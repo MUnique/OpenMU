@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.AdminPanel.Map
                 Direction = (locateable as IRotatable)?.Rotation ?? default,
                 Id = locateable.Id,
                 MapId = locateable.CurrentMap.MapId,
-                Name = locateable.ToString(),
+                Name = locateable.ToString() ?? string.Empty,
                 X = locateable.Position.X,
                 Y = locateable.Position.Y,
             };

@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
         /// The requested configuration as json string.
         /// </returns>
         [HttpGet("[controller]_{objectId}.json")]
-        public IActionResult GetConfigurationById(Guid objectId)
+        public IActionResult? GetConfigurationById(Guid objectId)
         {
             using var context = this.persistenceContextProvider.CreateNewTypedContext<T>();
             var item = context.GetById<T>(objectId);

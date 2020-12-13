@@ -2,8 +2,6 @@
 @using MUnique.OpenMU.AdminPanel.Services
 @using MUnique.OpenMU.Interfaces
 
-@inject ServerService serverService
-
 <h1>Servers</h1>
 
 @if (servers == null)
@@ -37,12 +35,18 @@ else
 }
 
 @code {
-    private IList<IManageableServer> servers;
+    private IList<IManageableServer>? servers;
+
+    /// <summary>
+    /// Gets or sets the <see cref="ServerService"/>.
+    /// </summary>
+    [Inject]
+    public ServerService ServerService { get; set; } = null!;
 
     /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.servers = this.serverService.Servers;
+        this.servers = this.ServerService.Servers;
     }
 }

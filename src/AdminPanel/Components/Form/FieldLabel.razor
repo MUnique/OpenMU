@@ -6,20 +6,20 @@
 <label for="@this.fieldIdentifier.FieldName">@this.actualLabel</label>
 
 @code {
-    private string actualLabel;
+    private string actualLabel = null!;
     private FieldIdentifier fieldIdentifier;
 
     /// <summary>
     /// Gets or sets the text.
     /// </summary>
     [Parameter]
-    public string Text { get; set; }
+    public string Text { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets an expression that identifies the bound value.
     /// </summary>
     [Parameter]
-    public Expression<Func<TValue>> ValueExpression { get; set; }
+    public Expression<Func<TValue>> ValueExpression { get; set; } = null!;
 
     /// <inheritdoc />
     protected override void OnParametersSet()

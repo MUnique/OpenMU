@@ -67,7 +67,7 @@
     /// "collapse" is a class of bootstrap which hides it.
     /// In our css we also define to show it anyway, if the width sufficient.
     /// </summary>
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : string.Empty;
 
     private void ToggleNavMenu()
     {

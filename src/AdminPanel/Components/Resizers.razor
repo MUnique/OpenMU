@@ -12,7 +12,7 @@
     /// into relative coordinates of the object on its parent.
     /// </summary>
     [Parameter]
-    public Func<MouseEventArgs, Task<(byte X, byte Y)?>> CoordinatesGetter { get; set; }
+    public Func<MouseEventArgs, Task<(byte X, byte Y)?>> CoordinatesGetter { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets an <see cref="EventCallback"/> which gets called when a resizing operation takes place.

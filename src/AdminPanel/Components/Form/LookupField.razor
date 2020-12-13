@@ -1,4 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics.CodeAnalysis
 @using MUnique.OpenMU.AdminPanel.Services
 @using MUnique.OpenMU.Persistence
 
@@ -32,21 +33,22 @@
 </div>
 
 @code {
+
     /// <summary>
     /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
     /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
     /// </summary>
     [Parameter]
-    public string Label { get; set; }
+    public string Label { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the persistence context.
     /// </summary>
     [CascadingParameter]
-    public IContext PersistenceContext { get; set; }
+    public IContext PersistenceContext { get; set; } = null!;
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string value, out TObject result, out string validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TObject result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         throw new NotImplementedException();
     }

@@ -50,31 +50,31 @@
 
     private bool isLoading;
 
-    private IReadOnlyList<TItem> items;
+    private IReadOnlyList<TItem>? items;
 
     /// <summary>
     /// Gets or sets the table header column elements.
     /// </summary>
     [Parameter]
-    public RenderFragment TableHeader { get; set; }
+    public RenderFragment TableHeader { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the table filter header column elements.
     /// </summary>
     [Parameter]
-    public RenderFragment FilterHeader { get; set; }
+    public RenderFragment? FilterHeader { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the item row template.
     /// </summary>
     [Parameter]
-    public RenderFragment<TItem> ItemTemplate { get; set; }
+    public RenderFragment<TItem> ItemTemplate { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the table footer template.
     /// </summary>
     [Parameter]
-    public RenderFragment TableFooter { get; set; }
+    public RenderFragment? TableFooter { get; set; }
 
     /// <summary>
     /// Gets or sets the current page.

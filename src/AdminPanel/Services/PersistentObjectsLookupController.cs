@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<T>> GetSuggestionsAsync<T>(string text, IContext persistenceContext)
+        public Task<IEnumerable<T>> GetSuggestionsAsync<T>(string? text, IContext? persistenceContext)
             where T : class
         {
             if (!typeof(T).IsConfigurationType())
@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
             }
 
             using var context = persistenceContext is null ? this.contextProvider.CreateNewTypedContext<T>() : null;
-            var values = (persistenceContext ?? context).Get<T>();
+            var values = (persistenceContext ?? context)?.Get<T>() ?? Enumerable.Empty<T>();
             if (string.IsNullOrEmpty(text))
             {
                 return Task.FromResult(values);

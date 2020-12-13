@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.AdminPanel.Models
         /// <summary>
         /// Gets or sets the name of the plug in point.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the plug in count.

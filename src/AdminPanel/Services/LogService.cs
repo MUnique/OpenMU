@@ -56,12 +56,12 @@ namespace MUnique.OpenMU.AdminPanel.Services
         /// <summary>
         /// Occurs when a log event was received.
         /// </summary>
-        public event EventHandler<LogEntryReceivedEventArgs> LogEventReceived;
+        public event EventHandler<LogEntryReceivedEventArgs>? LogEventReceived;
 
         /// <summary>
         /// Gets the known loggers.
         /// </summary>
-        public ICollection<string> Loggers { get; private set; }
+        public ICollection<string> Loggers { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets the captured entries.

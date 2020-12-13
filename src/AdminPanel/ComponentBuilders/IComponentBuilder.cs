@@ -29,7 +29,10 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
         /// <param name="propertyInfo">The property information.</param>
         /// <param name="treeBuilder">The tree builder.</param>
         /// <param name="currentIndex">The current index in the render tree.</param>
-        /// <returns>The updated index in the render tree.</returns>
+        /// <param name="notificationService">The notification service.</param>
+        /// <returns>
+        /// The updated index in the render tree.
+        /// </returns>
         int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService);
     }
 }

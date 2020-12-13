@@ -10,7 +10,7 @@
 </tr>
 
 @code {
-    private IList<IManageableServer> servers;
+    private IList<IManageableServer>? servers;
 
     /// <inheritdoc />
     protected override void OnInitialized()
@@ -21,6 +21,6 @@
 
     private int GetPlayerCount()
     {
-        return this.servers.Where(s => s.Id < 0x10000).Sum(s => s.CurrentConnections);
+        return this.servers?.Where(s => s.Id < 0x10000).Sum(s => s.CurrentConnections) ?? 0;
     }
 }

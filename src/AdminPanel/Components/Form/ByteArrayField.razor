@@ -2,6 +2,7 @@
 @using System.IO
 @using MUnique.OpenMU.Network
 @using MUnique.OpenMU.Persistence
+@using System.Diagnostics.CodeAnalysis
 
 @inherits NotifyableInputBase<byte[]>
 
@@ -24,15 +25,23 @@
     </div>
 
 @code {
+
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
     [Parameter]
-    public string Label { get; set; }
+    public string Label { get; set; } = string.Empty;
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string value, out byte[] result, out string validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out byte[] result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
+        if (value is null)
+        {
+            result = Array.Empty<byte>();
+            validationErrorMessage = null;
+            return true;
+        }
+
         var values = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         result = new byte[values.Length];
         int i = 0;
@@ -56,9 +65,9 @@
     }
 
     /// <inheritdoc />
-    protected override string FormatValueAsString(byte[] value)
+    protected override string? FormatValueAsString(byte[]? value)
     {
-        return value.AsString();
+        return value?.AsString();
     }
 
     private async Task OnSelectedFile(IFileListEntry[] files)

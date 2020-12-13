@@ -61,10 +61,10 @@ namespace MUnique.OpenMU.AdminPanel
             services.AddSingleton<ConnectServerService>();
 
             services.AddScoped<AccountService>();
-            services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>());
+            services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
 
             services.AddScoped<PlugInController>();
-            services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>());
+            services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
 
             services.AddSingleton<LogService>();
             services.AddScoped<LogController>();
@@ -77,14 +77,14 @@ namespace MUnique.OpenMU.AdminPanel
             services.AddScoped(provider =>
             {
                 var contextProvider = provider.GetService<IPersistenceContextProvider>();
-                using var initialContext = contextProvider.CreateNewConfigurationContext();
+                using var initialContext = contextProvider!.CreateNewConfigurationContext();
                 return initialContext.Get<GameConfiguration>().First();
             });
 
             services.AddTransient(provider =>
             {
                 var contextProvider = provider.GetService<IPersistenceContextProvider>();
-                return contextProvider.CreateNewPlayerContext(provider.GetService<GameConfiguration>());
+                return contextProvider!.CreateNewPlayerContext(provider.GetService<GameConfiguration>()!);
             });
         }
 

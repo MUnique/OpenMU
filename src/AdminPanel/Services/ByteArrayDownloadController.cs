@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
         [HttpGet]
         public Task GetAsync(string typeString, Guid id, string propertyName)
         {
-            var type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.StartsWith(nameof(MUnique)))
+            var type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName?.StartsWith(nameof(MUnique)) ?? false)
                 .Select(assembly => assembly.GetType(typeString)).FirstOrDefault(t => t != null);
             if (type is null)
             {
@@ -55,13 +55,23 @@ namespace MUnique.OpenMU.AdminPanel.Services
                 throw new ArgumentException($"Property {type}.{propertyName} is not a byte array.", nameof(propertyName));
             }
 
-            var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext)).MakeGenericMethod(type);
-            using var persistenceContext = (IContext)createContextMethod.Invoke(this.persistenceContextProvider, Array.Empty<object>());
+            var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(type);
+            using var persistenceContext = (IContext)createContextMethod.Invoke(this.persistenceContextProvider, Array.Empty<object>())!;
 
-            var method = typeof(IContext).GetMethod(nameof(IContext.GetById)).MakeGenericMethod(type);
+            var method = typeof(IContext).GetMethod(nameof(IContext.GetById))!.MakeGenericMethod(type);
             var obj = method.Invoke(persistenceContext, new object[] { id });
-            var array = (byte[])property.GetValue(obj);
+            if (obj is null)
+            {
+                return Task.FromResult(this.NotFound());
+            }
+
+            var array = (byte[]?)property.GetValue(obj);
             this.Response.ContentType = "application/octet-stream";
+            if (array is null || array.Length == 0)
+            {
+                return Task.CompletedTask;
+            }
+
             return this.Response.Body.WriteAsync(array, 0, array.Length);
         }
     }

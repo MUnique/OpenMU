@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
     /// </summary>
     public class ConnectServerService
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
 
         private readonly IList<IManageableServer> servers;
         private readonly IPersistenceContextProvider persistenceContextProvider;
@@ -89,7 +89,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
             try
             {
                 Log.Info($"requested to save configuration of connect server {configuration.ServerId}");
-                DataModel.Configuration.ConnectServerDefinition currentConfiguration = null;
+                DataModel.Configuration.ConnectServerDefinition? currentConfiguration = null;
                 if (this.servers.OfType<IConnectServer>().FirstOrDefault(s => s.Settings.GetId() == configuration.GetId()) is { } server)
                 {
                     currentConfiguration = server.Settings as DataModel.Configuration.ConnectServerDefinition;

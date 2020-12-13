@@ -1,4 +1,5 @@
-﻿@inherits NotifyableInputBase<short>
+﻿@using System.Diagnostics.CodeAnalysis
+@inherits NotifyableInputBase<short>
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
@@ -7,14 +8,15 @@
 </div>
 
 @code {
+
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
     [Parameter]
-    public string Label { get; set; }
+    public string Label { get; set; } = string.Empty;
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string value, out short result, out string validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out short result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         throw new NotImplementedException();
     }

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Reflection;
     using Microsoft.AspNetCore.Components;
@@ -26,12 +27,12 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             builder.AddAttribute(i++, "class", this.CssClass);
             builder.AddAttribute(i++, "id", this.FieldIdentifier.FieldName);
             builder.AddAttribute(i++, "value", this.CurrentValueAsString);
-            builder.AddAttribute(i++, "onchange", EventCallback.Factory.CreateBinder<string>(this, value => this.CurrentValueAsString = value, this.CurrentValueAsString));
+            builder.AddAttribute(i++, "onchange", EventCallback.Factory.CreateBinder<string>(this, value => this.CurrentValueAsString = value, this.CurrentValueAsString ?? string.Empty));
 
             foreach (var enumValue in Enum.GetValues(typeof(TValue)))
             {
                 var name = Enum.GetName(typeof(TValue), enumValue);
-                var displayName = typeof(TValue).GetField(name).GetCustomAttribute<DisplayAttribute>()?.Name;
+                var displayName = typeof(TValue).GetField(name!)!.GetCustomAttribute<DisplayAttribute>()?.Name;
                 builder.OpenElement(i++, "option");
                 builder.AddAttribute(i++, "value", enumValue.ToString());
                 if (this.CurrentValueAsString == enumValue.ToString())
@@ -47,15 +48,14 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         }
 
         /// <inheritdoc />
-        protected override bool TryParseValueFromString(string value, out TValue result, out string validationErrorMessage)
+        protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TValue result, [NotNullWhen(false)] out string? validationErrorMessage)
         {
             if (!typeof(TValue).IsEnum)
             {
                 throw new InvalidOperationException($"{this.GetType()} does not support the type '{typeof(TValue)}'.");
             }
 
-            var success = BindConverter.TryConvertTo<TValue>(value, CultureInfo.CurrentCulture, out var parsedValue);
-            if (success)
+            if (BindConverter.TryConvertTo<TValue>(value, CultureInfo.CurrentCulture, out var parsedValue))
             {
                 result = parsedValue;
                 validationErrorMessage = null;

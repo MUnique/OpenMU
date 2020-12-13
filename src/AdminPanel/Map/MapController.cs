@@ -60,13 +60,13 @@ namespace MUnique.OpenMU.AdminPanel.Map
         }
 
         /// <inheritdoc />
-        public event EventHandler ObjectsChanged;
+        public event EventHandler? ObjectsChanged;
 
         /// <inheritdoc/>
         public int InfoRange => byte.MaxValue;
 
         /// <inheritdoc/>
-        public GameMap CurrentMap => null;
+        public GameMap? CurrentMap => null;
 
         /// <inheritdoc/>
         public Point Position { get; set; }

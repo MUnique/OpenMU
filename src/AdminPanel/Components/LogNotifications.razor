@@ -19,6 +19,7 @@
     private bool showWarning;
     private bool showError;
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -26,7 +27,7 @@
         this.logService.LogEventReceived += this.OnLogEventReceived;
     }
 
-    private void OnLogEventReceived(object sender, LogEntryReceivedEventArgs e)
+    private void OnLogEventReceived(object? sender, LogEntryReceivedEventArgs e)
     {
         if (!this.showError && e.Data.Level.Value == Level.Error.Value)
         {

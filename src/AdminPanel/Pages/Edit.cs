@@ -32,14 +32,14 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                 { typeof(GameMapDefinition), new List<(string, string)> { ("Map Editor", "/map-editor/{0}") } },
             };
 
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private object model;
-        private Type type;
-        private IContext persistenceContext;
-        private CancellationTokenSource disposeCts;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
+        private object? model;
+        private Type? type;
+        private IContext? persistenceContext;
+        private CancellationTokenSource? disposeCts;
         private DataLoadingState loadingState;
-        private Task loadTask;
-        private IDisposable modalDisposable;
+        private Task? loadTask;
+        private IDisposable? modalDisposable;
 
         private enum DataLoadingState
         {
@@ -70,23 +70,19 @@ namespace MUnique.OpenMU.AdminPanel.Pages
         /// Gets or sets the <see cref="Type.FullName"/> of the object which should be edited.
         /// </summary>
         [Parameter]
-        public string TypeString
-        {
-            get;
-            set;
-        }
+        public string TypeString { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the persistence context provider which loads and saves the object.
         /// </summary>
         [Inject]
-        public IPersistenceContextProvider PersistenceContextProvider { get; set; }
+        public IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the modal service.
         /// </summary>
         [Inject]
-        public IModalService ModalService { get; set; }
+        public IModalService ModalService { get; set; } = null!;
 
         /// <inheritdoc />
         public async ValueTask DisposeAsync()
@@ -109,7 +105,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             {
                 var downloadMarkup = this.GetDownloadMarkup();
                 var editorsMarkup = this.GetEditorsMarkup();
-                builder.AddMarkupContent(0, $"<h1>Edit {this.type.Name}</h1>{downloadMarkup}{editorsMarkup}\r\n");
+                builder.AddMarkupContent(0, $"<h1>Edit {this.type!.Name}</h1>{downloadMarkup}{editorsMarkup}\r\n");
                 builder.OpenComponent<CascadingValue<IContext>>(1);
                 builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this.persistenceContext);
                 builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), true);
@@ -166,9 +162,9 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             await base.OnAfterRenderAsync(firstRender);
         }
 
-        private string GetDownloadMarkup()
+        private string? GetDownloadMarkup()
         {
-            if (GenericControllerFeatureProvider.SupportedTypes.Any(t => t.Item1 == this.type))
+            if (this.type is not null && GenericControllerFeatureProvider.SupportedTypes.Any(t => t.Item1 == this.type))
             {
                 var uri = $"/download/{this.type.Name}/{this.type.Name}_{this.Id}.json";
                 return $"<p>Download as json: <a href=\"{uri}\" download><span class=\"oi oi-data-transfer-download\"></span></a></p>";
@@ -177,11 +173,12 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             return null;
         }
 
-        private string GetEditorsMarkup()
+        private string? GetEditorsMarkup()
         {
-            StringBuilder stringBuilder = null;
-            if (EditorPages.TryGetValue(this.type, out var editors)
-                || (this.type.BaseType is{} baseType && EditorPages.TryGetValue(baseType, out editors)))
+            StringBuilder? stringBuilder = null;
+            if (this.type is not null
+                && (EditorPages.TryGetValue(this.type, out var editors)
+                    || (this.type.BaseType is{} baseType && EditorPages.TryGetValue(baseType, out editors))))
             {
                 foreach (var editor in editors)
                 {
@@ -196,17 +193,17 @@ namespace MUnique.OpenMU.AdminPanel.Pages
 
         private async Task LoadDataAsync(CancellationToken cancellationToken)
         {
-            this.type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.StartsWith(nameof(MUnique)))
+            this.type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName?.StartsWith(nameof(MUnique)) ?? false)
                 .Select(assembly => assembly.GetType(this.TypeString)).FirstOrDefault(t => t != null);
             if (this.type is null)
             {
                 throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
             }
 
-            var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext)).MakeGenericMethod(this.type);
-            this.persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, Array.Empty<object>());
+            var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.type);
+            this.persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, Array.Empty<object>())!;
 
-            var method = typeof(IContext).GetMethod(nameof(IContext.GetById)).MakeGenericMethod(this.type);
+            var method = typeof(IContext).GetMethod(nameof(IContext.GetById))!.MakeGenericMethod(this.type);
             try
             {
                 if (!cancellationToken.IsCancellationRequested)
@@ -244,7 +241,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             string text;
             try
             {
-                text = this.persistenceContext.SaveChanges() ? "The changes have been saved." : "There were no changes to save.";
+                text = this.persistenceContext?.SaveChanges() ?? false ? "The changes have been saved." : "There were no changes to save.";
             }
             catch (Exception ex)
             {

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
     /// </summary>
     public class ShowAreaSkillAnimationPlugIn : JsViewPlugInBase, IShowAreaSkillAnimationPlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowAreaSkillAnimationPlugIn"/> class.

@@ -4,6 +4,10 @@
 
 namespace MUnique.OpenMU.AdminPanel.Components.Form
 {
+    using System.ComponentModel.DataAnnotations;
+    using Blazored.Modal;
+    using Blazored.Modal.Services;
+    using Microsoft.AspNetCore.Components;
     using MUnique.OpenMU.AdminPanel.Services;
 
     /// <summary>
@@ -14,5 +18,26 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     public partial class ModalObjectSelection<TItem>
         where TItem : class
     {
+        /// <summary>
+        /// Gets or sets the selected item.
+        /// </summary>
+        [Required]
+        public TItem? Item { get; set; }
+
+        /// <summary>
+        /// Gets or sets the modal instance.
+        /// </summary>
+        [CascadingParameter]
+        public BlazoredModalInstance BlazoredModal { get; set; } = null!;
+
+        private void Submit()
+        {
+            this.BlazoredModal.Close(ModalResult.Ok(this.Item));
+        }
+
+        private void Cancel()
+        {
+            this.BlazoredModal.Cancel();
+        }
     }
 }
