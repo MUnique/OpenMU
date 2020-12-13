@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Login;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,13 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
         /// <inheritdoc/>
         public void ShowLoginResult(LoginResult loginResult)
         {
-            using var writer = this.player.Connection.StartSafeWrite(LoginResponse.HeaderType, LoginResponse.Length);
-            _ = new LoginResponse(writer.Span)
-            {
-                Success = ConvertResult(loginResult),
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendLoginResponse(ConvertResult(loginResult));
         }
 
         private static LoginResponse.LoginResult ConvertResult(LoginResult loginResult)

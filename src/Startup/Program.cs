@@ -228,7 +228,11 @@ namespace MUnique.OpenMU.Startup
                     .AddHostedService<ApiHost>())
                 .Build();
             Log.Info("Host created");
-            NpgsqlLoggingProvider.Initialize(host.Services.GetService<ILoggerFactory>());
+            if (host.Services.GetService<ILoggerFactory>() is { } loggerFactory)
+            {
+                NpgsqlLoggingProvider.Initialize(loggerFactory);
+            }
+
             this.servers.Add(host.Services.GetService<IChatServer>() ?? throw new Exception($"{nameof(IChatServer)} not registered."));
             this.LoadGameClientDefinitions(host.Services.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."));
             Log.Info("Starting host...");

@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
                 }
 
                 var packetType = packet[2];
-                if (this.packetHandlers.TryGetValue(packetType, out IPacketHandler<Client> packetHandler))
+                if (this.packetHandlers.TryGetValue(packetType, out var packetHandler))
                 {
                     packetHandler.HandlePacket(client, packet);
                 }

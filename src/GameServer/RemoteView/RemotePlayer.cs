@@ -36,17 +36,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             this.clientVersion = clientVersion;
             this.MainPacketHandler = new MainPacketHandlerPlugInContainer(this, gameContext.PlugInManager, gameContext.LoggerFactory);
             this.MainPacketHandler.Initialize();
-            this.Connection.PacketReceived += (sender, packet) => this.PacketReceived(packet);
-            this.Connection.Disconnected += (sender, packet) => this.Disconnect();
+            this.Connection!.PacketReceived += (sender, packet) => this.PacketReceived(packet);
+            this.Connection!.Disconnected += (sender, packet) => this.Disconnect();
         }
 
         /// <inheritdoc />
-        public event EventHandler ClientVersionChanged;
+        public event EventHandler? ClientVersionChanged;
 
         /// <summary>
         /// Gets the game server context.
         /// </summary>
-        public IGameServerContext GameServerContext => this.GameContext as IGameServerContext;
+        public IGameServerContext GameServerContext => (IGameServerContext)this.GameContext;
 
         /// <inheritdoc />
         public ClientVersion ClientVersion
@@ -68,17 +68,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <summary>
         /// Gets the connection.
         /// </summary>
-        internal IConnection Connection { get; private set; }
+        internal IConnection? Connection { get; private set; }
 
         /// <summary>
         /// Gets the currently effective appearance serializer.
         /// </summary>
-        internal IAppearanceSerializer AppearanceSerializer => this.ViewPlugIns.GetPlugIn<IAppearanceSerializer>();
+        internal IAppearanceSerializer AppearanceSerializer => this.ViewPlugIns.GetPlugIn<IAppearanceSerializer>() ?? throw new Exception("No appearance serializer available.");
 
         /// <summary>
         /// Gets the currently effective item serializer.
         /// </summary>
-        internal IItemSerializer ItemSerializer => this.ViewPlugIns.GetPlugIn<IItemSerializer>();
+        internal IItemSerializer ItemSerializer => this.ViewPlugIns.GetPlugIn<IItemSerializer>() ?? throw new Exception("No item serializer available.");
 
         /// <summary>
         /// Gets the main packet handler.
@@ -121,7 +121,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             try
             {
                 Span<byte> buffer;
-                IMemoryOwner<byte> owner = null;
+                IMemoryOwner<byte>? owner = null;
                 if (sequence.Length <= this.packetBuffer.Length)
                 {
                     sequence.CopyTo(this.packetBuffer);

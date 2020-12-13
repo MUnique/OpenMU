@@ -36,7 +36,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 return;
             }
 
-            using var writer = this.player.Connection.StartSafeWrite(QuestState.HeaderType, QuestState.Length);
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
+            using var writer = connection.StartSafeWrite(QuestState.HeaderType, QuestState.Length);
             var message = new QuestState(writer.Span)
             {
                 QuestGroup = (ushort)questState.Group,

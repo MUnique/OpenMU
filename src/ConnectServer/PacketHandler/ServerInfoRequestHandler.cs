@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
                 client.Connection.Disconnect();
             }
 
-            if (this.connectServer.ConnectInfos.TryGetValue(serverId, out byte[] connectInfo))
+            if (this.connectServer.ConnectInfos.TryGetValue(serverId, out var connectInfo))
             {
                 using var writer = client.Connection.StartSafeWrite(connectInfo[0], connectInfo.Length);
                 connectInfo.CopyTo(writer.Span);

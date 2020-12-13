@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.GameServer
         /// <summary>
         /// Occurs when a guild has been deleted.
         /// </summary>
-        public event EventHandler<GuildDeletedEventArgs> GuildDeleted;
+        public event EventHandler<GuildDeletedEventArgs>? GuildDeleted;
 
         /// <inheritdoc/>
         public byte Id { get; }
@@ -103,7 +103,7 @@ namespace MUnique.OpenMU.GameServer
             this.GuildDeleted?.Invoke(this, new GuildDeletedEventArgs(guildId));
         }
 
-        private void PlayerEnteredWorld(object sender, EventArgs e)
+        private void PlayerEnteredWorld(object? sender, EventArgs e)
         {
             if (sender is Player player)
             {
@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.GameServer
             }
         }
 
-        private void PlayerLeftWorld(object sender, EventArgs e)
+        private void PlayerLeftWorld(object? sender, EventArgs e)
         {
             if (sender is Player player)
             {

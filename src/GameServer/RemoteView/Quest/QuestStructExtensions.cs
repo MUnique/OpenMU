@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 {
-    using System;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
@@ -25,10 +24,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// </summary>
         /// <param name="questState">State of the quest.</param>
         /// <param name="player">The player.</param>
-        internal static void SendLegacyQuestState(this CharacterQuestState questState, RemotePlayer player)
+        internal static void SendLegacyQuestState(this CharacterQuestState? questState, RemotePlayer player)
         {
+            var connection = player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var questCount = 7;
-            using var writer = player.Connection.StartSafeWrite(LegacyQuestStateList.HeaderType, LegacyQuestStateList.GetRequiredSize(questCount));
+            using var writer = connection.StartSafeWrite(LegacyQuestStateList.HeaderType, LegacyQuestStateList.GetRequiredSize(questCount));
             var message = new LegacyQuestStateList(writer.Span)
             {
                 QuestCount = (byte)questCount,
@@ -61,9 +66,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// <param name="message">The message.</param>
         /// <param name="questState">State of the quest.</param>
         /// <param name="player">The player.</param>
-        internal static void AssignActiveQuestData(this QuestState message, CharacterQuestState questState, RemotePlayer player)
+        internal static void AssignActiveQuestData(this QuestState message, CharacterQuestState? questState, RemotePlayer player)
         {
-            var activeQuest = questState.ActiveQuest;
+            var activeQuest = questState?.ActiveQuest;
             if (activeQuest is null)
             {
                 return;
@@ -88,7 +93,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 int i = 0;
                 foreach (var requiredKill in activeQuest.RequiredMonsterKills)
                 {
-                    requiredKill.AssignTo(message.GetQuestCondition(i), questState);
+                    requiredKill.AssignTo(message.GetQuestCondition(i), questState!);
                     i++;
                 }
             }

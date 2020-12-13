@@ -77,12 +77,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
             }
 
             var guild = this.Player.GameServerContext.GuildServer.GetGuild(guildId);
+            if (guild is null)
+            {
+                return Memory<byte>.Empty;
+            }
+
             var data = this.Serialize(guild, guildId);
             Cache.TryAdd(guildId, data);
             return data;
         }
 
-        private static void OnGuildDeleted(object sender, GuildDeletedEventArgs args)
+        private static void OnGuildDeleted(object? sender, GuildDeletedEventArgs args)
         {
             Cache.TryRemove(args.GuildId, out _);
         }

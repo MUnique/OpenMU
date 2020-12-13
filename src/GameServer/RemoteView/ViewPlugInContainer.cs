@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         /// <inheritdoc />
         /// <remarks>We sort by version and choose the highest one.</remarks>
-        protected override IViewPlugIn DetermineEffectivePlugIn(Type interfaceType)
+        protected override IViewPlugIn? DetermineEffectivePlugIn(Type interfaceType)
         {
             return this.ActivePlugIns.OrderByDescending(p => p.GetType().GetCustomAttribute(typeof(MinimumClientAttribute))).FirstOrDefault(interfaceType.IsInstanceOfType);
         }
@@ -84,12 +84,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             if (this.Client.IsPlugInSuitable(plugInType))
             {
-                var plugIn = ActivatorUtilities.CreateInstance(this.serviceContainer, plugInType) as IViewPlugIn;
+                var plugIn = (IViewPlugIn)ActivatorUtilities.CreateInstance(this.serviceContainer, plugInType)!;
                 this.AddPlugIn(plugIn, true);
             }
         }
 
-        private void OnClientVersionChanged(object sender, EventArgs e)
+        private void OnClientVersionChanged(object? sender, EventArgs e)
         {
             this.Client = this.player.ClientVersion;
             foreach (var activePlugIn in this.ActivePlugIns)

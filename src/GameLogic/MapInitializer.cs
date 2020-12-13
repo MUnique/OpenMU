@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="mapNumber">The map number.</param>
         /// <returns>The game map definition.</returns>
-        protected virtual GameMapDefinition GetMapDefinition(ushort mapNumber)
+        protected virtual GameMapDefinition? GetMapDefinition(ushort mapNumber)
         {
             return this.configuration.Maps.FirstOrDefault(m => m.Number == mapNumber);
         }

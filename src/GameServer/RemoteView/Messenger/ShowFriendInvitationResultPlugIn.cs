@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,14 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void ShowFriendInvitationResult(bool success, uint requestId)
         {
-            using var writer = this.player.Connection.StartSafeWrite(FriendInvitationResult.HeaderType, FriendInvitationResult.Length);
-            _ = new FriendInvitationResult(writer.Span)
-            {
-                Success = success,
-                RequestId = requestId,
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendFriendInvitationResult(success, requestId);
         }
     }
 }

@@ -32,8 +32,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void AppearanceChanged(Player changedPlayer, Item item)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var itemSerializer = this.player.ItemSerializer;
-            using var writer = this.player.Connection.StartSafeWrite(
+            using var writer = connection.StartSafeWrite(
                 Network.Packets.ServerToClient.AppearanceChanged.HeaderType,
                 Network.Packets.ServerToClient.AppearanceChanged.GetRequiredSize(itemSerializer.NeededSpace));
             var packet = new AppearanceChanged(writer.Span)

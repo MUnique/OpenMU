@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.GameServer
         }
 
         /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets the identifier of the server.
@@ -198,7 +198,7 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void GuildChatMessage(uint guildId, string sender, string message)
         {
-            var guildplayers = from player in this.gameContext.PlayerList
+            var guildPlayers = from player in this.gameContext.PlayerList
                 where player.GuildStatus?.GuildId == guildId
                 select player;
 
@@ -209,7 +209,7 @@ namespace MUnique.OpenMU.GameServer
                 messageSend = "@" + message;
             }
 
-            foreach (var player in guildplayers)
+            foreach (var player in guildPlayers)
             {
                 player.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(messageSend, sender, 0);
             }
@@ -218,7 +218,7 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void AllianceChatMessage(uint guildId, string sender, string message)
         {
-            var guildplayers = from player in this.gameContext.PlayerList
+            var guildPlayers = from player in this.gameContext.PlayerList
                 where player.GuildStatus?.GuildId == guildId
                 select player;
 
@@ -230,7 +230,7 @@ namespace MUnique.OpenMU.GameServer
             }
 
             // TODO: determine alliance
-            foreach (var player in guildplayers)
+            foreach (var player in guildPlayers)
             {
                 player.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(messageSend, sender, ChatMessageType.Alliance);
             }
@@ -258,7 +258,7 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public bool IsAccountOnline(string accountName)
         {
-            return this.gameContext.PlayerList.Any(player => player.Account.LoginName == accountName);
+            return this.gameContext.PlayerList.Any(player => player.Account?.LoginName == accountName);
         }
 
         /// <inheritdoc />
@@ -279,7 +279,7 @@ namespace MUnique.OpenMU.GameServer
         public bool BanPlayer(string playerName)
         {
             var player = this.gameContext.GetPlayerByCharacterName(playerName);
-            if (player != null)
+            if (player.Account is not null)
             {
                 player.Account.State = AccountState.TemporarilyBanned;
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Your account has been temporarily banned by a game master.", MessageType.BlueNormal);
@@ -342,7 +342,7 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void RegisterMapObserver(ushort mapId, object worldObserver)
         {
-            if ((worldObserver is not ILocateable locateableObserver))
+            if (worldObserver is not ILocateable locateableObserver)
             {
                 throw new ArgumentException("worldObserver needs to implement ILocateable", nameof(worldObserver));
             }
@@ -392,7 +392,7 @@ namespace MUnique.OpenMU.GameServer
             player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.KickSucceeded);
         }
 
-        private void OnPlayerConnected(object sender, PlayerConnectedEventArgs e)
+        private void OnPlayerConnected(object? sender, PlayerConnectedEventArgs e)
         {
             var player = e.ConntectedPlayer;
             this.gameContext.AddPlayer(player);
@@ -415,7 +415,10 @@ namespace MUnique.OpenMU.GameServer
         {
             try
             {
-                this.Context.LoginServer.LogOff(player.Account?.LoginName, this.Id);
+                if (player.Account?.LoginName is { } loginName)
+                {
+                    this.Context.LoginServer.LogOff(loginName, this.Id);
+                }
             }
             catch (Exception ex)
             {
@@ -455,7 +458,7 @@ namespace MUnique.OpenMU.GameServer
             }
         }
 
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

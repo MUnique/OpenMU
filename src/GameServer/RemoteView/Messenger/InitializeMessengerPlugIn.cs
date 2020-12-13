@@ -31,11 +31,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void InitializeMessenger(int maxLetters)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var friendServer = this.player.GameServerContext.FriendServer;
             var friends = friendServer.GetFriendList(this.player.SelectedCharacter.Id);
             var friendList = friends as ICollection<string> ?? friends.ToList();
 
-            using var writer = this.player.Connection.StartSafeWrite(MessengerInitialization.HeaderType, MessengerInitialization.GetRequiredSize(friendList.Count));
+            using var writer = connection.StartSafeWrite(MessengerInitialization.HeaderType, MessengerInitialization.GetRequiredSize(friendList.Count));
             var message = new MessengerInitialization(writer.Span)
             {
                 FriendCount = (byte)friendList.Count,

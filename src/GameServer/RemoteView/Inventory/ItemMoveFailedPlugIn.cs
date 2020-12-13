@@ -29,8 +29,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void ItemMoveFailed(Item item)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var itemSerializer = this.player.ItemSerializer;
-            using var writer = this.player.Connection.StartSafeWrite(ItemMoveRequestFailed.HeaderType, ItemMoveRequestFailed.GetRequiredSize(itemSerializer.NeededSpace));
+            using var writer = connection.StartSafeWrite(ItemMoveRequestFailed.HeaderType, ItemMoveRequestFailed.GetRequiredSize(itemSerializer.NeededSpace));
             var message = new ItemMoveRequestFailed(writer.Span);
             if (item != null)
             {

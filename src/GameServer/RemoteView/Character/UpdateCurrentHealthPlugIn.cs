@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -30,14 +29,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCurrentHealth()
         {
-            using var writer = this.player.Connection.StartSafeWrite(CurrentHealthAndShield.HeaderType, CurrentHealthAndShield.Length);
-            _ = new CurrentHealthAndShield(writer.Span)
-            {
-                Health = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f),
-                Shield = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f),
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendCurrentHealthAndShield(
+                (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f),
+                (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f));
         }
     }
 }

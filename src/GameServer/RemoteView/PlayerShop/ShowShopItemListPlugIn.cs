@@ -34,10 +34,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
         /// </remarks>
         public void ShowShopItemList(Player requestedPlayer, bool isUpdate)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var itemSerializer = this.player.ItemSerializer;
             var playerId = requestedPlayer.GetId(this.player);
             var items = requestedPlayer.ShopStorage.Items.ToList();
-            using var writer = this.player.Connection.StartSafeWrite(PlayerShopItemList.HeaderType, PlayerShopItemList.GetRequiredSize(items.Count));
+            using var writer = connection.StartSafeWrite(PlayerShopItemList.HeaderType, PlayerShopItemList.GetRequiredSize(items.Count));
 
             var packet = new PlayerShopItemList(writer.Span)
             {

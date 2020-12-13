@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer
     {
         private readonly GameServer gameServer;
         private readonly GameServerConfiguration configuration;
-        private IList<IGameMapInfo> gameMapInfos;
+        private IList<IGameMapInfo>? gameMapInfos;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameServerInfoAdapter"/> class.
@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameServer
         }
 
         /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc/>
         public byte Id => this.gameServer.Id;
@@ -53,13 +53,7 @@ namespace MUnique.OpenMU.GameServer
         public int MaximumPlayers => this.configuration.MaximumPlayers;
 
         /// <inheritdoc/>
-        public IList<IGameMapInfo> Maps
-        {
-            get
-            {
-                return this.gameMapInfos ??= this.gameServer.Context.Maps.Select(this.CreateMapAdapter).ToList<IGameMapInfo>();
-            }
-        }
+        public IList<IGameMapInfo> Maps => this.gameMapInfos ??= this.gameServer.Context.Maps.Select(this.CreateMapAdapter).ToList<IGameMapInfo>();
 
         /// <inheritdoc/>
         public override string ToString()
@@ -91,7 +85,7 @@ namespace MUnique.OpenMU.GameServer
                 .Select(this.CreateMapAdapter)
                 .ForEach(map =>
                 {
-                    this.gameMapInfos.Add(map);
+                    this.gameMapInfos!.Add(map);
                     mapsChanged = true;
                 });
 
@@ -108,7 +102,7 @@ namespace MUnique.OpenMU.GameServer
             return mapsChanged;
         }
 
-        private void OnMapPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnMapPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             this.RaisePropertyChanged(nameof(this.Maps));
         }
@@ -120,7 +114,7 @@ namespace MUnique.OpenMU.GameServer
             return mapAdapter;
         }
 
-        private void OnGameServerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnGameServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {

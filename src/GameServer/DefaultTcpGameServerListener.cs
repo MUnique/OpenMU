@@ -15,7 +15,6 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.PlugIns;
-    using MUnique.OpenMU.Network.SimpleModulus;
     using Pipelines.Sockets.Unofficial;
 
     /// <summary>
@@ -35,7 +34,7 @@ namespace MUnique.OpenMU.GameServer
         private readonly IGameServerStateObserver stateObserver;
         private readonly IIpAddressResolver addressResolver;
         private readonly ILoggerFactory loggerFactory;
-        private TcpListener listener;
+        private TcpListener? listener;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTcpGameServerListener" /> class.
@@ -58,7 +57,7 @@ namespace MUnique.OpenMU.GameServer
         }
 
         /// <inheritdoc/>
-        public event EventHandler<PlayerConnectedEventArgs> PlayerConnected;
+        public event EventHandler<PlayerConnectedEventArgs>? PlayerConnected;
 
         /// <inheritdoc/>
         public void Start()
@@ -107,6 +106,11 @@ namespace MUnique.OpenMU.GameServer
             Socket newClient;
             try
             {
+                if (this.listener is null)
+                {
+                    return;
+                }
+
                 newClient = await this.listener.AcceptSocketAsync().ConfigureAwait(false);
             }
             catch (ObjectDisposedException ex)
@@ -123,7 +127,7 @@ namespace MUnique.OpenMU.GameServer
             this.HandleNewSocket(newClient);
 
             // Accept the next Client:
-            if (this.listener.Server.IsBound)
+            if (this.listener?.Server.IsBound ?? false)
             {
                 await this.BeginAccept().ConfigureAwait(false);
             }

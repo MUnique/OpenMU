@@ -30,7 +30,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void StatIncreaseResult(AttributeDefinition attribute, bool success)
         {
-            using var writer = this.player.Connection.StartSafeWrite(CharacterStatIncreaseResponse.HeaderType, CharacterStatIncreaseResponse.Length);
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
+            using var writer = connection.StartSafeWrite(CharacterStatIncreaseResponse.HeaderType, CharacterStatIncreaseResponse.Length);
             var packet = new CharacterStatIncreaseResponse(writer.Span)
             {
                 Success = success,

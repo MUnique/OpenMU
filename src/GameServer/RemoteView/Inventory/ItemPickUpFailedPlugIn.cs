@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,13 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc />
         public void ItemPickUpFailed(ItemPickFailReason reason)
         {
-            using var writer = this.player.Connection.StartSafeWrite(ItemPickUpRequestFailed.HeaderType, ItemPickUpRequestFailed.Length);
-            _ = new ItemPickUpRequestFailed(writer.Span)
-            {
-                FailReason = reason.Convert(),
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendItemPickUpRequestFailed(reason.Convert());
         }
     }
 }

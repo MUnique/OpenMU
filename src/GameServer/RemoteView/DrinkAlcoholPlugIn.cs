@@ -28,13 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void DrinkAlcohol()
         {
-            using var writer = this.player.Connection.StartSafeWrite(ConsumeItemWithEffect.HeaderType, ConsumeItemWithEffect.Length);
-            _ = new ConsumeItemWithEffect(writer.Span)
-            {
-                EffectTimeInSeconds = 80,
-                ItemType = ConsumeItemWithEffect.ConsumedItemType.Ale,
-            };
-            writer.Commit();
+            this.player.Connection?.SendConsumeItemWithEffect(ConsumeItemWithEffect.ConsumedItemType.Ale, 80);
         }
     }
 }

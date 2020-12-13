@@ -93,25 +93,25 @@ namespace MUnique.OpenMU.GameServer
         public static bool operator ==(ClientAttribute left, ClientAttribute right) => Compare(left, right) == 0;
 
         /// <inheritdoc />
-        public int CompareTo(ClientAttribute other)
+        public int CompareTo(ClientAttribute? other)
         {
             return this.Client.CompareTo(other?.Client ?? default);
         }
 
         /// <inheritdoc />
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             return this.CompareTo(obj as ClientAttribute);
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return this.CompareTo(obj) == 0;
         }
 
         /// <inheritdoc />
-        public bool Equals(ClientAttribute other)
+        public bool Equals(ClientAttribute? other)
         {
             return this.CompareTo(other) == 0;
         }

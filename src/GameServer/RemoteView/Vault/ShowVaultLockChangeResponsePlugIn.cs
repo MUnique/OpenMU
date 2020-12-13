@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Vault
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Vault;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,12 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Vault
         /// <inheritdoc />
         public void ShowResponse(VaultLockChangeResult result)
         {
-            using var writer = this.player.Connection.StartSafeWrite(VaultProtectionInformation.HeaderType, VaultProtectionInformation.Length);
-            _ = new VaultProtectionInformation(writer.Span)
-            {
-                ProtectionState = this.GetVaultState(result),
-            };
-            writer.Commit();
+            this.player.Connection?.SendVaultProtectionInformation(this.GetVaultState(result));
         }
 
         private VaultProtectionInformation.VaultProtectionState GetVaultState(VaultLockChangeResult result)

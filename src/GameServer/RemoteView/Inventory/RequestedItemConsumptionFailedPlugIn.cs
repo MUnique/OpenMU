@@ -31,14 +31,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <remarks>The server sends the current health/shield to the client, with <see cref="ItemConsumptionFailed"/>.</remarks>
         public void RequestedItemConsumptionFailed()
         {
-            using var writer = this.player.Connection.StartSafeWrite(ItemConsumptionFailed.HeaderType, ItemConsumptionFailed.Length);
-            _ = new ItemConsumptionFailed(writer.Span)
-            {
-                Health = (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f),
-                Shield = (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f),
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendItemConsumptionFailed(
+                (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f),
+                (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f));
         }
     }
 }

@@ -29,13 +29,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc />
         public void ApplyKeyConfiguration()
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var keyConfiguration = this.player.SelectedCharacter.KeyConfiguration;
             if (keyConfiguration is null || keyConfiguration.Length == 0)
             {
                 return;
             }
 
-            using var writer = this.player.Connection.StartSafeWrite(
+            using var writer = connection.StartSafeWrite(
                 MUnique.OpenMU.Network.Packets.ServerToClient.ApplyKeyConfiguration.HeaderType,
                 MUnique.OpenMU.Network.Packets.ServerToClient.ApplyKeyConfiguration.GetRequiredSize(keyConfiguration.Length));
             var packet = new ApplyKeyConfiguration(writer.Span);

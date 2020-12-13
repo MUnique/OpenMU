@@ -81,9 +81,9 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <inheritdoc/>
-        public MUnique.OpenMU.Interfaces.Guild GetGuild(uint guildId)
+        public MUnique.OpenMU.Interfaces.Guild? GetGuild(uint guildId)
         {
-            if (this.guildDictionary.TryGetValue(guildId, out GuildContainer guild))
+            if (this.guildDictionary.TryGetValue(guildId, out var guild))
             {
                 return guild.Guild;
             }
@@ -92,37 +92,36 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <inheritdoc/>
-        public GuildMemberStatus CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
+        public GuildMemberStatus? CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
         {
             var context = this.persistenceContextProvider.CreateNewGuildContext();
+
+            var guild = context.CreateNew<Guild>();
+            guild.Name = name;
+            guild.Logo = logo;
+
+            var masterGuildMemberInfo = context.CreateNew<GuildMember>(masterId);
+            masterGuildMemberInfo.Status = GuildPosition.GuildMaster;
+            masterGuildMemberInfo.GuildId = guild.Id;
+            guild.Members.Add(masterGuildMemberInfo);
+
+            if (context.SaveChanges())
             {
-                var guild = context.CreateNew<Guild>();
-                guild.Name = name;
-                guild.Logo = logo;
-
-                var masterGuildMemberInfo = context.CreateNew<GuildMember>(masterId);
-                masterGuildMemberInfo.Status = GuildPosition.GuildMaster;
-                masterGuildMemberInfo.GuildId = guild.Id;
-                guild.Members.Add(masterGuildMemberInfo);
-
-                if (context.SaveChanges())
-                {
-                    var container = this.CreateGuildContainer(guild, context);
-                    container.SetServerId(masterId, serverId);
-                    container.Members[masterId].PlayerName = masterName;
-                    return new GuildMemberStatus(container.Id, GuildPosition.GuildMaster);
-                }
+                var container = this.CreateGuildContainer(guild, context);
+                container.SetServerId(masterId, serverId);
+                container.Members[masterId].PlayerName = masterName;
+                return new GuildMemberStatus(container.Id, GuildPosition.GuildMaster);
             }
 
             return null;
         }
 
         /// <inheritdoc/>
-        public GuildMemberStatus CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId)
+        public GuildMemberStatus? CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId)
         {
             try
             {
-                if (this.guildDictionary.TryGetValue(guildId, out GuildContainer guild))
+                if (this.guildDictionary.TryGetValue(guildId, out var guild))
                 {
                     if (guild.Members.ContainsKey(characterId))
                     {
@@ -155,7 +154,7 @@ namespace MUnique.OpenMU.GuildServer
         {
             try
             {
-                if (this.guildDictionary.TryGetValue(guildId, out GuildContainer guild))
+                if (this.guildDictionary.TryGetValue(guildId, out var guild))
                 {
                     var guildMember = guild.Guild.Members.FirstOrDefault(m => m.Id == characterId);
                     if (guildMember != null)
@@ -174,16 +173,14 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <inheritdoc />
-        public GuildMemberStatus PlayerEnteredGame(Guid characterId, string characterName, byte serverId)
+        public GuildMemberStatus? PlayerEnteredGame(Guid characterId, string characterName, byte serverId)
         {
-            using (var tempContext = this.persistenceContextProvider.CreateNewGuildContext())
+            using var tempContext = this.persistenceContextProvider.CreateNewGuildContext();
+            var guildMember = tempContext.GetById<GuildMember>(characterId); // we use the same id for Character.Id and GuildMemberInfo.Id
+            if (guildMember != null)
             {
-                var guildMember = tempContext.GetById<GuildMember>(characterId); // we use the same id for Character.Id and GuildMemberInfo.Id
-                if (guildMember != null)
-                {
-                    var guildId = this.GuildMemberEnterGame(guildMember.GuildId, guildMember.Id, serverId);
-                    return new GuildMemberStatus(guildId, guildMember.Status);
-                }
+                var guildId = this.GuildMemberEnterGame(guildMember.GuildId, guildMember.Id, serverId);
+                return new GuildMemberStatus(guildId, guildMember.Status);
             }
 
             return null;
@@ -192,7 +189,7 @@ namespace MUnique.OpenMU.GuildServer
         /// <inheritdoc/>
         public void GuildMemberLeftGame(uint guildId, Guid guildMemberId, byte serverId)
         {
-            if (this.guildDictionary.TryGetValue(guildId, out GuildContainer guild))
+            if (this.guildDictionary.TryGetValue(guildId, out var guild))
             {
                 guild.SetServerId(guildMemberId, OfflineServerId);
                 if (guild.Members.Values.All(member => member.ServerId == OfflineServerId))
@@ -205,7 +202,7 @@ namespace MUnique.OpenMU.GuildServer
         /// <inheritdoc/>
         public IEnumerable<GuildListEntry> GetGuildList(uint guildId)
         {
-            if (!this.guildDictionary.TryGetValue(guildId, out GuildContainer guildContainer))
+            if (!this.guildDictionary.TryGetValue(guildId, out var guildContainer))
             {
                 return Enumerable.Empty<GuildListEntry>();
             }
@@ -216,7 +213,7 @@ namespace MUnique.OpenMU.GuildServer
         /// <inheritdoc/>
         public void KickMember(uint guildId, string playerName)
         {
-            if (!this.guildDictionary.TryGetValue(guildId, out GuildContainer guildContainer))
+            if (!this.guildDictionary.TryGetValue(guildId, out var guildContainer))
             {
                 this.logger.LogWarning($"Guild {guildId} not found, so Player {playerName} can't be kicked.");
                 return;
@@ -245,7 +242,7 @@ namespace MUnique.OpenMU.GuildServer
                 guildContainer.DatabaseContext.SaveChanges();
             }
 
-            if (this.gameServers.TryGetValue(member.ServerId, out IGameServer gameServer))
+            if (this.gameServers.TryGetValue(member.ServerId, out var gameServer))
             {
                 gameServer.GuildPlayerKicked(playerName);
             }
@@ -294,9 +291,9 @@ namespace MUnique.OpenMU.GuildServer
             return guild.Id;
         }
 
-        private GuildContainer GetOrCreateGuildContainer(Guid guildId)
+        private GuildContainer? GetOrCreateGuildContainer(Guid guildId)
         {
-            if (!this.guildIdMapping.TryGetValue(guildId, out var shortGuildId) || !this.guildDictionary.TryGetValue(shortGuildId, out GuildContainer guild))
+            if (!this.guildIdMapping.TryGetValue(guildId, out var shortGuildId) || !this.guildDictionary.TryGetValue(shortGuildId, out var guild))
             {
                 var context = this.persistenceContextProvider.CreateNewGuildContext();
                 var guildinfo = context.GetById<Guild>(guildId);
@@ -308,7 +305,7 @@ namespace MUnique.OpenMU.GuildServer
                 }
 
                 guild = this.CreateGuildContainer(guildinfo, context);
-                guild.LoadMemberNames(this.persistenceContextProvider);
+                guild.LoadMemberNames();
             }
 
             return guild;

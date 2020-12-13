@@ -30,9 +30,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void DroppedItemsDisappeared(IEnumerable<ushort> disappearedItemIds)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             ////C2 00 07 21 01 00 0C
             int count = disappearedItemIds.Count();
-            using var writer = this.player.Connection.StartSafeWrite(ItemDropRemoved.HeaderType, ItemDropRemoved.GetRequiredSize(count));
+            using var writer = connection.StartSafeWrite(ItemDropRemoved.HeaderType, ItemDropRemoved.GetRequiredSize(count));
             var message = new ItemDropRemoved(writer.Span)
             {
                 ItemCount = (byte)count,

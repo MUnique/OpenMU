@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.Interfaces
         /// </summary>
         /// <param name="guildId">The guild identifier.</param>
         /// <returns>The guild.</returns>
-        Guild GetGuild(uint guildId);
+        Guild? GetGuild(uint guildId);
 
         /// <summary>
         /// Creates the guild and sets the guild master online at the guild server. A separate call to <see cref="PlayerEnteredGame"/> is not required.
@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="logo">The logo.</param>
         /// <param name="serverId">The identifier of the server on which the guild is getting created.</param>
         /// <returns>The guild member status of the creator (guild master).</returns>
-        GuildMemberStatus CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId);
+        GuildMemberStatus? CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId);
 
         /// <summary>
         /// Creates the guild member and sets it online at the guild server. A separate call to <see cref="PlayerEnteredGame"/> is not required.
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="role">The role of the member.</param>
         /// <param name="serverId">The identifier of the server on which the guild member is getting created.</param>
         /// <returns>The created guild member info.</returns>
-        GuildMemberStatus CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId);
+        GuildMemberStatus? CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId);
 
         /// <summary>
         /// Updates the guild member position.
@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="characterName">Name of the character.</param>
         /// <param name="serverId">The identifier of the server on which the guild member entered.</param>
         /// <returns>The guild member status if it's a guild member; Otherwise, null.</returns>
-        GuildMemberStatus PlayerEnteredGame(Guid characterId, string characterName, byte serverId);
+        GuildMemberStatus? PlayerEnteredGame(Guid characterId, string characterName, byte serverId);
 
         /// <summary>
         /// Notifies the guild server that a guild member left the game.

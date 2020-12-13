@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.GuildServer
         /// <param name="serverId">The server identifier.</param>
         public void SetServerId(Guid memberId, byte serverId)
         {
-            if (this.Members.TryGetValue(memberId, out GuildListEntry listEntry))
+            if (this.Members.TryGetValue(memberId, out var listEntry))
             {
                 listEntry.ServerId = serverId;
             }
@@ -74,18 +74,14 @@ namespace MUnique.OpenMU.GuildServer
         /// <summary>
         /// Loads the member names from the database.
         /// </summary>
-        /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public void LoadMemberNames(IPersistenceContextProvider persistenceContextProvider)
+        public void LoadMemberNames()
         {
             var memberNames = this.DatabaseContext.GetMemberNames(this.Guild.Id);
-            if (memberNames != null)
+            foreach (var member in this.Members.Where(m => m.Value.PlayerName is null))
             {
-                foreach (var member in this.Members.Where(m => m.Value.PlayerName is null))
+                if (memberNames.TryGetValue(member.Key, out var name))
                 {
-                    if (memberNames.TryGetValue(member.Key, out string name))
-                    {
-                        member.Value.PlayerName = name;
-                    }
+                    member.Value.PlayerName = name;
                 }
             }
         }

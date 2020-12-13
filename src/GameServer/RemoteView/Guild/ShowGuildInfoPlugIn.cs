@@ -37,8 +37,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
                 return;
             }
 
+            var connection = this.Player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             // guildInfo is the cached, serialized result of the GuildInformation-Class.
-            using var writer = this.Player.Connection.StartSafeWrite(data.Span[0], data.Length);
+            using var writer = connection.StartSafeWrite(data.Span[0], data.Length);
             data.Span.CopyTo(writer.Span);
             writer.Commit();
         }
@@ -59,15 +65,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
             var result = new GuildInformation(array)
             {
                 GuildId = guildId,
-                GuildName = guild.Name,
+                GuildName = guild.Name ?? string.Empty,
             };
             if (guild.AllianceGuild != null)
             {
-                result.AllianceGuildName = guild.AllianceGuild.Name;
+                result.AllianceGuildName = guild.AllianceGuild.Name ?? string.Empty;
             }
 
             guild.Logo.CopyTo(result.Logo);
-            return array.AsMemory<byte>();
+            return array.AsMemory();
         }
     }
 }

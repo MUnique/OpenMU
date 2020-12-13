@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// <summary>
         /// Gets or sets the ip from which the client is connecting.
         /// </summary>
-        public IPAddress Address { get; set; }
+        public IPAddress Address { get; set; } = IPAddress.None;
 
         /// <summary>
         /// Gets or sets the port from which the client is connecting.
@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.ConnectServer
             writer.Commit();
         }
 
-        private void OnlineTimer_Elapsed(object state)
+        private void OnlineTimer_Elapsed(object? state)
         {
             if (this.Connection.Connected && DateTime.Now.Subtract(this.lastReceive) > this.Timeout)
             {
@@ -125,7 +125,7 @@ namespace MUnique.OpenMU.ConnectServer
             }
         }
 
-        private void OnPacketReceived(object sender, ReadOnlySequence<byte> sequence)
+        private void OnPacketReceived(object? sender, ReadOnlySequence<byte> sequence)
         {
             this.lastReceive = DateTime.Now;
             if (sequence.Length > this.receiveBuffer.Length)

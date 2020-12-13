@@ -10,7 +10,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -39,22 +38,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             }
 
             var charStats = this.player.Attributes;
-            using var writer = this.player.Connection.StartSafeWrite(CharacterLevelUpdate.HeaderType, CharacterLevelUpdate.Length);
-            _ = new CharacterLevelUpdate(writer.Span)
-            {
-                Level = (ushort)charStats[Stats.Level],
-                LevelUpPoints = (ushort)selectedCharacter.LevelUpPoints,
-                MaximumHealth = (ushort)charStats[Stats.MaximumHealth],
-                MaximumMana = (ushort)charStats[Stats.MaximumMana],
-                MaximumShield = (ushort)charStats[Stats.MaximumShield],
-                MaximumAbility = (ushort)charStats[Stats.MaximumAbility],
-                FruitPoints = (ushort)selectedCharacter.UsedFruitPoints,
-                NegativeFruitPoints = (ushort)selectedCharacter.UsedNegFruitPoints,
-                MaximumFruitPoints = selectedCharacter.GetMaximumFruitPoints(),
-                MaximumNegativeFruitPoints = selectedCharacter.GetMaximumFruitPoints(),
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendCharacterLevelUpdate(
+                (ushort)charStats[Stats.Level],
+                (ushort)selectedCharacter.LevelUpPoints,
+                (ushort)charStats[Stats.MaximumHealth],
+                (ushort)charStats[Stats.MaximumMana],
+                (ushort)charStats[Stats.MaximumShield],
+                (ushort)charStats[Stats.MaximumAbility],
+                (ushort)selectedCharacter.UsedFruitPoints,
+                selectedCharacter.GetMaximumFruitPoints(),
+                (ushort)selectedCharacter.UsedNegFruitPoints,
+                selectedCharacter.GetMaximumFruitPoints());
 
             this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Congratulations, you are Level {this.player.Attributes[Stats.Level]} now.", MessageType.BlueNormal);
         }

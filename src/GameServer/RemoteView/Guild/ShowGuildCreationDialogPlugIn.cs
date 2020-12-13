@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Guild;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,9 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// <inheritdoc/>
         public void ShowGuildCreationDialog()
         {
-            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.ShowGuildCreationDialog.HeaderType, Network.Packets.ServerToClient.ShowGuildCreationDialog.Length);
-            _ = new ShowGuildCreationDialog(writer.Span);
-            writer.Commit();
+            this.player.Connection?.SendShowGuildCreationDialog();
         }
     }
 }

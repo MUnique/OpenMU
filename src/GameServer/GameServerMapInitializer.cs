@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameServer
         /// </summary>
         /// <param name="mapNumber">The map number.</param>
         /// <returns>The game map definition.</returns>
-        protected override GameMapDefinition GetMapDefinition(ushort mapNumber)
+        protected override GameMapDefinition? GetMapDefinition(ushort mapNumber)
         {
             return this.serverDefinition.ServerConfiguration.Maps.FirstOrDefault(map => map.Number == mapNumber);
         }

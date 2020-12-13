@@ -29,12 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc/>
         public void ShowTradeRequest(ITrader requester)
         {
-            using var writer = this.player.Connection.StartSafeWrite(TradeRequest.HeaderType, TradeRequest.Length);
-            _ = new TradeRequest(writer.Span)
-            {
-                Name = requester.Name,
-            };
-            writer.Commit();
+            this.player.Connection?.SendTradeRequest(requester.Name);
         }
     }
 }

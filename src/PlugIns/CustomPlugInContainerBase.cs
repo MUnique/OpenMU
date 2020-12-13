@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.PlugIns
         /// </summary>
         /// <param name="interfaceType">The interface type of the actual plugin type.</param>
         /// <returns>The new effective plugin.</returns>
-        protected abstract TPlugIn DetermineEffectivePlugIn(Type interfaceType);
+        protected abstract TPlugIn? DetermineEffectivePlugIn(Type interfaceType);
 
         /// <summary>
         /// Creates the plug in if suitable for this instance.

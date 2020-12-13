@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,17 +28,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void AddToLetterList(LetterHeader letter, ushort newLetterIndex, bool newLetter)
         {
-            using var writer = this.player.Connection.StartSafeWrite(AddLetter.HeaderType, AddLetter.Length);
-            _ = new AddLetter(writer.Span)
-            {
-                LetterIndex = newLetterIndex,
-                SenderName = letter.SenderName,
-                Subject = letter.Subject,
-                Timestamp = letter.LetterDate.ToUniversalTime().AddHours(this.player.Account.TimeZone).ToString("yyyy-MM-dd HH:mm:ss"),
-                State = newLetter ? AddLetter.LetterState.New : letter.ReadFlag ? AddLetter.LetterState.Read : AddLetter.LetterState.Unread,
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendAddLetter(
+                newLetterIndex,
+                letter.SenderName ?? string.Empty,
+                letter.LetterDate.ToUniversalTime().AddHours(this.player.Account?.TimeZone ?? 0).ToString("yyyy-MM-dd HH:mm:ss"),
+                letter.Subject ?? string.Empty,
+                newLetter ? AddLetter.LetterState.New : letter.ReadFlag ? AddLetter.LetterState.Read : AddLetter.LetterState.Unread);
         }
     }
 }

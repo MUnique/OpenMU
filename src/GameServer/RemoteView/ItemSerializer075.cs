@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc />
         public Item DeserializeItem(Span<byte> array, GameConfiguration gameConfiguration, IContext persistenceContext)
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }

@@ -29,8 +29,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void ItemAppear(Item newItem)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var itemSerializer = this.player.ItemSerializer;
-            using var writer = this.player.Connection.StartSafeWrite(ItemAddedToInventory.HeaderType, ItemAddedToInventory.GetRequiredSize(itemSerializer.NeededSpace));
+            using var writer = connection.StartSafeWrite(ItemAddedToInventory.HeaderType, ItemAddedToInventory.GetRequiredSize(itemSerializer.NeededSpace));
             var message = new ItemAddedToInventory(writer.Span)
             {
                 InventorySlot = newItem.ItemSlot,

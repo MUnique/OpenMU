@@ -32,22 +32,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
         {
             if (window == NpcWindow.NpcDialog)
             {
-                using var writer = this.player.Connection.StartSafeWrite(OpenNpcDialog.HeaderType, OpenNpcDialog.Length);
-                _ = new OpenNpcDialog(writer.Span)
-                {
-                    NpcNumber = this.player.OpenedNpc.Definition.Number.ToUnsigned(),
-                };
-
-                writer.Commit();
+                this.player.Connection?.SendOpenNpcDialog(this.player.OpenedNpc.Definition.Number.ToUnsigned());
             }
             else
             {
-                using var writer = this.player.Connection.StartSafeWrite(NpcWindowResponse.HeaderType, NpcWindowResponse.Length);
-                _ = new NpcWindowResponse(writer.Span)
-                {
-                    Window = Convert(window),
-                };
-                writer.Commit();
+                this.player.Connection?.SendNpcWindowResponse(Convert(window));
             }
         }
 

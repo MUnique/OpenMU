@@ -55,16 +55,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
         }
 
-        private void SendCharacters(IEnumerable<Player> newPlayers, out IList<Player> shopPlayers, out IList<Player> guildPlayers, bool isSpawned)
+        private void SendCharacters(IEnumerable<Player> newPlayers, out IList<Player>? shopPlayers, out IList<Player>? guildPlayers, bool isSpawned)
         {
-            var appearanceSerializer = this.player.AppearanceSerializer;
             shopPlayers = null;
             guildPlayers = null;
+
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
+            var appearanceSerializer = this.player.AppearanceSerializer;
             var newPlayerList = newPlayers.ToList();
             const int estimatedEffectsPerPlayer = 5;
             var estimatedSizePerCharacter = AddCharactersToScope.CharacterData.GetRequiredSize(estimatedEffectsPerPlayer);
             var estimatedSize = AddCharactersToScope.GetRequiredSize(newPlayerList.Count, estimatedSizePerCharacter);
-            using var writer = this.player.Connection.StartSafeWrite(AddCharactersToScope.HeaderType, estimatedSize);
+            using var writer = connection.StartSafeWrite(AddCharactersToScope.HeaderType, estimatedSize);
             var packet = new AddCharactersToScope(writer.Span)
             {
                 CharacterCount = (byte)newPlayerList.Count,

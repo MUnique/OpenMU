@@ -33,7 +33,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// <inheritdoc/>
         public void ShowQuestProgress(QuestDefinition quest, bool wasProgressionRequested)
         {
-            using var writer = this.player.Connection.StartSafeWrite(QuestProgress.HeaderType, QuestProgress.Length);
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
+            using var writer = connection.StartSafeWrite(QuestProgress.HeaderType, QuestProgress.Length);
             _ = new QuestProgress(writer.Span)
             {
                 QuestGroup = (ushort)quest.Group,

@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Guild;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,13 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// <inheritdoc/>
         public void ShowGuildCreateResult(GuildCreateErrorDetail errorDetail)
         {
-            using var writer = this.player.Connection.StartSafeWrite(GuildCreationResult.HeaderType, GuildCreationResult.Length);
-            _ = new GuildCreationResult(writer.Span)
-            {
-                Success = errorDetail == GuildCreateErrorDetail.None,
-                Error = errorDetail.Convert(),
-            };
-            writer.Commit();
+            this.player.Connection?.SendGuildCreationResult(errorDetail == GuildCreateErrorDetail.None, errorDetail.Convert());
         }
     }
 }

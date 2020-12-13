@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,14 +28,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCurrentMana()
         {
-            using var writer = this.player.Connection.StartSafeWrite(CurrentManaAndAbility.HeaderType, CurrentManaAndAbility.Length);
-            _ = new CurrentManaAndAbility(writer.Span)
-            {
-                Ability = (ushort)this.player.Attributes[Stats.CurrentAbility],
-                Mana = (ushort)this.player.Attributes[Stats.CurrentMana],
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendCurrentManaAndAbility(
+                (ushort)this.player.Attributes[Stats.CurrentAbility],
+                (ushort)this.player.Attributes[Stats.CurrentMana]);
         }
     }
 }

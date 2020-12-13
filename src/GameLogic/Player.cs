@@ -187,7 +187,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the account.
         /// </summary>
-        public Account Account
+        public Account? Account
         {
             get => this.account;
             set
@@ -196,7 +196,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     this.account = value;
                     this.accountLoggingScope?.Dispose();
-                    this.accountLoggingScope = this.Logger.BeginScope("Account: {Name}", this.account.LoginName);
+                    this.accountLoggingScope = this.Logger.BeginScope("Account: {Name}", this.account!.LoginName);
                     this.IsVaultLocked = !string.IsNullOrWhiteSpace(this.account.VaultPassword);
                 }
             }

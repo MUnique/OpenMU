@@ -5,9 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Trade
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic.Views.Trade;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,20 +27,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc/>
         public void ShowTradeRequestAnswer(bool tradeAccepted)
         {
-            using var writer = this.player.Connection.StartSafeWrite(TradeRequestAnswer.HeaderType, TradeRequestAnswer.Length);
-            var packet = new TradeRequestAnswer(writer.Span)
-            {
-                Name = this.player.TradingPartner.Name,
-                Accepted = tradeAccepted,
-            };
-
-            if (tradeAccepted)
-            {
-                packet.TradePartnerLevel = (ushort)this.player.TradingPartner.Level;
-                packet.GuildId = this.player.TradingPartner.GuildStatus?.GuildId ?? 0;
-            }
-
-            writer.Commit();
+            this.player.Connection?.SendTradeRequestAnswer(
+                tradeAccepted,
+                this.player.TradingPartner?.Name ?? string.Empty,
+                (ushort)(tradeAccepted ? this.player.TradingPartner?.Level ?? 0 : 0),
+                tradeAccepted ? this.player.TradingPartner?.GuildStatus?.GuildId ?? 0 : 0);
         }
     }
 }

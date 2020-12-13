@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameServer
         }
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc/>
         public short MapNumber => this.map.Definition.Number;
@@ -47,15 +47,12 @@ namespace MUnique.OpenMU.GameServer
         public byte[] TerrainData => this.map.Definition.TerrainData;
 
         /// <inheritdoc/>
-        public IList<IPlayerInfo> Players
-        {
-            get { return this.players.Select(p => new PlayerInfo(p) as IPlayerInfo).ToList(); }
-        }
+        public IList<IPlayerInfo> Players => this.players.Select(p => new PlayerInfo(p) as IPlayerInfo).ToList();
 
         /// <inheritdoc/>
         public int PlayerCount => this.players.Count();
 
-        private void OnMapObjectAddedOrRemoved(object sender, GameMapEventArgs e)
+        private void OnMapObjectAddedOrRemoved(object? sender, GameMapEventArgs e)
         {
             if (e.Object is Player)
             {
@@ -78,9 +75,9 @@ namespace MUnique.OpenMU.GameServer
                 get
                 {
                     var remotePlayer = this.player as RemotePlayer;
-                    if (remotePlayer?.Connection != null)
+                    if (remotePlayer?.Connection?.ToString() is { } address)
                     {
-                        return remotePlayer.Connection.ToString();
+                        return address;
                     }
 
                     return "N/A";
@@ -101,7 +98,7 @@ namespace MUnique.OpenMU.GameServer
                 }
             }
 
-            public string AccountName => this.player.Account.LoginName;
+            public string AccountName => this.player.Account?.LoginName ?? "N/A";
 
             public byte LocationX => this.player.Position.X;
 

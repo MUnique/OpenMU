@@ -29,11 +29,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void UpdateInventoryList()
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             // C4 00 00 00 F3 10 ...
             var itemSerializer = this.player.ItemSerializer;
             var lengthPerItem = StoredItem.GetRequiredSize(itemSerializer.NeededSpace);
             var items = this.player.SelectedCharacter.Inventory.Items.OrderBy(item => item.ItemSlot).ToList();
-            using var writer = this.player.Connection.StartSafeWrite(CharacterInventory.HeaderType, CharacterInventory.GetRequiredSize(items.Count, lengthPerItem));
+            using var writer = connection.StartSafeWrite(CharacterInventory.HeaderType, CharacterInventory.GetRequiredSize(items.Count, lengthPerItem));
             var packet = new CharacterInventory(writer.Span)
             {
                 ItemCount = (byte)items.Count,

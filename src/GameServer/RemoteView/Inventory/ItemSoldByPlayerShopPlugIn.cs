@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,13 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void ItemSoldByPlayerShop(byte slot, Player buyer)
         {
-            using var writer = this.player.Connection.StartSafeWrite(PlayerShopItemSoldToPlayer.HeaderType, PlayerShopItemSoldToPlayer.Length);
-            _ = new PlayerShopItemSoldToPlayer(writer.Span)
-            {
-                InventorySlot = slot,
-                BuyerName = buyer.SelectedCharacter.Name,
-            };
-            writer.Commit();
+            this.player.Connection?.SendPlayerShopItemSoldToPlayer(slot, buyer.SelectedCharacter.Name);
         }
     }
 }

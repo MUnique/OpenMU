@@ -48,14 +48,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
             // TODO: Duration
             var playerId = affectedPlayer.GetId(this.player);
-            using var writer = this.player.Connection.StartSafeWrite(MagicEffectStatus.HeaderType, MagicEffectStatus.Length);
-            _ = new MagicEffectStatus(writer.Span)
-            {
-                IsActive = isActive,
-                PlayerId = playerId,
-                EffectId = (byte)effect.Id,
-            };
-            writer.Commit();
+            this.player.Connection?.SendMagicEffectStatus(isActive, playerId, (byte)effect.Id);
         }
     }
 }

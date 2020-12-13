@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
     using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Trade;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -36,12 +35,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// </remarks>
         public void ChangeTradeButtonState(TradeButtonState state)
         {
-            using var writer = this.player.Connection.StartSafeWrite(TradeButtonStateChanged.HeaderType, TradeButtonStateChanged.Length);
-            _ = new TradeButtonStateChanged(writer.Span)
-            {
-                State = Convert(state),
-            };
-            writer.Commit();
+            this.player.Connection?.SendTradeButtonStateChanged(Convert(state));
         }
 
         private static TradeButtonStateChanged.TradeButtonState Convert(TradeButtonState state)

@@ -40,13 +40,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 return;
             }
 
-            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.QuestCancelled.HeaderType, Network.Packets.ServerToClient.QuestCancelled.Length);
-            _ = new QuestCancelled(writer.Span)
-            {
-                QuestNumber = (ushort)quest.Number,
-                QuestGroup = (ushort)quest.Group,
-            };
-            writer.Commit();
+            this.player.Connection?.SendQuestCancelled((ushort)quest.Number, (ushort)quest.Group);
         }
     }
 }

@@ -33,7 +33,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// <inheritdoc />
         public void ShowAvailableQuests()
         {
-            if (this.player.OpenedNpc is null)
+            var connection = this.player.Connection;
+            if (connection is null || this.player.OpenedNpc is null)
             {
                 return;
             }
@@ -41,7 +42,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             var totalQuests = this.player.GetAvailableQuestsOfOpenedNpc().ToList();
             var questCount = totalQuests.Count;
 
-            using var writer = this.player.Connection.StartSafeWrite(AvailableQuests.HeaderType, AvailableQuests.GetRequiredSize(questCount));
+            using var writer = connection.StartSafeWrite(AvailableQuests.HeaderType, AvailableQuests.GetRequiredSize(questCount));
             var message = new AvailableQuests(writer.Span)
             {
                 QuestCount = (ushort)questCount,

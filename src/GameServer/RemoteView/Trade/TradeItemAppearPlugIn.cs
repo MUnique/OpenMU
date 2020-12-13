@@ -29,8 +29,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc/>
         public void TradeItemAppear(byte toSlot, Item item)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var itemSerializer = this.player.ItemSerializer;
-            using var writer = this.player.Connection.StartSafeWrite(TradeItemAdded.HeaderType, TradeItemAdded.GetRequiredSize(itemSerializer.NeededSpace));
+            using var writer = connection.StartSafeWrite(TradeItemAdded.HeaderType, TradeItemAdded.GetRequiredSize(itemSerializer.NeededSpace));
             var packet = new TradeItemAdded(writer.Span)
             {
                 ToSlot = toSlot,

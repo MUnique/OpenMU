@@ -62,17 +62,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
-        private void OnAppearanceOfAppearanceChanged(object sender, EventArgs args) => this.InvalidateCache(sender as IAppearanceData);
+        private void OnAppearanceOfAppearanceChanged(object? sender, EventArgs args) => this.InvalidateCache(sender as IAppearanceData ?? throw new ArgumentException($"sender must be of type {nameof(IAppearanceData)}"));
 
         private void WritePreviewCharSet(Span<byte> target, IAppearanceData appearanceData)
         {
-            ItemAppearance[] itemArray = new ItemAppearance[InventoryConstants.BootsSlot + 1];
+            ItemAppearance?[] itemArray = new ItemAppearance[InventoryConstants.BootsSlot + 1];
             for (byte i = 0; i < itemArray.Length; i++)
             {
                 itemArray[i] = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == i && item.Definition.Number < 16);
             }
 
-            target[0] = (byte)(appearanceData.CharacterClass.Number << 3);
+            if (appearanceData.CharacterClass is not null)
+            {
+                target[0] = (byte)(appearanceData.CharacterClass.Number << 3);
+            }
+
             target[0] |= (byte)appearanceData.Pose;
             this.SetHand(target, itemArray[InventoryConstants.LeftHandSlot], 1);
 
@@ -95,7 +99,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             this.SetItemLevels(target, itemArray);
         }
 
-        private void SetHand(Span<byte> preview, ItemAppearance item, int index)
+        private void SetHand(Span<byte> preview, ItemAppearance? item, int index)
         {
             if (item is null)
             {
@@ -118,7 +122,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             return (byte)(value & 0x0F);
         }
 
-        private void SetArmorPiece(Span<byte> preview, ItemAppearance item, int index, bool highNibble)
+        private void SetArmorPiece(Span<byte> preview, ItemAppearance? item, int index, bool highNibble)
         {
             if (item is null)
             {
@@ -131,20 +135,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
-        private void SetItemLevels(Span<byte> preview, ItemAppearance[] itemArray)
+        private void SetItemLevels(Span<byte> preview, ItemAppearance?[] itemArray)
         {
-            int levelindex = 0;
+            int levelIndex = 0;
             for (int i = 0; i < 7; i++)
             {
-                if (itemArray[i] != null)
+                if (itemArray[i] is not null)
                 {
-                    levelindex |= itemArray[i].GetGlowLevel() << (i * 3);
+                    levelIndex |= itemArray[i]!.GetGlowLevel() << (i * 3);
                 }
             }
 
-            preview[6] = (byte)((levelindex >> 16) & 255);
-            preview[7] = (byte)((levelindex >> 8) & 255);
-            preview[8] = (byte)(levelindex & 255);
+            preview[6] = (byte)((levelIndex >> 16) & 255);
+            preview[7] = (byte)((levelIndex >> 8) & 255);
+            preview[8] = (byte)(levelIndex & 255);
         }
     }
 }

@@ -31,9 +31,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void ShowLetter(LetterBody letter)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var appearanceSerializer = this.player.AppearanceSerializer;
             var letterIndex = this.player.SelectedCharacter.Letters.IndexOf(letter.Header);
-            using var writer = this.player.Connection.StartSafeWrite(OpenLetter.HeaderType, OpenLetter.GetRequiredSize(letter.Message));
+            using var writer = connection.StartSafeWrite(OpenLetter.HeaderType, OpenLetter.GetRequiredSize(letter.Message));
 
             var result = new OpenLetter(writer.Span)
             {

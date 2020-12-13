@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Party;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,12 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
         /// <inheritdoc/>
         public void PartyMemberRemoved(byte index)
         {
-            using var writer = this.player.Connection.StartSafeWrite(RemovePartyMember.HeaderType, RemovePartyMember.Length);
-            _ = new RemovePartyMember(writer.Span)
-            {
-                Index = index,
-            };
-            writer.Commit();
+            this.player.Connection?.SendRemovePartyMember(index);
         }
     }
 }

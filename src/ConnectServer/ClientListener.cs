@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.ConnectServer
         private readonly object clientListLock = new object();
         private readonly IConnectServerSettings connectServerSettings;
         private readonly IPacketHandler<Client> packetHandler;
-        private TcpListener clientListener;
+        private TcpListener? clientListener;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientListener" /> class.
@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// <summary>
         /// Occurs when the number of connected clients changed.
         /// </summary>
-        public event EventHandler ConnectedClientsChanged;
+        public event EventHandler? ConnectedClientsChanged;
 
         /// <summary>
         /// Gets the connected clients.
@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// </summary>
         public void StopListener()
         {
-            this.clientListener.Stop();
+            this.clientListener?.Stop();
             this.logger.LogInformation("Client Listener stopped");
         }
 
@@ -89,7 +89,13 @@ namespace MUnique.OpenMU.ConnectServer
             Socket newClient;
             try
             {
-                newClient = await this.clientListener.AcceptSocketAsync().ConfigureAwait(false);
+                var listener = this.clientListener;
+                if (listener is null)
+                {
+                    return;
+                }
+
+                newClient = await listener.AcceptSocketAsync().ConfigureAwait(false);
             }
             catch (ObjectDisposedException)
             {
@@ -105,7 +111,7 @@ namespace MUnique.OpenMU.ConnectServer
             this.HandleNewSocket(newClient);
 
             // Accept the next Client:
-            if (this.clientListener.Server.IsBound)
+            if (this.clientListener?.Server.IsBound ?? false)
             {
                 await this.BeginAccept().ConfigureAwait(false);
             }
@@ -130,9 +136,9 @@ namespace MUnique.OpenMU.ConnectServer
         {
             var connection = new Connection(SocketConnection.Create(socket), null, null, this.loggerFactory.CreateLogger<Connection>());
             var client = new Client(connection, this.connectServerSettings.Timeout, this.packetHandler, this.connectServerSettings.MaximumReceiveSize, this.loggerFactory.CreateLogger<Client>());
-            var ipEndpoint = (IPEndPoint)socket.RemoteEndPoint;
-            client.Address = ipEndpoint.Address;
-            client.Port = ipEndpoint.Port;
+            var ipEndpoint = socket.RemoteEndPoint as IPEndPoint;
+            client.Address = ipEndpoint?.Address ?? IPAddress.None;
+            client.Port = ipEndpoint?.Port ?? 0;
             client.Timeout = this.connectServerSettings.Timeout;
 
             lock (this.clientListLock)

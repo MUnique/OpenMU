@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -30,16 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success)
         {
             var chatServerIp = this.player.GameServerContext.FriendServer.GetChatserverIP();
-            using var writer = this.player.Connection.StartSafeWrite(ChatRoomConnectionInfo.HeaderType, ChatRoomConnectionInfo.Length);
-            _ = new ChatRoomConnectionInfo(writer.Span)
-            {
-                ChatServerIp = chatServerIp,
-                AuthenticationToken = uint.Parse(authenticationInfo.AuthenticationToken),
-                ChatRoomId = authenticationInfo.RoomId,
-                FriendName = friendName,
-                Success = success,
-            };
-            writer.Commit();
+            this.player.Connection?.SendChatRoomConnectionInfo(chatServerIp, authenticationInfo.RoomId, uint.Parse(authenticationInfo.AuthenticationToken), friendName, success);
         }
     }
 }

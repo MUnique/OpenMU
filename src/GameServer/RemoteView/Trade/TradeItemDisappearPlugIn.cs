@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Trade;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,13 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc/>
         public void TradeItemDisappear(byte slot, Item item)
         {
-            using var writer = this.player.Connection.StartSafeWrite(TradeItemRemoved.HeaderType, TradeItemRemoved.Length);
-            _ = new TradeItemRemoved(writer.Span)
-            {
-                Slot = slot,
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendTradeItemRemoved(slot);
         }
     }
 }

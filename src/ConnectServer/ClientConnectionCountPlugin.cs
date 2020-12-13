@@ -33,7 +33,14 @@ namespace MUnique.OpenMU.ConnectServer
         /// <inheritdoc/>
         public bool OnAfterSocketAccept(Socket socket)
         {
-            var ipAddress = ((IPEndPoint)socket.RemoteEndPoint).Address;
+            var ipAddress = (socket.RemoteEndPoint as IPEndPoint)?.Address;
+            if (ipAddress is null)
+            {
+                // should never happen - but who knows. In this case, we allow the connection.
+                this.logger.LogDebug($"Non-IPEndPoint connected: {socket.RemoteEndPoint}.");
+                return true;
+            }
+
             if (this.connectServerSettings.CheckMaxConnectionsPerAddress
                 && this.clientCounter.GetConnectionCount(ipAddress) >= this.connectServerSettings.MaxConnectionsPerAddress)
             {
