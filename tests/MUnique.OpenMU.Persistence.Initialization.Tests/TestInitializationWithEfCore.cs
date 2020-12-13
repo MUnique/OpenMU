@@ -48,10 +48,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
             Assert.That(gameConfiguraton, Is.Not.Null);
 
             // Testing loading of an account
-            using var accountContext = contextProvider.CreateNewPlayerContext(gameConfiguraton);
+            using var accountContext = contextProvider.CreateNewPlayerContext(gameConfiguraton!);
             var account1 = accountContext.GetAccountByLoginName("test1", "test1");
             Assert.That(account1, Is.Not.Null);
-            Assert.That(account1.LoginName, Is.EqualTo("test1"));
+            Assert.That(account1!.LoginName, Is.EqualTo("test1"));
         }
     }
 }

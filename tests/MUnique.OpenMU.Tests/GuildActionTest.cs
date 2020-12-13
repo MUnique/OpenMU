@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.PlugIns;
-
 namespace MUnique.OpenMU.Tests
 {
     using System;
@@ -20,6 +18,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence.BasicModel;
     using MUnique.OpenMU.Persistence.InMemory;
+    using MUnique.OpenMU.PlugIns;
     using NUnit.Framework;
 
     /// <summary>
@@ -28,9 +27,9 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public class GuildActionTest : GuildTestBase
     {
-        private Player guildMasterPlayer;
-        private IGameServerContext gameServerContext;
-        private Player player;
+        private Player guildMasterPlayer = null!;
+        private IGameServerContext gameServerContext = null!;
+        private Player player = null!;
 
         /// <inheritdoc/>
         [SetUp]

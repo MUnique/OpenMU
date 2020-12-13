@@ -2,12 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections.Generic;
-using MUnique.OpenMU.PlugIns;
-
 namespace MUnique.OpenMU.Tests
 {
-    using Microsoft.Extensions.Logging;
+    using System.Collections.Generic;
     using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -15,6 +12,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.PlayerActions.Party;
     using MUnique.OpenMU.GameLogic.Views.Party;
     using MUnique.OpenMU.Persistence.InMemory;
+    using MUnique.OpenMU.PlugIns;
     using NUnit.Framework;
 
     /// <summary>
@@ -114,8 +112,8 @@ namespace MUnique.OpenMU.Tests
             Assert.That(partyMember2.Party, Is.Null);
             Assert.That(party.PartyList, Is.Null.Or.Empty);
 
-            Mock.Get(partyMember1.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v.PartyMemberRemoved(partyMember1Index), Times.Once);
-            Mock.Get(partyMember2.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v.PartyMemberRemoved(partyMember2Index), Times.Once);
+            Mock.Get(partyMember1.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v!.PartyMemberRemoved(partyMember1Index), Times.Once);
+            Mock.Get(partyMember2.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v!.PartyMemberRemoved(partyMember2Index), Times.Once);
         }
 
         /// <summary>
@@ -131,7 +129,7 @@ namespace MUnique.OpenMU.Tests
 
             handler.HandlePartyRequest(player, toRequest);
 
-            Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v.ShowPartyRequest(player), Times.Once);
+            Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequest(player), Times.Once);
             Assert.That(toRequest.LastPartyRequester, Is.SameAs(player));
         }
 
@@ -152,8 +150,8 @@ namespace MUnique.OpenMU.Tests
             Assert.That(player.Party.PartyMaster, Is.SameAs(requester));
             Assert.That(player.LastPartyRequester, Is.Null);
             Assert.That(player.Party.PartyList, Contains.Item(player));
-            Mock.Get(player.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v.UpdatePartyList(), Times.AtLeastOnce);
-            Mock.Get(requester.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v.UpdatePartyList(), Times.AtLeastOnce);
+            Mock.Get(player.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v!.UpdatePartyList(), Times.AtLeastOnce);
+            Mock.Get(requester.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v!.UpdatePartyList(), Times.AtLeastOnce);
         }
 
         /// <summary>
@@ -178,7 +176,7 @@ namespace MUnique.OpenMU.Tests
             Assert.That(player.Party.PartyList, Is.Not.Contains(requester));
             Assert.That(player.LastPartyRequester, Is.Null);
             Assert.That(requester.Party, Is.Null);
-            Mock.Get(player.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v.ShowPartyRequest(requester), Times.Never);
+            Mock.Get(player.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequest(requester), Times.Never);
         }
 
         private Player CreatePartyMember()

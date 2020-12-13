@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Tests
             var skillList = player.SkillList as SkillList;
             player.Inventory.AddItem(0, this.CreateItemWithSkill());
 
-            Assert.That(skillList.ContainsSkill(ItemSkillId), Is.True);
+            Assert.That(skillList!.ContainsSkill(ItemSkillId), Is.True);
         }
 
         /// <summary>

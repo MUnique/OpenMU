@@ -19,14 +19,14 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public sealed class FriendServerTest
     {
-        private Character player1;
-        private Character player2;
-        private IDictionary<int, IGameServer> gameServers;
-        private Mock<IGameServer> gameServer1;
-        private Mock<IGameServer> gameServer2;
-        private IFriendServer friendServer;
+        private Character player1 = null!;
+        private Character player2 = null!;
+        private IDictionary<int, IGameServer> gameServers = null!;
+        private Mock<IGameServer> gameServer1 = null!;
+        private Mock<IGameServer> gameServer2 = null!;
+        private IFriendServer friendServer = null!;
 
-        private InMemoryPersistenceContextProvider persistenceContextProvider;
+        private InMemoryPersistenceContextProvider persistenceContextProvider = null!;
 
         /// <summary>
         /// Sets up the environment with 2 game servers.

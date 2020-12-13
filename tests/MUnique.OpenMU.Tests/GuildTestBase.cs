@@ -21,32 +21,32 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// Gets or sets the first game server.
         /// </summary>
-        protected Mock<IGameServer> GameServer0 { get; set; }
+        protected Mock<IGameServer> GameServer0 { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the second game server.
         /// </summary>
-        protected Mock<IGameServer> GameServer1 { get; set; }
+        protected Mock<IGameServer> GameServer1 { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the repository manager.
         /// </summary>
-        protected IPersistenceContextProvider PersistenceContextProvider { get; set; }
+        protected IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the game servers.
         /// </summary>
-        protected IDictionary<int, IGameServer> GameServers { get; set; }
+        protected IDictionary<int, IGameServer> GameServers { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the guild server.
         /// </summary>
-        protected IGuildServer GuildServer { get; set; }
+        protected IGuildServer GuildServer { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the guild master.
         /// </summary>
-        protected Character GuildMaster { get; set; }
+        protected Character GuildMaster { get; set; } = null!;
 
         /// <summary>
         /// Setups the test objects.
@@ -62,12 +62,12 @@ namespace MUnique.OpenMU.Tests
             this.GameServers = new Dictionary<int, IGameServer> { { 0, this.GameServer0.Object }, { 1, this.GameServer1.Object } };
             this.GuildServer = new OpenMU.GuildServer.GuildServer(this.GameServers, this.PersistenceContextProvider, new NullLogger<GuildServer.GuildServer>());
             var guildStatus = this.GuildServer.CreateGuild("Foobar", this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0);
-            this.GuildServer.GuildMemberLeftGame(guildStatus.GuildId, this.GuildMaster.Id, 0);
+            this.GuildServer.GuildMemberLeftGame(guildStatus!.GuildId, this.GuildMaster.Id, 0);
         }
 
         private Character GetGuildMaster()
         {
-            var context = this.PersistenceContextProvider.CreateNewContext(null);
+            var context = this.PersistenceContextProvider.CreateNewContext();
             var master = context.CreateNew<Character>();
             master.Name = "GuildMaster";
             return master;

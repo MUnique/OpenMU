@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
             return this.Manager.GetRepository<Friend>().GetAll().Where(f => f.CharacterId == characterId)
                 .Select(f => (Friend: f, CharacterName: characters.FirstOrDefault(c => c.Id == f.CharacterId)?.Name, FriendName: characters.FirstOrDefault(c => c.Id == f.FriendId)?.Name))
                 .Where(f => f.CharacterName is not null && f.FriendName is not null)
-                .Select(f => new FriendViewItem(f.FriendName!, f.CharacterName!)
+                .Select(f => new FriendViewItem(f.CharacterName!, f.FriendName!)
                     {
                         Accepted = f!.Friend.Accepted,
                         CharacterId = f.Friend.CharacterId,

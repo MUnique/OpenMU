@@ -53,11 +53,11 @@ namespace MUnique.OpenMU.ChatServer
             this.manager = manager;
             this.logger = logger;
             this.connection = connection;
-            this.connection.PacketReceived += this.ReadPacket;
+            this.connection!.PacketReceived += this.ReadPacket;
             this.connection.Disconnected += (sender, e) => this.LogOff();
 
             this.LastActivity = DateTime.Now;
-            this.connection.BeginReceive();
+            this.connection!.BeginReceive();
         }
 
         /// <summary>
@@ -84,6 +84,11 @@ namespace MUnique.OpenMU.ChatServer
         /// <inheritdoc/>
         public void SendMessage(byte senderId, string message)
         {
+            if (this.connection is null)
+            {
+                return;
+            }
+
             var messageByteLength = Encoding.UTF8.GetByteCount(message);
             using var writer = this.connection.StartSafeWrite(0xC1, 5 + messageByteLength);
             var packet = writer.Span;
@@ -98,6 +103,11 @@ namespace MUnique.OpenMU.ChatServer
         /// <inheritdoc/>
         public void SendChatRoomClientList(IReadOnlyCollection<IChatClient> clients)
         {
+            if (this.connection is null)
+            {
+                return;
+            }
+
             const int sizePerClient = 11;
             using var writer = this.connection.StartSafeWrite(0xC2, 8 + (sizePerClient * clients.Count));
             var packet = writer.Span;
@@ -118,6 +128,11 @@ namespace MUnique.OpenMU.ChatServer
         /// <inheritdoc/>
         public void SendChatRoomClientUpdate(byte updatedClientId, string updatedClientName, ChatRoomClientUpdateType updateType)
         {
+            if (this.connection is null)
+            {
+                return;
+            }
+
             using var writer = this.connection.StartSafeWrite(0xC1, 0x0F);
             var packet = writer.Span;
             packet[2] = 0x01;

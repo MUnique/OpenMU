@@ -22,9 +22,9 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public class ItemSerializerTests
     {
-        private GameConfiguration gameConfiguration;
-        private IPersistenceContextProvider contextProvider;
-        private IItemSerializer itemSerializer;
+        private GameConfiguration gameConfiguration = null!;
+        private IPersistenceContextProvider contextProvider = null!;
+        private IItemSerializer itemSerializer = null!;
 
         /// <summary>
         /// Sets up the test environment by initializing configuration data and a <see cref="IPersistenceContextProvider"/>.

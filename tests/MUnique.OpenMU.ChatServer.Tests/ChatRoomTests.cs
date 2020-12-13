@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var clientId = room.GetNextClientIndex();
             var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
             room.RegisterClient(authenticationInfo);
-            Assert.Throws<ArgumentNullException>(() => room.TryJoin(null));
+            Assert.Throws<ArgumentNullException>(() => room.TryJoin(null!));
         }
 
         /// <summary>

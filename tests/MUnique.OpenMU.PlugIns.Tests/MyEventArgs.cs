@@ -20,6 +20,6 @@ namespace MUnique.OpenMU.PlugIns.Tests
         /// <summary>
         /// Gets or sets a text.
         /// </summary>
-        public string Text { get; set; }
+        public string? Text { get; set; }
     }
 }

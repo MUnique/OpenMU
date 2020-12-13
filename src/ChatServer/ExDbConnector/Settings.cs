@@ -79,12 +79,12 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// <summary>
         /// Gets the configured exDb server host.
         /// </summary>
-        public string ExDbHost => this["ExDbHost"];
+        public string? ExDbHost => this["ExDbHost"];
 
         /// <summary>
         /// Gets the configured xor32 key.
         /// </summary>
-        public byte[] Xor32Key
+        public byte[]? Xor32Key
         {
             get
             {
@@ -92,10 +92,13 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                 {
                     var customXor32KeyList = new List<byte>();
                     var keyAsString = this["Xor32Key"];
-                    var bytesAsString = keyAsString.Split(' ');
-                    foreach (var byteString in bytesAsString)
+                    if (keyAsString is not null)
                     {
-                        customXor32KeyList.Add(byte.Parse(byteString, System.Globalization.NumberStyles.HexNumber));
+                        var bytesAsString = keyAsString.Split(' ');
+                        foreach (var byteString in bytesAsString)
+                        {
+                            customXor32KeyList.Add(byte.Parse(byteString, System.Globalization.NumberStyles.HexNumber));
+                        }
                     }
 
                     return customXor32KeyList.ToArray();
@@ -105,11 +108,11 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             }
         }
 
-        private string this[string key]
+        private string? this[string key]
         {
             get
             {
-                this.settingsDictionary.TryGetValue(key, out string value);
+                this.settingsDictionary.TryGetValue(key, out var value);
                 return value;
             }
         }

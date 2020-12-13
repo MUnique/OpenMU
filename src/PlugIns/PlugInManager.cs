@@ -424,7 +424,7 @@ namespace MUnique.OpenMU.PlugIns
 
         private Assembly CompileCustomPlugInAssembly(PlugInConfiguration configuration)
         {
-            if (!string.IsNullOrEmpty(configuration.CustomPlugInSource))
+            if (string.IsNullOrEmpty(configuration.CustomPlugInSource))
             {
                 throw new ArgumentNullException(nameof(configuration));
             }

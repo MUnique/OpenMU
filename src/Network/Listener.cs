@@ -19,8 +19,8 @@ namespace MUnique.OpenMU.Network
     {
         private readonly ILogger logger;
         private readonly int port;
-        private readonly Func<PipeReader, IPipelinedDecryptor>? decryptorCreator;
-        private readonly Func<PipeWriter, IPipelinedEncryptor>? encryptorCreator;
+        private readonly Func<PipeReader, IPipelinedDecryptor?>? decryptorCreator;
+        private readonly Func<PipeWriter, IPipelinedEncryptor?>? encryptorCreator;
         private readonly ILoggerFactory loggerFactory;
         private TcpListener? clientListener;
 
@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.Network
         /// <param name="decryptorCreator">The decryptor creator function.</param>
         /// <param name="encryptorCreator">The encryptor creator function.</param>
         /// <param name="loggerFactory">The logger factory.</param>
-        public Listener(int port, Func<PipeReader, IPipelinedDecryptor>? decryptorCreator, Func<PipeWriter, IPipelinedEncryptor>? encryptorCreator, ILoggerFactory loggerFactory)
+        public Listener(int port, Func<PipeReader, IPipelinedDecryptor?>? decryptorCreator, Func<PipeWriter, IPipelinedEncryptor?>? encryptorCreator, ILoggerFactory loggerFactory)
         {
             this.port = port;
             this.decryptorCreator = decryptorCreator;

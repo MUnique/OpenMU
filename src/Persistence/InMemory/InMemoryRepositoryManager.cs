@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         public new IRepository<T> GetRepository<T>()
             where T : class
         {
-            var repository = this.InternalGetRepository(typeof(T)) ?? this.CreateAndRegisterMemoryRepository<T>();
+            var repository = this.InternalGetRepository(typeof(T)) as IRepository<T> ?? this.CreateAndRegisterMemoryRepository<T>();
             return (IRepository<T>)repository;
         }
 

@@ -23,11 +23,11 @@ namespace MUnique.OpenMU.Tests
         private readonly int skillIdRank2 = 2;
         private readonly int skillIdRank3 = 3;
 
-        private Player player;
-        private Skill skillRank1;
-        private Skill skillRank2;
-        private Skill skillRank3;
-        private AddMasterPointAction addAction;
+        private Player player = null!;
+        private Skill skillRank1 = null!;
+        private Skill skillRank2 = null!;
+        private Skill skillRank3 = null!;
+        private AddMasterPointAction addAction = null!;
 
         /// <summary>
         /// Setups the test data.
@@ -233,7 +233,7 @@ namespace MUnique.OpenMU.Tests
             Assert.That(this.player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
         }
 
-        private Skill CreateSkill(short id, byte rank, byte rootId, Skill requiredSkill, CharacterClass charClass)
+        private Skill CreateSkill(short id, byte rank, byte rootId, Skill? requiredSkill, CharacterClass charClass)
         {
             var masterDef = new Mock<MasterSkillDefinition>();
             masterDef.SetupAllProperties();
