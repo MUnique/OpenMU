@@ -12,22 +12,19 @@ namespace MUnique.OpenMU.Network.Analyzer
     /// <summary>
     /// A simple packet sender form which allows to send data packets to the client or the server.
     /// </summary>
-    /// <seealso cref="System.Windows.Forms.Form" />
     public class PacketSenderForm : Form
     {
-        private readonly LiveConnection connection;
+        private readonly LiveConnection connection = null!;
 
         /// <summary>
         /// Required designer variable.
         /// </summary>
-#pragma warning disable 649
-        private readonly IContainer components;
-#pragma warning restore 649
+        private readonly IContainer components = null!;
 
-        private TextBox packetTextBox;
-        private Button sendButton;
-        private RadioButton toClientRadioButton;
-        private RadioButton toServerRadioButton;
+        private TextBox packetTextBox = null!;
+        private Button sendButton = null!;
+        private RadioButton toClientRadioButton = null!;
+        private RadioButton toServerRadioButton = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PacketSenderForm"/> class.
@@ -48,6 +45,7 @@ namespace MUnique.OpenMU.Network.Analyzer
 
             this.SetText();
 
+            this.sendButton.Click += this.SendButtonClick;
             connection.PropertyChanged += this.ConnectionOnPropertyChanged;
         }
 
@@ -59,14 +57,18 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
             if (disposing)
             {
-                this.connection.PropertyChanged -= this.ConnectionOnPropertyChanged;
+                if (this.connection is not null)
+                {
+                    this.connection.PropertyChanged -= this.ConnectionOnPropertyChanged;
+                }
+
                 this.components?.Dispose();
             }
 
             base.Dispose(disposing);
         }
 
-        private void ConnectionOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ConnectionOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (!this.InvokeRequired)
             {
@@ -89,7 +91,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
-        private void SendButtonClick(object sender, EventArgs e)
+        private void SendButtonClick(object? sender, EventArgs e)
         {
             foreach (var line in this.packetTextBox.Lines.Where(l => !string.IsNullOrEmpty(l.Trim())))
             {
@@ -115,6 +117,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
+#pragma warning disable
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
@@ -151,7 +154,6 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.sendButton.TabIndex = 7;
             this.sendButton.Text = "Send";
             this.sendButton.UseVisualStyleBackColor = true;
-            this.sendButton.Click += this.SendButtonClick;
             // 
             // toClientRadioButton
             // 
@@ -191,5 +193,6 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+#pragma warning restore
     }
 }

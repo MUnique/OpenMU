@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.ClientLauncher
         /// <summary>
         /// Gets or sets the host ip.
         /// </summary>
-        string HostAddress { get; set; }
+        string? HostAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the host port.
@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.ClientLauncher
         /// <summary>
         /// Gets or sets the main executable path.
         /// </summary>
-        string MainExePath { get; set; }
+        string? MainExePath { get; set; }
 
         /// <summary>
         /// Launches the MU Online client with the specified settings.

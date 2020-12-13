@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// Occurs when a client connected and the <see cref="LiveConnection"/> object has been created.
         /// </summary>
-        public event EventHandler<ClientConnectedEventArgs> ClientConnected;
+        public event EventHandler<ClientConnectedEventArgs>? ClientConnected;
 
         /// <summary>
         /// Gets or sets the client version.
@@ -65,27 +65,27 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// </summary>
         public int TargetPort { get; set; }
 
-        private INetworkEncryptionFactoryPlugIn NetworkEncryptionPlugIn =>
+        private INetworkEncryptionFactoryPlugIn? NetworkEncryptionPlugIn =>
             this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(this.ClientVersion)
             ?? this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
 
         /// <inheritdoc />
-        protected override IPipelinedDecryptor CreateDecryptor(PipeReader reader)
+        protected override IPipelinedDecryptor? CreateDecryptor(PipeReader reader)
         {
             return this.GetDecryptor(reader, DataDirection.ClientToServer);
         }
 
         /// <inheritdoc />
-        protected override IPipelinedEncryptor CreateEncryptor(PipeWriter writer)
+        protected override IPipelinedEncryptor? CreateEncryptor(PipeWriter writer)
         {
             return this.GetEncryptor(writer, DataDirection.ServerToClient);
         }
 
-        private IPipelinedEncryptor GetEncryptor(PipeWriter pipeWriter, DataDirection direction) => this.NetworkEncryptionPlugIn.CreateEncryptor(pipeWriter, direction);
+        private IPipelinedEncryptor? GetEncryptor(PipeWriter pipeWriter, DataDirection direction) => this.NetworkEncryptionPlugIn?.CreateEncryptor(pipeWriter, direction);
 
-        private IPipelinedDecryptor GetDecryptor(PipeReader pipeReader, DataDirection direction) => this.NetworkEncryptionPlugIn.CreateDecryptor(pipeReader, direction);
+        private IPipelinedDecryptor? GetDecryptor(PipeReader pipeReader, DataDirection direction) => this.NetworkEncryptionPlugIn?.CreateDecryptor(pipeReader, direction);
 
-        private void OnClientAccepted(object sender, ClientAcceptEventArgs e)
+        private void OnClientAccepted(object? sender, ClientAcceptEventArgs e)
         {
             var clientConnection = e.AcceptedConnection;
             try
@@ -97,7 +97,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                 var decryptor = this.GetDecryptor(socketConnection.Input, DataDirection.ServerToClient);
                 var encryptor = this.GetEncryptor(socketConnection.Output, DataDirection.ClientToServer);
                 var serverConnection = new Connection(socketConnection, decryptor, encryptor, this.loggerFactory.CreateLogger<Connection>());
-                var proxy = new LiveConnection(clientConnection, serverConnection, this.invokeAction, loggerFactory);
+                var proxy = new LiveConnection(clientConnection, serverConnection, this.invokeAction, this.loggerFactory);
 
                 this.ClientConnected?.Invoke(this, new ClientConnectedEventArgs(proxy));
             }

@@ -63,10 +63,13 @@ namespace MUnique.OpenMU.ClientLauncher
 
             var reader = new XmlSerializer(typeof(Launcher));
             using var file = new StreamReader(ConfigFileName);
-            var launcher = (Launcher)reader.Deserialize(file);
-            this.ServerAddressTextBox.Text = launcher.HostAddress;
-            this.ServerPortControl.Value = launcher.HostPort;
-            this.MainExePathTextBox.Text = launcher.MainExePath;
+            if (reader.Deserialize(file) is Launcher launcher)
+            {
+                this.ServerAddressTextBox.Text = launcher.HostAddress;
+                this.ServerPortControl.Value = launcher.HostPort;
+                this.MainExePathTextBox.Text = launcher.MainExePath;
+            }
+
             file.Close();
         }
 

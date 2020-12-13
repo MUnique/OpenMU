@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private readonly PlugInManager plugInManager;
 
-        private LiveConnectionListener clientListener;
+        private LiveConnectionListener? clientListener;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
@@ -131,7 +131,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.btnStartProxy.Text = "Stop Proxy";
         }
 
-        private void ClientListenerOnClientConnected(object sender, ClientConnectedEventArgs e)
+        private void ClientListenerOnClientConnected(object? sender, ClientConnectedEventArgs e)
         {
             this.InvokeByProxy(new Action(() =>
             {
@@ -186,7 +186,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
-        private void ConnectionSelected(object sender, System.EventArgs e)
+        private void ConnectionSelected(object sender, EventArgs e)
         {
             var index = this.connectedClientsListBox.SelectedIndex;
             if (index < 0)
