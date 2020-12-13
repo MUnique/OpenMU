@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
         {
             var serializer = new SimpleModulusKeySerializer();
 
-            if (serializer.TryDeserialize(keyFilePath, out uint[] modulusKey, out uint[] cryptKey, out uint[] xorKey))
+            if (serializer.TryDeserialize(keyFilePath, out var modulusKey, out var cryptKey, out var xorKey))
             {
                 Console.WriteLine($"Loaded Key:");
                 Console.WriteLine($"   Modulus: {string.Join(", ", modulusKey.Select(k => k.ToString()))}");
@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
                 var otherCryptKey = generator.FindOtherKey(modulusKey, cryptKey);
                 var file = new FileInfo(keyFilePath);
                 var otherFileName = GetOtherFileName(file.Name);
-                var otherFilePath = Path.Combine(file.DirectoryName, otherFileName);
+                var otherFilePath = file.DirectoryName is null ? otherFileName : Path.Combine(file.DirectoryName, otherFileName);
 
                 Console.WriteLine($"Calculated Crypt Key: {string.Join(", ", otherCryptKey.Select(k => k.ToString()))}");
                 Console.WriteLine($"To save the calculated key file '{otherFilePath}' press any key");
