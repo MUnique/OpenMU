@@ -32,16 +32,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the name of the state.
         /// </summary>
-        public string Name
-        {
-            get;
-            set;
-        }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the possible transitions to which this state can advance.
         /// </summary>
-        public ICollection<State> PossibleTransitions
+        public ICollection<State>? PossibleTransitions
         {
             get;
             set;
@@ -55,7 +51,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(State lhs, State rhs)
+        public static bool operator ==(State? lhs, State? rhs)
         {
             if (ReferenceEquals(lhs, rhs))
             {
@@ -78,16 +74,16 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(State lhs, State rhs)
+        public static bool operator !=(State? lhs, State? rhs)
         {
             return !(lhs == rhs);
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => this.Equals(obj as State);
+        public override bool Equals(object? obj) => this.Equals(obj as State);
 
         /// <inheritdoc />
-        public bool Equals(State other)
+        public bool Equals(State? other)
         {
             if (other is null)
             {

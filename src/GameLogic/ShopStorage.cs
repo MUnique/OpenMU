@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="player">The player.</param>
         public ShopStorage(Player player)
-            : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(player.SelectedCharacter.Inventory, InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
+            : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(player.SelectedCharacter!.Inventory, InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
         {
             this.StoreLock = new object();
         }
@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.GameLogic
         public object StoreLock { get; }
 
         /// <inheritdoc/>
-        public string StoreName { get; set; }
+        public string StoreName { get; set; } = string.Empty;
 
         /// <inheritdoc/>
         public bool StoreOpen { get; set; }

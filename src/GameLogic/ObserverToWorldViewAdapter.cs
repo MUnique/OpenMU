@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic
         public IList<Bucket<ILocateable>> ObservingBuckets { get; } = new List<Bucket<ILocateable>>();
 
         /// <inheritdoc/>
-        public void LocateableAdded(object sender, BucketItemEventArgs<ILocateable> eventArgs)
+        public void LocateableAdded(object? sender, BucketItemEventArgs<ILocateable> eventArgs)
         {
             if (this.isDisposed)
             {
@@ -49,7 +49,9 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var item = eventArgs.Item;
-            if (item is IHasBucketInformation hasBucketInfo && this.ObservingBuckets.Contains(hasBucketInfo.OldBucket))
+            if (item is IHasBucketInformation hasBucketInfo
+                && hasBucketInfo.OldBucket is not null
+                && this.ObservingBuckets.Contains(hasBucketInfo.OldBucket))
             {
                 // we already observe the bucket where the object came from
                 return;
@@ -101,7 +103,7 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public void LocateableRemoved(object sender, BucketItemEventArgs<ILocateable> eventArgs)
+        public void LocateableRemoved(object? sender, BucketItemEventArgs<ILocateable> eventArgs)
         {
             if (this.isDisposed)
             {

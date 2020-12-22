@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.Resets
     public class ResetCharacterAction
     {
         private readonly Player player;
-        private readonly NonPlayerCharacter npc;
+        private readonly NonPlayerCharacter? npc;
         private readonly LogoutAction logoutAction = new LogoutAction();
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameLogic.Resets
         /// </summary>
         /// <param name="player">Player to reset.</param>
         /// <param name="npc">NPC which the player talks to to initiate the reset action.</param>
-        public ResetCharacterAction(Player player, NonPlayerCharacter npc = null)
+        public ResetCharacterAction(Player player, NonPlayerCharacter? npc = null)
         {
             this.player = player;
             this.npc = npc;
@@ -48,6 +48,12 @@ namespace MUnique.OpenMU.GameLogic.Resets
             if (this.player.PlayerState.CurrentState != PlayerState.EnteredWorld && this.npc is null)
             {
                 this.ShowMessage("Cannot do reset with any windows opened.");
+                return;
+            }
+
+            if (this.player.Attributes is null || this.player.SelectedCharacter is null)
+            {
+                this.ShowMessage("Not entered the game.");
                 return;
             }
 
@@ -97,7 +103,7 @@ namespace MUnique.OpenMU.GameLogic.Resets
 
         private int GetResetCount()
         {
-            return (int)this.player.Attributes[Stats.Resets];
+            return (int)this.player.Attributes![Stats.Resets];
         }
 
         private bool TryConsumeMoney(ResetConfiguration configuration)
@@ -127,17 +133,17 @@ namespace MUnique.OpenMU.GameLogic.Resets
 
             if (configuration.ResetStats)
             {
-                this.player.SelectedCharacter.CharacterClass.StatAttributes
+                this.player.SelectedCharacter!.CharacterClass.StatAttributes
                     .Where(s => s.IncreasableByPlayer)
-                    .ForEach(s => this.player.Attributes[s.Attribute] = s.BaseValue);
+                    .ForEach(s => this.player.Attributes![s.Attribute] = s.BaseValue);
             }
 
-            this.player.SelectedCharacter.LevelUpPoints = calculatedPointsPerReset;
+            this.player.SelectedCharacter!.LevelUpPoints = calculatedPointsPerReset;
         }
 
         private void MoveHome()
         {
-            var homeMap = this.player.SelectedCharacter.CharacterClass.HomeMap;
+            var homeMap = this.player.SelectedCharacter!.CharacterClass.HomeMap;
             var randomSpawn = homeMap.SafezoneMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
             this.player.SelectedCharacter.PositionX = (byte)Rand.NextInt(randomSpawn.X1, randomSpawn.X2);
             this.player.SelectedCharacter.PositionY = (byte)Rand.NextInt(randomSpawn.Y1, randomSpawn.Y2);

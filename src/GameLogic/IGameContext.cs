@@ -20,12 +20,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Occurs when a game map got created.
         /// </summary>
-        event EventHandler<GameMapEventArgs> GameMapCreated;
+        event EventHandler<GameMap>? GameMapCreated;
 
         /// <summary>
         /// Occurs when a game map got removed.
         /// </summary>
-        event EventHandler<GameMapEventArgs> GameMapRemoved;
+        event EventHandler<GameMap>? GameMapRemoved;
 
         /// <summary>
         /// Gets the global experience rate.
@@ -72,14 +72,14 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="mapId">The map identifier.</param>
         /// <returns>The hosted GameMap instance.</returns>
-        GameMap GetMap(ushort mapId);
+        GameMap? GetMap(ushort mapId);
 
         /// <summary>
         /// Gets the player object by character name.
         /// </summary>
         /// <param name="name">The character name.</param>
         /// <returns>The player object.</returns>
-        Player GetPlayerByCharacterName(string name);
+        Player? GetPlayerByCharacterName(string name);
 
         /// <summary>
         /// Sends a global message to all players of the game with the specified message type.

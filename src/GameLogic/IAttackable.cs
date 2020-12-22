@@ -51,14 +51,14 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the information about the last death.
         /// </summary>
-        DeathInformation LastDeath { get; }
+        DeathInformation? LastDeath { get; }
 
         /// <summary>
         /// Attacks this object by the attacker with the specified skill.
         /// </summary>
         /// <param name="attacker">The attacker.</param>
         /// <param name="skill">The skill.</param>
-        void AttackBy(IAttacker attacker, SkillEntry skill);
+        void AttackBy(IAttacker attacker, SkillEntry? skill);
 
         /// <summary>
         /// Reflects the damage which was done previously with <see cref="AttackBy" /> or even <see cref="ReflectDamage" /> to the <paramref name="reflector" />.

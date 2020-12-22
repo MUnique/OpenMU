@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="defender">The object which is defending.</param>
         /// <param name="skill">The skill which is used.</param>
         /// <returns>The hit information.</returns>
-        public static HitInfo CalculateDamage(this IAttacker attacker, IAttackable defender, SkillEntry skill)
+        public static HitInfo CalculateDamage(this IAttacker attacker, IAttackable defender, SkillEntry? skill)
         {
             if (!attacker.IsAttackSuccessfulTo(defender))
             {
@@ -151,7 +151,7 @@ namespace MUnique.OpenMU.GameLogic
                 player.CreateMagicEffectPowerUp(skillEntry);
             }
 
-            var magicEffect = new MagicEffect(skillEntry.BuffPowerUp, skillEntry.Skill.MagicEffectDef, TimeSpan.FromSeconds(skillEntry.PowerUpDuration.Value));
+            var magicEffect = new MagicEffect(skillEntry.BuffPowerUp!, skillEntry.Skill.MagicEffectDef, TimeSpan.FromSeconds(skillEntry.PowerUpDuration.Value));
             target.MagicEffectList.AddEffect(magicEffect);
         }
 
@@ -163,6 +163,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="skillEntry">The skill entry.</param>
         public static void ApplyRegeneration(this IAttackable target, Player player, SkillEntry skillEntry)
         {
+            if (player.Attributes is null)
+            {
+                return;
+            }
+
             var skill = skillEntry.Skill;
             var regenerationValue = player.Attributes.CreateElement(skill.MagicEffectDef.PowerUpDefinition.Boost);
             var regeneration = Stats.IntervalRegenerationAttributes.FirstOrDefault(r =>
@@ -250,7 +255,7 @@ namespace MUnique.OpenMU.GameLogic
                 player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to himself.");
                 result = false;
             }
-            else if (skill.TargetRestriction == SkillTargetRestriction.Party && target != player && (player.Party is null || !player.Party.PartyList.Contains(target as IPartyMember)))
+            else if (skill.TargetRestriction == SkillTargetRestriction.Party && target != player && target is IPartyMember partyMember && (player.Party is null || !player.Party.PartyList.Contains(partyMember)))
             {
                 player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to his party.");
                 result = false;
@@ -272,9 +277,9 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="target">The target.</param>
         public static void MoveRandomly(this IAttackable target)
         {
-            if (target is IMovable movable)
+            if (target is IMovable movable && target.CurrentMap is { } map)
             {
-                var terrain = target.CurrentMap.Terrain;
+                var terrain = map.Terrain;
                 var newX = target.Position.X + Rand.NextInt(-1, 2);
                 var newY = target.Position.Y + Rand.NextInt(-1, 2);
                 var isNewXAllowed = newX >= byte.MinValue && newX <= byte.MaxValue;
@@ -361,7 +366,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="skill">Skill which is used.</param>
         /// <param name="minimumBaseDamage">Minimum base damage.</param>
         /// <param name="maximumBaseDamage">Maximum base damage.</param>
-        private static void GetBaseDmg(this IAttacker attacker, SkillEntry skill, out int minimumBaseDamage, out int maximumBaseDamage)
+        private static void GetBaseDmg(this IAttacker attacker, SkillEntry? skill, out int minimumBaseDamage, out int maximumBaseDamage)
         {
             var attackerStats = attacker.Attributes;
             minimumBaseDamage = (int)(attackerStats[Stats.BaseDamageBonus] + attackerStats[Stats.BaseMinDamageBonus]);

@@ -16,6 +16,6 @@ namespace MUnique.OpenMU.GameLogic.Views.NPC
         /// </summary>
         /// <param name="result">The crafting result.</param>
         /// <param name="createdItem">The created item.</param>
-        void ShowResult(CraftingResult result, Item createdItem);
+        void ShowResult(CraftingResult result, Item? createdItem);
     }
 }

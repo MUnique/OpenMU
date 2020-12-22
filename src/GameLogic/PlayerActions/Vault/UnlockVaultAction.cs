@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Vault
         /// <param name="pin">The pin.</param>
         public void UnlockVault(Player player, string pin)
         {
-            if (player.Account.VaultPassword == pin)
+            if (player.Account?.VaultPassword == pin)
             {
                 player.IsVaultLocked = false;
                 player.ViewPlugIns.GetPlugIn<IShowVaultLockChangeResponse>()?.ShowResponse(VaultLockChangeResult.Unlocked);

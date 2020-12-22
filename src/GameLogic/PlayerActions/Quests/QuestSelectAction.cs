@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                 return;
             }
 
-            var questState = player.SelectedCharacter.QuestStates.FirstOrDefault(q => q.Group == group);
+            var questState = player.SelectedCharacter?.QuestStates.FirstOrDefault(q => q.Group == group);
             if (questState?.ActiveQuest != null)
             {
                 player.Logger.LogDebug("There is already an active quest of this group.");

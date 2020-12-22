@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 trader.TradingMoney = 0;
                 if (trader.BackupInventory != null)
                 {
-                    trader.Inventory.Clear();
+                    trader.Inventory!.Clear();
                     trader.BackupInventory.RestoreItemStates();
                     trader.BackupInventory.Items.ForEach(item => trader.Inventory.AddItem(item.ItemSlot, item));
                     trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;
@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         {
             trader.TradingPartner = null;
             trader.BackupInventory = null;
-            trader.TemporaryStorage.Clear();
+            trader.TemporaryStorage!.Clear();
         }
 
         /// <summary>
@@ -57,12 +57,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         protected void SendMessage(ITrader trader, string message)
         {
             var player = trader as Player;
-            if (player is null)
-            {
-                return;
-            }
-
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
+            player?.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
         }
     }
 }

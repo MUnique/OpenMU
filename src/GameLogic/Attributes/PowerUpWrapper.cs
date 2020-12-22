@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
     {
         private readonly IElement element;
 
-        private ComposableAttribute parentAttribute;
+        private ComposableAttribute? parentAttribute;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PowerUpWrapper"/> class.
@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         }
 
         /// <inheritdoc/>
-        public event EventHandler ValueChanged;
+        public event EventHandler? ValueChanged;
 
         /// <inheritdoc/>
         public float Value => this.element.Value;
@@ -80,7 +80,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
             }
         }
 
-        private void OnValueChanged(object sender, EventArgs eventArgs)
+        private void OnValueChanged(object? sender, EventArgs eventArgs)
         {
             this.ValueChanged?.Invoke(sender, eventArgs);
         }

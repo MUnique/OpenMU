@@ -18,9 +18,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="friendName">Name of the friend, with which the player wants to chat.</param>
         public void RequestChat(Player player, string friendName)
         {
+            var character = player.SelectedCharacter;
+            if (character is null)
+            {
+                return;
+            }
+
             var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
 
-            var authenticationInfo = friendServer?.CreateChatRoom(player.SelectedCharacter.Name, friendName);
+            var authenticationInfo = friendServer?.CreateChatRoom(character.Name, friendName);
             if (authenticationInfo != null)
             {
                 player.ViewPlugIns.GetPlugIn<IChatRoomCreatedPlugIn>()?.ChatRoomCreated(authenticationInfo, friendName, true);
@@ -36,10 +42,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         /// <param name="requestId">The request identifier.</param>
         public void InviteFriendToChat(Player player, string friendName, ushort roomId, uint requestId)
         {
+            var character = player.SelectedCharacter;
+            if (character is null)
+            {
+                return;
+            }
+
             var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
             if (friendServer != null)
             {
-                var result = friendServer.InviteFriendToChatRoom(player.SelectedCharacter.Name, friendName, roomId);
+                var result = friendServer.InviteFriendToChatRoom(character.Name, friendName, roomId);
                 player.ViewPlugIns.GetPlugIn<IShowFriendInvitationResultPlugIn>()?.ShowFriendInvitationResult(result, requestId);
             }
         }

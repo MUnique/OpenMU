@@ -18,6 +18,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Quest
         /// Shows the state of the quest.
         /// </summary>
         /// <param name="questState">The quest state.</param>
-        void ShowQuestState(CharacterQuestState questState);
+        void ShowQuestState(CharacterQuestState? questState);
     }
 }

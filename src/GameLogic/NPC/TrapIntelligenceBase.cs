@@ -14,7 +14,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// </summary>
     public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
     {
-        private Timer aiTimer;
+        private Timer? aiTimer;
+        private Trap? trap;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrapIntelligenceBase"/> class.
@@ -28,7 +29,11 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <summary>
         /// Gets or sets the trap.
         /// </summary>
-        public Trap Trap { get; set; }
+        public Trap Trap
+        {
+            get => trap ?? throw new InvalidOperationException("Instance is not initialized with a Trap yet");
+            set => trap = value;
+        }
 
         /// <inheritdoc/>
         public NonPlayerCharacter Npc

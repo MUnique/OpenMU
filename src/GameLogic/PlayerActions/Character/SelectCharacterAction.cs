@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 return;
             }
 
-            player.SelectedCharacter = player.Account.Characters.FirstOrDefault(c => c.Name.Equals(characterName));
+            player.SelectedCharacter = player.Account?.Characters.FirstOrDefault(c => c.Name.Equals(characterName));
             if (player.SelectedCharacter is null)
             {
                 player.Logger.LogError("Could not select character because character not found: [{0}]", characterName);

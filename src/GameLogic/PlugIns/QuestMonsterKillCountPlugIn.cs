@@ -24,7 +24,8 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         /// <param name="killer">The killer.</param>
         public void AttackableGotKilled(IAttackable killed, IAttacker killer)
         {
-            if (!(killer is Player player && killed is Monster monster))
+            if (!(killer is Player player && killed is Monster monster)
+                || player.SelectedCharacter?.QuestStates is null)
             {
                 return;
             }
@@ -46,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
                         questState.RequirementStates.Add(requirementState);
                     }
 
-                    requirementState.KillCount++;
+                    requirementState!.KillCount++;
                 }
             }
         }

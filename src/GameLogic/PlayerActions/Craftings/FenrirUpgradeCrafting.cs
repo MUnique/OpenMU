@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         {
             successRateByItems = 0;
             items = new List<CraftingRequiredItemLink>(4);
-            var inputItems = player.TemporaryStorage.Items.ToList();
+            var inputItems = player.TemporaryStorage!.Items.ToList();
             var itemsLevelAndOption4 = inputItems
                 .Where(item => item.Level >= 4
                                && item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Option))

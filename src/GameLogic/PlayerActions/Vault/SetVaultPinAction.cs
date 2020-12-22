@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Vault
         /// <param name="accountPassword">The account password.</param>
         public void SetPin(Player player, string newPin, string accountPassword)
         {
-            if (player.IsVaultLocked)
+            if (player.Account is null || player.IsVaultLocked)
             {
                 player.ViewPlugIns.GetPlugIn<IShowVaultLockChangeResponse>()?.ShowResponse(VaultLockChangeResult.SetPinFailedBecauseLock);
                 return;

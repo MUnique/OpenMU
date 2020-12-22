@@ -61,7 +61,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(AttributeDefinition lhs, AttributeDefinition rhs)
+        public static bool operator ==(AttributeDefinition? lhs, AttributeDefinition? rhs)
         {
             if (ReferenceEquals(lhs, rhs))
             {
@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(AttributeDefinition lhs, AttributeDefinition rhs)
+        public static bool operator !=(AttributeDefinition? lhs, AttributeDefinition? rhs)
         {
             return !(lhs == rhs);
         }

@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             }
 
             var lastGuildRequester = player.LastGuildRequester;
-            if (lastGuildRequester is null)
+            if (lastGuildRequester?.SelectedCharacter is null)
             {
                 return;
             }
@@ -54,7 +54,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             if (accept)
             {
-                var guildStatus = guildServer.CreateGuildMember(player.GuildStatus.GuildId, player.LastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id);
+                var guildStatus = guildServer.CreateGuildMember(player.GuildStatus.GuildId, lastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id);
                 lastGuildRequester.GuildStatus = guildStatus;
 
                 lastGuildRequester.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(lastGuildRequester, false), true);

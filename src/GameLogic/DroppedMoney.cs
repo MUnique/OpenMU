@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         private readonly object pickupLock;
 
-        private Timer removeTimer;
+        private Timer? removeTimer;
 
         private bool availableToPick = true;
 

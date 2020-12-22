@@ -90,9 +90,13 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private void OnEffectTimeOut(object sender, EventArgs args)
+        private void OnEffectTimeOut(object? sender, EventArgs args)
         {
             var effect = sender as MagicEffect;
+            if (effect is null)
+            {
+                return;
+            }
 
             lock (this.addLock)
             {
@@ -127,7 +131,7 @@ namespace MUnique.OpenMU.GameLogic
 
             //// GMO behaviour would be: RemoveEffect(magicEffect.Id); AddEffect(effect);
             //// I change the existing Timer and Buff Value, without removing the effect itself.
-            //// This doesnt only save traffic, it also looks better in game.
+            //// This doesn't only save traffic, it also looks better in game.
             magicEffect.Duration = effect.Duration;
             magicEffect.ResetTimer();
             foreach (var powerUp in magicEffect.PowerUpElements)

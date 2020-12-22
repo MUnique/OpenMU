@@ -30,12 +30,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
             {
-                player.Logger.LogError($"Account {player.Account.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
+                player.Logger.LogError($"Account {player.Account!.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
                 return;
             }
 
-            CharacterClass characterClass = player.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.Number == characterClassId);
-            if (characterClass != null)
+            var characterClass = player.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.Number == characterClassId);
+            if (characterClass is not null)
             {
                 var character = this.CreateCharacter(player, characterName, characterClass);
                 if (character != null)
@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             }
         }
 
-        private Character CreateCharacter(Player player, string name, CharacterClass charclass)
+        private Character? CreateCharacter(Player player, string name, CharacterClass charclass)
         {
             var account = player.Account;
             if (account is null)
@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
         private byte? GetFreeSlot(Player player)
         {
-            var usedSlots = player.Account.Characters.Select(c => (int)c.CharacterSlot);
+            var usedSlots = player.Account!.Characters.Select(c => (int)c.CharacterSlot);
             var freeSlots = Enumerable.Range(0, player.GameContext.Configuration.MaximumCharactersPerAccount).Except(usedSlots).ToList();
             if (freeSlots.Any())
             {

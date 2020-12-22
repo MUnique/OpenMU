@@ -45,7 +45,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         {
             successRate = 0;
             itemLinks = new List<CraftingRequiredItemLink>(3);
-            var item1 = player.TemporaryStorage.Items.FirstOrDefault(item => item.Definition.Name == this.requiredEventItemName1);
+
+            var item1 = player.TemporaryStorage!.Items.FirstOrDefault(item => item.Definition.Name == this.requiredEventItemName1);
             var item2 = player.TemporaryStorage.Items.FirstOrDefault(item => item.Definition.Name == this.requiredEventItemName2);
             var chaos = player.TemporaryStorage.Items.FirstOrDefault(item => item.Definition.Name == "Jewel of Chaos");
             if (item1 is null || item2 is null || item1.Level != item2.Level || chaos is null)
@@ -109,7 +110,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             item.Definition = player.GameContext.Configuration.Items.First(i => i.Name == this.resultItemName);
             item.Level = this.GetEventLevel(requiredItems);
             item.Durability = 1;
-            player.TemporaryStorage.AddItem(item);
+            player.TemporaryStorage?.AddItem(item);
             yield return item;
         }
 

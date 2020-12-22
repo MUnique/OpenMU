@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
             }
 
             LetterDeleteRequest message = packet;
-            if (message.LetterIndex < player.SelectedCharacter.Letters.Count)
+            if (message.LetterIndex < player.SelectedCharacter?.Letters.Count)
             {
                 var letter = player.SelectedCharacter.Letters[message.LetterIndex];
                 this.deleteAction.DeleteLetter(player, letter);

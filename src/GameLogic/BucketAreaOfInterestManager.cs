@@ -182,7 +182,7 @@ namespace MUnique.OpenMU.GameLogic
             lock (moveLock)
             {
                 var oldPosition = obj.Position;
-                Bucket<ILocateable> oldBucket;
+                Bucket<ILocateable>? oldBucket;
                 Bucket<ILocateable> newBucket = this.Map[target];
                 if (obj is IHasBucketInformation bucketInfo)
                 {

@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class BackupItemStorage
     {
-        private readonly IList<ItemState> initialItemStates;
+        private readonly IList<(Item Item, byte Slot)> initialItemStates;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BackupItemStorage"/> class.
@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.GameLogic
             items.AddRange(itemStorage.Items);
             this.Items = items;
             this.Money = itemStorage.Money;
-            this.initialItemStates = this.Items.Select(item => new ItemState { Slot = item.ItemSlot, Item = item }).ToList();
+            this.initialItemStates = this.Items.Select(item => (item, item.ItemSlot)).ToList();
         }
 
         /// <summary>
@@ -45,13 +45,6 @@ namespace MUnique.OpenMU.GameLogic
         public void RestoreItemStates()
         {
             this.initialItemStates.ForEach(state => state.Item.ItemSlot = state.Slot);
-        }
-
-        private class ItemState
-        {
-            internal byte Slot { get; set; }
-
-            internal Item Item { get; set; }
         }
     }
 }

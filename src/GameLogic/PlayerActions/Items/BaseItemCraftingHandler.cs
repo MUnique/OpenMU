@@ -19,9 +19,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     {
         /// <inheritdoc/>
-        public (CraftingResult, Item) DoMix(Player player, byte socketSlot)
+        public (CraftingResult, Item?) DoMix(Player player, byte socketSlot)
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
+            if (player.TemporaryStorage is null)
+            {
+                return (CraftingResult.Failed, null);
+            }
+
             if (this.TryGetRequiredItems(player, out var items, out var successRate) is { } error)
             {
                 return (error, null);
@@ -87,7 +92,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <returns>
         /// The created or modified item. If there are multiple, only the last one is returned.
         /// </returns>
-        private Item DoTheMix(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+        private Item? DoTheMix(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
         {
             foreach (var requiredItemLink in requiredItems)
             {
@@ -115,7 +120,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     foreach (var item in itemLink.Items)
                     {
                         player.Logger.LogDebug("Item {0} is getting destroyed.", item);
-                        player.TemporaryStorage.RemoveItem(item);
+                        player.TemporaryStorage!.RemoveItem(item);
                         player.PersistenceContext.Delete(item);
                         point?.ItemDestroyed(item);
                     }

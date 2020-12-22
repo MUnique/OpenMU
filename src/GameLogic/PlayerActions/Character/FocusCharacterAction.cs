@@ -24,8 +24,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 return;
             }
 
-            var character = player.Account.Characters.FirstOrDefault(c => c.Name == characterName);
-            if (character != null)
+            var character = player.Account?.Characters.FirstOrDefault(c => c.Name == characterName);
+            if (character is not null)
             {
                 player.ViewPlugIns.GetPlugIn<ICharacterFocusedPlugIn>()?.CharacterFocused(character);
             }

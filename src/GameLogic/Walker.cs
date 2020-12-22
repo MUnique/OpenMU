@@ -20,8 +20,9 @@ namespace MUnique.OpenMU.GameLogic
         private readonly ISupportWalk walkSupporter;
         private readonly Func<TimeSpan> stepDelay;
         private readonly Stack<WalkingStep> nextSteps = new Stack<WalkingStep>(5);
-        private Timer walkTimer;
-        private ReaderWriterLockSlim walkLock;
+        private readonly ReaderWriterLockSlim walkLock;
+        private Timer? walkTimer;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Walker" /> class.
@@ -33,6 +34,7 @@ namespace MUnique.OpenMU.GameLogic
             this.walkSupporter = walkSupporter;
             this.stepDelay = stepDelay;
             this.walkLock = new ReaderWriterLockSlim();
+            this.walkLock.Dispose();
         }
 
         /// <summary>
@@ -47,6 +49,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="steps">The steps.</param>
         public void WalkTo(Point target, Span<WalkingStep> steps)
         {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
             this.walkLock.EnterWriteLock();
             try
             {
@@ -128,7 +135,7 @@ namespace MUnique.OpenMU.GameLogic
                     this.walkTimer.Dispose(); // reuse timer?
                     this.walkTimer = null;
                     this.nextSteps.Clear();
-                    this.CurrentTarget = default(Point);
+                    this.CurrentTarget = default;
                 }
             }
             finally
@@ -142,23 +149,24 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public void Dispose()
         {
-            if (this.walkLock != null)
+            this.isDisposed = true;
+            if (this.walkTimer != null)
             {
                 this.Stop();
-                this.walkLock.Dispose();
-                this.walkLock = null;
             }
+
+            this.walkLock.Dispose();
         }
 
         /// <summary>
         /// Performs the next step of a walk.
         /// </summary>
         /// <param name="state">The state.</param>
-        private void WalkStep(object state)
+        private void WalkStep(object? state)
         {
             try
             {
-                if (this.walkLock is null)
+                if (this.isDisposed)
                 {
                     Debug.WriteLine("walker already disposed");
                     return;
@@ -205,9 +213,9 @@ namespace MUnique.OpenMU.GameLogic
                 var nextStep = this.nextSteps.Pop();
                 this.walkSupporter.Position = nextStep.To;
 
-                if (this.walkSupporter is IRotatable rotateable)
+                if (this.walkSupporter is IRotatable rotatable)
                 {
-                    rotateable.Rotation = nextStep.Direction;
+                    rotatable.Rotation = nextStep.Direction;
                 }
             }
         }

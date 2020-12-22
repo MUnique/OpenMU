@@ -13,14 +13,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public class LearnablesConsumeHandler : IItemConsumeHandler
     {
         /// <inheritdoc/>
-        public bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
+        public bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
-            {
-                return false;
-            }
-
-            if (item is null)
             {
                 return false;
             }
@@ -33,13 +28,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
             var skill = this.GetLearnableSkill(item, player.GameContext.Configuration);
 
-            if (skill is null || player.SkillList.ContainsSkill(skill.Number.ToUnsigned()))
+            if (skill is null || player.SkillList!.ContainsSkill(skill.Number.ToUnsigned()))
             {
                 return false;
             }
 
             player.SkillList.AddLearnedSkill(skill);
-            player.Inventory.RemoveItem(item);
+            player.Inventory!.RemoveItem(item);
             player.PersistenceContext.Delete(item);
             return true;
         }
@@ -50,7 +45,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <param name="item">The item.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
         /// <returns>The skill to learn.</returns>
-        protected virtual Skill GetLearnableSkill(Item item, GameConfiguration gameConfiguration)
+        protected virtual Skill? GetLearnableSkill(Item item, GameConfiguration gameConfiguration)
         {
             return item.Definition.Skill;
         }

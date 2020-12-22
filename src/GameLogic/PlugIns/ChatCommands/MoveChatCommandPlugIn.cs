@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             this.warpAction.WarpTo(player, warpInfo);
         }
 
-        private static WarpInfo GetWarpInfo(string mapName, Player player)
+        private static WarpInfo? GetWarpInfo(string mapName, Player player)
         {
             return player.GameContext.Configuration.WarpList?.FirstOrDefault(info => info.Name.ToLower().Equals(mapName.ToLower()));
         }

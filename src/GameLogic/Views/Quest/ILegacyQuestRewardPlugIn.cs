@@ -22,6 +22,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Quest
         /// <param name="rewardType">Type of the reward.</param>
         /// <param name="value">The value.</param>
         /// <param name="attributeReward">The attribute reward.</param>
-        void Show(Player player, QuestRewardType rewardType, int value, AttributeDefinition attributeReward);
+        void Show(Player player, QuestRewardType rewardType, int value, AttributeDefinition? attributeReward);
     }
 }

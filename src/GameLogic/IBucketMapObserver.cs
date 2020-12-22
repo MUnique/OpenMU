@@ -26,14 +26,14 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="eventArgs">The event args with the item which got added.</param>
-        void LocateableAdded(object sender, BucketItemEventArgs<ILocateable> eventArgs);
+        void LocateableAdded(object? sender, BucketItemEventArgs<ILocateable> eventArgs);
 
         /// <summary>
         /// This method is called, when another locateable is moving out of the observing zones.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="eventArgs">The event args with the item which got removed.</param>
-        void LocateableRemoved(object sender, BucketItemEventArgs<ILocateable> eventArgs);
+        void LocateableRemoved(object? sender, BucketItemEventArgs<ILocateable> eventArgs);
 
         /// <summary>
         /// This method is called, when this object is moving to another zone, and old objects are getting out of range.

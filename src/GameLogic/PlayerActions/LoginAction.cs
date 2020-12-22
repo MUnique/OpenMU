@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         public void Login(Player player, string username, string password)
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
-            Account account;
+            Account? account;
             try
             {
                 account = player.PersistenceContext.GetAccountByLoginName(username, password);

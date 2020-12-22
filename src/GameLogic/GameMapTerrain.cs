@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic
         /// Initializes a new instance of the <see cref="GameMapTerrain"/> class.
         /// </summary>
         /// <param name="terrainData">The terrain data.</param>
-        public GameMapTerrain(byte[] terrainData)
+        public GameMapTerrain(byte[]? terrainData)
         {
             if (terrainData is { })
             {
@@ -47,33 +47,33 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets a grid of all safezone coordinates.
         /// </summary>
-        public bool[,] SafezoneMap { get; private set; }
+        public bool[,] SafezoneMap { get; } = new bool[256, 256];
 
         /// <summary>
         /// Gets a grid of all walkable coordinates.
         /// </summary>
-        public bool[,] WalkMap { get; private set; }
+        public bool[,] WalkMap { get; } = new bool[256, 256];
 
         /// <summary>
         /// Gets a grid of the walkable coordinates of monsters.
         /// </summary>
-        public byte[,] AIgrid { get; private set; }
+        public byte[,] AIgrid { get; } = new byte[256, 256];
 
         /// <summary>
         /// Gets a random drop coordinate at the specified point in the specified radius.
         /// </summary>
         /// <param name="point">The target point.</param>
-        /// <param name="maxmimumRadius">The maximum radius around the specified coordinate.</param>
+        /// <param name="maximumRadius">The maximum radius around the specified coordinate.</param>
         /// <returns>The random drop coordinate.</returns>
-        public Point GetRandomCoordinate(Point point, byte maxmimumRadius)
+        public Point GetRandomCoordinate(Point point, byte maximumRadius)
         {
-            byte tempx = (byte)Rand.NextInt(Math.Max(0, point.X - maxmimumRadius), Math.Min(255, point.X + maxmimumRadius + 1));
-            byte tempy = (byte)Rand.NextInt(Math.Max(0, point.Y - maxmimumRadius), Math.Min(255, point.Y + maxmimumRadius + 1));
+            byte tempx = (byte)Rand.NextInt(Math.Max(0, point.X - maximumRadius), Math.Min(255, point.X + maximumRadius + 1));
+            byte tempy = (byte)Rand.NextInt(Math.Max(0, point.Y - maximumRadius), Math.Min(255, point.Y + maximumRadius + 1));
             int i = 0;
             while (!this.WalkMap[tempx, tempy] && i < 20)
             {
-                tempx = (byte)Rand.NextInt(Math.Max(0, point.X - maxmimumRadius), Math.Min(255, point.X + maxmimumRadius + 1));
-                tempy = (byte)Rand.NextInt(Math.Max(0, point.Y - maxmimumRadius), Math.Min(255, point.Y + maxmimumRadius + 1));
+                tempx = (byte)Rand.NextInt(Math.Max(0, point.X - maximumRadius), Math.Min(255, point.X + maximumRadius + 1));
+                tempy = (byte)Rand.NextInt(Math.Max(0, point.Y - maximumRadius), Math.Min(255, point.Y + maximumRadius + 1));
                 i++;
             }
 
@@ -91,10 +91,6 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="data">The data.</param>
         private void ReadTerrainData(ReadOnlySpan<byte> data)
         {
-            this.WalkMap = new bool[256, 256];
-            this.SafezoneMap = new bool[256, 256];
-            this.AIgrid = new byte[256, 256];
-
             for (int i = 0; i < data.Length; i++)
             {
                 byte x = (byte)(i & 0xFF);

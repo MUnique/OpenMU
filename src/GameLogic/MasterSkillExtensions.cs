@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.GameLogic
                 return 0f;
             }
 
-            if (!ValueResultCache.TryGetValue(formula, out float[] results))
+            if (!ValueResultCache.TryGetValue(formula, out var results))
             {
                 results = new float[maximumLevel];
 

@@ -17,25 +17,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public abstract class HealthPotionConsumeHandler : RecoverConsumeHandler.ManaHealthConsumeHandler, IItemConsumeHandler
     {
         /// <inheritdoc/>
-        protected override AttributeDefinition MaximumAttribute
-        {
-            get
-            {
-                return Stats.MaximumHealth;
-            }
-        }
+        protected override AttributeDefinition MaximumAttribute => Stats.MaximumHealth;
 
         /// <inheritdoc/>
-        protected override AttributeDefinition CurrentAttribute
-        {
-            get
-            {
-                return Stats.CurrentHealth;
-            }
-        }
+        protected override AttributeDefinition CurrentAttribute => Stats.CurrentHealth;
 
         /// <inheritdoc/>
-        public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
+        public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
         {
             if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {

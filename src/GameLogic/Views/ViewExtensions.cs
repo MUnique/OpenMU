@@ -48,14 +48,14 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// <param name="player">The player.</param>
         /// <param name="id">The identifier.</param>
         /// <returns>The object with the specified id which is on the same map as the specified player.</returns>
-        public static IIdentifiable GetObject(this Player player, ushort id)
+        public static IIdentifiable? GetObject(this Player player, ushort id)
         {
             if (id == ConstantPlayerId)
             {
                 return player;
             }
 
-            return player.CurrentMap.GetObject(id);
+            return player.CurrentMap?.GetObject(id);
         }
     }
 }

@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the plug in manager.
         /// </summary>
-        public PlugInManager PlugInManager { get; set; }
+        public PlugInManager? PlugInManager { get; set; }
 
         /// <summary>
         /// Gets or sets the duration of the item drop on created <see cref="GameMap"/>s.
@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic
         protected byte ChunkSize { get; set; }
 
         /// <inheritdoc/>
-        public GameMap CreateGameMap(ushort mapNumber)
+        public GameMap? CreateGameMap(ushort mapNumber)
         {
             var definition = this.GetMapDefinition(mapNumber);
             if (definition != null)
@@ -71,6 +71,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc />
         public void InitializeState(GameMap createdMap)
         {
+            if (this.PlugInManager is null)
+            {
+                throw new InvalidOperationException("PlugInManager must be set first");
+            }
+
             this.logger.LogDebug("Start creating monster instances for map {createdMap}", createdMap);
             foreach (var spawn in createdMap.Definition.MonsterSpawns.Where(s => s.SpawnTrigger == SpawnTrigger.Automatic))
             {
@@ -128,7 +133,7 @@ namespace MUnique.OpenMU.GameLogic
             return new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
         }
 
-        private INpcIntelligence TryCreateConfiguredNpcIntelligence(MonsterDefinition monsterDefinition, GameMap createdMap)
+        private INpcIntelligence? TryCreateConfiguredNpcIntelligence(MonsterDefinition monsterDefinition, GameMap createdMap)
         {
             if (string.IsNullOrWhiteSpace(monsterDefinition.IntelligenceTypeName))
             {
@@ -144,7 +149,7 @@ namespace MUnique.OpenMU.GameLogic
                     return null;
                 }
 
-                return (INpcIntelligence)Activator.CreateInstance(type, createdMap);
+                return Activator.CreateInstance(type, createdMap) as INpcIntelligence;
             }
             catch (Exception ex)
             {

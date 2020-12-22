@@ -21,11 +21,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public class TownPortalScrollConsumeHandler : BaseConsumeHandler
     {
         /// <inheritdoc />
-        public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
+        public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
         {
             if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {
-                var targetMap = player.CurrentMap.Definition.SafezoneMap ?? player.SelectedCharacter.CharacterClass.HomeMap;
+                var targetMap = player.CurrentMap!.Definition.SafezoneMap ?? player.SelectedCharacter!.CharacterClass.HomeMap;
                 var exitGate = targetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
                 player.WarpTo(exitGate);
                 return true;

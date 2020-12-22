@@ -30,10 +30,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
         private readonly PlugInManager plugInManager;
         private readonly Walker walker;
 
-        private Timer respawnTimer;
+        private Timer? respawnTimer;
         private int health;
         private bool isCalculatingPath;
-        private PathFinder pathFinder;
+        private PathFinder? pathFinder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Monster" /> class.
@@ -106,7 +106,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public bool IsAlive { get; set; }
 
         /// <inheritdoc/>
-        public DeathInformation LastDeath { get; private set; }
+        public DeathInformation? LastDeath { get; private set; }
 
         /// <inheritdoc cref="IAttackable" />
         public IAttributeSystem Attributes { get; }
@@ -151,7 +151,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 return;
             }
 
-            IList<PathResultNode> calculatedPath;
+            IList<PathResultNode>? calculatedPath;
             this.isCalculatingPath = true;
             try
             {
@@ -214,7 +214,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public int GetSteps(Span<WalkingStep> steps) => this.walker.GetSteps(steps);
 
         /// <inheritdoc />
-        public void AttackBy(IAttacker attacker, SkillEntry skill)
+        public void AttackBy(IAttacker attacker, SkillEntry? skill)
         {
             var hitInfo = attacker.CalculateDamage(this, skill);
             this.Hit(hitInfo, attacker, skill?.Skill);
@@ -303,15 +303,15 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 }
                 else
                 {
-                    var players = party.PartyList.OfType<Player>().Where(p => p.CurrentMap == killer.CurrentMap && !p.IsAtSafezone()).ToList();
+                    var players = party.PartyList.OfType<Player>().Where(p => p.CurrentMap == killer.CurrentMap && !p.IsAtSafezone() && p.Attributes is { }).ToList();
                     var moneyPart = amount / players.Count;
-                    players.ForEach(p => p.TryAddMoney((int)(moneyPart * p.Attributes[Stats.MoneyAmountRate])));
+                    players.ForEach(p => p.TryAddMoney((int)(moneyPart * p.Attributes![Stats.MoneyAmountRate])));
                 }
 
                 return;
             }
 
-            var droppedMoney = new DroppedMoney((uint)(amount * killer.Attributes[Stats.MoneyAmountRate]), this.Position, this.CurrentMap);
+            var droppedMoney = new DroppedMoney((uint)(amount * killer.Attributes![Stats.MoneyAmountRate]), this.Position, this.CurrentMap);
             this.CurrentMap.Add(droppedMoney);
         }
 
@@ -343,7 +343,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 }
 
                 var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
-                var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, killer, owners);
+                var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, null, owners);
                 this.CurrentMap.Add(droppedItem);
             }
         }
@@ -377,7 +377,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 this.DropItem(exp, player);
                 player.AfterKilledMonster();
                 player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, attacker);
-                if (player.SelectedCharacter.State > HeroState.Normal)
+                if (player.SelectedCharacter!.State > HeroState.Normal)
                 {
                     player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
                 }
@@ -393,7 +393,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.CurrentMap.Respawn(this);
         }
 
-        private void Hit(HitInfo hitInfo, IAttacker attacker, Skill skill)
+        private void Hit(HitInfo hitInfo, IAttacker attacker, Skill? skill)
         {
             if (!this.IsAlive)
             {

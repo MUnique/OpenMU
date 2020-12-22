@@ -21,6 +21,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         /// <param name="player">The player.</param>
         /// <param name="item">The item.</param>
         /// <param name="targetItem">The target item, e.g. an armor piece which gets upgraded by the consumption of a jewel.</param>
-        void ItemConsumed(Player player, Item item, Item targetItem);
+        void ItemConsumed(Player player, Item item, Item? targetItem);
     }
 }

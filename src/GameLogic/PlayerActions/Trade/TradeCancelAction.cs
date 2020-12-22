@@ -19,12 +19,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         public new void CancelTrade(ITrader trader)
         {
             using var loggerScope = (trader as Player)?.Logger.BeginScope(this.GetType());
-            var tradingPartner = trader?.TradingPartner;
+            var tradingPartner = trader.TradingPartner;
             if (tradingPartner != null)
             {
                 base.CancelTrade(tradingPartner);
-                base.CancelTrade(trader);
-                trader.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()?.TradeFinished(TradeResult.Cancelled);
+                base.CancelTrade(trader!);
+                trader!.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()?.TradeFinished(TradeResult.Cancelled);
                 tradingPartner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()?.TradeFinished(TradeResult.Cancelled);
             }
             else

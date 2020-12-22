@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public class BaseConsumeHandler : IItemConsumeHandler
     {
         /// <inheritdoc/>
-        public virtual bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
+        public virtual bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
         {
             if (!this.CheckPreconditions(player, item))
             {
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
             if (item.Durability == 0)
             {
-                player.Inventory.RemoveItem(item);
+                player.Inventory?.RemoveItem(item);
                 player.PersistenceContext.Delete(item);
             }
         }
@@ -54,7 +54,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         protected bool CheckPreconditions(Player player, Item item)
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
-                || item is null
                 || item.Durability == 0)
             {
                 return false;

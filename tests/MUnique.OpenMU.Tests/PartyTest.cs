@@ -29,9 +29,9 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void PartyMemberAdd()
         {
-            var party = new Party(5, new NullLogger<Party>());
             var partyMember = this.CreatePartyMember();
-            party.Add(partyMember);
+            var party = new Party(partyMember, 5, new NullLogger<Party>());
+
             Assert.That(party.PartyList, Contains.Item(partyMember));
         }
 
@@ -99,9 +99,8 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void PartyAutoClose()
         {
-            var party = new Party(5, new NullLogger<Party>());
             var partyMember1 = this.CreatePartyMember();
-            party.Add(partyMember1);
+            var party = new Party(partyMember1, 5, new NullLogger<Party>());
             var partyMember1Index = (byte)(party.PartyList.Count - 1);
             var partyMember2 = this.CreatePartyMember();
             party.Add(partyMember2);
@@ -188,8 +187,8 @@ namespace MUnique.OpenMU.Tests
 
         private Party CreatePartyWithMembers(int numberOfMembers)
         {
-            var party = new Party(5, new NullLogger<Party>());
-            for (ushort i = 0; i < numberOfMembers; i++)
+            var party = new Party(this.CreatePartyMember(), 5, new NullLogger<Party>());
+            for (ushort i = 1; i < numberOfMembers; i++)
             {
                 var partyMember = this.CreatePartyMember();
                 party.Add(partyMember);

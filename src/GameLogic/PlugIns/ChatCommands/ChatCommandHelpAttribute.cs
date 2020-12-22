@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     [AttributeUsage(AttributeTargets.Class)]
     public class ChatCommandHelpAttribute : Attribute
     {
-        private readonly Type argumentsType;
+        private readonly Type? argumentsType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatCommandHelpAttribute" /> class.
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// </summary>
         /// <param name="command">The command.</param>
         /// <param name="argumentsType">Type of the arguments.</param>
-        public ChatCommandHelpAttribute(string command, Type argumentsType)
+        public ChatCommandHelpAttribute(string command, Type? argumentsType)
             : this(command, argumentsType, CharacterStatus.Normal)
         {
         }
@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <param name="command">The command.</param>
         /// <param name="argumentsType">Type of the arguments.</param>
         /// <param name="minimumCharacterStatus">The minimum character status.</param>
-        public ChatCommandHelpAttribute(string command, Type argumentsType, CharacterStatus minimumCharacterStatus)
+        public ChatCommandHelpAttribute(string command, Type? argumentsType, CharacterStatus minimumCharacterStatus)
         {
             this.Command = command;
             this.argumentsType = argumentsType;

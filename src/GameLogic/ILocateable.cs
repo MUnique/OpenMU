@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the current map on which the object currently is.
         /// </summary>
-        GameMap CurrentMap { get; }
+        GameMap? CurrentMap { get; }
 
         /// <summary>
         /// Gets or sets the coordinates on the map.
@@ -32,13 +32,13 @@ namespace MUnique.OpenMU.GameLogic
         /// This is helpful for other objects to determine if the observation should
         /// be continued or not.
         /// </summary>
-        Bucket<ILocateable> NewBucket { get; set; }
+        Bucket<ILocateable>? NewBucket { get; set; }
 
         /// <summary>
         /// Gets or sets the bucket where this instance currently moves away.
         /// This is helpful for other objects to determine if the observation should
         /// be continued or not.
         /// </summary>
-        Bucket<ILocateable> OldBucket { get; set; }
+        Bucket<ILocateable>? OldBucket { get; set; }
     }
 }

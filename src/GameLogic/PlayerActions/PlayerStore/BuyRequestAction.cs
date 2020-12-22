@@ -27,9 +27,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         public void BuyItem(Player player, Player requestedPlayer, byte slot)
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
-            if (!requestedPlayer.ShopStorage.StoreOpen)
+            if (!(requestedPlayer.ShopStorage?.StoreOpen ?? false))
             {
-                player.Logger.LogDebug("Store not open, Character {0}", requestedPlayer.SelectedCharacter.Name);
+                player.Logger.LogDebug("Store not open, Character {0}", requestedPlayer.SelectedCharacter?.Name);
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player's Store not open.", MessageType.BlueNormal); // Code: 3
                 return;
             }
@@ -57,8 +57,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
             }
 
             // Check Inv Space
-            int freeslot = player.Inventory.CheckInvSpace(item);
-            if (freeslot == -1)
+            var freeslot = player.Inventory?.CheckInvSpace(item);
+            if (freeslot is null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Not enough Space in your Inventory.", MessageType.BlueNormal);
                 return;
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
             {
                 if (!requestedPlayer.ShopStorage.StoreOpen)
                 {
-                    player.Logger.LogDebug("Store not open anymore, Character {0}", requestedPlayer.SelectedCharacter.Name);
+                    player.Logger.LogDebug("Store not open anymore, Character {0}", requestedPlayer.SelectedCharacter?.Name);
                     player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player's Store not open anymore.", MessageType.BlueNormal);
                     return;
                 }
@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
                         requestedPlayer.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(slot);
                         item.ItemSlot = (byte)freeslot;
                         item.StorePrice = null;
-                        player.Inventory.AddItem(item);
+                        player.Inventory!.AddItem(item);
                         requestedPlayer.PersistenceContext.Detach(item);
                         itemContext.SaveChanges();
                         player.PersistenceContext.Attach(item);

@@ -12,12 +12,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the current party of the player.
         /// </summary>
-        Party Party { get; set; }
+        Party? Party { get; set; }
 
         /// <summary>
         /// Gets or sets the last party requester.
         /// </summary>
-        IPartyMember LastPartyRequester { get; set; }
+        IPartyMember? LastPartyRequester { get; set; }
 
         /// <summary>
         /// Gets the maximum health.

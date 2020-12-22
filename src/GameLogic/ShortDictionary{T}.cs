@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace MUnique.OpenMU.GameLogic.DataStructures
 {
     using System;
@@ -13,10 +15,11 @@ namespace MUnique.OpenMU.GameLogic.DataStructures
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     public class ShortDictionary<T> : IDictionary<ushort, T>
+        where T : class
     {
         private const ushort NullValue = 0xFFFF;
 
-        private readonly IList<T> list;
+        private readonly IList<T?> list;
 
         private readonly ushort[] mapping;
 
@@ -29,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.DataStructures
         /// </summary>
         public ShortDictionary()
         {
-            this.list = new List<T>();
+            this.list = new List<T?>();
             this.mapping = new ushort[0x10000];
             for (int i = 0; i < this.mapping.Length; ++i)
             {
@@ -73,7 +76,7 @@ namespace MUnique.OpenMU.GameLogic.DataStructures
                 {
                     if (this.mapping[i] != NullValue)
                     {
-                        result.Add(this.list[this.mapping[i]]);
+                        result.Add(this.list[this.mapping[i]]!);
                     }
                 }
 
@@ -82,19 +85,10 @@ namespace MUnique.OpenMU.GameLogic.DataStructures
         }
 
         /// <inheritdoc/>
-        public int Count
-        {
-            get
-            {
-                return this.count;
-            }
-        }
+        public int Count => this.count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <inheritdoc/>
         public T this[ushort key]
@@ -103,7 +97,7 @@ namespace MUnique.OpenMU.GameLogic.DataStructures
             {
                 if (this.ContainsKey(key))
                 {
-                    return this.list[this.mapping[key]];
+                    return this.list[this.mapping[key]]!;
                 }
 
                 throw new KeyNotFoundException();
@@ -180,12 +174,12 @@ namespace MUnique.OpenMU.GameLogic.DataStructures
         }
 
         /// <inheritdoc/>
-        public bool TryGetValue(ushort key, out T value)
+        public bool TryGetValue(ushort key, [MaybeNullWhen(false)] out T value)
         {
-            value = default(T);
+            value = default;
             if (this.ContainsKey(key))
             {
-                value = this.list[this.mapping[key]];
+                value = this.list[this.mapping[key]]!;
                 return true;
             }
 
@@ -252,7 +246,7 @@ namespace MUnique.OpenMU.GameLogic.DataStructures
             {
                 if (this.mapping[i] != NullValue)
                 {
-                    yield return new KeyValuePair<ushort, T>(i, this.list[this.mapping[i]]);
+                    yield return new KeyValuePair<ushort, T>(i, this.list[this.mapping[i]]!);
                 }
             }
         }

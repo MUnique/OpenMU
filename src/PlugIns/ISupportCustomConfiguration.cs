@@ -9,10 +9,11 @@ namespace MUnique.OpenMU.PlugIns
     /// </summary>
     /// <typeparam name="TCustomConfig">The type of the custom configuration.</typeparam>
     public interface ISupportCustomConfiguration<TCustomConfig>
+        where TCustomConfig : class
     {
         /// <summary>
         /// Gets or sets the configuration.
         /// </summary>
-        TCustomConfig Configuration { get; set; }
+        TCustomConfig? Configuration { get; set; }
     }
 }

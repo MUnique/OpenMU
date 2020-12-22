@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         protected abstract AttributeDefinition MaximumAttribute { get; }
 
         /// <inheritdoc/>
-        public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
+        public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
         {
             if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {
@@ -47,6 +47,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <param name="player">The player.</param>
         internal void Recover(Player player)
         {
+            if (player.Attributes is null)
+            {
+                return;
+            }
+
             var recoverAmount = (player.Attributes[this.MaximumAttribute] * this.RecoverPercent / 100) + this.GetAdditionalRecover(player);
             player.Attributes[this.CurrentAttribute] = (uint)Math.Min(player.Attributes[this.MaximumAttribute], player.Attributes[this.CurrentAttribute] + recoverAmount);
         }
@@ -83,7 +88,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             /// <inheritdoc/>
             protected override double GetAdditionalRecover(Player player)
             {
-                return Math.Max(0, 50 + (this.Multiplier * 50) - player.Attributes[Stats.Level]);
+                return Math.Max(0, 50 + (this.Multiplier * 50) - player.Attributes![Stats.Level]);
             }
         }
     }

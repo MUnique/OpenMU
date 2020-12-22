@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
                 return value;
             }
 
-            if (StatMapping.TryGetValue(attributeDefinition, out Func<Trap, float> mappingFunction))
+            if (StatMapping.TryGetValue(attributeDefinition, out var mappingFunction))
             {
                 return mappingFunction(this.trap);
             }
@@ -93,7 +93,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDef)
         {
-            if (!MonsterStatAttributesCache.TryGetValue(monsterDef, out IDictionary<AttributeDefinition, float> result))
+            if (!MonsterStatAttributesCache.TryGetValue(monsterDef, out var result))
             {
                 result = monsterDef.Attributes.ToDictionary(m => m.AttributeDefinition, m => m.Value);
                 MonsterStatAttributesCache.Add(monsterDef, result);

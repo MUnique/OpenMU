@@ -31,12 +31,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Occurs when an item has been added.
         /// </summary>
-        public event EventHandler<BucketItemEventArgs<T>> ItemAdded;
+        public event EventHandler<BucketItemEventArgs<T>>? ItemAdded;
 
         /// <summary>
         /// Occurs when an item has been removed.
         /// </summary>
-        public event EventHandler<BucketItemEventArgs<T>> ItemRemoved;
+        public event EventHandler<BucketItemEventArgs<T>>? ItemRemoved;
 
         /// <summary>
         /// Gets the count.
@@ -121,7 +121,7 @@ namespace MUnique.OpenMU.GameLogic
 
             public TEnumerated Current => this.enumerator.Current;
 
-            object IEnumerator.Current => this.Current;
+            object IEnumerator.Current => this.Current!;
 
             public bool MoveNext()
             {

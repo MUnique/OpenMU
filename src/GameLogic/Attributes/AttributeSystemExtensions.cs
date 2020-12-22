@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Persistence;
+
 namespace MUnique.OpenMU.GameLogic.Attributes
 {
     using System;
@@ -28,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
             {
                 var elements = relations
                     .Select(r => new AttributeRelationshipElement(
-                        new[] { attributeSystem.GetOrCreateAttribute(r.InputAttribute) },
+                        new[] { attributeSystem.GetOrCreateAttribute(r.InputAttribute ?? throw new InvalidOperationException($"InputAttribute value not set for AttributeRelationship {r.GetId()}.")) },
                         r.InputOperand,
                         r.InputOperator))
                     .Cast<IElement>();

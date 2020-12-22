@@ -176,8 +176,8 @@ namespace MUnique.OpenMU.GameLogic
 
                 if (RequirementReductionAttributeMapping.TryGetValue(requirement.Attribute, out var reductionAttribute)
                     && item.ItemOptions.FirstOrDefault(o =>
-                            o.ItemOption.PowerUpDefinition?.TargetAttribute == reductionAttribute
-                            || o.ItemOption.LevelDependentOptions.Any(l => l.PowerUpDefinition?.TargetAttribute == reductionAttribute))
+                            o.ItemOption?.PowerUpDefinition?.TargetAttribute == reductionAttribute
+                            || (o.ItemOption?.LevelDependentOptions?.Any(l => l.PowerUpDefinition?.TargetAttribute == reductionAttribute) ?? false))
                         is { } reductionOption)
                 {
                     var optionOfLevelPowerUp = reductionOption.ItemOption.LevelDependentOptions

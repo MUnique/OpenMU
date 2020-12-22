@@ -25,15 +25,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (slot == InventoryConstants.PetSlot && player.OpenedNpc is null)
             {
-                player.Logger.LogWarning("Cheater Warning: Player tried to repair pet slot, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
+                player.Logger.LogWarning("Cheater Warning: Player tried to repair pet slot, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter?.Name, player.Account?.LoginName);
                 return;
             }
 
-            Item item = player.Inventory.GetItem(slot);
+            var item = player.Inventory?.GetItem(slot);
             if (item is null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("No Item there to repair.", MessageType.BlueNormal);
-                player.Logger.LogWarning("RepairItem: Player {0}, Itemslot {1} not filled", player.SelectedCharacter.Name, slot);
+                player.Logger.LogWarning("RepairItem: Player {0}, Itemslot {1} not filled", player.SelectedCharacter?.Name, slot);
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             if (player.OpenedNpc is null)
             {
                 // probably cheater
-                player.Logger.LogWarning("Cheater Warning: Player tried to repair all items, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter.Name, player.Account.LoginName);
+                player.Logger.LogWarning("Cheater Warning: Player tried to repair all items, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter?.Name, player.Account?.LoginName);
             }
 
             // TODO: Check if NPC is able to repair all items. Maybe specified by npc dialog type
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     continue;
                 }
 
-                Item item = player.Inventory.GetItem(i);
+                var item = player.Inventory?.GetItem(i);
                 if (item is null)
                 {
                     continue;

@@ -52,9 +52,9 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public int PlayerCount => this.players.Count();
 
-        private void OnMapObjectAddedOrRemoved(object? sender, GameMapEventArgs e)
+        private void OnMapObjectAddedOrRemoved(object? sender, (GameMap Map, ILocateable Object) args)
         {
-            if (e.Object is Player)
+            if (args.Object is Player)
             {
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Players)));
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.PlayerCount)));

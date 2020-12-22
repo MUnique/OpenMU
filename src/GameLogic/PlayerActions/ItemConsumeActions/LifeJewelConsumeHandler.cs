@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// </summary>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         public LifeJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
-            : base(persistenceContextProvider, new ItemUpgradeConfiguration { AddsOption = true, IncreasesOption = true, FailResult = ItemFailResult.DecreaseOptionByOneOrRemove, OptionType = ItemOptionTypes.Option, SuccessChance = 0.5 })
+            : base(persistenceContextProvider, new ItemUpgradeConfiguration(ItemOptionTypes.Option, true, true, 0.5, ItemFailResult.DecreaseOptionByOneOrRemove))
         {
         }
     }

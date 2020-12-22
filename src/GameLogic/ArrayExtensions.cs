@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             for (int i = 0; i < array.Length; i++)
             {
-                array[i] = default(T);
+                array[i] = default!;
             }
         }
 
@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 for (int j = 0; j < array.GetLength(1); j++)
                 {
-                    array[i, j] = default(T);
+                    array[i, j] = default!;
                 }
             }
         }

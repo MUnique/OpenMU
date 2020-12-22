@@ -171,9 +171,26 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         internal class ItemUpgradeConfiguration
         {
             /// <summary>
-            /// Gets or sets the type of the option.
+            /// Initializes a new instance of the <see cref="ItemUpgradeConfiguration"/> class.
             /// </summary>
-            public ItemOptionType OptionType { get; set; }
+            /// <param name="optionType">Type of the option.</param>
+            /// <param name="addsOption">if set to <c>true</c> [adds option].</param>
+            /// <param name="increasesOption">if set to <c>true</c> [increases option].</param>
+            /// <param name="successChance">The success chance.</param>
+            /// <param name="failResult">The fail result.</param>
+            public ItemUpgradeConfiguration(ItemOptionType optionType, bool addsOption, bool increasesOption, double successChance, ItemFailResult failResult)
+            {
+                this.OptionType = optionType;
+                this.AddsOption = addsOption;
+                this.IncreasesOption = increasesOption;
+                this.SuccessChance = successChance;
+                this.FailResult = failResult;
+            }
+
+            /// <summary>
+            /// Gets the type of the option.
+            /// </summary>
+            public ItemOptionType OptionType { get; }
 
             /// <summary>
             /// Gets or sets a value indicating whether the handler adds option, if the item does not already have it.
@@ -201,7 +218,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             /// <remarks>
             /// e.g. luck option which adds 25 per cent.
             /// </remarks>
-            public ItemOptionType BoostOptionType { get; set; }
+            public ItemOptionType? BoostOptionType { get; set; }
 
             /// <summary>
             /// Gets or sets the success chance boost if the target item has the option of type specified in <see cref="BoostOptionType"/>.

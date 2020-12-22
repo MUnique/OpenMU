@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
         /// <inheritdoc />
         public void AfterTargetGotAttacked(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
         {
-            if (!target.IsAlive || target is not IMovable movableTarget)
+            if (!target.IsAlive || target is not IMovable movableTarget || target.CurrentMap is not { } currentMap)
             {
                 return;
             }
@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
             while (currentDistance < skillEntry.Skill.Range)
             {
                 var nextTarget = currentTarget.CalculateTargetPoint(direction);
-                if (!target.CurrentMap.Terrain.WalkMap[nextTarget.X, nextTarget.Y]
+                if (!currentMap.Terrain.WalkMap[nextTarget.X, nextTarget.Y]
                     || (target is NonPlayerCharacter && target.CurrentMap.Terrain.SafezoneMap[nextTarget.X, nextTarget.Y]))
                 {
                     // we don't want to push the target into a non-reachable area, through walls or monsters into the safe zone.

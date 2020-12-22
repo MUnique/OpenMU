@@ -29,14 +29,14 @@ namespace MUnique.OpenMU.GameLogic
             {
                 if (!this.currentlyEffectivePlugIns.ContainsKey(plugInType))
                 {
-                    var plugIn = (IFeaturePlugIn)Activator.CreateInstance(plugInType);
+                    var plugIn = (IFeaturePlugIn)Activator.CreateInstance(plugInType)!;
                     this.AddPlugIn(plugIn, true);
                 }
             }
         }
 
         /// <inheritdoc />
-        public T GetPlugIn<T>()
+        public T? GetPlugIn<T>()
             where T : class, IFeaturePlugIn
         {
             if (this.currentlyEffectivePlugIns.TryGetValue(typeof(T), out var plugIn) && plugIn is T t)
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic
             var knownPlugIn = this.FindKnownPlugin(plugInType);
             if (knownPlugIn is null)
             {
-                this.AddPlugIn((IFeaturePlugIn)Activator.CreateInstance(plugInType), true);
+                this.AddPlugIn((IFeaturePlugIn)Activator.CreateInstance(plugInType)!, true);
             }
         }
     }

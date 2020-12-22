@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
+    using System.Diagnostics.CodeAnalysis;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views;
@@ -21,7 +22,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="warpInfo">The warp information.</param>
         public void WarpTo(Player player, WarpInfo warpInfo)
         {
-            if (this.CheckRequirements(player, warpInfo, out string errorMessage))
+            if (this.CheckRequirements(player, warpInfo, out var errorMessage))
             {
                 player.WarpTo(warpInfo.Gate);
             }
@@ -31,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             }
         }
 
-        private bool CheckRequirements(Player player, WarpInfo warpInfo, out string errorMessage)
+        private bool CheckRequirements(Player player, WarpInfo warpInfo, [MaybeNullWhen(true)] out string errorMessage)
         {
             errorMessage = null;
             if (!this.CheckLevelRequirement(player, warpInfo))
@@ -40,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return false;
             }
 
-            if (warpInfo.Gate.Map.TryGetRequirementError(player, out string message))
+            if (warpInfo.Gate.Map.TryGetRequirementError(player, out var message))
             {
                 errorMessage = message;
                 return false;
@@ -68,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private bool CheckLevelRequirement(Player player, WarpInfo warpInfo)
         {
-            if (warpInfo.LevelRequirement <= player.Attributes[Stats.Level])
+            if (warpInfo.LevelRequirement <= player.Attributes?[Stats.Level])
             {
                 return true;
             }

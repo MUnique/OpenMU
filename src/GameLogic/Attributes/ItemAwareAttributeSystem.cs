@@ -31,6 +31,6 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets or sets the item set power ups.
         /// </summary>
-        public IReadOnlyList<PowerUpWrapper> ItemSetPowerUps { get; set; }
+        public IReadOnlyList<PowerUpWrapper>? ItemSetPowerUps { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
         {
             if (target is Player targetPlayer
                 && Rand.NextRandomBool(25)
-                && targetPlayer.Inventory.EquippedItems.SelectRandom() is Item randomItem)
+                && targetPlayer.Inventory?.EquippedItems.SelectRandom() is { } randomItem)
             {
                 randomItem.Durability /= 2;
                 targetPlayer.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(randomItem, false);

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Vault
         /// <param name="accountPassword">The account password.</param>
         public void RemovePin(Player player, string accountPassword)
         {
-            if (BCrypt.Net.BCrypt.Verify(accountPassword, player.Account.PasswordHash))
+            if (player.Account is not null && BCrypt.Net.BCrypt.Verify(accountPassword, player.Account.PasswordHash))
             {
                 player.Account.VaultPassword = null;
                 player.IsVaultLocked = false;

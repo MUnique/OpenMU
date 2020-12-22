@@ -33,20 +33,20 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="slot">The slot of the item.</param>
         public void BuyItem(Player player, byte slot)
         {
-            if (player.OpenedNpc is null)
+            if (player.OpenedNpc is null || player.PlayerState.CurrentState != PlayerState.NpcDialogOpened)
             {
                 player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                 return;
             }
 
             var npcDefinition = player.OpenedNpc.Definition;
-            if (npcDefinition.MerchantStore is null || npcDefinition.MerchantStore.Items.Count == 0)
+            if (npcDefinition?.MerchantStore is null || npcDefinition.MerchantStore.Items.Count == 0)
             {
                 player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                 return;
             }
 
-            Item storeItem = npcDefinition.MerchantStore.Items.FirstOrDefault(i => i.ItemSlot == slot);
+            var storeItem = npcDefinition.MerchantStore.Items.FirstOrDefault(i => i.ItemSlot == slot);
             if (storeItem is null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Item Unknown", MessageType.BlueNormal);
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
 
             // Inventory Update:
-            if (storeItem.IsStackable() && player.Inventory.Items.FirstOrDefault(item => storeItem.CanCompletelyStackOn(item)) is Item targetItem)
+            if (storeItem.IsStackable() && player.Inventory!.Items.FirstOrDefault(item => storeItem.CanCompletelyStackOn(item)) is { } targetItem)
             {
                 if (!this.CheckMoney(player, storeItem))
                 {
@@ -68,8 +68,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
             else
             {
-                int toSlot = player.Inventory.CheckInvSpace(storeItem);
-                if (toSlot == -1)
+                var toSlot = player.Inventory!.CheckInvSpace(storeItem);
+                if (toSlot is null)
                 {
                     player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Inventory Full", MessageType.BlueNormal);
                     player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();

@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
-    using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
 
@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="player">The player.</param>
         /// <param name="errorMessage">The error message, which is available when this method returns <c>true</c>.</param>
         /// <returns><c>False</c>, if the requirements are fulfilled; Otherwise, <c>true</c>.</returns>
-        public static bool TryGetRequirementError(this GameMapDefinition gameMapDefinition, Player player, out string errorMessage)
+        public static bool TryGetRequirementError(this GameMapDefinition gameMapDefinition, Player player, [MaybeNullWhen(false)] out string errorMessage)
         {
             errorMessage = null;
 
@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             {
                 foreach (var requirement in gameMapDefinition.MapRequirements)
                 {
-                    if (player.Attributes[requirement.Attribute] < requirement.MinimumValue)
+                    if (player.Attributes is null || player.Attributes[requirement.Attribute] < requirement.MinimumValue)
                     {
                         errorMessage = $"Missing requirement to enter the map: {requirement.Attribute.Description}";
                         return true;

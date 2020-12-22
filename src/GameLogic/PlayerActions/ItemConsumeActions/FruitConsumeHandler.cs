@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public class FruitConsumeHandler : BaseConsumeHandler
     {
         /// <inheritdoc />
-        public override bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
+        public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
         {
             if (!this.CheckPreconditions(player, item))
             {
@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            var statAttributeDefinition = player.SelectedCharacter.CharacterClass.StatAttributes.FirstOrDefault(a =>
+            var statAttributeDefinition = player.SelectedCharacter!.CharacterClass.StatAttributes.FirstOrDefault(a =>
                 a.IncreasableByPlayer && a.Attribute == statAttribute);
             if (statAttributeDefinition is null)
             {
@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (player.Inventory.EquippedItems.Any())
+            if (player.Inventory!.EquippedItems.Any())
             {
                 player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?.ShowResponse(FruitConsumptionResult.PreventedByEquippedItems, 0, statAttribute);
                 return false;
@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            if (!isAdding && player.Attributes[statAttribute] <= statAttributeDefinition.BaseValue)
+            if (!isAdding && player.Attributes![statAttribute] <= statAttributeDefinition.BaseValue)
             {
                 player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
                     .ShowResponse(FruitConsumptionResult.MinusPreventedByDefault, 0, statAttribute);
@@ -73,14 +73,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 var randomPoints = (byte)Math.Min(maximumRemainingPoints, this.GetRandomPoints(isAdding));
                 if (isAdding)
                 {
-                    player.Attributes[statAttribute] += randomPoints;
+                    player.Attributes![statAttribute] += randomPoints;
                     player.SelectedCharacter.UsedFruitPoints += randomPoints;
                     player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
                         .ShowResponse(FruitConsumptionResult.PlusSuccess, randomPoints, statAttribute);
                 }
                 else
                 {
-                    player.Attributes[statAttribute] -= randomPoints;
+                    player.Attributes![statAttribute] -= randomPoints;
                     player.SelectedCharacter.UsedNegFruitPoints += randomPoints;
                     player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
                         .ShowResponse(FruitConsumptionResult.MinusSuccess, randomPoints, statAttribute);
@@ -140,8 +140,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         private int GetSuccessPercentage(Player player, bool isAdding)
         {
             var currentUseCount = isAdding
-                ? player.SelectedCharacter.UsedFruitPoints
-                : player.SelectedCharacter.UsedNegFruitPoints;
+                ? player.SelectedCharacter!.UsedFruitPoints
+                : player.SelectedCharacter!.UsedNegFruitPoints;
 
             var maximumUseCount = player.SelectedCharacter.GetMaximumFruitPoints();
             if (currentUseCount <= 10)

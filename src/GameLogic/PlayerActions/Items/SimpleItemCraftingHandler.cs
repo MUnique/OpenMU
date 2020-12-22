@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             successRate = this.settings.SuccessPercent;
             items = new List<CraftingRequiredItemLink>(this.settings.RequiredItems.Count);
-            var storage = player.TemporaryStorage.Items.ToList();
+            var storage = player.TemporaryStorage?.Items.ToList() ?? new List<Item>();
             foreach (var requiredItem in this.settings.RequiredItems)
             {
                 var foundItems = storage.Where(item => this.RequiredItemMatches(item, requiredItem)).ToList();
@@ -185,7 +185,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     resultItem.HasSkill = true;
                 }
 
-                player.TemporaryStorage.AddItem(resultItem);
+                player.TemporaryStorage!.AddItem(resultItem);
                 yield return resultItem;
             }
         }

@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Occurs when a guild has been deleted.
         /// </summary>
-        event EventHandler<GuildDeletedEventArgs> GuildDeleted;
+        event EventHandler<GuildDeletedEventArgs>? GuildDeleted;
 
         /// <summary>
         /// Gets the identifier of the server.

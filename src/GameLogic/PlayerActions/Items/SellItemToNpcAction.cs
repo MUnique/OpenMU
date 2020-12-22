@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         public void SellItem(Player player, byte slot)
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
-            Item item = player.Inventory.GetItem(slot);
+            var item = player.Inventory?.GetItem(slot);
             if (item is null)
             {
                 player.Logger.LogWarning("Player {0} requested to sell item at slot {1}, but item wasn't found.", player, slot);
@@ -64,10 +64,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             if (player.TryAddMoney(sellingPrice))
             {
                 player.Logger.LogDebug("Sold Item {0} for price: {1}", item, sellingPrice);
-                player.Inventory.RemoveItem(item);
+                player.Inventory!.RemoveItem(item);
                 player.ViewPlugIns.GetPlugIn<IItemSoldToNpcPlugIn>()?.ItemSoldToNpc(true);
 
-                player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToMerchantPlugIn>()?.ItemSold(player, item, player.OpenedNpc);
+                player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToMerchantPlugIn>()?.ItemSold(player, item, player.OpenedNpc!);
             }
         }
     }

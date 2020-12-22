@@ -38,11 +38,16 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         {
             try
             {
+                if (player.SelectedCharacter is null)
+                {
+                    return;
+                }
+
                 var arguments = command.ParseArguments<Arguments>();
                 var attribute = this.GetAttribute(player, arguments.StatType);
                 for (var i = 0; i < arguments.Amount; i++)
                 {
-                    if (player.SelectedCharacter.LevelUpPoints <= 0)
+                    if (player.SelectedCharacter?.LevelUpPoints <= 0)
                     {
                         player.ShowMessage("Cancelled adding points. No more points available.");
                         break;
@@ -57,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             }
         }
 
-        private AttributeDefinition GetAttribute(Player player, string statType)
+        private AttributeDefinition GetAttribute(Player player, string? statType)
         {
             var attribute = statType switch
             {
@@ -69,7 +74,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                 _ => throw new ArgumentException($"Unknown stat: '{statType}'."),
             };
 
-            if (player.SelectedCharacter.Attributes.All(sa => sa.Definition != attribute))
+            if (player.SelectedCharacter!.Attributes.All(sa => sa.Definition != attribute))
             {
                 throw new ArgumentException($"The character has no stat attribute '{statType}'.");
             }
@@ -80,7 +85,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         private class Arguments : ArgumentsBase
         {
             [ValidValues("str", "agi", "vit", "ene", "cmd")]
-            public string StatType { get; set; }
+            public string? StatType { get; set; }
 
             public int Amount { get; set; }
         }

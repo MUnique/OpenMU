@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         /// <param name="requestedPlayer">The requested player.</param>
         public void RequestStoreItemList(Player player, Player requestedPlayer)
         {
-            if (!requestedPlayer.ShopStorage.StoreOpen)
+            if (!(requestedPlayer.ShopStorage?.StoreOpen ?? false))
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player's Store not open.", MessageType.BlueNormal);
                 return;

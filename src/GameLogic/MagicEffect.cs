@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class MagicEffect : IDisposable
     {
-        private Timer finishTimer;
+        private Timer? finishTimer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MagicEffect"/> class.
@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Occurs when the effect has been timed out.
         /// </summary>
-        public event EventHandler EffectTimeOut;
+        public event EventHandler? EffectTimeOut;
 
         /// <summary>
         /// Gets the identifier of the effect.

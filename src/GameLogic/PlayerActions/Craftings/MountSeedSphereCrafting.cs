@@ -98,7 +98,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             return null;
         }
 
-        private IncreasableItemOption GetPossibleBonusOption(Item socketItem)
+        private IncreasableItemOption? GetPossibleBonusOption(Item socketItem)
         {
             var possibleBonusOptions = socketItem.Definition.PossibleItemOptions
                 .FirstOrDefault(p => p.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.SocketBonusOption));

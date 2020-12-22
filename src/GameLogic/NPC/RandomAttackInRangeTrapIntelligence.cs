@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// </summary>
     public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
     {
-        private IAttackable currentTarget;
+        private IAttackable? currentTarget;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomAttackInRangeTrapIntelligence"/> class.
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
         }
 
-        private IAttackable SearchNextTarget()
+        private IAttackable? SearchNextTarget()
         {
             List<IWorldObserver> tempObservers;
             this.Trap.ObserverLock.EnterReadLock();
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
 
             double closestDistance = 100;
-            IAttackable closest = null;
+            IAttackable? closest = null;
 
             foreach (var target in tempObservers.OfType<IAttackable>())
             {
@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.Trap.ObserverLock.EnterReadLock();
             try
             {
-                return this.Trap.Observers.Contains(this.currentTarget as IWorldObserver);
+                return this.currentTarget is IWorldObserver worldObserver && this.Trap.Observers.Contains(worldObserver);
             }
             finally
             {

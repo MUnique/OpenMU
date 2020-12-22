@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             result.Definition = player.GameContext.Configuration.Items.Single(i => i.Number == resultSphereNumber && i.Group == 12);
             result.Level = seed.Level; // The level defines the kind of option
 
-            player.TemporaryStorage.AddItem(result);
+            player.TemporaryStorage!.AddItem(result);
             yield return result;
         }
     }

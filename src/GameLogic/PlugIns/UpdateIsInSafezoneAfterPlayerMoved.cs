@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         {
             if (attackable is Player player)
             {
-                player.Attributes.SetStatAttribute(Stats.IsInSafezone, attackable.IsAtSafezone() ? 1.0f : 0.0f);
+                player.Attributes?.SetStatAttribute(Stats.IsInSafezone, attackable.IsAtSafezone() ? 1.0f : 0.0f);
             }
         }
     }

@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <returns>Returns the initialized type.</returns>
         public static T ParseArguments<T>(this string command)
         {
-            var instance = (T)Activator.CreateInstance(typeof(T));
+            var instance = (T)Activator.CreateInstance(typeof(T))!;
             var properties = instance.GetType().GetProperties()
                 .Where(property => property.SetMethod is { })
                 .ToList();
@@ -43,6 +43,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
             var attributedArguments = properties
                 .Select(p => p.GetCustomAttribute<ArgumentAttribute>())
                 .Where(a => a is { })
+                .Select(a => a!)
                 .ToList();
             var requiredArgumentCount = attributedArguments.Any()
                 ? attributedArguments.Count(a => a.IsRequired)
