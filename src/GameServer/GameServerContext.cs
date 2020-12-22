@@ -105,7 +105,7 @@ namespace MUnique.OpenMU.GameServer
 
         private void PlayerEnteredWorld(object? sender, EventArgs e)
         {
-            if (sender is Player player)
+            if (sender is Player player && player.SelectedCharacter is not null)
             {
                 this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
                 player.GuildStatus = this.GuildServer.PlayerEnteredGame(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
@@ -118,7 +118,7 @@ namespace MUnique.OpenMU.GameServer
 
         private void PlayerLeftWorld(object? sender, EventArgs e)
         {
-            if (sender is Player player)
+            if (sender is Player player && player.SelectedCharacter is not null)
             {
                 this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, 0xFF);
                 if (player.GuildStatus != null)

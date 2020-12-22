@@ -35,14 +35,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         {
             if (quest.Group == QuestConstants.LegacyQuestGroup)
             {
-                this.player.Connection.SendLegacySetQuestStateResponse((byte)quest.Number, 0, this.player.GetLegacyQuestStateByte());
+                this.player.Connection?.SendLegacySetQuestStateResponse((byte)quest.Number, 0, this.player.GetLegacyQuestStateByte());
             }
             else
             {
                 var state = this.player.GetQuestState(quest.Group);
-                if (state.ActiveQuest == quest)
+                if (state?.ActiveQuest == quest)
                 {
-                    this.player.Connection.SendQuestStepInfo((ushort)quest.Number, (ushort)quest.Group);
+                    this.player.Connection?.SendQuestStepInfo((ushort)quest.Number, (ushort)quest.Group);
                     this.player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(quest, true);
                 }
             }

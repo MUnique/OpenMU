@@ -29,6 +29,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCurrentHealth()
         {
+            if (this.player.Attributes is null)
+            {
+                return;
+            }
+
             this.player.Connection?.SendCurrentHealthAndShield(
                 (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f),
                 (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f));

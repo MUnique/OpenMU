@@ -70,8 +70,8 @@ namespace MUnique.OpenMU.Tests
         public void PartyMemberKickByMaster()
         {
             var party = this.CreatePartyWithMembers(3);
-            var partyMaster = party.PartyList[0] as Player;
-            var partyMember = party.PartyList[1] as Player;
+            var partyMaster = (Player)party.PartyList[0];
+            var partyMember = (Player)party.PartyList[1];
 
             this.kickAction.KickPlayer(partyMaster, (byte)party.PartyList.IndexOf(partyMember));
             Assert.That(party.PartyList, Is.Not.Contains(partyMember));
@@ -146,7 +146,7 @@ namespace MUnique.OpenMU.Tests
 
             handler.HandleResponse(player, true);
             Assert.That(player.Party, Is.Not.Null);
-            Assert.That(player.Party.PartyMaster, Is.SameAs(requester));
+            Assert.That(player.Party!.PartyMaster, Is.SameAs(requester));
             Assert.That(player.LastPartyRequester, Is.Null);
             Assert.That(player.Party.PartyList, Contains.Item(player));
             Mock.Get(player.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v!.UpdatePartyList(), Times.AtLeastOnce);
@@ -172,7 +172,7 @@ namespace MUnique.OpenMU.Tests
             var requester = this.CreatePartyMember();
             player.LastPartyRequester = requester;
             handler.HandleResponse(player, true);
-            Assert.That(player.Party.PartyList, Is.Not.Contains(requester));
+            Assert.That(player.Party!.PartyList, Is.Not.Contains(requester));
             Assert.That(player.LastPartyRequester, Is.Null);
             Assert.That(requester.Party, Is.Null);
             Mock.Get(player.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequest(requester), Times.Never);
@@ -180,7 +180,7 @@ namespace MUnique.OpenMU.Tests
 
         private Player CreatePartyMember()
         {
-            var result = TestHelper.GetPlayer(this.GetGameServer());
+            var result = TestHelper.GetPlayer(this.GetGameContext());
             result.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
             return result;
         }
@@ -197,17 +197,18 @@ namespace MUnique.OpenMU.Tests
             return party;
         }
 
-        private IGameContext GetGameServer()
+        private IGameContext GetGameContext()
         {
             var contextProvider = new InMemoryPersistenceContextProvider();
             var gameConfig = contextProvider.CreateNewContext().CreateNew<GameConfiguration>();
             gameConfig.Maps.Add(contextProvider.CreateNewContext().CreateNew<GameMapDefinition>());
 
             var mapInitializer = new MapInitializer(gameConfig, new NullLogger<MapInitializer>());
-            var gameServer = new GameContext(gameConfig, contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(new List<PlugInConfiguration>(), new NullLoggerFactory(), null));
-            gameServer.Configuration.MaximumPartySize = 5;
+            var gameContext = new GameContext(gameConfig, contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(new List<PlugInConfiguration>(), new NullLoggerFactory(), null));
+            gameContext.Configuration.MaximumPartySize = 5;
+            mapInitializer.PlugInManager = gameContext.PlugInManager;
 
-            return gameServer;
+            return gameContext;
         }
     }
 }

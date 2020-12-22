@@ -148,9 +148,10 @@ namespace MUnique.OpenMU.ChatServer.Tests
         [Test]
         public async Task SentMessageEncryptedProperly()
         {
+            var manager = new ChatRoomManager(new NullLoggerFactory());
             var duplexPipe = new DuplexPipe();
             var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
-            var client = new ChatClient(connection, null, new NullLogger<ChatClient>());
+            var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
             var expectedPacket = new byte[] { 0xC1, 0x0B, 0x04, 0x01, 0x06, 0xBD, 0x8E, 0xEA, 0xBD, 0x8E, 0xEA };
             client.SendMessage(1, "AAAAAA");
             var sendResult = await duplexPipe.SendPipe.Reader.ReadAsync();

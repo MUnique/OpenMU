@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         public ItemMoveFailedPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void ItemMoveFailed(Item item)
+        public void ItemMoveFailed(Item? item)
         {
             var connection = this.player.Connection;
             if (connection is null)

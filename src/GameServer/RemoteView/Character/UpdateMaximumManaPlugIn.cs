@@ -28,6 +28,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateMaximumMana()
         {
+            if (this.player.Attributes is null)
+            {
+                return;
+            }
+
             this.player.Connection?.SendMaximumManaAndAbility(
                 (ushort)this.player.Attributes[Stats.MaximumMana],
                 (ushort)this.player.Attributes[Stats.MaximumAbility]);

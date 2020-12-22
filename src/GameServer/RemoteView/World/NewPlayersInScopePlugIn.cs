@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 playerBlock.CurrentPositionY = newPlayer.Position.Y;
 
                 appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 21
-                playerBlock.Name = newPlayer.SelectedCharacter.Name;
+                playerBlock.Name = newPlayer.SelectedCharacter!.Name;
                 if (newPlayer.IsWalking)
                 {
                     playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                     effectBlock.Id = (byte)activeEffects[e].Id;
                 }
 
-                if (newPlayer.ShopStorage.StoreOpen)
+                if (newPlayer.ShopStorage?.StoreOpen ?? false)
                 {
                     (shopPlayers ??= new List<Player>()).Add(newPlayer);
                 }

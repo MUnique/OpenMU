@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         public void InitializeMessenger(int maxLetters)
         {
             var connection = this.player.Connection;
-            if (connection is null)
+            if (connection is null || this.player.SelectedCharacter is null)
             {
                 return;
             }

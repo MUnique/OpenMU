@@ -29,6 +29,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void SendMasterStats()
         {
             var character = this.player.SelectedCharacter;
+            if (character is null || this.player.Attributes is null)
+            {
+                return;
+            }
+
             this.player.Connection?.SendMasterStatsUpdate(
                 (ushort)this.player.Attributes[Stats.MasterLevel],
                 (ulong)character.MasterExperience,

@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                     playerBlock.IsIced = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
                     playerBlock.IsDamageBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
                     playerBlock.IsDefenseBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
-                    playerBlock.Name = newPlayer.SelectedCharacter.Name;
+                    playerBlock.Name = newPlayer.SelectedCharacter!.Name;
 
                     if (newPlayer.IsWalking)
                     {

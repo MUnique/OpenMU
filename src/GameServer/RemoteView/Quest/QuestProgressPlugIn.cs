@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 QuestGroup = (ushort)quest.Group,
             };
 
-            var questState = this.player.SelectedCharacter.QuestStates.FirstOrDefault(q => q.Group == quest.Group);
+            var questState = this.player.SelectedCharacter?.QuestStates.FirstOrDefault(q => q.Group == quest.Group);
 
             // to write the quest state into the message, we can use the same logic as for the QuestState. The messages are equal in their content.
             QuestState progress = writer.Span;

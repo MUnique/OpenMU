@@ -239,10 +239,15 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void LetterReceived(LetterHeader letter)
         {
+            if (letter.ReceiverName is null)
+            {
+                throw new InvalidOperationException("Letter ReceiverName must be provided.");
+            }
+
             var player = this.gameContext.GetPlayerByCharacterName(letter.ReceiverName);
             if (player != null)
             {
-                var newLetterIndex = player.SelectedCharacter.Letters.Count;
+                var newLetterIndex = player.SelectedCharacter!.Letters.Count;
                 player.PersistenceContext.Attach(letter);
                 player.SelectedCharacter.Letters.Add(letter);
                 player.ViewPlugIns.GetPlugIn<IAddToLetterListPlugIn>()?.AddToLetterList(letter, (ushort)newLetterIndex, true);
@@ -279,7 +284,7 @@ namespace MUnique.OpenMU.GameServer
         public bool BanPlayer(string playerName)
         {
             var player = this.gameContext.GetPlayerByCharacterName(playerName);
-            if (player.Account is not null)
+            if (player?.Account is not null)
             {
                 player.Account.State = AccountState.TemporarilyBanned;
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Your account has been temporarily banned by a game master.", MessageType.BlueNormal);
@@ -299,21 +304,21 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void FriendRequest(string requester, string receiver)
         {
-            Player player = this.gameContext.GetPlayerByCharacterName(receiver);
+            var player = this.gameContext.GetPlayerByCharacterName(receiver);
             player?.ViewPlugIns.GetPlugIn<IShowFriendRequestPlugIn>()?.ShowFriendRequest(requester);
         }
 
         /// <inheritdoc/>
         public void FriendOnlineStateChanged(string player, string friend, int serverId)
         {
-            Player observerPlayer = this.gameContext.GetPlayerByCharacterName(player);
+            var observerPlayer = this.gameContext.GetPlayerByCharacterName(player);
             observerPlayer?.ViewPlugIns.GetPlugIn<IFriendStateUpdatePlugIn>()?.FriendStateUpdate(friend, serverId);
         }
 
         /// <inheritdoc/>
         public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string creatorName)
         {
-            Player player = this.gameContext.GetPlayerByCharacterName(authenticationInfo.ClientName);
+            var player = this.gameContext.GetPlayerByCharacterName(authenticationInfo.ClientName);
             player?.ViewPlugIns.GetPlugIn<IChatRoomCreatedPlugIn>()?.ChatRoomCreated(authenticationInfo, creatorName, true);
         }
 
@@ -330,7 +335,7 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void GuildPlayerKicked(string playerName)
         {
-            Player player = this.gameContext.GetPlayerByCharacterName(playerName);
+            var player = this.gameContext.GetPlayerByCharacterName(playerName);
             if (player is null)
             {
                 return;
@@ -362,10 +367,8 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void UnregisterMapObserver(ushort mapId, ushort worldObserverId)
         {
-            var map = this.gameContext.GetMap(mapId);
-            if (map != null)
+            if (this.gameContext.GetMap(mapId) is { } map && map.GetObject(worldObserverId) is { } observer)
             {
-                var observer = map.GetObject(worldObserverId);
                 map.Remove(observer);
             }
         }

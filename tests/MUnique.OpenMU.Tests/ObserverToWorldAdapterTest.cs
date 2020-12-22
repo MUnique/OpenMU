@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.Tests
             };
             map.Add(nonPlayer);
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
-            adapter.ObservingBuckets.Add(nonPlayer.NewBucket);
+            adapter.ObservingBuckets.Add(nonPlayer.NewBucket!);
             nonPlayer.OldBucket = nonPlayer.NewBucket; // oldbucket would be set, if it got moved on the map
 
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
@@ -74,8 +74,8 @@ namespace MUnique.OpenMU.Tests
                 Position = new Point(100, 128),
             };
             map.Add(nonPlayer2);
-            adapter.ObservingBuckets.Add(nonPlayer1.NewBucket);
-            adapter.ObservingBuckets.Add(nonPlayer2.NewBucket);
+            adapter.ObservingBuckets.Add(nonPlayer1.NewBucket!);
+            adapter.ObservingBuckets.Add(nonPlayer2.NewBucket!);
 
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer1));
             adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer2));

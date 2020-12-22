@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 return;
             }
 
-            var keyConfiguration = this.player.SelectedCharacter.KeyConfiguration;
+            var keyConfiguration = this.player.SelectedCharacter?.KeyConfiguration;
             if (keyConfiguration is null || keyConfiguration.Length == 0)
             {
                 return;

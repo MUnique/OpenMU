@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
         {
             if (packet[3] != 0)
             {
-                player.Logger.LogWarning("Player {0} Unknown Letter Delete Request: {1}", player.SelectedCharacter.Name, packet.AsString());
+                player.Logger.LogWarning("Player {0} Unknown Letter Delete Request: {1}", player.SelectedCharacter?.Name, packet.AsString());
                 return;
             }
 

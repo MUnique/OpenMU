@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
         public void ShowShopItemList(Player requestedPlayer, bool isUpdate)
         {
             var connection = this.player.Connection;
-            if (connection is null)
+            if (connection is null || requestedPlayer.ShopStorage is null || requestedPlayer.SelectedCharacter is null)
             {
                 return;
             }

@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
         }
 
         /// <inheritdoc />
-        public void ShowResult(CraftingResult result, Item createdItem)
+        public void ShowResult(CraftingResult result, Item? createdItem)
         {
             var itemData = new byte[this.player.ItemSerializer.NeededSpace];
             if (createdItem is { })
@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
                 this.player.ItemSerializer.SerializeItem(itemData, createdItem);
             }
 
-            this.player.Connection.SendItemCraftingResult(Convert(result), itemData);
+            this.player.Connection?.SendItemCraftingResult(Convert(result), itemData);
         }
 
         private static ItemCraftingResult.CraftingResult Convert(CraftingResult result)

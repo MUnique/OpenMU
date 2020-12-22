@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void ItemSoldByPlayerShop(byte slot, Player buyer)
         {
-            this.player.Connection?.SendPlayerShopItemSoldToPlayer(slot, buyer.SelectedCharacter.Name);
+            this.player.Connection?.SendPlayerShopItemSoldToPlayer(slot, buyer.SelectedCharacter!.Name);
         }
     }
 }

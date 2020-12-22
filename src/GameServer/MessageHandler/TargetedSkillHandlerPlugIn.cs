@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <param name="targetId">The target identifier.</param>
         protected void Handle(Player player, ushort skillId, ushort targetId)
         {
-            if (!player.SkillList.ContainsSkill(skillId))
+            if (player.SkillList is null || !player.SkillList.ContainsSkill(skillId))
             {
                 return;
             }

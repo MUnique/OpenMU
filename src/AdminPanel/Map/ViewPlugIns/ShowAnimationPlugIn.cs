@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         }
 
         /// <inheritdoc />
-        public async void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, Direction direction)
+        public async void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable? targetObj, Direction direction)
         {
             await this.InvokeAsync(animatingObj.Id, animation, targetObj?.Id ?? 0, direction);
         }

@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
             this.player = player;
         }
 
-        private byte[] HealthValues => this.healthValues ??= new byte[this.player.Party.MaxPartySize];
+        private byte[] HealthValues => this.healthValues ??= new byte[this.player.Party!.MaxPartySize];
 
         /// <inheritdoc/>
         public bool IsHealthUpdateNeeded()

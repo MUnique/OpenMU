@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.Tests
         /// <returns>The same player.</returns>
         public static Player WithBasicDropItemGroups(this Player player)
         {
-            player.CurrentMap.Definition.DropItemGroups.AddBasicDropItemGroups();
+            player.CurrentMap!.Definition.DropItemGroups.AddBasicDropItemGroups();
             return player;
         }
 

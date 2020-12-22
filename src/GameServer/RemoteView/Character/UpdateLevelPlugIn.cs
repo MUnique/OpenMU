@@ -32,12 +32,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void UpdateLevel()
         {
             var selectedCharacter = this.player.SelectedCharacter;
-            if (selectedCharacter is null)
+            var charStats = this.player.Attributes;
+            if (selectedCharacter is null || charStats is null)
             {
                 return;
             }
 
-            var charStats = this.player.Attributes;
             this.player.Connection?.SendCharacterLevelUpdate(
                 (ushort)charStats[Stats.Level],
                 (ushort)selectedCharacter.LevelUpPoints,
@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 (ushort)selectedCharacter.UsedNegFruitPoints,
                 selectedCharacter.GetMaximumFruitPoints());
 
-            this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Congratulations, you are Level {this.player.Attributes[Stats.Level]} now.", MessageType.BlueNormal);
+            this.player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Congratulations, you are Level {charStats[Stats.Level]} now.", MessageType.BlueNormal);
         }
     }
 }

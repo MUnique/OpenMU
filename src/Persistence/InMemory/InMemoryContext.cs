@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public T CreateNew<T>(params object[] args)
+        public T CreateNew<T>(params object?[] args)
             where T : class
         {
             var newObject = typeof(Persistence.BasicModel.GameConfiguration).Assembly.CreateNew<T>(args);

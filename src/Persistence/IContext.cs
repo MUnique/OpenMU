@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Persistence
         /// <returns>
         /// A new instance of <typeparamref name="T" />.
         /// </returns>
-        T CreateNew<T>(params object[] args)
+        T CreateNew<T>(params object?[] args)
             where T : class;
 
         /// <summary>

@@ -31,6 +31,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <remarks>The server sends the current health/shield to the client, with <see cref="ItemConsumptionFailed"/>.</remarks>
         public void RequestedItemConsumptionFailed()
         {
+            if (this.player.Attributes is null)
+            {
+                return;
+            }
+
             this.player.Connection?.SendItemConsumptionFailed(
                 (ushort)Math.Max(this.player.Attributes[Stats.CurrentHealth], 0f),
                 (ushort)Math.Max(this.player.Attributes[Stats.CurrentShield], 0f));

@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 {
-    using System;
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
@@ -86,6 +85,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 
         private void SetGuildPlayerBlock(AssignCharacterToGuild.GuildMemberRelation playerBlock, Player guildPlayer, bool appearsNew)
         {
+            if (guildPlayer.GuildStatus is null)
+            {
+                return;
+            }
+
             playerBlock.GuildId = guildPlayer.GuildStatus.GuildId;
             playerBlock.Role = guildPlayer.GuildStatus.Position.Convert();
             playerBlock.PlayerId = guildPlayer.GetId(this.player);

@@ -28,6 +28,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Vault
         /// <inheritdoc/>
         public void ShowVault()
         {
+            if (this.player.Vault is null)
+            {
+                return;
+            }
+
             this.player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(NpcWindow.VaultStorage);
             this.player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(this.player.Vault.ItemStorage.Items, StoreKind.Normal);
             this.player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney(true);

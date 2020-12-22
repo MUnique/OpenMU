@@ -28,23 +28,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public AddExperiencePlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void AddExperience(int exp, IAttackable obj)
+        public void AddExperience(int exp, IAttackable? obj)
         {
             var remainingExperience = exp;
             ushort damage = 0;
-            if (obj.Id != obj.LastDeath?.KillerId)
+            if (obj is not null && obj.Id != obj.LastDeath?.KillerId)
             {
                 damage = (ushort)Math.Min(obj.LastDeath?.FinalHit.HealthDamage ?? 0, ushort.MaxValue);
             }
 
-            ushort id = (ushort)(obj.GetId(this.player) | 0x8000);
+            var id = (ushort)(obj.GetId(this.player) | 0x8000);
             while (remainingExperience > 0)
             {
                 // We send multiple exp packets if the value is bigger than ushort.MaxValue, because that's all what the packet can carry.
                 // On a normal exp server this should never be an issue, but with higher settings, it fixes the problem that the exp bar
                 // shows less exp than the player actually gained.
                 ushort sendExp = remainingExperience > ushort.MaxValue ? ushort.MaxValue : (ushort)remainingExperience;
-                this.player.Connection.SendExperienceGained(id, sendExp, damage);
+                this.player.Connection?.SendExperienceGained(id, sendExp, damage);
                 damage = 0; // don't send damage again
                 remainingExperience -= sendExp;
             }

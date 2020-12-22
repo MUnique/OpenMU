@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public void AppearanceChanged(Player changedPlayer, Item item)
         {
             var connection = this.player.Connection;
-            if (connection is null)
+            if (connection is null || changedPlayer.Inventory is null)
             {
                 return;
             }

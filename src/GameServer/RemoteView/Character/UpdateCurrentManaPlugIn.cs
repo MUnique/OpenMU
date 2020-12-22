@@ -28,6 +28,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCurrentMana()
         {
+            if (this.player.Attributes is null)
+            {
+                return;
+            }
+
             this.player.Connection?.SendCurrentManaAndAbility(
                 (ushort)this.player.Attributes[Stats.CurrentAbility],
                 (ushort)this.player.Attributes[Stats.CurrentMana]);

@@ -29,7 +29,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCharacterHeroState(Player affectedPlayer)
         {
-            this.player.Connection.SendHeroStateChanged(affectedPlayer.GetId(this.player), affectedPlayer.SelectedCharacter.State.Convert());
+            if (affectedPlayer.SelectedCharacter is { } character)
+            {
+                this.player.Connection?.SendHeroStateChanged(affectedPlayer.GetId(this.player), character.State.Convert());
+            }
         }
     }
 }

@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -93,7 +92,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                     skillEntry.SkillNumber = (ushort)skill.Number;
                     if (skill.MasterDefinition is not null)
                     {
-                        skillEntry.SkillLevel = (byte)this.player.SkillList.GetSkill((ushort)skill.Number).Level;
+                        skillEntry.SkillLevel = (byte)(this.player.SkillList!.GetSkill((ushort)skill.Number)?.Level ?? 0);
                     }
                 }
             }
@@ -118,8 +117,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         protected void BuildSkillList()
         {
             this.SkillList.Clear();
-            var skills = this.player.SkillList.Skills.ToList();
-            if (this.player.SelectedCharacter.CharacterClass.IsMasterClass)
+            var skills = this.player.SkillList!.Skills.ToList();
+            if (this.player.SelectedCharacter!.CharacterClass.IsMasterClass)
             {
                 var replacedSkills = skills.Select(entry => entry.Skill.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
                 skills.RemoveAll(s => replacedSkills.Contains(s.Skill));

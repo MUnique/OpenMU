@@ -48,8 +48,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
             foreach (var shopPlayer in playersWithShop)
             {
                 var shopBlock = packet[i];
-                shopBlock.PlayerId = shopPlayer.GetId(this.player);
-                shopBlock.StoreName = shopPlayer.ShopStorage.StoreName;
+                if (shopPlayer.ShopStorage is not null)
+                {
+                    shopBlock.PlayerId = shopPlayer.GetId(this.player);
+                    shopBlock.StoreName = shopPlayer.ShopStorage.StoreName;
+                }
+
                 i++;
             }
 

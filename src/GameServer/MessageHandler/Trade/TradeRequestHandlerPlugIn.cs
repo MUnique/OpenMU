@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
         public void HandlePacket(Player player, Span<byte> packet)
         {
             TradeRequest message = packet;
-            Player partner = player.GetObservingPlayerWithId(message.PlayerId);
+            var partner = player.GetObservingPlayerWithId(message.PlayerId);
             if (partner is null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Trade partner not found.", MessageType.BlueNormal);

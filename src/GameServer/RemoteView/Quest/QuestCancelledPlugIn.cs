@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         {
             if (quest.Group == QuestConstants.LegacyQuestGroup)
             {
-                this.player.SelectedCharacter.QuestStates.FirstOrDefault(q => q.Group == QuestConstants.LegacyQuestGroup).SendLegacyQuestState(this.player);
+                this.player.SelectedCharacter?.QuestStates.FirstOrDefault(q => q.Group == QuestConstants.LegacyQuestGroup)?.SendLegacyQuestState(this.player);
                 return;
             }
 

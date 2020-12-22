@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>
         /// A new instance of <typeparamref name="T" />.
         /// </returns>
-        public T CreateNew<T>(params object[] args)
+        public T CreateNew<T>(params object?[] args)
             where T : class
         {
             var instance = typeof(CachingEntityFrameworkContext).Assembly.CreateNew<T>(args);

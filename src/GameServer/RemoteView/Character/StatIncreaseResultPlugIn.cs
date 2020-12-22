@@ -46,11 +46,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             {
                 if (attribute == Stats.BaseEnergy)
                 {
-                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes[Stats.MaximumMana];
+                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes![Stats.MaximumMana];
                 }
                 else if (attribute == Stats.BaseVitality)
                 {
-                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes[Stats.MaximumHealth];
+                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes![Stats.MaximumHealth];
                 }
                 else
                 {
@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 }
 
                 // since all stats may affect shield and ability, both are included
-                packet.UpdatedMaximumShield = (ushort)this.player.Attributes[Stats.MaximumShield];
+                packet.UpdatedMaximumShield = (ushort)this.player.Attributes![Stats.MaximumShield];
                 packet.UpdatedMaximumAbility = (ushort)this.player.Attributes[Stats.MaximumAbility];
             }
 

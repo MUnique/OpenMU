@@ -36,17 +36,17 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             PlayerShopItemBuyRequest message = packet;
 
-            if (player.CurrentMap.GetObject(message.PlayerId) is not Player requestedPlayer)
+            if (player.CurrentMap?.GetObject(message.PlayerId) is not Player requestedPlayer)
             {
                 player.Logger.LogDebug("Player not found: {0}", message.PlayerId);
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
                 return;
             }
 
-            if (message.PlayerName != requestedPlayer.SelectedCharacter.Name)
+            if (message.PlayerName != requestedPlayer.SelectedCharacter?.Name)
             {
-                player.Logger.LogDebug("Player Names dont match: {0} != {1}", message.PlayerName, requestedPlayer.SelectedCharacter.Name);
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Player Names don't match. {message.PlayerName} <> {requestedPlayer.SelectedCharacter.Name}", MessageType.BlueNormal);
+                player.Logger.LogDebug("Player Names dont match: {0} != {1}", message.PlayerName, requestedPlayer.SelectedCharacter?.Name);
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Player Names don't match. {message.PlayerName} <> {requestedPlayer.SelectedCharacter?.Name}", MessageType.BlueNormal);
                 return;
             }
 

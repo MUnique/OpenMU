@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         public QuestStateResponsePlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc />
-        public void ShowQuestState(CharacterQuestState questState)
+        public void ShowQuestState(CharacterQuestState? questState)
         {
             if (questState is null || questState.Group == QuestConstants.LegacyQuestGroup)
             {

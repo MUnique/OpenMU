@@ -36,8 +36,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             this.clientVersion = clientVersion;
             this.MainPacketHandler = new MainPacketHandlerPlugInContainer(this, gameContext.PlugInManager, gameContext.LoggerFactory);
             this.MainPacketHandler.Initialize();
-            this.Connection!.PacketReceived += (sender, packet) => this.PacketReceived(packet);
-            this.Connection!.Disconnected += (sender, packet) => this.Disconnect();
+            this.Connection!.PacketReceived += (_, packet) => this.PacketReceived(packet);
+            this.Connection!.Disconnected += (_, _) => this.Disconnect();
         }
 
         /// <inheritdoc />
@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             using var loggingScope = this.Logger.BeginScope(
                 ("GameServer", this.GameServerContext.Id),
-                ("Connection", this.Connection),
+                ("Connection", this.Connection!),
                 ("Account", this.GetAccountName()),
                 ("Character", this.GetSelectedCharacterName()));
 

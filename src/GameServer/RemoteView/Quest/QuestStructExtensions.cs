@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 }
             }
 
-            if (player.SelectedCharacter.CharacterClass.GetBaseClass(player.GameContext.Configuration).Number != (byte)CharacterClassNumber.DarkKnight)
+            if (player.SelectedCharacter?.CharacterClass.GetBaseClass(player.GameContext.Configuration).Number != (byte)CharacterClassNumber.DarkKnight)
             {
                 message.SecretOfDarkStoneState = LegacyQuestState.Undefined;
             }
@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         {
             condition.Type = ConditionType.Item;
             condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
-            condition.CurrentCount = (uint)player.Inventory.Items.Count(item => item.Definition == itemRequirement.Item);
+            condition.CurrentCount = (uint)(player.Inventory?.Items.Count(item => item.Definition == itemRequirement.Item) ?? 0);
             condition.RequirementId = itemRequirement.Item.GetItemType();
             var temporaryItem = new TemporaryItem { Definition = itemRequirement.Item };
             temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();

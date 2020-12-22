@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public void HandlePacket(Player player, Span<byte> packet)
         {
             TalkToNpcRequest message = packet;
-            if (player.CurrentMap.GetObject(message.NpcId) is NonPlayerCharacter npc)
+            if (player.CurrentMap?.GetObject(message.NpcId) is NonPlayerCharacter npc)
             {
                 this.talkNpcAction.TalkToNpc(player, npc);
             }

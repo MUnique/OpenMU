@@ -34,7 +34,6 @@ namespace MUnique.OpenMU.GameLogic
             this.walkSupporter = walkSupporter;
             this.stepDelay = stepDelay;
             this.walkLock = new ReaderWriterLockSlim();
-            this.walkLock.Dispose();
         }
 
         /// <summary>

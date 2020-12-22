@@ -28,6 +28,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void ShowTeleported()
         {
+            if (this.player.SelectedCharacter is null)
+            {
+                return;
+            }
+
             var mapNumber = this.player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
             var position = this.player.Position;
             this.player.Connection?.SendMapChanged(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte(), false);

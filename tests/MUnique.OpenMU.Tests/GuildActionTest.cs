@@ -39,15 +39,15 @@ namespace MUnique.OpenMU.Tests
 
             this.gameServerContext = this.CreateGameServer();
             this.guildMasterPlayer = TestHelper.GetPlayer(this.gameServerContext);
-            this.guildMasterPlayer.SelectedCharacter.Id = this.GuildMaster.Id;
+            this.guildMasterPlayer.SelectedCharacter!.Id = this.GuildMaster.Id;
             this.guildMasterPlayer.SelectedCharacter.Name = this.GuildMaster.Name;
             this.guildMasterPlayer.GuildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, 0);
-            this.guildMasterPlayer.Attributes[Stats.Level] = 100;
+            this.guildMasterPlayer.Attributes![Stats.Level] = 100;
             this.player = TestHelper.GetPlayer(this.gameServerContext);
-            this.player.CurrentMap.Add(this.guildMasterPlayer);
-            this.player.SelectedCharacter.Name = "Player";
+            this.player.CurrentMap!.Add(this.guildMasterPlayer);
+            this.player.SelectedCharacter!.Name = "Player";
             this.player.SelectedCharacter.Id = Guid.NewGuid();
-            this.player.Attributes[Stats.Level] = 20;
+            this.player.Attributes![Stats.Level] = 20;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.Tests
             var guildRequestAction = new GuildRequestAction();
             guildRequestAction.RequestGuild(this.player, this.guildMasterPlayer.Id);
             Assert.That(this.guildMasterPlayer.LastGuildRequester, Is.SameAs(this.player));
-            Mock.Get(this.guildMasterPlayer.ViewPlugIns.GetPlugIn<IShowGuildJoinRequestPlugIn>()).Verify(g => g.ShowGuildJoinRequest(this.player), Times.Once);
+            Mock.Get(this.guildMasterPlayer.ViewPlugIns.GetPlugIn<IShowGuildJoinRequestPlugIn>()).Verify(g => g!.ShowGuildJoinRequest(this.player), Times.Once);
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace MUnique.OpenMU.Tests
             this.RequestGuildAndRespond(true);
 
             Assert.That(this.player.GuildStatus, Is.Not.Null);
-            Assert.That(this.player.GuildStatus.GuildId, Is.Not.EqualTo(0));
-            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g.ShowGuildJoinResponse(GuildRequestAnswerResult.Accepted), Times.Once);
+            Assert.That(this.player.GuildStatus!.GuildId, Is.Not.EqualTo(0));
+            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g!.ShowGuildJoinResponse(GuildRequestAnswerResult.Accepted), Times.Once);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace MUnique.OpenMU.Tests
         {
             this.RequestGuildAndRespond(false);
             Assert.That(this.player.GuildStatus, Is.Null);
-            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g.ShowGuildJoinResponse(GuildRequestAnswerResult.Refused), Times.Once);
+            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g!.ShowGuildJoinResponse(GuildRequestAnswerResult.Refused), Times.Once);
         }
 
         /// <summary>
@@ -93,9 +93,9 @@ namespace MUnique.OpenMU.Tests
         public void GuildCreationDialog()
         {
             var action = new GuildMasterAnswerAction();
-            this.player.OpenedNpc = new NonPlayerCharacter(null, null, null);
+            this.player.OpenedNpc = new NonPlayerCharacter(null!, null!, null!);
             action.ProcessAnswer(this.player, GuildMasterAnswerAction.Answer.ShowDialog);
-            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IShowGuildCreationDialogPlugIn>()).Verify(g => g.ShowGuildCreationDialog(), Times.Once());
+            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IShowGuildCreationDialogPlugIn>()).Verify(g => g!.ShowGuildCreationDialog(), Times.Once());
         }
 
         /// <summary>
@@ -107,10 +107,10 @@ namespace MUnique.OpenMU.Tests
             var action = new GuildCreateAction();
             action.CreateGuild(this.player, "Foobar2", Array.Empty<byte>());
             Assert.That(this.player.GuildStatus, Is.Not.Null);
-            Assert.That(this.player.GuildStatus.Position, Is.EqualTo(GuildPosition.GuildMaster));
+            Assert.That(this.player.GuildStatus!.Position, Is.EqualTo(GuildPosition.GuildMaster));
             var context = this.PersistenceContextProvider.CreateNewGuildContext();
             var newGuild = context.Get<DataModel.Entities.Guild>().First(g => g.Name == "Foobar2");
-            Assert.That(newGuild.Members.Any(m => m.Id == this.player.SelectedCharacter.Id), Is.True);
+            Assert.That(newGuild.Members.Any(m => m.Id == this.player.SelectedCharacter!.Id), Is.True);
         }
 
         /// <summary>
@@ -122,9 +122,9 @@ namespace MUnique.OpenMU.Tests
             this.RequestGuildAndRespond(true);
             var action = new GuildListRequestAction();
             action.RequestGuildList(this.player);
-            var guildList = this.GuildServer.GetGuildList(this.player.GuildStatus.GuildId);
-            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()).Verify(v => v.ShowGuildList(It.Is<IEnumerable<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this.player.SelectedCharacter.Name))), Times.Once());
-            Assert.That(guildList.Any(entry => entry.PlayerName == this.player.SelectedCharacter.Name), Is.True);
+            var guildList = this.GuildServer.GetGuildList(this.player.GuildStatus!.GuildId);
+            Mock.Get(this.player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()).Verify(v => v!.ShowGuildList(It.Is<IEnumerable<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this.player.SelectedCharacter!.Name))), Times.Once());
+            Assert.That(guildList.Any(entry => entry.PlayerName == this.player.SelectedCharacter!.Name), Is.True);
         }
 
         private void RequestGuildAndRespond(bool acceptRequest)
@@ -139,15 +139,17 @@ namespace MUnique.OpenMU.Tests
         {
             var gameConfiguration = new GameConfiguration();
             gameConfiguration.Maps.Add(new GameMapDefinition());
+            var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>());
             var gameServer = new GameServerContext(
                 new GameServerDefinition { GameConfiguration = gameConfiguration },
                 this.GuildServer,
                 new Mock<ILoginServer>().Object,
                 new Mock<IFriendServer>().Object,
                 new InMemoryPersistenceContextProvider(),
-                new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>()),
+                mapInitializer,
                 new NullLoggerFactory(),
                 new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLoggerFactory(), null));
+            mapInitializer.PlugInManager = gameServer.PlugInManager;
             return gameServer;
         }
     }

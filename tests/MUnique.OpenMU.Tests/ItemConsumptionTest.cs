@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.Tests
             var upgradeableItem = this.GetItemWithPossibleOption();
             upgradeableItem.Level = itemLevel;
             var upgradableItemSlot = (byte)(ItemSlot + 1);
-            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+            player.Inventory!.AddItem(upgradableItemSlot, upgradeableItem);
             var bless = this.GetItem();
             player.Inventory.AddItem(ItemSlot, bless);
             bless.Durability = 1;
@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.Tests
             var upgradeableItem = this.GetItemWithPossibleOption();
             upgradeableItem.Level = itemLevel;
             var upgradableItemSlot = (byte)(ItemSlot + 1);
-            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+            player.Inventory!.AddItem(upgradableItemSlot, upgradeableItem);
             var soul = this.GetItem();
             player.Inventory.AddItem(ItemSlot, soul);
             soul.Durability = 1;
@@ -130,7 +130,7 @@ namespace MUnique.OpenMU.Tests
             var player = this.GetPlayer();
             var upgradeableItem = this.GetItemWithPossibleOption();
             var upgradableItemSlot = (byte)(ItemSlot + 1);
-            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+            player.Inventory!.AddItem(upgradableItemSlot, upgradeableItem);
             bool jolConsumed = false;
             for (int i = 0; i < numberOfOptions; i++)
             {
@@ -161,7 +161,7 @@ namespace MUnique.OpenMU.Tests
             var player = this.GetPlayer();
             var upgradeableItem = this.GetItemWithPossibleOption();
             var upgradableItemSlot = (byte)(ItemSlot + 1);
-            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+            player.Inventory!.AddItem(upgradableItemSlot, upgradeableItem);
 
             // we're adding 3 options first
             for (int i = 0; i < 3; i++)
@@ -197,7 +197,7 @@ namespace MUnique.OpenMU.Tests
             var player = this.GetPlayer();
             var upgradeableItem = this.GetItemWithPossibleOption();
             var upgradableItemSlot = (byte)(ItemSlot + 1);
-            player.Inventory.AddItem(upgradableItemSlot, upgradeableItem);
+            player.Inventory!.AddItem(upgradableItemSlot, upgradeableItem);
 
             var jol = this.GetItem();
             player.Inventory.AddItem(ItemSlot, jol);
@@ -251,11 +251,11 @@ namespace MUnique.OpenMU.Tests
         {
             var player = this.GetPlayer();
             var item = this.GetItem();
-            player.Inventory.AddItem(ItemSlot, item);
+            player.Inventory!.AddItem(ItemSlot, item);
             var consumeHandler = new BigShieldPotionConsumeHandler();
             var success = consumeHandler.ConsumeItem(player, item, null, FruitUsage.Undefined);
             Assert.That(success, Is.True);
-            Assert.That(player.Attributes.GetValueOfAttribute(Stats.CurrentShield), Is.GreaterThan(0.0f));
+            Assert.That(player.Attributes!.GetValueOfAttribute(Stats.CurrentShield), Is.GreaterThan(0.0f));
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace MUnique.OpenMU.Tests
             var player = this.GetPlayer();
             player.PlayerState.TryAdvanceTo(PlayerState.TradeRequested);
             var item = this.GetItem();
-            player.Inventory.AddItem(ItemSlot, item);
+            player.Inventory!.AddItem(ItemSlot, item);
             var success = consumeHandler.ConsumeItem(player, item, null, FruitUsage.Undefined);
             Assert.That(success, Is.False);
         }
@@ -282,7 +282,7 @@ namespace MUnique.OpenMU.Tests
             var consumeHandler = new BaseConsumeHandler();
             var player = this.GetPlayer();
             var item = this.GetItem();
-            player.Inventory.AddItem(ItemSlot, item);
+            player.Inventory!.AddItem(ItemSlot, item);
             item.Durability = 3;
             var success = consumeHandler.ConsumeItem(player, item, null, FruitUsage.Undefined);
             Assert.That(success, Is.True);
@@ -299,7 +299,7 @@ namespace MUnique.OpenMU.Tests
             var consumeHandler = new BaseConsumeHandler();
             var player = this.GetPlayer();
             var item = this.GetItem();
-            player.Inventory.AddItem(ItemSlot, item);
+            player.Inventory!.AddItem(ItemSlot, item);
             var success = consumeHandler.ConsumeItem(player, item, null, FruitUsage.Undefined);
             Assert.That(success, Is.True);
             Assert.That(item.Durability, Is.EqualTo(0));
@@ -307,14 +307,16 @@ namespace MUnique.OpenMU.Tests
         }
 
         /// <summary>
-        /// Tests if the consume of the alcohol fails when the item is not in the inventory.
+        /// Tests if the consume of the alcohol fails when the item has no durability anymore.
         /// </summary>
         [Test]
         public void DrinkAlcoholFail()
         {
             var consumeHandler = new AlcoholConsumeHandler();
             var player = this.GetPlayer();
-            var success = consumeHandler.ConsumeItem(player, null, null, FruitUsage.Undefined);
+            var item = this.GetItem();
+            item.Durability = 0;
+            var success = consumeHandler.ConsumeItem(player, item, null, FruitUsage.Undefined);
 
             Assert.That(success, Is.False);
             Mock.Get(player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()).Verify(view => view!.DrinkAlcohol(), Times.Never);
@@ -329,7 +331,7 @@ namespace MUnique.OpenMU.Tests
             var consumeHandler = new AlcoholConsumeHandler();
             var player = this.GetPlayer();
             var item = this.GetItem();
-            player.Inventory.AddItem(ItemSlot, item);
+            player.Inventory!.AddItem(ItemSlot, item);
             var success = consumeHandler.ConsumeItem(player, item, null, FruitUsage.Undefined);
 
             Assert.That(success, Is.True);
@@ -345,11 +347,11 @@ namespace MUnique.OpenMU.Tests
         {
             var player = this.GetPlayer();
             var item = this.GetItem();
-            player.Inventory.AddItem(ItemSlot, item);
+            player.Inventory!.AddItem(ItemSlot, item);
             var consumeHandler = new BigHealthPotionConsumeHandler();
             var success = consumeHandler.ConsumeItem(player, item, null, FruitUsage.Undefined);
             Assert.That(success, Is.True);
-            Assert.That(player.Attributes.GetValueOfAttribute(Stats.CurrentHealth), Is.GreaterThan(0.0f));
+            Assert.That(player.Attributes!.GetValueOfAttribute(Stats.CurrentHealth), Is.GreaterThan(0.0f));
         }
 
         /// <summary>
@@ -360,11 +362,11 @@ namespace MUnique.OpenMU.Tests
         {
             var player = this.GetPlayer();
             var item = this.GetItem();
-            player.Inventory.AddItem(ItemSlot, item);
+            player.Inventory!.AddItem(ItemSlot, item);
             var consumeHandler = new BigManaPotionConsumeHandler();
             var success = consumeHandler.ConsumeItem(player, item, null, FruitUsage.Undefined);
             Assert.That(success, Is.True);
-            Assert.That(player.Attributes.GetValueOfAttribute(Stats.CurrentMana), Is.GreaterThan(0.0f));
+            Assert.That(player.Attributes!.GetValueOfAttribute(Stats.CurrentMana), Is.GreaterThan(0.0f));
         }
 
         private Item GetItem()
@@ -380,7 +382,7 @@ namespace MUnique.OpenMU.Tests
         {
             var player = TestHelper.GetPlayer();
 
-            player.SelectedCharacter.Attributes.Add(new StatAttribute(Stats.Level, 100));
+            player.SelectedCharacter!.Attributes.Add(new StatAttribute(Stats.Level, 100));
             player.SelectedCharacter.Attributes.Add(new StatAttribute(Stats.CurrentHealth, 0));
             player.SelectedCharacter.Attributes.Add(new StatAttribute(Stats.CurrentMana, 0));
             player.SelectedCharacter.Attributes.Add(new StatAttribute(Stats.CurrentShield, 0));

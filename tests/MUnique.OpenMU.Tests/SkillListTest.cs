@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.Tests
         public void LearnedSkill()
         {
             var player = TestHelper.GetPlayer();
-            player.SelectedCharacter.LearnedSkills.Add(this.CreateSkillEntry(LearnedSkillId));
+            player.SelectedCharacter!.LearnedSkills.Add(this.CreateSkillEntry(LearnedSkillId));
             var skillList = new SkillList(player);
             Assert.That(skillList.ContainsSkill(LearnedSkillId), Is.True);
         }
@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.Tests
             var player = TestHelper.GetPlayer();
             var item = this.CreateItemWithSkill();
             item.Durability = 1;
-            player.Inventory.AddItem(0, item);
+            player.Inventory!.AddItem(0, item);
             var skillList = new SkillList(player);
             Assert.That(skillList.ContainsSkill(ItemSkillId), Is.True);
         }
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.Tests
         {
             var player = TestHelper.GetPlayer();
             var skillList = player.SkillList as SkillList;
-            player.Inventory.AddItem(0, this.CreateItemWithSkill());
+            player.Inventory!.AddItem(0, this.CreateItemWithSkill());
 
             Assert.That(skillList!.ContainsSkill(ItemSkillId), Is.True);
         }
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.Tests
             var player = TestHelper.GetPlayer();
             var item = this.CreateItemWithSkill();
             item.Durability = 1;
-            player.Inventory.AddItem(0, item);
+            player.Inventory!.AddItem(0, item);
             var skillList = new SkillList(player);
             Assert.That(skillList.RemoveItemSkill(item.Definition.Skill.Number.ToUnsigned()), Is.True);
             Assert.That(skillList.ContainsSkill(ItemSkillId), Is.False);
@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.Tests
         public void NonLearnedSkill()
         {
             var player = TestHelper.GetPlayer();
-            Assert.That(player.SkillList.ContainsSkill(NonLearnedSkillId), Is.False);
+            Assert.That(player.SkillList!.ContainsSkill(NonLearnedSkillId), Is.False);
         }
 
         private Item CreateItemWithSkill()

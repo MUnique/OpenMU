@@ -123,20 +123,20 @@ namespace MUnique.OpenMU.Tests
 
             var item1 = this.GetItem();
             var item2 = this.GetItem();
-            trader1.Inventory.AddItem(20, item1);
+            trader1.Inventory!.AddItem(20, item1);
             trader1.Inventory.AddItem(21, item2);
             tradeRequestAction.RequestTrade(trader1, trader2);
             tradeResponseAction.HandleTradeAccept(trader2, true);
             var itemMoveAction = new MoveItemAction();
             itemMoveAction.MoveItem(trader1, 20, Storages.Inventory, 0, Storages.Trade);
             itemMoveAction.MoveItem(trader1, 21, Storages.Inventory, 2, Storages.Trade);
-            Assert.That(trader1.TemporaryStorage.Items.First(), Is.SameAs(item1));
+            Assert.That(trader1.TemporaryStorage!.Items.First(), Is.SameAs(item1));
 
             var tradeButtonHandler = new TradeButtonAction();
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Checked);
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
             Assert.That(trader1.Inventory.ItemStorage.Items, Is.Empty);
-            Assert.That(trader2.Inventory.ItemStorage.Items.First(), Is.SameAs(item1));
+            Assert.That(trader2.Inventory!.ItemStorage.Items.First(), Is.SameAs(item1));
         }
 
         private Item GetItem()

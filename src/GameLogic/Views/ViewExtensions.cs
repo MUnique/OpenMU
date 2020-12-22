@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.Views
         /// without forcing the player client connect to another server.
         /// Examples for such shared maps are loren valley, crywolf, land of trials, loren market etc.
         /// </remarks>
-        public static ushort GetId(this IIdentifiable identifiable, Player playerOfView)
+        public static ushort GetId(this IIdentifiable? identifiable, Player playerOfView)
         {
             if (playerOfView == identifiable)
             {

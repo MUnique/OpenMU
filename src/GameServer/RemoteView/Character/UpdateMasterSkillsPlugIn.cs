@@ -36,7 +36,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 return;
             }
 
-            var masterSkills = this.player.SkillList.Skills.Where(s => s.Skill.MasterDefinition != null).ToList();
+            var masterSkills = this.player.SkillList?.Skills.Where(s => s.Skill.MasterDefinition != null).ToList();
+            if (masterSkills is null || this.player.SelectedCharacter is null)
+            {
+                return;
+            }
+
             using var writer = connection.StartSafeWrite(MasterSkillList.HeaderType, MasterSkillList.GetRequiredSize(masterSkills.Count));
             var packet = new MasterSkillList(writer.Span)
             {
