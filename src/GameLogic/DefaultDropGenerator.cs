@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -52,7 +53,7 @@
             var questGroups = character.QuestStates?
                                   .SelectMany(q => q.ActiveQuest?.RequiredItems
                                                        .Where(i => i.DropItemGroup is { })
-                                                       .Select(i => i.DropItemGroup)
+                                                       .Select(i => i.DropItemGroup!)
                                                    ?? Enumerable.Empty<DropItemGroup>())
                               ?? Enumerable.Empty<DropItemGroup>();
             var dropGroups =
@@ -114,7 +115,7 @@
         protected void ApplyRandomOptions(Item item)
         {
             item.Durability = item.GetMaximumDurabilityOfOnePiece();
-            foreach (var option in item.Definition.PossibleItemOptions.Where(o => o.AddsRandomly))
+            foreach (var option in item.Definition!.PossibleItemOptions.Where(o => o.AddsRandomly))
             {
                 for (int i = 0; i < option.MaximumOptionsPerItem; i++)
                 {
@@ -184,7 +185,8 @@
 
             var ancientSet = item.ItemSetGroups.Where(g => g.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).SelectRandom(this.randomizer);
             item.ItemSetGroups.Add(ancientSet);
-            var bonusOption = ancientSet.Items.First(i => i.ItemDefinition == item.Definition).BonusOption; // for example: +5str or +10str
+            var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
+            var bonusOption = itemOfSet.BonusOption ?? throw Error.NotInitializedProperty(itemOfSet, nameof(itemOfSet.BonusOption)); // for example: +5str or +10str
             var bonusOptionLink = new ItemOptionLink();
             bonusOptionLink.ItemOption = bonusOption;
             bonusOptionLink.Level = bonusOption.LevelDependentOptions.Select(o => o.Level).SelectRandom();
@@ -249,14 +251,14 @@
 
         private void AddRandomExcOptions(Item item)
         {
-            var possibleItemOptions = item.Definition.PossibleItemOptions;
+            var possibleItemOptions = item.Definition!.PossibleItemOptions;
             var excellentOptions = possibleItemOptions.FirstOrDefault(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent));
             if (excellentOptions is null)
             {
                 return;
             }
 
-            for (int i = item.ItemOptions.Count(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent); i < excellentOptions.MaximumOptionsPerItem; i++)
+            for (int i = item.ItemOptions.Count(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent); i < excellentOptions.MaximumOptionsPerItem; i++)
             {
                 if (i == 0)
                 {

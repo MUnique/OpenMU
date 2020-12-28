@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -48,10 +49,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 throw new ArgumentException($"The item has no socket at slot {socketSlot}.");
             }
 
-            if (socketItem.ItemOptions.Any(link => link.Index == socketSlot && link.ItemOption.OptionType == ItemOptionTypes.SocketOption))
+            if (socketItem.ItemOptions.Any(link => link.Index == socketSlot && link.ItemOption?.OptionType == ItemOptionTypes.SocketOption))
             {
                 throw new ArgumentException("The socket of the item is not free.");
             }
+
+            seedSphere.ThrowNotInitializedProperty(seedSphere.Definition is null, nameof(seedSphere.Definition));
 
             var sphereOption = player.PersistenceContext.CreateNew<ItemOptionLink>();
             sphereOption.ItemOption = seedSphere.Definition.PossibleItemOptions
@@ -62,7 +65,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             sphereOption.Index = socketSlot;
             socketItem.ItemOptions.Add(sphereOption);
 
-            var currentSocketOptionCount = socketItem.ItemOptions.Count(optionLink => optionLink.ItemOption.OptionType == ItemOptionTypes.SocketOption);
+            var currentSocketOptionCount = socketItem.ItemOptions.Count(optionLink => optionLink.ItemOption?.OptionType == ItemOptionTypes.SocketOption);
             if (currentSocketOptionCount == 3
                 && Rand.NextRandomBool(30)
                 && this.GetPossibleBonusOption(socketItem) is { } bonusOption)
@@ -89,6 +92,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             // Armors: Water, Earth, Wind
             var seedSphere = items.Single(i => i.ItemRequirement.Reference == SeedSphereReference).Items.Single();
             var socketItem = items.Single(i => i.ItemRequirement.Reference == SocketItemReference).Items.Single();
+            seedSphere.ThrowNotInitializedProperty(seedSphere.Definition is null, nameof(seedSphere.Definition));
+            socketItem.ThrowNotInitializedProperty(socketItem.Definition is null, nameof(socketItem.Definition));
+
             var seedOption = seedSphere.Definition.PossibleItemOptions.Single();
             if (socketItem.Definition.PossibleItemOptions.All(iod => iod != seedOption))
             {
@@ -100,6 +106,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
 
         private IncreasableItemOption? GetPossibleBonusOption(Item socketItem)
         {
+            socketItem.ThrowNotInitializedProperty(socketItem.Definition is null, nameof(socketItem.Definition));
+
             var possibleBonusOptions = socketItem.Definition.PossibleItemOptions
                 .FirstOrDefault(p => p.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.SocketBonusOption));
 
@@ -109,9 +117,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             }
 
             var options = socketItem.ItemOptions
-                .Where(link => link.ItemOption.OptionType == ItemOptionTypes.SocketOption && link.Index < 3)
+                .Where(link => link.ItemOption?.OptionType == ItemOptionTypes.SocketOption && link.Index < 3)
                 .OrderBy(link => link.Index)
-                .Select(link => link.ItemOption)
+                .Select(link => link.ItemOption!)
                 .Distinct()
                 .ToList();
 

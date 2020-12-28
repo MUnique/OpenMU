@@ -114,13 +114,13 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the name.
         /// </summary>
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the character class.
         /// </summary>
         [Required]
-        public virtual CharacterClass CharacterClass { get; set; }
+        public virtual CharacterClass? CharacterClass { get; set; }
 
         /// <summary>
         /// Gets or sets the character slot in the account.
@@ -155,7 +155,8 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the current game map.
         /// </summary>
-        public virtual GameMapDefinition CurrentMap { get; set; }
+        [Required]
+        public virtual GameMapDefinition? CurrentMap { get; set; }
 
         /// <summary>
         /// Gets or sets the x-coordinate of its map position.
@@ -195,7 +196,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the quest info. Don't know yet what its content is.
         /// </summary>
-        public byte[] QuestInfo { get; set; }
+        public byte[]? QuestInfo { get; set; }
 
         /// <summary>
         /// Gets or sets the used fruit points.
@@ -215,41 +216,41 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the key configuration, which is set by the client and just saved as is.
         /// </summary>
-        public byte[] KeyConfiguration { get; set; }
+        public byte[]? KeyConfiguration { get; set; }
 
         /// <summary>
         /// Gets or sets the stat attributes.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<StatAttribute> Attributes { get; protected set; }
+        public virtual ICollection<StatAttribute> Attributes { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the letters.
         /// </summary>
         [MemberOfAggregate]
-        public virtual IList<LetterHeader> Letters { get; protected set; }
+        public virtual IList<LetterHeader> Letters { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the learned skills.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<SkillEntry> LearnedSkills { get; protected set; }
+        public virtual ICollection<SkillEntry> LearnedSkills { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the inventory.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ItemStorage Inventory { get; set; }
+        public virtual ItemStorage? Inventory { get; set; }
 
         /// <summary>
         /// Gets or sets the drop item groups.
         /// </summary>
-        public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; }
+        public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the quest states.
         /// </summary>
-        public virtual ICollection<CharacterQuestState> QuestStates { get; protected set; }
+        public virtual ICollection<CharacterQuestState> QuestStates { get; protected set; } = null!;
 
         /// <inheritdoc />
         public override string ToString()

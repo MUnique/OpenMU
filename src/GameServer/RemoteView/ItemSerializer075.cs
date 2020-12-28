@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -35,18 +36,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void SerializeItem(Span<byte> target, Item item)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
             target[0] = (byte)(item.Definition.Number & 0x0F);
             target[0] |= (byte)(item.Definition.Group << 4);
 
             target[1] = (byte)((item.Level << 3) & LevelMask);
 
-            var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.Option);
+            var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
             if (itemOption != null)
             {
                 target[1] |= (byte)(itemOption.Level & 3);
             }
 
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Luck))
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck))
             {
                 target[1] |= LuckFlag;
             }

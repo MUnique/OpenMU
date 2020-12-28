@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
 {
+    using System;
     using System.Linq;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
@@ -12,6 +13,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.Quest;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// A player action which implements the completion of a quest.
@@ -39,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
             {
                 if (requiredItem.MinimumNumber > player.Inventory?.Items.Count(i => i.Definition == requiredItem.Item))
                 {
-                    player.Logger.LogDebug("Failed, required item not found: {0}", requiredItem.Item.Name);
+                    player.Logger.LogDebug("Failed, required item not found: {0}", requiredItem.Item!.Name);
                     return;
                 }
             }
@@ -49,7 +51,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                 var currentKillCount = questState!.RequirementStates.FirstOrDefault(r => r.Requirement == requiredKills)?.KillCount ?? 0;
                 if (currentKillCount < requiredKills.MinimumNumber)
                 {
-                    player.Logger.LogDebug("Failed, required kills of monster {0}: {1}/{2};", requiredKills.Monster.Designation, currentKillCount, requiredKills.MinimumNumber);
+                    player.Logger.LogDebug("Failed, required kills of monster {0}: {1}/{2};", requiredKills.Monster?.Designation, currentKillCount, requiredKills.MinimumNumber);
                     return;
                 }
             }
@@ -103,7 +105,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                     break;
                 case QuestRewardType.Item:
                     var item = player.PersistenceContext.CreateNew<Item>();
-                    item.AssignValues(reward.ItemReward);
+                    item.AssignValues(reward.ItemReward ?? throw new InvalidOperationException($"Reward {reward.GetId()} is defined as item reward, but has no item assigned"));
                     if (player.Inventory!.AddItem(item))
                     {
                         player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(item);
@@ -120,7 +122,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                         ?.Show(player, QuestRewardType.LevelUpPoints, reward.Value, null);
                     break;
                 case QuestRewardType.CharacterEvolutionFirstToSecond:
-                    player.SelectedCharacter!.CharacterClass = player.SelectedCharacter.CharacterClass.NextGenerationClass;
+                    player.SelectedCharacter!.CharacterClass = player.SelectedCharacter.CharacterClass?.NextGenerationClass
+                                                               ?? throw new InvalidOperationException($"Current character class has no next generation");
                     player.ForEachWorldObserver(
                         o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(
                             player,
@@ -129,7 +132,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                             null), true);
                     break;
                 case QuestRewardType.CharacterEvolutionSecondToThird:
-                    player.SelectedCharacter!.CharacterClass = player.SelectedCharacter.CharacterClass.NextGenerationClass;
+                    player.SelectedCharacter!.CharacterClass = player.SelectedCharacter.CharacterClass?.NextGenerationClass
+                                                               ?? throw new InvalidOperationException($"Current character class has no next generation");
                     player.ForEachWorldObserver(
                         o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(
                             player,

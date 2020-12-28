@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Quests
 {
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// The monster kill requirement of a <see cref="QuestDefinition"/>.
     /// </summary>
@@ -12,7 +14,8 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         /// <summary>
         /// Gets or sets the monster which must be killed.
         /// </summary>
-        public virtual MonsterDefinition Monster { get; set; }
+        [Required]
+        public virtual MonsterDefinition? Monster { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum number of killed <see cref="Monster"/>s.

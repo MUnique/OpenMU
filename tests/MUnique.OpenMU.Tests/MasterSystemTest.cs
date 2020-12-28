@@ -37,10 +37,10 @@ namespace MUnique.OpenMU.Tests
         {
             this.player = TestHelper.GetPlayer();
             var context = this.player.GameContext;
-            this.skillRank1 = this.CreateSkill(1, 1, 1, null, this.player.SelectedCharacter!.CharacterClass);
-            this.skillRank2 = this.CreateSkill(2, 2, 1, null, this.player.SelectedCharacter.CharacterClass);
-            this.skillRank3 = this.CreateSkill((short)this.skillIdRank3, 3, 1, null, this.player.SelectedCharacter.CharacterClass);
-            this.skillRank3.MasterDefinition.MinimumLevel = 10;
+            this.skillRank1 = this.CreateSkill(1, 1, 1, null, this.player.SelectedCharacter!.CharacterClass!);
+            this.skillRank2 = this.CreateSkill(2, 2, 1, null, this.player.SelectedCharacter!.CharacterClass!);
+            this.skillRank3 = this.CreateSkill((short)this.skillIdRank3, 3, 1, null, this.player.SelectedCharacter!.CharacterClass!);
+            this.skillRank3.MasterDefinition!.MinimumLevel = 10;
             context.Configuration.Skills.Add(this.skillRank1);
             context.Configuration.Skills.Add(this.skillRank2);
             context.Configuration.Skills.Add(this.skillRank3);
@@ -175,7 +175,7 @@ namespace MUnique.OpenMU.Tests
             this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             this.player.SelectedCharacter.LearnedSkills.First().Level = 10;
 
-            this.skillRank2.MasterDefinition.RequiredMasterSkills.Add(new Skill());
+            this.skillRank2.MasterDefinition!.RequiredMasterSkills.Add(new Skill());
             this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
             Assert.That(this.player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(1));
             Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank2), Is.False);
@@ -190,7 +190,7 @@ namespace MUnique.OpenMU.Tests
             this.player.SelectedCharacter!.MasterLevelUpPoints = 2;
             this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank1);
             this.player.SelectedCharacter.LearnedSkills.First().Level = 10;
-            this.skillRank2.MasterDefinition.RequiredMasterSkills.Add(this.skillRank1);
+            this.skillRank2.MasterDefinition!.RequiredMasterSkills.Add(this.skillRank1);
             this.addAction.AddMasterPoint(this.player, (ushort)this.skillIdRank2);
             Assert.That(this.player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
             Assert.That(this.player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this.skillRank2), Is.True);

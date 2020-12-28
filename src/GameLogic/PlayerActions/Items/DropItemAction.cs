@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private void DropItem(Player player, Item item, Point target)
         {
-            var owners = item.Definition.IsBoundToCharacter
+            var owners = item.Definition!.IsBoundToCharacter
                 ? player.GetAsEnumerable()
                 : player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
             var droppedItem = new DroppedItem(item, target, player.CurrentMap!, player, owners);

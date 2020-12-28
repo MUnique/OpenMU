@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets or sets the power up definition.
         /// </summary>
         [MemberOfAggregate]
-        public virtual PowerUpDefinition PowerUpDefinition { get; set; }
+        public virtual PowerUpDefinition? PowerUpDefinition { get; set; }
 
         /// <inheritdoc />
         public override string ToString()

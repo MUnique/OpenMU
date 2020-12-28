@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             var appearanceSerializer = this.player.AppearanceSerializer;
 
             // 0.75 doesn't support dark lord (number 16) and newer classes yet
-            var supportedCharacters = this.player.Account.Characters.Where(c => c.CharacterClass.Number < 16).OrderBy(c => c.CharacterSlot).ToList();
+            var supportedCharacters = this.player.Account.Characters.Where(c => c.CharacterClass?.Number < 16).OrderBy(c => c.CharacterSlot).ToList();
 
             using var writer = connection.StartSafeWrite(CharacterList075.HeaderType, CharacterList075.GetRequiredSize(supportedCharacters.Count));
             var packet = new CharacterList075(writer.Span)

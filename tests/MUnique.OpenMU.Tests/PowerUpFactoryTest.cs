@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel.Configuration;
-
 namespace MUnique.OpenMU.Tests
 {
     using System.Collections.Generic;
@@ -12,6 +10,7 @@ namespace MUnique.OpenMU.Tests
     using Moq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
@@ -284,7 +283,7 @@ namespace MUnique.OpenMU.Tests
         private Item GetItemWithBasePowerUp()
         {
             var item = this.GetItem();
-            item.Definition.BasePowerUpAttributes.Add(this.GetBasePowerUpDefinition());
+            item.Definition!.BasePowerUpAttributes.Add(this.GetBasePowerUpDefinition());
             return item;
         }
 
@@ -324,11 +323,11 @@ namespace MUnique.OpenMU.Tests
             armorSet.Setup(a => a.Options).Returns(new List<IncreasableItemOption>());
             armorSet.Object.MinimumItemCount = levels.Length;
             armorSet.Object.SetLevel = minimumLevel;
-            armorSet.Object.Options.Add(this.GetOption(Stats.DefenseBase, setBonusDefense).ItemOption);
+            armorSet.Object.Options.Add(this.GetOption(Stats.DefenseBase, setBonusDefense).ItemOption!);
             foreach (var level in levels)
             {
                 var item = this.GetItem();
-                item.Definition.PossibleItemSetGroups.Add(armorSet.Object);
+                item.Definition!.PossibleItemSetGroups.Add(armorSet.Object);
                 item.ItemSetGroups.Add(armorSet.Object);
                 armorSet.Object.Items.Add(new ItemOfItemSet { ItemDefinition = item.Definition });
                 item.Level = level;
@@ -345,7 +344,7 @@ namespace MUnique.OpenMU.Tests
             for (int i = 0; i < ancientOptionCount; i++)
             {
                 var setOption = this.GetOption(Stats.DefenseBase, i + 10).ItemOption;
-                setOption.Number = i + 1;
+                setOption!.Number = i + 1;
                 ancientSet.Object.Options.Add(setOption);
             }
 
@@ -353,7 +352,7 @@ namespace MUnique.OpenMU.Tests
             for (int i = 0; i < itemCount; i++)
             {
                 var item = this.GetItem();
-                item.Definition.PossibleItemSetGroups.Add(ancientSet.Object);
+                item.Definition!.PossibleItemSetGroups.Add(ancientSet.Object);
                 item.ItemSetGroups.Add(ancientSet.Object);
                 item.ItemOptions.Add(new ItemOptionLink { ItemOption = bonusOption, Level = 1 });
 

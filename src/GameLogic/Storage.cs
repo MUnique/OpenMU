@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -150,6 +150,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public int? CheckInvSpace(Item item)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+
             // Find free Space in the Inventory and return the slot where the Item can be placed
             // Check every slot if it fits
             for (byte row = 0; row < this.rows; row++)
@@ -224,6 +226,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns><c>True</c>, if successful; Otherwise, <c>false</c>.</returns>
         protected bool AddItemInternal(byte slot, Item item)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+
             if (this.ItemArray[slot] != null)
             {
                 return false;
@@ -261,7 +265,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private void SetItemUsedSlots(Item item, int columnIndex, int rowIndex, bool used = true)
         {
-            for (int r = rowIndex; r < rowIndex + item.Definition.Height; r++)
+            for (int r = rowIndex; r < rowIndex + item.Definition!.Height; r++)
             {
                 for (int c = columnIndex; c < columnIndex + item.Definition.Width; c++)
                 {

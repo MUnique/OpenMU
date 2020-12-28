@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Linq;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -151,7 +152,7 @@ namespace MUnique.OpenMU.GameLogic
                 player.CreateMagicEffectPowerUp(skillEntry);
             }
 
-            var magicEffect = new MagicEffect(skillEntry.BuffPowerUp!, skillEntry.Skill.MagicEffectDef, TimeSpan.FromSeconds(skillEntry.PowerUpDuration.Value));
+            var magicEffect = new MagicEffect(skillEntry.BuffPowerUp!, skillEntry.Skill!.MagicEffectDef!, TimeSpan.FromSeconds(skillEntry.PowerUpDuration!.Value));
             target.MagicEffectList.AddEffect(magicEffect);
         }
 
@@ -169,11 +170,11 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var skill = skillEntry.Skill;
-            var regenerationValue = player.Attributes.CreateElement(skill.MagicEffectDef.PowerUpDefinition.Boost);
-            var regeneration = Stats.IntervalRegenerationAttributes.FirstOrDefault(r =>
-                r.CurrentAttribute == skill.MagicEffectDef.PowerUpDefinition.TargetAttribute);
+            var regeneration = Stats.IntervalRegenerationAttributes.FirstOrDefault(r => r.CurrentAttribute == skill.MagicEffectDef?.PowerUpDefinition?.TargetAttribute);
             if (regeneration != null)
             {
+                var powerUpDefinition = skill.MagicEffectDef!.PowerUpDefinition!;
+                var regenerationValue = player.Attributes.CreateElement(powerUpDefinition.Boost ?? throw Error.NotInitializedProperty(powerUpDefinition, nameof(powerUpDefinition.Boost)));
                 var value = skillEntry.Level == 0 ? regenerationValue.Value : regenerationValue.Value + skillEntry.CalculateValue();
                 target.Attributes[regeneration.CurrentAttribute] = Math.Min(
                     target.Attributes[regeneration.CurrentAttribute] + value,
@@ -182,7 +183,7 @@ namespace MUnique.OpenMU.GameLogic
             else
             {
                 player.Logger.LogWarning(
-                    $"Regeneration skill {skill.Name} is configured to regenerate a non-regeneration-able target attribute {skill.MagicEffectDef.PowerUpDefinition.TargetAttribute}.");
+                    $"Regeneration skill {skill.Name} is configured to regenerate a non-regeneration-able target attribute {skill.MagicEffectDef?.PowerUpDefinition?.TargetAttribute}.");
             }
         }
 
@@ -300,7 +301,9 @@ namespace MUnique.OpenMU.GameLogic
         public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement)
         {
             var modifier = 1.0f;
-            if (ReductionModifiers.TryGetValue(attributeRequirement.Attribute, out var reductionAttribute))
+            if (ReductionModifiers.TryGetValue(
+                attributeRequirement.Attribute ?? throw Error.NotInitializedProperty(attributeRequirement, nameof(attributeRequirement.Attribute)),
+                out var reductionAttribute))
             {
                 modifier -= attacker.Attributes[reductionAttribute];
             }

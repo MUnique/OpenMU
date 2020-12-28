@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the attribute definition.
         /// </summary>
-        public virtual AttributeDefinition AttributeDefinition { get; set; }
+        public virtual AttributeDefinition? AttributeDefinition { get; set; }
 
         /// <summary>
         /// Gets or sets the value.

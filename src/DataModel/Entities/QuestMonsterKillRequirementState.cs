@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the requirement for which this state is kept.
         /// </summary>
-        public virtual QuestMonsterKillRequirement Requirement { get; set; }
+        public virtual QuestMonsterKillRequirement? Requirement { get; set; }
 
         /// <summary>
         /// Gets or sets the monster kill count for this <see cref="Requirement"/>.

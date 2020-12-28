@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             ItemAppearance?[] itemArray = new ItemAppearance[InventoryConstants.BootsSlot + 1];
             for (byte i = 0; i < itemArray.Length; i++)
             {
-                itemArray[i] = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == i && item.Definition.Number < 16);
+                itemArray[i] = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == i && item.Definition?.Number < 16);
             }
 
             if (appearanceData.CharacterClass is not null)
@@ -91,17 +91,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             this.SetArmorPiece(target, itemArray[InventoryConstants.GlovesSlot], 4, false);
 
             this.SetArmorPiece(target, itemArray[InventoryConstants.BootsSlot], 5, true);
-            var wing = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == InventoryConstants.WingsSlot && item.Definition.Number < 3);
-            var pet = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == InventoryConstants.PetSlot && item.Definition.Number < 3);
-            target[5] |= (byte)((wing?.Definition.Number & 0x03) << 2 ?? 0b1100);
-            target[5] |= (byte)(pet?.Definition.Number & 0x03 ?? 0b0011);
+            var wing = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == InventoryConstants.WingsSlot && item.Definition?.Number < 3);
+            var pet = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == InventoryConstants.PetSlot && item.Definition?.Number < 3);
+            target[5] |= (byte)((wing?.Definition?.Number & 0x03) << 2 ?? 0b1100);
+            target[5] |= (byte)(pet?.Definition?.Number & 0x03 ?? 0b0011);
 
             this.SetItemLevels(target, itemArray);
         }
 
         private void SetHand(Span<byte> preview, ItemAppearance? item, int index)
         {
-            if (item is null)
+            if (item?.Definition is null)
             {
                 preview[index] = 0xFF;
             }
@@ -124,7 +124,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SetArmorPiece(Span<byte> preview, ItemAppearance? item, int index, bool highNibble)
         {
-            if (item is null)
+            if (item?.Definition is null)
             {
                 // if the item is not equipped every index bit is set to 1
                 preview[index] |= highNibble ? this.GetOrMaskForHighNibble(0x0F) : this.GetOrMaskForLowNibble(0x0F);

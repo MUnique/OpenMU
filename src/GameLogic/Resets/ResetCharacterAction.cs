@@ -133,7 +133,7 @@ namespace MUnique.OpenMU.GameLogic.Resets
 
             if (configuration.ResetStats)
             {
-                this.player.SelectedCharacter!.CharacterClass.StatAttributes
+                this.player.SelectedCharacter!.CharacterClass!.StatAttributes
                     .Where(s => s.IncreasableByPlayer)
                     .ForEach(s => this.player.Attributes![s.Attribute] = s.BaseValue);
             }
@@ -143,12 +143,14 @@ namespace MUnique.OpenMU.GameLogic.Resets
 
         private void MoveHome()
         {
-            var homeMap = this.player.SelectedCharacter!.CharacterClass.HomeMap;
-            var randomSpawn = homeMap.SafezoneMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
-            this.player.SelectedCharacter.PositionX = (byte)Rand.NextInt(randomSpawn.X1, randomSpawn.X2);
-            this.player.SelectedCharacter.PositionY = (byte)Rand.NextInt(randomSpawn.Y1, randomSpawn.Y2);
-            this.player.SelectedCharacter.CurrentMap = randomSpawn.Map;
-            this.player.Rotation = randomSpawn.Direction;
+            var homeMap = this.player.SelectedCharacter!.CharacterClass!.HomeMap;
+            if (homeMap?.SafezoneMap?.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } randomSpawn)
+            {
+                this.player.SelectedCharacter.PositionX = (byte)Rand.NextInt(randomSpawn.X1, randomSpawn.X2);
+                this.player.SelectedCharacter.PositionY = (byte)Rand.NextInt(randomSpawn.Y1, randomSpawn.Y2);
+                this.player.SelectedCharacter.CurrentMap = randomSpawn.Map;
+                this.player.Rotation = randomSpawn.Direction;
+            }
         }
 
         private void Logout()

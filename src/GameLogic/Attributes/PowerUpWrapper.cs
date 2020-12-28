@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
     using System;
     using System.Collections.Generic;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Attributes;
 
     /// <summary>
@@ -54,16 +55,22 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <returns>The elements which represent the power-up.</returns>
         public static IEnumerable<PowerUpWrapper> CreateByPowerUpDefinition(PowerUpDefinition powerUpDef, AttributeSystem attributeHolder)
         {
-            if (powerUpDef.Boost.ConstantValue != null)
+            if (powerUpDef.Boost?.ConstantValue != null)
             {
-                yield return new PowerUpWrapper(powerUpDef.Boost.ConstantValue, powerUpDef.TargetAttribute, attributeHolder);
+                yield return new PowerUpWrapper(
+                    powerUpDef.Boost.ConstantValue,
+                    powerUpDef.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDef, nameof(PowerUpDefinition.TargetAttribute)),
+                    attributeHolder);
             }
 
-            if (powerUpDef.Boost.RelatedValues != null)
+            if (powerUpDef.Boost?.RelatedValues != null)
             {
                 foreach (var relationship in powerUpDef.Boost.RelatedValues)
                 {
-                    yield return new PowerUpWrapper(attributeHolder.CreateRelatedAttribute(relationship, attributeHolder), powerUpDef.TargetAttribute, attributeHolder);
+                    yield return new PowerUpWrapper(
+                        attributeHolder.CreateRelatedAttribute(relationship, attributeHolder),
+                        powerUpDef.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDef, nameof(PowerUpDefinition.TargetAttribute)),
+                        attributeHolder);
                 }
             }
         }

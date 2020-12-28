@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration
 {
+    using System;
     using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network.PlugIns;
@@ -32,16 +33,22 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the version which is defined in the client binaries.
         /// </summary>
-        public byte[] Version { get; set; }
+        public byte[]? Version { get; set; }
+
+        /// <inheritdoc />
+        byte[] IGameClientVersion.Version => this.Version ?? throw new InvalidOperationException("Version not initialized.");
 
         /// <summary>
         /// Gets or sets the serial which is defined in the client binaries.
         /// </summary>
-        public byte[] Serial { get; set; }
+        public byte[]? Serial { get; set; }
+
+        /// <inheritdoc />
+        byte[] IGameClientVersion.Serial => this.Serial ?? throw new InvalidOperationException("Serial not initialized.");
 
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }

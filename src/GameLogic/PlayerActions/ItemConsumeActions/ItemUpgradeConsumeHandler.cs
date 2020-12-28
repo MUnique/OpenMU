@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            var itemOption = item.ItemOptions.First(o => o.ItemOption.OptionType == this.Configuration.OptionType);
+            var itemOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
             var increasableOption = itemOption.ItemOption;
             var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOption.Level) ?? false;
             if (!higherOptionPossible)
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
         private bool TryAddItemOption(Item item, IContext persistenceContext)
         {
-            if (!this.Configuration.AddsOption)
+            if (!this.Configuration.AddsOption || item.Definition is null)
             {
                 return false;
             }
@@ -157,12 +157,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
         private bool ItemHasOptionAlready(Item item)
         {
-            return item.ItemOptions.Any(o => o.ItemOption.OptionType == this.Configuration.OptionType);
+            return item.ItemOptions.Any(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
         }
 
         private bool ItemCanHaveOption(Item item)
         {
-            return item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType));
+            return item.Definition?.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType)) ?? false;
         }
 
         /// <summary>

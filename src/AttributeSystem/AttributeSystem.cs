@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.AttributeSystem
         }
 
         /// <inheritdoc/>
-        public float this[AttributeDefinition attributeDefinition]
+        public float this[AttributeDefinition? attributeDefinition]
         {
             get => this.GetValueOfAttribute(attributeDefinition);
 
@@ -77,8 +77,13 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <param name="attributeDefinition">The attribute definition.</param>
         /// <param name="newValue">The new value.</param>
         /// <returns>The success.</returns>
-        public bool SetStatAttribute(AttributeDefinition attributeDefinition, float newValue)
+        public bool SetStatAttribute(AttributeDefinition? attributeDefinition, float newValue)
         {
+            if (attributeDefinition is null)
+            {
+                return false;
+            }
+
             if (this.attributes.TryGetValue(attributeDefinition, out var attribute)
                 && attribute is StatAttribute statAttribute)
             {
@@ -101,7 +106,7 @@ namespace MUnique.OpenMU.AttributeSystem
         }
 
         /// <inheritdoc/>
-        public float GetValueOfAttribute(AttributeDefinition attributeDefinition)
+        public float GetValueOfAttribute(AttributeDefinition? attributeDefinition)
         {
             var element = this.GetAttribute(attributeDefinition);
             if (element != null)
@@ -197,7 +202,7 @@ namespace MUnique.OpenMU.AttributeSystem
             this.AddAttributeRelationship(combination, this);
         }
 
-        private IElement? GetAttribute(AttributeDefinition attributeDefinition)
+        private IElement? GetAttribute(AttributeDefinition? attributeDefinition)
         {
             if (attributeDefinition is null)
             {

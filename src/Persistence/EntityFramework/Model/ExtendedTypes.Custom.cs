@@ -35,8 +35,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
         /// </summary>
         public float Value
         {
-            get => this.ConstantValue.Value;
-            set => this.ConstantValue.Value = value;
+            get => this.ConstantValue!.Value;
+            set => this.ConstantValue!.Value = value;
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
         /// </summary>
         public AggregateType AggregateType
         {
-            get => this.ConstantValue.AggregateType;
-            set => this.ConstantValue.AggregateType = value;
+            get => this.ConstantValue!.AggregateType;
+            set => this.ConstantValue!.AggregateType = value;
         }
 
         /// <summary>

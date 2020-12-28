@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the number.
@@ -36,12 +36,12 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets or sets the required item options which all have to be fulfilled in order to get the <see cref="Bonus"/>.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<CombinationBonusRequirement> Requirements { get; protected set; }
+        public virtual ICollection<CombinationBonusRequirement> Requirements { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the bonus power up.
         /// </summary>
         [MemberOfAggregate]
-        public virtual PowerUpDefinition Bonus { get; set; }
+        public virtual PowerUpDefinition? Bonus { get; set; }
     }
 }

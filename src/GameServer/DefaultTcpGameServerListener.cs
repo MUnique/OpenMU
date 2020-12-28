@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.GameServer
             {
                 socket.NoDelay = true;
                 var socketConnection = SocketConnection.Create(socket);
-                var clientVersion = new ClientVersion(this.endPoint.Client.Season, this.endPoint.Client.Episode, this.endPoint.Client.Language);
+                var clientVersion = new ClientVersion(this.endPoint.Client!.Season, this.endPoint.Client.Episode, this.endPoint.Client.Language);
                 var encryptionFactoryPlugIn = this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(clientVersion)
                                                 ?? this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
                 IConnection connection;

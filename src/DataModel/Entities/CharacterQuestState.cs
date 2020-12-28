@@ -26,16 +26,16 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the last finished quest of the <see cref="Group"/>.
         /// </summary>
-        public virtual QuestDefinition LastFinishedQuest { get; set; }
+        public virtual QuestDefinition? LastFinishedQuest { get; set; }
 
         /// <summary>
         /// Gets or sets the active quest.
         /// </summary>
-        public virtual QuestDefinition ActiveQuest { get; set; }
+        public virtual QuestDefinition? ActiveQuest { get; set; }
 
         /// <summary>
         /// Gets or sets the requirement states for the current <see cref="ActiveQuest"/>.
         /// </summary>
-        public virtual ICollection<QuestMonsterKillRequirementState> RequirementStates { get; protected set; }
+        public virtual ICollection<QuestMonsterKillRequirementState> RequirementStates { get; protected set; } = null!;
     }
 }

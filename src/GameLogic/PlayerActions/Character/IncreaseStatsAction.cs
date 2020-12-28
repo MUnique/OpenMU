@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System;
-
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
+    using System;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.GameLogic.Views.Character;
@@ -29,7 +28,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
             if (player.SelectedCharacter.LevelUpPoints > 0)
             {
-                var attributeDef = player.SelectedCharacter.CharacterClass.StatAttributes.FirstOrDefault(a => a.Attribute == statAttributeDefinition);
+                var attributeDef = player.SelectedCharacter.CharacterClass?.StatAttributes.FirstOrDefault(a => a.Attribute == statAttributeDefinition);
                 if (attributeDef != null && attributeDef.IncreasableByPlayer)
                 {
                     player.Attributes![attributeDef.Attribute]++;

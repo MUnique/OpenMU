@@ -43,9 +43,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 {
                     X = this.player.Position.X,
                     Y = this.player.Position.Y,
-                    MapId = (byte)this.player.SelectedCharacter!.CurrentMap.Number,
+                    MapId = (byte)this.player.SelectedCharacter!.CurrentMap!.Number,
                     CurrentExperience = (uint)this.player.SelectedCharacter.Experience,
-                    ExperienceForNextLevel = (uint)this.player.GameServerContext.Configuration.ExperienceTable[(int)this.player.Attributes![Stats.Level] + 1],
+                    ExperienceForNextLevel = (uint)this.player.GameServerContext.Configuration.ExperienceTable![(int)this.player.Attributes![Stats.Level] + 1],
                     LevelUpPoints = (ushort)this.player.SelectedCharacter.LevelUpPoints,
                     Strength = (ushort)this.player.Attributes[Stats.BaseStrength],
                     Agility = (ushort)this.player.Attributes[Stats.BaseAgility],

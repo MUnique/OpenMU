@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             var socketItem = requiredItems.Single(i => i.ItemRequirement.Reference == SocketItemReference).Items.Single();
 
             var socketOption = socketItem.ItemOptions
-                .FirstOrDefault(optionLink => optionLink.ItemOption.OptionType == ItemOptionTypes.SocketOption && optionLink.Index == socketSlot);
+                .FirstOrDefault(optionLink => optionLink.ItemOption?.OptionType == ItemOptionTypes.SocketOption && optionLink.Index == socketSlot);
             if (socketOption is null)
             {
                 throw new ArgumentException($"No seed sphere is mounted on the socket slot {socketSlot}.");
@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             player.PersistenceContext.Delete(socketOption);
 
             if (socketOption.Index < 3
-                && socketItem.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.SocketBonusOption) is { } bonusOption)
+                && socketItem.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketBonusOption) is { } bonusOption)
             {
                 socketItem.ItemOptions.Remove(bonusOption);
                 player.PersistenceContext.Delete(bonusOption);

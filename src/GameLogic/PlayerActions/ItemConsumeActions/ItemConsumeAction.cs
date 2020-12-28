@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         public void HandleConsumeRequest(Player player, byte inventorySlot, byte inventoryTargetSlot, FruitUsage fruitUsage)
         {
             var item = player.Inventory?.GetItem(inventorySlot);
-            if (item is null)
+            if (item?.Definition is null)
             {
                 player.ViewPlugIns.GetPlugIn<IRequestedItemConsumptionFailedPlugIn>()?.RequestedItemConsumptionFailed();
                 return;
@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             var items = gameContext.Configuration.Items.Where(def => !string.IsNullOrEmpty(def.ConsumeHandlerClass));
             foreach (var item in items)
             {
-                var consumeHandler = this.CreateConsumeHandler(gameContext, item.ConsumeHandlerClass);
+                var consumeHandler = this.CreateConsumeHandler(gameContext, item.ConsumeHandlerClass!);
                 this.consumeHandlers.Add(item, consumeHandler);
             }
         }

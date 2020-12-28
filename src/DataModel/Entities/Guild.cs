@@ -22,6 +22,6 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the members.
         /// </summary>
-        public virtual ICollection<GuildMember> Members { get; protected set; }
+        public virtual ICollection<GuildMember> Members { get; protected set; } = null!;
     }
 }

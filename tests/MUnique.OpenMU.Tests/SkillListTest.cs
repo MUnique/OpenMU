@@ -71,7 +71,7 @@ namespace MUnique.OpenMU.Tests
             item.Durability = 1;
             player.Inventory!.AddItem(0, item);
             var skillList = new SkillList(player);
-            Assert.That(skillList.RemoveItemSkill(item.Definition.Skill.Number.ToUnsigned()), Is.True);
+            Assert.That(skillList.RemoveItemSkill(item.Definition!.Skill!.Number.ToUnsigned()), Is.True);
             Assert.That(skillList.ContainsSkill(ItemSkillId), Is.False);
         }
 

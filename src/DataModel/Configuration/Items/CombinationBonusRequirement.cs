@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the required <see cref="ItemOption.OptionType"/>.
         /// </summary>
-        public virtual ItemOptionType OptionType { get; set; }
+        public virtual ItemOptionType? OptionType { get; set; }
 
         /// <summary>
         /// Gets or sets the required <see cref="ItemOption.SubOptionType"/>.

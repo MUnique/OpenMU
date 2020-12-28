@@ -226,9 +226,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 return null;
             }
 
-            return item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+            return item.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
                 .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
+                .First(o => o.PowerUpDefinition?.TargetAttribute == targetExcellentOption);
         }
     }
 }

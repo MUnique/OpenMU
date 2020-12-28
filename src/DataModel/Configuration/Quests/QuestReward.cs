@@ -31,11 +31,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         /// The <see cref="Value"/> contains how often the item is rewarded.
         /// </summary>
         [MemberOfAggregate]
-        public virtual Item ItemReward { get; set; }
+        public virtual Item? ItemReward { get; set; }
 
         /// <summary>
         /// Gets or sets the attribute reward. It's set when <see cref="RewardType"/> is <see cref="QuestRewardType.Attribute"/>.
         /// </summary>
-        public virtual AttributeDefinition AttributeReward { get; set; }
+        public virtual AttributeDefinition? AttributeReward { get; set; }
     }
 }

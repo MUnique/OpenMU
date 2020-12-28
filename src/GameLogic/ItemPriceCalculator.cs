@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -53,7 +54,7 @@ namespace MUnique.OpenMU.GameLogic
 
                     if (item.Durability > 0)
                     {
-                        gold = baseprice * item.Durability / item.Definition.Durability;
+                        gold = baseprice * item.Durability / item.Definition?.Durability ?? 1;
                     }
 
                     return gold;
@@ -75,7 +76,7 @@ namespace MUnique.OpenMU.GameLogic
 
                     if (item.Durability > 0)
                     {
-                        gold = baseprice * item.Durability / item.Definition.Durability;
+                        gold = baseprice * item.Durability / item.Definition?.Durability ?? 1;
                     }
 
                     return gold;
@@ -120,7 +121,7 @@ namespace MUnique.OpenMU.GameLogic
                 (int)SpecialItems.Dinorant, item =>
                 {
                     var gold = 960000;
-                    var opt = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.Option);
+                    var opt = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
                     var optionLevel = opt?.Level ?? 0;
                     gold += 300000 * optionLevel;
                     return gold;
@@ -255,6 +256,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The selling price.</returns>
         public long CalculateSellingPrice(Item item)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+
             var sellingPrice = this.CalculateBuyingPrice(item) / 3;
             if (item.Definition.Group == 14 && (item.Definition.Number <= 8))
             {
@@ -317,8 +320,9 @@ namespace MUnique.OpenMU.GameLogic
 
         private static long CalculateBuyingPrice(Item item, byte durability)
         {
-            var definition = item.Definition;
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
 
+            var definition = item.Definition!;
             if (definition.Value > 0 && (definition.Group == 15 || definition.Group == 12))
             {
                 return RoundPrice(definition.Value);
@@ -326,7 +330,7 @@ namespace MUnique.OpenMU.GameLogic
 
             long price = 0;
             int dropLevel = definition.DropLevel + (item.Level * 3);
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent))
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
             {
                 // increased drop level of excellent item
                 dropLevel += 25;
@@ -400,12 +404,12 @@ namespace MUnique.OpenMU.GameLogic
                 }
 
                 // add 25% for luck
-                if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Luck))
+                if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck))
                 {
                     price += price * 25 / 100;
                 }
 
-                var opt = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.Option);
+                var opt = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
                 var optionLevel = opt?.Level ?? 0;
 
                 // Item Options (1 to 4, or 4 to 16)
@@ -422,21 +426,21 @@ namespace MUnique.OpenMU.GameLogic
                 }
 
                 // For each wing option, add 25%
-                var wingOptionCount = item.ItemOptions.Count(o => o.ItemOption.OptionType == ItemOptionTypes.Wing);
+                var wingOptionCount = item.ItemOptions.Count(o => o.ItemOption?.OptionType == ItemOptionTypes.Wing);
                 for (int i = 0; i < wingOptionCount; i++)
                 {
                     price += (long)(price * 0.25);
                 }
 
                 // For each excellent option double the value
-                var excCount = item.ItemOptions.Count(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent);
+                var excCount = item.ItemOptions.Count(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent);
                 for (int i = 0; i < excCount; i++)
                 {
                     price += price;
                 }
             }
 
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.GuardianOption))
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GuardianOption))
             {
                 price += price * 16 / 100;
             }
@@ -459,8 +463,8 @@ namespace MUnique.OpenMU.GameLogic
 
         private static bool IsWing(Item item)
         {
-            return (item.Definition.Group == 12 && WingIds.Contains(item.Definition.Number))
-                   || (item.Definition.Group == 13 && item.Definition.Number == 30); // DL 1st Cape
+            return (item.Definition?.Group == 12 && WingIds.Contains(item.Definition.Number))
+                   || (item.Definition?.Group == 13 && item.Definition.Number == 30); // DL 1st Cape
         }
 
         private static int GetId(byte group, int id)

@@ -35,18 +35,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             var inputItems = player.TemporaryStorage!.Items.ToList();
             var itemsLevelAndOption4 = inputItems
                 .Where(item => item.Level >= 4
-                               && item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Option))
+                               && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
                 .ToList();
             var randomWeapons = itemsLevelAndOption4
                 .Where(item => item.IsWearable()
-                               && item.Definition.BasePowerUpAttributes.Any(a =>
+                               && item.Definition!.BasePowerUpAttributes.Any(a =>
                                    a.TargetAttribute == Stats.MinimumPhysBaseDmg
                                    || a.TargetAttribute == Stats.MinimumCurseBaseDmg
                                    || a.TargetAttribute == Stats.MinimumWizBaseDmg))
                 .ToList();
 
             var randomArmors = itemsLevelAndOption4
-                .Where(item => item.IsWearable() && item.Definition.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.DefenseBase))
+                .Where(item => item.IsWearable() && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.DefenseBase))
                 .ToList();
 
             if (randomArmors.Any() && randomWeapons.Any())
@@ -60,9 +60,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 return CraftingResult.LackingMixItems;
             }
 
-            var hornOfFenrir = inputItems.FirstOrDefault(item => item.Definition.Name == "Horn of Fenrir");
-            var chaos = inputItems.FirstOrDefault(item => item.Definition.Name == "Jewel of Chaos");
-            var jewelsOfLife = inputItems.Where(item => item.Definition.Name == "Jewel of Life").Take(5).ToList();
+            var hornOfFenrir = inputItems.FirstOrDefault(item => item.Definition?.Name == "Horn of Fenrir");
+            var chaos = inputItems.FirstOrDefault(item => item.Definition?.Name == "Jewel of Chaos");
+            var jewelsOfLife = inputItems.Where(item => item.Definition?.Name == "Jewel of Life").Take(5).ToList();
 
             if (hornOfFenrir is null
                 || chaos is null
@@ -82,9 +82,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 return CraftingResult.TooManyItems;
             }
 
-            items.Add(new CraftingRequiredItemLink(hornOfFenrir.GetAsEnumerable(), new ItemCraftingRequiredItem { PossibleItems = { hornOfFenrir.Definition }, MinimumAmount = 1, MaximumAmount = 1, Reference = 1, SuccessResult = MixResult.StaysAsIs }));
-            items.Add(new CraftingRequiredItemLink(chaos.GetAsEnumerable(), new ItemCraftingRequiredItem { PossibleItems = { chaos.Definition }, MinimumAmount = 1, MaximumAmount = 1 }));
-            items.Add(new CraftingRequiredItemLink(jewelsOfLife, new ItemCraftingRequiredItem { PossibleItems = { jewelsOfLife.First().Definition }, MinimumAmount = 5, MaximumAmount = 5 }));
+            items.Add(new CraftingRequiredItemLink(hornOfFenrir.GetAsEnumerable(), new ItemCraftingRequiredItem { PossibleItems = { hornOfFenrir.Definition! }, MinimumAmount = 1, MaximumAmount = 1, Reference = 1, SuccessResult = MixResult.StaysAsIs }));
+            items.Add(new CraftingRequiredItemLink(chaos.GetAsEnumerable(), new ItemCraftingRequiredItem { PossibleItems = { chaos.Definition! }, MinimumAmount = 1, MaximumAmount = 1 }));
+            items.Add(new CraftingRequiredItemLink(jewelsOfLife, new ItemCraftingRequiredItem { PossibleItems = { jewelsOfLife.First().Definition! }, MinimumAmount = 5, MaximumAmount = 5 }));
             if (randomWeapons.Any())
             {
                 items.Add(new CraftingRequiredItemLink(randomWeapons, new ItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 2 }));
@@ -108,12 +108,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             IEnumerable<IncreasableItemOption> fenrirOptions;
             if (requiredItems.Any(i => i.ItemRequirement.Reference == 2))
             {
-                fenrirOptions = fenrir.Definition.PossibleItemOptions.SelectMany(opt =>
+                fenrirOptions = fenrir.Definition!.PossibleItemOptions.SelectMany(opt =>
                     opt.PossibleOptions.Where(o => o.OptionType == ItemOptionTypes.BlackFenrir));
             }
             else
             {
-                fenrirOptions = fenrir.Definition.PossibleItemOptions.SelectMany(opt =>
+                fenrirOptions = fenrir.Definition!.PossibleItemOptions.SelectMany(opt =>
                     opt.PossibleOptions.Where(o => o.OptionType == ItemOptionTypes.BlueFenrir));
             }
 

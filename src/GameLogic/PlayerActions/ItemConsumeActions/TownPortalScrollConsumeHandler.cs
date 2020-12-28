@@ -25,10 +25,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         {
             if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {
-                var targetMap = player.CurrentMap!.Definition.SafezoneMap ?? player.SelectedCharacter!.CharacterClass.HomeMap;
-                var exitGate = targetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
-                player.WarpTo(exitGate);
-                return true;
+                var targetMap = player.CurrentMap!.Definition.SafezoneMap ?? player.SelectedCharacter!.CharacterClass!.HomeMap;
+                if (targetMap is { })
+                {
+                    var exitGate = targetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
+                    player.WarpTo(exitGate);
+                    return true;
+                }
             }
 
             return false;

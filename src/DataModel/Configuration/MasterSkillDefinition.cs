@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.AttributeSystem;
 
     /// <summary>
@@ -16,14 +17,15 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the root.
         /// </summary>
-        public virtual MasterSkillRoot Root { get; set; }
+        [Required]
+        public virtual MasterSkillRoot? Root { get; set; }
 
         /// <summary>
         /// Gets or sets a collection with the required skills.
         /// Just one skill (of at least level 10) of this list is required
         /// to meet the requirements when learning this skill.
         /// </summary>
-        public virtual ICollection<Skill> RequiredMasterSkills { get; protected set; }
+        public virtual ICollection<Skill> RequiredMasterSkills { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the rank.
@@ -55,7 +57,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// We use the syntax of MathParser.org.
         /// To use the level in the formula, use the argument "level".
         /// </remarks>
-        public string ValueFormula { get; set; }
+        public string ValueFormula { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the formula to calculate the visible value, depending on the level of the master skill.
@@ -64,12 +66,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// We use the syntax of MathParser.org.
         /// To use the level in the formula, use the argument "level".
         /// </remarks>
-        public string DisplayValueFormula { get; set; }
+        public string DisplayValueFormula { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the target attribute of a passive skill boost.
         /// </summary>
-        public virtual AttributeDefinition TargetAttribute { get; set; }
+        public virtual AttributeDefinition? TargetAttribute { get; set; }
 
         /// <summary>
         /// Gets or sets the type of how the calculated value is aggregated to the <see cref="TargetAttribute"/>.
@@ -80,6 +82,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the replaced skill. If this skill is defined, this master skill replaces it in the skill list.
         /// The attack damage is also inherited and increased by the damage AND value of the master skill.
         /// </summary>
-        public virtual Skill ReplacedSkill { get; set; }
+        public virtual Skill? ReplacedSkill { get; set; }
     }
 }

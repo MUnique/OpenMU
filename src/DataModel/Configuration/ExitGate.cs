@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration
 {
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// Defines a gate through which a player enters a map.
     /// </summary>
@@ -17,7 +19,8 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the map which will be entered.
         /// </summary>
-        public virtual GameMapDefinition Map { get; set; }
+        [Required]
+        public virtual GameMapDefinition? Map { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is a spawn gate.

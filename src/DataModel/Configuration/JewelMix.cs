@@ -24,17 +24,17 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets gets the single jewel item definition.
         /// </summary>
-        public virtual ItemDefinition SingleJewel { get; set; }
+        public virtual ItemDefinition? SingleJewel { get; set; }
 
         /// <summary>
         /// Gets or sets gets the mixed jewel item definition.
         /// </summary>
-        public virtual ItemDefinition MixedJewel { get; set; }
+        public virtual ItemDefinition? MixedJewel { get; set; }
 
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{this.SingleJewel?.Name} <> {this.MixedJewel.Name}";
+            return $"{this.SingleJewel?.Name} <> {this.MixedJewel?.Name}";
         }
     }
 }

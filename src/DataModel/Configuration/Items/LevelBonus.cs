@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets or sets the additional value element to the base value.
         /// </summary>
         [Transient]
-        public ConstantElement AdditionalValueElement { get; set; }
+        public ConstantElement? AdditionalValueElement { get; set; }
 
         /// <summary>
         /// Gets or sets the additional value to the base value.

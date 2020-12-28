@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
         private void SendMessage(bool success)
         {
-            if (this.player.SelectedCharacter is null)
+            if (this.player.SelectedCharacter?.CurrentMap is null)
             {
                 return;
             }

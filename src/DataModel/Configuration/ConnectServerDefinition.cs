@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System;
+    using System.ComponentModel.DataAnnotations;
+    
     using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.Interfaces;
 
@@ -25,15 +27,16 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <remarks>
         /// Will be displayed in the server list in the admin panel as <see cref="IManageableServer.Description"/>.
         /// </remarks>
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the client which is expected to connect.
         /// </summary>
-        public virtual GameClientDefinition Client { get; set; }
+        [Required]
+        public virtual GameClientDefinition? Client { get; set; }
 
         /// <inheritdoc/>
-        IGameClientVersion IConnectServerSettings.Client => this.Client;
+        IGameClientVersion IConnectServerSettings.Client => this.Client ?? throw new InvalidOperationException("ConnectServerDefinition.Client not initialized.");
 
         /// <summary>
         /// Gets or sets a value indicating whether the client should get disconnected when a unknown packet is getting received.
@@ -59,12 +62,15 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the current patch version.
         /// </summary>
-        public byte[] CurrentPatchVersion { get; set; }
+        public byte[]? CurrentPatchVersion { get; set; }
+
+        /// <inheritdoc />
+        byte[] IConnectServerSettings.CurrentPatchVersion => this.CurrentPatchVersion ?? throw new InvalidOperationException("Patch Version is not initialized");
 
         /// <summary>
         /// Gets or sets the patch address.
         /// </summary>
-        public string PatchAddress { get; set; }
+        public string PatchAddress { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the maximum connections per ip.

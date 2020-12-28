@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
 {
     using System.Collections.Generic;
     using System.Linq;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
@@ -41,6 +42,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         {
             var seed = requiredItems.Single(i => i.ItemRequirement.Reference == SeedReference).Items.Single();
             var sphere = requiredItems.Single(i => i.ItemRequirement.Reference == SphereReference).Items.Single();
+            seed.ThrowNotInitializedProperty(seed.Definition is null, nameof(seed.Definition));
+            sphere.ThrowNotInitializedProperty(sphere.Definition is null, nameof(sphere.Definition));
 
             // The following is a bit "magic", because it implicitly relies on the item data and how its built up.
             // Because it has some structure, we can calculate which number the resulting seed sphere will have.

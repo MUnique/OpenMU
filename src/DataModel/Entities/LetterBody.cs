@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Entities
 {
     using System;
+    using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.Interfaces;
 
@@ -22,12 +23,13 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the header.
         /// </summary>
-        public virtual LetterHeader Header { get; set; }
+        [Required]
+        public virtual LetterHeader? Header { get; set; }
 
         /// <summary>
         /// Gets or sets the message.
         /// </summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the rotation of the sender character.
@@ -43,7 +45,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the sender appearance data.
         /// </summary>
         [MemberOfAggregate]
-        public virtual AppearanceData SenderAppearance { get; set; }
+        public virtual AppearanceData? SenderAppearance { get; set; }
 
         /// <inheritdoc />
         public override string ToString()

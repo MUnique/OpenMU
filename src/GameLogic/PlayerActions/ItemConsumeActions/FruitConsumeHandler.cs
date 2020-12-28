@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            var statAttributeDefinition = player.SelectedCharacter!.CharacterClass.StatAttributes.FirstOrDefault(a =>
+            var statAttributeDefinition = player.SelectedCharacter!.CharacterClass?.StatAttributes.FirstOrDefault(a =>
                 a.IncreasableByPlayer && a.Attribute == statAttribute);
             if (statAttributeDefinition is null)
             {

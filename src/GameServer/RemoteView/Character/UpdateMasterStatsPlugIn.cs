@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             this.player.Connection?.SendMasterStatsUpdate(
                 (ushort)this.player.Attributes[Stats.MasterLevel],
                 (ulong)character.MasterExperience,
-                (ulong)this.player.GameServerContext.Configuration.MasterExperienceTable[(int)this.player.Attributes[Stats.MasterLevel] + 1],
+                (ulong)this.player.GameServerContext.Configuration.MasterExperienceTable![(int)this.player.Attributes[Stats.MasterLevel] + 1],
                 (ushort)character.MasterLevelUpPoints,
                 (ushort)this.player.Attributes[Stats.MaximumHealth],
                 (ushort)this.player.Attributes[Stats.MaximumMana],

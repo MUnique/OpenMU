@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// Gets or sets the item definition.
         /// </summary>
-        public virtual ItemDefinition ItemDefinition { get; set; }
+        public virtual ItemDefinition? ItemDefinition { get; set; }
 
         /// <summary>
         /// Gets or sets the random minimum level for a created item.

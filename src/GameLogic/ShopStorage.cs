@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -16,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="player">The player.</param>
         public ShopStorage(Player player)
-            : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(player.SelectedCharacter!.Inventory, InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
+            : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, nameof(Character.Inventory)), InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
         {
             this.StoreLock = new object();
         }

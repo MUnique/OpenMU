@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Persistence;
-
 namespace MUnique.OpenMU.GameLogic.Attributes
 {
     using System;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Extensions for <see cref="IAttributeSystem"/>s.
@@ -25,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static IElement CreateElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue value)
         {
             var relations = value.RelatedValues;
-            IElement result = value.ConstantValue;
+            var result = value.ConstantValue;
             if (relations?.Any() ?? false)
             {
                 var elements = relations

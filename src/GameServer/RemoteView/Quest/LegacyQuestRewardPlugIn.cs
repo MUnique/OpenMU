@@ -45,10 +45,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                     this.player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.LevelUpPoints, (byte)value);
                     break;
                 case QuestRewardType.CharacterEvolutionFirstToSecond:
-                    this.player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.CharacterEvolutionFirstToSecond, (byte)(this.player.SelectedCharacter!.CharacterClass.Number << 3));
+                    this.player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.CharacterEvolutionFirstToSecond, (byte)(this.player.SelectedCharacter!.CharacterClass!.Number << 3));
                     break;
                 case QuestRewardType.CharacterEvolutionSecondToThird:
-                    this.player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.CharacterEvolutionSecondToThird, (byte)(this.player.SelectedCharacter!.CharacterClass.Number << 3));
+                    this.player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.CharacterEvolutionSecondToThird, (byte)(this.player.SelectedCharacter!.CharacterClass!.Number << 3));
                     break;
                 case QuestRewardType.Attribute:
                     if (attributeReward == Stats.IsSkillComboAvailable)

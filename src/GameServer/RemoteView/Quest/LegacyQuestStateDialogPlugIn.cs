@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 
             var questState = this.player.SelectedCharacter.QuestStates.FirstOrDefault(s => s.Group == QuestConstants.LegacyQuestGroup);
             var quest = questState?.ActiveQuest ?? this.player.GetNextLegacyQuest();
-            connection?.SendLegacyQuestStateDialog((byte)(quest?.Number ?? 0), this.player.GetLegacyQuestStateByte());
+            connection.SendLegacyQuestStateDialog((byte)(quest?.Number ?? 0), this.player.GetLegacyQuestStateByte());
 
             if (quest?.RequiredMonsterKills.Any() ?? false)
             {
@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 foreach (var requirement in quest.RequiredMonsterKills)
                 {
                     var monsterState = packet[i];
-                    monsterState.MonsterNumber = (uint)requirement.Monster.Number;
+                    monsterState.MonsterNumber = (uint)requirement.Monster!.Number;
                     monsterState.KillCount = (uint)(questState?.RequirementStates.FirstOrDefault(r => r.Requirement == requirement)?.KillCount ?? 0);
                     i++;
                 }

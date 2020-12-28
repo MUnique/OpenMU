@@ -7,8 +7,8 @@ namespace MUnique.OpenMU.GameLogic.Attributes
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
 
@@ -150,7 +150,9 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         {
             if (!MonsterStatAttributesCache.TryGetValue(monsterDef, out var result))
             {
-                result = monsterDef.Attributes.ToDictionary(m => m.AttributeDefinition, m => m.Value);
+                result = monsterDef.Attributes.ToDictionary(
+                    m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
+                    m => m.Value);
                 MonsterStatAttributesCache.Add(monsterDef, result);
             }
 

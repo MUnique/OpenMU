@@ -219,7 +219,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the designation of this monster.
         /// Not relevant for the server, however helpful for debugging/logging.
         /// </summary>
-        public string Designation { get; set; }
+        public string Designation { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the range in which a monster will move randomly?
@@ -281,43 +281,43 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the name of the intelligence type, if this npc/monster uses a specific implementation of an INpcIntelligence.
         /// </summary>
-        public string IntelligenceTypeName { get; set; }
+        public string? IntelligenceTypeName { get; set; }
 
         /// <summary>
         /// Gets or sets the skill with which this monster is attacking. Also known as "Attack type".
         /// </summary>
         /// <remarks>The additional damage of the skill is usually NOT applied; However, magic effects are.</remarks>
-        public virtual Skill AttackSkill { get; set; }
+        public virtual Skill? AttackSkill { get; set; }
 
         /// <summary>
         /// Gets or sets the items of the merchant store. Is only relevant for merchant NPCs.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ItemStorage MerchantStore { get; set; }
+        public virtual ItemStorage? MerchantStore { get; set; }
 
         /// <summary>
         /// Gets or sets the item craftings. Is only relevant for crafting NPCs (chaos goblin etc.).
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemCrafting.ItemCrafting> ItemCraftings { get; protected set; }
+        public virtual ICollection<ItemCrafting.ItemCrafting> ItemCraftings { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the drop item groups.
         /// Some monsters drop special items. Examples: Kundun has the chance to drop ancient items.
         /// </summary>
-        public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; }
+        public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the attributes of this monster.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<MonsterAttribute> Attributes { get; protected set; }
+        public virtual ICollection<MonsterAttribute> Attributes { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the quests which can be started through this npc.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<QuestDefinition> Quests { get; protected set; }
+        public virtual ICollection<QuestDefinition> Quests { get; protected set; } = null!;
 
         /// <summary>
         /// Attribute default accessor.

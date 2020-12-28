@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             }
 
             var masterSkills = this.player.SkillList?.Skills.Where(s => s.Skill.MasterDefinition != null).ToList();
-            if (masterSkills is null || this.player.SelectedCharacter is null)
+            if (masterSkills is null || this.player.SelectedCharacter?.CharacterClass is null)
             {
                 return;
             }

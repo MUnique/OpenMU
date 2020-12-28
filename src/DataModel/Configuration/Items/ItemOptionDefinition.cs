@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the name of the option, for example "Luck", "Skill", "Normal Option".
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether this option adds randomly.
@@ -39,6 +39,6 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets or sets the possible options.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<IncreasableItemOption> PossibleOptions { get; protected set; }
+        public virtual ICollection<IncreasableItemOption> PossibleOptions { get; protected set; } = null!;
     }
 }

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     using System;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -95,10 +96,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void SerializeItem(Span<byte> target, Item item)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
             target[0] = (byte)item.Definition.Number;
             target[1] = (byte)((item.Level << 3) & LevelMask);
 
-            var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.Option);
+            var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
             if (itemOption != null)
             {
                 // The item option level is splitted into 2 parts. Webzen... :-/
@@ -107,7 +109,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
                 // Some items (wings) can have different options (3rd wings up to 3!)
                 // Alternate options are set at array[startIndex + 3] |= 0x20 and 0x10
-                if (itemOption.ItemOption.Number != 0)
+                if (itemOption.ItemOption?.Number > 0)
                 {
                     target[3] |= (byte)((itemOption.ItemOption.Number & 0b11) << 4);
                 }
@@ -125,7 +127,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             target[3] |= GetFenrirByte(item);
 
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Luck))
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck))
             {
                 target[1] |= LuckFlag;
             }
@@ -141,7 +143,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 target[4] |= (byte)(ancientSet.AncientSetDiscriminator & AncientDiscriminatorMask);
 
                 // An ancient item may or may not have an ancient bonus option. Example without bonus: Gywen Pendant.
-                var ancientBonus = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus);
+                var ancientBonus = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.AncientBonus);
                 if (ancientBonus != null)
                 {
                     target[4] |= (byte)((ancientBonus.Level << 2) & AncientBonusLevelMask);
@@ -149,7 +151,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
 
             target[5] = (byte)(item.Definition.Group << 4);
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.GuardianOption))
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GuardianOption))
             {
                 target[5] |= GuardianOptionFlag;
             }
@@ -216,7 +218,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            if (item.Definition.Skill is null)
+            if (item.Definition!.Skill is null)
             {
                 throw new ArgumentException($"The skill flag was set, but a skill is not defined for the specified item ({item.Definition.Number}, {item.Definition.Group})");
             }
@@ -231,7 +233,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            var luckOption = item.Definition.PossibleItemOptions
+            var luckOption = item.Definition!.PossibleItemOptions
                                  .SelectMany(o => o.PossibleOptions.Where(i => i.OptionType == ItemOptionTypes.Luck))
                                  .FirstOrDefault()
                              ?? throw new ArgumentException($"The luck flag was set, but luck option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
@@ -243,7 +245,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private static void ReadWingOption(byte wingbyte, IContext persistenceContext, Item item)
         {
             var wingBits = wingbyte & 0x0F;
-            var wingOptionDefinition = item.Definition.PossibleItemOptions.First(o =>
+            var wingOptionDefinition = item.Definition!.PossibleItemOptions.First(o =>
                 o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing));
             foreach (var wingOption in wingOptionDefinition.PossibleOptions)
             {
@@ -260,7 +262,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private static void ReadExcellentOption(byte excByte, IContext persistenceContext, Item item)
         {
             var excellentBits = excByte & 0x3F;
-            var excellentOptionDefinition = item.Definition.PossibleItemOptions.First(o =>
+            var excellentOptionDefinition = item.Definition!.PossibleItemOptions.First(o =>
                 o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Excellent));
             foreach (var excellentOption in excellentOptionDefinition.PossibleOptions)
             {
@@ -282,7 +284,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            var itemIsWing = item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing));
+            var itemIsWing = item.Definition!.PossibleItemOptions.Any(o => o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing));
             var optionNumber = itemIsWing ? (array[3] >> 4) & 0b11 : 0;
             var option = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions.Where(i => i.OptionType == ItemOptionTypes.Option && i.Number == optionNumber))
                 .FirstOrDefault()
@@ -302,7 +304,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             var bonusLevel = (ancientByte & AncientBonusLevelMask) >> 2;
             var setDiscriminator = ancientByte & AncientDiscriminatorMask;
-            var ancientSets = item.Definition.PossibleItemSetGroups
+            var ancientSets = item.Definition!.PossibleItemSetGroups
                 .Where(set => set.AncientSetDiscriminator == setDiscriminator && set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).ToList();
             if (ancientSets.Count > 1)
             {
@@ -329,7 +331,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            if (!item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.GuardianOption)))
+            if (!item.Definition!.PossibleItemOptions.Any(o => o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.GuardianOption)))
             {
                 throw new ArgumentException($"The lvl380 option flag was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
             }
@@ -346,7 +348,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private static void ReadSockets(Span<byte> socketBytes, IContext persistenceContext, Item item)
         {
-            if (item.Definition.MaximumSockets == 0)
+            if (item.Definition!.MaximumSockets == 0)
             {
                 return;
             }
@@ -396,7 +398,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            var bonusOption = item.Definition.PossibleItemOptions
+            var bonusOption = item.Definition!.PossibleItemOptions
                 .SelectMany(o => o.PossibleOptions
                     .Where(p => p.OptionType == ItemOptionTypes.SocketBonusOption && p.Number == socketBonusByte))
                 .FirstOrDefault();
@@ -414,7 +416,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
             var level = harmonyByte & 0x0F;
             var optionNumber = (harmonyByte & 0xF0) >> 4;
-            var harmonyOption = item.Definition.PossibleItemOptions
+            var harmonyOption = item.Definition!.PossibleItemOptions
                                     .SelectMany(o => o.PossibleOptions.Where(p =>
                                         p.OptionType == ItemOptionTypes.HarmonyOption && p.Number == optionNumber))
                                     .FirstOrDefault()
@@ -446,7 +448,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return;
             }
 
-            var blackOption = item.Definition.PossibleItemOptions.FirstOrDefault(o => o.PossibleOptions.Any(p => p.OptionType == fenrirOptionType))
+            var blackOption = item.Definition!.PossibleItemOptions.FirstOrDefault(o => o.PossibleOptions.Any(p => p.OptionType == fenrirOptionType))
                               ?? throw new ArgumentException($"The fenrir flag {fenrirFlag} in {fenrirByte} was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
             var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
             optionLink.ItemOption = blackOption.PossibleOptions.First();
@@ -456,17 +458,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private static byte GetFenrirByte(Item item)
         {
             byte result = 0;
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.BlackFenrir))
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir))
             {
                 result |= BlackFenrirFlag;
             }
 
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.BlueFenrir))
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir))
             {
                 result |= BlueFenrirFlag;
             }
 
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.GoldFenrir))
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir))
             {
                 result |= GoldFenrirFlag;
             }
@@ -478,14 +480,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         {
             byte GetSocketByte(int socketSlot)
             {
-                var optionLink = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.SocketOption && o.Index == socketSlot);
+                var optionLink = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketOption && o.Index == socketSlot);
                 if (optionLink is null)
                 {
                     return EmptySocket;
                 }
 
                 var sphereLevel = optionLink.Level;
-                var elementType = optionLink.ItemOption.SubOptionType;
+                var elementType = optionLink.ItemOption!.SubOptionType;
                 var elementOption = optionLink.ItemOption.Number;
                 var optionIndex = SocketOptionIndexOffsets[elementType] + elementOption;
 
@@ -505,8 +507,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
                 return 0;
             }
 
-            var bonusOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.SocketBonusOption);
-            if (bonusOption != null)
+            var bonusOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketBonusOption);
+            if (bonusOption?.ItemOption != null)
             {
                 return (byte)bonusOption.ItemOption.Number;
             }
@@ -517,8 +519,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private static byte GetHarmonyByte(Item item)
         {
             byte result = 0;
-            var harmonyOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.HarmonyOption);
-            if (harmonyOption != null)
+            var harmonyOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption);
+            if (harmonyOption?.ItemOption is not null)
             {
                 result = (byte)(harmonyOption.ItemOption.Number << 4);
                 result |= (byte)harmonyOption.Level;
@@ -530,11 +532,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         private static byte GetExcellentByte(Item item)
         {
             byte result = 0;
-            var excellentOptions = item.ItemOptions.Where(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent || o.ItemOption.OptionType == ItemOptionTypes.Wing);
+            var excellentOptions = item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent || o.ItemOption?.OptionType == ItemOptionTypes.Wing);
 
             foreach (var option in excellentOptions)
             {
-                result |= (byte)(1 << (option.ItemOption.Number - 1));
+                result |= (byte)(1 << (option.ItemOption!.Number - 1));
             }
 
             return result;

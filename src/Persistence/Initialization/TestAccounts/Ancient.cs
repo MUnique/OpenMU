@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
             character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 200;
             character.LevelUpPoints -= 1060; // for the added strength and agility
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 12, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Great Lord Scepter+13+16+L+ExcDmg
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 12, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Great Lord Scepter+13+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.ArmorSlot, ItemGroups.Armor, 26, 13, "Agnis")); // Agnis Armor+13+16+L
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.HelmSlot, ItemGroups.Helm, 26, 13, "Agnis")); // Agnis Helm+13+16+L
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.PantsSlot, ItemGroups.Pants, 26, 13, "Broy")); // Broy Pants+13+16+L
@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 990; // for the added strength, agility and energy
             character.LevelUpPoints += 110; // after level 220, one point more
 
-            character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.LeftHandSlot, ItemGroups.Swords, 14, 13, "Hyon")); // Hyon LS+13+16+S+L
+            character.Inventory!.Items.Add(this.CreateFullAncient(InventoryConstants.LeftHandSlot, ItemGroups.Swords, 14, 13, "Hyon")); // Hyon LS+13+16+S+L
             character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 5, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Blade+13+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.ArmorSlot, ItemGroups.Armor, 1, 13, "Vicious")); // Vicious Dragon Armor+13+16+L
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.HelmSlot, ItemGroups.Helm, 1, 13, "Vicious")); // Vicious Dragon Helm+13+16+L
@@ -90,7 +90,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 1400; // for the added strength, agility and energy
             character.LevelUpPoints += 110; // after level 220, one point more
 
-            character.Inventory.Items.Add(this.CreateArrows(0));
+            character.Inventory!.Items.Add(this.CreateArrows(0));
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.RightHandSlot, ItemGroups.Bows, 5, 13, "Gywen")); // Gywen Silver Bow+13+16+S+L
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.ArmorSlot, ItemGroups.Armor, 14, 13, "Aruan")); // Gywen Armor+13+16+L
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.HelmSlot, ItemGroups.Helm, 14, 13, "Aruan")); // Aruan Helm+13+16+L
@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 1600; // for the added strength, agility, energy
             character.LevelUpPoints += 110; // after level 220, one point more
 
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 5, 11, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Staff of Kundun+13+16+L+ExcDmg
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 5, 11, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Staff of Kundun+13+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.RightHandSlot, ItemGroups.Shields, 6, 13, "Heras")); // Heras Skull Shield+13+16+S+L
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.ArmorSlot, ItemGroups.Armor, 3, 13, "Enis")); // Enis Legendary Armor+13+16+L
             character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.HelmSlot, ItemGroups.Helm, 3, 13, "Enis")); // Enis Legendary Helm+13+16+L

@@ -230,7 +230,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <value>
         /// The terrain data.
         /// </value>
-        byte[] TerrainData { get; }
+        byte[]? TerrainData { get; }
 
         /// <summary>
         /// Gets the players which are currently playing on the map.

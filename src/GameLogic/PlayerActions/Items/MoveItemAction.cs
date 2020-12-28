@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Microsoft.Extensions.Logging;
-
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using System;
     using System.ComponentModel;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
@@ -99,7 +98,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private void PartiallyStack(Player player, Item sourceItem, Item targetItem)
         {
-            var partialAmount = (byte)Math.Min(targetItem.Definition.Durability - targetItem.Durability, sourceItem.Durability);
+            var partialAmount = (byte)Math.Min(targetItem.Definition!.Durability - targetItem.Durability, sourceItem.Durability);
             targetItem.Durability += partialAmount;
             sourceItem.Durability -= partialAmount;
             player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(sourceItem);
@@ -208,12 +207,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var storage = toStorage.Storage;
             if (toStorage.Storage == player.Inventory && toSlot <= LastEquippableItemSlotIndex)
             {
-                if (storage.GetItem(toSlot) != null)
+                var itemDefinition = item.Definition;
+                if (storage.GetItem(toSlot) != null || itemDefinition?.ItemSlot is null)
                 {
                     return Movement.None;
                 }
-
-                var itemDefinition = item.Definition;
 
                 if (itemDefinition.ItemSlot.ItemSlots.Contains(toSlot) &&
                     player.CompliesRequirements(item))
@@ -221,7 +219,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     if (itemDefinition.ItemSlot.ItemSlots.Contains(RightHandSlot)
                         && itemDefinition.ItemSlot.ItemSlots.Contains(LeftHandSlot)
                         && toSlot == RightHandSlot
-                        && storage.GetItem(LeftHandSlot)?.Definition.Width >= 2)
+                        && storage.GetItem(LeftHandSlot)?.Definition!.Width >= 2)
                     {
                         return Movement.None;
                     }
@@ -233,7 +231,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return Movement.None;
             }
 
-            if (item.Definition.IsBoundToCharacter && toStorage != fromStorage)
+            if (item.Definition!.IsBoundToCharacter && toStorage != fromStorage)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("This item is bound to the inventory of this character.", MessageType.BlueNormal);
                 return Movement.None;
@@ -307,7 +305,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             int rowIndex = (toSlot - toStorage.StartIndex) / RowSize;
             int columnIndex = (toSlot - toStorage.StartIndex) % RowSize;
-            for (int r = rowIndex; r < rowIndex + item.Definition.Height; r++)
+            for (int r = rowIndex; r < rowIndex + item.Definition!.Height; r++)
             {
                 for (int c = columnIndex; c < columnIndex + item.Definition.Width; c++)
                 {
@@ -327,7 +325,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             int rowIndex = (blockingItem.ItemSlot - toStorage.StartIndex) / RowSize;
 
             // Set all taken slots of this item to true
-            for (int r = rowIndex; r < rowIndex + blockingItem.Definition.Height; r++)
+            for (int r = rowIndex; r < rowIndex + blockingItem.Definition!.Height; r++)
             {
                 for (int c = columnIndex; c < columnIndex + blockingItem.Definition.Width; c++)
                 {

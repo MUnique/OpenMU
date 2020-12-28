@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the maximum connections.
@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the endpoints of the game server.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ChatServerEndpoint> Endpoints { get; protected set; }
+        public virtual ICollection<ChatServerEndpoint> Endpoints { get; protected set; } = null!;
 
         /// <inheritdoc/>
         public override string ToString()

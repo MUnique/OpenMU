@@ -33,9 +33,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
         public void CharacterCreated(Player player, Character createdCharacter)
         {
             using var logScope = player.Logger.BeginScope(this.GetType());
-            if (this.characterClassNumber != createdCharacter.CharacterClass.Number)
+            if (this.characterClassNumber != createdCharacter.CharacterClass?.Number)
             {
-                player.Logger.LogDebug("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass.Number, this.characterClassNumber);
+                player.Logger.LogDebug("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass?.Number, this.characterClassNumber);
                 return;
             }
 

@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.GameServer
                 throw;
             }
 
-            this.ServerInfo = new GameServerInfoAdapter(this, gameServerDefinition.ServerConfiguration);
+            this.ServerInfo = new GameServerInfoAdapter(this, gameServerDefinition.ServerConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a ServerConfiguration"));
         }
 
         /// <inheritdoc />

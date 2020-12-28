@@ -178,7 +178,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             }
 
             character.CurrentMap = character.CharacterClass.HomeMap;
-            var spawnGate = character.CurrentMap.ExitGates.Where(m => m.IsSpawnGate).SelectRandom();
+            var spawnGate = character.CurrentMap!.ExitGates.Where(m => m.IsSpawnGate).SelectRandom();
             character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
             character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
             character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
@@ -213,7 +213,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
                 var optionLink = this.Context.CreateNew<ItemOptionLink>();
                 optionLink.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
                     .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                    .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
+                    .First(o => o.PowerUpDefinition!.TargetAttribute == targetExcellentOption);
                 item.ItemOptions.Add(optionLink);
             }
 
@@ -437,7 +437,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
                 var optionLink = this.Context.CreateNew<ItemOptionLink>();
                 optionLink.ItemOption = weapon.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
                     .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                    .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
+                    .First(o => o.PowerUpDefinition!.TargetAttribute == targetExcellentOption);
                 weapon.ItemOptions.Add(optionLink);
             }
 
@@ -505,7 +505,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
                 return fenrir;
             }
 
-            var options = fenrir.Definition.PossibleItemOptions.First().PossibleOptions.Where(p => p.OptionType == color);
+            var options = fenrir.Definition!.PossibleItemOptions.First().PossibleOptions.Where(p => p.OptionType == color);
             foreach (var option in options)
             {
                 var optionLink = this.Context.CreateNew<ItemOptionLink>();

@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic
 
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Skill Effect, used by Skill Effect List in each
@@ -29,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="definition">The definition.</param>
         /// <param name="duration">The duration.</param>
         public MagicEffect(IElement powerUp, MagicEffectDefinition definition, TimeSpan duration)
-            : this(duration, definition, new ElementWithTarget(powerUp, definition.PowerUpDefinition.TargetAttribute))
+            : this(duration, definition, new ElementWithTarget(powerUp, definition.PowerUpDefinition?.TargetAttribute ?? throw new InvalidOperationException($"MagicEffectDefinition {definition.GetId()} has no target attribute.")))
         {
         }
 

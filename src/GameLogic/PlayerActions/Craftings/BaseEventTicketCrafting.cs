@@ -46,9 +46,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             successRate = 0;
             itemLinks = new List<CraftingRequiredItemLink>(3);
 
-            var item1 = player.TemporaryStorage!.Items.FirstOrDefault(item => item.Definition.Name == this.requiredEventItemName1);
-            var item2 = player.TemporaryStorage.Items.FirstOrDefault(item => item.Definition.Name == this.requiredEventItemName2);
-            var chaos = player.TemporaryStorage.Items.FirstOrDefault(item => item.Definition.Name == "Jewel of Chaos");
+            var item1 = player.TemporaryStorage!.Items.FirstOrDefault(item => item.Definition?.Name == this.requiredEventItemName1);
+            var item2 = player.TemporaryStorage.Items.FirstOrDefault(item => item.Definition?.Name == this.requiredEventItemName2);
+            var chaos = player.TemporaryStorage.Items.FirstOrDefault(item => item.Definition?.Name == "Jewel of Chaos");
             if (item1 is null || item2 is null || item1.Level != item2.Level || chaos is null)
             {
                 return this.IncorrectMixItemsResult;
@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 item1.GetAsEnumerable(),
                 new ItemCraftingRequiredItem
                 {
-                    PossibleItems = { item1.Definition },
+                    PossibleItems = { item1.Definition! },
                     MaximumAmount = 1,
                     MinimumAmount = 1,
                 }));
@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 item2.GetAsEnumerable(),
                 new ItemCraftingRequiredItem
                 {
-                    PossibleItems = { item2.Definition },
+                    PossibleItems = { item2.Definition! },
                     MaximumAmount = 1,
                     MinimumAmount = 1,
                 }));
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 chaos.GetAsEnumerable(),
                 new ItemCraftingRequiredItem
                 {
-                    PossibleItems = { chaos.Definition },
+                    PossibleItems = { chaos.Definition! },
                     MaximumAmount = 1,
                     MinimumAmount = 1,
                 }));
@@ -116,7 +116,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
 
         private byte GetEventLevel(IList<CraftingRequiredItemLink> requiredItems)
         {
-            var item = requiredItems.First(ri => ri.Items.Any(i => i.Definition.Name == this.requiredEventItemName1));
+            var item = requiredItems.First(ri => ri.Items.Any(i => i.Definition?.Name == this.requiredEventItemName1));
             return item.Items.First().Level;
         }
     }

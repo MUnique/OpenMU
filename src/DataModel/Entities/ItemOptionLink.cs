@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Entities
 {
+    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
@@ -16,7 +17,8 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the item option.
         /// Link to <see cref="ItemDefinition.PossibleItemOptions"/>, <see cref="ItemOptionDefinition.PossibleOptions"/>.
         /// </summary>
-        public virtual IncreasableItemOption ItemOption { get; set; }
+        [Required]
+        public virtual IncreasableItemOption? ItemOption { get; set; }
 
         /// <summary>
         /// Gets or sets the level.

@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             itemOption.PowerUpDefinition.TargetAttribute =
                 this.GameConfiguration.Attributes.FirstOrDefault(a => a == Stats.CriticalDamageChance);
             itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-            itemOption.PowerUpDefinition.Boost.ConstantValue.Value = 0.05f;
+            itemOption.PowerUpDefinition.Boost.ConstantValue!.Value = 0.05f;
             definition.PossibleOptions.Add(itemOption);
 
             return definition;
@@ -175,7 +175,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             itemOption.PowerUpDefinition.TargetAttribute =
                 this.GameConfiguration.Attributes.First(a => a == attributeDefinition);
             itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-            itemOption.PowerUpDefinition.Boost.ConstantValue.Value = 4;
+            itemOption.PowerUpDefinition.Boost.ConstantValue!.Value = 4;
             for (int level = 2; level <= 4; level++)
             {
                 var levelDependentOption = this.Context.CreateNew<ItemOptionOfLevel>();
@@ -183,7 +183,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
                 powerUpDefinition.TargetAttribute = itemOption.PowerUpDefinition.TargetAttribute;
                 powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-                powerUpDefinition.Boost.ConstantValue.Value = level * 4;
+                powerUpDefinition.Boost.ConstantValue!.Value = level * 4;
                 levelDependentOption.PowerUpDefinition = powerUpDefinition;
                 itemOption.LevelDependentOptions.Add(levelDependentOption);
             }

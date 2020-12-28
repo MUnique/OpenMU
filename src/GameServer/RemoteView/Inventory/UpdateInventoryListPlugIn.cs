@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         public void UpdateInventoryList()
         {
             var connection = this.player.Connection;
-            if (connection is null || this.player.SelectedCharacter is null)
+            if (connection is null || this.player.SelectedCharacter?.Inventory is null)
             {
                 return;
             }

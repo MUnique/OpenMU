@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         protected override Character CreateDarkLord()
         {
             var character = this.CreateCharacter(this.AccountName + "Dl", CharacterClassNumber.DarkLord, this.Level, 3);
-            character.Inventory.Items.Add(this.CreateSmallAxe(0));
+            character.Inventory!.Items.Add(this.CreateSmallAxe(0));
             character.Inventory.Items.Add(this.CreateArmorItem(52, 5, 8)); // Leather Armor
             character.Inventory.Items.Add(this.CreateArmorItem(49, 5, 9)); // Leather Pants
             character.Inventory.Items.Add(this.CreateArmorItem(63, 5, 10, Stats.DamageReflection)); // Leather Gloves
@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         protected override Character CreateKnight()
         {
             var character = this.CreateCharacter(this.AccountName + "Dk", CharacterClassNumber.DarkKnight, this.Level, 0);
-            character.Inventory.Items.Add(this.CreateSmallAxe(0));
+            character.Inventory!.Items.Add(this.CreateSmallAxe(0));
             character.Inventory.Items.Add(this.CreateArmorItem(52, 5, 8)); // Leather Armor
             character.Inventory.Items.Add(this.CreateArmorItem(47, 5, 7)); // Leather Helm
             character.Inventory.Items.Add(this.CreateArmorItem(49, 5, 9)); // Leather Pants
@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 20;
             character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 30;
 
-            character.Inventory.Items.Add(this.CreateShortBow(1));
+            character.Inventory!.Items.Add(this.CreateShortBow(1));
             character.Inventory.Items.Add(this.CreateArrows(0));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 10, 8)); // Vine Armor
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 10, 7)); // Vine Helm
@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         protected override Character CreateWizard()
         {
             var character = this.CreateCharacter(this.AccountName + "Dw", CharacterClassNumber.DarkWizard, this.Level, 1);
-            character.Inventory.Items.Add(this.CreateSkullStaff(0));
+            character.Inventory!.Items.Add(this.CreateSkullStaff(0));
             character.Inventory.Items.Add(this.CreateArmorItem(52, 2, 8)); // Pad Armor
             character.Inventory.Items.Add(this.CreateArmorItem(47, 2, 7)); // Pad Helm
             character.Inventory.Items.Add(this.CreateArmorItem(49, 2, 9)); // Pad Pants

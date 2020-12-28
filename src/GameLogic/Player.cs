@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel;
+
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
@@ -106,10 +108,17 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public int Money
         {
-            get => this.SelectedCharacter?.Inventory.Money ?? 0;
+            get => this.SelectedCharacter?.Inventory?.Money ?? 0;
 
             set
             {
+                if (this.SelectedCharacter is null)
+                {
+                    return;
+                }
+
+                this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.Inventory is null, nameof(this.SelectedCharacter.Inventory));
+
                 if (this.SelectedCharacter != null && this.SelectedCharacter.Inventory.Money != value)
                 {
                     this.SelectedCharacter.Inventory.Money = value;
@@ -508,6 +517,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns><c>True</c>, if the player complies with the requirements of the specified item; Otherwise, <c>false</c>.</returns>
         public bool CompliesRequirements(Item item)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+
             foreach (var requirement in item.Definition.Requirements.Select(item.GetRequirement))
             {
                 if (this.Attributes![requirement.Item1] < requirement.Item2)
@@ -516,7 +527,7 @@ namespace MUnique.OpenMU.GameLogic
                 }
             }
 
-            return item.Definition.QualifiedCharacters.Contains(this.SelectedCharacter!.CharacterClass);
+            return item.Definition.QualifiedCharacters.Contains(this.SelectedCharacter!.CharacterClass!);
         }
 
         /// <summary>
@@ -644,6 +655,9 @@ namespace MUnique.OpenMU.GameLogic
         /// </remarks>
         public void ClientReadyAfterMapChange()
         {
+            this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
+            this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
+            
             this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned());
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
             this.IsAlive = true;
@@ -681,7 +695,7 @@ namespace MUnique.OpenMU.GameLogic
 
                 // Add the Exp
                 bool lvlup = false;
-                var expTable = this.GameContext.Configuration.ExperienceTable;
+                var expTable = this.GameContext.Configuration.ExperienceTable ?? throw Error.NotInitializedProperty(this.GameContext.Configuration, nameof(GameConfiguration.ExperienceTable));
                 if (expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter!.Experience < exp)
                 {
                     exp = expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter.Experience;
@@ -900,6 +914,16 @@ namespace MUnique.OpenMU.GameLogic
         public void CreateMagicEffectPowerUp(SkillEntry skillEntry)
         {
             var skill = skillEntry.Skill;
+            if (skill.MagicEffectDef?.PowerUpDefinition?.Boost is null)
+            {
+                throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefintion.");
+            }
+
+            if (skill.MagicEffectDef.PowerUpDefinition.Duration is null)
+            {
+                throw new InvalidOperationException($"PowerUpDefinition {skill.MagicEffectDef.PowerUpDefinition.GetId()} no Duration.");
+            }
+
             var powerUpDef = skill.MagicEffectDef.PowerUpDefinition;
             if (skillEntry.Level > 0)
             {
@@ -1024,7 +1048,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The current step delay, depending on equipped items.</returns>
         private TimeSpan GetStepDelay()
         {
-            if (this.Inventory?.EquippedItems.Any(item => item.Definition.ItemSlot.ItemSlots.Contains(7)) ?? false)
+            if (this.Inventory?.EquippedItems.Any(item => item.Definition?.ItemSlot?.ItemSlots.Contains(7) ?? false) ?? false)
             {
                 // Wings
                 return TimeSpan.FromMilliseconds(300);
@@ -1124,13 +1148,13 @@ namespace MUnique.OpenMU.GameLogic
         private Item? GetAmmunitionItem()
         {
             if (this.Inventory?.GetItem(InventoryConstants.LeftHandSlot) is { } leftItem
-                && leftItem.Definition.IsAmmunition)
+                && (leftItem.Definition?.IsAmmunition ?? false))
             {
                 return leftItem;
             }
 
             if (this.Inventory?.GetItem(InventoryConstants.RightHandSlot) is { } rightItem
-                && rightItem.Definition.IsAmmunition)
+                && (rightItem.Definition?.IsAmmunition ?? false))
             {
                 return rightItem;
             }

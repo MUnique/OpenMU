@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <returns>The skill to learn.</returns>
         protected virtual Skill? GetLearnableSkill(Item item, GameConfiguration gameConfiguration)
         {
-            return item.Definition.Skill;
+            return item.Definition?.Skill;
         }
     }
 }

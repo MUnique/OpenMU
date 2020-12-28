@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -48,8 +49,8 @@ namespace MUnique.OpenMU.GameLogic
             this.itemSkills = new List<SkillEntry>();
             this.player.Inventory.EquippedItems
                 .Where(item => item.HasSkill)
-                .Where(item => item.Definition.Skill != null)
-                .ForEach(item => this.AddItemSkill(item.Definition.Skill));
+                .Where(item => (item.Definition ?? throw Error.NotInitializedProperty(item, nameof(item.Definition))).Skill != null)
+                .ForEach(item => this.AddItemSkill(item.Definition!.Skill!));
             this.player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChanged;
             foreach (var skill in this.learnedSkills.Where(s => s.Skill.SkillType == SkillType.PassiveBoost))
             {
@@ -160,7 +161,7 @@ namespace MUnique.OpenMU.GameLogic
         private void Inventory_WearingItemsChanged(object? sender, ItemEventArgs eventArgs)
         {
             var item = eventArgs.Item;
-            if (!item.HasSkill || item.Definition.Skill is null)
+            if (!item.HasSkill || item.Definition?.Skill is null)
             {
                 return;
             }
@@ -181,7 +182,7 @@ namespace MUnique.OpenMU.GameLogic
             public PassiveSkillBoostPowerUp(SkillEntry skillEntry)
             {
                 this.Value = skillEntry.CalculateValue();
-                this.AggregateType = skillEntry.Skill.MasterDefinition.Aggregation;
+                this.AggregateType = skillEntry.Skill.MasterDefinition!.Aggregation;
                 skillEntry.PropertyChanged += (sender, eventArgs) =>
                 {
                     if (eventArgs.PropertyName == nameof(SkillEntry.Level))

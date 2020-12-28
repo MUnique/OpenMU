@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             if (this.IsWarpLegit(player, gate))
             {
-                player.WarpTo(gate.TargetGate);
+                player.WarpTo(gate.TargetGate!);
             }
             else
             {
@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private bool IsWarpLegit(Player player, EnterGate? enterGate)
         {
-            if (enterGate is null)
+            if (enterGate?.TargetGate?.Map is null)
             {
                 return false;
             }

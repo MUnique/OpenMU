@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -45,10 +46,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <returns><c>true</c>, if the actual item matches with the required item definition.</returns>
         protected virtual bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+
             return (!requiredItem.PossibleItems.Any() || requiredItem.PossibleItems.Contains(item.Definition))
                        && item.Level >= requiredItem.MinimumItemLevel
                        && item.Level <= requiredItem.MaximumItemLevel
-                       && requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption.OptionType == r));
+                       && requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption!.OptionType == r));
         }
 
         /// <inheritdoc />
@@ -83,19 +86,19 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 foreach (var item in foundItems)
                 {
                     if (this.settings.SuccessPercentageAdditionForLuck != default
-                        && item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Luck))
+                        && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck))
                     {
                         successRate = (byte)(successRate + this.settings.SuccessPercentageAdditionForLuck);
                     }
 
                     if (this.settings.SuccessPercentageAdditionForExcellentItem != default
-                        && item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent))
+                        && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
                     {
                         successRate = (byte)(successRate + this.settings.SuccessPercentageAdditionForExcellentItem);
                     }
 
                     if (this.settings.SuccessPercentageAdditionForAncientItem != default
-                        && item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.AncientBonus))
+                        && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.AncientBonus))
                     {
                         successRate = (byte)(successRate + this.settings.SuccessPercentageAdditionForAncientItem);
                     }
@@ -168,7 +171,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             {
                 // Create new Item
                 var resultItem = player.PersistenceContext.CreateNew<Item>();
-                resultItem.Definition = craftingResultItem.ItemDefinition;
+                resultItem.Definition = craftingResultItem.ItemDefinition ?? throw Error.NotInitializedProperty(craftingResultItem, nameof(craftingResultItem.ItemDefinition));
                 resultItem.Level = (byte)Rand.NextInt(
                     craftingResultItem.RandomMinimumLevel,
                     craftingResultItem.RandomMaximumLevel + 1);
@@ -180,7 +183,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 if (!resultItem.HasSkill
                     && this.settings.ResultItemSkillChance > 0
                     && Rand.NextRandomBool(this.settings.ResultItemSkillChance)
-                    && resultItem.Definition.Skill is { })
+                    && resultItem.Definition!.Skill is { })
                 {
                     resultItem.HasSkill = true;
                 }
@@ -194,7 +197,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             if (this.settings.ResultItemLuckOptionChance > 0
                 && Rand.NextRandomBool(this.settings.ResultItemLuckOptionChance)
-                && resultItem.Definition.PossibleItemOptions
+                && resultItem.Definition!.PossibleItemOptions
                         .FirstOrDefault(o => o.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.Luck))
                     is { } luck)
             {
@@ -207,7 +210,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         private void AddRandomExcellentOptions(Item resultItem, Player player)
         {
             if (this.settings.ResultItemExcellentOptionChance > 0
-                && resultItem.Definition.PossibleItemOptions.FirstOrDefault(o =>
+                && resultItem.Definition!.PossibleItemOptions.FirstOrDefault(o =>
                         o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent || p.OptionType == ItemOptionTypes.Wing))
                     is { } optionDefinition)
             {

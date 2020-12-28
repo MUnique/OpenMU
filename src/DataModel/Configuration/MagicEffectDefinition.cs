@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the sub type.
@@ -54,6 +54,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the powerUp definition which is used to create the actual power up element.
         /// </summary>
         [MemberOfAggregate]
-        public virtual PowerUpDefinitionWithDuration PowerUpDefinition { get; set; }
+        public virtual PowerUpDefinitionWithDuration? PowerUpDefinition { get; set; }
     }
 }

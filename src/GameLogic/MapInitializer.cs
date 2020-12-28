@@ -77,11 +77,11 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             this.logger.LogDebug("Start creating monster instances for map {createdMap}", createdMap);
-            foreach (var spawn in createdMap.Definition.MonsterSpawns.Where(s => s.SpawnTrigger == SpawnTrigger.Automatic))
+            foreach (var spawn in createdMap.Definition.MonsterSpawns.Where(s => s.SpawnTrigger == SpawnTrigger.Automatic && s.MonsterDefinition is not null))
             {
                 for (int i = 0; i < spawn.Quantity; i++)
                 {
-                    var monsterDef = spawn.MonsterDefinition;
+                    var monsterDef = spawn.MonsterDefinition!;
                     NonPlayerCharacter npc;
 
                     var intelligence = this.TryCreateConfiguredNpcIntelligence(monsterDef, createdMap);

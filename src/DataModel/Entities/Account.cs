@@ -56,22 +56,22 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the unique login name.
         /// </summary>
         [Required]
-        public string LoginName { get; set; }
+        public string LoginName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the hash of the password, preferrably of BCrypt.
         /// </summary>
-        public string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the security code which is used to confirm character deletion and guild kicks.
         /// </summary>
-        public string SecurityCode { get; set; }
+        public string SecurityCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the e mail address.
         /// </summary>
-        public string EMail { get; set; }
+        public string EMail { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the unlocked character classes which are locked by default.
@@ -80,7 +80,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Some classes are only available when the player reached a certain level before, or when he paid for some unlock ticket.
         /// </remarks>
         [HiddenAtCreation]
-        public virtual ICollection<CharacterClass> UnlockedCharacterClasses { get; protected set; }
+        public virtual ICollection<CharacterClass> UnlockedCharacterClasses { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the registration date.
@@ -101,14 +101,14 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the vault password.
         /// </summary>
         [HiddenAtCreation]
-        public string VaultPassword { get; set; }
+        public string VaultPassword { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the vault.
         /// </summary>
         [MemberOfAggregate]
         [HiddenAtCreation]
-        public virtual ItemStorage Vault { get; set; }
+        public virtual ItemStorage? Vault { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is vault extended.
@@ -120,7 +120,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// </summary>
         [MemberOfAggregate]
         [HiddenAtCreation]
-        public virtual ICollection<Character> Characters { get; protected set; }
+        public virtual ICollection<Character> Characters { get; protected set; } = null!;
 
         /// <inheritdoc />
         public override string ToString()

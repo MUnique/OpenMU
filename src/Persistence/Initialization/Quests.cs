@@ -285,7 +285,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private void AddItemRequirement(QuestDefinition quest, byte itemGroup, short itemNumber, byte itemLevel, byte minimumMonsterLevel, byte maximumMonsterLevel)
         {
             var itemRequirement = this.AddItemRequirement(quest, itemGroup, itemNumber, itemLevel);
-            var dropItemGroup = itemRequirement.DropItemGroup;
+            var dropItemGroup = itemRequirement.DropItemGroup!;
             dropItemGroup.MinimumMonsterLevel = minimumMonsterLevel;
             dropItemGroup.MaximumMonsterLevel = maximumMonsterLevel;
         }
@@ -293,7 +293,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         private void AddItemRequirement(QuestDefinition quest, byte itemGroup, short itemNumber, byte itemLevel, short monsterNumber, double dropRate)
         {
             var itemRequirement = this.AddItemRequirement(quest, itemGroup, itemNumber, itemLevel);
-            var dropItemGroup = itemRequirement.DropItemGroup;
+            var dropItemGroup = itemRequirement.DropItemGroup!;
             dropItemGroup.Monster = this.GameConfiguration.Monsters.First(m => m.Number == monsterNumber);
             dropItemGroup.Chance = dropRate;
         }

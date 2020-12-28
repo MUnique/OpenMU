@@ -7,8 +7,9 @@ namespace MUnique.OpenMU.GameLogic.Attributes
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
+    using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
 
@@ -20,8 +21,8 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         private static readonly IDictionary<AttributeDefinition, Func<Trap, float>> StatMapping =
             new Dictionary<AttributeDefinition, Func<Trap, float>>
             {
-                { Stats.AttackDamageIncrease, m => 1.0f },
-                { Stats.ShieldBypassChance, m => 1.0f },
+                { Stats.AttackDamageIncrease, _ => 1.0f },
+                { Stats.ShieldBypassChance, _ => 1.0f },
             };
 
         private static readonly IDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new Dictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>>();
@@ -95,7 +96,9 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         {
             if (!MonsterStatAttributesCache.TryGetValue(monsterDef, out var result))
             {
-                result = monsterDef.Attributes.ToDictionary(m => m.AttributeDefinition, m => m.Value);
+                result = monsterDef.Attributes.ToDictionary(
+                    m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(PowerUpDefinition.TargetAttribute)),
+                    m => m.Value);
                 MonsterStatAttributesCache.Add(monsterDef, result);
             }
 

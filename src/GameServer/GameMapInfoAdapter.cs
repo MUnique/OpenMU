@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameServer
         public string MapName => this.map.Definition.Name;
 
         /// <inheritdoc/>
-        public byte[] TerrainData => this.map.Definition.TerrainData;
+        public byte[]? TerrainData => this.map.Definition.TerrainData;
 
         /// <inheritdoc/>
         public IList<IPlayerInfo> Players => this.players.Select(p => new PlayerInfo(p) as IPlayerInfo).ToList();

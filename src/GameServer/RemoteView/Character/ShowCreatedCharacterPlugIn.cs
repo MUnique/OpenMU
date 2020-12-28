@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 CharacterName = character.Name,
                 CharacterSlot = character.CharacterSlot,
                 Level = (ushort)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Level)?.Value ?? 0),
-                Class = (CharacterClassNumber)character.CharacterClass.Number,
+                Class = (CharacterClassNumber)character.CharacterClass!.Number,
                 CharacterStatus = (byte)character.CharacterStatus,
             };
 

@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// Gets or sets the collection of possible items which are valid for this requirement.
         /// </summary>
-        public virtual ICollection<ItemDefinition> PossibleItems { get; protected set; }
+        public virtual ICollection<ItemDefinition> PossibleItems { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the minimum item level.
@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// Gets or sets the required item options.
         /// </summary>
-        public virtual ICollection<ItemOptionType> RequiredItemOptions { get; protected set; }
+        public virtual ICollection<ItemOptionType> RequiredItemOptions { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the minimum amount.

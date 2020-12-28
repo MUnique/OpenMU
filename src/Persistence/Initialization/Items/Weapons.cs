@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         {
             get
             {
-                return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumPhysBaseDmg));
+                return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg));
             }
         }
 
@@ -90,7 +90,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         {
             get
             {
-                return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumWizBaseDmg));
+                return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg));
             }
         }
 
@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         {
             get
             {
-                return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumCurseBaseDmg));
+                return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg));
             }
         }
 

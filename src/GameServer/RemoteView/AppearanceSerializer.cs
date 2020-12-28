@@ -152,7 +152,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SetHand(Span<byte> preview, ItemAppearance? item, int indexIndex, int groupIndex)
         {
-            if (item is null)
+            if (item?.Definition is null)
             {
                 preview[indexIndex] = 0xFF;
                 preview[groupIndex] |= 0xF0;
@@ -184,7 +184,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SetArmorItemIndex(Span<byte> preview, ItemAppearance item, int firstIndex, bool firstIndexHigh, byte secondIndexMask, int thirdIndex, bool thirdIndexHigh)
         {
-            preview[firstIndex] |= firstIndexHigh ? this.GetOrMaskForHighNibble(item.Definition.Number) : this.GetOrMaskForLowNibble(item.Definition.Number);
+            preview[firstIndex] |= firstIndexHigh ? this.GetOrMaskForHighNibble(item.Definition!.Number) : this.GetOrMaskForLowNibble(item.Definition!.Number);
             byte multi = (byte)(item.Definition.Number / 16);
             if (multi > 0)
             {
@@ -204,7 +204,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void SetArmorPiece(Span<byte> preview, ItemAppearance? item, int firstIndex, bool firstIndexHigh, byte secondIndexMask, int thirdIndex, bool thirdIndexHigh)
         {
-            if (item is null)
+            if (item?.Definition is null)
             {
                 this.SetEmptyArmor(preview, firstIndex, firstIndexHigh, secondIndexMask, thirdIndex, thirdIndexHigh);
             }
@@ -245,7 +245,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void AddWing(Span<byte> preview, ItemAppearance? wing)
         {
-            if (wing is null)
+            if (wing?.Definition is null)
             {
                 return;
             }
@@ -347,7 +347,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 
         private void AddPet(Span<byte> preview, ItemAppearance? pet)
         {
-            if (pet is null)
+            if (pet?.Definition is null)
             {
                 preview[5] |= 0b0000_0011;
                 return;

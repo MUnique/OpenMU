@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// </summary>
         /// <param name="character">The character.</param>
         public ItemAwareAttributeSystem(Character character)
-            : base(character.Attributes, character.CharacterClass.BaseAttributeValues, character.CharacterClass.AttributeCombinations)
+            : base(character.Attributes, character.CharacterClass!.BaseAttributeValues, character.CharacterClass.AttributeCombinations)
         {
             this.ItemPowerUps = new Dictionary<Item, IReadOnlyList<PowerUpWrapper>>();
         }

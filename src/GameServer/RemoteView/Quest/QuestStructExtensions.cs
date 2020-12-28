@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 
             if (questState != null)
             {
-                for (int i = 0; i < questState.LastFinishedQuest.Number; i++)
+                for (int i = 0; i < (questState.LastFinishedQuest?.Number ?? 0); i++)
                 {
                     message[i] = LegacyQuestState.Complete;
                 }
@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 }
             }
 
-            if (player.SelectedCharacter?.CharacterClass.GetBaseClass(player.GameContext.Configuration).Number != (byte)CharacterClassNumber.DarkKnight)
+            if (player.SelectedCharacter?.CharacterClass?.GetBaseClass(player.GameContext.Configuration).Number != (byte)CharacterClassNumber.DarkKnight)
             {
                 message.SecretOfDarkStoneState = LegacyQuestState.Undefined;
             }
@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             condition.Type = ConditionType.Item;
             condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
             condition.CurrentCount = (uint)(player.Inventory?.Items.Count(item => item.Definition == itemRequirement.Item) ?? 0);
-            condition.RequirementId = itemRequirement.Item.GetItemType();
+            condition.RequirementId = itemRequirement.Item!.GetItemType();
             var temporaryItem = new TemporaryItem { Definition = itemRequirement.Item };
             temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();
             player.ItemSerializer.SerializeItem(condition.RequiredItemData, temporaryItem);
@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         {
             condition.Type = ConditionType.MonsterKills;
             condition.RequiredCount = (uint)killRequirement.MinimumNumber;
-            condition.RequirementId = (ushort)killRequirement.Monster.Number;
+            condition.RequirementId = (ushort)killRequirement.Monster!.Number;
             condition.CurrentCount = (uint)(questState.RequirementStates.FirstOrDefault(s => s.Requirement == killRequirement)?.KillCount ?? 0);
         }
 
@@ -137,7 +137,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             rewardStruct.RewardCount = (uint)questReward.Value;
             if (questReward.RewardType == QuestRewardType.Item && questReward.ItemReward is { } itemReward)
             {
-                rewardStruct.RewardId = itemReward.Definition.GetItemType();
+                rewardStruct.RewardId = itemReward.Definition!.GetItemType();
                 itemSerializer.SerializeItem(rewardStruct.RewardedItemData, itemReward);
             }
         }

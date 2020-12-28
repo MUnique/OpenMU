@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             if (this.CheckRequirements(player, warpInfo, out var errorMessage))
             {
-                player.WarpTo(warpInfo.Gate);
+                player.WarpTo(warpInfo.Gate!);
             }
             else
             {
@@ -38,6 +38,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             if (!this.CheckLevelRequirement(player, warpInfo))
             {
                 errorMessage = $"You need to be level {warpInfo.LevelRequirement} in order to warp";
+                return false;
+            }
+
+            if (warpInfo.Gate?.Map is null)
+            {
+                errorMessage = "The warp target is not initialized";
                 return false;
             }
 

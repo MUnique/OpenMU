@@ -120,7 +120,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
                     configuration.Adapt(currentConfiguration);
                     if (!Equals(currentConfiguration.Client, configuration.Client))
                     {
-                        currentConfiguration.Client = configContext.GetById<DataModel.Configuration.GameClientDefinition>(configuration.Client.GetId());
+                        currentConfiguration.Client = configContext.GetById<DataModel.Configuration.GameClientDefinition>(configuration.Client!.GetId());
                     }
 
                     configContext.SaveChanges();

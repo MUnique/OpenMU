@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Diagnostics.SymbolStore;
-
 namespace MUnique.OpenMU.Persistence.Json
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.SymbolStore;
     using System.Linq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;

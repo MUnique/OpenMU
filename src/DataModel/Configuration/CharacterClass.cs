@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the name of the character class.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether this character class can get created by the user.
@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the next generation class, to which a character can upgrade after
         /// fulfilling certain requirements, like quests.
         /// </summary>
-        public virtual CharacterClass NextGenerationClass { get; set; }
+        public virtual CharacterClass? NextGenerationClass { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this class is a master class and therefore can receive master experience for the master tree.
@@ -74,24 +74,24 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the stat attributes.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<StatAttributeDefinition> StatAttributes { get; protected set; }
+        public virtual ICollection<StatAttributeDefinition> StatAttributes { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the attribute combinations.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<AttributeRelationship> AttributeCombinations { get; protected set; }
+        public virtual ICollection<AttributeRelationship> AttributeCombinations { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the base attribute values.
         /// For example the amount of health a character got without any added stat point.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ConstValueAttribute> BaseAttributeValues { get; protected set; }
+        public virtual ICollection<ConstValueAttribute> BaseAttributeValues { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the home map.
         /// </summary>
-        public virtual GameMapDefinition HomeMap { get; set; }
+        public virtual GameMapDefinition? HomeMap { get; set; }
     }
 }

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Entities
 {
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Text;
     using MUnique.OpenMU.DataModel.Composition;
@@ -23,7 +24,8 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the item definition.
         /// </summary>
-        public virtual ItemDefinition Definition { get; set; }
+        [Required]
+        public virtual ItemDefinition? Definition { get; set; }
 
         /// <summary>
         /// Gets or sets the currently remaining durability.
@@ -44,12 +46,12 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the item options.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemOptionLink> ItemOptions { get; protected set; }
+        public virtual ICollection<ItemOptionLink> ItemOptions { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the item set group (Ancient Set,).
         /// </summary>
-        public virtual ICollection<ItemSetGroup> ItemSetGroups { get; protected set; }
+        public virtual ICollection<ItemSetGroup> ItemSetGroups { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the socket count. This limits the amount of socket options in the <see cref="ItemOptions"/>.
@@ -97,7 +99,7 @@ namespace MUnique.OpenMU.DataModel.Entities
             var stringBuilder = new StringBuilder();
             stringBuilder.Append("Slot ").Append(this.ItemSlot).Append(": ");
 
-            if (this.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent))
+            if (this.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
             {
                 stringBuilder.Append("Excellent ");
             }
@@ -108,15 +110,15 @@ namespace MUnique.OpenMU.DataModel.Entities
                 stringBuilder.Append(ancientSet.Name).Append(" ");
             }
 
-            stringBuilder.Append(this.Definition.Name);
+            stringBuilder.Append(this.Definition?.Name);
             if (this.Level > 0)
             {
                 stringBuilder.Append("+").Append(this.Level);
             }
 
-            foreach (var option in this.ItemOptions.OrderBy(o => o.ItemOption.OptionType == ItemOptionTypes.Option))
+            foreach (var option in this.ItemOptions.OrderBy(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
             {
-                stringBuilder.Append("+").Append(option.ItemOption.PowerUpDefinition);
+                stringBuilder.Append("+").Append(option.ItemOption?.PowerUpDefinition);
             }
 
             if (this.HasSkill)
@@ -124,7 +126,7 @@ namespace MUnique.OpenMU.DataModel.Entities
                 stringBuilder.Append("+Skill");
             }
 
-            if (this.ItemOptions.Any(opt => opt.ItemOption.OptionType == ItemOptionTypes.Luck))
+            if (this.ItemOptions.Any(opt => opt.ItemOption?.OptionType == ItemOptionTypes.Luck))
             {
                 stringBuilder.Append("+Luck");
             }

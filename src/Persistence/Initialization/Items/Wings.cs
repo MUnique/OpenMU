@@ -237,10 +237,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 optionDefinition.PossibleOptions.Add(option);
             }
 
-            wing.PossibleItemOptions.Add(
-                this.GameConfiguration.ItemOptions
-                    .FirstOrDefault(iod => iod.PossibleOptions
-                        .Any(o => o.OptionType == ItemOptionTypes.Luck)));
+            wing.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o?.OptionType == ItemOptionTypes.Luck)));
             return wing;
         }
 
@@ -256,7 +253,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
                 optionOfLevel.Level = level;
-                optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(itemOption.PowerUpDefinition.TargetAttribute, level * valueIncrementPerLevel, aggregateType);
+                optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(itemOption.PowerUpDefinition.TargetAttribute!, level * valueIncrementPerLevel, aggregateType);
                 itemOption.LevelDependentOptions.Add(optionOfLevel);
             }
 

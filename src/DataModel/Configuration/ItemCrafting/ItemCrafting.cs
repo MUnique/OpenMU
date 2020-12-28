@@ -22,17 +22,17 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the name of the item crafting handler class.
         /// </summary>
-        public string ItemCraftingHandlerClassName { get; set; }
+        public string ItemCraftingHandlerClassName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the simple crafting settings.
         /// </summary>
         [MemberOfAggregate]
-        public virtual SimpleCraftingSettings SimpleCraftingSettings { get; set; }
+        public virtual SimpleCraftingSettings? SimpleCraftingSettings { get; set; }
     }
 }

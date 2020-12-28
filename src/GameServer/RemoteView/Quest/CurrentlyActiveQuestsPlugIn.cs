@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 return;
             }
 
-            var activeQuests = this.player.SelectedCharacter.QuestStates.Where(state => state.Group != QuestConstants.LegacyQuestGroup && state.ActiveQuest != null).Select(s => s.ActiveQuest).ToList();
+            var activeQuests = this.player.SelectedCharacter.QuestStates.Where(state => state.Group != QuestConstants.LegacyQuestGroup && state.ActiveQuest != null).Select(s => s.ActiveQuest!).ToList();
             using var writer = connection.StartSafeWrite(
                 QuestStateList.HeaderType,
                 QuestStateList.GetRequiredSize(activeQuests.Count));

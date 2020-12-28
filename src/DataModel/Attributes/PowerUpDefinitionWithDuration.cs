@@ -15,6 +15,6 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// Gets or sets the duration which describes how long the boost applies.
         /// </summary>
         [MemberOfAggregate]
-        public virtual PowerUpDefinitionValue Duration { get; set; }
+        public virtual PowerUpDefinitionValue? Duration { get; set; }
     }
 }

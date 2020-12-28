@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
         {
             var item = requiredItems.First().Items.First();
-            var johOptionLink = item.ItemOptions.First(link => link.ItemOption.OptionType == ItemOptionTypes.HarmonyOption);
+            var johOptionLink = item.ItemOptions.First(link => link.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption);
             item.ItemOptions.Remove(johOptionLink);
             player.PersistenceContext.Delete(johOptionLink);
             yield return item;

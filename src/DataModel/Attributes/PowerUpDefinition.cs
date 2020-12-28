@@ -17,26 +17,26 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// <summary>
         /// Gets or sets the target attribute.
         /// </summary>
-        public virtual AttributeDefinition TargetAttribute { get; set; }
+        public virtual AttributeDefinition? TargetAttribute { get; set; }
 
         /// <summary>
         /// Gets or sets the boost.
         /// </summary>
         [MemberOfAggregate]
-        public virtual PowerUpDefinitionValue Boost { get; set; }
+        public virtual PowerUpDefinitionValue? Boost { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()
         {
             string value;
-            if (this.Boost != null && this.Boost.ConstantValue.Value > 0)
+            if (this.Boost?.ConstantValue?.Value > 0)
             {
                 value = this.Boost.ConstantValue.Value.ToString(CultureInfo.InvariantCulture);
             }
             else if (this.Boost?.RelatedValues != null && this.Boost.RelatedValues.Any())
             {
                 var relation = this.Boost.RelatedValues.First();
-                value = relation.InputAttribute.Designation + relation.InputOperator.AsString() + relation.InputOperand;
+                value = relation.InputAttribute?.Designation + relation.InputOperator.AsString() + relation.InputOperand;
             }
             else
             {
@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
                 value = "0";
             }
 
-            return value + " " + this.TargetAttribute.Designation;
+            return value + " " + this.TargetAttribute?.Designation;
         }
     }
 }

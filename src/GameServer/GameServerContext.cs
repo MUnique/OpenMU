@@ -40,14 +40,14 @@ namespace MUnique.OpenMU.GameServer
             IMapInitializer mapInitializer,
             ILoggerFactory loggerFactory,
             PlugInManager plugInManager)
-            : base(gameServerDefinition.GameConfiguration, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager)
+            : base(gameServerDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"), persistenceContextProvider, mapInitializer, loggerFactory, plugInManager)
         {
             this.gameServerDefinition = gameServerDefinition;
             this.Id = gameServerDefinition.ServerID;
             this.GuildServer = guildServer;
             this.LoginServer = loginServer;
             this.FriendServer = friendServer;
-            this.ServerConfiguration = gameServerDefinition.ServerConfiguration;
+            this.ServerConfiguration = gameServerDefinition.ServerConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a ServerConfiguration");
         }
 
         /// <summary>

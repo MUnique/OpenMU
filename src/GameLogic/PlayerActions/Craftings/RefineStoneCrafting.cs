@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         protected override bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
         {
             return base.RequiredItemMatches(item, requiredItem)
-                   && (item.IsWearable() && !this.excludedItems.Contains((item.Definition.Group, item.Definition.Number)));
+                   && (item.IsWearable() && !this.excludedItems.Contains((item.Definition!.Group, item.Definition.Number)));
         }
 
         /// <inheritdoc />

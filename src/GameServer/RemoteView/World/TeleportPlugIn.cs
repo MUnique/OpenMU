@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void ShowTeleported()
         {
-            if (this.player.SelectedCharacter is null)
+            if (this.player.SelectedCharacter?.CurrentMap is null)
             {
                 return;
             }

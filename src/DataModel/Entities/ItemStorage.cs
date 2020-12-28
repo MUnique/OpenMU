@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the items which are stored.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<Item> Items { get; protected set; }
+        public virtual ICollection<Item> Items { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the money which is stored.

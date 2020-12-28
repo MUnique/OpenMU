@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Vault
         {
             if (player.Account is not null && BCrypt.Net.BCrypt.Verify(accountPassword, player.Account.PasswordHash))
             {
-                player.Account.VaultPassword = null;
+                player.Account.VaultPassword = string.Empty;
                 player.IsVaultLocked = false;
                 player.ViewPlugIns.GetPlugIn<IUpdateVaultStatePlugIn>()?.UpdateState();
             }

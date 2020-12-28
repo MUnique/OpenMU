@@ -210,7 +210,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
 
             if (optionTargetAttribute == Stats.HealthRecoveryMultiplier)
             {
-                item.PossibleItemOptions.Add(this.healthRecoverOptionDefinition);
+                item.PossibleItemOptions.Add(this.healthRecoverOptionDefinition!);
             }
             else if (optionTargetAttribute != null)
             {

@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 200;
             character.LevelUpPoints -= 1100; // for the added strength and agility
 
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 12, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Great Lord Scepter+13+16+L+ExcDmg
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 12, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Great Lord Scepter+13+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 26, 7, Stats.MaximumHealth, 13, 4, true)); // Exc Ada Helm+13+16+L
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 26, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Exc Ada Armor+13+16+L
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 26, 9, Stats.MoneyAmountRate, 13, 4, true)); // Exc Ada Pants+13+16+L
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 700; // for the added strength and agility
             character.LevelUpPoints += 80; // after level 220, one point more
 
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 5, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Blade+13+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 6, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Exc Scale Armor+13+16+L
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 6, 7, Stats.MaximumHealth, 13, 4, true)); // Exc Scale Helm+13+16+L
@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 700; // for the added strength and agility
             character.LevelUpPoints += 80; // after level 220, one point more
 
-            character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 12, 8, null, 15, 4, true));
+            character.Inventory!.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 12, 8, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 12, 7, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 12, 9, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 12, 10, null, 15, 4, true));
@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 1200; // for the added strength, agility, energy
             character.LevelUpPoints += 80; // after level 220, one point more
 
-            character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 7, 8, null, 15, 4, true));
+            character.Inventory!.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 7, 8, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 7, 7, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 7, 9, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 7, 10, null, 15, 4, true));

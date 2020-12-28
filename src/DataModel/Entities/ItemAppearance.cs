@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the definition of the item.
         /// </summary>
-        public virtual ItemDefinition Definition { get; set; }
+        public virtual ItemDefinition? Definition { get; set; }
 
         /// <summary>
         /// Gets or sets the level.
@@ -31,6 +31,6 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the visible options.
         /// </summary>
-        public virtual ICollection<ItemOptionType> VisibleOptions { get; protected set; }
+        public virtual ICollection<ItemOptionType> VisibleOptions { get; protected set; } = null!;
     }
 }

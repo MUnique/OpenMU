@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
-            if (this.Item.Definition.IsBoundToCharacter && !this.IsPlayerAnOwner(player))
+            if (this.Item.Definition!.IsBoundToCharacter && !this.IsPlayerAnOwner(player))
             {
                 return false;
             }

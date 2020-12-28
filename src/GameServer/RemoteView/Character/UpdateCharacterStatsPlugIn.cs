@@ -44,9 +44,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 {
                     X = this.player.Position.X,
                     Y = this.player.Position.Y,
-                    MapId = ShortExtensions.ToUnsigned(this.player.SelectedCharacter!.CurrentMap.Number),
+                    MapId = ShortExtensions.ToUnsigned(this.player.SelectedCharacter!.CurrentMap!.Number),
                     CurrentExperience = (ulong)this.player.SelectedCharacter.Experience,
-                    ExperienceForNextLevel = (ulong)this.player.GameServerContext.Configuration.ExperienceTable[(int)this.player.Attributes![Stats.Level] + 1],
+                    ExperienceForNextLevel = (ulong)this.player.GameServerContext.Configuration.ExperienceTable![(int)this.player.Attributes![Stats.Level] + 1],
                     LevelUpPoints = (ushort)this.player.SelectedCharacter.LevelUpPoints,
                     Strength = (ushort)this.player.Attributes[Stats.BaseStrength],
                     Agility = (ushort)this.player.Attributes[Stats.BaseAgility],
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 writer.Commit();
             }
 
-            if (this.player.SelectedCharacter.CharacterClass.IsMasterClass)
+            if (this.player.SelectedCharacter.CharacterClass!.IsMasterClass)
             {
                 this.player.ViewPlugIns.GetPlugIn<IUpdateMasterStatsPlugIn>()?.SendMasterStats();
             }

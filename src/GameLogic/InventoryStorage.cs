@@ -8,8 +8,8 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.World;
     using static OpenMU.GameLogic.InventoryConstants;
 
@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic
                 GetInventorySize(player),
                 EquippableSlotsCount,
                 0,
-                new ItemStorageAdapter(player.SelectedCharacter!.Inventory, FirstEquippableItemSlotIndex, GetInventorySize(player)))
+                new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, GetInventorySize(player)))
         {
             this.player = player;
             this.EquippedItemsChanged += (sender, eventArgs) => this.UpdateItemsOnChange(eventArgs.Item);
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public event EventHandler<ItemEventArgs> EquippedItemsChanged;
+        public event EventHandler<ItemEventArgs>? EquippedItemsChanged;
 
         /// <inheritdoc/>
         public IEnumerable<Item> EquippedItems

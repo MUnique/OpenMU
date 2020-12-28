@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
 
             if (request.ProceedAction == QuestProceedRequest.QuestProceedAction.AcceptQuest)
             {
-                if (questState != null)
+                if (questState?.ActiveQuest != null)
                 {
                     // keep it running and confirm that it started
                     player.ViewPlugIns.GetPlugIn<IQuestStartedPlugIn>()?.QuestStarted(questState.ActiveQuest);

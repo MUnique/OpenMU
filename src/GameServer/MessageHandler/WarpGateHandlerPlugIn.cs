@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 return;
             }
 
-            var gate = player.SelectedCharacter?.CurrentMap.EnterGates.FirstOrDefault(g => g.Number == gateNumber);
+            var gate = player.SelectedCharacter?.CurrentMap?.EnterGates.FirstOrDefault(g => g.Number == gateNumber);
             if (gate is null)
             {
                 player.Logger.LogWarning("Gate {0} not found in current map {1}", gateNumber,  player.SelectedCharacter?.CurrentMap);

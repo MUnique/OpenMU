@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <value>
         /// The name.
         /// </value>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether all of the options of this item set always apply.
@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// The order is defined by <see cref="ItemOption.Number"/>.
         /// </remarks>
         [MemberOfAggregate]
-        public virtual ICollection<IncreasableItemOption> Options { get; protected set; }
+        public virtual ICollection<IncreasableItemOption> Options { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the items of this set.
@@ -77,6 +77,6 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Here we can define additional bonus options, like the ancient options (e.g. +5 / +10 Str etc.).
         /// </remarks>
         [MemberOfAggregate]
-        public virtual ICollection<ItemOfItemSet> Items { get; protected set; }
+        public virtual ICollection<ItemOfItemSet> Items { get; protected set; } = null!;
     }
 }

@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Vault
         /// <inheritdoc/>
         public void UpdateVaultMoney(bool success)
         {
-            this.player.Connection?.SendVaultMoneyUpdate(success, success ? (uint)this.player.Money : 0, success ? (uint)this.player.Account!.Vault.Money : 0);
+            this.player.Connection?.SendVaultMoneyUpdate(success, success ? (uint)this.player.Money : 0, success ? (uint)this.player.Account!.Vault!.Money : 0);
         }
     }
 }

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer
 {
+    using System;
     using System.Linq;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -22,7 +23,7 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="serverDefinition">The server definition.</param>
         /// <param name="logger">The logger.</param>
         public GameServerMapInitializer(GameServerDefinition serverDefinition, ILogger<GameServerMapInitializer> logger)
-            : base(serverDefinition.GameConfiguration, logger)
+            : base(serverDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"), logger)
         {
             this.serverDefinition = serverDefinition;
         }
@@ -34,7 +35,7 @@ namespace MUnique.OpenMU.GameServer
         /// <returns>The game map definition.</returns>
         protected override GameMapDefinition? GetMapDefinition(ushort mapNumber)
         {
-            return this.serverDefinition.ServerConfiguration.Maps.FirstOrDefault(map => map.Number == mapNumber);
+            return this.serverDefinition.ServerConfiguration?.Maps.FirstOrDefault(map => map.Number == mapNumber);
         }
 
         /// <inheritdoc/>

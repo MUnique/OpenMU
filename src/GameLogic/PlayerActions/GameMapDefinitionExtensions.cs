@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 {
                     if (player.Attributes is null || player.Attributes[requirement.Attribute] < requirement.MinimumValue)
                     {
-                        errorMessage = $"Missing requirement to enter the map: {requirement.Attribute.Description}";
+                        errorMessage = $"Missing requirement to enter the map: {requirement.Attribute?.Description}";
                         return true;
                     }
                 }
