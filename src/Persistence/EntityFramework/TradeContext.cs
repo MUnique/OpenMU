@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// A context which is used for trades.
     /// </summary>
     /// <remarks>
-    /// In an ideal world, it would just need to track two properties: <see cref="Item.ItemStorage"/> and <see cref="DataModel.Entities.Item.ItemSlot"/>.
+    /// In an ideal world, it would just need to track two properties: <see cref="DataModel.Entities.ItemStorage"/> and <see cref="DataModel.Entities.Item.ItemSlot"/>.
     /// </remarks>
     /// <seealso cref="Microsoft.EntityFrameworkCore.DbContext" />
     internal class TradeContext : AccountContext

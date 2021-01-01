@@ -44,9 +44,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             database.OpenConnection();
             try
             {
-                if (this.objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context) is {} config)
+                if (this.objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context) is { } config)
                 {
-
                     this.SetExperienceTables(config);
                     return config;
                 }

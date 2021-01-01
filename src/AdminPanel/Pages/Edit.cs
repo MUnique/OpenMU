@@ -178,7 +178,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             StringBuilder? stringBuilder = null;
             if (this.type is not null
                 && (EditorPages.TryGetValue(this.type, out var editors)
-                    || (this.type.BaseType is{} baseType && EditorPages.TryGetValue(baseType, out editors))))
+                    || (this.type.BaseType is { } baseType && EditorPages.TryGetValue(baseType, out editors))))
             {
                 foreach (var editor in editors)
                 {
