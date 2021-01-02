@@ -55,6 +55,9 @@ namespace MUnique.OpenMU.PlugIns
         /// </value>
         protected IList<TPlugIn> ActivePlugIns { get; } = new List<TPlugIn>();
 
+        /// <inheritdoc />
+        IEnumerable<TPlugIn> IPlugInContainer<TPlugIn>.ActivePlugIns => this.ActivePlugIns;
+
         /// <summary>
         /// Gets the known plug ins.
         /// </summary>

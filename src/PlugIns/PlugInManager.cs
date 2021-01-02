@@ -98,6 +98,21 @@ namespace MUnique.OpenMU.PlugIns
         }
 
         /// <summary>
+        /// Gets the active plug ins of the specified type.
+        /// </summary>
+        /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
+        /// <returns>The active plugins of the specified type.</returns>
+        public IEnumerable<TPlugIn> GetActivePlugInsOf<TPlugIn>()
+        {
+            if (this.plugInPoints.TryGetValue(typeof(TPlugIn), out var point) && point is IPlugInContainer<TPlugIn> container)
+            {
+                return container.ActivePlugIns;
+            }
+
+            return Enumerable.Empty<TPlugIn>();
+        }
+
+        /// <summary>
         /// Discovers and registers plug ins of the specified assembly.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
