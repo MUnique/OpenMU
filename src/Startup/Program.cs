@@ -19,6 +19,7 @@ namespace MUnique.OpenMU.Startup
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AdminPanel;
+    using MUnique.OpenMU.AdminPanel.Services;
     using MUnique.OpenMU.ChatServer;
     using MUnique.OpenMU.ConnectServer;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -220,6 +221,7 @@ namespace MUnique.OpenMU.Startup
                     .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>())
                     .AddSingleton<GameServerContainer>()
                     .AddSingleton<PlugInManager>()
+                    .AddSingleton<IPlugInConfigurationChangeListener, PlugInConfigurationChangeListener>()
                     .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>().CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList())
                     .AddHostedService(provider => provider.GetService<IChatServer>())
                     .AddHostedService(provider => provider.GetService<ConnectServerContainer>())

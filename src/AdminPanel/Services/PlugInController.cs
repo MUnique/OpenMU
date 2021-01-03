@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
     /// <summary>
     /// A scoped controller to manage plugins.
     /// </summary>
-    public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupportDataChangedNotification
+    public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupportDataChangedNotification, ISupportPlugInConfigurationChangedNotification
     {
         private readonly IPersistenceContextProvider persistenceContextProvider;
         private readonly IModalService modalService;
@@ -41,6 +41,15 @@ namespace MUnique.OpenMU.AdminPanel.Services
 
         /// <inheritdoc />
         public event EventHandler DataChanged;
+
+        /// <inheritdoc />
+        public event EventHandler<Guid>? PlugInActivated;
+
+        /// <inheritdoc />
+        public event EventHandler<Guid>? PlugInDeactivated;
+
+        /// <inheritdoc />
+        public event EventHandler<(Guid, PlugInConfiguration)>? PlugInConfigurationChanged;
 
         /// <summary>
         /// Gets or sets the name filter.
@@ -205,6 +214,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
                 item.Configuration.SetConfiguration(configuration);
                 context.SaveChanges();
                 this.DataChanged?.Invoke(this, EventArgs.Empty);
+                this.PlugInConfigurationChanged?.Invoke(this, (item.TypeId, item.Configuration));
             }
         }
 
@@ -309,6 +319,14 @@ namespace MUnique.OpenMU.AdminPanel.Services
             item.Configuration.IsActive = value;
             context.SaveChanges();
             this.DataChanged?.Invoke(this, EventArgs.Empty);
+            if (value)
+            {
+                this.PlugInActivated?.Invoke(this, item.TypeId);
+            }
+            else
+            {
+                this.PlugInDeactivated?.Invoke(this, item.TypeId);
+            }
         }
 
         private bool FilterByTypeName(Type plugInType)

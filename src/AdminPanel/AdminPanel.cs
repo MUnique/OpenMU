@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.AdminPanel
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.AdminPanel.Services;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using SixLabors.ImageSharp;
@@ -27,6 +28,7 @@ namespace MUnique.OpenMU.AdminPanel
         private readonly IServerConfigurationChangeListener changeListener;
         private readonly ILoggerFactory loggerFactory;
         private readonly AdminPanelSettings settings;
+        private readonly IPlugInConfigurationChangeListener plugInChangeListener;
         private readonly ILogger<AdminPanel> logger;
         private IHost host;
 
@@ -38,13 +40,15 @@ namespace MUnique.OpenMU.AdminPanel
         /// <param name="changeListener">The change listener.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="settings">The admin panel settings.</param>
-        public AdminPanel(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, IServerConfigurationChangeListener changeListener, ILoggerFactory loggerFactory, AdminPanelSettings settings)
+        /// <param name="plugInChangeListener">The plug in change listener.</param>
+        public AdminPanel(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, IServerConfigurationChangeListener changeListener, ILoggerFactory loggerFactory, AdminPanelSettings settings, IPlugInConfigurationChangeListener plugInChangeListener)
         {
             this.servers = servers;
             this.persistenceContextProvider = persistenceContextProvider;
             this.changeListener = changeListener;
             this.loggerFactory = loggerFactory;
             this.settings = settings;
+            this.plugInChangeListener = plugInChangeListener;
             this.logger = this.loggerFactory.CreateLogger<AdminPanel>();
         }
 
@@ -63,6 +67,7 @@ namespace MUnique.OpenMU.AdminPanel
                     serviceCollection.AddSingleton(this.persistenceContextProvider);
                     serviceCollection.AddSingleton(this.changeListener);
                     serviceCollection.AddSingleton(this.loggerFactory);
+                    serviceCollection.AddSingleton(this.plugInChangeListener);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

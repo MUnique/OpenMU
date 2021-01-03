@@ -315,6 +315,19 @@ namespace MUnique.OpenMU.PlugIns
             this.RegisterPlugInType(instance.GetType());
         }
 
+        /// <summary>
+        /// Configures the plug in.
+        /// </summary>
+        /// <param name="plugInId">The plug in identifier.</param>
+        /// <param name="configuration">The configuration.</param>
+        public void ConfigurePlugIn(Guid plugInId, PlugInConfiguration configuration)
+        {
+            if (this.knownPlugIns.TryGetValue(plugInId, out var plugInType))
+            {
+                this.ConfigurePlugIn(plugInType, configuration);
+            }
+        }
+
         private Type GetCustomPlugInPointType(Type interfaceType)
         {
             if (interfaceType.GetCustomAttribute<CustomPlugInContainerAttribute>() != null)
