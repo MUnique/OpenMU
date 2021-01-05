@@ -19,6 +19,8 @@ You can start the server with the following parameters:
 | -demo       | Instead of using an external database, it uses in-memory repositories and data is initialized at each start. Only for testing, not for production usage, as player progress is **not saved** to a database or file. |
 | -deamon     | Deactivates handling of console inputs |
 | -adminport:[1 to 65535] | Defines the tcp port which should be used for the admin panel. Default: 1234 |
+| -adminpanel:[enabled|disabled] | Defines if the admin panel is available. If disabled, *-autostart* is applied automatically. Default: enabled |
+| -api:[enabled|disabled] | Defines if the admin panel is available. Default: enabled |
 
 ### -resolveIP ###
 Defines how the own ip address is determined which is reported back to the game client in case it requests to connect to a selected game server (server selection screen) or the chat server (when starting a chat with the in-game messenger).

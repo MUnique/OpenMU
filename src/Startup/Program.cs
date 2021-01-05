@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.Startup
             Log.Info("Creating host...");
             this.serverHost = await this.CreateHost(args);
 
-            if (args.Contains("-autostart"))
+            if (args.Contains("-autostart") || !this.IsAdminPanelEnabled(args))
             {
                 foreach (var chatServer in this.servers.OfType<ChatServer>())
                 {
@@ -203,31 +203,40 @@ namespace MUnique.OpenMU.Startup
                     configureLogging.AddLog4Net(settings);
                 })
                 .ConfigureServices(c =>
+                {
                     c.AddSingleton(this.servers)
-                    .AddSingleton(s => s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<ChatServerDefinition>().First() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
-                    .AddSingleton(s => s.GetService<ChatServerDefinition>()?.ConvertToSettings() ?? throw new Exception($"{nameof(ChatServerSettings)} not registered."))
-                    .AddIpResolver(args)
-                    .AddSingleton(this.gameServers)
-                    .AddSingleton(this.gameServers.Values)
-                    .AddSingleton(s => this.DeterminePersistenceContextProvider(args, s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered.")))
-                    .AddSingleton<IServerConfigurationChangeListener, ServerConfigurationChangeListener>()
-                    .AddSingleton<ILoginServer, LoginServer>()
-                    .AddSingleton<IGuildServer, GuildServer>()
-                    .AddSingleton<IFriendServer, FriendServer>()
-                    .AddSingleton<IChatServer, ChatServer>()
-                    .AddSingleton<ConnectServerFactory>()
-                    .AddSingleton<ConnectServerContainer>()
-                    .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
-                    .AddSingleton<GameServerContainer>()
-                    .AddSingleton<PlugInManager>()
-                    .AddSingleton<IPlugInConfigurationChangeListener, PlugInConfigurationChangeListener>()
-                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
-                    .AddHostedService(provider => provider.GetService<IChatServer>())
-                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>())
-                    .AddHostedService(provider => provider.GetService<GameServerContainer>())
-                    .AddHostedService<AdminPanel>()
-                        .AddSingleton(new AdminPanelSettings(this.DetermineAdminPort(args)))
-                    .AddHostedService<ApiHost>())
+                        .AddSingleton(s => s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<ChatServerDefinition>().First() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
+                        .AddSingleton(s => s.GetService<ChatServerDefinition>()?.ConvertToSettings() ?? throw new Exception($"{nameof(ChatServerSettings)} not registered."))
+                        .AddIpResolver(args)
+                        .AddSingleton(this.gameServers)
+                        .AddSingleton(this.gameServers.Values)
+                        .AddSingleton(s => this.DeterminePersistenceContextProvider(args, s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered.")))
+                        .AddSingleton<ILoginServer, LoginServer>()
+                        .AddSingleton<IGuildServer, GuildServer>()
+                        .AddSingleton<IFriendServer, FriendServer>()
+                        .AddSingleton<IChatServer, ChatServer>()
+                        .AddSingleton<ConnectServerFactory>()
+                        .AddSingleton<ConnectServerContainer>()
+                        .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
+                        .AddSingleton<GameServerContainer>()
+                        .AddSingleton<PlugInManager>()
+                        .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
+                        .AddHostedService(provider => provider.GetService<IChatServer>())
+                        .AddHostedService(provider => provider.GetService<ConnectServerContainer>())
+                        .AddHostedService(provider => provider.GetService<GameServerContainer>());
+                    if (this.IsAdminPanelEnabled(args))
+                    {
+                        c.AddSingleton<IServerConfigurationChangeListener, ServerConfigurationChangeListener>()
+                            .AddSingleton<IPlugInConfigurationChangeListener, PlugInConfigurationChangeListener>()
+                            .AddHostedService<AdminPanel>()
+                            .AddSingleton(new AdminPanelSettings(this.DetermineAdminPort(args)));
+                    }
+
+                    if (this.IsApiEnabled(args))
+                    {
+                        c.AddHostedService<ApiHost>();
+                    }
+                })
                 .Build();
             Log.Info("Host created");
             if (host.Services.GetService<ILoggerFactory>() is { } loggerFactory)
@@ -246,18 +255,35 @@ namespace MUnique.OpenMU.Startup
             return host;
         }
 
-        private ushort DetermineAdminPort(string[] args)
+        private ushort DetermineAdminPort(string[] args) => this.DetermineUshort("adminport", args, 1234);
+
+        private ushort DetermineUshort(string parameterName, string[] args, ushort defaultValue)
         {
-            var parameter = args.FirstOrDefault(a => a.StartsWith("-adminport:", StringComparison.InvariantCultureIgnoreCase));
+            var parameter = args.FirstOrDefault(a => a.StartsWith($"-{parameterName}:", StringComparison.InvariantCultureIgnoreCase));
             if (parameter != null
-                && int.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out int port)
-                && port >= 1
-                && port <= ushort.MaxValue)
+                && int.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out int value)
+                && value >= 0
+                && value <= ushort.MaxValue)
             {
-                return (ushort)port;
+                return (ushort)value;
             }
 
-            return 1234; // Default port
+            return defaultValue;
+        }
+
+        private bool IsAdminPanelEnabled(string[] args) => this.IsFeatureEnabled("adminpanel", args);
+
+        private bool IsApiEnabled(string[] args) => this.IsFeatureEnabled("api", args);
+
+        private bool IsFeatureEnabled(string featureName, string[] args)
+        {
+            var parameter = args.FirstOrDefault(a => a.StartsWith($"-{featureName}:", StringComparison.InvariantCultureIgnoreCase));
+            if (parameter is null)
+            {
+                return true;
+            }
+
+            return parameter.Substring(parameter.IndexOf(':') + 1).StartsWith("enabled", StringComparison.InvariantCultureIgnoreCase);
         }
 
         private IPersistenceContextProvider DeterminePersistenceContextProvider(string[] args, ILoggerFactory loggerFactory)
