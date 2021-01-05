@@ -65,7 +65,8 @@ namespace MUnique.OpenMU.AdminPanel
 
             services.AddScoped<PlugInController>();
             services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
-
+            services.AddScoped<ISupportPlugInConfigurationChangedNotification>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
+            services.AddScoped<PlugInConfigurationChangeForwarder>();
             services.AddSingleton<LogService>();
             services.AddScoped<LogController>();
 

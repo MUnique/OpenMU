@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Linq;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -24,12 +23,10 @@ namespace MUnique.OpenMU.GameLogic
         public FeaturePlugInContainer(PlugInManager manager)
             : base(manager)
         {
-            foreach (var plugInType in this.Manager.GetKnownPlugInsOf<IFeaturePlugIn>()
-                .Where(this.Manager.IsPlugInActive))
+            foreach (var plugIn in this.Manager.GetActivePlugInsOf<IFeaturePlugIn>())
             {
-                if (!this.currentlyEffectivePlugIns.ContainsKey(plugInType))
+                if (!this.currentlyEffectivePlugIns.ContainsKey(plugIn.GetType()))
                 {
-                    var plugIn = (IFeaturePlugIn)Activator.CreateInstance(plugInType)!;
                     this.AddPlugIn(plugIn, true);
                 }
             }

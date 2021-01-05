@@ -4,12 +4,22 @@
 
 namespace MUnique.OpenMU.PlugIns
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// A interface a plugin container (e.g. a proxy object) which manages <typeparamref name="TPlugIn"/>s.
     /// </summary>
     /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
-    public interface IPlugInContainer<in TPlugIn>
+    public interface IPlugInContainer<TPlugIn>
     {
+        /// <summary>
+        /// Gets the active plug ins.
+        /// </summary>
+        /// <value>
+        /// The active plug ins.
+        /// </value>
+        IEnumerable<TPlugIn> ActivePlugIns { get; }
+
         /// <summary>
         /// Adds the plug in to the plugin point.
         /// </summary>

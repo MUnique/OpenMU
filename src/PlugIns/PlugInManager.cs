@@ -98,6 +98,21 @@ namespace MUnique.OpenMU.PlugIns
         }
 
         /// <summary>
+        /// Gets the active plug ins of the specified type.
+        /// </summary>
+        /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
+        /// <returns>The active plugins of the specified type.</returns>
+        public IEnumerable<TPlugIn> GetActivePlugInsOf<TPlugIn>()
+        {
+            if (this.plugInPoints.TryGetValue(typeof(TPlugIn), out var point) && point is IPlugInContainer<TPlugIn> container)
+            {
+                return container.ActivePlugIns;
+            }
+
+            return Enumerable.Empty<TPlugIn>();
+        }
+
+        /// <summary>
         /// Discovers and registers plug ins of the specified assembly.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
@@ -298,6 +313,19 @@ namespace MUnique.OpenMU.PlugIns
             }
 
             this.RegisterPlugInType(instance.GetType());
+        }
+
+        /// <summary>
+        /// Configures the plug in.
+        /// </summary>
+        /// <param name="plugInId">The plug in identifier.</param>
+        /// <param name="configuration">The configuration.</param>
+        public void ConfigurePlugIn(Guid plugInId, PlugInConfiguration configuration)
+        {
+            if (this.knownPlugIns.TryGetValue(plugInId, out var plugInType))
+            {
+                this.ConfigurePlugIn(plugInType, configuration);
+            }
         }
 
         private Type? GetCustomPlugInPointType(Type interfaceType)
