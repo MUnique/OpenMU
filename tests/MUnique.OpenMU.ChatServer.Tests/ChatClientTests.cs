@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var duplexPipe = new DuplexPipe();
             var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
             var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
-            room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+            room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
 
             var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
             await duplexPipe.ReceivePipe.Writer.WriteAsync(authenticationPacket);
@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var duplexPipe = new DuplexPipe();
             var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
             var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
-            room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450674"));
+            room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450674"));
             var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
             await duplexPipe.ReceivePipe.Writer.WriteAsync(authenticationPacket);
             await duplexPipe.ReceivePipe.Writer.FlushAsync();
@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager(new NullLoggerFactory());
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+            room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
             var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
             var duplexPipe1 = new DuplexPipe();
             var connection1 = new Connection(duplexPipe1, null, null, new NullLogger<Connection>());
@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
             var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
 
-            room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+            room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
             var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
             await duplexPipe.ReceivePipe.Writer.WriteAsync(authenticationPacket);
             await duplexPipe.ReceivePipe.Writer.FlushAsync();
@@ -132,7 +132,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
 
             var authInfo = new ChatServerAuthenticationInfo(3, roomId, "Bob", "128450673");
-            room.RegisterClient(authInfo);
+            room!.RegisterClient(authInfo);
 
             var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
             await duplexPipe.ReceivePipe.Writer.WriteAsync(authenticationPacket);
@@ -148,9 +148,10 @@ namespace MUnique.OpenMU.ChatServer.Tests
         [Test]
         public async Task SentMessageEncryptedProperly()
         {
+            var manager = new ChatRoomManager(new NullLoggerFactory());
             var duplexPipe = new DuplexPipe();
             var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
-            var client = new ChatClient(connection, null, new NullLogger<ChatClient>());
+            var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
             var expectedPacket = new byte[] { 0xC1, 0x0B, 0x04, 0x01, 0x06, 0xBD, 0x8E, 0xEA, 0xBD, 0x8E, 0xEA };
             client.SendMessage(1, "AAAAAA");
             var sendResult = await duplexPipe.SendPipe.Reader.ReadAsync();
@@ -171,7 +172,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var duplexPipe = new DuplexPipe();
             var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
             var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
-            room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+            room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
 
             var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
             duplexPipe.ReceivePipe.Writer.Write(authenticationPacket);
@@ -197,7 +198,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var duplexPipe1 = new DuplexPipe();
             var connection1 = new Connection(duplexPipe1, null, null, new NullLogger<Connection>());
             var client1 = new ChatClient(connection1, manager, new NullLogger<ChatClient>());
-            room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+            room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
 
             var authenticationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
@@ -238,7 +239,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var duplexPipe1 = new DuplexPipe();
             var connection1 = new Connection(duplexPipe1, null, null, new NullLogger<Connection>());
             var client1 = new ChatClient(connection1, manager, new NullLogger<ChatClient>());
-            room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+            room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
 
             var authenticationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
@@ -279,7 +280,7 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var duplexPipe1 = new DuplexPipe();
             var connection1 = new Connection(duplexPipe1, null, null, new NullLogger<Connection>());
             var client1 = new ChatClient(connection1, manager, new NullLogger<ChatClient>());
-            room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+            room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
 
             var authenticationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };

@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Network.Tests
         [Test]
         public async Task TestDisconnectOnInvalidHeaderSent()
         {
-            IConnection connection = null;
+            IConnection? connection = null;
             var server = new TcpListener(IPAddress.Any, 5000);
             server.Start();
             try
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.Network.Tests
         {
             const int maximumPacketCount = 1000;
 
-            IConnection connection = null;
+            IConnection? connection = null;
             var server = new TcpListener(IPAddress.Any, 5000);
             server.Start();
             server.BeginAcceptSocket(

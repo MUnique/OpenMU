@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
     /// </summary>
     public class StatAttributeDefinition
     {
-        private AttributeDefinition attribute;
+        private AttributeDefinition attribute = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StatAttributeDefinition"/> class.

@@ -30,12 +30,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             using var loggerScope = player.Logger.BeginScope(this.GetType());
             if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
             {
-                player.Logger.LogError($"Account {player.Account.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
+                player.Logger.LogError($"Account {player.Account!.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
                 return;
             }
 
-            CharacterClass characterClass = player.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.Number == characterClassId);
-            if (characterClass != null)
+            var characterClass = player.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.Number == characterClassId);
+            if (characterClass is not null)
             {
                 var character = this.CreateCharacter(player, characterName, characterClass);
                 if (character != null)
@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             }
         }
 
-        private Character CreateCharacter(Player player, string name, CharacterClass charclass)
+        private Character? CreateCharacter(Player player, string name, CharacterClass charclass)
         {
             var account = player.Account;
             if (account is null)
@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             }
 
             player.Logger.LogDebug("Enter CreateCharacter: {0} {1} {2}", account.LoginName, name, charclass);
-            var isValidName = Regex.IsMatch(name, player.GameContext.Configuration.CharacterNameRegex);
+            var isValidName = string.IsNullOrWhiteSpace(player.GameContext.Configuration.CharacterNameRegex) || Regex.IsMatch(name, player.GameContext.Configuration.CharacterNameRegex);
             player.Logger.LogDebug("CreateCharacter: Character Name matches = {0}", isValidName);
             if (!isValidName)
             {
@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 return null;
             }
 
-            if (!charclass.CanGetCreated)
+            if (!charclass.CanGetCreated || charclass.HomeMap is null)
             {
                 return null;
             }
@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             var attributes = character.CharacterClass.StatAttributes.Select(a => player.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
             attributes.ForEach(character.Attributes.Add);
             character.CurrentMap = charclass.HomeMap;
-            var randomSpawnGate = character.CurrentMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
+            var randomSpawnGate = character.CurrentMap!.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
             character.PositionX = (byte)Rand.NextInt(randomSpawnGate.X1, randomSpawnGate.X2);
             character.PositionY = (byte)Rand.NextInt(randomSpawnGate.Y1, randomSpawnGate.Y2);
             character.Inventory = player.PersistenceContext.CreateNew<ItemStorage>();
@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
         private byte? GetFreeSlot(Player player)
         {
-            var usedSlots = player.Account.Characters.Select(c => (int)c.CharacterSlot);
+            var usedSlots = player.Account!.Characters.Select(c => (int)c.CharacterSlot);
             var freeSlots = Enumerable.Range(0, player.GameContext.Configuration.MaximumCharactersPerAccount).Except(usedSlots).ToList();
             if (freeSlots.Any())
             {

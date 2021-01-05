@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// Initializes a new instance of the <see cref="ServerList" /> class.
         /// </summary>
         /// <param name="clientVersion">The client version.</param>
-        public ServerList(Network.PlugIns.ClientVersion clientVersion)
+        public ServerList(ClientVersion clientVersion)
         {
             this.clientVersion = clientVersion;
             this.Servers = new SortedSet<ServerListItem>(new ServerListItemComparer());
@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// <summary>
         /// Gets the cache of the available servers.
         /// </summary>
-        public byte[] Cache { get; private set; }
+        public byte[]? Cache { get; private set; }
 
         /// <summary>
         /// Serializes this instance to a server list packet, which can be sent to the client.
@@ -108,9 +108,9 @@ namespace MUnique.OpenMU.ConnectServer
             /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.</returns>
             /// <param name="x">The first object to compare.</param>
             /// <param name="y">The second object to compare.</param>
-            public int Compare(ServerListItem x, ServerListItem y)
+            public int Compare(ServerListItem? x, ServerListItem? y)
             {
-                return x.ServerId.CompareTo(y.ServerId);
+                return x?.ServerId.CompareTo(y?.ServerId) ?? int.MinValue;
             }
         }
     }

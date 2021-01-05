@@ -39,7 +39,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
                 return;
             }
 
-            LetterHeader letter = null;
+            if (player.SelectedCharacter is null)
+            {
+                player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
+                return;
+            }
+
+            LetterHeader? letter;
             try
             {
                 using (var context = player.GameContext.PersistenceContextProvider.CreateNewPlayerContext(player.GameContext.Configuration))
@@ -62,6 +68,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
                 player.Logger.LogError(ex, "Unexpected error when trying to send a letter");
                 player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Oops, some error happened during sending the Letter.", MessageType.BlueNormal);
+                return;
             }
 
             // Try to forward it to the player, if he is online
@@ -69,7 +76,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             if (receiverPlayer != null)
             {
                 receiverPlayer.PersistenceContext.Attach(letter);
-                receiverPlayer.SelectedCharacter.Letters.Add(letter);
+                receiverPlayer.SelectedCharacter!.Letters.Add(letter);
                 receiverPlayer.ViewPlugIns.GetPlugIn<IAddToLetterListPlugIn>()?.AddToLetterList(letter, (ushort)(receiverPlayer.SelectedCharacter.Letters.Count - 1), true);
             }
             else
@@ -82,7 +89,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         {
             var letterHeader = context.CreateNew<LetterHeader>();
             letterHeader.LetterDate = DateTime.Now;
-            letterHeader.SenderName = player.SelectedCharacter.Name;
+            letterHeader.SenderName = player.SelectedCharacter!.Name;
             letterHeader.ReceiverName = receiver;
             letterHeader.Subject = title;
 

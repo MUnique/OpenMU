@@ -48,9 +48,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             using var loggerScope = sender.Logger.BeginScope(this.GetType());
             ChatMessageType messageType = this.GetMessageType(message, whisper);
-            if (messageType != ChatMessageType.Whisper && playerName != sender.SelectedCharacter.Name)
+            if (messageType != ChatMessageType.Whisper && playerName != sender.SelectedCharacter?.Name)
             {
-                sender.Logger.LogWarning("Maybe Hacker, Charname in chat packet != charname\t [{0}] <> [{1}]", sender.SelectedCharacter.Name, playerName);
+                sender.Logger.LogWarning("Maybe Hacker, Charname in chat packet != charname\t [{0}] <> [{1}]", sender.SelectedCharacter?.Name, playerName);
             }
 
             switch (messageType)
@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                         break;
                     }
 
-                    if (sender.SelectedCharacter.CharacterStatus >= commandHandler.MinCharacterStatusRequirement)
+                    if (sender.SelectedCharacter!.CharacterStatus >= commandHandler.MinCharacterStatusRequirement)
                     {
                         commandHandler.HandleCommand(sender, message);
                     }
@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                         sender.GameContext.PlugInManager.GetPlugInPoint<IWhisperMessageReceivedPlugIn>()?.WhisperMessageReceived(sender, whisperReceiver, message, eventArgs);
                         if (!eventArgs.Cancel)
                         {
-                            whisperReceiver.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Whisper);
+                            whisperReceiver.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter!.Name, ChatMessageType.Whisper);
                         }
                     }
 
@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private void HandleChatMessage(Player sender, string message, ChatMessageType messageType)
         {
-            sender.Logger.LogDebug("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter.Name, message);
+            sender.Logger.LogDebug("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter!.Name, message);
             var eventArgs = new CancelEventArgs();
             sender.GameContext.PlugInManager.GetPlugInPoint<IChatMessageReceivedPlugIn>()?.ChatMessageReceived(sender, message, eventArgs);
             if (eventArgs.Cancel)
@@ -133,7 +133,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 {
                     if (sender.SelectedCharacter.CharacterStatus >= CharacterStatus.GameMaster)
                     {
-                        sender.GameContext?.SendGlobalNotification(message);
+                        sender.GameContext.SendGlobalNotification(message);
                     }
 
                     break;
@@ -170,7 +170,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// </summary>
         private class ReverseComparer : IComparer<string>
         {
-            public int Compare(string x, string y)
+            public int Compare(string? x, string? y)
             {
                 return string.Compare(y, x, StringComparison.InvariantCultureIgnoreCase);
             }

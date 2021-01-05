@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
         }
 
         /// <inheritdoc/>
-        public IList<PathResultNode> FindPath(Point start, Point end)
+        public IList<PathResultNode>? FindPath(Point start, Point end)
         {
             var result = new List<PathResultNode>();
             Point nextStep;

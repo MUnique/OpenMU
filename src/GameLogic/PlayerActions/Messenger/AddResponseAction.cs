@@ -26,14 +26,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
             }
 
             var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
-            if (friendServer != null)
+            if (friendServer != null && player.SelectedCharacter is { } character)
             {
                 if (accepted)
                 {
                     player.ViewPlugIns.GetPlugIn<IFriendAddedPlugIn>()?.FriendAdded(requesterName);
                 }
 
-                friendServer.FriendResponse(player.SelectedCharacter.Name, requesterName, accepted);
+                friendServer.FriendResponse(character.Name, requesterName, accepted);
             }
         }
     }

@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
             try
             {
                 var builder = new GameConfigurationJsonQueryBuilder();
-                result = builder.BuildJsonQueryForEntity(type);
+                result = builder.BuildJsonQueryForEntity(type!);
             }
             finally
             {
@@ -61,7 +61,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
             try
             {
                 var builder = new JsonQueryBuilder();
-                result = builder.BuildJsonQueryForEntity(type);
+                result = builder.BuildJsonQueryForEntity(type!);
             }
             finally
             {

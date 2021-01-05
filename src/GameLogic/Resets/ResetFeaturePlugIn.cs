@@ -15,6 +15,6 @@ namespace MUnique.OpenMU.GameLogic.Resets
     public class ResetFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfiguration<ResetConfiguration>
     {
         /// <inheritdoc/>
-        public ResetConfiguration Configuration { get; set; }
+        public ResetConfiguration? Configuration { get; set; }
     }
 }

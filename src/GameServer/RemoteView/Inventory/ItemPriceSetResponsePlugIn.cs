@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.PlayerShop;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,14 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc />
         public void ItemPriceSetResponse(byte itemSlot, ItemPriceResult result)
         {
-            using var writer = this.player.Connection.StartSafeWrite(PlayerShopSetItemPriceResponse.HeaderType, PlayerShopSetItemPriceResponse.Length);
-            _ = new PlayerShopSetItemPriceResponse(writer.Span)
-            {
-                InventorySlot = itemSlot,
-                Result = result.Convert(),
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendPlayerShopSetItemPriceResponse(itemSlot, result.Convert());
         }
     }
 }

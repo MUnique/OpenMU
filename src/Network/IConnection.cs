@@ -35,12 +35,12 @@ namespace MUnique.OpenMU.Network
         /// <remarks>
         /// Remove and implement <see cref="IDuplexPipe"/> instead?
         /// </remarks>
-        event PipedPacketReceivedHandler PacketReceived;
+        event PipedPacketReceivedHandler? PacketReceived;
 
         /// <summary>
         /// Occurs when the client disconnected.
         /// </summary>
-        event DisconnectedHandler Disconnected;
+        event DisconnectedHandler? Disconnected;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="IConnection"/> is connected.

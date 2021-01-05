@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>The disposable to end the usage.</returns>
         public IDisposable UseContext(IContext context)
         {
-            Stack<IContext> contextsOfCurrentThread;
+            Stack<IContext>? contextsOfCurrentThread;
             this.contextLock.EnterWriteLock();
             try
             {
@@ -71,9 +71,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Gets the current context of the current thread.
         /// </summary>
         /// <returns>The current context.</returns>
-        public IContext GetCurrentContext()
+        public IContext? GetCurrentContext()
         {
-            Stack<IContext> contextsOfCurrentThread;
+            Stack<IContext>? contextsOfCurrentThread;
             this.contextLock.EnterReadLock();
             try
             {
@@ -112,8 +112,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
         private sealed class ContextPop : IDisposable
         {
-            private Stack<IContext> stack;
-            private Action<Stack<IContext>> afterPopAction;
+            private Stack<IContext>? stack;
+            private Action<Stack<IContext>>? afterPopAction;
 
             public ContextPop(Stack<IContext> stack, Action<Stack<IContext>> afterPopAction)
             {

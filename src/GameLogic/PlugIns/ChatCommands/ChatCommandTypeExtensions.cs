@@ -20,11 +20,12 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <returns>The available chat commands of the player.</returns>
         public static IEnumerable<ChatCommandHelpAttribute> GetAvailableChatCommands(this Player player)
         {
-            return player.GameContext.PlugInManager
+            return player.GameContext?.PlugInManager
                 .GetKnownPlugInsOf<IChatCommandPlugIn>()
                 .Select(CustomAttributeExtensions.GetCustomAttribute<ChatCommandHelpAttribute>)
                 .Where(attribute => attribute is { })
-                .Where(attribute => player.SelectedCharacter.CharacterStatus >= attribute.MinimumCharacterStatus);
+                .Where(attribute => player.SelectedCharacter?.CharacterStatus >= attribute!.MinimumCharacterStatus)
+                .Select(attribute => attribute!) ?? Enumerable.Empty<ChatCommandHelpAttribute>();
         }
     }
 }

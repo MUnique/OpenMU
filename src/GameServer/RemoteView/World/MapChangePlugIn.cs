@@ -39,9 +39,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
         private void SendMessage(bool success)
         {
+            if (this.player.SelectedCharacter?.CurrentMap is null)
+            {
+                return;
+            }
+
             var mapNumber = this.player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
             var position = this.player.IsWalking ? this.player.WalkTarget : this.player.Position;
-            this.player.Connection.SendMapChanged(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte(), success);
+            this.player.Connection?.SendMapChanged(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte(), success);
         }
     }
 }

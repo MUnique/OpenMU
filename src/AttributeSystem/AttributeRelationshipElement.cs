@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// </summary>
         public override float Value => this.cachedValue ?? this.GetAndCacheValue();
 
-        private void ElementChanged(object sender, EventArgs eventArgs)
+        private void ElementChanged(object? sender, EventArgs eventArgs)
         {
             this.cachedValue = null;
             this.RaiseValueChanged();

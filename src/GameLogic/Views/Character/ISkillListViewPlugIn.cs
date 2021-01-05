@@ -33,6 +33,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Character
         /// </summary>
         /// <param name="skillIndex">Index of the skill.</param>
         /// <returns>The skill by its index in the internal skill list.</returns>
-        Skill GetSkillByIndex(byte skillIndex);
+        Skill? GetSkillByIndex(byte skillIndex);
     }
 }

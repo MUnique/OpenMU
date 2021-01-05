@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Character;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,13 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void CharacterFocused(Character character)
         {
-            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.CharacterFocused.HeaderType, Network.Packets.ServerToClient.CharacterFocused.Length);
-            _ = new CharacterFocused(writer.Span)
-            {
-                CharacterName = character.Name,
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendCharacterFocused(character.Name);
         }
     }
 }

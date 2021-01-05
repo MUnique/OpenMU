@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     {
         private static readonly IList<IComponentBuilder> Builders = new List<IComponentBuilder>();
 
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
 
         /// <summary>
         /// Initializes static members of the <see cref="AutoFields"/> class.
@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         /// The context.
         /// </value>
         [CascadingParameter]
-        public EditContext Context { get; set; }
+        public EditContext Context { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the notification service.
@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         /// The notification service.
         /// </value>
         [Inject]
-        public IChangeNotificationService NotificationService { get; set; }
+        public IChangeNotificationService NotificationService { get; set; } = null!;
 
         /// <inheritdoc />
         protected override void BuildRenderTree(RenderTreeBuilder builder)
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             int i = 0;
             foreach (var propertyInfo in this.GetProperties())
             {
-                IComponentBuilder componentBuilder = null;
+                IComponentBuilder? componentBuilder = null;
                 try
                 {
                     componentBuilder = Builders.FirstOrDefault(b => b.CanBuildComponent(propertyInfo));

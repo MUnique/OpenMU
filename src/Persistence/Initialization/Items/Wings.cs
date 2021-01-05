@@ -27,12 +27,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         private static readonly int[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
         private static readonly int[] DefenseIncreaseByLevelThirdWings = { 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 41, 47, 54, 62, 71, 81 };
 
-        private List<LevelBonus> defenseBonusPerLevel;
-        private List<LevelBonus> defenseBonusPerLevelThridWings;
-        private List<LevelBonus> damageIncreasePerLevelFirstWings;
-        private List<LevelBonus> damageIncreasePerLevelSecondWings;
-        private List<LevelBonus> damageIncreasePerLevelThirdWings;
-        private List<LevelBonus> damageAbsorbPerLevel;
+        private List<LevelBonus> defenseBonusPerLevel = null!;
+        private List<LevelBonus> defenseBonusPerLevelThridWings = null!;
+        private List<LevelBonus> damageIncreasePerLevelFirstWings = null!;
+        private List<LevelBonus> damageIncreasePerLevelSecondWings = null!;
+        private List<LevelBonus> damageIncreasePerLevelThirdWings = null!;
+        private List<LevelBonus> damageAbsorbPerLevel = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Wings"/> class.
@@ -196,7 +196,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.GameConfiguration.Items.Add(feather);
         }
 
-        private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, List<LevelBonus> damageIncreasePerLevel, List<LevelBonus> defenseIncreasePerLevel, ItemOptionDefinition wingOptionDefinition)
+        private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, List<LevelBonus> damageIncreasePerLevel, List<LevelBonus> defenseIncreasePerLevel, ItemOptionDefinition? wingOptionDefinition)
         {
             var wing = this.CreateWing(number, width, height, name, dropLevel, defense, durability, levelRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
             if (wingOptionDefinition != null)
@@ -221,7 +221,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 powerUp.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = damageIncreaseInitial / 100f;
-                damageIncreasePerLevel?.ForEach(powerUp.BonusPerLevel.Add);
+                damageIncreasePerLevel.ForEach(powerUp.BonusPerLevel.Add);
                 wing.BasePowerUpAttributes.Add(powerUp);
             }
 
@@ -237,10 +237,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 optionDefinition.PossibleOptions.Add(option);
             }
 
-            wing.PossibleItemOptions.Add(
-                this.GameConfiguration.ItemOptions
-                    .FirstOrDefault(iod => iod.PossibleOptions
-                        .Any(o => o.OptionType == ItemOptionTypes.Luck)));
+            wing.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o?.OptionType == ItemOptionTypes.Luck)));
             return wing;
         }
 
@@ -256,7 +253,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             {
                 var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
                 optionOfLevel.Level = level;
-                optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(itemOption.PowerUpDefinition.TargetAttribute, level * valueIncrementPerLevel, aggregateType);
+                optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(itemOption.PowerUpDefinition.TargetAttribute!, level * valueIncrementPerLevel, aggregateType);
                 itemOption.LevelDependentOptions.Add(optionOfLevel);
             }
 

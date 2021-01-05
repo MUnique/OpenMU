@@ -20,12 +20,12 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <remarks>
         /// This never happens in this implementation.
         /// </remarks>
-        public event EventHandler AppearanceChanged;
+        public event EventHandler? AppearanceChanged;
 
         /// <summary>
         /// Gets or sets the character class.
         /// </summary>
-        public virtual CharacterClass CharacterClass { get; set; }
+        public virtual CharacterClass? CharacterClass { get; set; }
 
         /// <inheritdoc />
         public CharacterPose Pose { get; set; }
@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the equipped items.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemAppearance> EquippedItems { get; protected set; }
+        public virtual ICollection<ItemAppearance> EquippedItems { get; protected set; } = null!;
 
         /// <inheritdoc />
         IEnumerable<ItemAppearance> IAppearanceData.EquippedItems => this.EquippedItems;

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Gets or sets the current game configuration.
         /// This is used by the <see cref="ConfigurationTypeRepository{T}"/> which gets its data from the current game configuration.
         /// </summary>
-        internal GameConfiguration CurrentGameConfiguration { get; set; }
+        internal GameConfiguration? CurrentGameConfiguration { get; set; }
 
         /// <inheritdoc/>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -38,13 +38,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<ChatServerDefinition>();
             modelBuilder.Entity<PowerUpDefinitionWithDuration>()
                 .HasOne(d => d.RawBoost)
-                .WithOne(v => v.ParentAsBoost)
+                .WithOne(v => v.ParentAsBoost!)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("PowerUpDefinitionWithDuration_Boost");
 
             modelBuilder.Entity<PowerUpDefinitionWithDuration>()
                 .HasOne(d => d.RawDuration)
-                .WithOne(v => v.ParentAsDuration)
+                .WithOne(v => v.ParentAsDuration!)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("PowerUpDefinitionWithDuration_Duration");
             modelBuilder.Entity<PowerUpDefinitionWithDuration>().Property(d => d.BoostId);
@@ -72,10 +72,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 var accountKey = entity.Metadata.GetForeignKeys().First(key => key.PrincipalEntityType == modelBuilder.Entity<Account>().Metadata);
                 accountKey.DeleteBehavior = DeleteBehavior.Cascade;
 
-                entity.HasMany(character => character.RawLetters).WithOne(letter => letter.Receiver).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(character => character.RawLetters).WithOne(letter => letter.Receiver!).OnDelete(DeleteBehavior.Cascade);
             });
 
-            modelBuilder.Entity<ItemStorage>().HasMany(storage => storage.RawItems).WithOne(item => item.RawItemStorage);
+            modelBuilder.Entity<ItemStorage>().HasMany(storage => storage.RawItems).WithOne(item => item.RawItemStorage!);
             modelBuilder.Entity<GameServerDefinition>();
             modelBuilder.Entity<ItemBasePowerUpDefinition>().Ignore(d => d.BaseValueElement);
             modelBuilder.Entity<LevelBonus>().Ignore(l => l.AdditionalValueElement);
@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<Model.ConstValueAttribute>().Ignore(c => c.AggregateType);
             modelBuilder.Entity<CharacterClass>()
                 .HasMany(c => c.RawBaseAttributeValues)
-                .WithOne(c => c.CharacterClass);
+                .WithOne(c => c.CharacterClass!);
             modelBuilder.Entity<Model.StatAttribute>().Ignore("ValueGetter");
 
             modelBuilder.Entity<MasterSkillDefinition>().HasOne(s => s.RawRoot);

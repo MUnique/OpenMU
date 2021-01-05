@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Linq;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -81,7 +82,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 if (group.AlwaysApplies)
                 {
-                    result = result.Concat(group.Options.Select(o => o.PowerUpDefinition));
+                    result = result.Concat(group.Options.Select(o => o.PowerUpDefinition ?? throw Error.NotInitializedProperty(o, nameof(o.PowerUpDefinition))));
 
                     continue;
                 }
@@ -101,7 +102,7 @@ namespace MUnique.OpenMU.GameLogic
                 if (setIsComplete)
                 {
                     // Take all options when the set is complete
-                    result = result.Concat(group.Options.Select(o => o.PowerUpDefinition));
+                    result = result.Concat(group.Options.Select(o => o.PowerUpDefinition ?? throw Error.NotInitializedProperty(o, nameof(o.PowerUpDefinition))));
                     continue;
                 }
 
@@ -110,7 +111,7 @@ namespace MUnique.OpenMU.GameLogic
                     // Take the first n-1 options
                     result = result.Concat(group.Options.OrderBy(o => o.Number)
                         .Take(itemCount - 1)
-                        .Select(o => o.PowerUpDefinition));
+                        .Select(o => o.PowerUpDefinition ?? throw Error.NotInitializedProperty(o, nameof(o.PowerUpDefinition))));
                 }
             }
 
@@ -127,13 +128,13 @@ namespace MUnique.OpenMU.GameLogic
                 yield break;
             }
 
-            var activeItemOptions = activeItems.SelectMany(i => i.ItemOptions.Select(o => o.ItemOption)).ToList();
+            var activeItemOptions = activeItems.SelectMany(i => i.ItemOptions.Select(o => o.ItemOption ?? throw Error.NotInitializedProperty(o, nameof(o.ItemOption)))).ToList();
             foreach (var combinationBonus in gameConfiguration.ItemOptionCombinationBonuses.Where(c => c.Bonus is { }))
             {
                 var remainingOptions = activeItemOptions.ToList<ItemOption>();
                 while (this.AreRequiredOptionsFound(combinationBonus, remainingOptions))
                 {
-                    yield return combinationBonus.Bonus;
+                    yield return combinationBonus.Bonus ?? throw Error.NotInitializedProperty(combinationBonus, nameof(combinationBonus.Bonus));
                     if (!combinationBonus.AppliesMultipleTimes)
                     {
                         break;
@@ -165,6 +166,9 @@ namespace MUnique.OpenMU.GameLogic
 
         private IEnumerable<PowerUpWrapper> GetBasePowerUpWrappers(Item item, AttributeSystem attributeHolder, ItemBasePowerUpDefinition attribute)
         {
+            attribute.ThrowNotInitializedProperty(attribute.BaseValueElement is null, nameof(attribute.BaseValueElement));
+            attribute.ThrowNotInitializedProperty(attribute.TargetAttribute is null, nameof(attribute.TargetAttribute));
+
             yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
             if (item.Level == 0)
             {
@@ -174,6 +178,7 @@ namespace MUnique.OpenMU.GameLogic
             var levelBonus = (attribute.BonusPerLevel ?? Enumerable.Empty<LevelBonus>()).FirstOrDefault(bonus => bonus.Level == item.Level);
             if (levelBonus != null)
             {
+                levelBonus.ThrowNotInitializedProperty(levelBonus.AdditionalValueElement is null, nameof(levelBonus.AdditionalValueElement));
                 yield return new PowerUpWrapper(levelBonus.AdditionalValueElement, attribute.TargetAttribute, attributeHolder);
             }
         }
@@ -188,8 +193,8 @@ namespace MUnique.OpenMU.GameLogic
 
             foreach (var optionLink in options)
             {
-                var option = optionLink.ItemOption;
-                var powerUp = option.PowerUpDefinition;
+                var option = optionLink.ItemOption ?? throw Error.NotInitializedProperty(optionLink, nameof(optionLink.ItemOption));
+                var powerUp = option.PowerUpDefinition ?? throw Error.NotInitializedProperty(option, nameof(option.PowerUpDefinition));
                 var level = option.LevelType == LevelType.ItemLevel ? item.Level : optionLink.Level;
                 if (level > 0)
                 {

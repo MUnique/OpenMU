@@ -34,13 +34,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true)
         {
-            if (newObjects is null || !newObjects.Any())
+            var connection = this.player.Connection;
+            if (connection is null || newObjects is null || !newObjects.Any())
             {
                 return;
             }
 
             var newObjectList = newObjects.ToList();
-            using var writer = this.player.Connection.StartSafeWrite(AddNpcsToScope.HeaderType, AddNpcsToScope.GetRequiredSize(newObjectList.Count));
+            using var writer = connection.StartSafeWrite(AddNpcsToScope.HeaderType, AddNpcsToScope.GetRequiredSize(newObjectList.Count));
             {
                 var packet = new AddNpcsToScope(writer.Span)
                 {

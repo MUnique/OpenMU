@@ -40,20 +40,20 @@ namespace MUnique.OpenMU.GameServer
             IMapInitializer mapInitializer,
             ILoggerFactory loggerFactory,
             PlugInManager plugInManager)
-            : base(gameServerDefinition.GameConfiguration, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager)
+            : base(gameServerDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"), persistenceContextProvider, mapInitializer, loggerFactory, plugInManager)
         {
             this.gameServerDefinition = gameServerDefinition;
             this.Id = gameServerDefinition.ServerID;
             this.GuildServer = guildServer;
             this.LoginServer = loginServer;
             this.FriendServer = friendServer;
-            this.ServerConfiguration = gameServerDefinition.ServerConfiguration;
+            this.ServerConfiguration = gameServerDefinition.ServerConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a ServerConfiguration");
         }
 
         /// <summary>
         /// Occurs when a guild has been deleted.
         /// </summary>
-        public event EventHandler<GuildDeletedEventArgs> GuildDeleted;
+        public event EventHandler<GuildDeletedEventArgs>? GuildDeleted;
 
         /// <inheritdoc/>
         public byte Id { get; }
@@ -103,9 +103,9 @@ namespace MUnique.OpenMU.GameServer
             this.GuildDeleted?.Invoke(this, new GuildDeletedEventArgs(guildId));
         }
 
-        private void PlayerEnteredWorld(object sender, EventArgs e)
+        private void PlayerEnteredWorld(object? sender, EventArgs e)
         {
-            if (sender is Player player)
+            if (sender is Player player && player.SelectedCharacter is not null)
             {
                 this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
                 player.GuildStatus = this.GuildServer.PlayerEnteredGame(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
@@ -116,9 +116,9 @@ namespace MUnique.OpenMU.GameServer
             }
         }
 
-        private void PlayerLeftWorld(object sender, EventArgs e)
+        private void PlayerLeftWorld(object? sender, EventArgs e)
         {
-            if (sender is Player player)
+            if (sender is Player player && player.SelectedCharacter is not null)
             {
                 this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, 0xFF);
                 if (player.GuildStatus != null)

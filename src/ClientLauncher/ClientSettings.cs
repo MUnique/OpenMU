@@ -12,6 +12,8 @@ namespace MUnique.OpenMU.ClientLauncher
     /// </summary>
     internal class ClientSettings
     {
+        private const string DefaultLanguage = "Eng";
+
         /// <summary>
         /// Gets or sets the client color depth.
         /// </summary>
@@ -70,7 +72,7 @@ namespace MUnique.OpenMU.ClientLauncher
             this.VolumeLevel = (int)(key.GetValue("VolumeLevel") ?? 0);
             this.IsWindowModeActive = (int)(key.GetValue("WindowMode") ?? 0) == 1;
             this.Resolution = (ClientResolution)(key.GetValue("Resolution") ?? 0);
-            this.LangSelection = ((string)key.GetValue("LangSelection") ?? "Eng").GetLanguage();
+            this.LangSelection = ((string?)key.GetValue("LangSelection") ?? DefaultLanguage).GetLanguage();
         }
 
         /// <summary>
@@ -87,7 +89,7 @@ namespace MUnique.OpenMU.ClientLauncher
             key.SetValue("VolumeLevel", this.VolumeLevel, RegistryValueKind.DWord);
             key.SetValue("WindowMode", this.IsWindowModeActive, RegistryValueKind.DWord);
             key.SetValue("Resolution", this.Resolution, RegistryValueKind.DWord);
-            key.SetValue("LangSelection", this.LangSelection.GetString(), RegistryValueKind.String);
+            key.SetValue("LangSelection", this.LangSelection.GetString() ?? DefaultLanguage, RegistryValueKind.String);
         }
     }
 }

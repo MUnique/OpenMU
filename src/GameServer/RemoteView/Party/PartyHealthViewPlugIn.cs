@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
     public class PartyHealthViewPlugIn : IPartyHealthViewPlugIn
     {
         private readonly RemotePlayer player;
-        private byte[] healthValues;
+        private byte[]? healthValues;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyHealthViewPlugIn"/> class.
@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
             this.player = player;
         }
 
-        private byte[] HealthValues => this.healthValues ??= new byte[this.player.Party.MaxPartySize];
+        private byte[] HealthValues => this.healthValues ??= new byte[this.player.Party!.MaxPartySize];
 
         /// <inheritdoc/>
         public bool IsHealthUpdateNeeded()
@@ -47,8 +47,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
                 return;
             }
 
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var partyListCount = partyList.Count;
-            using var writer = this.player.Connection.StartSafeWrite(PartyHealthUpdate.HeaderType, PartyHealthUpdate.GetRequiredSize(partyListCount));
+            using var writer = connection.StartSafeWrite(PartyHealthUpdate.HeaderType, PartyHealthUpdate.GetRequiredSize(partyListCount));
             var packet = new PartyHealthUpdate(writer.Span)
             {
                 Count = (byte)partyListCount,

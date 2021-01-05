@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.PlugIns
         /// <returns>
         /// The custom configuration as <typeparamref name="T" />.
         /// </returns>
-        public static T GetConfiguration<T>(this PlugInConfiguration configuration)
+        public static T? GetConfiguration<T>(this PlugInConfiguration configuration)
             where T : class
         {
             if (string.IsNullOrWhiteSpace(configuration.CustomConfiguration))

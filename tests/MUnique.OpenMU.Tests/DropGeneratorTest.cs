@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Tests
             Assert.That(item, Is.Not.Null);
 
             // ReSharper disable once PossibleNullReferenceException
-            Assert.That(item.Definition, Is.EqualTo(monster.DropItemGroups.Last().PossibleItems.First()));
+            Assert.That(item!.Definition, Is.EqualTo(monster.DropItemGroups.Last().PossibleItems.First()));
         }
 
         /// <summary>

@@ -12,10 +12,10 @@ namespace MUnique.OpenMU.AdminPanel.Services
     public class ChangeNotificationService : IChangeNotificationService
     {
         /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc />
-        public void NotifyChange(object sender, string propertyName)
+        public void NotifyChange(object? sender, string? propertyName)
         {
             this.PropertyChanged?.Invoke(sender, new PropertyChangedEventArgs(propertyName));
         }

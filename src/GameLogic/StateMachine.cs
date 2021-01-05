@@ -37,33 +37,27 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The event arguments.</param>
-        public delegate void StateChangeCancelEventHandler(object sender, StateChangeEventArgs e);
+        public delegate void StateChangeCancelEventHandler(object? sender, StateChangeEventArgs e);
 
         /// <summary>
         /// Event that fires just before the state changes.
         /// </summary>
-        public event StateChangeCancelEventHandler StateChanges;
+        public event StateChangeCancelEventHandler? StateChanges;
 
         /// <summary>
         /// Event that fires after the state have changed.
         /// </summary>
-        public event EventHandler StateChanged;
+        public event EventHandler? StateChanged;
 
         /// <summary>
         /// Gets the current state.
         /// </summary>
-        public State CurrentState { get; private set; }
+        public State? CurrentState { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the state machine is in a finished state, that means that no further state changes are possible.
         /// </summary>
-        public bool Finished
-        {
-            get
-            {
-                return this.CurrentState is null || this.CurrentState.PossibleTransitions is null || this.CurrentState.PossibleTransitions.Count == 0;
-            }
-        }
+        public bool Finished => this.CurrentState?.PossibleTransitions is null || this.CurrentState.PossibleTransitions.Count == 0;
 
         /// <summary>
         /// Tries to advance the state to <paramref name="nextState"/>.
@@ -72,12 +66,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The success.</returns>
         public bool TryAdvanceTo(State nextState)
         {
-            if (this.CurrentState is null)
-            {
-                return false;
-            }
-
-            if (this.CurrentState.PossibleTransitions is null)
+            if (this.CurrentState?.PossibleTransitions is null)
             {
                 return false;
             }
@@ -108,7 +97,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.OnStateChanged();
             })
             {
-                Allowed = this.CurrentState.PossibleTransitions.Contains(nextState) && this.OnStateChanging(nextState),
+                Allowed = (this.CurrentState?.PossibleTransitions?.Contains(nextState) ?? false) && this.OnStateChanging(nextState),
             };
 
             return context;
@@ -198,7 +187,7 @@ namespace MUnique.OpenMU.GameLogic
             /// <summary>
             /// Gets or sets the next state.
             /// </summary>
-            public State NextState { get; set; }
+            public State? NextState { get; set; }
         }
     }
 }

@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Character;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,9 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void ShowCharacterCreationFailed()
         {
-            using var writer = this.player.Connection.StartSafeWrite(CharacterCreationFailed.HeaderType, CharacterCreationFailed.Length);
-            _ = new CharacterCreationFailed(writer.Span);
-            writer.Commit();
+            this.player.Connection?.SendCharacterCreationFailed();
         }
     }
 }

@@ -25,6 +25,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
                 return;
             }
 
+            if (player.LastPartyRequester is null)
+            {
+                return;
+            }
+
             player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
 
             if (!accepted)
@@ -46,8 +51,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
             }
             else
             {
-                player.LastPartyRequester.Party = new Party(player.GameContext.Configuration.MaximumPartySize, player.GameContext.LoggerFactory.CreateLogger<Party>());
-                player.LastPartyRequester.Party.Add(player.LastPartyRequester); // Party Master first
+                player.LastPartyRequester.Party = new Party(player.LastPartyRequester, player.GameContext.Configuration.MaximumPartySize, player.GameContext.LoggerFactory.CreateLogger<Party>());
                 player.LastPartyRequester.Party.Add(player);
             }
 

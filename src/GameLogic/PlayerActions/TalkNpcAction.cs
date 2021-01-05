@@ -12,9 +12,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Guild;
-    using MUnique.OpenMU.GameLogic.Views.Vault;
     using MUnique.OpenMU.GameLogic.Views.NPC;
     using MUnique.OpenMU.GameLogic.Views.Quest;
+    using MUnique.OpenMU.GameLogic.Views.Vault;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
@@ -30,11 +30,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         public void TalkToNpc(Player player, NonPlayerCharacter npc)
         {
             var npcStats = npc.Definition;
-            if (npcStats is null)
-            {
-                return;
-            }
-
             if (!player.PlayerState.TryAdvanceTo(PlayerState.NpcDialogOpened))
             {
                 return;
@@ -54,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private void ShowDialogOfOpenedNpc(Player player)
         {
-            var npcStats = player.OpenedNpc.Definition;
+            var npcStats = player.OpenedNpc!.Definition;
             switch (npcStats.NpcWindow)
             {
                 case NpcWindow.Undefined:
@@ -77,7 +72,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
                     break;
                 case NpcWindow.VaultStorage:
-                    player.Account.Vault ??= player.PersistenceContext.CreateNew<ItemStorage>();
+                    player.Account!.Vault ??= player.PersistenceContext.CreateNew<ItemStorage>();
                     player.Vault = new Storage(InventoryConstants.WarehouseSize, player.Account.Vault);
                     player.ViewPlugIns.GetPlugIn<IShowVaultPlugIn>()?.ShowVault();
                     break;
@@ -104,13 +99,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private void ShowLegacyQuestDialog(Player player)
         {
-            var quests = player.OpenedNpc.Definition.Quests
-                .Where(q => q.QualifiedCharacter is null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass);
+            var quests = player.OpenedNpc!.Definition.Quests
+                .Where(q => q.QualifiedCharacter is null || q.QualifiedCharacter == player.SelectedCharacter!.CharacterClass);
 
             if (!quests.Any())
             {
-                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(
-                    "I have no quests for you.", player.OpenedNpc);
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject("I have no quests for you.", player.OpenedNpc);
                 player.OpenedNpc = null;
                 player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
                 return;
@@ -144,13 +138,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             if (player.Level < 100)
             {
-                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject("Your level should be at least level 100", player.OpenedNpc);
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject("Your level should be at least level 100", player.OpenedNpc!);
                 return false;
             }
 
             if (player.GuildStatus != null)
             {
-                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject("You already belong to a guild", player.OpenedNpc);
+                player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject("You already belong to a guild", player.OpenedNpc!);
                 return false;
             }
 

@@ -1,4 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics.CodeAnalysis
 @inherits NotifyableInputBase<DateTime>
 
     <div>
@@ -8,15 +9,16 @@
     </div>
 
 @code {
+
     /// <summary>
     /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
     /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
     /// </summary>
     [Parameter]
-    public string Label { get; set; }
+    public string Label { get; set; } = string.Empty;
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string value, out DateTime result, out string validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out DateTime result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         if (DateTime.TryParse(value, out result))
         {

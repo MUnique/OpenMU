@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.Tests
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season9PlugIn>();
             var containerForSeason6 = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
-            Assert.That(containerForSeason6.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season6PlugIn)));
+            Assert.That(containerForSeason6.GetPlugIn<ISomeViewPlugIn>()!.GetType(), Is.EqualTo(typeof(Season6PlugIn)));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.Tests
             manager.RegisterPlugIn<ISomeViewPlugIn, Season1PlugIn>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(manager), Season9E2English, manager);
-            Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season6PlugIn)));
+            Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>()!.GetType(), Is.EqualTo(typeof(Season6PlugIn)));
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.Tests
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugInOfSomeOtherLanguage>();
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugIn>();
             var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
-            Assert.That(containerForSeason6English.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season6PlugIn)));
+            Assert.That(containerForSeason6English.GetPlugIn<ISomeViewPlugIn>()!.GetType(), Is.EqualTo(typeof(Season6PlugIn)));
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace MUnique.OpenMU.Tests
             var manager = new PlugInManager(null, new NullLoggerFactory(), null);
             manager.RegisterPlugIn<ISomeViewPlugIn, InvariantSeasonPlugIn>();
             var containerForSeason6English = new ViewPlugInContainer(this.CreatePlayer(manager), Season6E3English, manager);
-            Assert.That(containerForSeason6English.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(InvariantSeasonPlugIn)));
+            Assert.That(containerForSeason6English.GetPlugIn<ISomeViewPlugIn>()!.GetType(), Is.EqualTo(typeof(InvariantSeasonPlugIn)));
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.Tests
             var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(manager), Season9E2English, manager);
 
             manager.DeactivatePlugIn<Season6PlugIn>();
-            Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season1PlugIn)));
+            Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>()!.GetType(), Is.EqualTo(typeof(Season1PlugIn)));
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.Tests
             manager.RegisterPlugIn<ISomeViewPlugIn, Season6PlugInInvariant>();
             var containerForSeason9 = new ViewPlugInContainer(this.CreatePlayer(manager), Season9E2English, manager);
 
-            Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>().GetType(), Is.EqualTo(typeof(Season6PlugIn)));
+            Assert.That(containerForSeason9.GetPlugIn<ISomeViewPlugIn>()!.GetType(), Is.EqualTo(typeof(Season6PlugIn)));
         }
 
         private RemotePlayer CreatePlayer(PlugInManager plugInManager)

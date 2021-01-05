@@ -37,13 +37,18 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         public void HandleCommand(Player player, string command)
         {
             using var logScope = player.Logger.BeginScope(this.GetType());
-            var dropCoordinates = player.CurrentMap.Terrain.GetRandomCoordinate(player.Position, 1);
+            if (player.CurrentMap is not { } currentMap)
+            {
+                return;
+            }
+
+            var dropCoordinates = currentMap.Terrain.GetRandomCoordinate(player.Position, 1);
             try
             {
                 var arguments = command.ParseArguments<Arguments>();
                 var item = CreateItem(player, arguments);
-                var droppedItem = new DroppedItem(item, dropCoordinates, player.CurrentMap, player);
-                player.CurrentMap.Add(droppedItem);
+                var droppedItem = new DroppedItem(item, dropCoordinates, currentMap, player);
+                currentMap.Add(droppedItem);
                 player.ShowMessage($"[GM][/item] {item} created");
             }
             catch (ArgumentException ex)

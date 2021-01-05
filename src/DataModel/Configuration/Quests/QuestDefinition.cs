@@ -15,12 +15,12 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         /// <summary>
         /// Gets or sets the NPC which gives the quest.
         /// </summary>
-        public virtual MonsterDefinition QuestGiver { get; set; }
+        public virtual MonsterDefinition? QuestGiver { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the quest.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the group identifier of the quest.
@@ -78,25 +78,25 @@ namespace MUnique.OpenMU.DataModel.Configuration.Quests
         /// <summary>
         /// Gets or sets the qualified character class. If <c>null</c>, it's valid for all character classes.
         /// </summary>
-        public virtual CharacterClass QualifiedCharacter { get; set; }
+        public virtual CharacterClass? QualifiedCharacter { get; set; }
 
         /// <summary>
         /// Gets or sets the required monster kills to be able to complete this quest.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<QuestMonsterKillRequirement> RequiredMonsterKills { get; protected set; }
+        public virtual ICollection<QuestMonsterKillRequirement> RequiredMonsterKills { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the required items which should be in the characters inventory when the
         /// player requests to complete the quest.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<QuestItemRequirement> RequiredItems { get; protected set; }
+        public virtual ICollection<QuestItemRequirement> RequiredItems { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the rewards when completing the quest successfully.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<QuestReward> Rewards { get; protected set; }
+        public virtual ICollection<QuestReward> Rewards { get; protected set; } = null!;
     }
 }

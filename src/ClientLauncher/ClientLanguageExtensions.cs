@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.ClientLauncher
         /// </summary>
         /// <param name="clientLanguage">The client language.</param>
         /// <returns>The string which should be set in the registry for the given <see cref="ClientLanguage"/>.</returns>
-        public static string GetString(this ClientLanguage clientLanguage)
+        public static string? GetString(this ClientLanguage clientLanguage)
         {
             var index = (int)clientLanguage;
             return index < LanguageKeys.Length ? LanguageKeys[index] : null;

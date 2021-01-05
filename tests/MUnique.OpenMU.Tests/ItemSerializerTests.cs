@@ -22,9 +22,9 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public class ItemSerializerTests
     {
-        private GameConfiguration gameConfiguration;
-        private IPersistenceContextProvider contextProvider;
-        private IItemSerializer itemSerializer;
+        private GameConfiguration gameConfiguration = null!;
+        private IPersistenceContextProvider contextProvider = null!;
+        private IItemSerializer itemSerializer = null!;
 
         /// <summary>
         /// Sets up the test environment by initializing configuration data and a <see cref="IPersistenceContextProvider"/>.
@@ -105,9 +105,9 @@ namespace MUnique.OpenMU.Tests
             {
                 var deserializedOptionLink = deserializedItem.ItemOptions
                     .FirstOrDefault(link => link.Level == optionLink.Level
-                                   && link.ItemOption.OptionType == optionLink.ItemOption.OptionType
+                                   && link.ItemOption!.OptionType == optionLink.ItemOption!.OptionType
                                    && link.ItemOption.Number == optionLink.ItemOption.Number);
-                Assert.That(deserializedOptionLink, Is.Not.Null, () => $"Option Link not found: {optionLink.ItemOption.OptionType.Name}, {optionLink.ItemOption.PowerUpDefinition}, Level: {optionLink.Level}");
+                Assert.That(deserializedOptionLink, Is.Not.Null, () => $"Option Link not found: {optionLink.ItemOption!.OptionType!.Name}, {optionLink.ItemOption.PowerUpDefinition}, Level: {optionLink.Level}");
             }
         }
 
@@ -125,9 +125,9 @@ namespace MUnique.OpenMU.Tests
             {
                 var deserializedOptionLink = deserializedItem.ItemOptions
                     .FirstOrDefault(link => link.Level == optionLink.Level
-                                            && link.ItemOption.OptionType == optionLink.ItemOption.OptionType
+                                            && link.ItemOption!.OptionType == optionLink.ItemOption!.OptionType
                                             && link.ItemOption.Number == optionLink.ItemOption.Number);
-                Assert.That(deserializedOptionLink, Is.Not.Null, () => $"Option Link not found: {optionLink.ItemOption.OptionType.Name}, {optionLink.ItemOption.PowerUpDefinition}, Level: {optionLink.Level}");
+                Assert.That(deserializedOptionLink, Is.Not.Null, () => $"Option Link not found: {optionLink.ItemOption!.OptionType!.Name}, {optionLink.ItemOption.PowerUpDefinition}, Level: {optionLink.Level}");
             }
 
             Assert.That(deserializedItem.ItemSetGroups.Count, Is.EqualTo(item.ItemSetGroups.Count));
@@ -151,9 +151,9 @@ namespace MUnique.OpenMU.Tests
             {
                 var deserializedOptionLink = deserializedItem.ItemOptions
                     .FirstOrDefault(link => link.Level == optionLink.Level
-                                            && link.ItemOption.OptionType == optionLink.ItemOption.OptionType
+                                            && link.ItemOption!.OptionType == optionLink.ItemOption!.OptionType
                                             && link.ItemOption.Number == optionLink.ItemOption.Number);
-                Assert.That(deserializedOptionLink, Is.Not.Null, () => $"Option Link not found: {optionLink.ItemOption.OptionType.Name}, {optionLink.ItemOption.PowerUpDefinition}, Level: {optionLink.Level}");
+                Assert.That(deserializedOptionLink, Is.Not.Null, () => $"Option Link not found: {optionLink.ItemOption!.OptionType!.Name}, {optionLink.ItemOption.PowerUpDefinition}, Level: {optionLink.Level}");
             }
 
             Assert.That(deserializedItem.ItemSetGroups.Count, Is.EqualTo(item.ItemSetGroups.Count));
@@ -225,11 +225,11 @@ namespace MUnique.OpenMU.Tests
 
             var excellent1 = context.CreateNew<ItemOptionLink>();
             excellent1.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
-                def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition.TargetAttribute == Stats.ExcellentDamageChance)).First();
+                def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition!.TargetAttribute == Stats.ExcellentDamageChance)).First();
             item.ItemOptions.Add(excellent1);
             var excellent2 = context.CreateNew<ItemOptionLink>();
             excellent2.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
-                def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition.TargetAttribute == Stats.AttackSpeed)).First();
+                def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition!.TargetAttribute == Stats.AttackSpeed)).First();
             item.ItemOptions.Add(excellent2);
 
             var array = new byte[this.itemSerializer.NeededSpace];

@@ -14,13 +14,13 @@ namespace MUnique.OpenMU.AdminPanel.Services
         /// <summary>
         /// Occurs when a property of an object changed.
         /// </summary>
-        event PropertyChangedEventHandler PropertyChanged;
+        event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Notifies all subscribers of <see cref="PropertyChanged"/> about the change.
         /// </summary>
         /// <param name="sender">The sender of the event, usually the changed object.</param>
         /// <param name="propertyName">Name of the property.</param>
-        void NotifyChange(object sender, string propertyName);
+        void NotifyChange(object? sender, string? propertyName);
     }
 }

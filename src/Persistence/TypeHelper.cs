@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence
                 return baseType;
             }
 
-            if (!BaseToPersistentTypes.TryGetValue(baseType, out Type persistentType))
+            if (!BaseToPersistentTypes.TryGetValue(baseType, out var persistentType))
             {
                 persistentType = origin.GetTypes().First(t => t.BaseType == baseType);
                 BaseToPersistentTypes.Add(baseType, persistentType);
@@ -55,16 +55,16 @@ namespace MUnique.OpenMU.Persistence
         /// <returns>
         /// A new object of the extended ef core type of the <typeparamref name="TBase" />.
         /// </returns>
-        public static TBase CreateNew<TBase>(this Assembly origin, params object[] args)
+        public static TBase CreateNew<TBase>(this Assembly origin, params object?[] args)
             where TBase : class
         {
             var persistentType = origin.GetPersistentTypeOf<TBase>();
             if (args.Length == 0)
             {
-                return Activator.CreateInstance(persistentType) as TBase;
+                return (TBase)Activator.CreateInstance(persistentType)!;
             }
 
-            return Activator.CreateInstance(persistentType, args) as TBase;
+            return (TBase)Activator.CreateInstance(persistentType, args)!;
         }
 
         /// <summary>

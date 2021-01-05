@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
     using System.Linq;
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
@@ -33,13 +32,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void ShowCreatedCharacter(Character character)
         {
-            using var writer = this.player.Connection.StartSafeWrite(CharacterCreationSuccessful.HeaderType, CharacterCreationSuccessful.Length);
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
+            using var writer = connection.StartSafeWrite(CharacterCreationSuccessful.HeaderType, CharacterCreationSuccessful.Length);
             var packet = new CharacterCreationSuccessful(writer.Span)
             {
                 CharacterName = character.Name,
                 CharacterSlot = character.CharacterSlot,
                 Level = (ushort)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Level)?.Value ?? 0),
-                Class = (CharacterClassNumber)character.CharacterClass.Number,
+                Class = (CharacterClassNumber)character.CharacterClass!.Number,
                 CharacterStatus = (byte)character.CharacterStatus,
             };
 

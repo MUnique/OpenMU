@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 return false;
             }
 
-            var itemOption = item.ItemOptions.First(o => o.ItemOption.OptionType == this.Configuration.OptionType);
+            var itemOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
             var increasableOption = itemOption.ItemOption;
             var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOption.Level) ?? false;
             if (!higherOptionPossible)
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
         private bool TryAddItemOption(Item item, IContext persistenceContext)
         {
-            if (!this.Configuration.AddsOption)
+            if (!this.Configuration.AddsOption || item.Definition is null)
             {
                 return false;
             }
@@ -157,12 +157,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
         private bool ItemHasOptionAlready(Item item)
         {
-            return item.ItemOptions.Any(o => o.ItemOption.OptionType == this.Configuration.OptionType);
+            return item.ItemOptions.Any(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
         }
 
         private bool ItemCanHaveOption(Item item)
         {
-            return item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType));
+            return item.Definition?.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType)) ?? false;
         }
 
         /// <summary>
@@ -171,9 +171,26 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         internal class ItemUpgradeConfiguration
         {
             /// <summary>
-            /// Gets or sets the type of the option.
+            /// Initializes a new instance of the <see cref="ItemUpgradeConfiguration"/> class.
             /// </summary>
-            public ItemOptionType OptionType { get; set; }
+            /// <param name="optionType">Type of the option.</param>
+            /// <param name="addsOption">if set to <c>true</c> [adds option].</param>
+            /// <param name="increasesOption">if set to <c>true</c> [increases option].</param>
+            /// <param name="successChance">The success chance.</param>
+            /// <param name="failResult">The fail result.</param>
+            public ItemUpgradeConfiguration(ItemOptionType optionType, bool addsOption, bool increasesOption, double successChance, ItemFailResult failResult)
+            {
+                this.OptionType = optionType;
+                this.AddsOption = addsOption;
+                this.IncreasesOption = increasesOption;
+                this.SuccessChance = successChance;
+                this.FailResult = failResult;
+            }
+
+            /// <summary>
+            /// Gets the type of the option.
+            /// </summary>
+            public ItemOptionType OptionType { get; }
 
             /// <summary>
             /// Gets or sets a value indicating whether the handler adds option, if the item does not already have it.
@@ -201,7 +218,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             /// <remarks>
             /// e.g. luck option which adds 25 per cent.
             /// </remarks>
-            public ItemOptionType BoostOptionType { get; set; }
+            public ItemOptionType? BoostOptionType { get; set; }
 
             /// <summary>
             /// Gets or sets the success chance boost if the target item has the option of type specified in <see cref="BoostOptionType"/>.

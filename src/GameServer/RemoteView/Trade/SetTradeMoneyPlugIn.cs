@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Trade;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,12 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc/>
         public void SetTradeMoney(uint moneyAmount)
         {
-            using var writer = this.player.Connection.StartSafeWrite(TradeMoneyUpdate.HeaderType, TradeMoneyUpdate.Length);
-            _ = new TradeMoneyUpdate(writer.Span)
-            {
-                MoneyAmount = moneyAmount,
-            };
-            writer.Commit();
+            this.player.Connection?.SendTradeMoneyUpdate(moneyAmount);
         }
     }
 }

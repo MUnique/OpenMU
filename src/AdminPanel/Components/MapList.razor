@@ -46,9 +46,9 @@ else
     /// Gets or sets the game server of the maps which are shown in this component.
     /// </summary>
     [Parameter]
-    public IGameServer GameServer { get; set; }
+    public IGameServer GameServer { get; set; } = null!;
 
-    private IList<IGameMapInfo> Maps => this.GameServer?.ServerInfo.Maps;
+    private IList<IGameMapInfo>? Maps => this.GameServer?.ServerInfo.Maps;
 
     /// <inheritdoc />
     public void Dispose() => this.GameServer.ServerInfo.PropertyChanged -= this.OnServerInfoChanged;
@@ -60,7 +60,7 @@ else
         this.GameServer.ServerInfo.PropertyChanged += this.OnServerInfoChanged;
     }
 
-    private async void OnServerInfoChanged(object sender, PropertyChangedEventArgs e)
+    private async void OnServerInfoChanged(object? sender, PropertyChangedEventArgs e)
     {
         try
         {

@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             /// <inheritdoc />
-            public bool Contains(Item item) => item != null && this.IsSlotOfThisStorage(item.ItemSlot) && this.actualCollection.Contains(item);
+            public bool Contains(Item item) => item is { } && this.IsSlotOfThisStorage(item.ItemSlot) && this.actualCollection.Contains(item);
 
             /// <inheritdoc />
             public void CopyTo(Item[] array, int arrayIndex)

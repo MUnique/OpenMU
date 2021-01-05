@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,14 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void ItemSoldToNpc(bool success)
         {
-            using var writer = this.player.Connection.StartSafeWrite(NpcItemSellResult.HeaderType, NpcItemSellResult.Length);
-            _ = new NpcItemSellResult(writer.Span)
-            {
-                Success = success,
-                Money = (uint)this.player.Money,
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendNpcItemSellResult(success, (uint)this.player.Money);
         }
     }
 }

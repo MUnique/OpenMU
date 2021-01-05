@@ -13,8 +13,6 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public static class EnumerableExtensions
     {
-        private static readonly Random Randomizer = new Random();
-
         /// <summary>
         /// Executes the <paramref name="action"/> for each element of <paramref name="enumerable"/>.
         /// </summary>
@@ -51,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic
                 return list[index];
             }
 
-            return default;
+            return default!;
         }
 
         /// <summary>
@@ -60,15 +58,6 @@ namespace MUnique.OpenMU.GameLogic
         /// <typeparam name="T">The generic type of the enumerable.</typeparam>
         /// <param name="enumerable">The enumerable.</param>
         /// <returns>The randomly selected element.</returns>
-        public static T SelectRandom<T>(this IEnumerable<T> enumerable)
-        {
-            var list = enumerable as IList<T> ?? enumerable.ToList();
-            if (list.Count > 0)
-            {
-                return list[Randomizer.Next(0, list.Count)];
-            }
-
-            return default;
-        }
+        public static T SelectRandom<T>(this IEnumerable<T> enumerable) => SelectRandom(enumerable, Rand.GetRandomizer());
     }
 }

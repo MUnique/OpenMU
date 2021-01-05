@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Linq;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -34,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="defender">The object which is defending.</param>
         /// <param name="skill">The skill which is used.</param>
         /// <returns>The hit information.</returns>
-        public static HitInfo CalculateDamage(this IAttacker attacker, IAttackable defender, SkillEntry skill)
+        public static HitInfo CalculateDamage(this IAttacker attacker, IAttackable defender, SkillEntry? skill)
         {
             if (!attacker.IsAttackSuccessfulTo(defender))
             {
@@ -151,7 +152,7 @@ namespace MUnique.OpenMU.GameLogic
                 player.CreateMagicEffectPowerUp(skillEntry);
             }
 
-            var magicEffect = new MagicEffect(skillEntry.BuffPowerUp, skillEntry.Skill.MagicEffectDef, TimeSpan.FromSeconds(skillEntry.PowerUpDuration.Value));
+            var magicEffect = new MagicEffect(skillEntry.BuffPowerUp!, skillEntry.Skill!.MagicEffectDef!, TimeSpan.FromSeconds(skillEntry.PowerUpDuration!.Value));
             target.MagicEffectList.AddEffect(magicEffect);
         }
 
@@ -163,12 +164,17 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="skillEntry">The skill entry.</param>
         public static void ApplyRegeneration(this IAttackable target, Player player, SkillEntry skillEntry)
         {
+            if (player.Attributes is null)
+            {
+                return;
+            }
+
             var skill = skillEntry.Skill;
-            var regenerationValue = player.Attributes.CreateElement(skill.MagicEffectDef.PowerUpDefinition.Boost);
-            var regeneration = Stats.IntervalRegenerationAttributes.FirstOrDefault(r =>
-                r.CurrentAttribute == skill.MagicEffectDef.PowerUpDefinition.TargetAttribute);
+            var regeneration = Stats.IntervalRegenerationAttributes.FirstOrDefault(r => r.CurrentAttribute == skill.MagicEffectDef?.PowerUpDefinition?.TargetAttribute);
             if (regeneration != null)
             {
+                var powerUpDefinition = skill.MagicEffectDef!.PowerUpDefinition!;
+                var regenerationValue = player.Attributes.CreateElement(powerUpDefinition.Boost ?? throw Error.NotInitializedProperty(powerUpDefinition, nameof(powerUpDefinition.Boost)));
                 var value = skillEntry.Level == 0 ? regenerationValue.Value : regenerationValue.Value + skillEntry.CalculateValue();
                 target.Attributes[regeneration.CurrentAttribute] = Math.Min(
                     target.Attributes[regeneration.CurrentAttribute] + value,
@@ -177,7 +183,7 @@ namespace MUnique.OpenMU.GameLogic
             else
             {
                 player.Logger.LogWarning(
-                    $"Regeneration skill {skill.Name} is configured to regenerate a non-regeneration-able target attribute {skill.MagicEffectDef.PowerUpDefinition.TargetAttribute}.");
+                    $"Regeneration skill {skill.Name} is configured to regenerate a non-regeneration-able target attribute {skill.MagicEffectDef?.PowerUpDefinition?.TargetAttribute}.");
             }
         }
 
@@ -250,7 +256,7 @@ namespace MUnique.OpenMU.GameLogic
                 player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to himself.");
                 result = false;
             }
-            else if (skill.TargetRestriction == SkillTargetRestriction.Party && target != player && (player.Party is null || !player.Party.PartyList.Contains(target as IPartyMember)))
+            else if (skill.TargetRestriction == SkillTargetRestriction.Party && target != player && target is IPartyMember partyMember && (player.Party is null || !player.Party.PartyList.Contains(partyMember)))
             {
                 player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to his party.");
                 result = false;
@@ -272,9 +278,9 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="target">The target.</param>
         public static void MoveRandomly(this IAttackable target)
         {
-            if (target is IMovable movable)
+            if (target is IMovable movable && target.CurrentMap is { } map)
             {
-                var terrain = target.CurrentMap.Terrain;
+                var terrain = map.Terrain;
                 var newX = target.Position.X + Rand.NextInt(-1, 2);
                 var newY = target.Position.Y + Rand.NextInt(-1, 2);
                 var isNewXAllowed = newX >= byte.MinValue && newX <= byte.MaxValue;
@@ -295,7 +301,9 @@ namespace MUnique.OpenMU.GameLogic
         public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement)
         {
             var modifier = 1.0f;
-            if (ReductionModifiers.TryGetValue(attributeRequirement.Attribute, out var reductionAttribute))
+            if (ReductionModifiers.TryGetValue(
+                attributeRequirement.Attribute ?? throw Error.NotInitializedProperty(attributeRequirement, nameof(attributeRequirement.Attribute)),
+                out var reductionAttribute))
             {
                 modifier -= attacker.Attributes[reductionAttribute];
             }
@@ -361,7 +369,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="skill">Skill which is used.</param>
         /// <param name="minimumBaseDamage">Minimum base damage.</param>
         /// <param name="maximumBaseDamage">Maximum base damage.</param>
-        private static void GetBaseDmg(this IAttacker attacker, SkillEntry skill, out int minimumBaseDamage, out int maximumBaseDamage)
+        private static void GetBaseDmg(this IAttacker attacker, SkillEntry? skill, out int minimumBaseDamage, out int maximumBaseDamage)
         {
             var attackerStats = attacker.Attributes;
             minimumBaseDamage = (int)(attackerStats[Stats.BaseDamageBonus] + attackerStats[Stats.BaseMinDamageBonus]);

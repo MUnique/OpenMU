@@ -4,13 +4,10 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
-    using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Character;
-    using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -33,19 +30,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void MasterSkillLevelChanged(SkillEntry skillEntry)
         {
             var character = this.player.SelectedCharacter;
-            using var writer = this.player.Connection.StartSafeWrite(MasterSkillLevelUpdate.HeaderType, MasterSkillLevelUpdate.Length);
-            _ = new MasterSkillLevelUpdate(writer.Span)
+            if (character?.CharacterClass is null)
             {
-                Success = true,
-                MasterLevelUpPoints = (ushort)character.MasterLevelUpPoints,
-                MasterSkillIndex = skillEntry.Skill.GetMasterSkillIndex(character.CharacterClass),
-                MasterSkillNumber = (ushort)skillEntry.Skill.Number,
-                Level = (byte)skillEntry.Level,
-                DisplayValue = skillEntry.CalculateDisplayValue(),
-                DisplayValueOfNextLevel = skillEntry.CalculateNextDisplayValue(),
-            };
+                return;
+            }
 
-            writer.Commit();
+            this.player.Connection?.SendMasterSkillLevelUpdate(
+                true,
+                (ushort)character.MasterLevelUpPoints,
+                skillEntry.Skill.GetMasterSkillIndex(character.CharacterClass),
+                (ushort)skillEntry.Skill.Number,
+                (byte)skillEntry.Level,
+                skillEntry.CalculateDisplayValue(),
+                skillEntry.CalculateNextDisplayValue());
         }
     }
 }

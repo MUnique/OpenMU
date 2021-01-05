@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ServerId = table.Column<byte>(type: "smallint", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     MaximumConnections = table.Column<int>(type: "integer", nullable: false),
                     ClientTimeout = table.Column<TimeSpan>(type: "interval", nullable: false),
                     ClientCleanUpInterval = table.Column<TimeSpan>(type: "interval", nullable: false),
@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Language = table.Column<int>(type: "integer", nullable: false),
                     Version = table.Column<byte[]>(type: "bytea", nullable: true),
                     Serial = table.Column<byte[]>(type: "bytea", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true)
+                    Description = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -243,13 +243,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ClientId = table.Column<Guid>(type: "uuid", nullable: true),
                     ServerId = table.Column<byte>(type: "smallint", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     DisconnectOnUnknownPacket = table.Column<bool>(type: "boolean", nullable: false),
                     MaximumReceiveSize = table.Column<byte>(type: "smallint", nullable: false),
                     ClientListenerPort = table.Column<int>(type: "integer", nullable: false),
                     Timeout = table.Column<TimeSpan>(type: "interval", nullable: false),
                     CurrentPatchVersion = table.Column<byte[]>(type: "bytea", nullable: true),
-                    PatchAddress = table.Column<string>(type: "text", nullable: true),
+                    PatchAddress = table.Column<string>(type: "text", nullable: false),
                     MaxConnectionsPerAddress = table.Column<int>(type: "integer", nullable: false),
                     CheckMaxConnectionsPerAddress = table.Column<bool>(type: "boolean", nullable: false),
                     MaxConnections = table.Column<int>(type: "integer", nullable: false),
@@ -301,7 +301,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     SafezoneMapId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
                     Number = table.Column<short>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     TerrainData = table.Column<byte[]>(type: "bytea", nullable: true),
                     ExpMultiplier = table.Column<double>(type: "double precision", nullable: false)
                 },
@@ -331,7 +331,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     AddsRandomly = table.Column<bool>(type: "boolean", nullable: false),
                     AddChance = table.Column<float>(type: "real", nullable: false),
                     MaximumOptionsPerItem = table.Column<int>(type: "integer", nullable: false)
@@ -355,8 +355,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     IsVisible = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -378,7 +378,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     AlwaysApplies = table.Column<bool>(type: "boolean", nullable: false),
                     CountDistinct = table.Column<bool>(type: "boolean", nullable: false),
                     MinimumItemCount = table.Column<int>(type: "integer", nullable: false),
@@ -405,7 +405,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemSlots = table.Column<string>(type: "text", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true)
+                    Description = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -426,7 +426,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true)
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -474,7 +474,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     ServerConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
                     ServerID = table.Column<byte>(type: "smallint", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     ExperienceRate = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
@@ -504,13 +504,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     VaultId = table.Column<Guid>(type: "uuid", nullable: true),
                     LoginName = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    SecurityCode = table.Column<string>(type: "text", nullable: true),
-                    EMail = table.Column<string>(type: "text", nullable: true),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    SecurityCode = table.Column<string>(type: "text", nullable: false),
+                    EMail = table.Column<string>(type: "text", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     State = table.Column<int>(type: "integer", nullable: false),
                     TimeZone = table.Column<short>(type: "smallint", nullable: false),
-                    VaultPassword = table.Column<string>(type: "text", nullable: true),
+                    VaultPassword = table.Column<string>(type: "text", nullable: false),
                     IsVaultExtended = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -628,7 +628,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     HomeMapId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
                     Number = table.Column<byte>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     CanGetCreated = table.Column<bool>(type: "boolean", nullable: false),
                     LevelRequirementByCreation = table.Column<short>(type: "smallint", nullable: false),
                     CreationAllowedFlag = table.Column<byte>(type: "smallint", nullable: false),
@@ -827,7 +827,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     BonusId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     Number = table.Column<int>(type: "integer", nullable: false),
                     AppliesMultipleTimes = table.Column<bool>(type: "boolean", nullable: false)
                 },
@@ -859,7 +859,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     PowerUpDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
                     Number = table.Column<short>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     SubType = table.Column<byte>(type: "smallint", nullable: false),
                     InformObservers = table.Column<bool>(type: "boolean", nullable: false),
                     StopByDeath = table.Column<bool>(type: "boolean", nullable: false),
@@ -1144,7 +1144,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     GateId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
                     Index = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Costs = table.Column<int>(type: "integer", nullable: false),
                     LevelRequirement = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -1316,7 +1316,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     HeaderId = table.Column<Guid>(type: "uuid", nullable: true),
                     SenderAppearanceId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Message = table.Column<string>(type: "text", nullable: true),
+                    Message = table.Column<string>(type: "text", nullable: false),
                     Rotation = table.Column<byte>(type: "smallint", nullable: false),
                     Animation = table.Column<byte>(type: "smallint", nullable: false)
                 },
@@ -1477,8 +1477,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Rank = table.Column<byte>(type: "smallint", nullable: false),
                     MaximumLevel = table.Column<byte>(type: "smallint", nullable: false),
                     MinimumLevel = table.Column<byte>(type: "smallint", nullable: false),
-                    ValueFormula = table.Column<string>(type: "text", nullable: true),
-                    DisplayValueFormula = table.Column<string>(type: "text", nullable: true),
+                    ValueFormula = table.Column<string>(type: "text", nullable: false),
+                    DisplayValueFormula = table.Column<string>(type: "text", nullable: false),
                     Aggregation = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -1511,7 +1511,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MasterDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
                     Number = table.Column<short>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Range = table.Column<short>(type: "smallint", nullable: false),
                     DamageType = table.Column<int>(type: "integer", nullable: false),
                     SkillType = table.Column<int>(type: "integer", nullable: false),
@@ -1570,7 +1570,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     DropsFromMonsters = table.Column<bool>(type: "boolean", nullable: false),
                     IsAmmunition = table.Column<bool>(type: "boolean", nullable: false),
                     IsBoundToCharacter = table.Column<bool>(type: "boolean", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     DropLevel = table.Column<byte>(type: "smallint", nullable: false),
                     MaximumItemLevel = table.Column<byte>(type: "smallint", nullable: false),
                     Durability = table.Column<byte>(type: "smallint", nullable: false),
@@ -1642,7 +1642,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     MerchantStoreId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
                     Number = table.Column<short>(type: "smallint", nullable: false),
-                    Designation = table.Column<string>(type: "text", nullable: true),
+                    Designation = table.Column<string>(type: "text", nullable: false),
                     MoveRange = table.Column<byte>(type: "smallint", nullable: false),
                     AttackRange = table.Column<byte>(type: "smallint", nullable: false),
                     ViewRange = table.Column<short>(type: "smallint", nullable: false),
@@ -1993,7 +1993,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     MonsterId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     Chance = table.Column<double>(type: "double precision", nullable: false),
                     MinimumMonsterLevel = table.Column<byte>(type: "smallint", nullable: true),
                     MaximumMonsterLevel = table.Column<byte>(type: "smallint", nullable: true),
@@ -2028,8 +2028,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     SimpleCraftingSettingsId = table.Column<Guid>(type: "uuid", nullable: true),
                     MonsterDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     Number = table.Column<byte>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    ItemCraftingHandlerClassName = table.Column<string>(type: "text", nullable: true)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ItemCraftingHandlerClassName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2123,7 +2123,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     QuestGiverId = table.Column<Guid>(type: "uuid", nullable: true),
                     QualifiedCharacterId = table.Column<Guid>(type: "uuid", nullable: true),
                     MonsterDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Group = table.Column<short>(type: "smallint", nullable: false),
                     Number = table.Column<short>(type: "smallint", nullable: false),
                     StartingNumber = table.Column<short>(type: "smallint", nullable: false),

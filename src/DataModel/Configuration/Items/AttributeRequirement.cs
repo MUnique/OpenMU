@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items
 {
+    using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.AttributeSystem;
 
     /// <summary>
@@ -14,7 +15,8 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the attribute which is required.
         /// </summary>
-        public virtual AttributeDefinition Attribute { get; set; }
+        [Required]
+        public virtual AttributeDefinition? Attribute { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum value the attribute needs to have.

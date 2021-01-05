@@ -7,8 +7,8 @@ namespace MUnique.OpenMU.GameLogic.Attributes
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
 
@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// Attribute dictionary of a monster instance.
         /// Most monster instances don't have additional attributes, so we just instantiate one if needed.
         /// </summary>
-        private IDictionary<AttributeDefinition, IComposableAttribute> attributes;
+        private IDictionary<AttributeDefinition, IComposableAttribute>? attributes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MonsterAttributeHolder"/> class.
@@ -61,14 +61,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <inheritdoc/>
         public float this[AttributeDefinition attributeDefinition]
         {
-            get
-            {
-                return this.GetValueOfAttribute(attributeDefinition);
-            }
+            get => this.GetValueOfAttribute(attributeDefinition);
 
             set
             {
-                if (SetterMapping.TryGetValue(attributeDefinition, out Action<Monster, float> setAction))
+                if (SetterMapping.TryGetValue(attributeDefinition, out var setAction))
                 {
                     setAction(this.monster, value);
                 }
@@ -78,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <inheritdoc/>
         public float GetValueOfAttribute(AttributeDefinition attributeDefinition)
         {
-            if (this.attributes != null && this.attributes.TryGetValue(attributeDefinition, out IComposableAttribute attribute))
+            if (this.attributes != null && this.attributes.TryGetValue(attributeDefinition, out var attribute))
             {
                 return attribute.Value;
             }
@@ -88,7 +85,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
                 return value;
             }
 
-            if (StatMapping.TryGetValue(attributeDefinition, out Func<Monster, float> mappingFunction))
+            if (StatMapping.TryGetValue(attributeDefinition, out var mappingFunction))
             {
                 return mappingFunction(this.monster);
             }
@@ -100,7 +97,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public void AddElement(IElement element, AttributeDefinition targetAttribute)
         {
             var attributeDictionary = this.GetAttributeDictionary();
-            if (!attributeDictionary.TryGetValue(targetAttribute, out IComposableAttribute attribute))
+            if (!attributeDictionary.TryGetValue(targetAttribute, out var attribute))
             {
                 attribute = new ComposableAttribute(targetAttribute);
                 var attrValue = this.GetValueOfAttribute(targetAttribute);
@@ -118,7 +115,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
             var attributeDictionary = this.attributes;
             if (attributeDictionary != null)
             {
-                if (attributeDictionary.TryGetValue(targetAttribute, out IComposableAttribute attribute))
+                if (attributeDictionary.TryGetValue(targetAttribute, out var attribute))
                 {
                     attribute.RemoveElement(element);
                     if (attribute.Elements.Skip(1).Take(1).Any())
@@ -151,9 +148,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDef)
         {
-            if (!MonsterStatAttributesCache.TryGetValue(monsterDef, out IDictionary<AttributeDefinition, float> result))
+            if (!MonsterStatAttributesCache.TryGetValue(monsterDef, out var result))
             {
-                result = monsterDef.Attributes.ToDictionary(m => m.AttributeDefinition, m => m.Value);
+                result = monsterDef.Attributes.ToDictionary(
+                    m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
+                    m => m.Value);
                 MonsterStatAttributesCache.Add(monsterDef, result);
             }
 

@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Extensions for <see cref="IAttributeSystem"/>s.
@@ -23,12 +24,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static IElement CreateElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue value)
         {
             var relations = value.RelatedValues;
-            IElement result = value.ConstantValue;
+            var result = value.ConstantValue;
             if (relations?.Any() ?? false)
             {
                 var elements = relations
                     .Select(r => new AttributeRelationshipElement(
-                        new[] { attributeSystem.GetOrCreateAttribute(r.InputAttribute) },
+                        new[] { attributeSystem.GetOrCreateAttribute(r.InputAttribute ?? throw new InvalidOperationException($"InputAttribute value not set for AttributeRelationship {r.GetId()}.")) },
                         r.InputOperand,
                         r.InputOperator))
                     .Cast<IElement>();

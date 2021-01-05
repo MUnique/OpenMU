@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.Tests
             Assert.AreSame(player, tradePartner.TradingPartner);
             Assert.AreEqual(PlayerState.TradeRequested, player.PlayerState.CurrentState);
             Assert.AreEqual(PlayerState.TradeRequested, tradePartner.PlayerState.CurrentState);
-            Mock.Get(tradePartner.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>()).Verify(view => view.ShowTradeRequest(player), Times.Once);
+            Mock.Get(tradePartner.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>()).Verify(view => view!.ShowTradeRequest(player), Times.Once);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Tests
             responseHandler.HandleTradeAccept(responder, true);
             Assert.AreEqual(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
             Assert.AreEqual(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
-            Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()).Verify(view => view.ShowTradeRequestAnswer(true), Times.Once);
+            Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()).Verify(view => view!.ShowTradeRequestAnswer(true), Times.Once);
         }
 
         /// <summary>
@@ -75,8 +75,8 @@ namespace MUnique.OpenMU.Tests
             Assert.AreEqual(PlayerState.EnteredWorld, trader1.PlayerState.CurrentState);
             Assert.AreEqual(PlayerState.EnteredWorld, trader2.PlayerState.CurrentState);
 
-            Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view.TradeFinished(TradeResult.Cancelled), Times.Once);
-            Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view.TradeFinished(TradeResult.Cancelled), Times.Once);
+            Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view!.TradeFinished(TradeResult.Cancelled), Times.Once);
+            Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view!.TradeFinished(TradeResult.Cancelled), Times.Once);
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace MUnique.OpenMU.Tests
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
             Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.EnteredWorld);
             Assert.AreEqual(trader2.PlayerState.CurrentState, PlayerState.EnteredWorld);
-            Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view.TradeFinished(TradeResult.Success), Times.Once);
-            Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view.TradeFinished(TradeResult.Success), Times.Once);
+            Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view!.TradeFinished(TradeResult.Success), Times.Once);
+            Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view!.TradeFinished(TradeResult.Success), Times.Once);
         }
 
         /// <summary>
@@ -123,20 +123,20 @@ namespace MUnique.OpenMU.Tests
 
             var item1 = this.GetItem();
             var item2 = this.GetItem();
-            trader1.Inventory.AddItem(20, item1);
+            trader1.Inventory!.AddItem(20, item1);
             trader1.Inventory.AddItem(21, item2);
             tradeRequestAction.RequestTrade(trader1, trader2);
             tradeResponseAction.HandleTradeAccept(trader2, true);
             var itemMoveAction = new MoveItemAction();
             itemMoveAction.MoveItem(trader1, 20, Storages.Inventory, 0, Storages.Trade);
             itemMoveAction.MoveItem(trader1, 21, Storages.Inventory, 2, Storages.Trade);
-            Assert.That(trader1.TemporaryStorage.Items.First(), Is.SameAs(item1));
+            Assert.That(trader1.TemporaryStorage!.Items.First(), Is.SameAs(item1));
 
             var tradeButtonHandler = new TradeButtonAction();
             tradeButtonHandler.TradeButtonChanged(trader1, TradeButtonState.Checked);
             tradeButtonHandler.TradeButtonChanged(trader2, TradeButtonState.Checked);
             Assert.That(trader1.Inventory.ItemStorage.Items, Is.Empty);
-            Assert.That(trader2.Inventory.ItemStorage.Items.First(), Is.SameAs(item1));
+            Assert.That(trader2.Inventory!.ItemStorage.Items.First(), Is.SameAs(item1));
         }
 
         private Item GetItem()

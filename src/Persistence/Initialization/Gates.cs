@@ -12,79 +12,83 @@ namespace MUnique.OpenMU.Persistence.Initialization
     /// <summary>
     /// Gates initialization.
     /// </summary>
-    public class Gates
+    public class Gates : InitializerBase
     {
-        private IContext context;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gates" /> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="gameConfiguration">The game configuration.</param>
+        public Gates(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
+        {
+        }
 
         /// <summary>
         /// Initializes the gates.
         /// </summary>
-        /// <param name="context">The repository manager.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
-        public void Initialize(IContext context, GameConfiguration gameConfiguration)
+        public override void Initialize()
         {
-            this.context = context;
-            var maps = gameConfiguration.Maps.ToDictionary(map => map.Number, map => map);
+            var maps = this.GameConfiguration.Maps.ToDictionary(map => map.Number, map => map);
             var targetGates = this.CreateTargetGates(maps);
             this.CreateEnterGates(maps, targetGates);
-            this.CreateWarpEntries(targetGates, gameConfiguration);
+            this.CreateWarpEntries(targetGates);
         }
 
         /// <summary>
         /// Creates the warp entries.
         /// </summary>
         /// <param name="gates">The gates.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
         /// <remarks>
         /// MoveReq.txt
         /// Search Regex: (?m)^\s*(\d+)\s+\"(\S+)\"\s+\"(\S+)\"\s+(\d+)\s+(\d+)\s+(\d+)\s*?$
-        /// Replace by: gameConfiguration.WarpList.Add(this.CreateWarpInfo($1, "$2", $4, $5, gates[$6]));.
+        /// Replace by: GameConfiguration.WarpList.Add(this.CreateWarpInfo($1, "$2", $4, $5, gates[$6]));.
         /// </remarks>
-        private void CreateWarpEntries(IDictionary<short, ExitGate> gates, GameConfiguration gameConfiguration)
+        private void CreateWarpEntries(IDictionary<short, ExitGate> gates)
         {
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(1, "Arena", 2000, 50, gates[50]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(2, "Lorencia", 2000, 10, gates[17]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(3, "Noria", 2000, 10, gates[27]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(4, "Devias", 2000, 20, gates[22]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(5, "Devias2", 2500, 20, gates[72]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(6, "Devias3", 3000, 20, gates[73]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(7, "Devias4", 3500, 20, gates[74]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(8, "Dungeon", 3000, 30, gates[2]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(9, "Dungeon2", 3500, 40, gates[6]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(10, "Dungeon3", 4000, 50, gates[10]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(11, "Atlans", 4000, 70, gates[49]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(12, "Atlans2", 4500, 80, gates[75]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(13, "Atlans3", 5000, 90, gates[76]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(14, "LostTower", 5000, 50, gates[42]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(15, "LostTower2", 5500, 50, gates[31]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(16, "LostTower3", 6000, 50, gates[33]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(17, "LostTower4", 6500, 60, gates[35]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(18, "LostTower5", 7000, 60, gates[37]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(19, "LostTower6", 7500, 70, gates[39]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(20, "LostTower7", 8000, 70, gates[41]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(21, "Tarkan", 8000, 140, gates[57]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(22, "Tarkan2", 8500, 140, gates[77]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(23, "Icarus", 10000, 170, gates[63]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(25, "Aida1", 8500, 150, gates[119]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(27, "Aida2", 8500, 150, gates[140]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(28, "KanturuRuins", 9000, 150, gates[138]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(29, "KanturuRuins2", 9000, 160, gates[141]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(30, "KanturuRelics", 15000, 230, gates[139]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(31, "Elbeland", 2000, 10, gates[267]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(32, "Elbeland2", 2500, 10, gates[268]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(33, "PeaceSwamp", 15000, 400, gates[273]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(34, "Raklion", 15000, 280, gates[287]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(37, "Vulcan", 15000, 30, gates[294]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(44, "LorenMarket", 18000, 200, gates[333]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(43, "Elbeland3", 3000, 10, gates[269]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(45, "KanturuRuins3", 9000, 160, gates[334]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(46, "Karutan1", 13000, 170, gates[335]));
-            gameConfiguration.WarpList.Add(this.CreateWarpInfo(47, "Karutan2", 14000, 180, gates[344]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(1, "Arena", 2000, 50, gates[50]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(2, "Lorencia", 2000, 10, gates[17]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(3, "Noria", 2000, 10, gates[27]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(4, "Devias", 2000, 20, gates[22]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(5, "Devias2", 2500, 20, gates[72]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(6, "Devias3", 3000, 20, gates[73]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(7, "Devias4", 3500, 20, gates[74]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(8, "Dungeon", 3000, 30, gates[2]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(9, "Dungeon2", 3500, 40, gates[6]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(10, "Dungeon3", 4000, 50, gates[10]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(11, "Atlans", 4000, 70, gates[49]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(12, "Atlans2", 4500, 80, gates[75]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(13, "Atlans3", 5000, 90, gates[76]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(14, "LostTower", 5000, 50, gates[42]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(15, "LostTower2", 5500, 50, gates[31]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(16, "LostTower3", 6000, 50, gates[33]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(17, "LostTower4", 6500, 60, gates[35]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(18, "LostTower5", 7000, 60, gates[37]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(19, "LostTower6", 7500, 70, gates[39]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(20, "LostTower7", 8000, 70, gates[41]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(21, "Tarkan", 8000, 140, gates[57]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(22, "Tarkan2", 8500, 140, gates[77]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(23, "Icarus", 10000, 170, gates[63]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(25, "Aida1", 8500, 150, gates[119]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(27, "Aida2", 8500, 150, gates[140]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(28, "KanturuRuins", 9000, 150, gates[138]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(29, "KanturuRuins2", 9000, 160, gates[141]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(30, "KanturuRelics", 15000, 230, gates[139]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(31, "Elbeland", 2000, 10, gates[267]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(32, "Elbeland2", 2500, 10, gates[268]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(33, "PeaceSwamp", 15000, 400, gates[273]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(34, "Raklion", 15000, 280, gates[287]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(37, "Vulcan", 15000, 30, gates[294]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(44, "LorenMarket", 18000, 200, gates[333]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(43, "Elbeland3", 3000, 10, gates[269]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(45, "KanturuRuins3", 9000, 160, gates[334]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(46, "Karutan1", 13000, 170, gates[335]));
+            this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(47, "Karutan2", 14000, 180, gates[344]));
         }
 
         private WarpInfo CreateWarpInfo(ushort index, string name, int costs, int levelRequirement, ExitGate gate)
         {
-            var warpInfo = this.context.CreateNew<WarpInfo>();
+            var warpInfo = this.Context.CreateNew<WarpInfo>();
             warpInfo.Index = index;
             warpInfo.Name = name;
             warpInfo.Costs = costs;
@@ -105,7 +109,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 throw new ArgumentException("y1 > y2");
             }
 
-            var gate = this.context.CreateNew<ExitGate>();
+            var gate = this.Context.CreateNew<ExitGate>();
             gate.Map = map;
             gate.X1 = x1;
             gate.Y1 = y1;
@@ -364,7 +368,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 
         private EnterGate CreateEnterGate(short number, ExitGate targetGate, byte x1, byte y1, byte x2, byte y2, short levelRequirement)
         {
-            var enterGate = this.context.CreateNew<EnterGate>();
+            var enterGate = this.Context.CreateNew<EnterGate>();
             enterGate.Number = number;
             enterGate.LevelRequirement = levelRequirement;
             enterGate.TargetGate = targetGate;

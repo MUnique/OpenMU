@@ -34,12 +34,14 @@ namespace MUnique.OpenMU.FriendServer
         private bool isDisposed;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OnlineFriend"/> class.
+        /// Initializes a new instance of the <see cref="OnlineFriend" /> class.
         /// </summary>
         /// <param name="gameServer">The game server.</param>
-        public OnlineFriend(IGameServer gameServer)
+        /// <param name="playerName">Name of the player.</param>
+        public OnlineFriend(IGameServer gameServer, string playerName)
         {
             this.gameServer = gameServer;
+            this.PlayerName = playerName;
             this.subscribers = new HashSet<IObserver<OnlineFriend>>();
             this.subscriptions = new List<Unsubscriber>();
         }
@@ -50,9 +52,9 @@ namespace MUnique.OpenMU.FriendServer
         public IGameServer GameServer => this.gameServer;
 
         /// <summary>
-        /// Gets or sets the name of the player.
+        /// Gets the name of the player.
         /// </summary>
-        public string PlayerName { get; set; }
+        public string PlayerName { get; }
 
         /// <summary>
         /// Gets or sets the server identifier.

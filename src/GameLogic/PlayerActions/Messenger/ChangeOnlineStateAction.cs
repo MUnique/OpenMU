@@ -19,9 +19,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         public void SetOnlineState(Player player, bool online)
         {
             player.OnlineAsFriend = online;
-            if (player.GameContext is IGameServerContext gameServerContext)
+            if (player.GameContext is IGameServerContext gameServerContext && player.SelectedCharacter is { } character)
             {
-                gameServerContext.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, player.OnlineAsFriend ? gameServerContext.Id : InvisibleState);
+                gameServerContext.FriendServer.SetOnlineState(character.Id, player.SelectedCharacter.Name, player.OnlineAsFriend ? gameServerContext.Id : InvisibleState);
             }
         }
     }

@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <value>
         /// The designation.
         /// </value>
-        public string Designation { get; set; }
+        public string? Designation { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <value>
         /// The description.
         /// </value>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Implements the operator ==.
@@ -61,7 +61,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(AttributeDefinition lhs, AttributeDefinition rhs)
+        public static bool operator ==(AttributeDefinition? lhs, AttributeDefinition? rhs)
         {
             if (ReferenceEquals(lhs, rhs))
             {
@@ -84,13 +84,13 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(AttributeDefinition lhs, AttributeDefinition rhs)
+        public static bool operator !=(AttributeDefinition? lhs, AttributeDefinition? rhs)
         {
             return !(lhs == rhs);
         }
 
         /// <inheritdoc />
-        public bool Equals(AttributeDefinition other)
+        public bool Equals(AttributeDefinition? other)
         {
             return this.Id == other?.Id;
         }
@@ -101,7 +101,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString()
+        public override string? ToString()
         {
             return this.Designation;
         }
@@ -113,9 +113,9 @@ namespace MUnique.OpenMU.AttributeSystem
         /// <returns>
         ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            AttributeDefinition other = obj as AttributeDefinition;
+            var other = obj as AttributeDefinition;
             if (other is null)
             {
                 return false;

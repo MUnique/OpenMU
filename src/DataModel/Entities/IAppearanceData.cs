@@ -16,12 +16,12 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Occurs when the appearance of the player changed.
         /// </summary>
-        event EventHandler AppearanceChanged;
+        event EventHandler? AppearanceChanged;
 
         /// <summary>
         /// Gets the character class.
         /// </summary>
-        CharacterClass CharacterClass { get; }
+        CharacterClass? CharacterClass { get; }
 
         /// <summary>
         /// Gets the current pose.

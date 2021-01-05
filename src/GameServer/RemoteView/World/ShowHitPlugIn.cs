@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
@@ -50,19 +49,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             {
                 var healthDamage = (ushort)System.Math.Min(0xFFFF, remainingHealthDamage);
                 var shieldDamage = (ushort)System.Math.Min(0xFFFF, remainingShieldDamage);
-                using var writer = this.player.Connection.StartSafeWrite(ObjectHit.HeaderType, ObjectHit.Length);
-                _ = new ObjectHit(writer.Span)
-                {
-                    HeaderCode = this.operation,
-                    ObjectId = targetId,
-                    HealthDamage = healthDamage,
-                    ShieldDamage = shieldDamage,
-                    IsDoubleDamage = hitInfo.Attributes.HasFlag(DamageAttributes.Double),
-                    IsTripleDamage = hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
-                    Kind = this.GetDamageKind(hitInfo.Attributes),
-                };
-
-                writer.Commit();
+                this.player.Connection?.SendObjectHit(
+                    this.operation,
+                    targetId,
+                    healthDamage,
+                    this.GetDamageKind(hitInfo.Attributes),
+                    hitInfo.Attributes.HasFlag(DamageAttributes.Double),
+                    hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
+                    shieldDamage);
 
                 remainingShieldDamage -= shieldDamage;
                 remainingHealthDamage -= healthDamage;

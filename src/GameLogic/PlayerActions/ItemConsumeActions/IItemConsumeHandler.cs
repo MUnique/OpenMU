@@ -23,6 +23,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <param name="targetItem">The item which is the target of the consumption (e.g. upgrade target of a jewel).</param>
         /// <param name="fruitUsage">In case the item is a fruit, this parameter defines how the fruit should be used.</param>
         /// <returns>The success of the consumption.</returns>
-        bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage);
+        bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage);
     }
 }

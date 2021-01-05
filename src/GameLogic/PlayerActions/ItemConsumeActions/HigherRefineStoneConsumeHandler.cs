@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// </summary>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         public HigherRefineStoneConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
-            : base(persistenceContextProvider, new ItemUpgradeConfiguration { AddsOption = false, IncreasesOption = true, OptionType = ItemOptionTypes.HarmonyOption, SuccessChance = 0.5, FailResult = ItemFailResult.SetOptionToLevelOne })
+            : base(persistenceContextProvider, new ItemUpgradeConfiguration(ItemOptionTypes.HarmonyOption, false, true, 0.5, ItemFailResult.SetOptionToLevelOne))
         {
         }
     }

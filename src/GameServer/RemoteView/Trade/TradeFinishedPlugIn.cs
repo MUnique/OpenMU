@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.GameLogic.Views.Trade;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -30,12 +29,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Trade
         /// <inheritdoc />
         public void TradeFinished(TradeResult tradeResult)
         {
-            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.TradeFinished.HeaderType, Network.Packets.ServerToClient.TradeFinished.Length);
-            _ = new TradeFinished(writer.Span)
-            {
-                Result = Convert(tradeResult),
-            };
-            writer.Commit();
+            this.player.Connection?.SendTradeFinished(Convert(tradeResult));
 
             if (tradeResult != TradeResult.TimedOut)
             {

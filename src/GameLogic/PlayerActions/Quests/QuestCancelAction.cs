@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         public void CancelQuest(Player player, short group, short number)
         {
             var questState = player.GetQuestState(group, number);
-            if (questState != null)
+            if (questState?.ActiveQuest != null)
             {
                 var quest = questState.ActiveQuest;
                 questState.Clear(player.PersistenceContext);

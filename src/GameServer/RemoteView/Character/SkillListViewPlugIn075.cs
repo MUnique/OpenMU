@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character
 {
-    using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Views.Character;
@@ -37,36 +36,29 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public override void AddSkill(Skill skill)
         {
             var skillIndex = this.AddSkillToList(skill);
-            using var writer = this.Player.Connection.StartSafeWrite(SkillAdded.HeaderType, SkillAdded.Length);
-            _ = new SkillAdded075(writer.Span)
-            {
-                SkillIndex = skillIndex,
-                SkillNumberAndLevel = this.GetSkillNumberAndLevel(skill),
-            };
-            writer.Commit();
+            this.Player.Connection?.SendSkillAdded075(skillIndex, this.GetSkillNumberAndLevel(skill));
         }
 
         /// <inheritdoc/>
         public override void RemoveSkill(Skill skill)
         {
-            var skillIndex = this.SkillList.IndexOf(skill);
-            using var writer = this.Player.Connection.StartSafeWrite(SkillRemoved.HeaderType, SkillRemoved.Length);
-            _ = new SkillRemoved075(writer.Span)
-            {
-                SkillIndex = (byte)skillIndex,
-                SkillNumberAndLevel = this.GetSkillNumberAndLevel(skill),
-            };
-
+            var skillIndex = (byte)this.SkillList.IndexOf(skill);
+            this.Player.Connection?.SendSkillRemoved075(skillIndex, this.GetSkillNumberAndLevel(skill));
             this.SkillList[skillIndex] = null;
-            writer.Commit();
         }
 
         /// <inheritdoc/>
         public override void UpdateSkillList()
         {
+            var connection = this.Player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             this.BuildSkillList();
 
-            using var writer = this.Player.Connection.StartSafeWrite(SkillListUpdate.HeaderType, SkillListUpdate.GetRequiredSize(this.SkillList.Count));
+            using var writer = connection.StartSafeWrite(SkillListUpdate.HeaderType, SkillListUpdate.GetRequiredSize(this.SkillList.Count));
             var packet = new SkillListUpdate075(writer.Span)
             {
                 Count = (byte)this.SkillList.Count,
@@ -82,8 +74,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             writer.Commit();
         }
 
-        private ushort GetSkillNumberAndLevel(Skill skill)
+        private ushort GetSkillNumberAndLevel(Skill? skill)
         {
+            if (skill is null)
+            {
+                return 0;
+            }
+
             ushort result = (ushort)((skill.Number & 0xFF) << 8);
 
             // The next lines seems strange but is correct. The same part of the skill number is already set in the first byte.

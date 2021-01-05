@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         private readonly IConnectServerSettings connectServerSettings;
         private readonly ILogger<FtpRequestHandler> logger;
 
-        private byte[] patchPacket;
+        private byte[]? patchPacket;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FtpRequestHandler" /> class.

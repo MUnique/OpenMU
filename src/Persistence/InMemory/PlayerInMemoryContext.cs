@@ -24,13 +24,13 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public MUnique.OpenMU.DataModel.Entities.LetterBody GetLetterBodyByHeaderId(Guid headerId)
+        public MUnique.OpenMU.DataModel.Entities.LetterBody? GetLetterBodyByHeaderId(Guid headerId)
         {
             return this.Manager.GetRepository<LetterBody>().GetAll().FirstOrDefault(body => body.Header.Id == headerId);
         }
 
         /// <inheritdoc/>
-        public MUnique.OpenMU.DataModel.Entities.Account GetAccountByLoginName(string loginName, string password)
+        public MUnique.OpenMU.DataModel.Entities.Account? GetAccountByLoginName(string loginName, string password)
         {
             return this.Manager.GetRepository<Account>().GetAll().FirstOrDefault(account => account.LoginName == loginName && BCrypt.Net.BCrypt.Verify(password, account.PasswordHash));
         }

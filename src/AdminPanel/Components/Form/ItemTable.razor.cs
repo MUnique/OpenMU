@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Blazored.Modal;
     using Microsoft.AspNetCore.Components;
@@ -32,28 +33,28 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         /// Gets or sets the label.
         /// </summary>
         [Parameter]
-        public string Label { get; set; }
+        public string Label { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the persistence context.
         /// </summary>
         [CascadingParameter]
-        public IContext PersistenceContext { get; set; }
+        public IContext PersistenceContext { get; set; } = null!;
 
         /// <inheritdoc />
         protected override void OnInitialized()
         {
             base.OnInitialized();
             this.isEditable = typeof(TItem).Namespace?.StartsWith(nameof(MUnique)) ?? false;
-            var isMemberOfAggregate = this.ValueExpression.IsAccessToMemberOfAggregate();
+            var isMemberOfAggregate = this.ValueExpression!.IsAccessToMemberOfAggregate();
             this.isAddingSupported = !isMemberOfAggregate;
             this.isCreatingSupported = isMemberOfAggregate;
-            this.isStartingCollapsed = this.Value.Count > 10;
+            this.isStartingCollapsed = this.Value is not null && this.Value.Count > 10;
             this.isCollapsed = this.isStartingCollapsed;
         }
 
         /// <inheritdoc />
-        protected override bool TryParseValueFromString(string value, out ICollection<TItem> result, out string validationErrorMessage)
+        protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out ICollection<TItem> result, [NotNullWhen(false)] out string? validationErrorMessage)
         {
             throw new NotImplementedException();
         }
@@ -69,6 +70,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             var result = await modal.Result;
             if (!result.Cancelled && result.Data is TItem item)
             {
+                this.Value ??= new List<TItem>();
                 this.Value.Add(item);
                 this.StateHasChanged();
             }
@@ -93,6 +95,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             }
             else
             {
+                this.Value ??= new List<TItem>();
                 this.Value.Add(item);
                 this.PersistenceContext.SaveChanges();
                 this.StateHasChanged();
@@ -101,10 +104,10 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
 
         private void OnRemoveClick(TItem item)
         {
-            this.Value.Remove(item);
+            this.Value?.Remove(item);
 
             // use the MemberOfAggregateAttribute here!
-            if (!this.ValueExpression.GetAccessedMemberType().IsConfigurationType()
+            if (!this.ValueExpression!.GetAccessedMemberType().IsConfigurationType()
                 && !typeof(TItem).IsConfigurationType())
             {
                 this.PersistenceContext.Delete(item);

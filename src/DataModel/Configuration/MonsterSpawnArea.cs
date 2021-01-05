@@ -36,12 +36,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the monster definition.
         /// </summary>
-        public virtual MonsterDefinition MonsterDefinition { get; set; }
+        public virtual MonsterDefinition? MonsterDefinition { get; set; }
 
         /// <summary>
         /// Gets or sets the game map.
         /// </summary>
-        public virtual GameMapDefinition GameMap { get; set; }
+        public virtual GameMapDefinition? GameMap { get; set; }
 
         /// <summary>
         /// Gets or sets the upper left corner x coordinate.
@@ -83,11 +83,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         {
             if (this.X1 != this.X2 || this.Y1 != this.Y2)
             {
-                return $"{this.MonsterDefinition.Designation} - Quantity: {this.Quantity} - Area: {this.X1}/{this.Y1} - {this.X2}/{this.Y2}";
+                return $"{this.MonsterDefinition?.Designation} - Quantity: {this.Quantity} - Area: {this.X1}/{this.Y1} - {this.X2}/{this.Y2}";
             }
             else
             {
-                return $"{this.MonsterDefinition.Designation} - Quantity: {this.Quantity} - At: {this.X1}/{this.Y1}";
+                return $"{this.MonsterDefinition?.Designation} - Quantity: {this.Quantity} - At: {this.X1}/{this.Y1}";
             }
         }
     }

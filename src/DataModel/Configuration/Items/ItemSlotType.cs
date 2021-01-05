@@ -14,11 +14,11 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the item slots of this slot type.
         /// </summary>
-        public virtual ICollection<int> ItemSlots { get; protected set; }
+        public virtual ICollection<int> ItemSlots { get; protected set; } = null!;
     }
 }

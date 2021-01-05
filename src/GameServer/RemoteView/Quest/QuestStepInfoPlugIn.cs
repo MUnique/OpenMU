@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameServer.RemoteView.Quest
+﻿// <copyright file="QuestStepInfoPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Quest;
@@ -26,7 +30,7 @@
         /// <inheritdoc/>
         public void ShowQuestStepInfo(short questGroup, short stepNumber)
         {
-            this.player.Connection.SendQuestStepInfo((ushort)stepNumber, (ushort)questGroup);
+            this.player.Connection?.SendQuestStepInfo((ushort)stepNumber, (ushort)questGroup);
         }
     }
 }

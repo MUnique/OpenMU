@@ -30,8 +30,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc />
         public void UpdateMasterSkills()
         {
-            var masterSkills = this.player.SkillList.Skills.Where(s => s.Skill.MasterDefinition != null).ToList();
-            using var writer = this.player.Connection.StartSafeWrite(MasterSkillList.HeaderType, MasterSkillList.GetRequiredSize(masterSkills.Count));
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
+            var masterSkills = this.player.SkillList?.Skills.Where(s => s.Skill.MasterDefinition != null).ToList();
+            if (masterSkills is null || this.player.SelectedCharacter?.CharacterClass is null)
+            {
+                return;
+            }
+
+            using var writer = connection.StartSafeWrite(MasterSkillList.HeaderType, MasterSkillList.GetRequiredSize(masterSkills.Count));
             var packet = new MasterSkillList(writer.Span)
             {
                 MasterSkillCount = (uint)masterSkills.Count,

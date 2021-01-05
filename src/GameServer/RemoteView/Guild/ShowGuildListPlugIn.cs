@@ -30,9 +30,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// <inheritdoc/>
         public void ShowGuildList(IEnumerable<OpenMU.Interfaces.GuildListEntry> players)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var playerCount = players.Count();
 
-            using var writer = this.player.Connection.StartSafeWrite(GuildList.HeaderType, GuildList.GetRequiredSize(playerCount));
+            using var writer = connection.StartSafeWrite(GuildList.HeaderType, GuildList.GetRequiredSize(playerCount));
             var packet = new GuildList(writer.Span)
             {
                 GuildMemberCount = (byte)playerCount,

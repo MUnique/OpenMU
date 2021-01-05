@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Network.SimpleModulus
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using static System.Buffers.Binary.BinaryPrimitives;
 
@@ -78,45 +79,47 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <param name="key">The key.</param>
         /// <param name="xorKey">The xor key.</param>
         /// <returns><c>True</c>, if successful; Otherwise, <c>false</c>.</returns>
-        public bool TryDeserialize(string fileName, out uint[] modulusKey, out uint[] key, out uint[] xorKey)
+        public bool TryDeserialize(
+            string fileName,
+            [MaybeNullWhen(false)] out uint[] modulusKey,
+            [MaybeNullWhen(false)] out uint[] key,
+            [MaybeNullWhen(false)] out uint[] xorKey)
         {
             modulusKey = null;
             key = null;
             xorKey = null;
-            using (var fileStream = File.OpenRead(fileName))
+            using var fileStream = File.OpenRead(fileName);
+            var first = fileStream.ReadByte();
+            var second = fileStream.ReadByte();
+            if (first != 0x12 && second != 0x11)
             {
-                var first = fileStream.ReadByte();
-                var second = fileStream.ReadByte();
-                if (first != 0x12 && second != 0x11)
-                {
-                    return false;
-                }
+                return false;
+            }
 
-                var length = fileStream.ReadInteger();
-                if (length > fileStream.Length + fileStream.Position)
-                {
-                    return false;
-                }
+            var length = fileStream.ReadInteger();
+            if (length > fileStream.Length + fileStream.Position)
+            {
+                return false;
+            }
 
-                var keyCount = length / (sizeof(uint) * 3);
-                modulusKey = new uint[keyCount];
-                key = new uint[keyCount];
-                xorKey = new uint[keyCount];
+            var keyCount = length / (sizeof(uint) * 3);
+            modulusKey = new uint[keyCount];
+            key = new uint[keyCount];
+            xorKey = new uint[keyCount];
 
-                for (int i = 0; i < keyCount; i++)
-                {
-                    modulusKey[i] = fileStream.ReadInteger() ^ this.encryptionKeys[i];
-                }
+            for (int i = 0; i < keyCount; i++)
+            {
+                modulusKey[i] = fileStream.ReadInteger() ^ this.encryptionKeys[i];
+            }
 
-                for (int i = 0; i < keyCount; i++)
-                {
-                    key[i] = fileStream.ReadInteger() ^ this.encryptionKeys[i];
-                }
+            for (int i = 0; i < keyCount; i++)
+            {
+                key[i] = fileStream.ReadInteger() ^ this.encryptionKeys[i];
+            }
 
-                for (int i = 0; i < keyCount; i++)
-                {
-                    xorKey[i] = fileStream.ReadInteger() ^ this.encryptionKeys[i];
-                }
+            for (int i = 0; i < keyCount; i++)
+            {
+                xorKey[i] = fileStream.ReadInteger() ^ this.encryptionKeys[i];
             }
 
             return true;

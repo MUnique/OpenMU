@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
         private class Arguments
         {
-            public string CommandName { get; set; }
+            public string? CommandName { get; set; }
         }
     }
 }

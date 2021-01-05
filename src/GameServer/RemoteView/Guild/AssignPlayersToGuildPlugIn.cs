@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 {
-    using System;
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
@@ -32,12 +31,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// <inheritdoc />
         public void AssignPlayersToGuild(ICollection<Player> guildPlayers, bool appearsNew)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             // C2 00 11
             // 65
             // 01
             // 34 4B 00 00 80 00 00
             // A4 F2 00 00 00
-            using var writer = this.player.Connection.StartSafeWrite(0xC2, AssignCharacterToGuild.GetRequiredSize(guildPlayers.Count));
+            using var writer = connection.StartSafeWrite(0xC2, AssignCharacterToGuild.GetRequiredSize(guildPlayers.Count));
             var packet = new AssignCharacterToGuild(writer.Span)
             {
                 PlayerCount = (byte)guildPlayers.Count,
@@ -56,12 +61,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
         /// <inheritdoc />
         public void AssignPlayerToGuild(Player guildPlayer, bool appearsNew)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             // C2 00 11
             // 65
             // 01
             // 34 4B 00 00 80 00 00
             // A4 F2 00 00 00
-            using var writer = this.player.Connection.StartSafeWrite(AssignCharacterToGuild.HeaderType, AssignCharacterToGuild.GetRequiredSize(1));
+            using var writer = connection.StartSafeWrite(AssignCharacterToGuild.HeaderType, AssignCharacterToGuild.GetRequiredSize(1));
             var packet = new AssignCharacterToGuild(writer.Span)
             {
                 PlayerCount = 1,
@@ -74,6 +85,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
 
         private void SetGuildPlayerBlock(AssignCharacterToGuild.GuildMemberRelation playerBlock, Player guildPlayer, bool appearsNew)
         {
+            if (guildPlayer.GuildStatus is null)
+            {
+                return;
+            }
+
             playerBlock.GuildId = guildPlayer.GuildStatus.GuildId;
             playerBlock.Role = guildPlayer.GuildStatus.Position.Convert();
             playerBlock.PlayerId = guildPlayer.GetId(this.player);

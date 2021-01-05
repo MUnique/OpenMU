@@ -51,12 +51,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Occurs when an object was added to the map.
         /// </summary>
-        public event EventHandler<GameMapEventArgs> ObjectAdded;
+        public event EventHandler<(GameMap Map , ILocateable Object)>? ObjectAdded;
 
         /// <summary>
         /// Occurs when an object was removed from the map.
         /// </summary>
-        public event EventHandler<GameMapEventArgs> ObjectRemoved;
+        public event EventHandler<(GameMap Map, ILocateable Object)>? ObjectRemoved;
 
         /// <summary>
         /// Gets the map identifier.
@@ -83,9 +83,9 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>The object with the specified identifier.</returns>
-        public ILocateable GetObject(ushort id)
+        public ILocateable? GetObject(ushort id)
         {
-            this.objectsInMap.TryGetValue(id, out ILocateable result);
+            this.objectsInMap.TryGetValue(id, out var result);
             return result;
         }
 
@@ -105,9 +105,9 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="dropId">The drop identifier.</param>
         /// <returns>The dropped item.</returns>
-        public ILocateable GetDrop(ushort dropId)
+        public ILocateable? GetDrop(ushort dropId)
         {
-            this.objectsInMap.TryGetValue(dropId, out ILocateable item);
+            this.objectsInMap.TryGetValue(dropId, out var item);
             return item;
         }
 
@@ -136,7 +136,7 @@ namespace MUnique.OpenMU.GameLogic
                     Interlocked.Decrement(ref this.playerCount);
                 }
 
-                this.ObjectRemoved?.Invoke(this, new GameMapEventArgs(this, locateable));
+                this.ObjectRemoved?.Invoke(this, (this, locateable));
             }
         }
 
@@ -170,7 +170,7 @@ namespace MUnique.OpenMU.GameLogic
 
             this.objectsInMap.Add(locateable.Id, locateable);
             this.areaOfInterestManager.AddObject(locateable);
-            this.ObjectAdded?.Invoke(this, new GameMapEventArgs(this, locateable));
+            this.ObjectAdded?.Invoke(this, (this, locateable));
         }
 
         /// <summary>

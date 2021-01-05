@@ -31,10 +31,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void ShowDroppedItems(IEnumerable<DroppedItem> droppedItems, bool freshDrops)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var itemSerializer = this.player.ItemSerializer;
             var droppedItemLength = ItemsDropped.DroppedItem.GetRequiredSize(itemSerializer.NeededSpace);
             int itemCount = droppedItems.Count();
-            using var writer = this.player.Connection.StartSafeWrite(ItemsDropped.HeaderType, ItemsDropped.GetRequiredSize(itemCount, droppedItemLength));
+            using var writer = connection.StartSafeWrite(ItemsDropped.HeaderType, ItemsDropped.GetRequiredSize(itemCount, droppedItemLength));
             var packet = new ItemsDropped(writer.Span)
             {
                 ItemCount = (byte)itemCount,

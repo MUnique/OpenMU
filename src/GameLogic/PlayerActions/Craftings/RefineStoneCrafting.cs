@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         protected override bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
         {
             return base.RequiredItemMatches(item, requiredItem)
-                   && (item.IsWearable() && !this.excludedItems.Contains((item.Definition.Group, item.Definition.Number)));
+                   && (item.IsWearable() && !this.excludedItems.Contains((item.Definition!.Group, item.Definition.Number)));
         }
 
         /// <inheritdoc />
@@ -143,7 +143,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                     var refineStone = player.PersistenceContext.CreateNew<Item>();
                     refineStone.Definition = player.GameContext.Configuration.Items.First(item => item.Group == 14 && item.Number == refineStoneNumber);
                     refineStone.Durability = 1;
-                    player.TemporaryStorage.AddItem(refineStone);
+                    player.TemporaryStorage!.AddItem(refineStone);
                     yield return refineStone;
                 }
             }

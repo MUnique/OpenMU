@@ -28,15 +28,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
         /// <inheritdoc/>
         public void UpdatePartyList()
         {
+            var connection = this.player.Connection;
             var party = this.player.Party;
-            if (party is null)
+            if (party is null || connection is null)
             {
                 return;
             }
 
             var partyList = party.PartyList;
-            var partyListCount = party.PartyList?.Count ?? 0;
-            using var writer = this.player.Connection.StartSafeWrite(PartyList.HeaderType, PartyList.GetRequiredSize(partyListCount));
+            var partyListCount = partyList.Count;
+            using var writer = connection.StartSafeWrite(PartyList.HeaderType, PartyList.GetRequiredSize(partyListCount));
             var packet = new PartyList(writer.Span)
             {
                 Count = (byte)partyListCount,
@@ -48,7 +49,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
                 var partyMemberBlock = packet[i];
                 partyMemberBlock.Index = i;
                 partyMemberBlock.Name = partyMember.Name;
-                partyMemberBlock.MapId = (byte)partyMember.CurrentMap.MapId;
+                partyMemberBlock.MapId = (byte)(partyMember.CurrentMap?.MapId ?? 0);
                 partyMemberBlock.PositionX = partyMember.Position.X;
                 partyMemberBlock.PositionY = partyMember.Position.Y;
                 partyMemberBlock.CurrentHealth = partyMember.CurrentHealth;

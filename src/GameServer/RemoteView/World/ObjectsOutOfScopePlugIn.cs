@@ -32,8 +32,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var count = objects.Count();
-            using var writer = this.player.Connection.StartSafeWrite(MapObjectOutOfScope.HeaderType, MapObjectOutOfScope.GetRequiredSize(count));
+            using var writer = connection.StartSafeWrite(MapObjectOutOfScope.HeaderType, MapObjectOutOfScope.GetRequiredSize(count));
             var packet = new MapObjectOutOfScope(writer.Span)
             {
                 ObjectCount = (byte)count,

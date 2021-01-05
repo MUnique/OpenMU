@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private readonly string clientName;
 
-        private string name;
+        private string name = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LiveConnection" /> class.
@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.serverConnection = serverConnection;
             this.invokeAction = invokeAction;
             this.logger = loggerFactory.CreateLogger("Proxy_" + this.clientConnection);
-            this.clientName = this.clientConnection.ToString();
+            this.clientName = this.clientConnection.ToString()!;
             this.Name = this.clientName;
             this.clientConnection.PacketReceived += this.ClientPacketReceived;
             this.serverConnection.PacketReceived += this.ServerPacketReceived;
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// Occurs when a property value changes.
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets the packet list of all captured packets.
@@ -137,7 +137,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// Called when a property value changed.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.invokeAction((Action)(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName))));
         }

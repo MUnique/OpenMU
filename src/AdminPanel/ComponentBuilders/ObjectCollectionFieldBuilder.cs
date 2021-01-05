@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
                 .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
                 .MakeGenericMethod(propertyInfo.PropertyType, typeof(ItemTable<>).MakeGenericType(propertyInfo.PropertyType.GenericTypeArguments[0]));
             var parameters = new[] { model, propertyInfo, builder, i, notificationService };
-            return (int)method.Invoke(this, parameters);
+            return (int)method.Invoke(this, parameters)!;
         }
     }
 }

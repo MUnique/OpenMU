@@ -1,4 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics.CodeAnalysis
 @inherits NotifyableInputBase<ICollection<int>>
 
 <div>
@@ -14,23 +15,26 @@
     /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
     /// </summary>
     [Parameter]
-    public string Label { get; set; }
+    public string Label { get; set; } = string.Empty;
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string value, out ICollection<int> result, out string validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out ICollection<int> result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         result = null;
-        foreach (var intValue in value.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        if (!string.IsNullOrWhiteSpace(value))
         {
-            if (int.TryParse(intValue, out var parsedInt))
+            foreach (var intValue in value.Split(';', StringSplitOptions.RemoveEmptyEntries))
             {
-                (result ??= new List<int>()).Add(parsedInt);
-            }
-            else
-            {
-                result = null;
-                validationErrorMessage = "Wrong format. Expected example: 1;2;3";
-                return false;
+                if (int.TryParse(intValue, out var parsedInt))
+                {
+                    (result ??= new List<int>()).Add(parsedInt);
+                }
+                else
+                {
+                    result = null;
+                    validationErrorMessage = "Wrong format. Expected example: 1;2;3";
+                    return false;
+                }
             }
         }
 
@@ -40,9 +44,8 @@
     }
 
     /// <inheritdoc />
-    protected override string FormatValueAsString(ICollection<int> value)
+    protected override string FormatValueAsString(ICollection<int>? value)
     {
-        return string.Join(';', value);
+        return value is null ? string.Empty : string.Join(';', value);
     }
-
 }

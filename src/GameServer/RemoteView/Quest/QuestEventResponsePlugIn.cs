@@ -31,10 +31,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// <inheritdoc/>
         public void ShowActiveEventQuests()
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             // Hints: * This is only sent for new characters (level <= 1, no MG or DL).
             //        * I also found a struct which contains the following fields (each 2 bytes: NpcNumber (0), Count (1), QuestGroup (1), QuestNumber (0)).
             //        * Always: C1 0C F6 03 00 00 01 00 00 00 01 00
-            using var writer = this.player.Connection.StartSafeWrite(
+            using var writer = connection.StartSafeWrite(
                 QuestEventResponse.HeaderType,
                 QuestEventResponse.Length);
             var message = new QuestStateList(writer.Span);

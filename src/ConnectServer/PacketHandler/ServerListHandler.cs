@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler
         public void HandlePacket(Client client, Span<byte> packet)
         {
             var packetSubType = packet[3];
-            if (this.packetHandlers.TryGetValue(packetSubType, out IPacketHandler<Client> packetHandler))
+            if (this.packetHandlers.TryGetValue(packetSubType, out var packetHandler))
             {
                 packetHandler.HandlePacket(client, packet);
             }

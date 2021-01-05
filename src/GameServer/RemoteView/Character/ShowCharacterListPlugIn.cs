@@ -33,8 +33,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void ShowCharacterList()
         {
+            var connection = this.player.Connection;
+            if (connection is null || this.player.Account is null)
+            {
+                return;
+            }
+
             var appearanceSerializer = this.player.AppearanceSerializer;
-            using var writer = this.player.Connection.StartSafeWrite(CharacterList.HeaderType, CharacterList.GetRequiredSize(this.player.Account.Characters.Count));
+            using var writer = connection.StartSafeWrite(CharacterList.HeaderType, CharacterList.GetRequiredSize(this.player.Account.Characters.Count));
             var packet = new CharacterList(writer.Span);
             byte maxClass = 0;
             packet.CreationFlags = this.player.Account.UnlockedCharacterClasses?

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
+    using System;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.GameLogic.Views.Character;
@@ -20,12 +21,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         /// <param name="statAttributeDefinition">The stat attribute definition.</param>
         public void IncreaseStats(Player player, AttributeDefinition statAttributeDefinition)
         {
+            if (player.SelectedCharacter is null)
+            {
+                throw new InvalidOperationException("No character selected");
+            }
+
             if (player.SelectedCharacter.LevelUpPoints > 0)
             {
-                var attributeDef = player.SelectedCharacter.CharacterClass.StatAttributes.FirstOrDefault(a => a.Attribute == statAttributeDefinition);
+                var attributeDef = player.SelectedCharacter.CharacterClass?.StatAttributes.FirstOrDefault(a => a.Attribute == statAttributeDefinition);
                 if (attributeDef != null && attributeDef.IncreasableByPlayer)
                 {
-                    player.Attributes[attributeDef.Attribute]++;
+                    player.Attributes![attributeDef.Attribute]++;
                     player.SelectedCharacter.LevelUpPoints--;
                     player.ViewPlugIns.GetPlugIn<IStatIncreaseResultPlugIn>()?.StatIncreaseResult(statAttributeDefinition, true);
                     return;

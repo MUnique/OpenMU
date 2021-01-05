@@ -30,7 +30,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void StatIncreaseResult(AttributeDefinition attribute, bool success)
         {
-            using var writer = this.player.Connection.StartSafeWrite(CharacterStatIncreaseResponse.HeaderType, CharacterStatIncreaseResponse.Length);
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
+            using var writer = connection.StartSafeWrite(CharacterStatIncreaseResponse.HeaderType, CharacterStatIncreaseResponse.Length);
             var packet = new CharacterStatIncreaseResponse(writer.Span)
             {
                 Success = success,
@@ -40,11 +46,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             {
                 if (attribute == Stats.BaseEnergy)
                 {
-                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes[Stats.MaximumMana];
+                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes![Stats.MaximumMana];
                 }
                 else if (attribute == Stats.BaseVitality)
                 {
-                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes[Stats.MaximumHealth];
+                    packet.UpdatedDependentMaximumStat = (ushort)this.player.Attributes![Stats.MaximumHealth];
                 }
                 else
                 {
@@ -52,7 +58,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 }
 
                 // since all stats may affect shield and ability, both are included
-                packet.UpdatedMaximumShield = (ushort)this.player.Attributes[Stats.MaximumShield];
+                packet.UpdatedMaximumShield = (ushort)this.player.Attributes![Stats.MaximumShield];
                 packet.UpdatedMaximumAbility = (ushort)this.player.Attributes[Stats.MaximumAbility];
             }
 

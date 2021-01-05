@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
         public void HandlePacket(Player player, Span<byte> packet)
         {
             PlayerShopSetItemPrice message = packet;
-            player.Logger.LogDebug("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter.Name, message.ItemSlot, message.Price);
+            player.Logger.LogDebug("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter?.Name, message.ItemSlot, message.Price);
             this.setPriceAction.SetPrice(player, message.ItemSlot, (int)message.Price);
         }
     }

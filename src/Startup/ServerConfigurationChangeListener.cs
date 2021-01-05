@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.Startup
         /// <param name="configuration">The configuration.</param>
         public void ConnectionServerAdded(ConnectServerDefinition configuration)
         {
-            var connectServer = this.connectServerFactory.CreateConnectServer(configuration, new ClientVersion(configuration.Client.Season, configuration.Client.Episode, configuration.Client.Language), configuration.GetId());
+            var connectServer = this.connectServerFactory.CreateConnectServer(configuration, new ClientVersion(configuration.Client!.Season, configuration.Client.Episode, configuration.Client.Language), configuration.GetId());
             this.servers.Add(connectServer);
         }
 

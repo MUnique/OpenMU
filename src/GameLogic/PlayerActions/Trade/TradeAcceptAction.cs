@@ -54,7 +54,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
         /// <param name="trader">Trader for which the trade should be opened.</param>
         internal void OpenTrade(ITrader trader)
         {
-            trader.BackupInventory = new BackupItemStorage(trader.Inventory.ItemStorage);
+            trader.BackupInventory = new BackupItemStorage(trader.Inventory!.ItemStorage);
             trader.TradingMoney = 0;
             trader.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(true);
         }

@@ -34,7 +34,10 @@ namespace MUnique.OpenMU.Persistence.InMemory
         {
             var members = this.Manager.GetRepository<GuildMember>().GetAll().Where(member => member.GuildId == guildId);
             var characters = this.Manager.GetRepository<Character>().GetAll();
-            return members.ToDictionary(m => m.Id, member => characters.FirstOrDefault(c => c.Id == member.Id)?.Name);
+            return members
+                .Select(m => (m.Id, Name: characters.FirstOrDefault(c => c.Id == m.Id)?.Name!))
+                .Where(m => m.Name is not null)
+                .ToDictionary(m => m.Id, m => m.Name);
         }
     }
 }

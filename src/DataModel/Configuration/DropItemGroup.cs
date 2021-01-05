@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the chance of the item drop group to apply. From 0.0 to 1.0.
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// If <c>null</c>, then it doesn't apply and it's valid for all monsters.
         /// </summary>
         /// <remarks>This is required for some quest items which should drop only from specific monsters.</remarks>
-        public virtual MonsterDefinition Monster { get; set; }
+        public virtual MonsterDefinition? Monster { get; set; }
 
         /// <summary>
         /// Gets or sets the item level which will be assigned to the dropped instance of <see cref="PossibleItems"/>.
@@ -94,6 +94,6 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the possible items which can be dropped.
         /// </summary>
-        public virtual ICollection<ItemDefinition> PossibleItems { get; protected set; }
+        public virtual ICollection<ItemDefinition> PossibleItems { get; protected set; } = null!;
     }
 }

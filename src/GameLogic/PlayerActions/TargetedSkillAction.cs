@@ -26,9 +26,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         public void PerformSkill(Player player, IAttackable target, ushort skillId)
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
-            SkillEntry skillEntry = player.SkillList.GetSkill(skillId);
-            var skill = skillEntry.Skill;
-            if (skill.SkillType == SkillType.PassiveBoost)
+            var skillEntry = player.SkillList?.GetSkill(skillId);
+            var skill = skillEntry?.Skill;
+            if (skill is null || skill.SkillType == SkillType.PassiveBoost)
             {
                 return;
             }
@@ -76,7 +76,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 target.MoveRandomly();
             }
 
-            this.ApplySkill(player, target, skillEntry);
+            this.ApplySkill(player, target, skillEntry!);
         }
 
         private void ApplySkill(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
@@ -118,7 +118,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             {
                 if (player.Party != null)
                 {
-                    return player.Party.PartyList.OfType<IAttackable>().Where(p => player.Observers.Contains(p as IWorldObserver));
+                    return player.Party.PartyList.OfType<IAttackable>().Where(p => player.Observers.Contains((IWorldObserver)p));
                 }
 
                 return player.GetAsEnumerable();
@@ -131,9 +131,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             if (skill.Target == SkillTarget.ExplicitWithImplicitInRange)
             {
-                if (targetedTarget != null && skill.ImplicitTargetRange > 0)
+                if (skill.ImplicitTargetRange > 0)
                 {
-                    var targetsOfTarget = targetedTarget.CurrentMap.GetAttackablesInRange(targetedTarget.Position, skill.ImplicitTargetRange);
+                    var targetsOfTarget = targetedTarget.CurrentMap?.GetAttackablesInRange(targetedTarget.Position, skill.ImplicitTargetRange) ?? Enumerable.Empty<IAttackable>();
                     if (!player.GameContext.Configuration.AreaSkillHitsPlayer && targetedTarget is Monster)
                     {
                         return targetsOfTarget.OfType<Monster>();
@@ -145,7 +145,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return targetedTarget.GetAsEnumerable();
             }
 
-            var targets = player.CurrentMap.GetAttackablesInRange(player.Position, skill.ImplicitTargetRange);
+            var targets = player.CurrentMap?.GetAttackablesInRange(player.Position, skill.ImplicitTargetRange) ?? Enumerable.Empty<IAttackable>();
 
             if (skill.Target == SkillTarget.ImplicitAllInRange)
             {

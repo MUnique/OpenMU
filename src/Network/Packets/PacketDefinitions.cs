@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         /// <param name="filePath">The path to the file.</param>
         /// <returns>The parsed object.</returns>
-        public static PacketDefinitions Load(string filePath)
+        public static PacketDefinitions? Load(string filePath)
         {
             var fileInfo = new FileInfo(filePath);
             using var fileStream = fileInfo.OpenRead();
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.Network.Packets
                 throw new ArgumentException($"File is not expected xml format: {filePath}");
             }
 
-            return (PacketDefinitions)serializer.Deserialize(xmlReader);
+            return serializer.Deserialize(xmlReader) as PacketDefinitions;
         }
 
         /// <summary>

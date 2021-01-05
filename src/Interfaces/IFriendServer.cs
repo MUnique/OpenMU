@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="playerName">Name of the player who is creating the chat room.</param>
         /// <param name="friendName">Name of the friend who should be invited to the chat room.</param>
         /// <returns>The authentication information for the <paramref name="playerName"/>.</returns>
-        ChatServerAuthenticationInfo CreateChatRoom(string playerName, string friendName);
+        ChatServerAuthenticationInfo? CreateChatRoom(string playerName, string friendName);
 
         /// <summary>
         /// Gets the friend list of a character.

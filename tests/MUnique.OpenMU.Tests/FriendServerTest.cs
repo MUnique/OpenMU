@@ -19,14 +19,14 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public sealed class FriendServerTest
     {
-        private Character player1;
-        private Character player2;
-        private IDictionary<int, IGameServer> gameServers;
-        private Mock<IGameServer> gameServer1;
-        private Mock<IGameServer> gameServer2;
-        private IFriendServer friendServer;
+        private Character player1 = null!;
+        private Character player2 = null!;
+        private IDictionary<int, IGameServer> gameServers = null!;
+        private Mock<IGameServer> gameServer1 = null!;
+        private Mock<IGameServer> gameServer2 = null!;
+        private IFriendServer friendServer = null!;
 
-        private InMemoryPersistenceContextProvider persistenceContextProvider;
+        private InMemoryPersistenceContextProvider persistenceContextProvider = null!;
 
         /// <summary>
         /// Sets up the environment with 2 game servers.
@@ -118,7 +118,7 @@ namespace MUnique.OpenMU.Tests
             var context = this.persistenceContextProvider.CreateNewFriendServerContext();
             var friendItem1 = context.GetFriends(this.player1.Id).FirstOrDefault();
             Assert.That(friendItem1, Is.Not.Null);
-            Assert.That(friendItem1.CharacterName, Is.EqualTo(this.player1.Name));
+            Assert.That(friendItem1!.CharacterName, Is.EqualTo(this.player1.Name));
             Assert.That(friendItem1.FriendName, Is.EqualTo(this.player2.Name));
             Assert.That(friendItem1.RequestOpen, Is.False);
             Assert.That(friendItem1.Accepted, Is.True);
@@ -128,7 +128,7 @@ namespace MUnique.OpenMU.Tests
 
             var friendItem2 = context.GetFriends(this.player2.Id).FirstOrDefault();
             Assert.That(friendItem2, Is.Not.Null);
-            Assert.That(friendItem2.CharacterName, Is.EqualTo(this.player2.Name));
+            Assert.That(friendItem2!.CharacterName, Is.EqualTo(this.player2.Name));
             Assert.That(friendItem2.FriendName, Is.EqualTo(this.player1.Name));
             Assert.That(friendItem2.RequestOpen, Is.False);
             Assert.That(friendItem2.Accepted, Is.True);
@@ -155,7 +155,7 @@ namespace MUnique.OpenMU.Tests
             var context = this.persistenceContextProvider.CreateNewFriendServerContext();
             var friendItem = context.GetFriends(this.player1.Id).FirstOrDefault();
             Assert.That(friendItem, Is.Not.Null);
-            Assert.That(friendItem.CharacterName, Is.EqualTo(this.player1.Name));
+            Assert.That(friendItem!.CharacterName, Is.EqualTo(this.player1.Name));
             Assert.That(friendItem.FriendName, Is.EqualTo(this.player2.Name));
             Assert.That(friendItem.RequestOpen, Is.False);
             Assert.That(friendItem.Accepted, Is.False);
@@ -231,7 +231,7 @@ namespace MUnique.OpenMU.Tests
         private void SetPlayerOnline(Guid playerId, string playerName, int serverId)
         {
             this.friendServer.SetOnlineState(playerId, playerName, (byte)serverId);
-            if (this.gameServers.TryGetValue((byte)serverId, out IGameServer gameServer))
+            if (this.gameServers.TryGetValue((byte)serverId, out var gameServer))
             {
                 Mock.Get(gameServer).Setup(g => g.IsPlayerOnline(playerName)).Returns(serverId != FriendServer.FriendServer.OfflineServerId);
             }
@@ -242,7 +242,7 @@ namespace MUnique.OpenMU.Tests
             var context = this.persistenceContextProvider.CreateNewFriendServerContext();
             var friendItem = context.GetFriends(this.player1.Id).FirstOrDefault();
             Assert.That(friendItem, Is.Not.Null);
-            Assert.That(friendItem.CharacterName, Is.EqualTo(this.player1.Name));
+            Assert.That(friendItem!.CharacterName, Is.EqualTo(this.player1.Name));
             Assert.That(friendItem.FriendName, Is.EqualTo(this.player2.Name));
             Assert.That(friendItem.RequestOpen, Is.True);
             Assert.That(friendItem.Accepted, Is.False);

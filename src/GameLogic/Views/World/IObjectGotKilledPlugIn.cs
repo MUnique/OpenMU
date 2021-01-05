@@ -17,6 +17,6 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// <param name="killedObject">The killed object.</param>
         /// <param name="killerObject">The object which killed the object.</param>
         /// /// <param name="skill">The skill with which was used.</param>
-        void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject, Skill skill = null);
+        void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject, Skill? skill = null);
     }
 }

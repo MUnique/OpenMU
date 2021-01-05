@@ -41,15 +41,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// </summary>
         private const int SeedSphereNumberEnd = SeedSphereNumberStart + (SphereLevels * SeedTypes) - 1;
 
-        private ItemOptionDefinition fireOptions;
-        private ItemOptionDefinition iceOptions;
-        private ItemOptionDefinition lightningOptions;
-        private ItemOptionDefinition windOptions;
-        private ItemOptionDefinition waterOptions;
-        private ItemOptionDefinition earthOptions;
-        private ItemOptionDefinition bonusArmorOptions;
-        private ItemOptionDefinition bonusPhysOptions;
-        private ItemOptionDefinition bonusWizOptions;
+        private ItemOptionDefinition? fireOptions;
+        private ItemOptionDefinition? iceOptions;
+        private ItemOptionDefinition? lightningOptions;
+        private ItemOptionDefinition? windOptions;
+        private ItemOptionDefinition? waterOptions;
+        private ItemOptionDefinition? earthOptions;
+        private ItemOptionDefinition? bonusArmorOptions;
+        private ItemOptionDefinition? bonusPhysOptions;
+        private ItemOptionDefinition? bonusWizOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SocketSystem"/> class.
@@ -67,19 +67,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             this.CreateSocketOptions();
             var types = new[]
             {
-                ("Fire", this.fireOptions),
-                ("Water", this.waterOptions),
-                ("Ice", this.iceOptions),
-                ("Wind", this.windOptions),
-                ("Lightning", this.lightningOptions),
-                ("Earth", this.earthOptions),
+                ("Fire", this.fireOptions!),
+                ("Water", this.waterOptions!),
+                ("Ice", this.iceOptions!),
+                ("Wind", this.windOptions!),
+                ("Lightning", this.lightningOptions!),
+                ("Earth", this.earthOptions!),
             };
 
             const int seedNumberStart = 60;
             for (byte number = seedNumberStart; number < seedNumberStart + types.Length; number++)
             {
                 var type = types[number - 60];
-                this.CreateSeed(number, $"Seed ({type.Item1})", type.Item2);
+                this.CreateSeed(number, $"Seed ({type.Item1})", type.Item2!);
             }
 
             this.CreateSphere(70, "Sphere (Mono)", 102);
@@ -93,7 +93,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 var number = SeedSphereNumberStart + (level * types.Length);
                 foreach (var type in types)
                 {
-                    this.CreateSeedSphere((byte)number, $"Seed Sphere ({type.Item1}) ({level + 1})", level, type.Item2);
+                    this.CreateSeedSphere((byte)number, $"Seed Sphere ({type.Item1}) ({level + 1})", level, type.Item2!);
                     number++;
                 }
             }
@@ -229,10 +229,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             item.MaximumSockets = 3;
-            item.PossibleItemOptions.Add(this.waterOptions);
-            item.PossibleItemOptions.Add(this.earthOptions);
-            item.PossibleItemOptions.Add(this.windOptions);
-            item.PossibleItemOptions.Add(this.bonusArmorOptions);
+            item.PossibleItemOptions.Add(this.waterOptions!);
+            item.PossibleItemOptions.Add(this.earthOptions!);
+            item.PossibleItemOptions.Add(this.windOptions!);
+            item.PossibleItemOptions.Add(this.bonusArmorOptions!);
         }
 
         private void AddWeaponSockets(byte group, short number, int socketCount)
@@ -245,17 +245,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             }
 
             item.MaximumSockets = socketCount;
-            item.PossibleItemOptions.Add(this.fireOptions);
-            item.PossibleItemOptions.Add(this.lightningOptions);
-            item.PossibleItemOptions.Add(this.iceOptions);
+            item.PossibleItemOptions.Add(this.fireOptions!);
+            item.PossibleItemOptions.Add(this.lightningOptions!);
+            item.PossibleItemOptions.Add(this.iceOptions!);
 
             if (item.Name.Contains("Staff") || item.Name.Contains("Stick"))
             {
-                item.PossibleItemOptions.Add(this.bonusWizOptions);
+                item.PossibleItemOptions.Add(this.bonusWizOptions!);
             }
             else
             {
-                item.PossibleItemOptions.Add(this.bonusPhysOptions);
+                item.PossibleItemOptions.Add(this.bonusPhysOptions!);
             }
         }
 
@@ -571,7 +571,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Seed Sphere Creation";
             crafting.Number = 43;
-            crafting.ItemCraftingHandlerClassName = typeof(SeedSphereCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(SeedSphereCrafting).FullName!;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
             crafting.SimpleCraftingSettings = craftingSettings;
             craftingSettings.SuccessPercent = 80;
@@ -644,7 +644,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Mount Seed Sphere";
             crafting.Number = 44;
-            crafting.ItemCraftingHandlerClassName = typeof(MountSeedSphereCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(MountSeedSphereCrafting).FullName!;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
             crafting.SimpleCraftingSettings = craftingSettings;
             craftingSettings.SuccessPercent = 100;
@@ -694,7 +694,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Remove Seed Sphere";
             crafting.Number = 45;
-            crafting.ItemCraftingHandlerClassName = typeof(RemoveSeedSphereCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(RemoveSeedSphereCrafting).FullName!;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
             crafting.SimpleCraftingSettings = craftingSettings;
             craftingSettings.SuccessPercent = 100;

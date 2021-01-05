@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
         }
 
         /// <inheritdoc />
-        public event EventHandler DataChanged;
+        public event EventHandler? DataChanged;
 
         /// <summary>
         /// Returns a slice of the account list, defined by an offset and a count.
@@ -89,7 +89,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
                 DisableBackgroundCancel = true,
             };
 
-            var modal = this.modalService.Show<ModalCreateNew<AccountCreationParameters>>($"Create {typeof(Account).Name}", parameters, options);
+            var modal = this.modalService.Show<ModalCreateNew<AccountCreationParameters>>($"Create {nameof(Account)}", parameters, options);
             var result = await modal.Result;
             if (!result.Cancelled)
             {
@@ -117,22 +117,22 @@ namespace MUnique.OpenMU.AdminPanel.Services
             [MaxLength(10)]
             [MinLength(3)]
             [Required]
-            public string LoginName { get; set; }
+            public string LoginName { get; set; } = string.Empty;
 
             [Display(Name = "Password")]
             [MaxLength(20)]
             [MinLength(3)]
             [Required]
-            public string Password { get; set; }
+            public string Password { get; set; } = string.Empty;
 
             [Display(Name = "Security Code")]
             [MaxLength(10)]
             [MinLength(3)]
             [Required]
-            public string SecurityCode { get; set; }
+            public string SecurityCode { get; set; } = string.Empty;
 
             [Display(Name = "E-Mail")]
-            public string EMail { get; set; }
+            public string EMail { get; set; } = string.Empty;
 
             [Display(Name = "Status")]
             public AccountState State { get; set; }

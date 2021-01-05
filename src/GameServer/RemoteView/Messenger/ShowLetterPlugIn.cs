@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
     using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -31,9 +30,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void ShowLetter(LetterBody letter)
         {
+            var connection = this.player.Connection;
+            if (connection is null || this.player.SelectedCharacter is null)
+            {
+                return;
+            }
+
             var appearanceSerializer = this.player.AppearanceSerializer;
-            var letterIndex = this.player.SelectedCharacter.Letters.IndexOf(letter.Header);
-            using var writer = this.player.Connection.StartSafeWrite(OpenLetter.HeaderType, OpenLetter.GetRequiredSize(letter.Message));
+            var letterIndex = this.player.SelectedCharacter.Letters.IndexOf(letter.Header!);
+            using var writer = connection.StartSafeWrite(OpenLetter.HeaderType, OpenLetter.GetRequiredSize(letter.Message));
 
             var result = new OpenLetter(writer.Span)
             {
@@ -44,7 +49,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
                 Message = letter.Message,
             };
 
-            appearanceSerializer.WriteAppearanceData(result.SenderAppearance, letter.SenderAppearance, false);
+            if (letter.SenderAppearance is not null)
+            {
+                appearanceSerializer.WriteAppearanceData(result.SenderAppearance, letter.SenderAppearance, false);
+            }
 
             writer.Commit();
         }

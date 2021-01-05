@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// </summary>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
         public HarmonyJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
-            : base(persistenceContextProvider, new ItemUpgradeConfiguration { AddsOption = true, IncreasesOption = false, OptionType = ItemOptionTypes.HarmonyOption, SuccessChance = 0.5 })
+            : base(persistenceContextProvider, new ItemUpgradeConfiguration(ItemOptionTypes.HarmonyOption, true, false, 0.5, ItemFailResult.None))
         {
         }
     }

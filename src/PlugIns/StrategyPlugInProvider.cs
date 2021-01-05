@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.PlugIns
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -16,6 +17,7 @@ namespace MUnique.OpenMU.PlugIns
     /// <seealso cref="IPlugInContainer{TPlugIn}" />
     public class StrategyPlugInProvider<TKey, TPlugIn> : PlugInContainerBase<TPlugIn>, IStrategyPlugInProvider<TKey, TPlugIn>
         where TPlugIn : class, IStrategyPlugIn<TKey>
+        where TKey : notnull
     {
         private readonly IDictionary<TKey, TPlugIn> effectiveStrategies = new Dictionary<TKey, TPlugIn>();
 
@@ -39,7 +41,7 @@ namespace MUnique.OpenMU.PlugIns
         protected ILogger Logger { get; }
 
         /// <inheritdoc />
-        public TPlugIn this[TKey key]
+        public TPlugIn? this[TKey key]
         {
             get
             {
@@ -66,7 +68,7 @@ namespace MUnique.OpenMU.PlugIns
         /// <param name="key">The key.</param>
         /// <param name="plugIn">The plug in.</param>
         /// <returns><c>True</c>, if the plugin has been found and returned; Otherwise, <c>false</c>.</returns>
-        protected bool TryGetPlugIn(TKey key, out TPlugIn plugIn) => this.effectiveStrategies.TryGetValue(key, out plugIn);
+        protected bool TryGetPlugIn(TKey key, [MaybeNullWhen(false)] out TPlugIn plugIn) => this.effectiveStrategies.TryGetValue(key, out plugIn);
 
         /// <inheritdoc />
         protected override void ActivatePlugIn(TPlugIn plugIn)

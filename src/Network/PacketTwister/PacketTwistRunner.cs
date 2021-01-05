@@ -107,7 +107,7 @@ namespace MUnique.OpenMU.Network.PacketTwister
         {
             var packetType = packet.GetPacketType();
             var data = packet.Slice(packet.GetPacketHeaderSize() + 1);
-            if (this.twisters.TryGetValue(packetType, out IPacketTwister twister))
+            if (this.twisters.TryGetValue(packetType, out var twister))
             {
                 twister.Twist(data);
             }
@@ -118,7 +118,7 @@ namespace MUnique.OpenMU.Network.PacketTwister
         {
             var packetType = packet.GetPacketType();
             var data = packet.Slice(packet.GetPacketHeaderSize() + 1);
-            if (this.twisters.TryGetValue(packetType, out IPacketTwister twister))
+            if (this.twisters.TryGetValue(packetType, out var twister))
             {
                 twister.Correct(data);
             }

@@ -32,12 +32,12 @@ namespace MUnique.OpenMU.PlugIns.Tests
         {
             if (this.CreateNewPlugIns)
             {
-                this.AddPlugIn(Activator.CreateInstance(plugInType) as ITestCustomPlugIn, true);
+                this.AddPlugIn((ITestCustomPlugIn)Activator.CreateInstance(plugInType)!, true);
             }
         }
 
         /// <inheritdoc />
-        protected override ICustomTestPlugInContainer DetermineEffectivePlugIn(Type interfaceType)
+        protected override ICustomTestPlugInContainer? DetermineEffectivePlugIn(Type interfaceType)
         {
             return this.ActivePlugIns.FirstOrDefault(interfaceType.IsInstanceOfType);
         }

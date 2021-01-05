@@ -7,8 +7,6 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
     using System;
     using System.ComponentModel.Design;
     using System.IO;
-    using log4net;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
     using MUnique.OpenMU.ChatServer;
@@ -26,7 +24,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                                                                typeof(Program).Assembly.GetName().Name +
                                                                ".exe.log4net.xml";
 
-        private static ILogger<Program> logger;
+        private static ILogger<Program> logger = NullLogger<Program>.Instance;
 
         /// <summary>
         /// The main entry point for the application.

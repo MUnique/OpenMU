@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.PlugIns
         /// <param name="configurations">The configurations.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="serviceProvider">The service provider.</param>
-        public PlugInManager(ICollection<PlugInConfiguration> configurations, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+        public PlugInManager(ICollection<PlugInConfiguration>? configurations, ILoggerFactory loggerFactory, IServiceProvider? serviceProvider)
         {
             this.logger = loggerFactory.CreateLogger<PlugInManager>();
             this.serviceContainer = new ServiceContainer(serviceProvider);
@@ -53,17 +53,17 @@ namespace MUnique.OpenMU.PlugIns
         /// <summary>
         /// Occurs when a plug in got deactivated.
         /// </summary>
-        public event EventHandler<PlugInEventArgs> PlugInDeactivated;
+        public event EventHandler<PlugInEventArgs>? PlugInDeactivated;
 
         /// <summary>
         /// Occurs when a plug in got activated.
         /// </summary>
-        public event EventHandler<PlugInEventArgs> PlugInActivated;
+        public event EventHandler<PlugInEventArgs>? PlugInActivated;
 
         /// <summary>
         /// Occurs when the <see cref="PlugInConfiguration.CustomConfiguration"/> has been changed.
         /// </summary>
-        public event EventHandler<PlugInConfigurationChangedEventArgs> PlugInConfigurationChanged;
+        public event EventHandler<PlugInConfigurationChangedEventArgs>? PlugInConfigurationChanged;
 
         /// <summary>
         /// Gets the known plug in types.
@@ -187,7 +187,7 @@ namespace MUnique.OpenMU.PlugIns
         /// </summary>
         /// <typeparam name="TPlugIn">The type of the plug in.</typeparam>
         /// <returns>The plug in point which implements <typeparamref name="TPlugIn"/>, if available; Otherwise, <c>null</c>.</returns>
-        public TPlugIn GetPlugInPoint<TPlugIn>()
+        public TPlugIn? GetPlugInPoint<TPlugIn>()
             where TPlugIn : class
         {
             if (this.plugInPoints.TryGetValue(typeof(TPlugIn), out var obj) && obj is TPlugIn plugIn)
@@ -204,7 +204,7 @@ namespace MUnique.OpenMU.PlugIns
         /// <typeparam name="TKey">The type of the key.</typeparam>
         /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
         /// <returns>The strategy plug in.</returns>
-        public IStrategyPlugInProvider<TKey, TStrategy> GetStrategyProvider<TKey, TStrategy>()
+        public IStrategyPlugInProvider<TKey, TStrategy>? GetStrategyProvider<TKey, TStrategy>()
             where TStrategy : class, IStrategyPlugIn<TKey>
         {
             if (this.plugInPoints.TryGetValue(typeof(TStrategy), out var obj) && obj is IStrategyPlugInProvider<TKey, TStrategy> plugIn)
@@ -222,10 +222,10 @@ namespace MUnique.OpenMU.PlugIns
         /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
         /// <param name="key">The key.</param>
         /// <returns>The strategy plug in of the specified key, if available; Otherwise, <c>null</c>.</returns>
-        public TStrategy GetStrategy<TKey, TStrategy>(TKey key)
+        public TStrategy? GetStrategy<TKey, TStrategy>(TKey key)
             where TStrategy : class, IStrategyPlugIn<TKey>
         {
-            return this.GetStrategyProvider<TKey, TStrategy>()[key];
+            return this.GetStrategyProvider<TKey, TStrategy>()?[key];
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace MUnique.OpenMU.PlugIns
         /// <typeparam name="TStrategy">The type of the strategy.</typeparam>
         /// <param name="key">The key.</param>
         /// <returns>The strategy plug in of the specified key, if available; Otherwise, <c>null</c>.</returns>
-        public TStrategy GetStrategy<TStrategy>(string key)
+        public TStrategy? GetStrategy<TStrategy>(string key)
             where TStrategy : class, IStrategyPlugIn<string>
         {
             return this.GetStrategy<string, TStrategy>(key);
@@ -328,7 +328,7 @@ namespace MUnique.OpenMU.PlugIns
             }
         }
 
-        private Type GetCustomPlugInPointType(Type interfaceType)
+        private Type? GetCustomPlugInPointType(Type interfaceType)
         {
             if (interfaceType.GetCustomAttribute<CustomPlugInContainerAttribute>() != null)
             {
@@ -358,7 +358,7 @@ namespace MUnique.OpenMU.PlugIns
             {
                 var keyType = strategyPlugInInterface.GetGenericArguments()[0];
                 var providerType = typeof(StrategyPlugInProvider<,>).MakeGenericType(keyType, typeof(TPlugInInterface));
-                proxy = ActivatorUtilities.CreateInstance(this.serviceContainer, providerType) as IPlugInContainer<TPlugInInterface>;
+                proxy = (IPlugInContainer<TPlugInInterface>)ActivatorUtilities.CreateInstance(this.serviceContainer, providerType);
             }
             else
             {
@@ -405,7 +405,7 @@ namespace MUnique.OpenMU.PlugIns
                 }
             }
 
-            if (this.knownPlugIns.TryGetValue(configuration.TypeId, out Type plugInType))
+            if (this.knownPlugIns.TryGetValue(configuration.TypeId, out var plugInType))
             {
                 if (!configuration.IsActive)
                 {
@@ -424,7 +424,7 @@ namespace MUnique.OpenMU.PlugIns
             }
         }
 
-        private void OnConfigurationChanged(PlugInConfiguration configuration, Type plugInType, string propertyName)
+        private void OnConfigurationChanged(PlugInConfiguration configuration, Type plugInType, string? propertyName)
         {
             if (propertyName == nameof(PlugInConfiguration.IsActive))
             {
@@ -452,7 +452,12 @@ namespace MUnique.OpenMU.PlugIns
 
         private Assembly CompileCustomPlugInAssembly(PlugInConfiguration configuration)
         {
-            var syntaxTree = SyntaxFactory.ParseSyntaxTree(configuration.CustomPlugInSource);
+            if (string.IsNullOrEmpty(configuration.CustomPlugInSource))
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            var syntaxTree = SyntaxFactory.ParseSyntaxTree(configuration.CustomPlugInSource!);
             return syntaxTree.CompileAndLoad($"CustomPlugIn_{configuration.TypeId}");
         }
 
@@ -470,8 +475,9 @@ namespace MUnique.OpenMU.PlugIns
         private IEnumerable<Type> DiscoverAllPlugIns()
         {
             return AppDomain.CurrentDomain.GetAssemblies()
-                .Where(assembly => !assembly.FullName.StartsWith("System"))
-                .Where(assembly => !assembly.FullName.StartsWith("Microsoft"))
+                .Where(assembly => assembly.FullName is not null)
+                .Where(assembly => !assembly.FullName!.StartsWith("System"))
+                .Where(assembly => !assembly.FullName!.StartsWith("Microsoft"))
                 .SelectMany(assembly => assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null));
         }
 

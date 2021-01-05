@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -28,13 +27,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void UpdateMoney()
         {
-            using var writer = this.player.Connection.StartSafeWrite(InventoryMoneyUpdate.HeaderType, InventoryMoneyUpdate.Length);
-            _ = new InventoryMoneyUpdate(writer.Span)
-            {
-                Money = (uint)this.player.Money,
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendInventoryMoneyUpdate((uint)this.player.Money);
         }
     }
 }

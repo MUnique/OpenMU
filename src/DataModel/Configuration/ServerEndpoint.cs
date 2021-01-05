@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration
 {
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// Defines an endpoint of a server.
     /// </summary>
@@ -24,7 +26,8 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the client which is expected to connect.
         /// </summary>
-        public virtual GameClientDefinition Client { get; set; }
+        [Required]
+        public virtual GameClientDefinition? Client { get; set; }
 
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.

@@ -15,15 +15,15 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public class StateMachineTest
     {
-        private StateMachine stateMachine;
+        private StateMachine stateMachine = null!;
 
-        private State initialState;
+        private State initialState = null!;
 
-        private State isolatedState;
+        private State isolatedState = null!;
 
-        private State nextState;
+        private State nextState = null!;
 
-        private State finishedState;
+        private State finishedState = null!;
 
         /// <summary>
         /// Sets up the test data.
@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void ChangesEventStateObject()
         {
-            State stateInEvent = null;
+            State? stateInEvent = null;
             this.stateMachine.StateChanges += (sender, args) =>
                 {
                     stateInEvent = args.NextState;

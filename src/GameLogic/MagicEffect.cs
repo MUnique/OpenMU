@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic
 
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Persistence;
 
     /// <summary>
     /// Skill Effect, used by Skill Effect List in each
@@ -20,7 +21,7 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class MagicEffect : IDisposable
     {
-        private Timer finishTimer;
+        private Timer? finishTimer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MagicEffect"/> class.
@@ -29,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="definition">The definition.</param>
         /// <param name="duration">The duration.</param>
         public MagicEffect(IElement powerUp, MagicEffectDefinition definition, TimeSpan duration)
-            : this(duration, definition, new ElementWithTarget(powerUp, definition.PowerUpDefinition.TargetAttribute))
+            : this(duration, definition, new ElementWithTarget(powerUp, definition.PowerUpDefinition?.TargetAttribute ?? throw new InvalidOperationException($"MagicEffectDefinition {definition.GetId()} has no target attribute.")))
         {
         }
 
@@ -50,7 +51,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Occurs when the effect has been timed out.
         /// </summary>
-        public event EventHandler EffectTimeOut;
+        public event EventHandler? EffectTimeOut;
 
         /// <summary>
         /// Gets the identifier of the effect.

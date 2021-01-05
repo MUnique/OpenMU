@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.Startup
             using var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
             foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
             {
-                var clientVersion = new ClientVersion(connectServerDefinition.Client.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
+                var clientVersion = new ClientVersion(connectServerDefinition.Client!.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
                 var connectServer = this.connectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
                 this.servers.Add(connectServer);
                 this.connectServers.Add(connectServer);

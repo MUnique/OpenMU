@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -48,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic
         public static bool CanLevelBeUpgraded(this Item item)
         {
             return item.IsWearable()
-                   && item.Definition.ItemSlot.ItemSlots.Any(slot => slot <= InventoryConstants.WingsSlot)
+                   && item.Definition!.ItemSlot!.ItemSlots.Any(slot => slot <= InventoryConstants.WingsSlot)
                    && item.Level < item.Definition.MaximumItemLevel;
         }
 
@@ -69,12 +70,12 @@ namespace MUnique.OpenMU.GameLogic
                 return 1;
             }
 
-            var result = item.Definition.Durability + AdditionalDurabilityPerLevel[item.Level];
-            if (item.ItemOptions.Any(link => link.ItemOption.OptionType == ItemOptionTypes.AncientBonus))
+            var result = item.Definition!.Durability + AdditionalDurabilityPerLevel[item.Level];
+            if (item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.AncientBonus))
             {
                 result += 20;
             }
-            else if (item.ItemOptions.Any(link => link.ItemOption.OptionType == ItemOptionTypes.Excellent))
+            else if (item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.Excellent))
             {
                 // TODO: archangel weapons, but I guess it's not a big issue if we don't, because of their already high durability
                 result += 15;
@@ -95,7 +96,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>
         ///   <c>true</c> if the specified item is wearable; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsWearable(this Item item) => item.Definition.ItemSlot != null;
+        public static bool IsWearable(this Item item) => item.Definition?.ItemSlot != null;
 
         /// <summary>
         /// Determines whether this item is stackable.
@@ -104,7 +105,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>
         ///   <c>true</c> if the specified item is stackable; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsStackable(this Item item) => !item.IsWearable() && item.Definition.Durability > 1;
+        public static bool IsStackable(this Item item) => !item.IsWearable() && item.Definition?.Durability > 1;
 
         /// <summary>
         /// Determines whether this item can be completely stacked on the specified other item.
@@ -115,7 +116,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>
         ///   <c>true</c> if this item can be completely stacked on the specified other item; otherwise, <c>false</c>.
         /// </returns>
-        public static bool CanCompletelyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && (item.Durability + otherItem.Durability) <= item.Definition.Durability;
+        public static bool CanCompletelyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && (item.Durability + otherItem.Durability) <= item.Definition?.Durability;
 
         /// <summary>
         /// Determines whether this item can be partially stacked on the specified other item.
@@ -126,7 +127,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>
         ///   <c>true</c> if this item can be partially stacked on the specified other item; otherwise, <c>false</c>.
         /// </returns>
-        public static bool CanPartiallyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && otherItem.Durability < otherItem.Definition.Durability;
+        public static bool CanPartiallyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && otherItem.Durability < otherItem.Definition?.Durability;
 
         /// <summary>
         /// Determines whether this item is of the same type as the specified other item.
@@ -150,6 +151,8 @@ namespace MUnique.OpenMU.GameLogic
         /// </remarks>
         public static (AttributeDefinition, int) GetRequirement(this Item item, AttributeRequirement requirement)
         {
+            requirement.ThrowNotInitializedProperty(requirement.Attribute is null, nameof(requirement.Attribute));
+
             if (RequirementAttributeMapping.TryGetValue(requirement.Attribute, out var totalAttribute))
             {
                 var multiplier = 3;
@@ -158,7 +161,7 @@ namespace MUnique.OpenMU.GameLogic
                     multiplier = 4;
 
                     // Summoner Books are calculated differently. They are in group 5 (staffs) and are the only items in the group which can have skill.
-                    if (item.Definition.Skill != null && item.Definition.Group == 5)
+                    if (item.Definition?.Skill != null && item.Definition.Group == 5)
                     {
                         return (totalAttribute, item.CalculateBookEnergyRequirement(requirement.MinimumValue));
                     }
@@ -167,7 +170,7 @@ namespace MUnique.OpenMU.GameLogic
                 var value = item.CalculateRequirement(requirement.MinimumValue, multiplier);
                 if (value > 0 && totalAttribute == Stats.TotalStrength)
                 {
-                    var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption.OptionType == ItemOptionTypes.Option);
+                    var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
                     if (itemOption != null)
                     {
                         value += itemOption.Level * 4;
@@ -176,11 +179,11 @@ namespace MUnique.OpenMU.GameLogic
 
                 if (RequirementReductionAttributeMapping.TryGetValue(requirement.Attribute, out var reductionAttribute)
                     && item.ItemOptions.FirstOrDefault(o =>
-                            o.ItemOption.PowerUpDefinition?.TargetAttribute == reductionAttribute
-                            || o.ItemOption.LevelDependentOptions.Any(l => l.PowerUpDefinition?.TargetAttribute == reductionAttribute))
+                            o.ItemOption?.PowerUpDefinition?.TargetAttribute == reductionAttribute
+                            || (o.ItemOption?.LevelDependentOptions.Any(l => l.PowerUpDefinition?.TargetAttribute == reductionAttribute) ?? false))
                         is { } reductionOption)
                 {
-                    var optionOfLevelPowerUp = reductionOption.ItemOption.LevelDependentOptions
+                    var optionOfLevelPowerUp = reductionOption.ItemOption!.LevelDependentOptions
                                                    .FirstOrDefault(o => o.Level == reductionOption.Level)?.PowerUpDefinition
                                                ?? reductionOption.ItemOption.PowerUpDefinition;
                     if (optionOfLevelPowerUp?.Boost?.ConstantValue is { } reduction)
@@ -209,8 +212,8 @@ namespace MUnique.OpenMU.GameLogic
                 Level = item.Level,
             };
             item.ItemOptions
-                .Where(option => option.ItemOption.OptionType?.IsVisible ?? false)
-                .Select(option => option.ItemOption.OptionType)
+                .Where(option => option.ItemOption?.OptionType is not null && option.ItemOption.OptionType.IsVisible)
+                .Select(option => option.ItemOption!.OptionType!)
                 .ForEach(appearance.VisibleOptions.Add);
             return appearance;
         }
@@ -238,8 +241,8 @@ namespace MUnique.OpenMU.GameLogic
                 return 0;
             }
 
-            var dropLevel = item.Definition.DropLevel;
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent || o.ItemOption.OptionType == ItemOptionTypes.AncientOption))
+            var dropLevel = item.Definition!.DropLevel;
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent || o.ItemOption?.OptionType == ItemOptionTypes.AncientOption))
             {
                 dropLevel += 25;
             }
@@ -249,8 +252,8 @@ namespace MUnique.OpenMU.GameLogic
 
         private static int CalculateBookEnergyRequirement(this Item item, int energyRequirementValue)
         {
-            var dropLevel = item.Definition.DropLevel;
-            if (item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Excellent))
+            var dropLevel = item.Definition!.DropLevel;
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
             {
                 dropLevel += 25;
             }
@@ -260,7 +263,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private sealed class TemporaryItemAppearance : ItemAppearance
         {
-            public override ICollection<ItemOptionType> VisibleOptions => base.VisibleOptions ?? (base.VisibleOptions = new List<ItemOptionType>());
+            public override ICollection<ItemOptionType> VisibleOptions => base.VisibleOptions ??= new List<ItemOptionType>();
         }
     }
 }

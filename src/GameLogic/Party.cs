@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.GameLogic.Views.Party;
 
     /// <summary>
-    /// The party object. Contains a group of players who can chat with each other, and get informations about the health status of their party mates.
+    /// The party object. Contains a group of players who can chat with each other, and get information about the health status of their party mates.
     /// </summary>
     public sealed class Party : IDisposable
     {
@@ -27,12 +27,14 @@ namespace MUnique.OpenMU.GameLogic
         private readonly List<Player> experienceDistributionList;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Party"/> class.
+        /// Initializes a new instance of the <see cref="Party" /> class.
         /// </summary>
+        /// <param name="partyMaster">The party master.</param>
         /// <param name="maxPartySize">Maximum size of the party.</param>
         /// <param name="logger">Logger of this party.</param>
-        public Party(byte maxPartySize, ILogger<Party> logger)
+        public Party(IPartyMember partyMaster, byte maxPartySize, ILogger<Party> logger)
         {
+            this.PartyMaster = partyMaster;
             this.maxPartySize = maxPartySize;
             this.logger = logger;
 
@@ -40,12 +42,13 @@ namespace MUnique.OpenMU.GameLogic
             this.experienceDistributionList = new List<Player>(this.MaxPartySize);
             var updateInterval = new TimeSpan(0, 0, 0, 0, 500);
             this.healthUpdate = new Timer(this.HealthUpdate_Elapsed, null, updateInterval, updateInterval);
+            this.Add(partyMaster);
         }
 
         /// <summary>
         /// Gets the party list.
         /// </summary>
-        public IList<IPartyMember> PartyList { get; private set; }
+        public IList<IPartyMember> PartyList { get; }
 
         /// <summary>
         /// Gets the maximum size of the party.
@@ -55,20 +58,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the party master.
         /// </summary>
-        public IPartyMember PartyMaster
-        {
-            get
-            {
-                if (this.PartyList.Count > 0)
-                {
-                    return this.PartyList[0];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        public IPartyMember PartyMaster { get; }
 
         /// <summary>
         /// Kicks the player from the party.
@@ -160,7 +150,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (this.PartyList != null)
+            if (this.PartyList.Count > 0)
             {
                 for (byte i = 0; i < this.PartyList.Count; i++)
                 {
@@ -176,7 +166,6 @@ namespace MUnique.OpenMU.GameLogic
                 }
 
                 this.PartyList.Clear();
-                this.PartyList = null;
                 this.healthUpdate.Dispose();
             }
         }
@@ -206,7 +195,7 @@ namespace MUnique.OpenMU.GameLogic
                 return count;
             }
 
-            var totalLevel = this.experienceDistributionList.Sum(p => (int)p.Attributes[Stats.Level]);
+            var totalLevel = this.experienceDistributionList.Sum(p => (int)p.Attributes![Stats.Level]);
             var averageLevel = totalLevel / count;
             var averageExperience = killedObject.Attributes[Stats.Level] * 1000 / averageLevel;
             var totalAverageExperience = averageExperience * count * Math.Pow(1.2, count - 1);
@@ -214,7 +203,7 @@ namespace MUnique.OpenMU.GameLogic
             var randomizedTotalExperiencePerLevel = randomizedTotalExperience / (float)totalLevel;
             foreach (var player in this.experienceDistributionList)
             {
-                player.AddExperience((int)(randomizedTotalExperiencePerLevel * player.Attributes[Stats.Level] * player.Attributes[Stats.ExperienceRate] * player.GameContext.ExperienceRate), killedObject);
+                player.AddExperience((int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * player.Attributes[Stats.ExperienceRate] * player.GameContext.ExperienceRate), killedObject);
             }
 
             return randomizedTotalExperience;
@@ -242,7 +231,7 @@ namespace MUnique.OpenMU.GameLogic
             this.SendPartyList();
         }
 
-        private void HealthUpdate_Elapsed(object state)
+        private void HealthUpdate_Elapsed(object? state)
         {
             try
             {

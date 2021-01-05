@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.AdminPanel.Map
         /// <inheritdoc />
         public async ValueTask<IMapController> CreateMap(int serverId, int mapId)
         {
-            IMapController mapController = null;
+            IMapController? mapController = null;
             try
             {
                 var appId = this.GenerateMapAppIdentifier(serverId, mapId);

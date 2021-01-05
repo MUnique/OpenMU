@@ -33,11 +33,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// This Packet is sent to the Server when an Object does an animation, including attacking other players.
         /// It will create the animation at the client side.
         /// </remarks>
-        public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, Direction direction)
+        public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable? targetObj, Direction direction)
         {
             var animatingId = animatingObj.GetId(this.player);
             var targetId = targetObj?.GetId(this.player) ?? 0;
-            this.player.Connection.SendObjectAnimation(animatingId, direction.ToPacketByte(), animation, targetId);
+            this.player.Connection?.SendObjectAnimation(animatingId, direction.ToPacketByte(), animation, targetId);
         }
     }
 }

@@ -46,6 +46,6 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets or sets the level dependent options for option levels over 1.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemOptionOfLevel> LevelDependentOptions { get; protected set; }
+        public virtual ICollection<ItemOptionOfLevel> LevelDependentOptions { get; protected set; } = null!;
     }
 }

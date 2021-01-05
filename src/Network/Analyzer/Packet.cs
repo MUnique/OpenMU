@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Network.Analyzer
 {
     using System;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
     /// A captured data packet.
@@ -14,7 +13,7 @@ namespace MUnique.OpenMU.Network.Analyzer
     {
         private readonly byte[] innerData;
 
-        private string dataAsString;
+        private string? dataAsString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Packet"/> class.

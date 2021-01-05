@@ -60,13 +60,13 @@ namespace MUnique.OpenMU.AdminPanel.Map
         }
 
         /// <inheritdoc />
-        public event EventHandler ObjectsChanged;
+        public event EventHandler? ObjectsChanged;
 
         /// <inheritdoc/>
         public int InfoRange => byte.MaxValue;
 
         /// <inheritdoc/>
-        public GameMap CurrentMap => null;
+        public GameMap? CurrentMap => null;
 
         /// <inheritdoc/>
         public Point Position { get; set; }
@@ -84,13 +84,13 @@ namespace MUnique.OpenMU.AdminPanel.Map
         public IDictionary<int, ILocateable> Objects { get; } = new Dictionary<int, ILocateable>();
 
         /// <inheritdoc/>
-        public void LocateableAdded(object sender, BucketItemEventArgs<ILocateable> eventArgs)
+        public void LocateableAdded(object? sender, BucketItemEventArgs<ILocateable> eventArgs)
         {
             this.adapterToWorldView.LocateableAdded(sender, eventArgs);
         }
 
         /// <inheritdoc/>
-        public void LocateableRemoved(object sender, BucketItemEventArgs<ILocateable> eventArgs)
+        public void LocateableRemoved(object? sender, BucketItemEventArgs<ILocateable> eventArgs)
         {
             this.adapterToWorldView.LocateableRemoved(sender, eventArgs);
         }

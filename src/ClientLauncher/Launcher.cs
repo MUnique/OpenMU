@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.ClientLauncher
         /// <summary>
         /// Gets or sets the host ip.
         /// </summary>
-        public string HostAddress { get; set; }
+        public string? HostAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the host port.
@@ -29,13 +29,25 @@ namespace MUnique.OpenMU.ClientLauncher
         /// <summary>
         /// Gets or sets the main executable path.
         /// </summary>
-        public string MainExePath { get; set; }
+        public string? MainExePath { get; set; }
 
         /// <summary>
         /// Launches Mu with the set configuration.
         /// </summary>
         public void LaunchClient()
         {
+            if (string.IsNullOrWhiteSpace(this.HostAddress))
+            {
+                MessageBox.Show("Host address is not set.", "Error");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(this.MainExePath))
+            {
+                MessageBox.Show("The path to the main.exe is not set.", "Error");
+                return;
+            }
+
             if (OperatingSystem.IsWindows())
             {
                 using var localMachineKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
@@ -55,10 +67,10 @@ namespace MUnique.OpenMU.ClientLauncher
                 }
             }
 
-            var info = new DirectoryInfo(this.MainExePath);
+            var info = new DirectoryInfo(this.MainExePath!);
             var startInfo = new ProcessStartInfo(this.MainExePath, "connect")
             {
-                WorkingDirectory = info.Parent.FullName,
+                WorkingDirectory = info.Parent!.FullName,
                 UseShellExecute = true,
                 Verb = "open",
             };
@@ -77,7 +89,7 @@ namespace MUnique.OpenMU.ClientLauncher
         private int PortEncode()
         {
             var port = this.HostPort;
-            switch (this.HostAddress.Length % 4)
+            switch (this.HostAddress!.Length % 4)
             {
                 case 0:
                     port += 12 - (((port / 4) % 4) * 8);
@@ -108,7 +120,7 @@ namespace MUnique.OpenMU.ClientLauncher
         {
             var result = new StringBuilder();
             var counter = 0;
-            foreach (var ch in this.HostAddress)
+            foreach (var ch in this.HostAddress!)
             {
                 var encodedCharacter = '\0';
                 counter++;

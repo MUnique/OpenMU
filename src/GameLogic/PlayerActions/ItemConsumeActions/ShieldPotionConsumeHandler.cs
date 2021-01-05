@@ -15,21 +15,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     public abstract class ShieldPotionConsumeHandler : RecoverConsumeHandler, IItemConsumeHandler
     {
         /// <inheritdoc/>
-        protected override AttributeDefinition MaximumAttribute
-        {
-            get
-            {
-                return Stats.MaximumShield;
-            }
-        }
+        protected override AttributeDefinition MaximumAttribute => Stats.MaximumShield;
 
         /// <inheritdoc/>
-        protected override AttributeDefinition CurrentAttribute
-        {
-            get
-            {
-                return Stats.CurrentShield;
-            }
-        }
+        protected override AttributeDefinition CurrentAttribute => Stats.CurrentShield;
     }
 }

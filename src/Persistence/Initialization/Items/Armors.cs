@@ -20,8 +20,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     {
         private static readonly int[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
 
-        private List<LevelBonus> defenseBonusPerLevel;
-        private List<LevelBonus> shieldDefenseBonusPerLevel;
+        private List<LevelBonus>? defenseBonusPerLevel;
+        private List<LevelBonus>? shieldDefenseBonusPerLevel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Armors"/> class.
@@ -463,7 +463,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 powerUp.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = defense;
-                this.shieldDefenseBonusPerLevel.ForEach(powerUp.BonusPerLevel.Add);
+                this.shieldDefenseBonusPerLevel?.ForEach(powerUp.BonusPerLevel.Add);
                 shield.BasePowerUpAttributes.Add(powerUp);
             }
 
@@ -472,7 +472,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 powerUp.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = defenseRate;
-                this.defenseBonusPerLevel.ForEach(powerUp.BonusPerLevel.Add);
+                this.defenseBonusPerLevel?.ForEach(powerUp.BonusPerLevel.Add);
                 shield.BasePowerUpAttributes.Add(powerUp);
             }
 
@@ -508,7 +508,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 powerUp.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
                 powerUp.BaseValue = defense;
-                this.defenseBonusPerLevel.ForEach(powerUp.BonusPerLevel.Add);
+                this.defenseBonusPerLevel?.ForEach(powerUp.BonusPerLevel.Add);
                 armor.BasePowerUpAttributes.Add(powerUp);
             }
 

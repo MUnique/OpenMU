@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="mapNumber">The map number.</param>
         /// <returns>The new game map instance.</returns>
-        GameMap CreateGameMap(ushort mapNumber);
+        GameMap? CreateGameMap(ushort mapNumber);
 
         /// <summary>
         /// Initializes the state of the previously created game map (e.g. by creating NPC instances).

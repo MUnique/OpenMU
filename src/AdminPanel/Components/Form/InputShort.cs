@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.AdminPanel.Components.Form
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
@@ -29,14 +30,14 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             builder.AddAttribute(3, "type", "number");
             builder.AddAttribute(4, "class", this.CssClass);
             builder.AddAttribute(5, "value", BindConverter.FormatValue(this.CurrentValueAsString));
-            builder.AddAttribute(6, "onchange", EventCallback.Factory.CreateBinder<string>(this, v => this.CurrentValueAsString = v, this.CurrentValueAsString));
+            builder.AddAttribute(6, "onchange", EventCallback.Factory.CreateBinder<string>(this, v => this.CurrentValueAsString = v, this.CurrentValueAsString!));
             builder.AddAttribute(7, "min", short.MinValue.ToString());
             builder.AddAttribute(8, "max", short.MaxValue.ToString());
             builder.CloseElement();
         }
 
         /// <inheritdoc />
-        protected override bool TryParseValueFromString(string value, out short result, out string validationErrorMessage)
+        protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out short result, [NotNullWhen(false)] out string? validationErrorMessage)
         {
             if (short.TryParse(value, out result))
             {

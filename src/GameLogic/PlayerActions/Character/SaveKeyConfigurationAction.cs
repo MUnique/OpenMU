@@ -16,7 +16,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         /// <param name="keyConfiguration">The key configuration.</param>
         public void SaveKeyConfiguration(Player player, byte[] keyConfiguration)
         {
-            player.SelectedCharacter.KeyConfiguration = keyConfiguration;
+            if (player.SelectedCharacter is { } character)
+            {
+                character.KeyConfiguration = keyConfiguration;
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc />
-        public override Account GetById(Guid id)
+        public override Account? GetById(Guid id)
         {
             ((CachingRepositoryManager)this.RepositoryManager).EnsureCachesForCurrentGameConfiguration();
             using var context = this.GetContext();
@@ -56,13 +56,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="loginName">The login name.</param>
         /// <param name="password">The password.</param>
         /// <returns>The account, if the password is correct. Otherwise, null.</returns>
-        internal DataModel.Entities.Account GetAccountByLoginName(string loginName, string password)
+        internal DataModel.Entities.Account? GetAccountByLoginName(string loginName, string password)
         {
             using var context = this.GetContext();
             return this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
         }
 
-        private Account LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContextBase context)
+        private Account? LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContextBase context)
         {
             var accountInfo = context.Context.Set<Account>()
                 .Select(a => new { a.Id, a.LoginName, a.PasswordHash })

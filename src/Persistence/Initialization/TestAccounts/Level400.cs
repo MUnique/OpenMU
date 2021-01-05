@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 2000; // for the added strength and agility
             character.MasterLevelUpPoints = 100; // To test master skill tree
 
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 13, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Scepter+15+16+L+ExcDmg
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 13, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Scepter+15+16+L+ExcDmg
 
             // Sunlight Set+15+16+L:
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 33, 8, null, 15, 4, true));
@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints += 180; // after level 220, one point more
             character.MasterLevelUpPoints = 100; // To test master skill tree
 
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 19, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Sword+15+16+L+ExcDmg
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 19, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Sword+15+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 22, 15, 4, true, true)); // Bone Blade+15+16+L
 
             // Dragon Knight Set+15+16+L:
@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints += 180; // after level 220, one point more
             character.MasterLevelUpPoints = 100; // To test master skill tree
 
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, (int)ItemGroups.Bows, 20, 13, 4, true, true, Stats.ExcellentDamageChance));
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, (int)ItemGroups.Bows, 20, 13, 4, true, true, Stats.ExcellentDamageChance));
             character.Inventory.Items.Add(this.CreateArrows(0));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 31, 8, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 31, 7, null, 15, 4, true));
@@ -137,7 +137,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints += 180; // after level 220, one point more
             character.MasterLevelUpPoints = 100; // To test master skill tree
 
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 5, 9, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc +15+16+L+ExcDmg
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 5, 9, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc +15+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.RightHandSlot, 15, 6, null, 15, 4, true)); // +15+16+L
 
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 30, 8, null, 15, 4, true));

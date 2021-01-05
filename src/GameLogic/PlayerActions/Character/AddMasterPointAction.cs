@@ -57,9 +57,16 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 if (this.CheckRequisitions(player, skill))
                 {
                     player.Logger.LogDebug("Adding master skill, skillId: {0}, player {1}", skill.Number, player);
-                    player.SkillList.AddLearnedSkill(skill);
-                    learnedSkill = player.SkillList.GetSkill(skillId);
-                    this.AddMasterPointToLearnedSkill(player, learnedSkill);
+                    player.SkillList!.AddLearnedSkill(skill);
+                    learnedSkill = player.SkillList?.GetSkill(skillId);
+                    if (learnedSkill is { })
+                    {
+                        this.AddMasterPointToLearnedSkill(player, learnedSkill);
+                    }
+                    else
+                    {
+                        player.Logger.LogDebug($"Learned Skill {skillId} not found.");
+                    }
                 }
             }
             else
@@ -70,8 +77,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
         private void AddMasterPointToLearnedSkill(Player player, SkillEntry learnedSkill)
         {
-            var requiredPoints = learnedSkill.Level == 0 ? learnedSkill.Skill.MasterDefinition.MinimumLevel : 1;
-            if (player.SelectedCharacter.MasterLevelUpPoints >= requiredPoints && learnedSkill.Level < learnedSkill.Skill.MasterDefinition.MaximumLevel)
+            var requiredPoints = learnedSkill.Level == 0 ? learnedSkill.Skill.MasterDefinition!.MinimumLevel : 1;
+            if (player.SelectedCharacter!.MasterLevelUpPoints >= requiredPoints && learnedSkill.Level < learnedSkill.Skill.MasterDefinition!.MaximumLevel)
             {
                 player.Logger.LogDebug("Adding {0} points to skill, skillId: {1}, player {2}", requiredPoints, learnedSkill.Skill.Number, player);
                 learnedSkill.Level += requiredPoints;
@@ -86,15 +93,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
         private bool CheckRequisitions(Player player, Skill skill)
         {
-            if (player.SelectedCharacter.MasterLevelUpPoints < skill.MasterDefinition.MinimumLevel)
+            if (player.SelectedCharacter!.MasterLevelUpPoints < skill.MasterDefinition!.MinimumLevel)
             {
                 player.Logger.LogWarning("Not enough master level up points, player {0}, available {1}, required {2}", player, player.SelectedCharacter.MasterLevelUpPoints, skill.MasterDefinition.MinimumLevel);
                 return false;
             }
 
-            if (!skill.QualifiedCharacters.Contains(player.SelectedCharacter.CharacterClass))
+            if (!skill.QualifiedCharacters.Contains(player.SelectedCharacter.CharacterClass!))
             {
-                player.Logger.LogWarning("Character not in a qualified class to learn the skill, account {0}, character {1}", player.Account.LoginName, player.SelectedCharacter.Name);
+                player.Logger.LogWarning("Character not in a qualified class to learn the skill, account {0}, character {1}", player.Account!.LoginName, player.SelectedCharacter.Name);
                 return false;
             }
 
@@ -121,8 +128,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             }
 
             var learnedRequiredSkill = character.LearnedSkills
-                .Where(l => l.Skill.MasterDefinition != null)
-                .FirstOrDefault(l => l.Skill.MasterDefinition.Root.Id == definition.Root.Id
+                .Where(l => l.Skill.MasterDefinition?.Root != null)
+                .FirstOrDefault(l => l.Skill.MasterDefinition!.Root!.Id == definition.Root?.Id
                                      && l.Skill.MasterDefinition.Rank == definition.Rank - 1);
             return learnedRequiredSkill?.Level >= MinimumSkillLevelOfRequiredSkill;
         }
@@ -133,8 +140,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             if (definition.RequiredMasterSkills is not null && definition.RequiredMasterSkills.Any())
             {
                 result = definition.RequiredMasterSkills.All(s =>
-                    player.SelectedCharacter.LearnedSkills.Any(learned => learned.Skill == s && learned.Level >= MinimumSkillLevelOfRequiredSkill)
-                    || (s.MasterDefinition is null && player.SkillList.ContainsSkill((ushort)s.Number)));
+                    player.SelectedCharacter!.LearnedSkills.Any(learned => learned.Skill == s && learned.Level >= MinimumSkillLevelOfRequiredSkill)
+                    || (s.MasterDefinition is null && player.SkillList!.ContainsSkill((ushort)s.Number)));
             }
 
             return result;

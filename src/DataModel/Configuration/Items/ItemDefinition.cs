@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the item slot where it can get equipped.
         /// </summary>
-        public virtual ItemSlotType ItemSlot { get; set; }
+        public virtual ItemSlotType? ItemSlot { get; set; }
 
         /// <summary>
         /// Gets or sets the width of the Item.
@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the name of the item.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the item drop level, which indicates the minimum monster lvl of which this item can be dropped.
@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the class name of the consumer handler.
         /// </summary>
-        public string ConsumeHandlerClass { get; set; }
+        public string? ConsumeHandlerClass { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum number of sockets an instance of this item can have.
@@ -93,12 +93,12 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// Gets or sets the skill which this items adds to the skill list while wearing or which can be learned by consuming this item.
         /// TODO: Split these two usages into different properties?.
         /// </summary>
-        public virtual Skill Skill { get; set; }
+        public virtual Skill? Skill { get; set; }
 
         /// <summary>
         /// Gets or sets the character classes which are qualified to wear this Item.
         /// </summary>
-        public virtual ICollection<CharacterClass> QualifiedCharacters { get; protected set; }
+        public virtual ICollection<CharacterClass> QualifiedCharacters { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the possible item set groups.
@@ -110,23 +110,23 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         ///   - set bonus for defense, if level is greater than 9
         ///   - ancient sets.
         /// </remarks>
-        public virtual ICollection<ItemSetGroup> PossibleItemSetGroups { get; protected set; }
+        public virtual ICollection<ItemSetGroup> PossibleItemSetGroups { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the possible item options.
         /// </summary>
-        public virtual ICollection<ItemOptionDefinition> PossibleItemOptions { get; protected set; }
+        public virtual ICollection<ItemOptionDefinition> PossibleItemOptions { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the requirements for wearing this item.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<AttributeRequirement> Requirements { get; protected set; }
+        public virtual ICollection<AttributeRequirement> Requirements { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the base PowerUps of this item, for example min/max damage for weapons.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemBasePowerUpDefinition> BasePowerUpAttributes { get; protected set; }
+        public virtual ICollection<ItemBasePowerUpDefinition> BasePowerUpAttributes { get; protected set; } = null!;
     }
 }

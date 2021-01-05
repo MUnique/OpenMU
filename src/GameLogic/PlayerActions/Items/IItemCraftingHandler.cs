@@ -19,6 +19,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="player">The mixing player.</param>
         /// <param name="socketSlot">The socket slot index for the <see cref="MountSeedSphereCrafting"/> and <see cref="RemoveSeedSphereCrafting"/>. It's a 0-based index.</param>
         /// <returns>The crafting result and the resulting item; if there are multiple, only the last one is returned.</returns>
-        (CraftingResult, Item) DoMix(Player player, byte socketSlot);
+        (CraftingResult, Item?) DoMix(Player player, byte socketSlot);
     }
 }

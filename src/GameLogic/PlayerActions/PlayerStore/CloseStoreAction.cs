@@ -17,6 +17,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
         /// <param name="player">The player.</param>
         public void CloseStore(Player player)
         {
+            if (player.ShopStorage is null)
+            {
+                return;
+            }
+
             lock (player.ShopStorage.StoreLock)
             {
                 player.ShopStorage.StoreOpen = false;

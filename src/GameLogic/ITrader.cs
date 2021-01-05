@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the current trading partner.
         /// </summary>
-        ITrader TradingPartner { get; set; }
+        ITrader? TradingPartner { get; set; }
 
         /// <summary>
         /// Gets or sets the money which is currently in the trade.
@@ -37,22 +37,22 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the short guild identifier.
         /// </summary>
-        GuildMemberStatus GuildStatus { get; set; }
+        GuildMemberStatus? GuildStatus { get; set; }
 
         /// <summary>
         /// Gets the inventory.
         /// </summary>
-        IInventoryStorage Inventory { get; }
+        IInventoryStorage? Inventory { get; }
 
         /// <summary>
         /// Gets the temporary storage, which holds the items of the trade.
         /// </summary>
-        IStorage TemporaryStorage { get; }
+        IStorage? TemporaryStorage { get; }
 
         /// <summary>
         /// Gets or sets the backup inventory.
         /// </summary>
-        BackupItemStorage BackupInventory { get; set; }
+        BackupItemStorage? BackupInventory { get; set; }
 
         /// <summary>
         /// Gets or sets the available money.

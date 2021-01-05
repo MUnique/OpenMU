@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Microsoft.Extensions.Logging.Abstractions;
-
 namespace MUnique.OpenMU.PublicApi
 {
     using System;
@@ -15,6 +13,7 @@ namespace MUnique.OpenMU.PublicApi
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>

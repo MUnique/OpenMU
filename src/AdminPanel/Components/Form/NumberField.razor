@@ -1,4 +1,5 @@
 ﻿@typeparam TNumber
+@using System.Diagnostics.CodeAnalysis
 @inherits NotifyableInputBase<TNumber>
 
 <div>
@@ -8,14 +9,15 @@
 </div>
 
 @code {
+
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
     [Parameter]
-    public string Label { get; set; }
+    public string Label { get; set; } = string.Empty;
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string value, out TNumber result, out string validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TNumber result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         throw new NotImplementedException();
     }

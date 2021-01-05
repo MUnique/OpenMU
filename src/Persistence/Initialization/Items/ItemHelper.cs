@@ -131,7 +131,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <param name="optionLevel">The option level.</param>
         /// <param name="luck">if set to <c>true</c>, the item has luck option.</param>
         /// <returns>The created armor set item.</returns>
-        public Item CreateSetItem(byte itemSlot, byte setNumber, ItemGroups group, AttributeDefinition targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
+        public Item CreateSetItem(byte itemSlot, byte setNumber, ItemGroups group, AttributeDefinition? targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
         {
             return this.CreateEquippableItem(itemSlot, group, setNumber, level, optionLevel, luck, targetExcellentOption);
         }
@@ -147,7 +147,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <param name="optionLevel">The option level.</param>
         /// <param name="luck">if set to <c>true</c>, the item has luck option.</param>
         /// <returns>The created shield.</returns>
-        public Item CreateShield(byte itemSlot, byte setNumber, bool skill, AttributeDefinition targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
+        public Item CreateShield(byte itemSlot, byte setNumber, bool skill, AttributeDefinition? targetExcellentOption = null, byte level = 0, byte optionLevel = 0, bool luck = false)
         {
             var item = this.CreateEquippableItem(itemSlot, ItemGroups.Shields, setNumber, level, optionLevel, luck, targetExcellentOption);
             item.HasSkill = skill;
@@ -165,7 +165,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <param name="luck">if set to <c>true</c>, the item has luck option.</param>
         /// <param name="targetExcellentOption">The target excellent option.</param>
         /// <returns>The created item.</returns>
-        public Item CreateEquippableItem(byte itemSlot, ItemGroups group, byte number, byte level, byte optionLevel, bool luck, AttributeDefinition targetExcellentOption)
+        public Item CreateEquippableItem(byte itemSlot, ItemGroups group, byte number, byte level, byte optionLevel, bool luck, AttributeDefinition? targetExcellentOption)
         {
             var item = this.context.CreateNew<Item>();
             item.Definition = this.gameConfiguration.Items.First(def => def.Group == (byte)group && def.Number == number);
@@ -212,23 +212,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <param name="skill">if set to <c>true</c>, the item has skill.</param>
         /// <param name="targetExcellentOption">The target excellent option.</param>
         /// <returns>The created weapon.</returns>
-        public Item CreateWeapon(byte itemSlot, ItemGroups group, byte number, byte level, byte optionLevel, bool luck, bool skill, AttributeDefinition targetExcellentOption)
+        public Item CreateWeapon(byte itemSlot, ItemGroups group, byte number, byte level, byte optionLevel, bool luck, bool skill, AttributeDefinition? targetExcellentOption)
         {
             var weapon = this.CreateEquippableItem(itemSlot, group, number, level, optionLevel, luck, targetExcellentOption);
             weapon.HasSkill = skill;
             return weapon;
         }
 
-        private IncreasableItemOption GetExcellentOption(AttributeDefinition targetExcellentOption, Item item)
+        private IncreasableItemOption? GetExcellentOption(AttributeDefinition? targetExcellentOption, Item item)
         {
             if (targetExcellentOption is null)
             {
                 return null;
             }
 
-            return item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+            return item.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
                 .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                .First(o => o.PowerUpDefinition.TargetAttribute == targetExcellentOption);
+                .First(o => o.PowerUpDefinition?.TargetAttribute == targetExcellentOption);
         }
     }
 }

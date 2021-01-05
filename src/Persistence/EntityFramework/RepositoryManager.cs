@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             var registeredTypes = this.Repositories.Keys.ToList();
             using var entityContext = new EntityDataContext();
             var modelTypes = entityContext.Model.GetEntityTypes().Select(e => e.ClrType);
-            var missingTypes = modelTypes.Where(t => !registeredTypes.Contains(t.BaseType));
+            var missingTypes = modelTypes.Where(t => t.BaseType is not null && !registeredTypes.Contains(t.BaseType));
             foreach (var type in missingTypes)
             {
                 var repository = this.CreateGenericRepository(type);
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         protected virtual IRepository CreateGenericRepository(Type entityType)
         {
             var repositoryType = typeof(GenericRepository<>).MakeGenericType(entityType);
-            return (IRepository)Activator.CreateInstance(repositoryType, this, this.loggerFactory.CreateLogger(repositoryType));
+            return (IRepository)Activator.CreateInstance(repositoryType, this, this.loggerFactory.CreateLogger(repositoryType))!;
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             if (type.Assembly.Equals(this.GetType().Assembly) && type.BaseType != typeof(object))
             {
-                base.RegisterRepository(type.BaseType, repository);
+                base.RegisterRepository(type.BaseType!, repository);
             }
             else
             {

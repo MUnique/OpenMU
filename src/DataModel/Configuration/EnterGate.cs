@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration
 {
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// Defines a gate which a player can enter to move to another <see cref="ExitGate"/>.
     /// </summary>
@@ -12,7 +14,8 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the target gate.
         /// </summary>
-        public virtual ExitGate TargetGate { get; set; }
+        [Required]
+        public virtual ExitGate? TargetGate { get; set; }
 
         /// <summary>
         /// Gets or sets the level requirement which the player needs to move through the gate.

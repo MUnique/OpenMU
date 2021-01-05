@@ -24,9 +24,9 @@ namespace MUnique.OpenMU.AdminPanel.Services
     {
         private readonly IPersistenceContextProvider persistenceContextProvider;
         private readonly IModalService modalService;
-        private string nameFilter;
+        private string nameFilter = string.Empty;
         private Guid pointFilter;
-        private string typeFilter;
+        private string typeFilter = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlugInController" /> class.
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
         }
 
         /// <inheritdoc />
-        public event EventHandler DataChanged;
+        public event EventHandler? DataChanged;
 
         /// <inheritdoc />
         public event EventHandler<Guid>? PlugInActivated;
@@ -211,7 +211,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
             {
                 using var context = this.persistenceContextProvider.CreateNewContext();
                 context.Attach(item.Configuration);
-                item.Configuration.SetConfiguration(configuration);
+                item.Configuration.SetConfiguration(configuration!);
                 context.SaveChanges();
                 this.DataChanged?.Invoke(this, EventArgs.Empty);
                 this.PlugInConfigurationChanged?.Invoke(this, (item.TypeId, item.Configuration));
@@ -235,10 +235,10 @@ namespace MUnique.OpenMU.AdminPanel.Services
 
         private static string GetPlugInName(Type plugInType)
         {
-            return plugInType.GetCustomAttribute<PlugInAttribute>().Name;
+            return plugInType.GetCustomAttribute<PlugInAttribute>()!.Name;
         }
 
-        private static Type GetPlugInExtensionPointType(Type plugInType)
+        private static Type? GetPlugInExtensionPointType(Type plugInType)
         {
             var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null);
             var customPlugInContainer = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null);
@@ -331,7 +331,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
 
         private bool FilterByTypeName(Type plugInType)
         {
-            return string.IsNullOrWhiteSpace(this.TypeFilter) || plugInType.FullName.Contains(this.TypeFilter, StringComparison.InvariantCultureIgnoreCase);
+            return string.IsNullOrWhiteSpace(this.TypeFilter) || (plugInType.FullName ?? plugInType.Name).Contains(this.TypeFilter, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private bool FilterByName(Type plugInType)

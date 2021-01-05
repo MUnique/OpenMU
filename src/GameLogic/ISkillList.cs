@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="skillId">The skill identifier.</param>
         /// <returns>The skill with the specified id.</returns>
-        SkillEntry GetSkill(ushort skillId);
+        SkillEntry? GetSkill(ushort skillId);
 
         /// <summary>
         /// Adds the learned skill.

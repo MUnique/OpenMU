@@ -281,7 +281,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the is two handed weapon equipped.
         /// </summary>
-        public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new AttributeDefinition(new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "Is Two-Handed Weapon Equipped", null);
+        public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new AttributeDefinition(new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "Is Two-Handed Weapon Equipped", string.Empty);
 
         /// <summary>
         /// Gets the combo bonus attribute definition.

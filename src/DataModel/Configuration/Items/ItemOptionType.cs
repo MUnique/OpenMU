@@ -20,12 +20,12 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether this item option is visible to other players.
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(ItemOptionType lhs, ItemOptionType rhs)
+        public static bool operator ==(ItemOptionType? lhs, ItemOptionType? rhs)
         {
             if (ReferenceEquals(lhs, rhs))
             {
@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(ItemOptionType lhs, ItemOptionType rhs)
+        public static bool operator !=(ItemOptionType? lhs, ItemOptionType? rhs)
         {
             return !(lhs == rhs);
         }
@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <returns>
         ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is not ItemOptionType other)
             {

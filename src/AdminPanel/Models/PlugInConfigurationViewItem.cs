@@ -44,17 +44,17 @@ namespace MUnique.OpenMU.AdminPanel.Models
         /// <summary>
         /// Gets or sets the name of the plugin type.
         /// </summary>
-        public string TypeName { get; set; }
+        public string? TypeName { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the plugin.
         /// </summary>
-        public string PlugInName { get; set; }
+        public string? PlugInName { get; set; }
 
         /// <summary>
         /// Gets or sets the plugin description.
         /// </summary>
-        public string PlugInDescription { get; set; }
+        public string? PlugInDescription { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the plugin is active.
@@ -64,26 +64,26 @@ namespace MUnique.OpenMU.AdminPanel.Models
         /// <summary>
         /// Gets or sets the type of the custom configuration, if available.
         /// </summary>
-        public Type ConfigurationType { get; set; }
+        public Type? ConfigurationType { get; set; }
 
         /// <summary>
         /// Gets or sets the custom plug in source which will be compiled at run-time.
         /// </summary>
-        public string CustomPlugInSource { get; set; }
+        public string? CustomPlugInSource { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the external assembly which will be loaded at run-time.
         /// </summary>
-        public string ExternalAssemblyName { get; set; }
+        public string? ExternalAssemblyName { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the plug in point.
         /// </summary>
-        public string PlugInPointName { get; set; }
+        public string? PlugInPointName { get; set; }
 
         /// <summary>
         /// Gets or sets the plug in point description.
         /// </summary>
-        public string PlugInPointDescription { get; set; }
+        public string? PlugInPointDescription { get; set; }
     }
 }

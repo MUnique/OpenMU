@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public void HandlePacket(Player player, Span<byte> packet)
         {
             AreaSkill message = packet;
-            if (!player.SkillList.ContainsSkill(message.SkillId))
+            if (player.SkillList is null || !player.SkillList.ContainsSkill(message.SkillId))
             {
                 return;
             }

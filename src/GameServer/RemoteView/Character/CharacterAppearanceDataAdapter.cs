@@ -31,10 +31,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// Occurs when the appearance of the player changed.
         /// </summary>
         /// <remarks>This never happens in this implementation.</remarks>
-        public event EventHandler AppearanceChanged;
+        public event EventHandler? AppearanceChanged;
 
         /// <inheritdoc/>
-        public CharacterClass CharacterClass => this.character?.CharacterClass;
+        public CharacterClass? CharacterClass => this.character?.CharacterClass;
 
         /// <inheritdoc />
         public CharacterPose Pose => CharacterPose.Standing;

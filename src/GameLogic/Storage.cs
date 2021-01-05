@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Entities;
 
     /// <summary>
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="itemStorage">The item storage.</param>
         public Storage(int numberOfSlots, int boxOffset, int slotOffset, ItemStorage itemStorage)
         {
-            this.ItemArray = new Item[numberOfSlots];
+            this.ItemArray = new Item?[numberOfSlots];
             this.rows = (numberOfSlots - boxOffset) / InventoryConstants.RowSize;
             this.usedSlots = new bool[this.rows, InventoryConstants.RowSize];
             this.ItemStorage = itemStorage;
@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic
             this.boxOffset = boxOffset;
 
             var lastSlot = numberOfSlots + slotOffset;
-            this.ItemStorage?.Items
+            this.ItemStorage.Items
                 .Where(item => item.ItemSlot <= lastSlot && item.ItemSlot >= slotOffset)
                 .ForEach(item =>
                 {
@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             get
             {
-                return this.ItemArray.Where(i => i != null);
+                return this.ItemArray.Where(i => i is not null).Select(item => item!);
             }
         }
 
@@ -91,12 +91,12 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IStorage> Extensions { get; set; }
+        public IEnumerable<IStorage> Extensions { get; set; } = Enumerable.Empty<IStorage>();
 
         /// <summary>
         /// Gets the item array with the <see cref="Item.ItemSlot"/> minus <see cref="slotOffset"/> as index.
         /// </summary>
-        protected Item[] ItemArray { get; }
+        protected Item?[] ItemArray { get; }
 
         /// <inheritdoc/>
         public virtual bool AddItem(byte slot, Item item)
@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.GameLogic
         public bool AddItem(Item item)
         {
             var freeSlot = this.CheckInvSpace(item);
-            if (freeSlot < 0)
+            if (freeSlot is null)
             {
                 return false;
             }
@@ -148,8 +148,10 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public int CheckInvSpace(Item item)
+        public int? CheckInvSpace(Item item)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+
             // Find free Space in the Inventory and return the slot where the Item can be placed
             // Check every slot if it fits
             for (byte row = 0; row < this.rows; row++)
@@ -163,7 +165,7 @@ namespace MUnique.OpenMU.GameLogic
                 }
             }
 
-            return -1;
+            return null;
         }
 
         /// <inheritdoc/>
@@ -182,7 +184,7 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public Item GetItem(byte inventorySlot)
+        public Item? GetItem(byte inventorySlot)
         {
             var index = inventorySlot - this.slotOffset;
             if (index < this.ItemArray.Length)
@@ -224,6 +226,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns><c>True</c>, if successful; Otherwise, <c>false</c>.</returns>
         protected bool AddItemInternal(byte slot, Item item)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+
             if (this.ItemArray[slot] != null)
             {
                 return false;
@@ -261,7 +265,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private void SetItemUsedSlots(Item item, int columnIndex, int rowIndex, bool used = true)
         {
-            for (int r = rowIndex; r < rowIndex + item.Definition.Height; r++)
+            for (int r = rowIndex; r < rowIndex + item.Definition!.Height; r++)
             {
                 for (int c = columnIndex; c < columnIndex + item.Definition.Width; c++)
                 {

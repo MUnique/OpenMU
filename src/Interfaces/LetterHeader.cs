@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Interfaces
         /// The persistence implementation can implement to keep an internal id, too.
         /// However, it should keep the name, if it should stay available after a sender character got deleted.
         /// </remarks>
-        public string SenderName { get; set; }
+        public string? SenderName { get; set; }
 
         /// <summary>
         /// Gets or sets the receiver.
@@ -32,12 +32,12 @@ namespace MUnique.OpenMU.Interfaces
         /// The persistence implementation can implement to keep an internal id, too.
         /// In this case, it may not be required to save the name itself.
         /// </remarks>
-        public string ReceiverName { get; set; }
+        public string? ReceiverName { get; set; }
 
         /// <summary>
         /// Gets or sets the subject.
         /// </summary>
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the letter date.

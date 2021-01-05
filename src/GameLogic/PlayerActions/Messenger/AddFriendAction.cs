@@ -19,9 +19,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         public void AddFriend(Player player, string friendName)
         {
             var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
-            if (friendServer != null)
+            if (friendServer != null && player.SelectedCharacter is { } character)
             {
-                bool isNewFriend = friendServer.FriendRequest(player.SelectedCharacter.Name, friendName);
+                bool isNewFriend = friendServer.FriendRequest(character.Name, friendName);
                 if (isNewFriend)
                 {
                     player.ViewPlugIns.GetPlugIn<IFriendAddedPlugIn>()?.FriendAdded(friendName);

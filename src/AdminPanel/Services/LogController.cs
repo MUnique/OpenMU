@@ -19,9 +19,9 @@ namespace MUnique.OpenMU.AdminPanel.Services
         private readonly LogService logService;
 
         private readonly RingBuffer<LogEventData> entries = new RingBuffer<LogEventData>(20);
-        private string loggerFilter;
-        private string characterFilter;
-        private string serverFilter;
+        private string loggerFilter = string.Empty;
+        private string characterFilter = string.Empty;
+        private string serverFilter = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogController"/> class.
@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
         /// <summary>
         /// Occurs when the visible entries changed, e.g. after changing filter settings or new log messages.
         /// </summary>
-        public event EventHandler EntriesChanged;
+        public event EventHandler? EntriesChanged;
 
         /// <summary>
         /// Gets or sets the logger filter.
@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
 
             if (logEventData.Properties[name] is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.String)
             {
-                return jsonElement.GetString();
+                return jsonElement.GetString() ?? string.Empty;
             }
 
             return string.Empty;

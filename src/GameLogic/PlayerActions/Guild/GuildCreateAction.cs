@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
             using var loggerScope = creator.Logger.BeginScope(this.GetType());
             if (creator.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
-                creator.Logger.LogError($"Account {creator.Account.LoginName} not in the right state, but {creator.PlayerState.CurrentState}.");
+                creator.Logger.LogError($"Account {creator.Account?.LoginName} not in the right state, but {creator.PlayerState.CurrentState}.");
                 return;
             }
 
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                 return;
             }
 
-            creator.GuildStatus = guildServer.CreateGuild(guildName, creator.SelectedCharacter.Name, creator.SelectedCharacter.Id, guildEmblem, ((IGameServerContext)creator.GameContext).Id);
+            creator.GuildStatus = guildServer.CreateGuild(guildName, creator.SelectedCharacter!.Name, creator.SelectedCharacter.Id, guildEmblem, ((IGameServerContext)creator.GameContext).Id);
             if (creator.GuildStatus is null)
             {
                 creator.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()?.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);

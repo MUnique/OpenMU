@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             if (this.IsWarpLegit(player, gate))
             {
-                player.WarpTo(gate.TargetGate);
+                player.WarpTo(gate.TargetGate!);
             }
             else
             {
@@ -32,9 +32,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             }
         }
 
-        private bool IsWarpLegit(Player player, EnterGate enterGate)
+        private bool IsWarpLegit(Player player, EnterGate? enterGate)
         {
-            if (enterGate is null)
+            if (enterGate?.TargetGate?.Map is null)
             {
                 return false;
             }
@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return false;
             }
 
-            if (enterGate.LevelRequirement > player.Attributes[Stats.Level])
+            if (enterGate.LevelRequirement > player.Attributes![Stats.Level])
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Your level is too low to enter this map.", Interfaces.MessageType.BlueNormal);
                 return false;
@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             var currentPosition = player.IsWalking ? player.WalkTarget : player.Position;
             var inaccuracy = player.GameContext.Configuration.InfoRange;
-            if (player.CurrentMap.Definition.EnterGates.Contains(enterGate)
+            if (player.CurrentMap!.Definition.EnterGates.Contains(enterGate)
                 && !(this.IsXInRange(currentPosition, enterGate, inaccuracy)
                 && this.IsYInRange(currentPosition, enterGate, inaccuracy)))
             {

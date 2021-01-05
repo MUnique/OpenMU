@@ -22,9 +22,9 @@ namespace MUnique.OpenMU.Network.Analyzer
         private const string ServerToClientPacketsFile = "ServerToClientPackets.xml";
         private const string CommonFile = "CommonEnums.xml";
         private readonly IList<IDisposable> watchers = new List<IDisposable>();
-        private PacketDefinitions clientPacketDefinitions;
-        private PacketDefinitions serverPacketDefinitions;
-        private PacketDefinitions commonDefinitions;
+        private PacketDefinitions? clientPacketDefinitions;
+        private PacketDefinitions? serverPacketDefinitions;
+        private PacketDefinitions? commonDefinitions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PacketAnalyzer"/> class.
@@ -45,15 +45,15 @@ namespace MUnique.OpenMU.Network.Analyzer
         public string ExtractInformation(Packet packet)
         {
             var definitions = packet.ToServer ? this.clientPacketDefinitions : this.serverPacketDefinitions;
-            var definition = definitions.Packets.FirstOrDefault(p => (byte)p.Type == packet.Type && p.Code == packet.Code && (!p.SubCodeSpecified || p.SubCode == packet.SubCode));
+            var definition = definitions?.Packets?.FirstOrDefault(p => (byte)p.Type == packet.Type && p.Code == packet.Code && (!p.SubCodeSpecified || p.SubCode == packet.SubCode));
             if (definition != null)
             {
                 var stringBuilder = new StringBuilder()
                     .Append(definition.Caption ?? definition.Name);
-                foreach (var field in definition.Fields)
+                foreach (var field in definition.Fields ?? Enumerable.Empty<Field>())
                 {
                     stringBuilder.Append(Environment.NewLine)
-                        .Append(field.Name).Append(": ").Append(this.ExtractFieldValueOrGetError(packet.Data.AsSpan(), field, definition, definitions));
+                        .Append(field.Name).Append(": ").Append(this.ExtractFieldValueOrGetError(packet.Data.AsSpan(), field, definition, definitions!));
                 }
 
                 return stringBuilder.ToString();
@@ -75,14 +75,14 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.watchers.Clear();
         }
 
-        private void LoadAndWatchConfiguration(Action<PacketDefinitions> assignAction, string fileName)
+        private void LoadAndWatchConfiguration(Action<PacketDefinitions?> assignAction, string fileName)
         {
             assignAction(PacketDefinitions.Load(fileName));
             var watcher = new FileSystemWatcher(Environment.CurrentDirectory, fileName);
 
             watcher.Changed += (sender, args) =>
             {
-                PacketDefinitions definitions;
+                PacketDefinitions? definitions;
                 try
                 {
                     definitions = PacketDefinitions.Load(fileName);
@@ -179,15 +179,15 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
             var type = packet.Structures?.FirstOrDefault(s => s.Name == field.TypeName)
                        ?? definitions.Structures?.FirstOrDefault(s => s.Name == field.TypeName)
-                       ?? this.commonDefinitions.Structures?.FirstOrDefault(s => s.Name == field.TypeName);
+                       ?? this.commonDefinitions?.Structures?.FirstOrDefault(s => s.Name == field.TypeName);
             if (type is null)
             {
                 return data.Slice(field.Index).AsString();
             }
 
-            var countField = packet.Fields.FirstOrDefault(f => f.Name == field.ItemCountField)
-                             ?? packet.Structures?.SelectMany(s => s.Fields).FirstOrDefault(f => f.Name == field.ItemCountField);
-            int count = int.Parse(this.ExtractFieldValue(data, countField, packet, definitions));
+            var countField = packet.Fields?.FirstOrDefault(f => f.Name == field.ItemCountField)
+                             ?? packet.Structures?.SelectMany(s => s.Fields ?? Enumerable.Empty<Field>()).FirstOrDefault(f => f.Name == field.ItemCountField);
+            int count = countField is null ? 0 : int.Parse(this.ExtractFieldValue(data, countField, packet, definitions));
             if (count == 0)
             {
                 return string.Empty;
@@ -207,7 +207,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                     .Append(field.Name + $"[{i}]:");
                 stringBuilder.Append(Environment.NewLine)
                     .Append("  Raw: ").Append(elementData.AsString());
-                foreach (var structField in type.Fields)
+                foreach (var structField in type.Fields ?? Enumerable.Empty<Field>())
                 {
                     stringBuilder.Append(Environment.NewLine)
                         .Append("  ").Append(structField.Name).Append(": ").Append(this.ExtractFieldValue(elementData, structField, packet, definitions));
@@ -223,7 +223,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             var enumDefinition = packet.Enums?.FirstOrDefault(e => e.Name == field.TypeName)
                                  ?? definitions.Enums?.FirstOrDefault(e => e.Name == field.TypeName)
                                  ?? this.commonDefinitions?.Enums?.FirstOrDefault(e => e.Name == field.TypeName);
-            var enumValue = enumDefinition?.Values.FirstOrDefault(v => v.Value == byteValue);
+            var enumValue = enumDefinition?.Values?.FirstOrDefault(v => v.Value == byteValue);
             return $"{data[field.Index]} ({enumValue?.Name ?? "unknown"})";
         }
 
@@ -234,7 +234,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                 return type.Length;
             }
 
-            if (type.Fields.All(f => f.Type != FieldType.StructureArray))
+            if (type.Fields?.All(f => f.Type != FieldType.StructureArray) ?? false)
             {
                 return (data.Length - field.Index) / count;
             }
@@ -252,6 +252,11 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <returns>The dynamic length of a struct with a nested structure array.</returns>
         private int DetermineDynamicStructLength(Span<byte> restData, Structure type, PacketDefinition packetType)
         {
+            if (type.Fields is null || packetType.Structures is null)
+            {
+                return 0;
+            }
+
             var nestedStructField = type.Fields.First(f => f.Type == FieldType.StructureArray);
             var countField = type.Fields.First(f => f.Name == nestedStructField.ItemCountField);
             var count = restData[countField.Index];

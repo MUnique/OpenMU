@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GameLogic.NPC;
-
 namespace MUnique.OpenMU.GameServer.RemoteView.World
 {
     using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
+    using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network;
@@ -48,7 +47,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             switch (type)
             {
                 case MoveType.Instant:
-                    this.player.Connection.SendObjectMoved(this.GetInstantMoveCode(), objectId, obj.Position.X, obj.Position.Y);
+                    this.player.Connection?.SendObjectMoved(this.GetInstantMoveCode(), objectId, obj.Position.X, obj.Position.Y);
                     break;
 
                 case MoveType.Teleport when obj is Player movedPlayer && movedPlayer != this.player:
@@ -77,6 +76,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
         private void ObjectWalked(ILocateable obj)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var objectId = obj.GetId(this.player);
             Span<Direction> steps = this.SendWalkDirections ? stackalloc Direction[16] : default;
             var stepsLength = 0;
@@ -108,7 +113,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
 
             var stepsSize = steps == default ? 1 : (steps.Length / 2) + 2;
-            using var writer = this.player.Connection.StartSafeWrite(
+            using var writer = connection.StartSafeWrite(
                 Network.Packets.ServerToClient.ObjectWalked.HeaderType,
                 Network.Packets.ServerToClient.ObjectWalked.GetRequiredSize(stepsSize));
             var walkPacket = new ObjectWalked(writer.Span)

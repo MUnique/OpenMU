@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                 return;
             }
 
-            Player guildMaster = player.CurrentMap.GetObject(guildMasterId) as Player;
+            var guildMaster = player.CurrentMap?.GetObject(guildMasterId) as Player;
 
             if (guildMaster?.GuildStatus?.Position != GuildPosition.GuildMaster)
             {

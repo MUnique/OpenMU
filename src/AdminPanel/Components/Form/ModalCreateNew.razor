@@ -18,19 +18,19 @@
     /// Gets or sets the modal instance.
     /// </summary>
     [CascadingParameter]
-    BlazoredModalInstance BlazoredModal { get; set; }
+    BlazoredModalInstance BlazoredModal { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the item which should be created.
     /// </summary>
     [Parameter]
-    public TItem Item { get; set; }
+    public TItem Item { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the persistence context which should be used. It's required for lookups.
     /// </summary>
     [Parameter]
-    public IContext PersistenceContext { get; set; }
+    public IContext PersistenceContext { get; set; } = null!;
 
     private void Submit()
     {

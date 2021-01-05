@@ -7,17 +7,15 @@ namespace MUnique.OpenMU.Persistence
     using System;
     using System.Collections.Concurrent;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Reflection;
-    using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
     /// Extensions for objects.
     /// </summary>
     public static class ObjectExtensions
     {
-        private static readonly ConcurrentDictionary<Type, PropertyInfo> IdProperties = new ConcurrentDictionary<Type, PropertyInfo>();
-        private static readonly ConcurrentDictionary<Type, PropertyInfo> NameProperties = new ConcurrentDictionary<Type, PropertyInfo>();
+        private static readonly ConcurrentDictionary<Type, PropertyInfo?> IdProperties = new ConcurrentDictionary<Type, PropertyInfo?>();
+        private static readonly ConcurrentDictionary<Type, PropertyInfo?> NameProperties = new ConcurrentDictionary<Type, PropertyInfo?>();
 
         /// <summary>
         /// Gets the guid identifier of an object, which has the name "Id".
@@ -42,7 +40,7 @@ namespace MUnique.OpenMU.Persistence
                 return Guid.Empty;
             }
 
-            return (Guid)idProperty.GetValue(item);
+            return (Guid)idProperty.GetValue(item)!;
         }
 
         /// <summary>
@@ -64,10 +62,10 @@ namespace MUnique.OpenMU.Persistence
 
             if (nameProperty is null)
             {
-                return item.ToString();
+                return item.ToString() ?? string.Empty;
             }
 
-            return (string)nameProperty.GetValue(item);
+            return (string?)nameProperty.GetValue(item) ?? string.Empty;
         }
     }
 }

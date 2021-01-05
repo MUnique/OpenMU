@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="observable">The observable.</param>
         /// <param name="playerId">The player identifier.</param>
         /// <returns>The observing player with the specified identifier, if found. Otherwise, null.</returns>
-        public static Player GetObservingPlayerWithId(this IObservable observable, ushort playerId)
+        public static Player? GetObservingPlayerWithId(this IObservable observable, ushort playerId)
         {
             observable.ObserverLock.EnterReadLock();
             try

@@ -57,7 +57,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             { SkillNumber.Recovery, MagicEffectNumber.ShieldRecover },
         };
 
-        private IDictionary<byte, MasterSkillRoot> masterSkillRoots;
+        private readonly IDictionary<byte, MasterSkillRoot> masterSkillRoots;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SkillsInitializer"/> class.
@@ -65,8 +65,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
         /// <param name="context">The persistence context.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
         public SkillsInitializer(IContext context, GameConfiguration gameConfiguration)
-        : base(context, gameConfiguration)
+            : base(context, gameConfiguration)
         {
+            this.masterSkillRoots = new SortedDictionary<byte, MasterSkillRoot>();
         }
 
         /// <summary>
@@ -571,7 +572,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
         private void InitializeMasterSkillData()
         {
             // Roots:
-            this.masterSkillRoots = new SortedDictionary<byte, MasterSkillRoot>();
             var leftRoot = this.Context.CreateNew<MasterSkillRoot>();
             leftRoot.Name = "Left (Common Skills)";
             this.masterSkillRoots.Add(1, leftRoot);
@@ -789,7 +789,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.AddMasterSkillDefinition(skillNumber, requiredSkill1, requiredSkill2, root, rank, regularSkill, maximumLevel, valueFormula, valueFormula, null, AggregateType.AddRaw);
         }
 
-        private void AddMasterSkillDefinition(SkillNumber skillNumber, SkillNumber requiredSkill1, SkillNumber requiredSkill2, byte root, byte rank, SkillNumber regularSkill, byte maximumLevel, string valueFormula, string displayValueFormula, AttributeDefinition targetAttribute, AggregateType aggregateType)
+        private void AddMasterSkillDefinition(SkillNumber skillNumber, SkillNumber requiredSkill1, SkillNumber requiredSkill2, byte root, byte rank, SkillNumber regularSkill, byte maximumLevel, string valueFormula, string displayValueFormula, AttributeDefinition? targetAttribute, AggregateType aggregateType)
         {
             var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
             skill.MasterDefinition = this.Context.CreateNew<MasterSkillDefinition>();

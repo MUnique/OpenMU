@@ -23,6 +23,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// Gets the current context of the current thread.
         /// </summary>
         /// <returns>The current context.</returns>
-        IContext GetCurrentContext();
+        IContext? GetCurrentContext();
     }
 }

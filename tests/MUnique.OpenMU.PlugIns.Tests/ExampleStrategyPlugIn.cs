@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         /// <value>
         /// The handled command.
         /// </value>
-        public string HandledCommand { get; private set; }
+        public string? HandledCommand { get; private set; }
 
         /// <inheritdoc/>
         public void HandleCommand(string command)

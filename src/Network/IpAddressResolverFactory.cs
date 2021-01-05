@@ -39,12 +39,15 @@ namespace MUnique.OpenMU.Network
                 case { } p when p.StartsWith(LocalIpResolve, StringComparison.InvariantCultureIgnoreCase):
                     return new LocalIpResolver();
                 default:
-                    IPAddress.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out var ip);
-                    return new CustomIpResolver(ip);
+                    var ipString = ExtractIpFromParameter(parameter);
+                    if (IPAddress.TryParse(ipString, out var ip))
+                    {
+                        return new CustomIpResolver(ip);
+                    }
+
+                    throw new ArgumentException($"The ip address '{ipString}' is in the wrong format.");
             }
         }
-
-        private static string GetParameter(string[] args) => args.FirstOrDefault(a => a.StartsWith(ResolveParameterPrefix, StringComparison.InvariantCultureIgnoreCase));
 
         /// <summary>
         /// Adds the ip resolver to the collection, depending on the command line arguments.
@@ -64,9 +67,18 @@ namespace MUnique.OpenMU.Network
                 case { } p when p.StartsWith(LocalIpResolve, StringComparison.InvariantCultureIgnoreCase):
                     return serviceCollection.AddSingleton<IIpAddressResolver, LocalIpResolver>();
                 default:
-                    IPAddress.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out var ip);
-                    return serviceCollection.AddSingleton<IIpAddressResolver>(new CustomIpResolver(ip));
+                    var ipString = ExtractIpFromParameter(parameter);
+                    if (IPAddress.TryParse(ipString, out var ip))
+                    {
+                        return serviceCollection.AddSingleton<IIpAddressResolver>(new CustomIpResolver(ip));
+                    }
+
+                    throw new ArgumentException($"The ip address '{ipString}' is in the wrong format.");
             }
         }
+
+        private static string ExtractIpFromParameter(string parameter) => parameter.Substring(parameter.IndexOf(':') + 1);
+
+        private static string? GetParameter(string[] args) => args.FirstOrDefault(a => a.StartsWith(ResolveParameterPrefix, StringComparison.InvariantCultureIgnoreCase));
     }
 }

@@ -16,7 +16,12 @@ namespace MUnique.OpenMU.AdminPanel
         /// <inheritdoc />
         public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return TimeSpan.Parse(reader.GetString());
+            if (TimeSpan.TryParse(reader.GetString(), out var result))
+            {
+                return result;
+            }
+
+            return default;
         }
 
         /// <inheritdoc />

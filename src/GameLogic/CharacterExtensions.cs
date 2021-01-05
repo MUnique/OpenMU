@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameLogic
         public static ushort GetMaximumFruitPoints(this Character character)
         {
             var index = (int)character.Attributes.First(a => a.Definition == Stats.Level).Value - 1;
-            return character.CharacterClass.FruitCalculation switch
+            return character.CharacterClass?.FruitCalculation switch
             {
                 FruitCalculationStrategy.DarkLord => FruitPointsPerLevelDarkLord[index],
                 FruitCalculationStrategy.MagicGladiator => FruitPointsPerLevelMagicGladiator[index],

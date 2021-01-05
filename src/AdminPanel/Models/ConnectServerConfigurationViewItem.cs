@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.AdminPanel.Models
         /// Gets or sets the game client definition.
         /// </summary>
         [Required]
-        public GameClientDefinition GameClientDefinition
+        public GameClientDefinition? GameClientDefinition
         {
             get => this.Configuration.Client;
             set => this.Configuration.Client = value;
@@ -185,8 +185,8 @@ namespace MUnique.OpenMU.AdminPanel.Models
         [Range(0, 255)]
         public int CurrentVersionMajor
         {
-            get => this.Configuration.CurrentPatchVersion[0];
-            set => this.Configuration.CurrentPatchVersion[0] = (byte)value;
+            get => this.Configuration.CurrentPatchVersion?[0] ?? 0;
+            set => (this.Configuration.CurrentPatchVersion ??= new byte[3])[0] = (byte)value;
         }
 
         /// <summary>
@@ -195,8 +195,8 @@ namespace MUnique.OpenMU.AdminPanel.Models
         [Range(0, 255)]
         public int CurrentVersionMinor
         {
-            get => this.Configuration.CurrentPatchVersion[1];
-            set => this.Configuration.CurrentPatchVersion[1] = (byte)value;
+            get => this.Configuration.CurrentPatchVersion?[1] ?? 0;
+            set => (this.Configuration.CurrentPatchVersion ??= new byte[3])[1] = (byte)value;
         }
 
         /// <summary>
@@ -205,8 +205,8 @@ namespace MUnique.OpenMU.AdminPanel.Models
         [Range(0, 255)]
         public int CurrentVersionPatch
         {
-            get => this.Configuration.CurrentPatchVersion[2];
-            set => this.Configuration.CurrentPatchVersion[2] = (byte)value;
+            get => this.Configuration.CurrentPatchVersion?[2] ?? 0;
+            set => (this.Configuration.CurrentPatchVersion ??= new byte[3])[2] = (byte)value;
         }
     }
 }

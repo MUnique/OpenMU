@@ -19,9 +19,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         public void DeleteFriend(Player player, string friendName)
         {
             var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
-            if (friendServer != null)
+            if (friendServer != null && player.SelectedCharacter is { } character)
             {
-                friendServer.DeleteFriend(player.SelectedCharacter.Name, friendName);
+                friendServer.DeleteFriend(character.Name, friendName);
                 player.ViewPlugIns.GetPlugIn<IFriendDeletedPlugIn>()?.FriendDeleted(friendName);
             }
         }

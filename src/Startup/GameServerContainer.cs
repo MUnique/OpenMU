@@ -83,7 +83,7 @@ namespace MUnique.OpenMU.Startup
                 var gameServer = new GameServer(gameServerDefinition, this.guildServer, this.loginServer, this.persistenceContextProvider, this.friendServer, this.loggerFactory, this.plugInManager);
                 foreach (var endpoint in gameServerDefinition.Endpoints)
                 {
-                    gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, this.connectServerContainer.GetObserver(endpoint.Client), this.ipResolver, this.loggerFactory));
+                    gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, this.connectServerContainer.GetObserver(endpoint.Client!), this.ipResolver, this.loggerFactory));
                 }
 
                 this.servers.Add(gameServer);

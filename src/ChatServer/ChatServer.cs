@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.ChatServer
 
         private readonly IIpAddressResolver addressResolver;
 
-        private string publicIp;
+        private string? publicIp;
 
         private ServerState serverState;
 
@@ -76,7 +76,7 @@ namespace MUnique.OpenMU.ChatServer
         }
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc/>
         public string Description => this.settings.Description;
@@ -246,7 +246,7 @@ namespace MUnique.OpenMU.ChatServer
             return tokenAsString;
         }
 
-        private void ChatClientAccepting(object sender, CancelEventArgs e)
+        private void ChatClientAccepting(object? sender, CancelEventArgs e)
         {
             if (this.settings.MaximumConnections == int.MaxValue)
             {
@@ -256,7 +256,7 @@ namespace MUnique.OpenMU.ChatServer
             e.Cancel = this.CurrentConnections >= this.settings.MaximumConnections;
         }
 
-        private void ChatClientAccepted(object sender, ClientAcceptEventArgs e)
+        private void ChatClientAccepted(object? sender, ClientAcceptEventArgs e)
         {
             var chatClient = new ChatClient(e.AcceptedConnection, this.manager, this.loggerFactory.CreateLogger<ChatClient>());
             this.connectedClients.Add(chatClient);
@@ -264,13 +264,17 @@ namespace MUnique.OpenMU.ChatServer
             chatClient.Disconnected += this.ChatClient_Disconnected;
         }
 
-        private void ChatClient_Disconnected(object sender, EventArgs e)
+        private void ChatClient_Disconnected(object? sender, EventArgs e)
         {
-            this.connectedClients.Remove(sender as IChatClient);
+            if (sender is IChatClient client)
+            {
+                this.connectedClients.Remove(client);
+            }
+
             this.RaisePropertyChanged(nameof(this.CurrentConnections));
         }
 
-        private void ClientCleanupInactiveClients(object sender, ElapsedEventArgs e)
+        private void ClientCleanupInactiveClients(object? sender, ElapsedEventArgs e)
         {
             try
             {
@@ -291,7 +295,7 @@ namespace MUnique.OpenMU.ChatServer
             }
         }
 
-        private void ClientCleanupUnusedRooms(object sender, ElapsedEventArgs e)
+        private void ClientCleanupUnusedRooms(object? sender, ElapsedEventArgs e)
         {
             try
             {
@@ -312,7 +316,7 @@ namespace MUnique.OpenMU.ChatServer
         /// Called when a property changed.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

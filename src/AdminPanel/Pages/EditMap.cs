@@ -22,32 +22,28 @@ namespace MUnique.OpenMU.AdminPanel.Pages
     [Route("/map-editor/{id:guid}")]
     public sealed class EditMap : ComponentBase, IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private object model;
-        private IContext persistenceContext;
-        private CancellationTokenSource disposeCts;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
+        private object? model;
+        private IContext? persistenceContext;
+        private CancellationTokenSource? disposeCts;
 
         /// <summary>
         /// Gets or sets the identifier of the object which should be edited.
         /// </summary>
         [Parameter]
-        public Guid Id
-        {
-            get;
-            set;
-        }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the persistence context provider which loads and saves the object.
         /// </summary>
         [Inject]
-        public IPersistenceContextProvider PersistenceContextProvider { get; set; }
+        public IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the modal service.
         /// </summary>
         [Inject]
-        public IModalService ModalService { get; set; }
+        public IModalService ModalService { get; set; } = null!;
 
         /// <inheritdoc />
         public void Dispose()
@@ -96,7 +92,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
 
         private async Task LoadData(CancellationToken cancellationToken)
         {
-            IDisposable modal = null;
+            IDisposable? modal = null;
             var showModalTask = this.InvokeAsync(() => modal = this.ModalService.ShowLoadingIndicator());
 
             this.persistenceContext = this.PersistenceContextProvider.CreateNewTypedContext<GameMapDefinition>();
@@ -115,7 +111,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                     }
 
                     await showModalTask;
-                    modal.Dispose();
+                    modal?.Dispose();
                     await this.InvokeAsync(this.StateHasChanged);
                 }
             }
@@ -135,7 +131,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             string text;
             try
             {
-                text = this.persistenceContext.SaveChanges() ? "The changes have been saved." : "There were no changes to save.";
+                text = this.persistenceContext?.SaveChanges() ?? false ? "The changes have been saved." : "There were no changes to save.";
             }
             catch (Exception ex)
             {

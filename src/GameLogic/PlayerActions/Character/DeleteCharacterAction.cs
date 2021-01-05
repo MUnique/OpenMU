@@ -34,11 +34,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
         {
             if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
             {
-                player.Logger.LogError($"Account {player.Account.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
+                player.Logger.LogError($"Account {player.Account?.LoginName} not in the right state, but {player.PlayerState.CurrentState}.");
                 return CharacterDeleteResult.Unsuccessful;
             }
 
-            var character = player.Account.Characters.FirstOrDefault(c => c.Name == characterName);
+            var character = player.Account!.Characters.FirstOrDefault(c => c.Name == characterName);
 
             if (character is null)
             {

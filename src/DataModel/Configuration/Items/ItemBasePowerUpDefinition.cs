@@ -16,34 +16,27 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the target attribute.
         /// </summary>
-        public virtual AttributeDefinition TargetAttribute { get; set; }
+        public virtual AttributeDefinition? TargetAttribute { get; set; }
 
         /// <summary>
         /// Gets or sets the base value.
         /// </summary>
         [Transient]
-        public ConstantElement BaseValueElement { get; set; }
+        public ConstantElement? BaseValueElement { get; set; }
 
         /// <summary>
         /// Gets or sets the bonus per level.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<LevelBonus> BonusPerLevel { get; protected set; }
+        public virtual ICollection<LevelBonus> BonusPerLevel { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the additional value to the base value.
         /// </summary>
         public float BaseValue
         {
-            get
-            {
-                return this.BaseValueElement?.Value ?? 0;
-            }
-
-            set
-            {
-                this.BaseValueElement = new ConstantElement(value);
-            }
+            get => this.BaseValueElement?.Value ?? 0;
+            set => this.BaseValueElement = new ConstantElement(value);
         }
 
         /// <inheritdoc />

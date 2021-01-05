@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
     using System.Linq;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
@@ -27,6 +28,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// </returns>
         protected override Skill GetLearnableSkill(Item item, GameConfiguration gameConfiguration)
         {
+            item.ThrowNotInitializedProperty(item.Definition?.Skill is null, "Definition.Skill");
+
             var baseSkillNumber = item.Definition.Skill.Number;
             var targetSkillNumber = baseSkillNumber + item.Level;
             return gameConfiguration.Skills.First(s => s.Number == targetSkillNumber);

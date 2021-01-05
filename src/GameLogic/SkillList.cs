@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
@@ -32,14 +33,24 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="player">The player.</param>
         public SkillList(Player player)
         {
+            if (player.SelectedCharacter is null)
+            {
+                throw new ArgumentException("SelectedCharacter must be set.");
+            }
+
+            if (player.Inventory is null)
+            {
+                throw new ArgumentException("Inventory must be set.");
+            }
+
             this.player = player;
             this.learnedSkills = this.player.SelectedCharacter.LearnedSkills ?? new List<SkillEntry>();
             this.availableSkills = this.learnedSkills.ToDictionary(skillEntry => skillEntry.Skill.Number.ToUnsigned());
             this.itemSkills = new List<SkillEntry>();
             this.player.Inventory.EquippedItems
                 .Where(item => item.HasSkill)
-                .Where(item => item.Definition.Skill != null)
-                .ForEach(item => this.AddItemSkill(item.Definition.Skill));
+                .Where(item => (item.Definition ?? throw Error.NotInitializedProperty(item, nameof(item.Definition))).Skill != null)
+                .ForEach(item => this.AddItemSkill(item.Definition!.Skill!));
             this.player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChanged;
             foreach (var skill in this.learnedSkills.Where(s => s.Skill.SkillType == SkillType.PassiveBoost))
             {
@@ -54,9 +65,9 @@ namespace MUnique.OpenMU.GameLogic
         public byte SkillCount => (byte)this.availableSkills.Count;
 
         /// <inheritdoc/>
-        public SkillEntry GetSkill(ushort skillId)
+        public SkillEntry? GetSkill(ushort skillId)
         {
-            this.availableSkills.TryGetValue(skillId, out SkillEntry result);
+            this.availableSkills.TryGetValue(skillId, out var result);
             return result;
         }
 
@@ -72,7 +83,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public bool RemoveItemSkill(ushort skillId)
         {
-            this.availableSkills.TryGetValue(skillId, out SkillEntry skillEntry);
+            this.availableSkills.TryGetValue(skillId, out var skillEntry);
             if (skillEntry is null)
             {
                 return false;
@@ -97,9 +108,11 @@ namespace MUnique.OpenMU.GameLogic
 
         private void AddItemSkill(Skill skill)
         {
-            var skillEntry = new SkillEntry();
-            skillEntry.Skill = skill;
-            skillEntry.Level = 0;
+            var skillEntry = new SkillEntry
+            {
+                Skill = skill,
+                Level = 0,
+            };
             this.itemSkills.Add(skillEntry);
 
             // Item skills are always level 0, so it doesn't matter which one is added to the dictionary.
@@ -142,19 +155,19 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             // maybe to do: We don't need to hold it, as it's added to the player attributes.
-            new PowerUpWrapper(new PassiveSkillBoostPowerUp(skillEntry), masterDefinition.TargetAttribute, this.player.Attributes);
+            new PowerUpWrapper(new PassiveSkillBoostPowerUp(skillEntry), masterDefinition.TargetAttribute, this.player.Attributes!);
         }
 
-        private void Inventory_WearingItemsChanged(object sender, ItemEventArgs eventArgs)
+        private void Inventory_WearingItemsChanged(object? sender, ItemEventArgs eventArgs)
         {
             var item = eventArgs.Item;
-            if (!item.HasSkill || item.Definition.Skill is null)
+            if (!item.HasSkill || item.Definition?.Skill is null)
             {
                 return;
             }
 
             var inventory = this.player.Inventory;
-            if (inventory.EquippedItems.Contains(item))
+            if (inventory!.EquippedItems.Contains(item))
             {
                 this.AddItemSkill(item.Definition.Skill);
             }
@@ -169,7 +182,7 @@ namespace MUnique.OpenMU.GameLogic
             public PassiveSkillBoostPowerUp(SkillEntry skillEntry)
             {
                 this.Value = skillEntry.CalculateValue();
-                this.AggregateType = skillEntry.Skill.MasterDefinition.Aggregation;
+                this.AggregateType = skillEntry.Skill.MasterDefinition!.Aggregation;
                 skillEntry.PropertyChanged += (sender, eventArgs) =>
                 {
                     if (eventArgs.PropertyName == nameof(SkillEntry.Level))
@@ -180,7 +193,7 @@ namespace MUnique.OpenMU.GameLogic
                 };
             }
 
-            public event EventHandler ValueChanged;
+            public event EventHandler? ValueChanged;
 
             public float Value { get; private set; }
 

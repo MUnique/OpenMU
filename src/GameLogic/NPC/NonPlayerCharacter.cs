@@ -61,10 +61,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public MonsterSpawnArea SpawnArea { get; protected set; }
 
         /// <inheritdoc/>
-        public Bucket<ILocateable> NewBucket { get; set; }
+        public Bucket<ILocateable>? NewBucket { get; set; }
 
         /// <inheritdoc/>
-        public Bucket<ILocateable> OldBucket { get; set; }
+        public Bucket<ILocateable>? OldBucket { get; set; }
 
         /// <summary>
         /// Initializes this instance.

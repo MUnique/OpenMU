@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.Persistence
     /// <typeparam name="TEfCore">The type of the ef core.</typeparam>
     /// <seealso cref="System.Collections.Generic.ICollection{TClass}" />
     public class ListAdapter<TClass, TEfCore> : CollectionAdapter<TClass, TEfCore>, IList<TClass>
+        where TClass : class
         where TEfCore : TClass
     {
         private readonly IList<TEfCore> rawList;

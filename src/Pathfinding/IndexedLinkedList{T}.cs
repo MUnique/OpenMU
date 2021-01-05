@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Pathfinding
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -55,7 +56,7 @@ namespace MUnique.OpenMU.Pathfinding
             }
 
             var inIndex = true;
-            if (!this.index.TryGetValue(indexValue, out LinkedListNode<T> node))
+            if (!this.index.TryGetValue(indexValue, out var node))
             {
                 node = this.innerList.First;
                 inIndex = false;
@@ -91,16 +92,26 @@ namespace MUnique.OpenMU.Pathfinding
         /// <inheritdoc/>
         public T Pop()
         {
-            var value = this.innerList.First.Value;
-            this.index.Remove(this.indexer.GetIndexValue(value)); // first value is probably always in the index...
-            this.innerList.RemoveFirst();
-            return value;
+            if (this.innerList.First is { } first)
+            {
+                var value = first.Value;
+                this.index.Remove(this.indexer.GetIndexValue(value)); // first value is probably always in the index...
+                this.innerList.RemoveFirst();
+                return value;
+            }
+
+            throw new InvalidOperationException("List is empty");
         }
 
         /// <inheritdoc/>
         public T Peek()
         {
-            return this.innerList.First.Value;
+            if (this.innerList.First is { } first)
+            {
+                return first.Value;
+            }
+
+            throw new InvalidOperationException("List is empty");
         }
 
         /// <inheritdoc/>

@@ -16,8 +16,7 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
     public class IntCollectionFieldBuilder : BaseComponentBuilder, IComponentBuilder
     {
         /// <inheritdoc/>
-        public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex,
-            IChangeNotificationService notificationService) => this.BuildField<ICollection<int>>(model, typeof(IntCollectionField), propertyInfo, builder, currentIndex, notificationService);
+        public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService) => this.BuildField<ICollection<int>>(model, typeof(IntCollectionField), propertyInfo, builder, currentIndex, notificationService);
 
         /// <inheritdoc/>
         public bool CanBuildComponent(PropertyInfo propertyInfo) => propertyInfo.PropertyType == typeof(ICollection<int>);

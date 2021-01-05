@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         public bool AcceptWrongBlockChecksum { get; set; }
 
         /// <inheritdoc />
-        protected override void OnComplete(Exception exception)
+        protected override void OnComplete(Exception? exception)
         {
             this.Pipe.Writer.Complete(exception);
         }

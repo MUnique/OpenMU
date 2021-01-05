@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc />
-        public override GameConfiguration GetById(Guid id)
+        public override GameConfiguration? GetById(Guid id)
         {
             if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
             {
@@ -44,10 +44,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             database.OpenConnection();
             try
             {
-                var config = this.objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context);
+                if (this.objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context) is { } config)
+                {
+                    this.SetExperienceTables(config);
+                    return config;
+                }
 
-                this.SetExperienceTables(config);
-                return config;
+                return null;
             }
             finally
             {
@@ -79,15 +82,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
         private void SetExperienceTables(GameConfiguration gameConfiguration)
         {
-            if (gameConfiguration != null)
-            {
-                gameConfiguration.ExperienceTable =
-                    Enumerable.Range(0, gameConfiguration.MaximumLevel + 2)
-                        .Select(level => this.CalculateNeededExperience(level))
-                        .ToArray();
-                gameConfiguration.MasterExperienceTable =
-                    Enumerable.Range(0, 201).Select(level => this.CalcNeededMasterExp(level)).ToArray();
-            }
+            gameConfiguration.ExperienceTable =
+                Enumerable.Range(0, gameConfiguration.MaximumLevel + 2)
+                    .Select(level => this.CalculateNeededExperience(level))
+                    .ToArray();
+            gameConfiguration.MasterExperienceTable =
+                Enumerable.Range(0, 201).Select(level => this.CalcNeededMasterExp(level)).ToArray();
         }
 
         private long CalcNeededMasterExp(long lvl)

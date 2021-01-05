@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var args = new MyEventArgs();
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
-            point.DoStuff(player, command, args);
+            point!.DoStuff(player, command, args);
             Assert.That(plugIn.WasExecuted, Is.True);
         }
 
@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var args = new MyEventArgs();
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
-            point.DoStuff(player, command, args);
+            point!.DoStuff(player, command, args);
             Assert.That(plugIn.WasExecuted, Is.False);
         }
 
@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var args = new MyEventArgs();
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
-            point.DoStuff(player, command, args);
+            point!.DoStuff(player, command, args);
             Assert.That(plugIn.WasExecuted, Is.False);
         }
 
@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var args = new MyEventArgs();
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
-            point.DoStuff(player, command, args);
+            point!.DoStuff(player, command, args);
             Assert.That(plugIn.WasExecuted, Is.True);
         }
 
@@ -132,7 +132,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var args = new MyEventArgs();
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
-            point.DoStuff(player, command, args);
+            point!.DoStuff(player, command, args);
             Assert.That(plugIn.WasExecuted, Is.True);
         }
 
@@ -155,7 +155,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var args = new MyEventArgs();
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
-            point.DoStuff(player, command, args);
+            point!.DoStuff(player, command, args);
             Assert.That(args.WasExecuted, Is.EqualTo(active));
         }
 
@@ -200,7 +200,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var args = new MyEventArgs();
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
-            point.DoStuff(player, command, args);
+            point!.DoStuff(player, command, args);
             Assert.That(args.Text, Is.EqualTo("CustomPlugIn"));
         }
 
@@ -270,7 +270,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var args = new MyEventArgs();
 
             var point = manager.GetPlugInPoint<IExamplePlugIn>();
-            point.DoStuff(player, command, args);
+            point!.DoStuff(player, command, args);
             Assert.That(plugIn.WasExecuted, Is.True);
         }
 

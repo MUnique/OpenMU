@@ -16,9 +16,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
     {
         private readonly GameMap map;
 
-        private IAttackable currentTarget;
+        private IAttackable? currentTarget;
 
-        private Timer aiTimer;
+        private Timer? aiTimer;
+        private Monster? monster;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BasicMonsterIntelligence"/> class.
@@ -39,7 +40,11 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <summary>
         /// Gets or sets the monster.
         /// </summary>
-        public Monster Monster { get; set; }
+        public Monster Monster
+        {
+            get => this.monster ?? throw new InvalidOperationException("Instance is not initialized with a Monster yet");
+            set => this.monster = value;
+        }
 
         /// <inheritdoc/>
         public void Start()
@@ -66,7 +71,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
         }
 
-        private IAttackable SearchNextTarget()
+        private IAttackable? SearchNextTarget()
         {
             List<IWorldObserver> tempObservers;
             this.Npc.ObserverLock.EnterReadLock();
@@ -80,7 +85,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
 
             double closestdistance = 100;
-            IAttackable closest = null;
+            IAttackable? closest = null;
 
             foreach (var attackable in tempObservers.OfType<IAttackable>().Where(a => !a.IsTeleporting))
             {
@@ -107,7 +112,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.Npc.ObserverLock.EnterReadLock();
             try
             {
-                return this.Npc.Observers.Contains(this.currentTarget as IWorldObserver);
+                return this.currentTarget is IWorldObserver worldObserver && this.Npc.Observers.Contains(worldObserver);
             }
             finally
             {
@@ -160,7 +165,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             else if (this.Npc.Definition.ViewRange + 1 >= dist)
             {
                 // no, walk to the target
-                var walkTarget = this.currentTarget.CurrentMap.Terrain.GetRandomCoordinate(this.currentTarget.Position, this.Monster.Definition.AttackRange);
+                var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(this.currentTarget.Position, this.Monster.Definition.AttackRange);
                 this.Monster.WalkTo(walkTarget);
             }
             else

@@ -101,10 +101,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
 
             if (ragefighterClass > 0)
             {
-                yield return characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.FistMaster);
+                if (characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.FistMaster) is { } fistMaster)
+                {
+                    yield return fistMaster;
+                }
+
                 if (ragefighterClass < 3)
                 {
-                    yield return characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.RageFighter);
+                    if (characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.RageFighter) is { } rageFighter)
+                    {
+                        yield return rageFighter;
+                    }
                 }
             }
         }

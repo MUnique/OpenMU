@@ -12,19 +12,9 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class PlayerState
     {
-        private readonly State tradeButtonPressed;
-
-        private readonly State tradeOpened;
-
-        private readonly State npcDialogOpened;
-
-        private readonly State partyRequest;
-
-        private readonly State guildRequest;
-
-        private PlayerState()
+        static PlayerState()
         {
-            this.tradeButtonPressed = new State(new Guid("706A9618-1C31-4357-8C1A-0AA71B4E89E9"))
+            TradeButtonPressed = new State(new Guid("706A9618-1C31-4357-8C1A-0AA71B4E89E9"))
             {
                 Name = "Trade Button Pressed",
                 PossibleTransitions = new List<State>
@@ -33,7 +23,7 @@ namespace MUnique.OpenMU.GameLogic
                     EnteredWorld,
                 },
             };
-            this.tradeOpened = new State(new Guid("F4367C99-1F11-4D42-9ADF-AD4655F022A0"))
+            TradeOpened = new State(new Guid("F4367C99-1F11-4D42-9ADF-AD4655F022A0"))
             {
                 Name = "Trade Opened",
                 PossibleTransitions = new List<State>
@@ -41,32 +31,32 @@ namespace MUnique.OpenMU.GameLogic
                     Disconnected,
                     Dead,
                     EnteredWorld,
-                    this.tradeButtonPressed,
+                    TradeButtonPressed,
                 },
             };
-            this.tradeButtonPressed.PossibleTransitions.Add(this.tradeOpened);
+            TradeButtonPressed.PossibleTransitions.Add(TradeOpened);
             TradeRequested = new State(new Guid("E15623A1-D125-4327-AE6A-9F36C5744BC0"))
             {
                 Name = "Trade Requested",
                 PossibleTransitions = new List<State>
                 {
                     Disconnected,
-                    this.tradeOpened,
+                    TradeOpened,
                     EnteredWorld,
                 },
             };
-            EnteredWorld.PossibleTransitions.Add(TradeRequested);
-            this.npcDialogOpened = new State(new Guid("B0DFD9AC-009C-496C-A1B9-C8D6C6BFE23F"))
+            EnteredWorld.PossibleTransitions!.Add(TradeRequested);
+            NpcDialogOpened = new State(new Guid("B0DFD9AC-009C-496C-A1B9-C8D6C6BFE23F"))
             {
-                Name = "Monster Dialog Opened",
+                Name = "NPC Dialog Opened",
                 PossibleTransitions = new List<State>
                 {
                     Disconnected,
                     EnteredWorld,
                 },
             };
-            EnteredWorld.PossibleTransitions.Add(this.npcDialogOpened);
-            this.partyRequest = new State(new Guid("FD96D6EC-88F3-4B0C-ADFB-D5DDF1554C48"))
+            EnteredWorld.PossibleTransitions.Add(NpcDialogOpened);
+            PartyRequest = new State(new Guid("FD96D6EC-88F3-4B0C-ADFB-D5DDF1554C48"))
             {
                 Name = "Party Requested",
                 PossibleTransitions = new List<State>
@@ -75,8 +65,8 @@ namespace MUnique.OpenMU.GameLogic
                     EnteredWorld,
                 },
             };
-            EnteredWorld.PossibleTransitions.Add(this.partyRequest);
-            this.guildRequest = new State(new Guid("B8C69D28-4CEF-45CE-9D11-37576A97E116"))
+            EnteredWorld.PossibleTransitions.Add(PartyRequest);
+            GuildRequest = new State(new Guid("B8C69D28-4CEF-45CE-9D11-37576A97E116"))
             {
                 Name = "Guild Requested",
                 PossibleTransitions = new List<State>
@@ -85,7 +75,7 @@ namespace MUnique.OpenMU.GameLogic
                     EnteredWorld,
                 },
             };
-            EnteredWorld.PossibleTransitions.Add(this.guildRequest);
+            EnteredWorld.PossibleTransitions.Add(GuildRequest);
 
             EnteredWorld.PossibleTransitions.Add(PlayerState.Dead);
 
@@ -204,34 +194,32 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the trade requested state. When this state is active, a player got requested by another player to open a trade.
         /// </summary>
-        public static State TradeRequested { get; private set; }
+        public static State TradeRequested { get; }
 
         /// <summary>
         /// Gets the trade opened state. When this state is active, the player has a trade going on.
         /// </summary>
-        public static State TradeOpened => Instance.tradeOpened;
+        public static State TradeOpened { get; }
 
         /// <summary>
         /// Gets the trade button pressed state. When this state is active, the player pressed its trade button to close his trade.
         /// </summary>
-        public static State TradeButtonPressed => Instance.tradeButtonPressed;
+        public static State TradeButtonPressed { get; }
 
         /// <summary>
         /// Gets the Monster dialog opened state. When this state is active, the player has opened a Monster dialog.
         /// </summary>
-        public static State NpcDialogOpened => Instance.npcDialogOpened;
+        public static State NpcDialogOpened { get; }
 
         /// <summary>
         /// Gets the party request state. When this state is active, the player has requested for party.
         /// </summary>
-        public static State PartyRequest => Instance.partyRequest;
+        public static State PartyRequest { get; }
 
         /// <summary>
         /// Gets the guild request state. When this state is active, the player has requested for guild.
         /// TODO: set this state.
         /// </summary>
-        public static State GuildRequest => Instance.guildRequest;
-
-        private static PlayerState Instance { get; } = new PlayerState();
+        public static State GuildRequest { get; }
     }
 }

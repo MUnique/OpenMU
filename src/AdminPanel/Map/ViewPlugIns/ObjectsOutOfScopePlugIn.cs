@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
     /// </summary>
     public class ObjectsOutOfScopePlugIn : JsViewPlugInBase, IObjectsOutOfScopePlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
 
         private readonly IDictionary<int, ILocateable> objects;
 

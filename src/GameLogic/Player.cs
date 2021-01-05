@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel;
+
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
@@ -42,18 +44,18 @@ namespace MUnique.OpenMU.GameLogic
 
         private CancellationToken respawnAfterDeathToken;
 
-        private Character selectedCharacter;
+        private Character? selectedCharacter;
 
-        private ICustomPlugInContainer<IViewPlugIn> viewPlugIns;
+        private ICustomPlugInContainer<IViewPlugIn>? viewPlugIns;
 
         private DateTime lastRegenerate = DateTime.UtcNow;
 
-        private GameMap currentMap;
+        private GameMap? currentMap;
 
-        private IDisposable characterLoggingScope;
+        private IDisposable? characterLoggingScope;
 
-        private IDisposable accountLoggingScope;
-        private Account account;
+        private IDisposable? accountLoggingScope;
+        private Account? account;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Player" /> class.
@@ -77,17 +79,17 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Occurs when the player has or got disconnected from the game.
         /// </summary>
-        public event EventHandler PlayerDisconnected;
+        public event EventHandler? PlayerDisconnected;
 
         /// <summary>
         /// Occurs when the player entered the world with his selected character.
         /// </summary>
-        public event EventHandler PlayerEnteredWorld;
+        public event EventHandler? PlayerEnteredWorld;
 
         /// <summary>
         /// Occurs when the player left the world with his selected character.
         /// </summary>
-        public event EventHandler PlayerLeftWorld;
+        public event EventHandler? PlayerLeftWorld;
 
         /// <summary>
         /// Gets the logger of this player.
@@ -106,10 +108,17 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public int Money
         {
-            get => this.SelectedCharacter?.Inventory.Money ?? 0;
+            get => this.SelectedCharacter?.Inventory?.Money ?? 0;
 
             set
             {
+                if (this.SelectedCharacter is null)
+                {
+                    return;
+                }
+
+                this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.Inventory is null, nameof(this.SelectedCharacter.Inventory));
+
                 if (this.SelectedCharacter != null && this.SelectedCharacter.Inventory.Money != value)
                 {
                     this.SelectedCharacter.Inventory.Money = value;
@@ -127,15 +136,15 @@ namespace MUnique.OpenMU.GameLogic
         public ushort Id { get; set; }
 
         /// <inheritdoc cref="IPartyMember" />
-        public string Name => this.SelectedCharacter.Name;
+        public string Name => this.SelectedCharacter?.Name ?? string.Empty;
 
         /// <inheritdoc/>
-        public int Level => (int)this.Attributes[Stats.Level];
+        public int Level => (int)(this.Attributes?[Stats.Level] ?? 0);
 
         /// <summary>
         /// Gets or sets the selected character.
         /// </summary>
-        public Character SelectedCharacter
+        public Character? SelectedCharacter
         {
             get => this.selectedCharacter;
 
@@ -149,7 +158,7 @@ namespace MUnique.OpenMU.GameLogic
                 if (value is null)
                 {
                     this.appearanceData.RaiseAppearanceChanged();
-                    this.PlayerLeftWorld?.Invoke(this, null);
+                    this.PlayerLeftWorld?.Invoke(this, EventArgs.Empty);
                     this.selectedCharacter = null;
                     this.characterLoggingScope?.Dispose();
                     this.characterLoggingScope = null;
@@ -158,7 +167,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     this.selectedCharacter = value;
                     this.characterLoggingScope = this.Logger.BeginScope("Character: {Name}", this.selectedCharacter.Name);
-                    this.PlayerEnteredWorld?.Invoke(this, null);
+                    this.PlayerEnteredWorld?.Invoke(this, EventArgs.Empty);
                     this.appearanceData.RaiseAppearanceChanged();
                 }
             }
@@ -187,7 +196,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the account.
         /// </summary>
-        public Account Account
+        public Account? Account
         {
             get => this.account;
             set
@@ -196,7 +205,7 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     this.account = value;
                     this.accountLoggingScope?.Dispose();
-                    this.accountLoggingScope = this.Logger.BeginScope("Account: {Name}", this.account.LoginName);
+                    this.accountLoggingScope = this.Logger.BeginScope("Account: {Name}", this.account!.LoginName);
                     this.IsVaultLocked = !string.IsNullOrWhiteSpace(this.account.VaultPassword);
                 }
             }
@@ -210,7 +219,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the Monster of the current opened Monster dialog.
         /// </summary>
-        public NonPlayerCharacter OpenedNpc { get; set; }
+        public NonPlayerCharacter? OpenedNpc { get; set; }
 
         /// <inheritdoc/>
         public StateMachine PlayerState { get; } = new StateMachine(GameLogic.PlayerState.Initial);
@@ -218,13 +227,13 @@ namespace MUnique.OpenMU.GameLogic
         // TODO: TradeContext-object?
 
         /// <inheritdoc/>
-        public ITrader TradingPartner { get; set; }
+        public ITrader? TradingPartner { get; set; }
 
         /// <inheritdoc/>
         public int TradingMoney { get; set; }
 
         /// <inheritdoc/>
-        public GameMap CurrentMap
+        public GameMap? CurrentMap
         {
             get => this.currentMap;
 
@@ -245,21 +254,21 @@ namespace MUnique.OpenMU.GameLogic
         public ReaderWriterLockSlim ObserverLock { get; } = new ReaderWriterLockSlim();
 
         /// <inheritdoc/>
-        public IPartyMember LastPartyRequester { get; set; }
+        public IPartyMember? LastPartyRequester { get; set; }
 
         /// <summary>
         /// Gets the skill list.
         /// </summary>
-        public ISkillList SkillList { get; private set; }
+        public ISkillList? SkillList { get; private set; }
 
         /// <inheritdoc/>
-        public GuildMemberStatus GuildStatus { get; set; }
+        public GuildMemberStatus? GuildStatus { get; set; }
 
         /// <inheritdoc/>
         public Direction Rotation { get; set; }
 
         /// <inheritdoc/>
-        public Party Party { get; set; }
+        public Party? Party { get; set; }
 
         /// <inheritdoc/>
         public bool IsAlive { get; set; }
@@ -267,7 +276,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public bool IsTeleporting { get; private set; }
 
-        public DeathInformation LastDeath { get; private set; }
+        public DeathInformation? LastDeath { get; private set; }
 
         /// <inheritdoc/>
         public Point Position
@@ -276,20 +285,20 @@ namespace MUnique.OpenMU.GameLogic
 
             set
             {
-                if (this.Position != value)
+                if (this.Position != value && this.SelectedCharacter is { } character)
                 {
-                    this.SelectedCharacter.PositionX = value.X;
-                    this.SelectedCharacter.PositionY = value.Y;
+                    character.PositionX = value.X;
+                    character.PositionY = value.Y;
                     this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
                 }
             }
         }
 
         /// <inheritdoc/>
-        public uint MaximumHealth => (uint)this.Attributes[Stats.MaximumHealth];
+        public uint MaximumHealth => (uint)(this.Attributes?[Stats.MaximumHealth] ?? 0);
 
         /// <inheritdoc/>
-        public uint CurrentHealth => (uint)this.Attributes[Stats.CurrentHealth];
+        public uint CurrentHealth => (uint)(this.Attributes?[Stats.CurrentHealth] ?? 0);
 
         /// <summary>
         /// Gets or sets a value indicating whether this player is online as friend, and shown as online in its friends friendlists.
@@ -297,18 +306,18 @@ namespace MUnique.OpenMU.GameLogic
         public bool OnlineAsFriend { get; set; } = true;
 
         /// <inheritdoc cref="IWorldObserver"/>
-        public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns => this.viewPlugIns ?? (this.viewPlugIns = this.CreateViewPlugInContainer());
+        public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns => this.viewPlugIns ??= this.CreateViewPlugInContainer();
 
         /// <inheritdoc/>
-        public IInventoryStorage Inventory { get; private set; }
+        public IInventoryStorage? Inventory { get; private set; }
 
         /// <inheritdoc/>
-        public IStorage TemporaryStorage { get; private set; }
+        public IStorage? TemporaryStorage { get; private set; }
 
         /// <summary>
         /// Gets or sets the vault.
         /// </summary>
-        public IStorage Vault { get; set; }
+        public IStorage? Vault { get; set; }
 
         /// <summary>
         /// Gets or sets a flag, indicating if the vault of the player is currently locked by a pin.
@@ -318,10 +327,10 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets the shop storage.
         /// </summary>
-        public IShopStorage ShopStorage { get; private set; }
+        public IShopStorage? ShopStorage { get; private set; }
 
         /// <inheritdoc/>
-        public BackupItemStorage BackupInventory { get; set; }
+        public BackupItemStorage? BackupInventory { get; set; }
 
         /// <summary>
         /// Gets the appearance data.
@@ -342,28 +351,33 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Gets or sets the last guild requester.
         /// </summary>
-        public Player LastGuildRequester { get; set; }
+        public Player? LastGuildRequester { get; set; }
 
         /// <inheritdoc/>
-        IAttributeSystem IAttackable.Attributes => this.Attributes;
+        IAttributeSystem IAttackable.Attributes => this.Attributes!;
 
         /// <inheritdoc/>
-        IAttributeSystem IAttacker.Attributes => this.Attributes;
+        IAttributeSystem IAttacker.Attributes => this.Attributes!;
 
         /// <summary>
         /// Gets the attribute system.
         /// </summary>
-        public ItemAwareAttributeSystem Attributes { get; private set; }
+        public ItemAwareAttributeSystem? Attributes { get; private set; }
 
         /// <inheritdoc/>
-        public Bucket<ILocateable> NewBucket { get; set; }
+        public Bucket<ILocateable>? NewBucket { get; set; }
 
         /// <inheritdoc/>
-        public Bucket<ILocateable> OldBucket { get; set; }
+        public Bucket<ILocateable>? OldBucket { get; set; }
 
         /// <inheritdoc/>
-        public void AttackBy(IAttacker attacker, SkillEntry skill)
+        public void AttackBy(IAttacker attacker, SkillEntry? skill)
         {
+            if (this.Attributes is null)
+            {
+                throw new InvalidOperationException("AttributeSystem not set.");
+            }
+
             var hitInfo = attacker.CalculateDamage(this, skill);
 
             if (hitInfo.HealthDamage == 0)
@@ -397,7 +411,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public void AfterHitTarget()
         {
-            this.Attributes[Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
+            this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
         }
 
         /// <inheritdoc/>
@@ -440,7 +454,7 @@ namespace MUnique.OpenMU.GameLogic
 
                     // We need to restore the previous position to make the Moving on the map data structure work correctly.
                     this.Position = previous;
-                    this.CurrentMap.Move(this, target, this.moveLock, MoveType.Teleport);
+                    this.CurrentMap?.Move(this, target, this.moveLock, MoveType.Teleport);
                 }
             }
             catch (Exception e)
@@ -458,7 +472,7 @@ namespace MUnique.OpenMU.GameLogic
         public void AfterKilledPlayer()
         {
             // TODO: Self Defense System
-            if (this.selectedCharacter.State != HeroState.PlayerKiller2ndStage)
+            if (this.selectedCharacter!.State != HeroState.PlayerKiller2ndStage)
             {
                 if (this.selectedCharacter.State < HeroState.Normal)
                 {
@@ -483,7 +497,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             foreach (var recoverAfterMonsterKill in Stats.AfterMonsterKillRegenerationAttributes)
             {
-                var additionalValue = (uint)((this.Attributes[recoverAfterMonsterKill.RegenerationMultiplier] * this.Attributes[recoverAfterMonsterKill.MaximumAttribute]) + this.Attributes[recoverAfterMonsterKill.AbsoluteAttribute]);
+                var additionalValue = (uint)((this.Attributes![recoverAfterMonsterKill.RegenerationMultiplier] * this.Attributes[recoverAfterMonsterKill.MaximumAttribute]) + this.Attributes[recoverAfterMonsterKill.AbsoluteAttribute]);
                 this.Attributes[recoverAfterMonsterKill.CurrentAttribute] = (uint)Math.Min(this.Attributes[recoverAfterMonsterKill.MaximumAttribute], this.Attributes[recoverAfterMonsterKill.CurrentAttribute] + additionalValue);
             }
 
@@ -503,15 +517,17 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns><c>True</c>, if the player complies with the requirements of the specified item; Otherwise, <c>false</c>.</returns>
         public bool CompliesRequirements(Item item)
         {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+
             foreach (var requirement in item.Definition.Requirements.Select(item.GetRequirement))
             {
-                if (this.Attributes[requirement.Item1] < requirement.Item2)
+                if (this.Attributes![requirement.Item1] < requirement.Item2)
                 {
                     return false;
                 }
             }
 
-            return item.Definition.QualifiedCharacters.Contains(this.SelectedCharacter.CharacterClass);
+            return item.Definition.QualifiedCharacters.Contains(this.SelectedCharacter!.CharacterClass!);
         }
 
         /// <summary>
@@ -537,6 +553,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns><c>True</c>, if the players inventory had enough money to move; Otherwise, <c>false</c>.</returns>
         public bool TryDepositVaultMoney(int value)
         {
+            if (this.Vault is null)
+            {
+                return false;
+            }
+
             if (this.Vault.ItemStorage.Money + value > this.GameContext?.Configuration?.MaximumVaultMoney)
             {
                 return false;
@@ -557,6 +578,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns><c>True</c>, if the vault had enough money to move and player inventory isn't maximum; Otherwise, <c>false</c>.</returns>
         public bool TryTakeVaultMoney(int value)
         {
+            if (this.Vault is null)
+            {
+                return false;
+            }
+
             if (this.Money + value > this.GameContext?.Configuration?.MaximumInventoryMoney)
             {
                 return false;
@@ -608,7 +634,7 @@ namespace MUnique.OpenMU.GameLogic
             this.IsTeleporting = false;
             this.walker.Stop();
             this.observerToWorldViewAdapter.ClearObservingObjectsList();
-            this.SelectedCharacter.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
+            this.SelectedCharacter!.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
             this.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
             this.SelectedCharacter.CurrentMap = gate.Map;
             this.Rotation = gate.Direction;
@@ -629,10 +655,13 @@ namespace MUnique.OpenMU.GameLogic
         /// </remarks>
         public void ClientReadyAfterMapChange()
         {
-            this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter.CurrentMap.Number.ToUnsigned());
+            this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
+            this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
+            
+            this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned());
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
             this.IsAlive = true;
-            this.CurrentMap.Add(this);
+            this.CurrentMap!.Add(this);
         }
 
         /// <summary>
@@ -643,7 +672,7 @@ namespace MUnique.OpenMU.GameLogic
         public int AddExpAfterKill(IAttackable killedObject)
         {
             // Calculate the Exp
-            var experience = killedObject.Attributes[Stats.Level] * 1000 / this.Attributes[Stats.Level];
+            var experience = killedObject.Attributes[Stats.Level] * 1000 / this.Attributes![Stats.Level];
             experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
             experience *= this.Attributes[Stats.ExperienceRate];
             experience *= this.GameContext.ExperienceRate;
@@ -658,16 +687,16 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="experience">The experience which should be added.</param>
         /// <param name="killedObject">The killed object which caused the experience gain.</param>
-        public void AddExperience(int experience, IAttackable killedObject)
+        public void AddExperience(int experience, IAttackable? killedObject)
         {
-            if (this.Attributes[Stats.Level] < this.GameContext.Configuration.MaximumLevel)
+            if (this.Attributes![Stats.Level] < this.GameContext.Configuration.MaximumLevel)
             {
                 long exp = experience;
 
                 // Add the Exp
                 bool lvlup = false;
-                var expTable = this.GameContext.Configuration.ExperienceTable;
-                if (expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter.Experience < exp)
+                var expTable = this.GameContext.Configuration.ExperienceTable ?? throw Error.NotInitializedProperty(this.GameContext.Configuration, nameof(GameConfiguration.ExperienceTable));
+                if (expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter!.Experience < exp)
                 {
                     exp = expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter.Experience;
                     lvlup = true;
@@ -702,7 +731,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.Logger.LogDebug("Move: Player is moving to {0}", target);
             this.walker.Stop();
-            this.CurrentMap.Move(this, target, this.moveLock, MoveType.Instant);
+            this.CurrentMap!.Move(this, target, this.moveLock, MoveType.Instant);
             this.Logger.LogDebug("Move: Observer Count: {0}", this.Observers.Count);
         }
 
@@ -736,6 +765,11 @@ namespace MUnique.OpenMU.GameLogic
         {
             try
             {
+                if (this.Attributes is null)
+                {
+                    return;
+                }
+
                 foreach (var r in Stats.IntervalRegenerationAttributes.Where(r =>
                     this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
                 {
@@ -821,13 +855,13 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public void LocateableAdded(object sender, BucketItemEventArgs<ILocateable> eventArgs)
+        public void LocateableAdded(object? sender, BucketItemEventArgs<ILocateable> eventArgs)
         {
             this.observerToWorldViewAdapter.LocateableAdded(sender, eventArgs);
         }
 
         /// <inheritdoc/>
-        public void LocateableRemoved(object sender, BucketItemEventArgs<ILocateable> eventArgs)
+        public void LocateableRemoved(object? sender, BucketItemEventArgs<ILocateable> eventArgs)
         {
             this.observerToWorldViewAdapter.LocateableRemoved(sender, eventArgs);
         }
@@ -854,19 +888,19 @@ namespace MUnique.OpenMU.GameLogic
         /// </returns>
         public bool TryConsumeForSkill(Skill skill)
         {
-            if (skill.Requirements.Any(r => r.MinimumValue > this.Attributes[r.Attribute]))
+            if (skill.Requirements.Any(r => r.MinimumValue > this.Attributes![r.Attribute]))
             {
                 return false;
             }
 
-            if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r) > this.Attributes[r.Attribute]))
+            if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r) > this.Attributes![r.Attribute]))
             {
                 return false;
             }
 
             foreach (var requirement in skill.ConsumeRequirements)
             {
-                this.Attributes[requirement.Attribute] -= this.GetRequiredValue(requirement);
+                this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement);
             }
 
             this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
@@ -880,19 +914,29 @@ namespace MUnique.OpenMU.GameLogic
         public void CreateMagicEffectPowerUp(SkillEntry skillEntry)
         {
             var skill = skillEntry.Skill;
+            if (skill.MagicEffectDef?.PowerUpDefinition?.Boost is null)
+            {
+                throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefintion.");
+            }
+
+            if (skill.MagicEffectDef.PowerUpDefinition.Duration is null)
+            {
+                throw new InvalidOperationException($"PowerUpDefinition {skill.MagicEffectDef.PowerUpDefinition.GetId()} no Duration.");
+            }
+
             var powerUpDef = skill.MagicEffectDef.PowerUpDefinition;
             if (skillEntry.Level > 0)
             {
-                var element = this.Attributes.CreateElement(powerUpDef.Boost);
+                var element = this.Attributes!.CreateElement(powerUpDef.Boost);
                 var additionalValue = new SimpleElement(skillEntry.CalculateValue(), element.AggregateType);
                 skillEntry.BuffPowerUp = new CombinedElement(element, additionalValue);
             }
             else
             {
-                skillEntry.BuffPowerUp = this.Attributes.CreateElement(powerUpDef.Boost);
+                skillEntry.BuffPowerUp = this.Attributes!.CreateElement(powerUpDef.Boost);
             }
 
-            skillEntry.PowerUpDuration = this.Attributes.CreateElement(powerUpDef.Duration);
+            skillEntry.PowerUpDuration = this.Attributes!.CreateElement(powerUpDef.Duration);
         }
 
         /// <inheritdoc/>
@@ -959,7 +1003,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The created view plug in container.</returns>
         protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
         {
-            return null;
+            throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
         }
 
         private void RemoveFromCurrentMap()
@@ -1004,7 +1048,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The current step delay, depending on equipped items.</returns>
         private TimeSpan GetStepDelay()
         {
-            if (this.Inventory.EquippedItems.Any(item => item.Definition.ItemSlot.ItemSlots.Contains(7)))
+            if (this.Inventory?.EquippedItems.Any(item => item.Definition?.ItemSlot?.ItemSlots.Contains(7) ?? false) ?? false)
             {
                 // Wings
                 return TimeSpan.FromMilliseconds(300);
@@ -1016,6 +1060,11 @@ namespace MUnique.OpenMU.GameLogic
 
         private ExitGate GetSpawnGateOfCurrentMap()
         {
+            if (this.CurrentMap is null)
+            {
+                throw new InvalidOperationException("CurrentMap is not set. Can't determine spawn gate.");
+            }
+
             var spawnTargetMap = this.CurrentMap.Definition.SafezoneMap ?? this.CurrentMap.Definition;
             var terrain = this.CurrentMap.Definition == spawnTargetMap ? this.CurrentMap.Terrain : new GameMapTerrain(spawnTargetMap);
             var safeSpawn = spawnTargetMap.ExitGates.Where(g => g.IsSpawnGate && terrain.SafezoneMap[g.X1, g.Y1]).SelectRandom()
@@ -1023,9 +1072,9 @@ namespace MUnique.OpenMU.GameLogic
             return safeSpawn;
         }
 
-        private void Hit(HitInfo hitInfo, IAttacker attacker, Skill skill)
+        private void Hit(HitInfo hitInfo, IAttacker attacker, Skill? skill)
         {
-            int oversd = (int)(this.Attributes[Stats.CurrentShield] - hitInfo.ShieldDamage);
+            int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
             if (oversd < 0)
             {
                 this.Attributes[Stats.CurrentShield] = 0;
@@ -1096,16 +1145,16 @@ namespace MUnique.OpenMU.GameLogic
             this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, killer);
         }
 
-        private Item GetAmmunitionItem()
+        private Item? GetAmmunitionItem()
         {
-            if (this.Inventory.GetItem(InventoryConstants.LeftHandSlot) is { } leftItem
-                && leftItem.Definition.IsAmmunition)
+            if (this.Inventory?.GetItem(InventoryConstants.LeftHandSlot) is { } leftItem
+                && (leftItem.Definition?.IsAmmunition ?? false))
             {
                 return leftItem;
             }
 
-            if (this.Inventory.GetItem(InventoryConstants.RightHandSlot) is { } rightItem
-                && rightItem.Definition.IsAmmunition)
+            if (this.Inventory?.GetItem(InventoryConstants.RightHandSlot) is { } rightItem
+                && (rightItem.Definition?.IsAmmunition ?? false))
             {
                 return rightItem;
             }
@@ -1113,9 +1162,9 @@ namespace MUnique.OpenMU.GameLogic
             return null;
         }
 
-        private void OnPlayerEnteredWorld(object sender, EventArgs e)
+        private void OnPlayerEnteredWorld(object? sender, EventArgs e)
         {
-            this.Attributes = new ItemAwareAttributeSystem(this.SelectedCharacter);
+            this.Attributes = new ItemAwareAttributeSystem(this.SelectedCharacter!);
             this.Inventory = new InventoryStorage(this, this.GameContext);
             this.ShopStorage = new ShopStorage(this);
             this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
@@ -1160,7 +1209,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         private void SetReclaimableAttributesBeforeEnterGame()
         {
-            this.Attributes[Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
+            this.Attributes![Stats.CurrentShield] = this.Attributes[Stats.MaximumShield];
             this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
             this.Attributes[Stats.CurrentAbility] = this.Attributes[Stats.MaximumAbility] / 2;
             this.Attributes[Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
@@ -1170,13 +1219,13 @@ namespace MUnique.OpenMU.GameLogic
         {
             foreach (var regeneration in Stats.IntervalRegenerationAttributes)
             {
-                this.Attributes[regeneration.CurrentAttribute] = this.Attributes[regeneration.MaximumAttribute];
+                this.Attributes![regeneration.CurrentAttribute] = this.Attributes[regeneration.MaximumAttribute];
             }
         }
 
         private void OnMaximumHealthOrShieldChanged()
         {
-            this.Attributes[Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
+            this.Attributes![Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
             this.Attributes[Stats.CurrentShield] = Math.Min(this.Attributes[Stats.CurrentShield], this.Attributes[Stats.MaximumShield]);
             this.ViewPlugIns.GetPlugIn<IUpdateMaximumHealthPlugIn>()?.UpdateMaximumHealth();
             this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
@@ -1184,14 +1233,14 @@ namespace MUnique.OpenMU.GameLogic
 
         private void OnAmmunitionAmountChanged()
         {
-            var value = Math.Max((byte)this.Attributes[Stats.AmmunitionAmount], (byte)0);
+            var value = Math.Max((byte)this.Attributes![Stats.AmmunitionAmount], (byte)0);
             if (this.GetAmmunitionItem() is { } ammoItem
                 && ammoItem.Durability != value)
             {
                 ammoItem.Durability = value;
                 if (ammoItem.Durability == 0)
                 {
-                    this.Inventory.RemoveItem(ammoItem);
+                    this.Inventory!.RemoveItem(ammoItem);
                     this.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(ammoItem.ItemSlot);
                     this.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(ammoItem);
                 }
@@ -1204,7 +1253,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private void OnMaximumManaOrAbilityChanged()
         {
-            this.Attributes[Stats.CurrentMana] = Math.Min(this.Attributes[Stats.CurrentMana], this.Attributes[Stats.MaximumMana]);
+            this.Attributes![Stats.CurrentMana] = Math.Min(this.Attributes[Stats.CurrentMana], this.Attributes[Stats.MaximumMana]);
             this.Attributes[Stats.CurrentAbility] = Math.Min(this.Attributes[Stats.CurrentAbility], this.Attributes[Stats.MaximumAbility]);
             this.ViewPlugIns.GetPlugIn<IUpdateMaximumManaPlugIn>()?.UpdateMaximumMana();
             this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
@@ -1228,13 +1277,13 @@ namespace MUnique.OpenMU.GameLogic
                 this.player = player;
             }
 
-            public event EventHandler AppearanceChanged;
+            public event EventHandler? AppearanceChanged;
 
-            public CharacterClass CharacterClass => this.player.SelectedCharacter?.CharacterClass;
+            public CharacterClass? CharacterClass => this.player.SelectedCharacter?.CharacterClass;
 
             public CharacterPose Pose => this.player.SelectedCharacter?.Pose ?? default;
 
-            public bool FullAncientSetEquipped => (this.fullAncientSetEquipped ?? (this.fullAncientSetEquipped = this.player.SelectedCharacter.HasFullAncientSetEquipped())).Value;
+            public bool FullAncientSetEquipped => (this.fullAncientSetEquipped ??= this.player.SelectedCharacter?.HasFullAncientSetEquipped()) ?? false;
 
             public IEnumerable<ItemAppearance> EquippedItems
             {

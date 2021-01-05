@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
@@ -21,7 +22,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the experience rate for the specific server.
@@ -32,18 +33,20 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the server configuration.
         /// </summary>
-        public virtual GameServerConfiguration ServerConfiguration { get; set; }
+        [Required]
+        public virtual GameServerConfiguration? ServerConfiguration { get; set; }
 
         /// <summary>
         /// Gets or sets the game configuration.
         /// </summary>
-        public virtual GameConfiguration GameConfiguration { get; set; }
+        [Required]
+        public virtual GameConfiguration? GameConfiguration { get; set; }
 
         /// <summary>
         /// Gets or sets the endpoints of the game server.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<GameServerEndpoint> Endpoints { get; protected set; }
+        public virtual ICollection<GameServerEndpoint> Endpoints { get; protected set; } = null!;
 
         /// <inheritdoc/>
         public override string ToString()

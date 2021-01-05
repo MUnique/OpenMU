@@ -21,9 +21,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
         public void DeleteLetter(Player player, LetterHeader letter)
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
-            if (letter is null)
+            if (player.SelectedCharacter is not { } character)
             {
-                player.Logger.LogWarning("letter is null, player {0}", player.SelectedCharacter.Name);
+                player.Logger.LogWarning("no character selected, player {0}", player);
+                return;
             }
 
             var letterIndex = player.SelectedCharacter.Letters.IndexOf(letter);

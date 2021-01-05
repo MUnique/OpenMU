@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.AttributeSystem
     /// </summary>
     public abstract class BaseAttribute : IAttribute
     {
-        private AttributeDefinition definition;
+        private AttributeDefinition definition = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseAttribute"/> class.
@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.AttributeSystem
         }
 
         /// <inheritdoc/>
-        public event EventHandler ValueChanged;
+        public event EventHandler? ValueChanged;
 
         /// <inheritdoc/>
         public virtual AttributeDefinition Definition

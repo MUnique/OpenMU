@@ -64,7 +64,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Occurs when a game map got created.
         /// </summary>
-        public event EventHandler<GameMapEventArgs> GameMapCreated;
+        public event EventHandler<GameMap>? GameMapCreated;
 
         /// <summary>
         /// Occurs when a game map got removed.
@@ -73,7 +73,7 @@ namespace MUnique.OpenMU.GameLogic
         /// Currently, maps are never removed.
         /// It may make sense to remove unused maps after a certain period.
         /// </remarks>
-        public event EventHandler<GameMapEventArgs> GameMapRemoved;
+        public event EventHandler<GameMap>? GameMapRemoved;
 
         /// <inheritdoc />
         public virtual float ExperienceRate => this.Configuration.ExperienceRate;
@@ -112,14 +112,14 @@ namespace MUnique.OpenMU.GameLogic
         public ILoggerFactory LoggerFactory { get; }
 
         /// <inheritdoc/>
-        public GameMap GetMap(ushort mapId)
+        public GameMap? GetMap(ushort mapId)
         {
             if (this.mapList.TryGetValue(mapId, out var map))
             {
                 return map;
             }
 
-            GameMap createdMap;
+            GameMap? createdMap;
             lock (this.mapInitializer)
             {
                 if (this.mapList.TryGetValue(mapId, out map))
@@ -140,7 +140,7 @@ namespace MUnique.OpenMU.GameLogic
 
             // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
             this.mapInitializer.InitializeState(createdMap);
-            this.GameMapCreated?.Invoke(this, new GameMapEventArgs(createdMap, null));
+            this.GameMapCreated?.Invoke(this, createdMap);
 
             return createdMap;
         }
@@ -187,9 +187,9 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="name">The character name.</param>
         /// <returns>The player by character name.</returns>
-        public Player GetPlayerByCharacterName(string name)
+        public Player? GetPlayerByCharacterName(string name)
         {
-            this.PlayersByCharacterName.TryGetValue(name, out Player player);
+            this.PlayersByCharacterName.TryGetValue(name, out var player);
             return player;
         }
 
@@ -232,12 +232,12 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private void ExecutePeriodicTasks(object state)
+        private void ExecutePeriodicTasks(object? state)
         {
             this.PlugInManager.GetPlugInPoint<IPeriodicTaskPlugIn>()?.ExecuteTask(this);
         }
 
-        private void RecoverTimerElapsed(object state)
+        private void RecoverTimerElapsed(object? state)
         {
             for (int i = this.PlayerList.Count - 1; i >= 0; --i)
             {
@@ -254,7 +254,7 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private void PlayerDisconnected(object sender, EventArgs e)
+        private void PlayerDisconnected(object? sender, EventArgs e)
         {
             if (sender is not Player player)
             {
@@ -264,24 +264,24 @@ namespace MUnique.OpenMU.GameLogic
             this.RemovePlayer(player);
         }
 
-        private void PlayerEnteredWorld(object sender, EventArgs e)
+        private void PlayerEnteredWorld(object? sender, EventArgs e)
         {
             if (sender is not Player player)
             {
                 return;
             }
 
-            this.PlayersByCharacterName.Add(player.SelectedCharacter.Name, player);
+            this.PlayersByCharacterName.Add(player.SelectedCharacter!.Name, player);
         }
 
-        private void PlayerLeftWorld(object sender, EventArgs e)
+        private void PlayerLeftWorld(object? sender, EventArgs e)
         {
             if (sender is not Player player)
             {
                 return;
             }
 
-            this.PlayersByCharacterName.Remove(player.SelectedCharacter.Name);
+            this.PlayersByCharacterName.Remove(player.SelectedCharacter!.Name);
         }
     }
 }

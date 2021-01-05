@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public abstract class NotifyableInputBase<TValue> : InputBase<TValue>
     {
-        private Func<TValue> getter;
+        private Func<TValue>? getter;
 
         /// <summary>
         /// Gets or sets the notification service.
@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         /// The notification service.
         /// </value>
         [Inject]
-        public IChangeNotificationService NotificationService { get; set; }
+        public IChangeNotificationService NotificationService { get; set; } = null!;
 
         /// <inheritdoc />
         protected override void OnInitialized()
@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             this.NotificationService.PropertyChanged -= this.OnPropertyChanged;
         }
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        private void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
         {
             if (sender != this.EditContext.Model)
             {
@@ -54,7 +54,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
                 return;
             }
 
-            this.getter ??= this.ValueExpression.Compile();
+            this.getter ??= this.ValueExpression!.Compile();
             this.CurrentValue = this.getter();
             this.StateHasChanged();
         }

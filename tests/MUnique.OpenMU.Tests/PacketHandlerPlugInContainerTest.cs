@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.Tests
             var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             var handler = containerForSeason6[HandlerKey];
-            Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6)));
+            Assert.That(handler!.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6)));
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.Tests
             var containerForSeason9 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason9.Initialize();
             var handler = containerForSeason9[HandlerKey];
-            Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6)));
+            Assert.That(handler!.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6)));
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.Tests
             var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             var handler = containerForSeason6[HandlerKey];
-            Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6)));
+            Assert.That(handler!.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6)));
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.Tests
             var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             var handler = containerForSeason6[HandlerKey];
-            Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerInvariant)));
+            Assert.That(handler!.GetType(), Is.EqualTo(typeof(PacketHandlerInvariant)));
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.Tests
             containerForSeason6.Initialize();
             manager.DeactivatePlugIn(typeof(PacketHandlerSeason6));
             var handler = containerForSeason6[HandlerKey];
-            Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerSeason1)));
+            Assert.That(handler!.GetType(), Is.EqualTo(typeof(PacketHandlerSeason1)));
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.Tests
             var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             var handler = containerForSeason6[HandlerKey];
-            Assert.That(handler.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6English)));
+            Assert.That(handler!.GetType(), Is.EqualTo(typeof(PacketHandlerSeason6English)));
         }
 
         /// <summary>

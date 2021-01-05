@@ -159,6 +159,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The size of the inventory.</returns>
         public static byte GetInventorySize(Player player)
         {
+            if (player.SelectedCharacter is null)
+            {
+                throw new ArgumentException("Player has no selected player.");
+            }
+
             var size = EquippableSlotsCount +
                 (InventoryRows * RowSize) +
                 (RowsOfOneExtension * Math.Min(player.SelectedCharacter.InventoryExtensions, MaximumNumberOfExtensions));

@@ -15,12 +15,12 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items
         /// <summary>
         /// Gets or sets the item's definition for which the bonus should apply.
         /// </summary>
-        public virtual ItemDefinition ItemDefinition { get; set; }
+        public virtual ItemDefinition? ItemDefinition { get; set; }
 
         /// <summary>
         /// Gets or sets the bonus option.
         /// </summary>
-        public virtual IncreasableItemOption BonusOption { get; set; }
+        public virtual IncreasableItemOption? BonusOption { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()

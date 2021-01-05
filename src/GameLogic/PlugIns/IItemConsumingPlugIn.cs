@@ -23,6 +23,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         /// <param name="item">The item.</param>
         /// <param name="targetItem">The target item, e.g. an armor piece which gets upgraded by the consumption of a jewel.</param>
         /// <param name="eventArgs">The <see cref="CancelEventArgs"/> instance containing the event data. Allows to cancel the consumption.</param>
-        void ItemConsuming(Player player, Item item, Item targetItem, CancelEventArgs eventArgs);
+        void ItemConsuming(Player player, Item item, Item? targetItem, CancelEventArgs eventArgs);
     }
 }

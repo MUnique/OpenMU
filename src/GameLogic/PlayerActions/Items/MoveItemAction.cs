@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 {
     using System;
     using System.ComponentModel;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
@@ -41,8 +42,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         public void MoveItem(Player player, byte fromSlot, Storages fromStorage, byte toSlot, Storages toStorage)
         {
             var fromStorageInfo = this.GetStorageInfo(player, fromStorage);
-            var fromItemStorage = fromStorageInfo.Storage;
-            Item item = fromItemStorage.GetItem(fromSlot);
+            var fromItemStorage = fromStorageInfo?.Storage;
+            var item = fromItemStorage?.GetItem(fromSlot);
 
             if (item is null)
             {
@@ -52,7 +53,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
 
             var toStorageInfo = this.GetStorageInfo(player, toStorage);
-            var toItemStorage = toStorageInfo.Storage;
+            var toItemStorage = toStorageInfo?.Storage;
 
             var movement = this.CanMove(player, item, toSlot, fromSlot, toStorageInfo, fromStorageInfo);
             if (movement != Movement.None)
@@ -68,13 +69,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             switch (movement)
             {
                 case Movement.Normal:
-                    this.MoveNormal(player, fromSlot, toSlot, toStorage, fromItemStorage, item, toItemStorage);
+                    this.MoveNormal(player, fromSlot, toSlot, toStorage, fromItemStorage!, item, toItemStorage!);
                     break;
-                case Movement.PartiallyStack:
-                    this.PartiallyStack(player, item, toItemStorage.GetItem(toSlot));
+                case Movement.PartiallyStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
+                    this.PartiallyStack(player, item, targetItem);
                     break;
-                case Movement.CompleteStack:
-                    this.FullStack(player, item, toItemStorage.GetItem(toSlot));
+                case Movement.CompleteStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
+                    this.FullStack(player, item, targetItem);
                     break;
                 default:
                     player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(item);
@@ -97,7 +98,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private void PartiallyStack(Player player, Item sourceItem, Item targetItem)
         {
-            var partialAmount = (byte)Math.Min(targetItem.Definition.Durability - targetItem.Durability, sourceItem.Durability);
+            var partialAmount = (byte)Math.Min(targetItem.Definition!.Durability - targetItem.Durability, sourceItem.Durability);
             targetItem.Durability += partialAmount;
             sourceItem.Durability -= partialAmount;
             player.ViewPlugIns.GetPlugIn<IItemMoveFailedPlugIn>()?.ItemMoveFailed(sourceItem);
@@ -135,26 +136,26 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
         }
 
-        private StorageInfo GetStorageInfo(Player player, Storages storageType)
+        private StorageInfo? GetStorageInfo(Player player, Storages storageType)
         {
-            StorageInfo result;
+            StorageInfo? result;
             switch (storageType)
             {
-                case Storages.Inventory:
+                case Storages.Inventory when player.Inventory is not null:
                     result = new StorageInfo(
                         player.Inventory,
                         InventoryRows,
                         EquippableSlotsCount,
                         (byte)(EquippableSlotsCount + GetInventorySize(player)));
                     break;
-                case Storages.PersonalStore:
+                case Storages.PersonalStore when player.ShopStorage is not null:
                     result = new StorageInfo(
                         player.ShopStorage,
                         StoreRows,
                         FirstStoreItemSlotIndex,
                         (byte)(FirstStoreItemSlotIndex + StoreSize));
                     break;
-                case Storages.Vault:
+                case Storages.Vault when player.Vault is not null:
                     result = new StorageInfo(player.Vault, WarehouseRows, 0, WarehouseSize);
                     break;
                 case Storages.Trade:
@@ -169,17 +170,32 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 case Storages.SeedSphereCrafting:
                 case Storages.SeedMountCrafting:
                 case Storages.SeedUnmountCrafting:
-                    result = new StorageInfo(player.TemporaryStorage, TemporaryStorageRows, 0, TemporaryStorageSize);
+                    if (player.TemporaryStorage is not null)
+                    {
+                        result = new StorageInfo(player.TemporaryStorage, TemporaryStorageRows, 0, TemporaryStorageSize);
+                    }
+                    else
+                    {
+                        result = null;
+                    }
+
                     break;
                 default:
-                    throw new NotImplementedException($"Moving to {storageType} is not implemented.");
+                    result = null;
+                    player.Logger.LogError($"Moving to {storageType} is not implemented.");
+                    break;
             }
 
             return result;
         }
 
-        private Movement CanMove(Player player, Item item, byte toSlot, byte fromSlot, StorageInfo toStorage, StorageInfo fromStorage)
+        private Movement CanMove(Player player, Item item, byte toSlot, byte fromSlot, StorageInfo? toStorage, StorageInfo? fromStorage)
         {
+            if (toStorage is null || fromStorage is null)
+            {
+                return Movement.None;
+            }
+
             if (fromStorage.Storage == player.Vault
                 && toStorage.Storage == player.Inventory
                 && player.IsVaultLocked)
@@ -191,12 +207,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             var storage = toStorage.Storage;
             if (toStorage.Storage == player.Inventory && toSlot <= LastEquippableItemSlotIndex)
             {
-                if (storage.GetItem(toSlot) != null)
+                var itemDefinition = item.Definition;
+                if (storage.GetItem(toSlot) != null || itemDefinition?.ItemSlot is null)
                 {
                     return Movement.None;
                 }
-
-                var itemDefinition = item.Definition;
 
                 if (itemDefinition.ItemSlot.ItemSlots.Contains(toSlot) &&
                     player.CompliesRequirements(item))
@@ -204,7 +219,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                     if (itemDefinition.ItemSlot.ItemSlots.Contains(RightHandSlot)
                         && itemDefinition.ItemSlot.ItemSlots.Contains(LeftHandSlot)
                         && toSlot == RightHandSlot
-                        && storage.GetItem(LeftHandSlot)?.Definition.Width >= 2)
+                        && storage.GetItem(LeftHandSlot)?.Definition!.Width >= 2)
                     {
                         return Movement.None;
                     }
@@ -216,7 +231,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return Movement.None;
             }
 
-            if (item.Definition.IsBoundToCharacter && toStorage != fromStorage)
+            if (item.Definition!.IsBoundToCharacter && toStorage != fromStorage)
             {
                 player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("This item is bound to the inventory of this character.", MessageType.BlueNormal);
                 return Movement.None;
@@ -290,7 +305,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         {
             int rowIndex = (toSlot - toStorage.StartIndex) / RowSize;
             int columnIndex = (toSlot - toStorage.StartIndex) % RowSize;
-            for (int r = rowIndex; r < rowIndex + item.Definition.Height; r++)
+            for (int r = rowIndex; r < rowIndex + item.Definition!.Height; r++)
             {
                 for (int c = columnIndex; c < columnIndex + item.Definition.Width; c++)
                 {
@@ -310,7 +325,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             int rowIndex = (blockingItem.ItemSlot - toStorage.StartIndex) / RowSize;
 
             // Set all taken slots of this item to true
-            for (int r = rowIndex; r < rowIndex + blockingItem.Definition.Height; r++)
+            for (int r = rowIndex; r < rowIndex + blockingItem.Definition!.Height; r++)
             {
                 for (int c = columnIndex; c < columnIndex + blockingItem.Definition.Width; c++)
                 {
@@ -348,13 +363,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             }
 
             /// <inheritdoc />
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 return obj is StorageInfo typedObj
                        && typedObj.Equals(this);
             }
 
-            public bool Equals(StorageInfo other)
+            public bool Equals(StorageInfo? other)
             {
                 if (other is null)
                 {

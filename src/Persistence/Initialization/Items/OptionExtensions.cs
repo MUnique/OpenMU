@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The definition for the luck option.</returns>
         public static ItemOptionDefinition GetLuck(this GameConfiguration gameConfiguration)
         {
-            return gameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck));
+            return gameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck));
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The definition for the defense option.</returns>
         public static ItemOptionDefinition GetDefenseOption(this GameConfiguration gameConfiguration)
         {
-            return gameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.DefenseBase));
+            return gameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.DefenseBase));
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The definition for the physical damage option.</returns>
         public static ItemOptionDefinition PhysicalDamageOption(this GameConfiguration gameConfiguration)
         {
-            return gameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumPhysBaseDmg));
+            return gameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg));
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         /// <returns>The definition for the wizardry damage option.</returns>
         public static ItemOptionDefinition WizardryDamageOption(this GameConfiguration gameConfiguration)
         {
-            return gameConfiguration.ItemOptions.FirstOrDefault(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition.TargetAttribute == Stats.MaximumWizBaseDmg));
+            return gameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg));
         }
 
         /// <summary>

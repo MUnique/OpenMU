@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 300;
             character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 200;
             character.LevelUpPoints -= 1135; // for the added strength and agility
-            character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.LeftHandSlot, ItemGroups.Scepters, 17, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
+            character.Inventory!.Items.Add(this.CreateSocketItem(InventoryConstants.LeftHandSlot, ItemGroups.Scepters, 17, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.ArmorSlot, ItemGroups.Armor, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.HelmSlot, ItemGroups.Helm, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.PantsSlot, ItemGroups.Pants, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
@@ -61,7 +61,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 1660; // for the added strength, agility and energy
             character.LevelUpPoints += 160; // after level 220, one point more
 
-            character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.LeftHandSlot, ItemGroups.Swords, 26, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
+            character.Inventory!.Items.Add(this.CreateSocketItem(InventoryConstants.LeftHandSlot, ItemGroups.Swords, 26, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.RightHandSlot, ItemGroups.Swords, 26, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.ArmorSlot, ItemGroups.Armor, 45, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.HelmSlot, ItemGroups.Helm, 45, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 1580; // for the added strength, agility and energy
             character.LevelUpPoints += 160; // after level 220, one point more
 
-            character.Inventory.Items.Add(this.CreateArrows(InventoryConstants.LeftHandSlot));
+            character.Inventory!.Items.Add(this.CreateArrows(InventoryConstants.LeftHandSlot));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.RightHandSlot, ItemGroups.Bows, 23, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1), (SocketSubOptionType.Lightning, 1), (SocketSubOptionType.Fire, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.ArmorSlot, ItemGroups.Armor, 49, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.HelmSlot, ItemGroups.Helm, 49, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.LevelUpPoints -= 1630; // for the added strength, agility, energy
             character.LevelUpPoints += 160; // after level 220, one point more
 
-            character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.LeftHandSlot, ItemGroups.Staff, 31, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
+            character.Inventory!.Items.Add(this.CreateSocketItem(InventoryConstants.LeftHandSlot, ItemGroups.Staff, 31, (SocketSubOptionType.Lightning, 0), (SocketSubOptionType.Ice, 0), (SocketSubOptionType.Fire, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.RightHandSlot, ItemGroups.Shields, 20, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.ArmorSlot, ItemGroups.Armor, 52, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1))); // Enis Legendary Armor+13+16+L
             character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.HelmSlot, ItemGroups.Helm, 52, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1))); // Enis Legendary Helm+13+16+L

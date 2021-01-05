@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     using System.ComponentModel;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
-    using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views.Inventory;
     using MUnique.OpenMU.Persistence;
@@ -19,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     /// </summary>
     public class ItemConsumeAction
     {
-        private IDictionary<ItemDefinition, IItemConsumeHandler> consumeHandlers;
+        private IDictionary<ItemDefinition, IItemConsumeHandler>? consumeHandlers;
 
         /// <summary>
         /// Handles the consume request.
@@ -30,21 +29,21 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         /// <param name="fruitUsage">The fruit usage.</param>
         public void HandleConsumeRequest(Player player, byte inventorySlot, byte inventoryTargetSlot, FruitUsage fruitUsage)
         {
-            Item item = player.Inventory.GetItem(inventorySlot);
-            if (item is null)
+            var item = player.Inventory?.GetItem(inventorySlot);
+            if (item?.Definition is null)
             {
                 player.ViewPlugIns.GetPlugIn<IRequestedItemConsumptionFailedPlugIn>()?.RequestedItemConsumptionFailed();
                 return;
             }
 
             this.InitializeConsumeHandlersIfRequired(player.GameContext);
-            if (!this.consumeHandlers.TryGetValue(item.Definition, out var consumeHandler))
+            if (!this.consumeHandlers!.TryGetValue(item.Definition, out var consumeHandler))
             {
                 player.ViewPlugIns.GetPlugIn<IRequestedItemConsumptionFailedPlugIn>()?.RequestedItemConsumptionFailed();
                 return;
             }
 
-            var targetItem = player.Inventory.GetItem(inventoryTargetSlot);
+            var targetItem = player.Inventory!.GetItem(inventoryTargetSlot);
 
             if (player.GameContext.PlugInManager.GetPlugInPoint<IItemConsumingPlugIn>() is { } plugInPoint)
             {
@@ -92,7 +91,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
             var items = gameContext.Configuration.Items.Where(def => !string.IsNullOrEmpty(def.ConsumeHandlerClass));
             foreach (var item in items)
             {
-                var consumeHandler = this.CreateConsumeHandler(gameContext, item.ConsumeHandlerClass);
+                var consumeHandler = this.CreateConsumeHandler(gameContext, item.ConsumeHandlerClass!);
                 this.consumeHandlers.Add(item, consumeHandler);
             }
         }

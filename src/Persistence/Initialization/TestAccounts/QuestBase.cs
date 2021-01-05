@@ -37,7 +37,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.CurrentMap = this.GameConfiguration.Maps.First(map => map.Number == Devias.Number);
             character.PositionX = 184;
             character.PositionY = 31;
-            character.Inventory.Money = 100000000;
+            character.Inventory!.Money = 100000000;
             return character;
         }
 
@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.Attributes.First(a => a.Definition == Stats.BaseVitality).Value += 100;
             character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 100;
             character.LevelUpPoints -= 700;
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 5, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Armor
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 5, 7, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Helm
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 5, 9, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Pants
@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.Attributes.First(a => a.Definition == Stats.BaseVitality).Value += 100;
             character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 100;
             character.LevelUpPoints -= 700;
-            character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
+            character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 1, 3, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Tomahawk+13+16+L+ExcDmg
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 5, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Armor
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 5, 7, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Helm
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
         }
 
         /// <inheritdoc/>
-        protected override Character CreateWizard()
+        protected override Character? CreateWizard()
         {
             return null;
         }
@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 600;
             character.LevelUpPoints -= 800; // for the added strength and agility
 
-            character.Inventory.Items.Add(this.CreateWeapon(1, (int)ItemGroups.Bows, 6, 13, 4, true, true));
+            character.Inventory!.Items.Add(this.CreateWeapon(1, (int)ItemGroups.Bows, 6, 13, 4, true, true));
             character.Inventory.Items.Add(this.CreateArrows(0));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 12, 8, null, 15, 4, true));
             character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 12, 7, null, 15, 4, true));

@@ -31,9 +31,15 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
         /// <inheritdoc/>
         public void ShowMerchantStoreItemList(ICollection<Item> storeItems, StoreKind storeKind)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var itemSerializer = this.player.ItemSerializer;
             int sizePerItem = StoredItem.GetRequiredSize(itemSerializer.NeededSpace);
-            using var writer = this.player.Connection.StartSafeWrite(StoreItemList.HeaderType, StoreItemList.GetRequiredSize(storeItems.Count, sizePerItem));
+            using var writer = connection.StartSafeWrite(StoreItemList.HeaderType, StoreItemList.GetRequiredSize(storeItems.Count, sizePerItem));
             var packet = new StoreItemList(writer.Span)
             {
                 ItemCount = (byte)storeItems.Count,

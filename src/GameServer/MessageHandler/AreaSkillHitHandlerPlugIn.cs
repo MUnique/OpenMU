@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             }
 
             AreaSkillHit message = packet;
-            if (!player.SkillList.ContainsSkill(message.SkillId))
+            if (player.SkillList is null || !player.SkillList.ContainsSkill(message.SkillId))
             {
                 return;
             }
@@ -50,8 +50,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             {
                 if (target is IObservable observable && observable.Observers.Contains(player))
                 {
-                    var skillEntry = player.SkillList.GetSkill(message.SkillId);
-                    this.skillHitAction.AttackTarget(player, target, skillEntry);
+                    if (player.SkillList.GetSkill(message.SkillId) is { } skillEntry)
+                    {
+                        this.skillHitAction.AttackTarget(player, target, skillEntry);
+                    }
                 }
                 else
                 {

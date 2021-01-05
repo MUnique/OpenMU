@@ -80,7 +80,7 @@ namespace MUnique.OpenMU.Pathfinding
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is Point point)
             {

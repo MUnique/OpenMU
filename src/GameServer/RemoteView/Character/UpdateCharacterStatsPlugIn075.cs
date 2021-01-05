@@ -31,15 +31,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <inheritdoc/>
         public void UpdateCharacterStats()
         {
-            using (var writer = this.player.Connection.StartSafeWrite(CharacterInformation075.HeaderType, CharacterInformation075.Length))
+            var connection = this.player.Connection;
+            if (connection is null || this.player.Account is null)
+            {
+                return;
+            }
+
+            using (var writer = connection.StartSafeWrite(CharacterInformation075.HeaderType, CharacterInformation075.Length))
             {
                 _ = new CharacterInformation075(writer.Span)
                 {
                     X = this.player.Position.X,
                     Y = this.player.Position.Y,
-                    MapId = (byte)this.player.SelectedCharacter.CurrentMap.Number,
+                    MapId = (byte)this.player.SelectedCharacter!.CurrentMap!.Number,
                     CurrentExperience = (uint)this.player.SelectedCharacter.Experience,
-                    ExperienceForNextLevel = (uint)this.player.GameServerContext.Configuration.ExperienceTable[(int)this.player.Attributes[Stats.Level] + 1],
+                    ExperienceForNextLevel = (uint)this.player.GameServerContext.Configuration.ExperienceTable![(int)this.player.Attributes![Stats.Level] + 1],
                     LevelUpPoints = (ushort)this.player.SelectedCharacter.LevelUpPoints,
                     Strength = (ushort)this.player.Attributes[Stats.BaseStrength],
                     Agility = (ushort)this.player.Attributes[Stats.BaseAgility],

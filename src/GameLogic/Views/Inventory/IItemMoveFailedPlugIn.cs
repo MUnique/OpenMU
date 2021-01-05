@@ -15,6 +15,6 @@ namespace MUnique.OpenMU.GameLogic.Views.Inventory
         /// Moving an item failed.
         /// </summary>
         /// <param name="item">The item which could not be moved. Null, if requested item could not be determined.</param>
-        void ItemMoveFailed(Item item);
+        void ItemMoveFailed(Item? item);
     }
 }

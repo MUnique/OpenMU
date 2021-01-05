@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
     internal class NotImplementedItemConsumeHandler : IItemConsumeHandler
     {
         /// <inheritdoc/>
-        public bool ConsumeItem(Player player, Item item, Item targetItem, FruitUsage fruitUsage)
+        public bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
         {
             player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Using this item is not implemented yet.", MessageType.BlueNormal);
             return false;

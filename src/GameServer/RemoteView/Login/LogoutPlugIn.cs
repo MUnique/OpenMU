@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
     using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Login;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
@@ -34,13 +33,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
         /// <inheritdoc />
         public void Logout(LogoutType logoutType)
         {
-            using var writer = this.player.Connection.StartSafeWrite(LogoutResponse.HeaderType, LogoutResponse.Length);
-            _ = new LogoutResponse(writer.Span)
-            {
-                Type = Convert(logoutType),
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendLogoutResponse(Convert(logoutType));
         }
 
         private static LogOutType Convert(LogoutType logoutType)

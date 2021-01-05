@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.Pathfinding
         /// <summary>
         /// Gets or sets the previous node.
         /// </summary>
-        public Node PreviousNode { get; set; }
+        public Node? PreviousNode { get; set; }
 
         /// <summary>
         /// Gets or sets the status.

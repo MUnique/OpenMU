@@ -62,17 +62,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
-        private void OnAppearanceOfAppearanceChanged(object sender, EventArgs args) => this.InvalidateCache(sender as IAppearanceData);
+        private void OnAppearanceOfAppearanceChanged(object? sender, EventArgs args) => this.InvalidateCache(sender as IAppearanceData ?? throw new ArgumentException($"sender must be of type {nameof(IAppearanceData)}"));
 
         private void WritePreviewCharSet(Span<byte> target, IAppearanceData appearanceData)
         {
-            ItemAppearance[] itemArray = new ItemAppearance[InventoryConstants.BootsSlot + 1];
+            ItemAppearance?[] itemArray = new ItemAppearance[InventoryConstants.BootsSlot + 1];
             for (byte i = 0; i < itemArray.Length; i++)
             {
-                itemArray[i] = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == i && item.Definition.Number < 16);
+                itemArray[i] = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == i && item.Definition?.Number < 16);
             }
 
-            target[0] = (byte)(appearanceData.CharacterClass.Number << 3);
+            if (appearanceData.CharacterClass is not null)
+            {
+                target[0] = (byte)(appearanceData.CharacterClass.Number << 3);
+            }
+
             target[0] |= (byte)appearanceData.Pose;
             this.SetHand(target, itemArray[InventoryConstants.LeftHandSlot], 1);
 
@@ -87,17 +91,17 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             this.SetArmorPiece(target, itemArray[InventoryConstants.GlovesSlot], 4, false);
 
             this.SetArmorPiece(target, itemArray[InventoryConstants.BootsSlot], 5, true);
-            var wing = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == InventoryConstants.WingsSlot && item.Definition.Number < 3);
-            var pet = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == InventoryConstants.PetSlot && item.Definition.Number < 3);
-            target[5] |= (byte)((wing?.Definition.Number & 0x03) << 2 ?? 0b1100);
-            target[5] |= (byte)(pet?.Definition.Number & 0x03 ?? 0b0011);
+            var wing = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == InventoryConstants.WingsSlot && item.Definition?.Number < 3);
+            var pet = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == InventoryConstants.PetSlot && item.Definition?.Number < 3);
+            target[5] |= (byte)((wing?.Definition?.Number & 0x03) << 2 ?? 0b1100);
+            target[5] |= (byte)(pet?.Definition?.Number & 0x03 ?? 0b0011);
 
             this.SetItemLevels(target, itemArray);
         }
 
-        private void SetHand(Span<byte> preview, ItemAppearance item, int index)
+        private void SetHand(Span<byte> preview, ItemAppearance? item, int index)
         {
-            if (item is null)
+            if (item?.Definition is null)
             {
                 preview[index] = 0xFF;
             }
@@ -118,9 +122,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             return (byte)(value & 0x0F);
         }
 
-        private void SetArmorPiece(Span<byte> preview, ItemAppearance item, int index, bool highNibble)
+        private void SetArmorPiece(Span<byte> preview, ItemAppearance? item, int index, bool highNibble)
         {
-            if (item is null)
+            if (item?.Definition is null)
             {
                 // if the item is not equipped every index bit is set to 1
                 preview[index] |= highNibble ? this.GetOrMaskForHighNibble(0x0F) : this.GetOrMaskForLowNibble(0x0F);
@@ -131,20 +135,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
         }
 
-        private void SetItemLevels(Span<byte> preview, ItemAppearance[] itemArray)
+        private void SetItemLevels(Span<byte> preview, ItemAppearance?[] itemArray)
         {
-            int levelindex = 0;
+            int levelIndex = 0;
             for (int i = 0; i < 7; i++)
             {
-                if (itemArray[i] != null)
+                if (itemArray[i] is not null)
                 {
-                    levelindex |= itemArray[i].GetGlowLevel() << (i * 3);
+                    levelIndex |= itemArray[i]!.GetGlowLevel() << (i * 3);
                 }
             }
 
-            preview[6] = (byte)((levelindex >> 16) & 255);
-            preview[7] = (byte)((levelindex >> 8) & 255);
-            preview[8] = (byte)(levelindex & 255);
+            preview[6] = (byte)((levelIndex >> 16) & 255);
+            preview[7] = (byte)((levelIndex >> 8) & 255);
+            preview[8] = (byte)(levelIndex & 255);
         }
     }
 }

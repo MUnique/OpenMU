@@ -86,15 +86,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>
         /// A new instance of <typeparamref name="T" />.
         /// </returns>
-        public T CreateNew<T>(params object[] args)
+        public T CreateNew<T>(params object?[] args)
             where T : class
         {
             var instance = typeof(CachingEntityFrameworkContext).Assembly.CreateNew<T>(args);
-            if (instance != null)
-            {
-                this.Context.Add(instance);
-            }
-
+            this.Context.Add(instance);
             return instance;
         }
 
@@ -112,7 +108,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc/>
-        public T GetById<T>(Guid id)
+        public T? GetById<T>(Guid id)
             where T : class
         {
             using var context = this.RepositoryManager.ContextStack.UseContext(this);
@@ -159,7 +155,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                             || p.Name.StartsWith("Joined"));
             foreach (var propertyInfo in aggregateProperties)
             {
-                var propertyValue = propertyInfo.GetMethod.Invoke(obj, Array.Empty<object>());
+                var propertyValue = propertyInfo.GetMethod?.Invoke(obj, Array.Empty<object>());
                 if (propertyValue is IEnumerable enumerable)
                 {
                     foreach (var value in enumerable)

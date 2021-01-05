@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 
         private static bool ItemHasLuck(Item item)
         {
-            return item.ItemOptions.Any(o => o.ItemOption.OptionType == ItemOptionTypes.Luck);
+            return item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck);
         }
     }
 }

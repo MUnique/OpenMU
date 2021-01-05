@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.AdminPanel.ComponentBuilders
                 .MakeGenericMethod(propertyInfo.PropertyType);
             var componentType = genericBaseComponentType.MakeGenericType(propertyInfo.PropertyType);
             var parameters = new[] { model, componentType, propertyInfo, builder, currentIndex, notificationService };
-            return (int)method.Invoke(this, parameters);
+            return (int)method.Invoke(this, parameters)!;
         }
 
         /// <summary>

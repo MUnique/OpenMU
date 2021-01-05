@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration
 {
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// Defines a warp list entry.
     /// </summary>
@@ -17,7 +19,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the warp costs.
@@ -32,6 +34,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the gate.
         /// </summary>
-        public virtual ExitGate Gate { get; set; }
+        [Required]
+        public virtual ExitGate? Gate { get; set; }
     }
 }

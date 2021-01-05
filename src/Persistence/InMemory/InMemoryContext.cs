@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public T CreateNew<T>(params object[] args)
+        public T CreateNew<T>(params object?[] args)
             where T : class
         {
             var newObject = typeof(Persistence.BasicModel.GameConfiguration).Assembly.CreateNew<T>(args);
@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public T GetById<T>(Guid id)
+        public T? GetById<T>(Guid id)
             where T : class
         {
             return this.Manager.GetRepository<T>().GetById(id);

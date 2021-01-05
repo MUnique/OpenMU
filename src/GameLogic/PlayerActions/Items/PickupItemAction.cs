@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="dropId">The drop identifier.</param>
         public void PickupItem(Player player, ushort dropId)
         {
-            var droppedLocateable = player.CurrentMap.GetDrop(dropId);
+            var droppedLocateable = player.CurrentMap?.GetDrop(dropId);
 
             switch (droppedLocateable)
             {
@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
             return true;
         }
 
-        private bool TryPickupItem(Player player, DroppedItem droppedItem, out Item stackTarget)
+        private bool TryPickupItem(Player player, DroppedItem droppedItem, out Item? stackTarget)
         {
             stackTarget = null;
             if (!this.CanPickup(player, droppedItem))
@@ -82,7 +82,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
                 return false;
             }
 
-            var slot = player.Inventory.CheckInvSpace(droppedItem.Item);
+            var slot = player.Inventory?.CheckInvSpace(droppedItem.Item);
             if (slot < InventoryConstants.EquippableSlotsCount)
             {
                 return false;

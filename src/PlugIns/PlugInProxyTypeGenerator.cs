@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.PlugIns
                 .AddUsings(
                     UsingDirective(ParseName("System")),
                     UsingDirective(ParseName("System.Collections.Generic")),
-                    UsingDirective(ParseName(typeof(TPlugIn).Namespace)));
+                    UsingDirective(ParseName(typeof(TPlugIn).Namespace!)));
             var referencedNamespaces = this.GetReferencedNamespaces(type).Select(ns => UsingDirective(ParseName(ns)));
             namespaceSyntax = namespaceSyntax.AddUsings(referencedNamespaces.ToArray());
             var typeSyntax = this.ImplementProxyType<TPlugIn>(type);
@@ -58,13 +58,16 @@ namespace MUnique.OpenMU.PlugIns
             namespaceSyntax = namespaceSyntax.AddMembers(typeSyntax);
             syntaxFactory = syntaxFactory.AddMembers(namespaceSyntax).NormalizeWhitespace();
             var proxyAssembly = syntaxFactory.SyntaxTree.CompileAndLoad(typeSyntax.Identifier.Text);
-            var proxyType = proxyAssembly.GetType(namespaceSyntax.Name + "." + typeSyntax.Identifier.Text);
-            return Activator.CreateInstance(proxyType, manager) as IPlugInContainer<TPlugIn>;
+            var proxyType = proxyAssembly.GetType(namespaceSyntax.Name + "." + typeSyntax.Identifier.Text)!;
+            return (IPlugInContainer<TPlugIn>)Activator.CreateInstance(proxyType, manager)!;
         }
 
         private IEnumerable<string> GetReferencedNamespaces(Type type)
         {
-            return type.GetMethods().SelectMany(method => method.GetParameters().Select(p => p.ParameterType.Namespace)).Distinct();
+            return type.GetMethods()
+                .SelectMany(method => method.GetParameters()
+                .Where(p => !string.IsNullOrWhiteSpace(p.ParameterType.Namespace))
+                .Select(p => p.ParameterType.Namespace!)).Distinct();
         }
 
         private string GetTypeName(Type type)
@@ -123,14 +126,14 @@ namespace MUnique.OpenMU.PlugIns
                                 .AddModifiers(Token(SyntaxKind.PublicKeyword));
             var methodCallStatement = forEachVariableName + "." + method.Name + "(";
             bool first = true;
-            ParameterInfo cancelEventArgs = null;
-            foreach (var parameter in method.GetParameters())
+            ParameterInfo? cancelEventArgs = null;
+            foreach (var parameter in method.GetParameters().Where(p => !string.IsNullOrWhiteSpace(p.Name)))
             {
                 methodDeclaration = methodDeclaration.AddParameterListParameters(Parameter(
                     List<AttributeListSyntax>(),
                     TokenList(),
                     ParseTypeName(this.GetTypeName(parameter.ParameterType)),
-                    ParseToken(parameter.Name),
+                    ParseToken(parameter.Name!),
                     null));
                 if (!first)
                 {

@@ -53,12 +53,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the experience table. Index is the player level, value the needed experience to reach that level.
         /// </summary>
-        public long[] ExperienceTable { get; set; }
+        public long[]? ExperienceTable { get; set; }
 
         /// <summary>
         /// Gets or sets the master experience table. Index is the player level, value the needed experience to reach that level.
         /// </summary>
-        public long[] MasterExperienceTable { get; set; }
+        public long[]? MasterExperienceTable { get; set; }
 
         /// <summary>
         /// Gets or sets the interval for attribute recoveries. See also MUnique.OpenMU.GameLogic.Attributes.Stats.Regeneration.
@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <remarks>
         /// "^[a-zA-Z0-9]{3,10}$";.
         /// </remarks>
-        public string CharacterNameRegex { get; set; }
+        public string? CharacterNameRegex { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum length of the password.
@@ -107,102 +107,102 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the possible jewel mixes.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<JewelMix> JewelMixes { get; protected set; }
+        public virtual ICollection<JewelMix> JewelMixes { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the warp list.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<WarpInfo> WarpList { get; protected set; }
+        public virtual ICollection<WarpInfo> WarpList { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the drop item groups which can be assigned to maps and characters.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; }
+        public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the skills of this game configuration.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<Skill> Skills { get; protected set; }
+        public virtual ICollection<Skill> Skills { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the character classes.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<CharacterClass> CharacterClasses { get; protected set; }
+        public virtual ICollection<CharacterClass> CharacterClasses { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the item definitions.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemDefinition> Items { get; protected set; }
+        public virtual ICollection<ItemDefinition> Items { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the item slot types.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemSlotType> ItemSlotTypes { get; protected set; }
+        public virtual ICollection<ItemSlotType> ItemSlotTypes { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the item option definitions.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemOptionDefinition> ItemOptions { get; protected set; }
+        public virtual ICollection<ItemOptionDefinition> ItemOptions { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the item option types.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemOptionType> ItemOptionTypes { get; protected set; }
+        public virtual ICollection<ItemOptionType> ItemOptionTypes { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the item set groups.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemSetGroup> ItemSetGroups { get; protected set; }
+        public virtual ICollection<ItemSetGroup> ItemSetGroups { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the item option combination bonuses.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<ItemOptionCombinationBonus> ItemOptionCombinationBonuses { get; protected set; }
+        public virtual ICollection<ItemOptionCombinationBonus> ItemOptionCombinationBonuses { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the map definitions.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<GameMapDefinition> Maps { get; protected set; }
+        public virtual ICollection<GameMapDefinition> Maps { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the monster definitions.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<MonsterDefinition> Monsters { get; protected set; }
+        public virtual ICollection<MonsterDefinition> Monsters { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the attributes.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<AttributeDefinition> Attributes { get; protected set; }
+        public virtual ICollection<AttributeDefinition> Attributes { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the magic effects.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<MagicEffectDefinition> MagicEffects { get; protected set; }
+        public virtual ICollection<MagicEffectDefinition> MagicEffects { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the master skill roots.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<MasterSkillRoot> MasterSkillRoots { get; protected set; }
+        public virtual ICollection<MasterSkillRoot> MasterSkillRoots { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the plug in configurations.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<PlugInConfiguration> PlugInConfigurations { get; protected set; }
+        public virtual ICollection<PlugInConfiguration> PlugInConfigurations { get; protected set; } = null!;
     }
 }

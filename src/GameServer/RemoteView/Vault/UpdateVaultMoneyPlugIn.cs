@@ -28,18 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Vault
         /// <inheritdoc/>
         public void UpdateVaultMoney(bool success)
         {
-            using var writer = this.player.Connection.StartSafeWrite(VaultMoneyUpdate.HeaderType, VaultMoneyUpdate.Length);
-            var moneyUpdate = new VaultMoneyUpdate(writer.Span)
-            {
-                Success = success,
-            };
-            if (success)
-            {
-                moneyUpdate.InventoryMoney = (uint)this.player.Money;
-                moneyUpdate.VaultMoney = (uint)this.player.Account.Vault.Money;
-            }
-
-            writer.Commit();
+            this.player.Connection?.SendVaultMoneyUpdate(success, success ? (uint)this.player.Money : 0, success ? (uint)this.player.Account!.Vault!.Money : 0);
         }
     }
 }

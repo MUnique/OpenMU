@@ -788,7 +788,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Blood Castle Ticket";
             crafting.Number = 8;
-            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.BloodCastleTicketCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.BloodCastleTicketCrafting).FullName!;
             return crafting;
         }
 
@@ -797,7 +797,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Devil's Square Ticket";
             crafting.Number = 2;
-            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.DevilSquareTicketCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.DevilSquareTicketCrafting).FullName!;
             return crafting;
         }
 
@@ -806,7 +806,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Illusion Temple Ticket";
             crafting.Number = 37;
-            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.IllusionTempleTicketCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.IllusionTempleTicketCrafting).FullName!;
             return crafting;
         }
 
@@ -1141,7 +1141,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Fenrir Upgrade (Stage 4)";
             crafting.Number = 28;
-            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.FenrirUpgradeCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(GameLogic.PlayerActions.Craftings.FenrirUpgradeCrafting).FullName!;
             return crafting;
         }
 
@@ -1150,7 +1150,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Refine Stone";
             crafting.Number = 34;
-            crafting.ItemCraftingHandlerClassName = typeof(RefineStoneCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(RefineStoneCrafting).FullName!;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
             crafting.SimpleCraftingSettings = craftingSettings;
             craftingSettings.SuccessPercent = 100; // It will be handled when creating the stones.
@@ -1178,7 +1178,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Restore Item (Remove JOH Option)";
             crafting.Number = 35;
-            crafting.ItemCraftingHandlerClassName = typeof(RestoreItemCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(RestoreItemCrafting).FullName!;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
             crafting.SimpleCraftingSettings = craftingSettings;
             craftingSettings.SuccessPercent = 100;
@@ -1199,7 +1199,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             var crafting = this.Context.CreateNew<ItemCrafting>();
             crafting.Name = "Guardian Option (Level 380)";
             crafting.Number = 36;
-            crafting.ItemCraftingHandlerClassName = typeof(GuardianOptionCrafting).FullName;
+            crafting.ItemCraftingHandlerClassName = typeof(GuardianOptionCrafting).FullName!;
             var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
             crafting.SimpleCraftingSettings = craftingSettings;
             craftingSettings.Money = 10_000_000;

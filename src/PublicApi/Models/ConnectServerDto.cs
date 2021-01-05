@@ -74,7 +74,7 @@ namespace MUnique.OpenMU.PublicApi.Models
                 State = connectServer.ServerState,
                 GameServers = connectServer.GameServerEndPoints
                     .Select(ep => GameServerDto.Create(
-                        ep.Endpoint, gameServers.FirstOrDefault(gs => gs.Id == ep.Id))).ToList(),
+                        ep.Endpoint, gameServers.First(gs => gs.Id == ep.Id))).ToList(),
             };
         }
     }

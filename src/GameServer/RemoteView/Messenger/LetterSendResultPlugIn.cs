@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
     using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Messenger;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,14 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void LetterSendResult(LetterSendSuccess success, uint letterId)
         {
-            using var writer = this.player.Connection.StartSafeWrite(LetterSendResponse.HeaderType, LetterSendResponse.Length);
-            _ = new LetterSendResponse(writer.Span)
-            {
-                LetterId = letterId,
-                Result = Convert(success),
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendLetterSendResponse(letterId, Convert(success));
         }
 
         private static LetterSendResponse.LetterSendRequestResult Convert(LetterSendSuccess success)

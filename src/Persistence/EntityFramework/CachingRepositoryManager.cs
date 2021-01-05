@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         protected override IRepository CreateGenericRepository(Type entityType)
         {
             var repositoryType = typeof(CachingGenericRepository<>).MakeGenericType(entityType);
-            return (IRepository)Activator.CreateInstance(repositoryType, this, this.loggerFactory.CreateLogger(repositoryType));
+            return (IRepository)Activator.CreateInstance(repositoryType, this, this.loggerFactory.CreateLogger(repositoryType))!;
         }
     }
 }

@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
             }
             catch (Exception e)
             {
-                context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("foo", $"{e.GetType()}: {e}", "error", "error", DiagnosticSeverity.Error, true), Location.None, DiagnosticSeverity.Error ));
+                context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("foo", $"{e.GetType()}: {e}", "error", "error", DiagnosticSeverity.Error, true), Location.None, DiagnosticSeverity.Error));
                 Console.WriteLine($"{e.GetType()}: {e}");
                 throw;
             }

@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.ConnectServer
         }
 
         /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc/>
         public ServerState ServerState
@@ -215,9 +215,9 @@ namespace MUnique.OpenMU.ConnectServer
             this.logger.LogDebug("Finished creating plugins");
         }
 
-        private void HandleServerPropertyChanged(object sender, PropertyChangedEventArgs args)
+        private void HandleServerPropertyChanged(object? sender, PropertyChangedEventArgs args)
         {
-            if (args.PropertyName != "OnlinePlayerCount")
+            if (args.PropertyName != nameof(IGameServerInfo.OnlinePlayerCount))
             {
                 return;
             }
@@ -240,7 +240,7 @@ namespace MUnique.OpenMU.ConnectServer
         /// Called when a property changed.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
     /// </summary>
     public class ShowAnimationPlugIn : JsViewPlugInBase, IShowAnimationPlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowAnimationPlugIn"/> class.
@@ -31,9 +31,9 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         }
 
         /// <inheritdoc />
-        public async void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable targetObj, Direction direction)
+        public async void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable? targetObj, Direction direction)
         {
-            await this.InvokeAsync(animatingObj.Id, animation, targetObj?.Id, direction);
+            await this.InvokeAsync(animatingObj.Id, animation, targetObj?.Id ?? 0, direction);
         }
     }
 }

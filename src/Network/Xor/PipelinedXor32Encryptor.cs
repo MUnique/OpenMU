@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.Network.Xor
         public PipeWriter Writer => this.pipe.Writer;
 
         /// <inheritdoc />
-        protected override void OnComplete(Exception exception)
+        protected override void OnComplete(Exception? exception)
         {
             this.target.Complete(exception);
         }

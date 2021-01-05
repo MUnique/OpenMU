@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.Startup
             {
                 result.Endpoints.Add(new OpenMU.ChatServer.ChatServerEndpoint
                 {
-                    ClientVersion = new ClientVersion(endpoint.Client.Season, endpoint.Client.Episode, endpoint.Client.Language),
+                    ClientVersion = new ClientVersion(endpoint.Client!.Season, endpoint.Client.Episode, endpoint.Client.Language),
                     NetworkPort = endpoint.NetworkPort,
                 });
             }

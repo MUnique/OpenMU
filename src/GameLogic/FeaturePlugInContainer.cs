@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc />
-        public T GetPlugIn<T>()
+        public T? GetPlugIn<T>()
             where T : class, IFeaturePlugIn
         {
             if (this.currentlyEffectivePlugIns.TryGetValue(typeof(T), out var plugIn) && plugIn is T t)
@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.GameLogic
             var knownPlugIn = this.FindKnownPlugin(plugInType);
             if (knownPlugIn is null)
             {
-                this.AddPlugIn((IFeaturePlugIn)Activator.CreateInstance(plugInType), true);
+                this.AddPlugIn((IFeaturePlugIn)Activator.CreateInstance(plugInType)!, true);
             }
         }
     }

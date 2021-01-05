@@ -179,19 +179,19 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the requirements to execute the skill.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<AttributeRequirement> Requirements { get; protected set; }
+        public virtual ICollection<AttributeRequirement> Requirements { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the attributes which values will be consumed by executing this skill.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<AttributeRequirement> ConsumeRequirements { get; protected set; }
+        public virtual ICollection<AttributeRequirement> ConsumeRequirements { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the maximum range between executor of the skill and the target object.
@@ -247,23 +247,23 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// If this is set, hitting the target (successfully or not) may apply additional effects.
         /// A value of <c>1.0f</c> means, the target is immune to effects of this element.
         /// </summary>
-        public virtual AttributeDefinition ElementalModifierTarget { get; set; }
+        public virtual AttributeDefinition? ElementalModifierTarget { get; set; }
 
         /// <summary>
         /// Gets or sets the magic effect definition. It will be applied for buff skills.
         /// </summary>
-        public virtual MagicEffectDefinition MagicEffectDef { get; set; }
+        public virtual MagicEffectDefinition? MagicEffectDef { get; set; }
 
         /// <summary>
         /// Gets or sets the character classes which are qualified to learn and use this skill.
         /// </summary>
-        public virtual ICollection<CharacterClass> QualifiedCharacters { get; protected set; }
+        public virtual ICollection<CharacterClass> QualifiedCharacters { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the master skill definition. Only relevant for master skills.
         /// </summary>
         [MemberOfAggregate]
-        public virtual MasterSkillDefinition MasterDefinition { get; set; }
+        public virtual MasterSkillDefinition? MasterDefinition { get; set; }
 
         /// <summary>
         /// Gets or sets the attack damage. Only relevant for attack skills.

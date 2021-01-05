@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void MultiplePlugInsAreExecuted()
         {
             var generator = new PlugInProxyTypeGenerator();
-            var proxy = generator.GenerateProxy<IExamplePlugIn>(null);
+            var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
 
             var player = TestHelper.GetPlayer();
             var command = "test";
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             proxy.AddPlugIn(firstMock.Object, true);
             proxy.AddPlugIn(secondMock.Object, true);
 
-            (proxy as IExamplePlugIn).DoStuff(player, command, args);
+            (proxy as IExamplePlugIn)?.DoStuff(player, command, args);
 
             firstMock.VerifyAll();
             secondMock.VerifyAll();
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void InactivePlugInsAreNotExecuted()
         {
             var generator = new PlugInProxyTypeGenerator();
-            var proxy = generator.GenerateProxy<IExamplePlugIn>(null);
+            var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
 
             var player = TestHelper.GetPlayer();
             var command = "test";
@@ -87,7 +87,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             proxy.AddPlugIn(firstMock.Object, false);
             proxy.AddPlugIn(secondMock.Object, true);
 
-            (proxy as IExamplePlugIn).DoStuff(player, command, args);
+            (proxy as IExamplePlugIn)?.DoStuff(player, command, args);
 
             firstMock.VerifyAll();
             firstMock.VerifyNoOtherCalls();
@@ -102,7 +102,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
         public void CancelEventArgsAreRespected()
         {
             var generator = new PlugInProxyTypeGenerator();
-            var proxy = generator.GenerateProxy<IExamplePlugIn>(null);
+            var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
 
             var player = TestHelper.GetPlayer();
             var command = "test";
@@ -114,7 +114,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             proxy.AddPlugIn(firstMock.Object, true);
             proxy.AddPlugIn(secondMock.Object, true);
 
-            (proxy as IExamplePlugIn).DoStuff(player, command, args);
+            (proxy as IExamplePlugIn)?.DoStuff(player, command, args);
             firstMock.VerifyAll();
             secondMock.VerifyAll();
             secondMock.VerifyNoOtherCalls();

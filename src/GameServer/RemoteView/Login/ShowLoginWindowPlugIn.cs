@@ -33,7 +33,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Login
         /// <inheritdoc/>
         public void ShowLoginWindow()
         {
-            using var writer = this.player.Connection.StartSafeWrite(GameServerEntered.HeaderType, GameServerEntered.Length);
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
+            using var writer = connection.StartSafeWrite(GameServerEntered.HeaderType, GameServerEntered.Length);
             var message = new GameServerEntered(writer.Span)
             {
                 PlayerId = ViewExtensions.ConstantPlayerId,

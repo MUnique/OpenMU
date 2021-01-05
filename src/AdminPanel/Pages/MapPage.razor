@@ -20,11 +20,12 @@
 </div>
 
 @code {
+
     /// <summary>
     /// Gets or sets the map factory.
     /// </summary>
     [Inject]
-    IMapFactory MapFactory { get; set; }
+    IMapFactory MapFactory { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the server id on which the map is hosted.
@@ -38,9 +39,9 @@
     [Parameter]
     public int MapId { get; set; }
 
-    private IMapController controller;
+    private IMapController? controller;
 
-    private AsyncLazy<IMapController> lazyController;
+    private AsyncLazy<IMapController>? lazyController;
 
     /// <inheritdoc />
     protected override void OnInitialized()

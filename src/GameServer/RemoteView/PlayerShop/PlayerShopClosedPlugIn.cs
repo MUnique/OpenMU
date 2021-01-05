@@ -31,27 +31,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
         public void PlayerShopClosed(Player playerWithClosedShop)
         {
             var playerId = playerWithClosedShop.GetId(this.player);
-            using (var writer = this.player.Connection.StartSafeWrite(
-                Network.Packets.ServerToClient.PlayerShopClosed.HeaderType,
-                Network.Packets.ServerToClient.PlayerShopClosed.Length))
-            {
-                _ = new PlayerShopClosed(writer.Span)
-                {
-                    PlayerId = playerId,
-                };
-                writer.Commit();
-            }
+            this.player.Connection?.SendPlayerShopClosed(playerId);
 
             // The following usually just needs to be sent to all players which currently have the shop dialog open
             // For the sake of simplicity, we send it to all players.
-            using (var writer = this.player.Connection.StartSafeWrite(ClosePlayerShopDialog.HeaderType, ClosePlayerShopDialog.Length))
-            {
-                _ = new ClosePlayerShopDialog(writer.Span)
-                {
-                    PlayerId = playerId,
-                };
-                writer.Commit();
-            }
+            this.player.Connection?.SendClosePlayerShopDialog(playerId);
         }
     }
 }

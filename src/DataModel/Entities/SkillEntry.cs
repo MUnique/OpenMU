@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Entities
 {
     using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -15,16 +16,24 @@ namespace MUnique.OpenMU.DataModel.Entities
     public class SkillEntry : INotifyPropertyChanged
     {
         private int level;
+        private Skill? skill;
+        private IElement? buffPowerUp;
+        private IElement? powerUpDuration;
 
         /// <summary>
         /// Occurs when a property changed.
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets or sets the skill definition.
         /// </summary>
-        public virtual Skill Skill { get; set; }
+        [Required]
+        public virtual Skill Skill
+        {
+            get => this.skill ?? throw Error.NotInitializedProperty(this); // todo check if this works in the admin panel?!
+            set => this.skill = value;
+        }
 
         /// <summary>
         /// Gets or sets the level of the skill, primarily master skill level.
@@ -50,7 +59,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the power up element of this skill of this player. It is a "cached" element which will be created on demand and can be applied multiple times.
         /// </summary>
         [Transient]
-        public IElement BuffPowerUp { get; set; }
+        public IElement? BuffPowerUp
+        {
+            get => buffPowerUp;
+            set => buffPowerUp = value;
+        }
 
         /// <summary>
         /// Gets or sets the duration of the <see cref="BuffPowerUp"/>.
@@ -59,7 +72,11 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// It is an IElement, because the duration can be dependent from the player attributes.
         /// </remarks>
         [Transient]
-        public IElement PowerUpDuration { get; set; }
+        public IElement? PowerUpDuration
+        {
+            get => powerUpDuration;
+            set => powerUpDuration = value;
+        }
 
         /// <inheritdoc />
         public override string ToString()

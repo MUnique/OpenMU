@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Party;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -29,12 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
         /// <inheritdoc/>
         public void ShowPartyRequest(IPartyMember requester)
         {
-            using var writer = this.player.Connection.StartSafeWrite(PartyRequest.HeaderType, PartyRequest.Length);
-            _ = new PartyRequest(writer.Span)
-            {
-                RequesterId = requester.Id,
-            };
-            writer.Commit();
+            this.player.Connection?.SendPartyRequest(requester.Id);
         }
     }
 }

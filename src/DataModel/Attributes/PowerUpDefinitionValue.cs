@@ -20,13 +20,13 @@ namespace MUnique.OpenMU.DataModel.Attributes
         /// </summary>
         [MemberOfAggregate]
         [Browsable(false)]
-        public SimpleElement ConstantValue { get; protected set; }
+        public SimpleElement ConstantValue { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the related values.
         /// </summary>
         [MemberOfAggregate]
-        public virtual ICollection<AttributeRelationship> RelatedValues { get; protected set; }
+        public virtual ICollection<AttributeRelationship> RelatedValues { get; protected set; } = null!;
 
         /// <inheritdoc />
         public override string ToString()

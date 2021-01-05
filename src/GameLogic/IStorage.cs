@@ -151,7 +151,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>The index of a slot in which the item would fit.</returns>
-        int CheckInvSpace(Item item);
+        int? CheckInvSpace(Item item);
 
         /// <summary>
         /// Checks if the items of this Storage will fit into another storage, and adds them if possible.
@@ -166,7 +166,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="inventorySlot">The inventory slot.</param>
         /// <returns>The item from the specified slot.</returns>
-        Item GetItem(byte inventorySlot);
+        Item? GetItem(byte inventorySlot);
 
         /// <summary>
         /// Removes the item from this storage.

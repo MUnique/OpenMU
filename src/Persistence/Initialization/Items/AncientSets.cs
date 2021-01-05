@@ -18,8 +18,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
     public class AncientSets : InitializerBase
     {
         private readonly IDictionary<AttributeDefinition, IncreasableItemOption> bonusOptions = new Dictionary<AttributeDefinition, IncreasableItemOption>();
-        private ItemOptionType ancientBonusOptionType;
-        private ItemOptionType ancientOptionType;
+        private readonly ItemOptionType ancientBonusOptionType;
+        private readonly ItemOptionType ancientOptionType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AncientSets"/> class.
@@ -29,14 +29,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
         public AncientSets(IContext context, GameConfiguration gameConfiguration)
             : base(context, gameConfiguration)
         {
+            this.ancientBonusOptionType = this.GameConfiguration.ItemOptionTypes.First(iot => iot == ItemOptionTypes.AncientBonus);
+            this.ancientOptionType = this.GameConfiguration.ItemOptionTypes.First(iot => iot == ItemOptionTypes.AncientOption);
         }
 
         /// <inheritdoc />
         public override void Initialize()
         {
-            this.ancientBonusOptionType = this.GameConfiguration.ItemOptionTypes.First(iot => iot == ItemOptionTypes.AncientBonus);
-            this.ancientOptionType = this.GameConfiguration.ItemOptionTypes.First(iot => iot == ItemOptionTypes.AncientOption);
-
             var warrior = this.AddAncientSet(
                 "Warrior", // Leather
                 1,
@@ -614,7 +613,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 (40, ItemGroups.Helm, Stats.TotalVitality));
         }
 
-        private void AddItems(ItemSetGroup set, params (short Number, ItemGroups Group, AttributeDefinition BonusOption)[] items)
+        private void AddItems(ItemSetGroup set, params (short Number, ItemGroups Group, AttributeDefinition? BonusOption)[] items)
         {
             foreach (var itemTuple in items)
             {
@@ -651,7 +650,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
             return set;
         }
 
-        private IncreasableItemOption CreateAncientBonusOption(AttributeDefinition attribute)
+        private IncreasableItemOption? CreateAncientBonusOption(AttributeDefinition? attribute)
         {
             if (attribute is null)
             {

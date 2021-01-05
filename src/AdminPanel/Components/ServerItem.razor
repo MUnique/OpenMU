@@ -64,7 +64,7 @@
     /// Gets or sets the server which is shown in this component.
     /// </summary>
     [Parameter]
-    public IManageableServer Server { get; set; }
+    public IManageableServer Server { get; set; } = null!;
 
     /// <inheritdoc />
     public void Dispose()
@@ -79,7 +79,7 @@
         this.Server.PropertyChanged += this.OnServerPropertyChanged;
     }
 
-    private async void OnServerPropertyChanged(object sender, PropertyChangedEventArgs eventArgs)
+    private async void OnServerPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
     {
         await this.InvokeAsync(this.StateHasChanged);
     }

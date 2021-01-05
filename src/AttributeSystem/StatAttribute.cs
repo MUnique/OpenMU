@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.AttributeSystem
         /// Initializes a new instance of the <see cref="StatAttribute"/> class.
         /// </summary>
         public StatAttribute()
-            : base(null, AggregateType.AddRaw)
+            : base(null!, AggregateType.AddRaw)
         {
         }
 

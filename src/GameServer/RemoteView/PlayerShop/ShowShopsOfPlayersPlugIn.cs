@@ -31,7 +31,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
         /// <inheritdoc />
         public void ShowShopsOfPlayers(ICollection<Player> playersWithShop)
         {
-            using var writer = this.player.Connection.StartSafeWrite(PlayerShops.HeaderType, PlayerShops.GetRequiredSize(playersWithShop.Count));
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
+            using var writer = connection.StartSafeWrite(PlayerShops.HeaderType, PlayerShops.GetRequiredSize(playersWithShop.Count));
 
             var packet = new PlayerShops(writer.Span)
             {
@@ -42,8 +48,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
             foreach (var shopPlayer in playersWithShop)
             {
                 var shopBlock = packet[i];
-                shopBlock.PlayerId = shopPlayer.GetId(this.player);
-                shopBlock.StoreName = shopPlayer.ShopStorage.StoreName;
+                if (shopPlayer.ShopStorage is not null)
+                {
+                    shopBlock.PlayerId = shopPlayer.GetId(this.player);
+                    shopBlock.StoreName = shopPlayer.ShopStorage.StoreName;
+                }
+
                 i++;
             }
 

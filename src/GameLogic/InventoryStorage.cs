@@ -8,8 +8,8 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.World;
     using static OpenMU.GameLogic.InventoryConstants;
 
@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic
                 GetInventorySize(player),
                 EquippableSlotsCount,
                 0,
-                new ItemStorageAdapter(player.SelectedCharacter.Inventory, FirstEquippableItemSlotIndex, GetInventorySize(player)))
+                new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, GetInventorySize(player)))
         {
             this.player = player;
             this.EquippedItemsChanged += (sender, eventArgs) => this.UpdateItemsOnChange(eventArgs.Item);
@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public event EventHandler<ItemEventArgs> EquippedItemsChanged;
+        public event EventHandler<ItemEventArgs>? EquippedItemsChanged;
 
         /// <inheritdoc/>
         public IEnumerable<Item> EquippedItems
@@ -50,9 +50,9 @@ namespace MUnique.OpenMU.GameLogic
             {
                 for (int i = FirstEquippableItemSlotIndex; i <= LastEquippableItemSlotIndex; i++)
                 {
-                    if (this.ItemArray[i] != null)
+                    if (this.ItemArray[i] is not null)
                     {
-                        yield return this.ItemArray[i];
+                        yield return this.ItemArray[i]!;
                     }
                 }
             }
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <remarks>Additionally we need to make a temporary item persistent with the context of the player.</remarks>
         public override bool AddItem(byte slot, Item item)
         {
-            Item convertedItem = null;
+            Item? convertedItem = null;
             if (item is TemporaryItem temporaryItem)
             {
                 convertedItem = temporaryItem.MakePersistent(this.player.PersistenceContext);
@@ -106,7 +106,12 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.player.OnAppearanceChanged();
             this.player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAppearanceChangedPlugIn>()?.AppearanceChanged(this.player, item), false); // in my tests it was not needed to send the appearance to the own players client.
-            if (this.player.Attributes.ItemPowerUps.TryGetValue(item, out IReadOnlyList<PowerUpWrapper> itemPowerUps))
+            if (this.player.Attributes is null)
+            {
+                return;
+            }
+
+            if (this.player.Attributes.ItemPowerUps.TryGetValue(item, out var itemPowerUps))
             {
                 this.player.Attributes.ItemPowerUps.Remove(item);
                 foreach (var powerUp in itemPowerUps)
@@ -130,6 +135,11 @@ namespace MUnique.OpenMU.GameLogic
 
         private void InitializePowerUps()
         {
+            if (this.player.Attributes is null)
+            {
+                throw new InvalidOperationException("The players AttributeSystem is not set yet.");
+            }
+
             foreach (var powerUp in this.player.Attributes.ItemPowerUps.Values.SelectMany(p => p).ToList())
             {
                 powerUp.Dispose();
@@ -153,7 +163,12 @@ namespace MUnique.OpenMU.GameLogic
 
         private void UpdateSetPowerUps()
         {
-            if (this.player.Attributes.ItemSetPowerUps != null)
+            if (this.player.Attributes is null)
+            {
+                throw new InvalidOperationException("The players AttributeSystem is not set yet.");
+            }
+
+            if (this.player.Attributes.ItemSetPowerUps is not null)
             {
                 foreach (var powerUp in this.player.Attributes.ItemSetPowerUps)
                 {

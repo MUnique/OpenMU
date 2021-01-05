@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             var character = base.CreateKnight();
             var ringOfHonor = this.CreateJewel(49, Items.Quest.ScrollOfEmperorNumber);
             ringOfHonor.Level = 1;
-            character.Inventory.Items.Add(ringOfHonor);
+            character.Inventory!.Items.Add(ringOfHonor);
             var darkStone = this.CreateJewel(50, Items.Quest.BrokenSwordNumber);
             darkStone.Level = 1;
             character.Inventory.Items.Add(darkStone);
@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
             var character = base.CreateElf();
             var ringOfHonor = this.CreateJewel(49, Items.Quest.ScrollOfEmperorNumber);
             ringOfHonor.Level = 1;
-            character.Inventory.Items.Add(ringOfHonor);
+            character.Inventory!.Items.Add(ringOfHonor);
             return character;
         }
     }

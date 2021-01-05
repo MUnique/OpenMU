@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
     /// </summary>
     public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectMovedPlugIn"/> class.
@@ -54,7 +54,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         private async Task ObjectMovedAsync(ILocateable movedObject, MoveType moveType)
         {
             Point targetPoint = movedObject.Position;
-            object steps = null;
+            object? steps = null;
             int walkDelay = 0;
             if (movedObject is ISupportWalk walker && moveType == MoveType.Walk)
             {
@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
                 steps = walkSteps;
             }
 
-            await this.InvokeAsync(movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps);
+            await this.InvokeAsync(movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps!);
         }
     }
 }

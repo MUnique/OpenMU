@@ -1,4 +1,4 @@
-﻿// <copyright file="MapChangePlugIn.cs" company="MUnique">
+﻿// <copyright file="TeleportPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -28,9 +28,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// <inheritdoc/>
         public void ShowTeleported()
         {
+            if (this.player.SelectedCharacter?.CurrentMap is null)
+            {
+                return;
+            }
+
             var mapNumber = this.player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
             var position = this.player.Position;
-            this.player.Connection.SendMapChanged(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte(), false);
+            this.player.Connection?.SendMapChanged(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte(), false);
         }
     }
 }

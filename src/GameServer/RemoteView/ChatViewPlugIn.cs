@@ -31,17 +31,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ChatMessage(string message, string sender, ChatMessageType type)
         {
-            using var writer = this.player.Connection.StartSafeWrite(
-                Network.Packets.ServerToClient.ChatMessage.HeaderType,
-                Network.Packets.ServerToClient.ChatMessage.GetRequiredSize(message));
-            _ = new ChatMessage(writer.Span)
-            {
-                Type = ConvertChatMessageType(type),
-                Sender = sender,
-                Message = message,
-            };
-
-            writer.Commit();
+            this.player.Connection?.SendChatMessage(ConvertChatMessageType(type), sender, message);
         }
 
         private static ChatMessage.ChatMessageType ConvertChatMessageType(ChatMessageType type)

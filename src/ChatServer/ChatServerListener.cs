@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.ChatServer
         private readonly ChatServerEndpoint endpoint;
         private readonly PlugInManager plugInManager;
         private readonly ILoggerFactory loggerFactory;
-        private Listener chatClientListener;
+        private Listener? chatClientListener;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatServerListener" /> class.
@@ -38,12 +38,12 @@ namespace MUnique.OpenMU.ChatServer
         /// <summary>
         /// Occurs when a new client was accepted.
         /// </summary>
-        public event EventHandler<ClientAcceptEventArgs> ClientAccepted;
+        public event EventHandler<ClientAcceptEventArgs>? ClientAccepted;
 
         /// <summary>
         /// Occurs when a client has been accepted by the tcp listener, but before a <see cref="Connection"/> is created.
         /// </summary>
-        public event EventHandler<CancelEventArgs> ClientAccepting;
+        public event EventHandler<CancelEventArgs>? ClientAccepting;
 
         /// <summary>
         /// Starts the tcp listener of this instance.
@@ -64,11 +64,11 @@ namespace MUnique.OpenMU.ChatServer
             this.chatClientListener?.Stop();
         }
 
-        private IPipelinedDecryptor CreateDecryptor(PipeReader pipeReader)
+        private IPipelinedDecryptor? CreateDecryptor(PipeReader pipeReader)
         {
             var encryptionFactoryPlugIn = this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(this.endpoint.ClientVersion)
                                           ?? this.plugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
-            return encryptionFactoryPlugIn.CreateDecryptor(pipeReader, DataDirection.ClientToServer);
+            return encryptionFactoryPlugIn?.CreateDecryptor(pipeReader, DataDirection.ClientToServer);
         }
     }
 }

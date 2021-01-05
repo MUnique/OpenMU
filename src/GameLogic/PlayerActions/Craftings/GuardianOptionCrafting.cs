@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
         protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
         {
             var item = requiredItems.First(i => i.ItemRequirement.Reference == ItemReference && i.Items.Any()).Items.First();
-            foreach (var optionDefinition in item.Definition.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption)).PossibleOptions)
+            foreach (var optionDefinition in item.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption)).PossibleOptions)
             {
                 var optionLink = player.PersistenceContext.CreateNew<ItemOptionLink>();
                 optionLink.ItemOption = optionDefinition;
@@ -70,9 +70,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
             }
 
             return base.RequiredItemMatches(item, requiredItem)
-                   && item.Definition.PossibleItemOptions.Any(o =>
+                   && item.Definition!.PossibleItemOptions.Any(o =>
                        o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption))
-                   && item.ItemOptions.All(o => o.ItemOption.OptionType != ItemOptionTypes.GuardianOption);
+                   && item.ItemOptions.All(o => o.ItemOption!.OptionType != ItemOptionTypes.GuardianOption);
         }
     }
 }

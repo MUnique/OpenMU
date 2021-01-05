@@ -8,19 +8,19 @@ else
 }
 
 @code {
-    private IList<(bool IsMarked, string Text)> elements;
+    private IList<(bool IsMarked, string Text)>? elements;
 
     /// <summary>
     /// Gets or sets the text which should be shown.
     /// </summary>
     [Parameter]
-    public string Text { get; set; }
+    public string Text { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the marked part of the <see cref="Text"/>.
     /// </summary>
     [Parameter]
-    public string Marked { get; set; }
+    public string Marked { get; set; } = string.Empty;
 
     /// <inheritdoc />
     protected override void OnParametersSet()

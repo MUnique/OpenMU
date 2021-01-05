@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -29,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <summary>
         /// This contains again all available skills. However, we need this to maintain the indexes. It can happen that the list contains holes after a skill got removed!.
         /// </summary>
-        private IList<Skill> skillList;
+        private IList<Skill?>? skillList;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SkillListViewPlugIn"/> class.
@@ -43,7 +42,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         /// <summary>
         /// Gets the internal skill list.
         /// </summary>
-        protected IList<Skill> SkillList => this.skillList ??= new List<Skill>();
+        protected IList<Skill?> SkillList => this.skillList ??= new List<Skill?>();
 
         /// <summary>
         /// Gets the player.
@@ -54,35 +53,29 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public virtual void AddSkill(Skill skill)
         {
             var skillIndex = this.AddSkillToList(skill);
-            using var writer = this.player.Connection.StartSafeWrite(SkillAdded.HeaderType, SkillAdded.Length);
-            _ = new SkillAdded(writer.Span)
-            {
-                SkillIndex = skillIndex,
-                SkillNumber = (ushort)skill.Number,
-            };
-            writer.Commit();
+            this.player.Connection?.SendSkillAdded(skillIndex, (ushort)skill.Number, 0);
         }
 
         /// <inheritdoc/>
         public virtual void RemoveSkill(Skill skill)
         {
             var skillIndex = this.SkillList.IndexOf(skill);
-            using var writer = this.player.Connection.StartSafeWrite(SkillRemoved.HeaderType, SkillRemoved.Length);
-            _ = new SkillRemoved(writer.Span)
-            {
-                SkillIndex = (byte)skillIndex,
-                SkillNumber = (ushort)skill.Number,
-            };
+            this.player.Connection?.SendSkillRemoved((byte)skillIndex, (ushort)skill.Number);
             this.SkillList[skillIndex] = null;
-            writer.Commit();
         }
 
         /// <inheritdoc/>
         public virtual void UpdateSkillList()
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             this.BuildSkillList();
 
-            using var writer = this.player.Connection.StartSafeWrite(SkillListUpdate.HeaderType, SkillListUpdate.GetRequiredSize(this.SkillList.Count));
+            using var writer = connection.StartSafeWrite(SkillListUpdate.HeaderType, SkillListUpdate.GetRequiredSize(this.SkillList.Count));
             var packet = new SkillListUpdate(writer.Span)
             {
                 Count = (byte)this.SkillList.Count,
@@ -94,10 +87,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 skillEntry.SkillIndex = i;
 
                 var skill = this.SkillList[i];
-                skillEntry.SkillNumber = (ushort)this.SkillList[i].Number;
-                if (skill.MasterDefinition != null)
+                if (skill is not null)
                 {
-                    skillEntry.SkillLevel = (byte)this.player.SkillList.GetSkill((ushort)skill.Number).Level;
+                    skillEntry.SkillNumber = (ushort)skill.Number;
+                    if (skill.MasterDefinition is not null)
+                    {
+                        skillEntry.SkillLevel = (byte)(this.player.SkillList!.GetSkill((ushort)skill.Number)?.Level ?? 0);
+                    }
                 }
             }
 
@@ -105,7 +101,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         }
 
         /// <inheritdoc />
-        public Skill GetSkillByIndex(byte skillIndex)
+        public Skill? GetSkillByIndex(byte skillIndex)
         {
             if (this.skillList != null && this.skillList.Count > skillIndex)
             {
@@ -121,8 +117,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         protected void BuildSkillList()
         {
             this.SkillList.Clear();
-            var skills = this.player.SkillList.Skills.ToList();
-            if (this.player.SelectedCharacter.CharacterClass.IsMasterClass)
+            var skills = this.player.SkillList!.Skills.ToList();
+            if (this.player.SelectedCharacter!.CharacterClass!.IsMasterClass)
             {
                 var replacedSkills = skills.Select(entry => entry.Skill.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
                 skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
@@ -156,7 +152,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
 
         private struct SkillEqualityComparer : IEqualityComparer<SkillEntry>
         {
-            public bool Equals(SkillEntry left, SkillEntry right)
+            public bool Equals(SkillEntry? left, SkillEntry? right)
             {
                 return Equals(left?.Skill, right?.Skill);
             }

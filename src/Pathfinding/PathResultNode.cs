@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.Pathfinding
     /// <summary>
     /// A path finder node.
     /// </summary>
-    public struct PathResultNode : IEquatable<PathResultNode>
+    public readonly struct PathResultNode : IEquatable<PathResultNode>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PathResultNode" /> struct.

@@ -108,17 +108,17 @@
 
 @code {
 
-    private Image<Rgba32> terrainImage;
+    private Image<Rgba32> terrainImage = null!;
 
     private float scale = 3;
 
-    private object focusedObject;
+    private object? focusedObject;
 
     /// <summary>
     /// Gets or sets the map which is edited in this component.
     /// </summary>
     [Parameter]
-    public GameMapDefinition Map { get; set; }
+    public GameMapDefinition Map { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the <see cref="EditForm.OnValidSubmit"/> event callback.
@@ -135,13 +135,13 @@
     /// This means, the resizing might be laggy and a bit buggy. It may make sense to do more stuff in javascript instead.
     /// </remarks>
     [Inject]
-    public IJSRuntime JsRuntime { get; set; }
+    public IJSRuntime JsRuntime { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the change notification service.
     /// </summary>
     [Inject]
-    public IChangeNotificationService NotificationService { get; set; }
+    public IChangeNotificationService NotificationService { get; set; } = null!;
 
     /// <inheritdoc />
     public void Dispose()
@@ -163,7 +163,7 @@
         this.terrainImage = new GameMapTerrain(this.Map).ToImage();
     }
 
-    private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
         if (sender == this.focusedObject)
         {
@@ -223,9 +223,9 @@
 
     private void OnObjectSelected(ChangeEventArgs args)
     {
-        var obj = this.Map.EnterGates.FirstOrDefault<object>(g => g.GetId().ToString() == args.Value.ToString())
-                  ?? this.Map.ExitGates.FirstOrDefault<object>(g => g.GetId().ToString() == args.Value.ToString())
-                  ?? this.Map.MonsterSpawns.FirstOrDefault(g => g.GetId().ToString() == args.Value.ToString());
+        var obj = this.Map.EnterGates.FirstOrDefault<object>(g => g.GetId().ToString() == args.Value?.ToString())
+                  ?? this.Map.ExitGates.FirstOrDefault<object>(g => g.GetId().ToString() == args.Value?.ToString())
+                  ?? this.Map.MonsterSpawns.FirstOrDefault(g => g.GetId().ToString() == args.Value?.ToString());
         this.focusedObject = obj;
     }
 
@@ -246,57 +246,61 @@
 
     private void OnSpawnResizing((byte X, byte Y, Resizers.ResizerPosition resizerPosition) args)
     {
-        var focusedSpawnArea = (MonsterSpawnArea)this.focusedObject;
-        switch (args.resizerPosition)
+        if (this.focusedObject is MonsterSpawnArea focusedSpawnArea)
         {
-            case Resizers.ResizerPosition.TopLeft:
-                focusedSpawnArea.X1 = args.X;
-                focusedSpawnArea.Y1 = args.Y;
-                break;
-            case Resizers.ResizerPosition.TopRight:
-                focusedSpawnArea.X1 = args.X;
-                focusedSpawnArea.Y2 = args.Y;
-                break;
-            case Resizers.ResizerPosition.BottomRight:
-                focusedSpawnArea.X2 = args.X;
-                focusedSpawnArea.Y2 = args.Y;
-                break;
-            case Resizers.ResizerPosition.BottomLeft:
-                focusedSpawnArea.X2 = args.X;
-                focusedSpawnArea.Y1 = args.Y;
-                break;
-        }
+            switch (args.resizerPosition)
+            {
+                case Resizers.ResizerPosition.TopLeft:
+                    focusedSpawnArea.X1 = args.X;
+                    focusedSpawnArea.Y1 = args.Y;
+                    break;
+                case Resizers.ResizerPosition.TopRight:
+                    focusedSpawnArea.X1 = args.X;
+                    focusedSpawnArea.Y2 = args.Y;
+                    break;
+                case Resizers.ResizerPosition.BottomRight:
+                    focusedSpawnArea.X2 = args.X;
+                    focusedSpawnArea.Y2 = args.Y;
+                    break;
+                case Resizers.ResizerPosition.BottomLeft:
+                    focusedSpawnArea.X2 = args.X;
+                    focusedSpawnArea.Y1 = args.Y;
+                    break;
+            }
 
-        this.NotificationService.NotifyChange(focusedSpawnArea, null);
+            this.NotificationService.NotifyChange(focusedSpawnArea, null);
+        }
     }
 
     private void OnGateResizing((byte X, byte Y, Resizers.ResizerPosition resizerPosition) args)
     {
-        var focusedGate = (Gate)this.focusedObject;
-        switch (args.resizerPosition)
+        if (this.focusedObject is MonsterSpawnArea focusedGate)
         {
-            case Resizers.ResizerPosition.TopLeft:
-                focusedGate.X1 = args.X;
-                focusedGate.Y1 = args.Y;
-                break;
-            case Resizers.ResizerPosition.TopRight:
-                focusedGate.X1 = args.X;
-                focusedGate.Y2 = args.Y;
-                break;
-            case Resizers.ResizerPosition.BottomRight:
-                focusedGate.X2 = args.X;
-                focusedGate.Y2 = args.Y;
-                break;
-            case Resizers.ResizerPosition.BottomLeft:
-                focusedGate.X2 = args.X;
-                focusedGate.Y1 = args.Y;
-                break;
-        }
+            switch (args.resizerPosition)
+            {
+                case Resizers.ResizerPosition.TopLeft:
+                    focusedGate.X1 = args.X;
+                    focusedGate.Y1 = args.Y;
+                    break;
+                case Resizers.ResizerPosition.TopRight:
+                    focusedGate.X1 = args.X;
+                    focusedGate.Y2 = args.Y;
+                    break;
+                case Resizers.ResizerPosition.BottomRight:
+                    focusedGate.X2 = args.X;
+                    focusedGate.Y2 = args.Y;
+                    break;
+                case Resizers.ResizerPosition.BottomLeft:
+                    focusedGate.X2 = args.X;
+                    focusedGate.Y1 = args.Y;
+                    break;
+            }
 
-        this.NotificationService.NotifyChange(focusedGate, null);
+            this.NotificationService.NotifyChange(focusedGate, null);
+        }
     }
 
-    private string GetFocusedRotation()
+    private string? GetFocusedRotation()
     {
         if (this.focusedObject is MonsterSpawnArea spawn)
         {

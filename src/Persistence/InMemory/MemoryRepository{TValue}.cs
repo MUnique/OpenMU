@@ -13,6 +13,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
+        where TValue : class
     {
         private readonly IDictionary<Guid, TValue> values = new Dictionary<Guid, TValue>();
 
@@ -46,14 +47,14 @@ namespace MUnique.OpenMU.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public TValue GetById(Guid id)
+        public TValue? GetById(Guid id)
         {
-            this.values.TryGetValue(id, out TValue obj);
+            this.values.TryGetValue(id, out var obj);
             return obj;
         }
 
         /// <inheritdoc/>
-        object IRepository.GetById(Guid id)
+        object? IRepository.GetById(Guid id)
         {
             return this.GetById(id);
         }

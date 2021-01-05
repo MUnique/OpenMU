@@ -5,10 +5,8 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.NPC
 {
     using System.Runtime.InteropServices;
-    using System.Text;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.NPC;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -30,13 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
         /// <inheritdoc />
         public void ShowMessageOfObject(string message, IIdentifiable sender)
         {
-            using var writer = this.player.Connection.StartSafeWrite(ObjectMessage.HeaderType, ObjectMessage.GetRequiredSize(message));
-            _ = new ObjectMessage(writer.Span)
-            {
-                ObjectId = sender.Id,
-                Message = message,
-            };
-            writer.Commit();
+            this.player.Connection?.SendObjectMessage(sender.Id, message);
         }
     }
 }

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.AdminPanel.Components.Form
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
@@ -29,14 +30,14 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             builder.AddAttribute(3, "type", "number");
             builder.AddAttribute(4, "class", this.CssClass);
             builder.AddAttribute(5, "value", BindConverter.FormatValue(this.CurrentValueAsString));
-            builder.AddAttribute(6, "onchange", EventCallback.Factory.CreateBinder<string>(this, v => this.CurrentValueAsString = v, this.CurrentValueAsString));
+            builder.AddAttribute(6, "onchange", EventCallback.Factory.CreateBinder<string>(this, v => this.CurrentValueAsString = v, this.CurrentValueAsString!));
             builder.AddAttribute(7, "min", "0");
             builder.AddAttribute(8, "max", "255");
             builder.CloseElement();
         }
 
         /// <inheritdoc />
-        protected override bool TryParseValueFromString(string value, out byte result, out string validationErrorMessage)
+        protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out byte result, [NotNullWhen(false)] out string? validationErrorMessage)
         {
             if (byte.TryParse(value, out result))
             {
@@ -51,7 +52,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         /// <inheritdoc />
         protected override string FormatValueAsString(byte value)
         {
-            return (string)BindConverter.FormatValue(value, CultureInfo.InvariantCulture);
+            return (string)BindConverter.FormatValue(value, CultureInfo.InvariantCulture)!;
         }
     }
 }

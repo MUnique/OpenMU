@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
     using System.Net.Sockets;
     using System.Text;
     using System.Threading.Tasks;
-    using log4net;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
@@ -32,7 +31,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         private readonly ushort chatServerPort;
         private readonly byte[] packetBuffer = new byte[0xFF];
 
-        private IConnection connection;
+        private IConnection? connection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExDbClient" /> class.
@@ -58,7 +57,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// </summary>
         public void Disconnect()
         {
-            this.connection.Disconnect();
+            this.connection?.Disconnect();
         }
 
         private async Task Connect()
@@ -84,13 +83,13 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             this.connection.PacketReceived += this.ExDbPacketReceived;
             this.connection.Disconnected += (sender, e) => Task.Run(async () => await this.Connect().ConfigureAwait(false));
             this.SendHello();
-            await this.connection.BeginReceive();
+            await this.connection!.BeginReceive();
         }
 
         private void SendHello()
         {
             // C1 3A 00 02 AC DA 43 68 61 74 53 65 72 76 65 72 00 ...
-            using (var writer = this.connection.StartSafeWrite(0xC1, 0x3A))
+            using (var writer = this.connection!.StartSafeWrite(0xC1, 0x3A))
             {
                 var packet = writer.Span;
                 packet[3] = 0x02;
@@ -198,7 +197,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// <param name="clientId">The client identifier on the server where the client plays on.</param>
         /// <param name="serverId">The server identifier where the client plays on.</param>
         /// <param name="type">The type. Usually 0 for the player who requested the chat and 1 for the other player.</param>
-        private void SendAuthentication(ChatServerAuthenticationInfo authenticationInfo, ChatServerAuthenticationInfo friendAuthenticationInfo, ushort clientId, ushort serverId, byte type)
+        private void SendAuthentication(ChatServerAuthenticationInfo authenticationInfo, ChatServerAuthenticationInfo? friendAuthenticationInfo, ushort clientId, ushort serverId, byte type)
         {
             this.logger.LogDebug($"Registered client {authenticationInfo.ClientName} with index {authenticationInfo.Index} and token {authenticationInfo.AuthenticationToken}");
             var token = uint.Parse(authenticationInfo.AuthenticationToken);
@@ -209,7 +208,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             }
 
             var roomId = authenticationInfo.RoomId;
-            using var writer = this.connection.StartSafeWrite(0xC1, 0x2C);
+            using var writer = this.connection!.StartSafeWrite(0xC1, 0x2C);
             var packet = writer.Span;
             packet[2] = 0xA0;
             packet[3] = 0x01;

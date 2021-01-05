@@ -52,15 +52,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             }
             else
             {
-                trader.TradingPartner.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()?.ChangeTradeButtonState(TradeButtonState.Checked);
+                tradingPartner?.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()?.ChangeTradeButtonState(TradeButtonState.Checked);
             }
         }
 
         private static bool TryAddItemsOfTradingPartner(ITrader trader)
         {
-            if (trader.TradingPartner.TemporaryStorage.Items.Any())
+            if (trader.TradingPartner?.TemporaryStorage?.Items.Any() ?? false)
             {
-                return trader.Inventory.TryTakeAll(trader.TradingPartner.TemporaryStorage);
+                return trader.Inventory!.TryTakeAll(trader.TradingPartner.TemporaryStorage!);
             }
 
             return true;
@@ -79,8 +79,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
                 return TradeResult.Cancelled;
             }
 
-            var traderItems = trader.TemporaryStorage.Items.ToList();
-            var tradePartnerItems = tradingPartner.TemporaryStorage.Items.ToList();
+            var traderItems = trader.TemporaryStorage!.Items.ToList();
+            var tradePartnerItems = tradingPartner.TemporaryStorage!.Items.ToList();
             this.AttachItemsToPersistenceContext(traderItems, itemContext);
             this.AttachItemsToPersistenceContext(tradePartnerItems, itemContext);
 
@@ -94,7 +94,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade
             try
             {
                 this.DetachItemsFromPersistenceContext(traderItems, trader.PersistenceContext);
-                this.DetachItemsFromPersistenceContext(tradePartnerItems, trader.TradingPartner.PersistenceContext);
+                this.DetachItemsFromPersistenceContext(tradePartnerItems, trader.TradingPartner!.PersistenceContext);
                 itemContext.SaveChanges();
                 this.AttachItemsToPersistenceContext(traderItems, trader.TradingPartner.PersistenceContext);
                 this.AttachItemsToPersistenceContext(tradePartnerItems, trader.PersistenceContext);

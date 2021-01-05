@@ -36,17 +36,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         {
             if (quest.Group == QuestConstants.LegacyQuestGroup)
             {
-                this.player.SelectedCharacter.QuestStates.FirstOrDefault(q => q.Group == QuestConstants.LegacyQuestGroup).SendLegacyQuestState(this.player);
+                this.player.SelectedCharacter?.QuestStates.FirstOrDefault(q => q.Group == QuestConstants.LegacyQuestGroup)?.SendLegacyQuestState(this.player);
                 return;
             }
 
-            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.QuestCancelled.HeaderType, Network.Packets.ServerToClient.QuestCancelled.Length);
-            _ = new QuestCancelled(writer.Span)
-            {
-                QuestNumber = (ushort)quest.Number,
-                QuestGroup = (ushort)quest.Group,
-            };
-            writer.Commit();
+            this.player.Connection?.SendQuestCancelled((ushort)quest.Number, (ushort)quest.Group);
         }
     }
 }

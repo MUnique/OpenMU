@@ -41,10 +41,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 return;
             }
 
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var appearanceSerializer = this.player.AppearanceSerializer;
-            IList<Player> guildPlayers = null;
+            IList<Player>? guildPlayers = null;
             var newPlayerList = newPlayers.ToList();
-            using (var writer = this.player.Connection.StartSafeWrite(AddCharactersToScope075.HeaderType, AddCharactersToScope075.GetRequiredSize(newPlayerList.Count)))
+            using (var writer = connection.StartSafeWrite(AddCharactersToScope075.HeaderType, AddCharactersToScope075.GetRequiredSize(newPlayerList.Count)))
             {
                 var packet = new AddCharactersToScope075(writer.Span)
                 {
@@ -71,7 +77,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                     playerBlock.IsIced = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
                     playerBlock.IsDamageBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
                     playerBlock.IsDefenseBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
-                    playerBlock.Name = newPlayer.SelectedCharacter.Name;
+                    playerBlock.Name = newPlayer.SelectedCharacter!.Name;
 
                     if (newPlayer.IsWalking)
                     {

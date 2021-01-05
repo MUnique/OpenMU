@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.FriendServer
     {
         private readonly IPersistenceContextProvider persistenceContextProvider;
 
-        private readonly IChatServer chatServer;
+        private readonly IChatServer? chatServer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FriendServer" /> class.
@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.FriendServer
         /// <param name="gameServers">The game servers.</param>
         /// <param name="chatServer">The chat server.</param>
         /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public FriendServer(IDictionary<int, IGameServer> gameServers, IChatServer chatServer, IPersistenceContextProvider persistenceContextProvider)
+        public FriendServer(IDictionary<int, IGameServer> gameServers, IChatServer? chatServer, IPersistenceContextProvider persistenceContextProvider)
         {
             this.chatServer = chatServer;
             this.GameServers = gameServers;
@@ -131,8 +131,13 @@ namespace MUnique.OpenMU.FriendServer
         }
 
         /// <inheritdoc/>
-        public ChatServerAuthenticationInfo CreateChatRoom(string playerName, string friendName)
+        public ChatServerAuthenticationInfo? CreateChatRoom(string playerName, string friendName)
         {
+            if (this.chatServer is null)
+            {
+                return null;
+            }
+
             if (!this.OnlineFriends.TryGetValue(playerName, out var player))
             {
                 return null;
@@ -164,6 +169,11 @@ namespace MUnique.OpenMU.FriendServer
         /// <inheritdoc />
         public bool InviteFriendToChatRoom(string playerName, string friendName, ushort roomId)
         {
+            if (this.chatServer is null)
+            {
+                return false;
+            }
+
             if (!this.OnlineFriends.TryGetValue(playerName, out var player))
             {
                 return false;
@@ -185,7 +195,7 @@ namespace MUnique.OpenMU.FriendServer
             }
 
             var authenticationInfoFriend = this.chatServer.RegisterClient(roomId, friendName);
-            if (authenticationInfoFriend != null)
+            if (authenticationInfoFriend is not null)
             {
                 gameServerOfFriend.ChatRoomCreated(authenticationInfoFriend, playerName);
                 return true;
@@ -212,9 +222,8 @@ namespace MUnique.OpenMU.FriendServer
                     return;
                 }
 
-                observer = new OnlineFriend(gameServer)
+                observer = new OnlineFriend(gameServer, characterName)
                 {
-                    PlayerName = characterName,
                     ServerId = (byte)gameServer.Id,
                 };
                 this.OnlineFriends.Add(characterName, observer);
@@ -250,7 +259,7 @@ namespace MUnique.OpenMU.FriendServer
         /// <inheritdoc/>
         public string GetChatserverIP()
         {
-            return this.chatServer.GetIpAddress();
+            return this.chatServer?.GetIpAddress() ?? string.Empty;
         }
 
         /// <inheritdoc/>

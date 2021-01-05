@@ -1,5 +1,4 @@
-﻿@using MUnique.OpenMU.AdminPanel.Services
-@using MUnique.OpenMU.DataModel.Entities
+﻿@using MUnique.OpenMU.DataModel.Entities
 @using MUnique.OpenMU.GameLogic
 
 <table>
@@ -20,7 +19,11 @@
                     <button type="button" class="oi oi-account-logout" @onclick=@(() => player.Disconnect()) title="Disconnect"></button>
                     <button type="button" class="oi oi-ban" @onclick=@(() =>
                                                                      {
-                                                                         player.Account.State = AccountState.TemporarilyBanned;
+                                                                         if (player.Account is not null)
+                                                                         {
+                                                                            player.Account.State = AccountState.TemporarilyBanned;
+                                                                         }
+
                                                                          player.Disconnect();
                                                                      }) title="Temporarily ban"></button>
                 </td>
@@ -35,7 +38,7 @@
     /// Gets or sets the map controller.
     /// </summary>
     [Parameter]
-    public IMapController MapController { get; set; }
+    public IMapController MapController { get; set; } = null!;
 
     /// <inheritdoc />
     protected override void OnParametersSet()

@@ -6,11 +6,12 @@
 @code
 {
     private CancellationTokenRegistration tokenRegistration;
+
     /// <summary>
     /// The reference to the opened modal.
     /// </summary>
     [CascadingParameter]
-    BlazoredModalInstance Modal { get; set; }
+    BlazoredModalInstance Modal { get; set; } = null!;
 
     /// <summary>
     /// The cancellation token which closes this loading indicator.

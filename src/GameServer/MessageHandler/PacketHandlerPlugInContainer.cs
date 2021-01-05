@@ -49,7 +49,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             this.serviceContainer.AddService(typeof(IClientVersionProvider), clientVersionProvider);
             this.serviceContainer.AddService(typeof(PlugInManager), manager);
             this.serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
-
         }
 
         /// <summary>
@@ -107,7 +106,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <param name="player">The player.</param>
         /// <param name="packet">The packet.</param>
         /// <param name="handler">The handler.</param>
-        protected void HandlePacket(Player player, in Span<byte> packet, THandler handler)
+        protected void HandlePacket(Player player, in Span<byte> packet, THandler? handler)
         {
             if (handler is null)
             {
@@ -204,7 +203,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             return plugIn;
         }
 
-        private void OnClientVersionChanged(object sender, EventArgs e)
+        private void OnClientVersionChanged(object? sender, EventArgs e)
         {
             this.Logger.LogWarning("Client version changed");
 

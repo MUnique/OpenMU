@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 {
-    using System;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Configuration.Quests;
@@ -25,10 +24,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// </summary>
         /// <param name="questState">State of the quest.</param>
         /// <param name="player">The player.</param>
-        internal static void SendLegacyQuestState(this CharacterQuestState questState, RemotePlayer player)
+        internal static void SendLegacyQuestState(this CharacterQuestState? questState, RemotePlayer player)
         {
+            var connection = player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var questCount = 7;
-            using var writer = player.Connection.StartSafeWrite(LegacyQuestStateList.HeaderType, LegacyQuestStateList.GetRequiredSize(questCount));
+            using var writer = connection.StartSafeWrite(LegacyQuestStateList.HeaderType, LegacyQuestStateList.GetRequiredSize(questCount));
             var message = new LegacyQuestStateList(writer.Span)
             {
                 QuestCount = (byte)questCount,
@@ -36,7 +41,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
 
             if (questState != null)
             {
-                for (int i = 0; i < questState.LastFinishedQuest.Number; i++)
+                for (int i = 0; i < (questState.LastFinishedQuest?.Number ?? 0); i++)
                 {
                     message[i] = LegacyQuestState.Complete;
                 }
@@ -47,7 +52,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 }
             }
 
-            if (player.SelectedCharacter.CharacterClass.GetBaseClass(player.GameContext.Configuration).Number != (byte)CharacterClassNumber.DarkKnight)
+            if (player.SelectedCharacter?.CharacterClass?.GetBaseClass(player.GameContext.Configuration).Number != (byte)CharacterClassNumber.DarkKnight)
             {
                 message.SecretOfDarkStoneState = LegacyQuestState.Undefined;
             }
@@ -61,9 +66,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         /// <param name="message">The message.</param>
         /// <param name="questState">State of the quest.</param>
         /// <param name="player">The player.</param>
-        internal static void AssignActiveQuestData(this QuestState message, CharacterQuestState questState, RemotePlayer player)
+        internal static void AssignActiveQuestData(this QuestState message, CharacterQuestState? questState, RemotePlayer player)
         {
-            var activeQuest = questState.ActiveQuest;
+            var activeQuest = questState?.ActiveQuest;
             if (activeQuest is null)
             {
                 return;
@@ -88,7 +93,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
                 int i = 0;
                 foreach (var requiredKill in activeQuest.RequiredMonsterKills)
                 {
-                    requiredKill.AssignTo(message.GetQuestCondition(i), questState);
+                    requiredKill.AssignTo(message.GetQuestCondition(i), questState!);
                     i++;
                 }
             }
@@ -111,8 +116,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         {
             condition.Type = ConditionType.Item;
             condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
-            condition.CurrentCount = (uint)player.Inventory.Items.Count(item => item.Definition == itemRequirement.Item);
-            condition.RequirementId = itemRequirement.Item.GetItemType();
+            condition.CurrentCount = (uint)(player.Inventory?.Items.Count(item => item.Definition == itemRequirement.Item) ?? 0);
+            condition.RequirementId = itemRequirement.Item!.GetItemType();
             var temporaryItem = new TemporaryItem { Definition = itemRequirement.Item };
             temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();
             player.ItemSerializer.SerializeItem(condition.RequiredItemData, temporaryItem);
@@ -122,7 +127,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
         {
             condition.Type = ConditionType.MonsterKills;
             condition.RequiredCount = (uint)killRequirement.MinimumNumber;
-            condition.RequirementId = (ushort)killRequirement.Monster.Number;
+            condition.RequirementId = (ushort)killRequirement.Monster!.Number;
             condition.CurrentCount = (uint)(questState.RequirementStates.FirstOrDefault(s => s.Requirement == killRequirement)?.KillCount ?? 0);
         }
 
@@ -132,7 +137,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
             rewardStruct.RewardCount = (uint)questReward.Value;
             if (questReward.RewardType == QuestRewardType.Item && questReward.ItemReward is { } itemReward)
             {
-                rewardStruct.RewardId = itemReward.Definition.GetItemType();
+                rewardStruct.RewardId = itemReward.Definition!.GetItemType();
                 itemSerializer.SerializeItem(rewardStruct.RewardedItemData, itemReward);
             }
         }

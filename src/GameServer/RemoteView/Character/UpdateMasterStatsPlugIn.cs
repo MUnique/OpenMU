@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.Character;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 
@@ -30,21 +29,20 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void SendMasterStats()
         {
             var character = this.player.SelectedCharacter;
-            using (var writer = this.player.Connection.StartSafeWrite(MasterStatsUpdate.HeaderType, MasterStatsUpdate.Length))
+            if (character is null || this.player.Attributes is null)
             {
-                _ = new MasterStatsUpdate(writer.Span)
-                {
-                    MasterLevel = (ushort)this.player.Attributes[Stats.MasterLevel],
-                    MasterExperience = (ulong)character.MasterExperience,
-                    MasterExperienceOfNextLevel = (ulong)this.player.GameServerContext.Configuration.MasterExperienceTable[(int)this.player.Attributes[Stats.MasterLevel] + 1],
-                    MasterLevelUpPoints = (ushort)character.MasterLevelUpPoints,
-                    MaximumHealth = (ushort)this.player.Attributes[Stats.MaximumHealth],
-                    MaximumMana = (ushort)this.player.Attributes[Stats.MaximumMana],
-                    MaximumShield = (ushort)this.player.Attributes[Stats.MaximumShield],
-                    MaximumAbility = (ushort)this.player.Attributes[Stats.MaximumAbility],
-                };
-                writer.Commit();
+                return;
             }
+
+            this.player.Connection?.SendMasterStatsUpdate(
+                (ushort)this.player.Attributes[Stats.MasterLevel],
+                (ulong)character.MasterExperience,
+                (ulong)this.player.GameServerContext.Configuration.MasterExperienceTable![(int)this.player.Attributes[Stats.MasterLevel] + 1],
+                (ushort)character.MasterLevelUpPoints,
+                (ushort)this.player.Attributes[Stats.MaximumHealth],
+                (ushort)this.player.Attributes[Stats.MaximumMana],
+                (ushort)this.player.Attributes[Stats.MaximumShield],
+                (ushort)this.player.Attributes[Stats.MaximumAbility]);
 
             this.player.ViewPlugIns.GetPlugIn<IUpdateMasterSkillsPlugIn>()?.UpdateMasterSkills();
         }

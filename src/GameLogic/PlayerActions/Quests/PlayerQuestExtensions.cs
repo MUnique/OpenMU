@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         /// <param name="group">The group of the quest.</param>
         /// <param name="number">The number of the quest.</param>
         /// <returns>The quest state, if found; Otherwise, <c>null</c>.</returns>
-        public static CharacterQuestState GetQuestState(this Player player, short group, short number)
+        public static CharacterQuestState? GetQuestState(this Player player, short group, short number)
         {
             return player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == group && (state.ActiveQuest?.Number == number || state.ActiveQuest?.StartingNumber == number));
         }
@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         /// <param name="player">The player.</param>
         /// <param name="group">The group of the quest.</param>
         /// <returns>The quest state, if found; Otherwise, <c>null</c>.</returns>
-        public static CharacterQuestState GetQuestState(this Player player, short group)
+        public static CharacterQuestState? GetQuestState(this Player player, short group)
         {
             return player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == group);
         }
@@ -44,10 +44,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         /// <param name="group">The group.</param>
         /// <param name="number">The number.</param>
         /// <returns>The quest definition for the specified group and number depending on the players character class.</returns>
-        public static QuestDefinition GetQuest(this Player player, short group, short number)
+        public static QuestDefinition? GetQuest(this Player player, short group, short number)
         {
             return player.OpenedNpc?.Definition.Quests
-                .FirstOrDefault(q => q.Group == group && (q.StartingNumber == number || q.Number == number) && (q.QualifiedCharacter is null || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass));
+                .FirstOrDefault(q => q.Group == group && (q.StartingNumber == number || q.Number == number) && (q.QualifiedCharacter is null || q.QualifiedCharacter == player.SelectedCharacter?.CharacterClass));
         }
 
         /// <summary>
@@ -59,9 +59,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
         {
             return player.OpenedNpc?.Definition.Quests
                 .Where(q => q.QualifiedCharacter is null
-                            || q.QualifiedCharacter == player.SelectedCharacter.CharacterClass)
+                            || q.QualifiedCharacter == player.SelectedCharacter?.CharacterClass)
                 .Where(q => q.MinimumCharacterLevel <= player.Level
-                            && (q.MaximumCharacterLevel == default || q.MaximumCharacterLevel >= player.Level));
+                            && (q.MaximumCharacterLevel == default || q.MaximumCharacterLevel >= player.Level))
+                ?? Enumerable.Empty<QuestDefinition>();
         }
     }
 }

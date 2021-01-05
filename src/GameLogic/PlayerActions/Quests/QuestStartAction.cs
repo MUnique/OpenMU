@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
                 return;
             }
 
-            var questState = player.SelectedCharacter.QuestStates.FirstOrDefault(q => q.Group == group);
+            var questState = player.SelectedCharacter!.QuestStates.FirstOrDefault(q => q.Group == group);
             if (questState is null)
             {
                 questState = player.PersistenceContext.CreateNew<CharacterQuestState>();

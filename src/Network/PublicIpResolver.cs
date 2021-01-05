@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Network
     {
         private readonly ILogger<PublicIpResolver> logger;
         private readonly TimeSpan maximumCachedAddressLifetime = new TimeSpan(0, 5, 0);
-        private IPAddress publicIPv4;
+        private IPAddress? publicIPv4;
         private DateTime lastRequest = DateTime.MinValue;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.Network
                 this.lastRequest = DateTime.Now;
             }
 
-            return this.publicIPv4;
+            return this.publicIPv4!;
         }
 
         private IPAddress InternalGetIPv4()

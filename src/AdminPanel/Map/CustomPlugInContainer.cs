@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.AdminPanel.Map
         }
 
         /// <inheritdoc />
-        public TPlugIn GetPlugIn<TPlugIn>()
+        public TPlugIn? GetPlugIn<TPlugIn>()
             where TPlugIn : class, T
         {
             if (this.registeredPlugIns.TryGetValue(typeof(TPlugIn), out var plugIn)

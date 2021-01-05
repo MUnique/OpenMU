@@ -27,11 +27,11 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly DateTime dropTimestamp = DateTime.UtcNow;
 
-        private Player dropper;
+        private Player? dropper;
 
-        private IEnumerable<object> owners;
+        private IEnumerable<object>? owners;
 
-        private Timer removeTimer;
+        private Timer? removeTimer;
 
         private bool availableToPick = true;
 
@@ -61,7 +61,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="map">The map.</param>
         /// <param name="dropper">The dropper.</param>
         /// <param name="owners">The owners.</param>
-        public DroppedItem(Item item, Point position, GameMap map, Player dropper, IEnumerable<object> owners)
+        public DroppedItem(Item item, Point position, GameMap map, Player? dropper, IEnumerable<object>? owners)
         {
             this.Item = item;
             this.pickupLock = new object();
@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <remarks>
         /// Can be overwritten, for example for quest items which dropped only for a specific player.
         /// </remarks>
-        public bool TryPickUpBy(Player player, out Item stackTarget)
+        public bool TryPickUpBy(Player player, out Item? stackTarget)
         {
             stackTarget = null;
             if (!this.availableToPick)
@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.GameLogic
 
             if (this.Item.IsStackable())
             {
-                stackTarget = player.Inventory.Items.FirstOrDefault(i => i.CanCompletelyStackOn(this.Item));
+                stackTarget = player.Inventory?.Items.FirstOrDefault(i => i.CanCompletelyStackOn(this.Item));
             }
 
             if (stackTarget != null)
@@ -122,7 +122,7 @@ namespace MUnique.OpenMU.GameLogic
                 return false;
             }
 
-            if (this.Item.Definition.IsBoundToCharacter && !this.IsPlayerAnOwner(player))
+            if (this.Item.Definition!.IsBoundToCharacter && !this.IsPlayerAnOwner(player))
             {
                 return false;
             }
@@ -156,7 +156,7 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private void DisposeAndDelete(object state)
+        private void DisposeAndDelete(object? state)
         {
             var player = this.dropper;
             try
@@ -182,8 +182,8 @@ namespace MUnique.OpenMU.GameLogic
         private bool TryPickUp(Player player)
         {
             player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
-            int slot = player.Inventory.CheckInvSpace(this.Item);
-            if (slot < InventoryConstants.LastEquippableItemSlotIndex)
+            var slot = player.Inventory?.CheckInvSpace(this.Item);
+            if (!slot.HasValue || slot < InventoryConstants.LastEquippableItemSlotIndex)
             {
                 player.Logger.LogDebug("Inventory full, Player {0}, Item {1}", player, this);
                 return false;
@@ -198,7 +198,7 @@ namespace MUnique.OpenMU.GameLogic
                     return false;
                 }
 
-                if (!player.Inventory.AddItem((byte)slot, this.Item))
+                if (!player.Inventory!.AddItem((byte)slot, this.Item))
                 {
                     player.Logger.LogDebug("Item could not be added to the inventory, Player {0}, Item {1}", player, this);
                     return false;

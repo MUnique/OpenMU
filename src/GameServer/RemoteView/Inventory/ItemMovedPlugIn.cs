@@ -31,6 +31,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
         /// <inheritdoc/>
         public void ItemMoved(Item item, byte toSlot, Storages storage)
         {
+            var connection = this.player.Connection;
+            if (connection is null)
+            {
+                return;
+            }
+
             var itemSerializer = this.player.ItemSerializer;
             var targetStorage = storage.Convert();
             if (targetStorage == ItemStorageKind.PlayerShop)
@@ -38,7 +44,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
                 targetStorage = ItemStorageKind.Inventory;
             }
 
-            using var writer = this.player.Connection.StartSafeWrite(Network.Packets.ServerToClient.ItemMoved.HeaderType, Network.Packets.ServerToClient.ItemMoved.GetRequiredSize(itemSerializer.NeededSpace));
+            using var writer = connection.StartSafeWrite(Network.Packets.ServerToClient.ItemMoved.HeaderType, Network.Packets.ServerToClient.ItemMoved.GetRequiredSize(itemSerializer.NeededSpace));
             var message = new ItemMoved(writer.Span)
             {
                 TargetStorageType = targetStorage,

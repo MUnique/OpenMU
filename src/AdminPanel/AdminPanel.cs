@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.AdminPanel
         private readonly AdminPanelSettings settings;
         private readonly IPlugInConfigurationChangeListener plugInChangeListener;
         private readonly ILogger<AdminPanel> logger;
-        private IHost host;
+        private IHost? host;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminPanel" /> class.
@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.AdminPanel
                     webBuilder.UseUrls($"http://*:{this.settings.Port}");
                 })
                 .Build();
-            await this.host.StartAsync(cancellationToken);
+            await this.host!.StartAsync(cancellationToken);
             this.logger.LogInformation($"Admin panel initialized, port {this.settings.Port}.");
         }
 
@@ -87,13 +87,13 @@ namespace MUnique.OpenMU.AdminPanel
         public Task StopAsync(CancellationToken cancellationToken)
         {
             this.logger.LogInformation("Stopping admin panel");
-            return this.host.StopAsync(cancellationToken);
+            return this.host?.StopAsync(cancellationToken) ?? Task.CompletedTask;
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            this.host.Dispose();
+            this.host?.Dispose();
         }
     }
 }
