@@ -26,7 +26,7 @@ Build shell commands and run:
 
 ```bash
 source dev.sh
-generate_certificate { password here }
+generate_certificates { password here }
 ```
 
 The script generates the certificate on a dedicated docker container and exports the environment variable `CERTIFICATE_PASSWORD` which can be used at docker-compose.
