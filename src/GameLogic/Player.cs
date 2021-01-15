@@ -913,6 +913,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="skillEntry">The skill entry.</param>
         public void CreateMagicEffectPowerUp(SkillEntry skillEntry)
         {
+            skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+
             var skill = skillEntry.Skill;
             if (skill.MagicEffectDef?.PowerUpDefinition?.Boost is null)
             {

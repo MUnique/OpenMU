@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel;
+
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
     using System.Linq;
@@ -50,7 +52,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
                 return;
             }
 
-            var learnedSkill = player.SelectedCharacter.LearnedSkills.FirstOrDefault(ls => ls.Skill.Number == skillId);
+            var learnedSkill = player.SelectedCharacter.LearnedSkills.FirstOrDefault(ls => ls.Skill?.Number == skillId);
             if (learnedSkill is null)
             {
                 player.Logger.LogDebug("Trying to add master skill, skillId: {0}, player {1}", skill.Number, player);
@@ -77,6 +79,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 
         private void AddMasterPointToLearnedSkill(Player player, SkillEntry learnedSkill)
         {
+            learnedSkill.ThrowNotInitializedProperty(learnedSkill.Skill is null, nameof(learnedSkill.Skill));
             var requiredPoints = learnedSkill.Level == 0 ? learnedSkill.Skill.MasterDefinition!.MinimumLevel : 1;
             if (player.SelectedCharacter!.MasterLevelUpPoints >= requiredPoints && learnedSkill.Level < learnedSkill.Skill.MasterDefinition!.MaximumLevel)
             {
@@ -128,8 +131,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             }
 
             var learnedRequiredSkill = character.LearnedSkills
-                .Where(l => l.Skill.MasterDefinition?.Root != null)
-                .FirstOrDefault(l => l.Skill.MasterDefinition!.Root!.Id == definition.Root?.Id
+                .Where(l => l.Skill?.MasterDefinition?.Root != null)
+                .FirstOrDefault(l => l.Skill!.MasterDefinition!.Root!.Id == definition.Root?.Id
                                      && l.Skill.MasterDefinition.Rank == definition.Rank - 1);
             return learnedRequiredSkill?.Level >= MinimumSkillLevelOfRequiredSkill;
         }

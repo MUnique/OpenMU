@@ -169,6 +169,8 @@ namespace MUnique.OpenMU.GameLogic
                 return;
             }
 
+            skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+
             var skill = skillEntry.Skill;
             var regeneration = Stats.IntervalRegenerationAttributes.FirstOrDefault(r => r.CurrentAttribute == skill.MagicEffectDef?.PowerUpDefinition?.TargetAttribute);
             if (regeneration != null)
@@ -195,6 +197,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="skillEntry">The skill entry.</param>
         public static void ApplyElementalEffects(this IAttackable target, Player player, SkillEntry skillEntry)
         {
+            skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
             var modifier = skillEntry.Skill.ElementalModifierTarget;
             if (modifier is null)
             {
@@ -353,6 +356,8 @@ namespace MUnique.OpenMU.GameLogic
 
         private static int GetDamage(this SkillEntry skill)
         {
+            skill.ThrowNotInitializedProperty(skill.Skill is null, nameof(skill.Skill));
+
             var result = skill.Skill.AttackDamage;
             if (skill.Skill.MasterDefinition != null)
             {
@@ -376,7 +381,7 @@ namespace MUnique.OpenMU.GameLogic
             maximumBaseDamage = (int)(attackerStats[Stats.BaseDamageBonus] + attackerStats[Stats.BaseMaxDamageBonus]);
 
             DamageType damageType = DamageType.Physical;
-            if (skill != null)
+            if (skill?.Skill != null)
             {
                 damageType = skill.Skill.DamageType;
 

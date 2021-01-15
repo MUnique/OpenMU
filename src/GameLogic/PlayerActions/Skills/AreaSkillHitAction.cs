@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         /// <param name="skill">The skill.</param>
         public void AttackTarget(Player player, IAttackable target, SkillEntry skill)
         {
-            if (skill.Skill.SkillType != SkillType.AreaSkillExplicitHits
+            if (skill.Skill?.SkillType != SkillType.AreaSkillExplicitHits
                 || target is null
                 || !target.IsAlive)
             {

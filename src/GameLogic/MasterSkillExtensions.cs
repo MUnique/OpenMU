@@ -22,14 +22,14 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="skillEntry">The skill entry of the master skill.</param>
         /// <returns>The value of the specified skill, depending on its formula and level.</returns>
-        public static float CalculateValue(this SkillEntry skillEntry) => skillEntry.Skill.MasterDefinition?.CalculateValue(skillEntry.Level) ?? 0;
+        public static float CalculateValue(this SkillEntry skillEntry) => skillEntry.Skill?.MasterDefinition?.CalculateValue(skillEntry.Level) ?? 0;
 
         /// <summary>
         /// Calculates the display value of the specified skill, depending on its formula and level.
         /// </summary>
         /// <param name="skillEntry">The skill entry of the master skill.</param>
         /// <returns>The value of the specified skill, depending on its formula and level.</returns>
-        public static float CalculateDisplayValue(this SkillEntry skillEntry) => skillEntry.Skill.MasterDefinition?.CalculateDisplayValue(skillEntry.Level) ?? 0;
+        public static float CalculateDisplayValue(this SkillEntry skillEntry) => skillEntry.Skill?.MasterDefinition?.CalculateDisplayValue(skillEntry.Level) ?? 0;
 
         /// <summary>
         /// Calculates the next display value of the specified skill, depending on its formula and level.
@@ -38,8 +38,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>The value of the specified skill, depending on its formula and level.</returns>
         public static float CalculateNextDisplayValue(this SkillEntry skillEntry)
         {
-            var level = Math.Min(skillEntry.Level + 1, skillEntry.Skill.MasterDefinition?.MaximumLevel ?? 0);
-            return skillEntry.Skill.MasterDefinition.CalculateDisplayValue(level);
+            var level = Math.Min(skillEntry.Level + 1, skillEntry.Skill?.MasterDefinition?.MaximumLevel ?? 0);
+            return skillEntry.Skill?.MasterDefinition.CalculateDisplayValue(level) ?? 0;
         }
 
         private static float CalculateValue(this MasterSkillDefinition? skillDefinition, int level) => skillDefinition?.ValueFormula.GetValue(level, skillDefinition.MaximumLevel) ?? 0;

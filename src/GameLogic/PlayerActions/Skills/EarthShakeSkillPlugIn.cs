@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel;
+
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
 {
     using System.Runtime.InteropServices;
@@ -29,6 +31,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
             {
                 return;
             }
+
+            skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
 
             var startingPoint = attacker.Position;
             var currentTarget = target.Position;

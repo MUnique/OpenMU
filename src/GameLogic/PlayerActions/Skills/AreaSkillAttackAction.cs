@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel;
+
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using System.Linq;
@@ -77,6 +79,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private void ApplySkill(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter)
         {
+            skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+
             if (target.CheckSkillTargetRestrictions(player, skillEntry.Skill))
             {
                 target.AttackBy(player, skillEntry);

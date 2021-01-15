@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
         public void MasterSkillLevelChanged(SkillEntry skillEntry)
         {
             var character = this.player.SelectedCharacter;
-            if (character?.CharacterClass is null)
+            if (character?.CharacterClass is null || skillEntry.Skill is null)
             {
                 return;
             }

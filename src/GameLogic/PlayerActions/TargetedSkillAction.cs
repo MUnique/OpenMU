@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel;
+
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using System.Collections.Generic;
@@ -81,6 +83,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
         private void ApplySkill(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
         {
+            skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
             var skill = skillEntry.Skill;
             var targets = this.DetermineTargets(player, targetedTarget, skill);
             foreach (var target in targets)

@@ -26,12 +26,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             //  - MagicEffects which should also prevent skill usage: Stone (0x39), Stun (0x3D), Sleep (0x48), Freeze2(0x92), Earth Binds(0x93)
             //  - During castle siege, can't teleport over the non-destroyed gates (simple y-axis check)
             if (player.SkillList?.GetSkill(TeleportSkillId) is { } skillEntry
+                && skillEntry.Skill is { } skill
                 && player.CurrentMap!.Terrain.WalkMap[target.X, target.Y]
                 && !player.CurrentMap.Terrain.SafezoneMap[target.X, target.Y]
-                && player.IsInRange(target, skillEntry.Skill.Range)
-                && player.TryConsumeForSkill(skillEntry.Skill))
+                && player.IsInRange(target, skill.Range)
+                && player.TryConsumeForSkill(skill))
             {
-                Task.Run(() => player.TeleportAsync(target, skillEntry.Skill));
+                Task.Run(() => player.TeleportAsync(target, skill));
             }
             else
             {

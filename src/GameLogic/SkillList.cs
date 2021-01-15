@@ -45,14 +45,16 @@ namespace MUnique.OpenMU.GameLogic
 
             this.player = player;
             this.learnedSkills = this.player.SelectedCharacter.LearnedSkills ?? new List<SkillEntry>();
-            this.availableSkills = this.learnedSkills.ToDictionary(skillEntry => skillEntry.Skill.Number.ToUnsigned());
+            this.learnedSkills.Where(entry => entry.Skill is null).ForEach(entry => throw Error.NotInitializedProperty(entry, nameof(entry.Skill)));
+
+            this.availableSkills = this.learnedSkills.ToDictionary(skillEntry => skillEntry.Skill!.Number.ToUnsigned());
             this.itemSkills = new List<SkillEntry>();
             this.player.Inventory.EquippedItems
                 .Where(item => item.HasSkill)
                 .Where(item => (item.Definition ?? throw Error.NotInitializedProperty(item, nameof(item.Definition))).Skill != null)
                 .ForEach(item => this.AddItemSkill(item.Definition!.Skill!));
             this.player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChanged;
-            foreach (var skill in this.learnedSkills.Where(s => s.Skill.SkillType == SkillType.PassiveBoost))
+            foreach (var skill in this.learnedSkills.Where(s => s.Skill!.SkillType == SkillType.PassiveBoost))
             {
                 this.CreatePowerUpForPassiveSkill(skill);
             }
@@ -91,9 +93,9 @@ namespace MUnique.OpenMU.GameLogic
 
             // We need to take into account that we there might be multiple items equipped with the same skill
             var skillRemoved = this.itemSkills.Remove(skillEntry);
-            if (skillRemoved && this.itemSkills.All(s => s.Skill.Number != skillId))
+            if (skillRemoved && this.itemSkills.All(s => s.Skill!.Number != skillId))
             {
-                this.player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.RemoveSkill(skillEntry.Skill);
+                this.player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.RemoveSkill(skillEntry.Skill!);
                 this.availableSkills.Remove(skillId);
             }
 
@@ -125,7 +127,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private void AddLearnedSkill(SkillEntry skill)
         {
-            this.availableSkills.Add(skill.Skill.Number.ToUnsigned(), skill);
+            this.availableSkills.Add(skill.Skill!.Number.ToUnsigned(), skill);
             this.learnedSkills.Add(skill);
 
             this.player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.AddSkill(skill.Skill);
@@ -142,7 +144,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private void CreatePowerUpWrappers(SkillEntry skillEntry)
         {
-            var masterDefinition = skillEntry.Skill.MasterDefinition;
+            var masterDefinition = skillEntry.Skill!.MasterDefinition;
             if (masterDefinition is null)
             {
                 return;
@@ -182,7 +184,7 @@ namespace MUnique.OpenMU.GameLogic
             public PassiveSkillBoostPowerUp(SkillEntry skillEntry)
             {
                 this.Value = skillEntry.CalculateValue();
-                this.AggregateType = skillEntry.Skill.MasterDefinition!.Aggregation;
+                this.AggregateType = skillEntry.Skill!.MasterDefinition!.Aggregation;
                 skillEntry.PropertyChanged += (sender, eventArgs) =>
                 {
                     if (eventArgs.PropertyName == nameof(SkillEntry.Level))

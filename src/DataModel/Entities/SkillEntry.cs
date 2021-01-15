@@ -16,7 +16,6 @@ namespace MUnique.OpenMU.DataModel.Entities
     public class SkillEntry : INotifyPropertyChanged
     {
         private int level;
-        private Skill? skill;
         private IElement? buffPowerUp;
         private IElement? powerUpDuration;
 
@@ -29,11 +28,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the skill definition.
         /// </summary>
         [Required]
-        public virtual Skill Skill
-        {
-            get => this.skill ?? throw Error.NotInitializedProperty(this); // todo check if this works in the admin panel?!
-            set => this.skill = value;
-        }
+        public virtual Skill? Skill { get; set; }
 
         /// <summary>
         /// Gets or sets the level of the skill, primarily master skill level.

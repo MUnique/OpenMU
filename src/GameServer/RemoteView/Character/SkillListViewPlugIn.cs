@@ -120,7 +120,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             var skills = this.player.SkillList!.Skills.ToList();
             if (this.player.SelectedCharacter!.CharacterClass!.IsMasterClass)
             {
-                var replacedSkills = skills.Select(entry => entry.Skill.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
+                var replacedSkills = skills.Select(entry => entry.Skill?.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
                 skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
             }
 

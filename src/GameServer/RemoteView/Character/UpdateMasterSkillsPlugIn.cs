@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 return;
             }
 
-            var masterSkills = this.player.SkillList?.Skills.Where(s => s.Skill.MasterDefinition != null).ToList();
+            var masterSkills = this.player.SkillList?.Skills.Where(s => s.Skill?.MasterDefinition != null).ToList();
             if (masterSkills is null || this.player.SelectedCharacter?.CharacterClass is null)
             {
                 return;
@@ -52,7 +52,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             foreach (var masterSkill in masterSkills)
             {
                 var skillsBlock = packet[i];
-                skillsBlock.MasterSkillIndex = masterSkill.Skill.GetMasterSkillIndex(this.player.SelectedCharacter.CharacterClass);
+                skillsBlock.MasterSkillIndex = masterSkill.Skill!.GetMasterSkillIndex(this.player.SelectedCharacter.CharacterClass);
                 skillsBlock.Level = (byte)masterSkill.Level;
                 skillsBlock.DisplayValue = masterSkill.CalculateDisplayValue();
                 skillsBlock.DisplayValueOfNextLevel = masterSkill.CalculateNextDisplayValue();
