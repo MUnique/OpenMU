@@ -15,7 +15,7 @@
     /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
     /// </summary>
     [Parameter]
-    public string Label { get; set; } = string.Empty;
+    public string? Label { get; set; }
 
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out DateTime result, [NotNullWhen(false)] out string? validationErrorMessage)

@@ -13,7 +13,7 @@
     /// Gets or sets the text.
     /// </summary>
     [Parameter]
-    public string Text { get; set; } = string.Empty;
+    public string? Text { get; set; }
 
     /// <summary>
     /// Gets or sets an expression that identifies the bound value.
@@ -26,7 +26,7 @@
     {
         base.OnParametersSet();
         this.fieldIdentifier = FieldIdentifier.Create(this.ValueExpression);
-        this.actualLabel = this.Text
+        this.actualLabel = (string.IsNullOrWhiteSpace(this.Text) ? null : this.Text)
                            ?? this.fieldIdentifier.Model.GetType().GetProperty(this.fieldIdentifier.FieldName)?.GetCustomAttribute<DisplayAttribute>()?.Name
                            ?? this.fieldIdentifier.FieldName;
     }

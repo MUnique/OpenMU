@@ -13,7 +13,7 @@
     /// Gets or sets the label.
     /// </summary>
     [Parameter]
-    public string Label { get; set; } = string.Empty;
+    public string? Label { get; set; }
 
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out bool result, [NotNullWhen(false)] out string? validationErrorMessage)
