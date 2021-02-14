@@ -19,7 +19,7 @@ I tried to make it flexible and I hope it's not too complicated.*
 
 For the big picture, you may have a look at the [architecture overview](architecture%20overview.png).
 
-There are interfaces for the interoperability between the different "servers" or sub-systems in [MUnique.OpenMU.Interfaces](../src/Interfaces/Readme.md).
+There are interfaces for the interoperability between the different "servers" or sub-systems in [MUnique.OpenMU.Interfaces](https://github.com/MUnique/OpenMU/tree/master/src/Interfaces).
 
 ### Communication between game client and server
 The network communication between game client and the game server takes place through the [Connection class](https://github.com/MUnique/OpenMU/tree/master/src/Network/Connection.cs). MUnique.OpenMU.Network contains all what's required to connect from and to a game server, using the MU Online network protocol.
@@ -84,7 +84,7 @@ If there might be a problem in the future, we could go further and mix relationa
   * [Master Skill System](MasterSystem.md): Description about the master skill system
   * [GameMap](GameMap.md): Description about the GameMap implementation
   * [Progress](Progress.md)/[Skills Progress](Skills-Progress.md): Information about the feature implementation progress of the project
-  * [Admin Panel](../src/AdminPanel/Readme.md): The user inferface of the server
-  * [Attribute System](../src/AttributeSystem/Readme.md): Damage calculation and player attributes are based on that
-  * [Network](../src/Network/Readme.md): About the network communication
-  * [Startup](../src/Startup/Readme.md): It's the project for the executeable which puts every piece of the puzzle together
+  * [Admin Panel](https://github.com/MUnique/OpenMU/tree/master/src/AdminPanel): The user inferface of the server
+  * [Attribute System](https://github.com/MUnique/OpenMU/tree/master/src/AttributeSystem): Damage calculation and player attributes are based on that
+  * [Network](https://github.com/MUnique/OpenMU/tree/master/src/Network): About the network communication
+  * [Startup](https://github.com/MUnique/OpenMU/tree/master/src/Startup): It's the project for the executeable which puts every piece of the puzzle together
