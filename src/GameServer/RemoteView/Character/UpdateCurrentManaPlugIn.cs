@@ -34,8 +34,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             }
 
             this.player.Connection?.SendCurrentManaAndAbility(
-                (ushort)this.player.Attributes[Stats.CurrentAbility],
-                (ushort)this.player.Attributes[Stats.CurrentMana]);
+                (ushort)this.player.Attributes[Stats.CurrentMana],
+                (ushort)this.player.Attributes[Stats.CurrentAbility]);
         }
     }
 }
