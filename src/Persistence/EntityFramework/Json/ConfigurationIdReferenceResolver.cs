@@ -39,6 +39,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         public object ResolveReference(object context, string reference)
         {
             var id = new Guid(reference);
+            if (id == Guid.Empty)
+            {
+                return null!;
+            }
 
             var success = this.cache.TryGetValue(id, out var obj);
             if (!success)

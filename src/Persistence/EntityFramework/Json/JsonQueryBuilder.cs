@@ -129,7 +129,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             stringBuilder.Append(", (");
             if (!navigation.IsMemberOfAggregate() || isBackReference)
             {
-                stringBuilder.Append("json_build_object('$ref', ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).Append("\")");
+                stringBuilder
+                    .Append($"case when {parentAlias}.\"{foreignKey.Name}\" is null then null else ")
+                    .Append("json_build_object('$ref', ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).Append("\") end");
             }
             else
             {
