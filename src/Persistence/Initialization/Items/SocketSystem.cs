@@ -428,6 +428,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Items
                 powerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
                 optionOfLevel.PowerUpDefinition = powerUpDefinition;
                 itemOption.LevelDependentOptions.Add(optionOfLevel);
+                if (optionOfLevel.Level == 1)
+                {
+                    itemOption.PowerUpDefinition = powerUpDefinition;
+                }
             }
 
             return itemOption;

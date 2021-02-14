@@ -144,6 +144,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.TestAccounts
                     .Where(o => o.OptionType == ItemOptionTypes.SocketOption && o.SubOptionType == (int)socketOption.Element)
                     .First(o => o.Number == socketOption.Number);
                 socketOptionLink.Index = slot++;
+                socketOptionLink.Level = 1;
                 item.ItemOptions.Add(socketOptionLink);
             }
 
