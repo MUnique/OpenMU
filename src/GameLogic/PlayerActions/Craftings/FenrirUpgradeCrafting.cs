@@ -82,18 +82,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 return CraftingResult.TooManyItems;
             }
 
-            items.Add(new CraftingRequiredItemLink(hornOfFenrir.GetAsEnumerable(), new ItemCraftingRequiredItem { PossibleItems = { hornOfFenrir.Definition! }, MinimumAmount = 1, MaximumAmount = 1, Reference = 1, SuccessResult = MixResult.StaysAsIs }));
-            items.Add(new CraftingRequiredItemLink(chaos.GetAsEnumerable(), new ItemCraftingRequiredItem { PossibleItems = { chaos.Definition! }, MinimumAmount = 1, MaximumAmount = 1 }));
-            items.Add(new CraftingRequiredItemLink(jewelsOfLife, new ItemCraftingRequiredItem { PossibleItems = { jewelsOfLife.First().Definition! }, MinimumAmount = 5, MaximumAmount = 5 }));
+            items.Add(new CraftingRequiredItemLink(hornOfFenrir.GetAsEnumerable(), new TransientItemCraftingRequiredItem { PossibleItems = { hornOfFenrir.Definition! }, MinimumAmount = 1, MaximumAmount = 1, Reference = 1, SuccessResult = MixResult.StaysAsIs }));
+            items.Add(new CraftingRequiredItemLink(chaos.GetAsEnumerable(), new TransientItemCraftingRequiredItem { PossibleItems = { chaos.Definition! }, MinimumAmount = 1, MaximumAmount = 1 }));
+            items.Add(new CraftingRequiredItemLink(jewelsOfLife, new TransientItemCraftingRequiredItem { PossibleItems = { jewelsOfLife.First().Definition! }, MinimumAmount = 5, MaximumAmount = 5 }));
             if (randomWeapons.Any())
             {
-                items.Add(new CraftingRequiredItemLink(randomWeapons, new ItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 2 }));
+                items.Add(new CraftingRequiredItemLink(randomWeapons, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 2 }));
                 successRateByItems = (byte)Math.Min(79, randomWeapons.Sum(this.priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
             }
 
             if (randomArmors.Any())
             {
-                items.Add(new CraftingRequiredItemLink(randomArmors, new ItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 3 }));
+                items.Add(new CraftingRequiredItemLink(randomArmors, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 3 }));
                 successRateByItems = (byte)Math.Min(79, randomArmors.Sum(this.priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
             }
 
