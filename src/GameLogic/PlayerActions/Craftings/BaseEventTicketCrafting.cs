@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
 {
     using System.Collections.Generic;
     using System.Linq;
-    using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlayerActions.Items;
     using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -56,7 +55,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
 
             itemLinks.Add(new CraftingRequiredItemLink(
                 item1.GetAsEnumerable(),
-                new ItemCraftingRequiredItem
+                new TransientItemCraftingRequiredItem
                 {
                     PossibleItems = { item1.Definition! },
                     MaximumAmount = 1,
@@ -64,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 }));
             itemLinks.Add(new CraftingRequiredItemLink(
                 item2.GetAsEnumerable(),
-                new ItemCraftingRequiredItem
+                new TransientItemCraftingRequiredItem
                 {
                     PossibleItems = { item2.Definition! },
                     MaximumAmount = 1,
@@ -72,7 +71,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
                 }));
             itemLinks.Add(new CraftingRequiredItemLink(
                 chaos.GetAsEnumerable(),
-                new ItemCraftingRequiredItem
+                new TransientItemCraftingRequiredItem
                 {
                     PossibleItems = { chaos.Definition! },
                     MaximumAmount = 1,
