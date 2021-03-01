@@ -113,6 +113,11 @@ namespace MUnique.OpenMU.GameServer
 
                 newClient = await this.listener.AcceptSocketAsync().ConfigureAwait(false);
             }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.OperationAborted)
+            {
+                this.Log(l => l.LogDebug(ex, "listener has been closed"));
+                return;
+            }
             catch (ObjectDisposedException ex)
             {
                 this.Log(l => l.LogDebug(ex, "listener has been disposed"));
