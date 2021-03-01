@@ -155,6 +155,11 @@ namespace MUnique.OpenMU.GameLogic
 
             if (RequirementAttributeMapping.TryGetValue(requirement.Attribute, out var totalAttribute))
             {
+                if (!item.IsWearable())
+                {
+                    return (totalAttribute, requirement.MinimumValue);
+                }
+
                 var multiplier = 3;
                 if (totalAttribute == Stats.TotalEnergy)
                 {
