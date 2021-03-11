@@ -65,7 +65,7 @@ namespace MUnique.OpenMU.GameServer
         /// Called when a property has been changed.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
