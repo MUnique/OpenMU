@@ -44,8 +44,10 @@ namespace MUnique.OpenMU.Pathfinding.Tests
             var end = new Point(115, 100);
             var result = this.pathFinder.FindPath(start, end);
             Assert.That(result, Is.Not.Null);
-            Assert.That(result!.Last().X, Is.EqualTo(end.X));
-            Assert.That(result.Last().Y, Is.EqualTo(end.Y));
+            var lastNode = result!.LastOrDefault();
+            Assert.That(lastNode, Is.Not.Null);
+            Assert.That(lastNode.X, Is.EqualTo(end.X));
+            Assert.That(lastNode.Y, Is.EqualTo(end.Y));
         }
 
         /// <summary>
