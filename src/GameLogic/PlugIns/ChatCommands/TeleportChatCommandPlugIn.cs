@@ -2,59 +2,35 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
+namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
 {
     using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.Pathfinding;
+    using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// A chat command plugin which handles teleport commands.
     /// </summary>
-    /// <remarks>
-    /// This should be deactivated by default or limited to game masters.
-    /// </remarks>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799886")]
-    [PlugIn("Teleport chat command", "Handles the chat command '/teleport x y'. Teleports the character to the specified coordinates.")]
-    [ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
-    public class TeleportChatCommandPlugIn : IChatCommandPlugIn
+    [PlugIn("Teleport chat command", "Handles the chat command '/teleport <x> <y>'. Teleports the game master to the specified coordinate.")]
+    [ChatCommandHelp(Command, typeof(TeleportChatCommandArgs), CharacterStatus.GameMaster)]
+    public class TeleportChatCommandPlugIn : ChatCommandPlugInBase<TeleportChatCommandArgs>
     {
         private const string Command = "/teleport";
 
-        private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-
         /// <inheritdoc />
-        public string Key => Command;
+        public override string Key => Command;
 
-        /// <inheritdoc />
-        public CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
+        /// <inheritdoc/>
+        public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
-        /// <inheritdoc />
-        public void HandleCommand(Player player, string command)
+        /// <inheritdoc/>
+        protected override void DoHandleCommand(Player gameMaster, TeleportChatCommandArgs arguments)
         {
-            try
-            {
-                var arguments = command.ParseArguments<Arguments>();
-                player.Move(arguments.Point);
-            }
-            catch (ArgumentException e)
-            {
-                player.ShowMessage(e.Message);
-            }
-        }
-
-        private class Arguments : ArgumentsBase
-        {
-            [Argument("x")]
-            public byte X { get; set; }
-
-            [Argument("y")]
-            public byte Y { get; set; }
-
-            public Point Point => new Point(this.X, this.Y);
+            gameMaster.Move(arguments.Coordinates);
         }
     }
 }
