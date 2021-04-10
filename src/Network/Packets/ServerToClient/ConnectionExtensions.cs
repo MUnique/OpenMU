@@ -3226,15 +3226,17 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="npcNumber">The npc number.</param>
+        /// <param name="gensContributionPoints">The gens contribution points.</param>
         /// <remarks>
         /// Is sent by the server when: The server acknowledges the requested opening of an npc dialog.
         /// Causes reaction on client side: The client opens the dialog of the specified npc.
         /// </remarks>
-        public static void SendOpenNpcDialog(this IConnection connection, ushort @npcNumber)
+        public static void SendOpenNpcDialog(this IConnection connection, ushort @npcNumber, uint @gensContributionPoints)
         {
             using var writer = connection.StartWriteOpenNpcDialog();
             var packet = writer.Packet;
             packet.NpcNumber = @npcNumber;
+            packet.GensContributionPoints = @gensContributionPoints;
             writer.Commit();
         }    }
     /// <summary>

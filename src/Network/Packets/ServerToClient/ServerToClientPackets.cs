@@ -15010,7 +15010,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the header type of this data packet.
         /// </summary>
-        public static byte HeaderType => 0xC1;
+        public static byte HeaderType => 0xC3;
 
         /// <summary>
         /// Gets the operation code of this data packet.
@@ -15031,15 +15031,24 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
 
         /// <summary>
         /// Gets or sets the npc number.
         /// </summary>
         public ushort NpcNumber
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the gens contribution points.
+        /// </summary>
+        public uint GensContributionPoints
+        {
+            get => ReadUInt32LittleEndian(this.data.Slice(8));
+            set => WriteUInt32LittleEndian(this.data.Slice(8), value);
         }
 
         /// <summary>

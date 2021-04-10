@@ -5240,7 +5240,7 @@
       </Fields>
     </Packet>
     <Packet>
-      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
       <Code>F9</Code>
       <SubCode>01</SubCode>
       <Name>OpenNpcDialog</Name>
@@ -5251,8 +5251,13 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>NpcNumber</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>GensContributionPoints</Name>
         </Field>
       </Fields>
     </Packet>

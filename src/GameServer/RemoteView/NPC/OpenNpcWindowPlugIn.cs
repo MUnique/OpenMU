@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
             {
                 if (this.player.OpenedNpc is not null)
                 {
-                    this.player.Connection?.SendOpenNpcDialog(this.player.OpenedNpc.Definition.Number.ToUnsigned());
+                    this.player.Connection?.SendOpenNpcDialog(this.player.OpenedNpc.Definition.Number.ToUnsigned(), 0);
                 }
             }
             else
