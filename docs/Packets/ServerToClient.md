@@ -126,4 +126,4 @@
   * [C1 F6 0F - QuestCancelled (by server)](C1-F6-0F-QuestCancelled_by-server.md)
   * [C1 F6 1A - QuestStateList (by server)](C1-F6-1A-QuestStateList_by-server.md)
   * [C1 F6 1B - QuestState (by server)](C1-F6-1B-QuestState_by-server.md)
-  * [C1 F9 01 - OpenNpcDialog (by server)](C1-F9-01-OpenNpcDialog_by-server.md)
+  * [C3 F9 01 - OpenNpcDialog (by server)](C3-F9-01-OpenNpcDialog_by-server.md)
