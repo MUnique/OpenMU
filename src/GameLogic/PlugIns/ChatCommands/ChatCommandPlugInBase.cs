@@ -78,6 +78,25 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         }
 
         /// <summary>
+        /// Gets a guild id by name.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="guildName">The guild name.</param>
+        /// <returns>The guild id.</returns>
+        protected uint GetGuildIdByName(Player player, string guildName)
+        {
+            var guildServer = (player.GameContext as IGameServerContext)!.GuildServer;
+            var guildId = guildServer.GetGuildIdByName(guildName);
+
+            if (guildId == default(uint))
+            {
+                throw new ArgumentException($"Guild {guildName} not found.");
+            }
+
+            return guildId;
+        }
+
+        /// <summary>
         /// Gets a character's location.
         /// </summary>
         /// <param name="character">The target character.</param>

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("9163C3EA-6722-4E55-A109-20C163C05266")]
-    [PlugIn("GMove chat command", "Handles the chat command '/gmove <characterName> <map> <x?> <y?>'. Move a character to a specified map and coordinates.")]
+    [PlugIn("GMove chat command", "Handles the chat command '/gmove <guildName> <map> <x?> <y?>'. Move the character from a guild to a specified map and coordinates.")]
     [ChatCommandHelp(Command, typeof(GMoveChatCommandArgs), CharacterStatus.GameMaster)]
     public class GMoveChatCommandPlugIn : ChatCommandPlugInBase<GMoveChatCommandArgs>
     {
@@ -33,18 +33,19 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
         /// <inheritdoc />
         protected override void DoHandleCommand(Player gameMaster, GMoveChatCommandArgs arguments)
         {
-            var player = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName!);
             var gate = this.GetWarpDestination(gameMaster, arguments.Map!, arguments.Coordinates);
-            player.WarpTo(gate);
+            var guildId = this.GetGuildIdByName(gameMaster, arguments.GuildName!);
 
-            if (player.Name.Equals(gameMaster.Name))
+            var guildPlayers = gameMaster.GameContext.PlayerList
+                .Where(p => p.GuildStatus?.GuildId == guildId)
+                .ToList();
+
+            foreach (var player in guildPlayers)
             {
-                this.ShowMessageTo(gameMaster, $"[{this.Key}] You have been moved to {gate.Map!.Name} at {player.Position.X}, {player.Position.Y}");
-            }
-            else
-            {
-                this.ShowMessageTo(player, "You have been moved by the game master.");
-                this.ShowMessageTo(gameMaster, $"[{this.Key}] {arguments.CharacterName} has been moved to {gate.Map!.Name} at {player.Position.X}, {player.Position.Y}");
+                player.WarpTo(gate);
+
+                this.ShowMessageTo(player, "Your guild has been moved by the game master.");
+                this.ShowMessageTo(gameMaster, $"[{this.Key}] {player.Name} from {arguments.GuildName} has been moved to {gate.Map!.Name} at {player.Position.X}, {player.Position.Y}");
             }
         }
 
