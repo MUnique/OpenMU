@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
 {
     using System;
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
     using MUnique.OpenMU.PlugIns;
@@ -31,10 +32,19 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
         protected override void DoHandleCommand(Player gameMaster, TraceChatCommandArgs arguments)
         {
             var player = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
+            var character = player.SelectedCharacter;
 
-            if (player.SelectedCharacter != null)
+            if (character != null)
             {
-                var characterLocation = this.GetLocationFrom(player.SelectedCharacter);
+                var characterLocation = new ExitGate
+                {
+                    Map = character.CurrentMap,
+                    X1 = character.PositionX,
+                    X2 = (byte)(character.PositionX + 2),
+                    Y1 = character.PositionY,
+                    Y2 = (byte)(character.PositionY + 2),
+                };
+
                 gameMaster.WarpTo(characterLocation);
             }
         }
