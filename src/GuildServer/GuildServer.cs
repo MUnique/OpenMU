@@ -92,6 +92,15 @@ namespace MUnique.OpenMU.GuildServer
         }
 
         /// <inheritdoc/>
+        public uint GetGuildIdByName(string guildName)
+        {
+            var guild = this.guildDictionary
+                .FirstOrDefault(x => x.Value.Guild.Name!.Equals(guildName, StringComparison.OrdinalIgnoreCase));
+
+            return guild.Key;
+        }
+
+        /// <inheritdoc/>
         public GuildMemberStatus? CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
         {
             var context = this.persistenceContextProvider.CreateNewGuildContext();

@@ -12,10 +12,10 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
     public class GMoveChatCommandArgs : ArgumentsBase
     {
         /// <summary>
-        /// Gets or sets the character name.
+        /// Gets or sets the guild name.
         /// </summary>
-        [Argument("characterName")]
-        public string? CharacterName { get; set; }
+        [Argument("guildName")]
+        public string? GuildName { get; set; }
 
         /// <summary>
         /// Gets or sets the name or id of the map.

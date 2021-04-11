@@ -48,6 +48,13 @@ namespace MUnique.OpenMU.Interfaces
         Guild? GetGuild(uint guildId);
 
         /// <summary>
+        /// Gets the guild id by the guild name.
+        /// </summary>
+        /// <param name="guildName">The guild name.</param>
+        /// <returns>The guild id.</returns>
+        uint GetGuildIdByName(string guildName);
+
+        /// <summary>
         /// Creates the guild and sets the guild master online at the guild server. A separate call to <see cref="PlayerEnteredGame"/> is not required.
         /// </summary>
         /// <param name="name">The name.</param>
