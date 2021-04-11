@@ -2,13 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
+namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
 {
-    using System.Linq;
+    using System;
     using System.Runtime.InteropServices;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlayerActions;
+    using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -16,40 +16,44 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("4564AE2B-4819-4155-B5B2-FE2ED0CF7A7F")]
-    [PlugIn("Move chat command", "Handles the chat command '/move map'. Move the character to the specified map.")]
-    public class MoveChatCommandPlugIn : IChatCommandPlugIn
+    [PlugIn("Move chat command", "Handles the chat command '/move <target> <map?> <x?> <y?>'. Move the character to the specified destination.")]
+    [ChatCommandHelp(Command, typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
+    public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
     {
-        private const string CommandKey = "/move";
-
-        private readonly WarpAction warpAction = new WarpAction();
+        private const string Command = "/move";
 
         /// <inheritdoc />
-        public string Key => CommandKey;
+        public override string Key => Command;
+
+        /// <inheritdoc/>
+        public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
 
         /// <inheritdoc />
-        public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
-
-        /// <inheritdoc />
-        public void HandleCommand(Player player, string command)
+        protected override void DoHandleCommand(Player sender, MoveChatCommandArgs arguments)
         {
-            var map = command.Split(' ').Skip(1).FirstOrDefault();
-            if (map is null)
+            var senderIsGameMaster = sender.SelectedCharacter?.CharacterStatus == CharacterStatus.GameMaster;
+            var isGameMasterWarpingCharacter = senderIsGameMaster && !string.IsNullOrWhiteSpace(arguments.Map);
+
+            if (isGameMasterWarpingCharacter)
             {
-                return;
-            }
+                var targetPlayer = this.GetPlayerByCharacterName(sender, arguments.Target!);
+                var exitGate = this.GetExitGate(sender, arguments.Map!, arguments.Coordinates);
+                targetPlayer.WarpTo(exitGate);
 
-            var warpInfo = GetWarpInfo(map, player);
-            if (warpInfo is null)
+                if (!targetPlayer.Name.Equals(sender.Name))
+                {
+                    this.ShowMessageTo(targetPlayer, "You have been moved by the game master.");
+                    this.ShowMessageTo(sender, $"[{this.Key}] {targetPlayer.Name} has been moved to {exitGate!.Map!.Name} at {targetPlayer.Position.X}, {targetPlayer.Position.Y}");
+                }
+            }
+            else
             {
-                return;
+                var warpInfo = this.GetWarpInfo(sender, arguments.Target!);
+                if (warpInfo != null)
+                {
+                    new WarpAction().WarpTo(sender, warpInfo);
+                }
             }
-
-            this.warpAction.WarpTo(player, warpInfo);
-        }
-
-        private static WarpInfo? GetWarpInfo(string mapName, Player player)
-        {
-            return player.GameContext.Configuration.WarpList?.FirstOrDefault(info => info.Name.ToLower().Equals(mapName.ToLower()));
         }
     }
 }

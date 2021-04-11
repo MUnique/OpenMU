@@ -5,11 +5,13 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System;
+    using System.Linq;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
     /// The base of every chat command plug in.
@@ -43,7 +45,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         }
 
         /// <summary>
-        /// handle the chat command safely.
+        /// Handles the chat command safely.
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="arguments">The arguments.</param>
@@ -97,20 +99,51 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         }
 
         /// <summary>
-        /// Gets a character's location.
+        /// Gets a exit gate.
         /// </summary>
-        /// <param name="character">The target character.</param>
-        /// <returns>An instance of the ExitGate.</returns>
-        protected ExitGate GetLocationFrom(Character character)
+        /// <param name="gameMaster">The game master.</param>
+        /// <param name="map">The name or id of the map.</param>
+        /// <param name="coordinates">The coordinates X and Y.</param>
+        /// <returns>The ExitGate.</returns>
+        protected ExitGate GetExitGate(Player gameMaster, string map, Point coordinates)
         {
+            if (coordinates.X == default && coordinates.Y == default)
+            {
+                return this.GetWarpInfo(gameMaster, map)?.Gate
+                    ?? throw new ArgumentException($"Map {map} not found.");
+            }
+
+            var mapDefinition = ushort.TryParse(map, out var mapId)
+                ? gameMaster.GameContext.GetMap(mapId)?.Definition
+                : gameMaster.GameContext.Configuration.Maps.FirstOrDefault(x => x.Name.Equals(map, StringComparison.OrdinalIgnoreCase));
+
+            if (mapDefinition == null)
+            {
+                throw new ArgumentException($"Map {map} not found.");
+            }
+
             return new ExitGate
             {
-                Map = character.CurrentMap,
-                X1 = character.PositionX,
-                X2 = (byte)(character.PositionX + 2),
-                Y1 = character.PositionY,
-                Y2 = (byte)(character.PositionY + 2),
+                Map = mapDefinition,
+                X1 = coordinates.X,
+                X2 = coordinates.X,
+                Y1 = coordinates.Y,
+                Y2 = coordinates.Y,
             };
+        }
+
+        /// <summary>
+        /// Gets a warp info.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="map">The name or id of the map.</param>
+        /// <returns>The WarpInfo.</returns>
+        protected WarpInfo? GetWarpInfo(Player player, string map)
+        {
+            var warpList = player.GameContext.Configuration.WarpList;
+            return ushort.TryParse(map, out var mapId)
+                ? warpList.FirstOrDefault(info => info.Gate?.Map?.Number == mapId)
+                : warpList.FirstOrDefault(info => info.Name.Equals(map, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
