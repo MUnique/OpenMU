@@ -151,6 +151,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
             // no target?
             if (this.currentTarget is null)
             {
+                // we move around randomly, so the monster does not look dead when watched from distance.
+                this.Monster.RandomMove();
                 return;
             }
 
