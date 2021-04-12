@@ -12,7 +12,20 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
         /// <summary>
         /// Gets or sets the character name.
         /// </summary>
-        [Argument("characterName")]
+        [Argument("character_name")]
         public string? CharacterName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the pk level.
+        /// </summary>
+        [Argument("pk_level")]
+        [ValidValues("1", "2", "3")]
+        public int Level { get; set; }
+
+        /// <summary>
+        /// Gets or sets the pk count.
+        /// </summary>
+        [Argument("pk_count")]
+        public int Count { get; set; }
     }
 }
