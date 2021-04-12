@@ -1,4 +1,4 @@
-﻿// <copyright file="GMoveChatCommandArgs.cs" company="MUnique">
+﻿// <copyright file="GuildMoveChatCommandArgs.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -7,9 +7,9 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
-    /// Arguments used by GMoveChatCommandPlugIn.
+    /// Arguments used by GuildMoveChatCommandPlugIn.
     /// </summary>
-    public class GMoveChatCommandArgs : ArgumentsBase
+    public class GuildMoveChatCommandArgs : ArgumentsBase
     {
         /// <summary>
         /// Gets or sets the guild name.
