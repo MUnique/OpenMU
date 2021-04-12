@@ -80,6 +80,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             var i = 0;
             foreach (var newPlayer in newPlayerList)
             {
+                var selectedCharacter = newPlayer.SelectedCharacter;
+                if (selectedCharacter is null)
+                {
+                    packet.CharacterCount--;
+                    continue;
+                }
+
                 var playerBlock = packet[i];
                 playerBlock.Id = newPlayer.GetId(this.player);
                 if (isSpawned)
@@ -91,7 +98,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 playerBlock.CurrentPositionY = newPlayer.Position.Y;
 
                 appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 21
-                playerBlock.Name = newPlayer.SelectedCharacter!.Name;
+                playerBlock.Name = selectedCharacter.Name;
                 if (newPlayer.IsWalking)
                 {
                     playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
@@ -104,7 +111,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 }
 
                 playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
-                playerBlock.HeroState = newPlayer.SelectedCharacter.State.Convert();
+                playerBlock.HeroState = selectedCharacter.State.Convert();
 
                 var activeEffects = newPlayer.MagicEffectList.GetVisibleEffects();
                 playerBlock.EffectCount = (byte)activeEffects.Count;
