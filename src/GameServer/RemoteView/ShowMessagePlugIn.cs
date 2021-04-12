@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Text;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
@@ -28,8 +29,23 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// <inheritdoc/>
         public void ShowMessage(string message, OpenMU.Interfaces.MessageType messageType)
         {
+            const int maxMessageLength = 241;
+
+            if (Encoding.UTF8.GetByteCount(message) > maxMessageLength)
+            {
+                var rest = message;
+                while (rest.Length > 0)
+                {
+                    var partSize = Encoding.UTF8.GetCharacterCountOfMaxByteCount(rest, maxMessageLength);
+                    this.ShowMessage(rest.Substring(0, partSize), messageType);
+                    rest = rest.Length > partSize ? rest.Substring(startIndex: partSize) : string.Empty;
+                }
+
+                return;
+            }
+
             const string messagePrefix = "000000000";
-            string content = this.player.ClientVersion.Season > 0 ? messagePrefix + message : message;
+            var content = this.player.ClientVersion.Season > 0 ? messagePrefix + message : message;
             this.player.Connection?.SendServerMessage(ConvertMessageType(messageType), content);
         }
 
