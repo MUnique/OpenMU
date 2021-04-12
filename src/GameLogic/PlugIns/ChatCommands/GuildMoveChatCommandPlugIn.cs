@@ -1,4 +1,4 @@
-﻿// <copyright file="GMoveChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="GuildMoveChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -16,11 +16,11 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("9163C3EA-6722-4E55-A109-20C163C05266")]
-    [PlugIn("GMove chat command", "Handles the chat command '/gmove <guildName> <map> <x?> <y?>'. Move the character from a guild to a specified map and coordinates.")]
-    [ChatCommandHelp(Command, typeof(GMoveChatCommandArgs), CharacterStatus.GameMaster)]
-    public class GMoveChatCommandPlugIn : ChatCommandPlugInBase<GMoveChatCommandArgs>
+    [PlugIn("Guild move chat command", "Handles the chat command '/guildmove <guildName> <map> <x?> <y?>'. Move the character from a guild to a specified map and coordinates.")]
+    [ChatCommandHelp(Command, typeof(GuildMoveChatCommandArgs), CharacterStatus.GameMaster)]
+    public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCommandArgs>
     {
-        private const string Command = "/gmove";
+        private const string Command = "/guildmove";
 
         /// <inheritdoc />
         public override string Key => Command;
@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
         public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
         /// <inheritdoc />
-        protected override void DoHandleCommand(Player gameMaster, GMoveChatCommandArgs arguments)
+        protected override void DoHandleCommand(Player gameMaster, GuildMoveChatCommandArgs arguments)
         {
             var guildId = this.GetGuildIdByName(gameMaster, arguments.GuildName!);
 
