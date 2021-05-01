@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("B5E0F108-9E55-48F6-A7A8-220BFAEF2F3E")]
-    [PlugIn("Disconnect chat command", "Handles the chat command '/disconnect <characterName>'. Disconnects a player from the game server.")]
+    [PlugIn("Disconnect chat command", "Handles the chat command '/disconnect <char>'. Disconnects a player from the game server.")]
     [ChatCommandHelp(Command, typeof(DisconnectChatCommandArgs), CharacterStatus.GameMaster)]
     public class DisconnectChatCommandPlugIn : ChatCommandPlugInBase<DisconnectChatCommandArgs>
     {

@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("F22C989B-A2A1-4991-B6C2-658337CC19CE")]
-    [PlugIn("Trace chat command", "Handles the chat command '/trace <characterName>'. Moves the game master to the character's location.")]
+    [PlugIn("Trace chat command", "Handles the chat command '/trace <char>'. Moves the game master to the character's location.")]
     [ChatCommandHelp(Command, typeof(TraceChatCommandArgs), CharacterStatus.GameMaster)]
     public class TraceChatCommandPlugIn : ChatCommandPlugInBase<TraceChatCommandArgs>
     {

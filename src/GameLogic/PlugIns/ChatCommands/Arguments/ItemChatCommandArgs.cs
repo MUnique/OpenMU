@@ -12,31 +12,31 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
         /// <summary>
         /// Gets or sets the group.
         /// </summary>
-        [Argument("g")]
+        [Argument("group")]
         public byte Group { get; set; }
 
         /// <summary>
         /// Gets or sets the number.
         /// </summary>
-        [Argument("n")]
+        [Argument("number")]
         public short Number { get; set; }
 
         /// <summary>
         /// Gets or sets the level.
         /// </summary>
-        [Argument("l", false)]
+        [Argument("lvl", false)]
         public byte Level { get; set; }
 
         /// <summary>
         /// Gets or sets the excellent number.
         /// </summary>
-        [Argument("e", false)]
+        [Argument("ex", false)]
         public byte ExcellentNumber { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the item contains skill.
         /// </summary>
-        [Argument("s", false)]
+        [Argument("sk", false)]
         public bool Skill { get; set; }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
         /// <summary>
         /// Gets or sets the option.
         /// </summary>
-        [Argument("o", false)]
+        [Argument("opt", false)]
         public byte Opt { get; set; }
 
         /// <summary>
@@ -57,14 +57,14 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
         /// When 1, the first ancient type of an item is applied; When 2, the second, if available.
         /// Example for a Dragon Set item: 1 will be Hyon, 2 will be Vicious..
         /// </summary>
-        [Argument("a", false)]
+        [Argument("anc", false)]
         [ValidValues("0", "1", "2")]
         public byte Ancient { get; set; }
 
         /// <summary>
         /// Gets or sets the ancient bonus option; Should be 1 or 2. Only applies, when <see cref="Ancient"/> is bigger than 0.
         /// </summary>
-        [Argument("abl", false)]
+        [Argument("ancBonuslvl", false)]
         [ValidValues("1", "2")]
         public byte AncientBonusLevel { get; set; } = 1;
     }

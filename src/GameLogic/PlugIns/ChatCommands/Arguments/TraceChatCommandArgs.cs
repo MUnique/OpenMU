@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
         /// <summary>
         /// Gets or sets the character name.
         /// </summary>
-        [Argument("characterName")]
+        [Argument("char")]
         public string? CharacterName { get; set; }
     }
 }

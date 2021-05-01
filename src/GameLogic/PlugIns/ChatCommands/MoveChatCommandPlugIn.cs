@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("4564AE2B-4819-4155-B5B2-FE2ED0CF7A7F")]
-    [PlugIn("Move chat command", "Handles the chat command '/move <target> <map?> <x?> <y?>'. Move the character to the specified destination.")]
+    [PlugIn("Move chat command", "Handles the chat command '/move <target> <mapIdOrName?> <x?> <y?>'. Move the character to the specified destination.")]
     [ChatCommandHelp(Command, typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
     public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
     {
@@ -32,12 +32,12 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
         protected override void DoHandleCommand(Player sender, MoveChatCommandArgs arguments)
         {
             var senderIsGameMaster = sender.SelectedCharacter?.CharacterStatus == CharacterStatus.GameMaster;
-            var isGameMasterWarpingCharacter = senderIsGameMaster && !string.IsNullOrWhiteSpace(arguments.Map);
+            var isGameMasterWarpingCharacter = senderIsGameMaster && !string.IsNullOrWhiteSpace(arguments.MapIdOrName);
 
             if (isGameMasterWarpingCharacter)
             {
                 var targetPlayer = this.GetPlayerByCharacterName(sender, arguments.Target!);
-                var exitGate = this.GetExitGate(sender, arguments.Map!, arguments.Coordinates);
+                var exitGate = this.GetExitGate(sender, arguments.MapIdOrName!, arguments.Coordinates);
                 targetPlayer.WarpTo(exitGate);
 
                 if (!targetPlayer.Name.Equals(sender.Name))

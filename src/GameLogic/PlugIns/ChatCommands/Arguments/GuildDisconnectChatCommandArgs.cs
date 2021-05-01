@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
         /// <summary>
         /// Gets or sets the guild name.
         /// </summary>
-        [Argument("guildName")]
+        [Argument("guild")]
         public string? GuildName { get; set; }
     }
 }

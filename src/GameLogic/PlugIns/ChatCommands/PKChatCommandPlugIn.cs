@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("30B7EFF0-33EE-4136-BEB0-BE503B748DC6")]
-    [PlugIn("PK chat command", "Handles the chat command '/pk <character> <pk_level> <pk_count>'. Sets PK Level and Count for a character.")]
+    [PlugIn("PK chat command", "Handles the chat command '/pk <char> <pk_lvl> <pk_count>'. Sets PK Level and Count for a character.")]
     [ChatCommandHelp(Command, typeof(PKChatCommandArgs), CharacterStatus.GameMaster)]
     public class PKChatCommandPlugIn : ChatCommandPlugInBase<PKChatCommandArgs>
     {
