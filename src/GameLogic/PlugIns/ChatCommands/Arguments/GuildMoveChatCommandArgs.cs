@@ -14,14 +14,14 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
         /// <summary>
         /// Gets or sets the guild name.
         /// </summary>
-        [Argument("guildName")]
+        [Argument("guild")]
         public string? GuildName { get; set; }
 
         /// <summary>
         /// Gets or sets the name or id of the map.
         /// </summary>
-        [Argument("map")]
-        public string? Map { get; set; }
+        [Argument("mapIdOrName")]
+        public string? MapIdOrName { get; set; }
 
         /// <summary>
         /// Gets or sets the coordinate X.

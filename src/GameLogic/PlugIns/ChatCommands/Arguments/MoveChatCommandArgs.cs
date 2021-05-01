@@ -21,8 +21,8 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments
         /// <summary>
         /// Gets or sets the name or id of the map.
         /// </summary>
-        [Argument("map", false)]
-        public string? Map { get; set; }
+        [Argument("mapIdOrName", false)]
+        public string? MapIdOrName { get; set; }
 
         /// <summary>
         /// Gets or sets the coordinate X.

@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("EB97A8F6-F6BD-460A-BCBE-253BF679361A")]
-    [PlugIn("PK clear chat command", "Handles the chat command '/pkclear <characterName>'. Clears a character murders.")]
+    [PlugIn("PK clear chat command", "Handles the chat command '/pkclear <char>'. Clears a character murders.")]
     [ChatCommandHelp(Command, typeof(PKClearChatCommandArgs), CharacterStatus.GameMaster)]
     public class PKClearChatCommandPlugIn : ChatCommandPlugInBase<PKClearChatCommandArgs>
     {
