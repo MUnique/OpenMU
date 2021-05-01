@@ -107,12 +107,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
             // todo: check the walk distance
         }
 
-        private bool IsTargetInObservers()
+        private bool IsTargetInObservers(IAttackable target)
         {
             this.Npc.ObserverLock.EnterReadLock();
             try
             {
-                return this.currentTarget is IWorldObserver worldObserver && this.Npc.Observers.Contains(worldObserver);
+                return target is IWorldObserver worldObserver && this.Npc.Observers.Contains(worldObserver);
             }
             finally
             {
@@ -132,13 +132,14 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 return;
             }
 
-            if (this.currentTarget != null)
+            var target = this.currentTarget;
+            if (target != null)
             {
                 // Old Target out of Range?
-                if (!this.currentTarget.IsAlive
-                    || this.currentTarget.IsTeleporting
-                    || this.currentTarget.IsAtSafezone()
-                    || !this.IsTargetInObservers())
+                if (!target.IsAlive
+                    || target.IsTeleporting
+                    || target.IsAtSafezone()
+                    || !this.IsTargetInObservers(target))
                 {
                     this.currentTarget = this.SearchNextTarget();
                 }
@@ -149,23 +150,25 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
 
             // no target?
-            if (this.currentTarget is null)
+            if (target is null)
             {
+                // we move around randomly, so the monster does not look dead when watched from distance.
+                this.Monster.RandomMove();
                 return;
             }
 
             // Target in Attack Range?
-            ushort dist = (ushort)this.currentTarget.GetDistanceTo(this.Npc);
+            ushort dist = (ushort)target.GetDistanceTo(this.Npc);
             if (this.Monster.Definition.AttackRange + 1 >= dist)
             {
-                this.Monster.Attack(this.currentTarget);  // yes, attack
+                this.Monster.Attack(target);  // yes, attack
             }
 
             // Target in View Range?
             else if (this.Npc.Definition.ViewRange + 1 >= dist)
             {
                 // no, walk to the target
-                var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(this.currentTarget.Position, this.Monster.Definition.AttackRange);
+                var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, this.Monster.Definition.AttackRange);
                 this.Monster.WalkTo(walkTarget);
             }
             else
