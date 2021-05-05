@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic
     {
         private readonly ISupportWalk walkSupporter;
         private readonly Func<TimeSpan> stepDelay;
-        private readonly Stack<WalkingStep> nextSteps = new Stack<WalkingStep>(5);
+        private readonly Queue<WalkingStep> nextSteps = new Queue<WalkingStep>(5);
         private readonly ReaderWriterLockSlim walkLock;
         private Timer? walkTimer;
         private bool isDisposed;
@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.nextSteps.Clear();
                 foreach (var step in steps)
                 {
-                    this.nextSteps.Push(step);
+                    this.nextSteps.Enqueue(step);
                 }
             }
             finally
@@ -209,7 +209,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             if (!this.ShouldWalkerStop())
             {
-                var nextStep = this.nextSteps.Pop();
+                var nextStep = this.nextSteps.Dequeue();
                 this.walkSupporter.Position = nextStep.To;
 
                 if (this.walkSupporter is IRotatable rotatable)
