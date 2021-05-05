@@ -64,14 +64,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             if (request.Header.Length > 6)
             {
                 // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
-                var steps = this.GetSteps(sourcePoint, this.GetDirections(request.Directions));
+                var steps = this.GetSteps(sourcePoint, this.DecodePayload(request.Directions, out _));
                 Point target = this.GetTarget(steps, sourcePoint);
 
                 player.WalkTo(target, steps);
             }
             else
             {
-                var rotationValue = (byte)((request.Directions[0] >> 4) & 0x0F);
+                var rotationValue = (byte)(request.Directions[0] >> 4);
                 player.Rotation = rotationValue.ParseAsDirection();
             }
         }
@@ -104,31 +104,38 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <summary>
-        /// Gets the walking directions from the walk packet.
+        /// Gets the walking directions from the walk packet and the final rotation of the character.
         /// </summary>
-        /// <param name="binaryDirections">The walking directions as binary data.</param>
-        /// <returns>The walking directions.</returns>
+        /// <param name="payload">
+        /// The number of steps, the character rotation and the actual steps as received from the client.
+        /// </param>
+        /// <param name="rotation">
+        /// The rotation of the character once the walking is done.
+        /// </param>
+        /// <returns>The walking directions and the final rotation of the character.</returns>
         /// <remarks>
         /// We return here the directions left-rotated; I don't know yet if that's an error in our Direction-enum
         /// or just the client uses another enumeration for it.
         /// </remarks>
-        private Span<Direction> GetDirections(Span<byte> binaryDirections)
+        private Span<Direction> DecodePayload(Span<byte> payload, out Direction rotation)
         {
-            // the first 4 bits of the first path byte contains the number of steps
-            var count = binaryDirections[0] & 0x0F;
-            var result = new Direction[count];
-            var firstDirectionValue = (byte)((binaryDirections[0] >> 4) & 0x0F);
-            result[0] = firstDirectionValue.ParseAsDirection();
+            int stepsNo;
+            Direction[] directions;
 
-            int i;
-            for (i = 1; i < count; i++)
+            stepsNo = payload[0] & 0x0F;
+            rotation = ((byte)(payload[0] >> 4)).ParseAsDirection();
+            directions = new Direction[stepsNo];
+
+            for (int i = 0; i < stepsNo; i++)
             {
-                var index = 0 + (i / 2);
-                var directionValue = (byte)((binaryDirections[index] >> ((i % 2) == 0 ? 0 : 4)) & 0x0F);
-                result[i] = directionValue.ParseAsDirection();
+                byte val;
+
+                val = payload[(i + 2) / 2];
+                val = (byte)(i % 2 == 0 ? val >> 4 : val & 0x0F);
+                directions[i] = val.ParseAsDirection();
             }
 
-            return result.AsSpan(0, i);
+            return directions.AsSpan(0, directions.Length);
         }
     }
 }
