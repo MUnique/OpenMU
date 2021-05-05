@@ -17,4 +17,6 @@ The player gets moved on the map, visible for other surrounding players.
 | 2 | 1 |    Byte   | 0xD4  | Packet header - packet type identifier |
 | 3 | 1 | Byte |  | SourceX |
 | 4 | 1 | Byte |  | SourceY |
-| 5 |  | Binary |  | Directions; The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it. |
+| 5 | 4 bit | Byte |  | TargetRotation |
+| 5 | 4 bit | Byte |  | StepCount |
+| 6 |  | Binary |  | Directions; The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it. |
