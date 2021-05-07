@@ -44,6 +44,7 @@ namespace MUnique.OpenMU.Tests
             Assert.That(count, Is.EqualTo(4));
 
             steps = steps.Slice(0, count);
+            steps.Reverse();
             Assert.That(steps[0].From, Is.EqualTo(StartPoint));
             Assert.That(steps[steps.Length - 1].To, Is.EqualTo(EndPoint));
             foreach (var direction in steps)
