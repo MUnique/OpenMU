@@ -3254,11 +3254,29 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Gets or sets the step count.
+        /// </summary>
+        public byte StepCount
+        {
+            get => this.data.Slice(5).GetByteValue(4, 0);
+            set => this.data.Slice(5).SetByteValue(value, 4, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the target rotation.
+        /// </summary>
+        public byte TargetRotation
+        {
+            get => this.data.Slice(5).GetByteValue(4, 4);
+            set => this.data.Slice(5).SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
         /// Gets or sets the directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.
         /// </summary>
         public Span<byte> Directions
         {
-            get => this.data.Slice(5);
+            get => this.data.Slice(6);
         }
 
         /// <summary>
@@ -3279,7 +3297,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Calculates the size of the packet for the specified length of <see cref="Directions"/>.
         /// </summary>
         /// <param name="directionsLength">The length in bytes of <see cref="Directions"/> on which the required size depends.</param>
-        public static int GetRequiredSize(int directionsLength) => directionsLength + 5;
+        public static int GetRequiredSize(int directionsLength) => directionsLength + 6;
     }
 
 
