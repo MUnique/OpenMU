@@ -908,6 +908,20 @@
         </Field>
         <Field>
           <Index>5</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Byte</Type>
+          <Name>StepCount</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Byte</Type>
+          <Name>TargetRotation</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>6</Index>
           <Type>Binary</Type>
           <Name>Directions</Name>
           <Description>The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.</Description>

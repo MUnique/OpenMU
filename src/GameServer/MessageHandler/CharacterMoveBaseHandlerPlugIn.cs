@@ -64,15 +64,14 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             if (request.Header.Length > 6)
             {
                 // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
-                var steps = this.GetSteps(sourcePoint, this.DecodePayload(request.Directions, out _));
+                var steps = this.GetSteps(sourcePoint, this.DecodePayload(request, out _));
                 Point target = this.GetTarget(steps, sourcePoint);
 
                 player.WalkTo(target, steps);
             }
             else
             {
-                var rotationValue = (byte)(request.Directions[0] >> 4);
-                player.Rotation = rotationValue.ParseAsDirection();
+                player.Rotation = request.TargetRotation.ParseAsDirection();
             }
         }
 
@@ -106,8 +105,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <summary>
         /// Gets the walking directions from the walk packet and the final rotation of the character.
         /// </summary>
-        /// <param name="payload">
-        /// The number of steps, the character rotation and the actual steps as received from the client.
+        /// <param name="walkRequest">
+        /// The walk request, received from the client.
         /// </param>
         /// <param name="rotation">
         /// The rotation of the character once the walking is done.
@@ -117,20 +116,15 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// We return here the directions left-rotated; I don't know yet if that's an error in our Direction-enum
         /// or just the client uses another enumeration for it.
         /// </remarks>
-        private Span<Direction> DecodePayload(Span<byte> payload, out Direction rotation)
+        private Span<Direction> DecodePayload(WalkRequest walkRequest, out Direction rotation)
         {
-            int stepsNo;
-            Direction[] directions;
-
-            stepsNo = payload[0] & 0x0F;
-            rotation = ((byte)(payload[0] >> 4)).ParseAsDirection();
-            directions = new Direction[stepsNo];
-
-            for (int i = 0; i < stepsNo; i++)
+            var stepsCount = walkRequest.StepCount;
+            rotation = walkRequest.TargetRotation.ParseAsDirection();
+            var directions = new Direction[stepsCount];
+            var payload = walkRequest.Directions;
+            for (int i = 0; i < stepsCount; i++)
             {
-                byte val;
-
-                val = payload[(i + 2) / 2];
+                var val = payload[i / 2];
                 val = (byte)(i % 2 == 0 ? val >> 4 : val & 0x0F);
                 directions[i] = val.ParseAsDirection();
             }
