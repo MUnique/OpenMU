@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Startup
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.Design;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -33,6 +34,7 @@ namespace MUnique.OpenMU.Startup
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
     using MUnique.OpenMU.Persistence.Initialization;
+    using MUnique.OpenMU.Persistence.Initialization.Version075;
     using MUnique.OpenMU.Persistence.InMemory;
     using MUnique.OpenMU.PlugIns;
     using MUnique.OpenMU.PublicApi;
@@ -180,12 +182,17 @@ namespace MUnique.OpenMU.Startup
 
         private void LoadGameClientDefinitions(IContext persistenceContext)
         {
-            ClientVersionResolver.DefaultVersion = new ClientVersion(6, 3, ClientLanguage.English);
-            foreach (var gameClientDefinition in persistenceContext.Get<GameClientDefinition>())
+            var versions = persistenceContext.Get<GameClientDefinition>().ToList();
+            foreach (var gameClientDefinition in versions)
             {
                 ClientVersionResolver.Register(
                     gameClientDefinition.Version,
                     new ClientVersion(gameClientDefinition.Season, gameClientDefinition.Episode, gameClientDefinition.Language));
+            }
+
+            if (versions.FirstOrDefault() is { } firstVersion)
+            {
+                ClientVersionResolver.DefaultVersion = ClientVersionResolver.Resolve(firstVersion.Version);
             }
         }
 
@@ -193,6 +200,7 @@ namespace MUnique.OpenMU.Startup
         {
             // Ensure GameLogic and GameServer Assemblies are loaded
             _ = GameLogic.Rand.NextInt(1, 2);
+            _ = DataInitialization.Id;
             _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
             var host = Host.CreateDefaultBuilder()
@@ -286,40 +294,51 @@ namespace MUnique.OpenMU.Startup
             return parameter.Substring(parameter.IndexOf(':') + 1).StartsWith("enabled", StringComparison.InvariantCultureIgnoreCase);
         }
 
+        private string GetVersionParameter(string[] args)
+        {
+            var parameter = args.FirstOrDefault(a => a.StartsWith("-version:", StringComparison.InvariantCultureIgnoreCase));
+            if (parameter is null)
+            {
+                return "season6"; // default
+            }
+
+            return parameter.Substring(parameter.IndexOf(':') + 1);
+        }
+
         private IPersistenceContextProvider DeterminePersistenceContextProvider(string[] args, ILoggerFactory loggerFactory)
         {
+            var version = this.GetVersionParameter(args);
+
             IPersistenceContextProvider contextProvider;
             if (args.Contains("-demo"))
             {
                 contextProvider = new InMemoryPersistenceContextProvider();
-                var initialization = new DataInitialization(contextProvider, loggerFactory);
-                initialization.CreateInitialData();
+                this.InitializeData(version, loggerFactory, contextProvider);
             }
             else
             {
-                contextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), args.Contains("-autoupdate"), loggerFactory);
+                contextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory);
             }
 
             return contextProvider;
         }
 
-        private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, bool autoupdate, ILoggerFactory loggerFactory)
+        private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
         {
-            var manager = new PersistenceContextProvider(loggerFactory);
-            if (reinit || !manager.DatabaseExists())
+            var contextProvider = new PersistenceContextProvider(loggerFactory);
+            if (reinit || !contextProvider.DatabaseExists())
             {
                 Log.Info("The database is getting (re-)initialized...");
-                manager.ReCreateDatabase();
-                var initialization = new DataInitialization(manager, loggerFactory);
-                initialization.CreateInitialData();
+                contextProvider.ReCreateDatabase();
+                this.InitializeData(version, loggerFactory, contextProvider);
                 Log.Info("...initialization finished.");
             }
-            else if (!manager.IsDatabaseUpToDate())
+            else if (!contextProvider.IsDatabaseUpToDate())
             {
                 if (autoupdate)
                 {
                     Console.WriteLine("The database needs to be updated before the server can be started. Updating...");
-                    manager.ApplyAllPendingUpdates();
+                    contextProvider.ApplyAllPendingUpdates();
                     Console.WriteLine("The database has been successfully updated.");
                 }
                 else
@@ -328,7 +347,7 @@ namespace MUnique.OpenMU.Startup
                     var key = Console.ReadLine()?.ToLowerInvariant();
                     if (key == "y")
                     {
-                        manager.ApplyAllPendingUpdates();
+                        contextProvider.ApplyAllPendingUpdates();
                         Console.WriteLine("The database has been successfully updated.");
                     }
                     else
@@ -343,7 +362,19 @@ namespace MUnique.OpenMU.Startup
                 // everything is fine and ready
             }
 
-            return manager;
+            return contextProvider;
+        }
+
+        private void InitializeData(string version, ILoggerFactory loggerFactory, IPersistenceContextProvider contextProvider)
+        {
+            var serviceContainer = new ServiceContainer();
+            serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
+            serviceContainer.AddService(typeof(IPersistenceContextProvider), contextProvider);
+
+            var plugInManager = new PlugInManager(null, loggerFactory, serviceContainer);
+            plugInManager.DiscoverAndRegisterPlugInsOf<IDataInitializationPlugIn>();
+            var initialization = plugInManager.GetStrategy<IDataInitializationPlugIn>(version) ?? throw new Exception("Data initialization plugin not found");
+            initialization.CreateInitialData(3, true);
         }
     }
 }

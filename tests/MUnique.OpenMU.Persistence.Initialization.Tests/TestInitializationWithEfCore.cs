@@ -37,10 +37,32 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
             this.TestDataInitialization(new InMemoryPersistenceContextProvider());
         }
 
+        /// <summary>
+        /// Tests the data initialization using the in-memory persistence.
+        /// </summary>
+        [Test]
+        public void TestSeason6Data()
+        {
+            var contextProvider = new InMemoryPersistenceContextProvider();
+            var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+            dataInitialization.CreateInitialData(1, false);
+        }
+
+        /// <summary>
+        /// Tests the data initialization using the in-memory persistence.
+        /// </summary>
+        [Test]
+        public void Test075Data()
+        {
+            var contextProvider = new InMemoryPersistenceContextProvider();
+            var dataInitialization = new Version075.DataInitialization(contextProvider, new NullLoggerFactory());
+            dataInitialization.CreateInitialData(1, false);
+        }
+
         private void TestDataInitialization(IPersistenceContextProvider contextProvider)
         {
-            var initialization = new DataInitialization(contextProvider, new NullLoggerFactory());
-            initialization.CreateInitialData();
+            var initialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+            initialization.CreateInitialData(3, true);
 
             // Loading game configuration
             using var context = contextProvider.CreateNewConfigurationContext();

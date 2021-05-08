@@ -13,6 +13,7 @@ namespace MUnique.OpenMU.Tests
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameServer.RemoteView;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
     using MUnique.OpenMU.Persistence.InMemory;
     using NUnit.Framework;
 
@@ -33,7 +34,7 @@ namespace MUnique.OpenMU.Tests
         public void Setup()
         {
             this.contextProvider = new InMemoryPersistenceContextProvider();
-            new MUnique.OpenMU.Persistence.Initialization.DataInitialization(this.contextProvider, new NullLoggerFactory()).CreateInitialData();
+            new DataInitialization(this.contextProvider, new NullLoggerFactory()).CreateInitialData(3, true);
             this.gameConfiguration = this.contextProvider.CreateNewConfigurationContext().Get<GameConfiguration>().First();
             this.itemSerializer = new ItemSerializer();
         }
