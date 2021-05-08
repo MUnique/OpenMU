@@ -24,7 +24,8 @@ namespace MUnique.OpenMU.Network.Analyzer
         private readonly Dictionary<ClientVersion, string> clientVersions = new Dictionary<ClientVersion, string>
         {
             { new ClientVersion(6, 3, ClientLanguage.English), "S6E3 (1.04d)" },
-            { new ClientVersion(0, 0, ClientLanguage.Invariant), "Season 0 - 6" },
+            { new ClientVersion(1, 0, ClientLanguage.Invariant), "Season 1 - 6" },
+            { new ClientVersion(0, 97, ClientLanguage.Invariant), "0.97" },
             { new ClientVersion(0, 75, ClientLanguage.Invariant), "0.75" },
         };
 
@@ -48,20 +49,21 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.connectedClientsListBox.DisplayMember = nameof(ICapturedConnection.Name);
             this.connectedClientsListBox.Update();
 
+            this.analyzer = new PacketAnalyzer();
+            this.Disposed += (_, __) => this.analyzer.Dispose();
+
             this.clientVersionComboBox.SelectedIndexChanged += (_, __) =>
             {
-                var listener = this.clientListener;
-                if (listener != null)
+                if (this.clientListener is { } listener)
                 {
                     listener.ClientVersion = this.SelectedClientVersion;
                 }
+
+                this.analyzer.ClientVersion = this.SelectedClientVersion;
             };
             this.clientVersionComboBox.DataSource = new BindingSource(this.clientVersions, null);
             this.clientVersionComboBox.DisplayMember = "Value";
             this.clientVersionComboBox.ValueMember = "Key";
-
-            this.analyzer = new PacketAnalyzer();
-            this.Disposed += (_, __) => this.analyzer.Dispose();
 
             this.targetHostTextBox.TextChanged += (_, __) =>
             {
@@ -126,6 +128,8 @@ namespace MUnique.OpenMU.Network.Analyzer
             {
                 ClientVersion = this.SelectedClientVersion,
             };
+
+            this.analyzer.ClientVersion = this.SelectedClientVersion;
             this.clientListener.ClientConnected += this.ClientListenerOnClientConnected;
             this.clientListener.Start();
             this.btnStartProxy.Text = "Stop Proxy";
