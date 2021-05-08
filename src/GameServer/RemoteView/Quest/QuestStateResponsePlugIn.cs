@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
     using MUnique.OpenMU.GameServer.MessageHandler.Quests;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -17,6 +18,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
     /// </summary>
     [PlugIn("Quest - State response", "The default implementation of the IQuestStateResponsePlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("BBE63528-67DC-4D5F-8C9D-D09AB488CC55")]
+    [MinimumClient(0, 90, ClientLanguage.Invariant)]
     public class QuestStateResponsePlugIn : IQuestStateResponsePlugIn
     {
         private readonly RemotePlayer player;

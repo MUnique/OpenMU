@@ -3,6 +3,7 @@
   * [C1 00 - PublicChatMessage (by client)](C1-00-PublicChatMessage_by-client.md)
   * [C1 02 - WhisperMessage (by client)](C1-02-WhisperMessage_by-client.md)
   * [C3 0E 00 - Ping (by client)](C3-0E-00-Ping_by-client.md)
+  * [C1 10 - WalkRequest075 (by client)](C1-10-WalkRequest075_by-client.md)
   * [C1 11 - HitRequest (by client)](C1-11-HitRequest_by-client.md)
   * [C1 15 - InstantMoveRequest (by client)](C1-15-InstantMoveRequest_by-client.md)
   * [C1 18 - AnimationRequest (by client)](C1-18-AnimationRequest_by-client.md)

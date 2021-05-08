@@ -930,6 +930,46 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>10</Code>
+      <Name>WalkRequest075</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player wants to walk on the game map.</SentWhen>
+      <CausedReaction>The player gets moved on the map, visible for other surrounding players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SourceX</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>SourceY</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Byte</Type>
+          <Name>StepCount</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Byte</Type>
+          <Name>TargetRotation</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Binary</Type>
+          <Name>Directions</Name>
+          <Description>The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>15</Code>
       <Name>InstantMoveRequest</Name>
       <Length>5</Length>

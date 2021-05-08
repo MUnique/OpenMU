@@ -1737,6 +1737,31 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="WalkRequest075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="sourceX">The source x.</param>
+        /// <param name="sourceY">The source y.</param>
+        /// <param name="stepCount">The step count.</param>
+        /// <param name="targetRotation">The target rotation.</param>
+        /// <param name="directions">The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player wants to walk on the game map.
+        /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
+        /// </remarks>
+        public static void SendWalkRequest075(this IConnection connection, byte @sourceX, byte @sourceY, byte @stepCount, byte @targetRotation, Span<byte> @directions)
+        {
+            using var writer = connection.StartSafeWrite(WalkRequest075.HeaderType, WalkRequest075.GetRequiredSize(directions.Length));
+            var packet = new WalkRequest075(writer.Span);
+            packet.SourceX = @sourceX;
+            packet.SourceY = @sourceY;
+            packet.StepCount = @stepCount;
+            packet.TargetRotation = @targetRotation;
+            @directions.CopyTo(packet.Directions);
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="InstantMoveRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>

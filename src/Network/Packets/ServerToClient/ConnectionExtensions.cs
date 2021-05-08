@@ -298,6 +298,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="ObjectWalked075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object in the observed scope (including the own player) walked to another position.
+        /// Causes reaction on client side: The object is animated to walk to the new position.
+        /// </remarks>
+        public static ObjectWalked075ThreadSafeWriter StartWriteObjectWalked075(this IConnection connection)
+        {
+          return new ObjectWalked075ThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="ExperienceGained" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -324,6 +337,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="MapChanged075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The map was changed on the server side.
+        /// Causes reaction on client side: The game client changes to the specified map and coordinates.
+        /// </remarks>
+        public static MapChanged075ThreadSafeWriter StartWriteMapChanged075(this IConnection connection)
+        {
+          return new MapChanged075ThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="MoneyDropped" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -334,6 +360,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static MoneyDroppedThreadSafeWriter StartWriteMoneyDropped(this IConnection connection)
         {
           return new MoneyDroppedThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="MoneyDropped075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: Money dropped on the ground.
+        /// Causes reaction on client side: The client adds the money to the ground.
+        /// </remarks>
+        public static MoneyDropped075ThreadSafeWriter StartWriteMoneyDropped075(this IConnection connection)
+        {
+          return new MoneyDropped075ThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -1701,6 +1740,29 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Sends a <see cref="ObjectWalked075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="objectId">The object id.</param>
+        /// <param name="targetX">The target x.</param>
+        /// <param name="targetY">The target y.</param>
+        /// <param name="targetRotation">The target rotation.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object in the observed scope (including the own player) walked to another position.
+        /// Causes reaction on client side: The object is animated to walk to the new position.
+        /// </remarks>
+        public static void SendObjectWalked075(this IConnection connection, ushort @objectId, byte @targetX, byte @targetY, byte @targetRotation)
+        {
+            using var writer = connection.StartWriteObjectWalked075();
+            var packet = writer.Packet;
+            packet.ObjectId = @objectId;
+            packet.TargetX = @targetX;
+            packet.TargetY = @targetY;
+            packet.TargetRotation = @targetRotation;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="ExperienceGained" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1739,6 +1801,29 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             using var writer = connection.StartWriteMapChanged();
             var packet = writer.Packet;
             packet.IsMapChange = @isMapChange;
+            packet.MapNumber = @mapNumber;
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.Rotation = @rotation;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="MapChanged075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="mapNumber">The map number.</param>
+        /// <param name="positionX">The position x.</param>
+        /// <param name="positionY">The position y.</param>
+        /// <param name="rotation">The rotation.</param>
+        /// <remarks>
+        /// Is sent by the server when: The map was changed on the server side.
+        /// Causes reaction on client side: The game client changes to the specified map and coordinates.
+        /// </remarks>
+        public static void SendMapChanged075(this IConnection connection, ushort @mapNumber, byte @positionX, byte @positionY, byte @rotation)
+        {
+            using var writer = connection.StartWriteMapChanged075();
+            var packet = writer.Packet;
             packet.MapNumber = @mapNumber;
             packet.PositionX = @positionX;
             packet.PositionY = @positionY;
@@ -1791,6 +1876,37 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             packet.MoneyNumber = @moneyNumber;
             packet.Amount = @amount;
             packet.MoneyGroup = @moneyGroup;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="MoneyDropped075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="id">The id.</param>
+        /// <param name="isFreshDrop">If this flag is set, the money is added to the map with an animation and sound. Otherwise it's just added like it was already on the ground before.</param>
+        /// <param name="positionX">The position x.</param>
+        /// <param name="positionY">The position y.</param>
+        /// <param name="amount">The amount.</param>
+        /// <param name="itemCount">The item count.</param>
+        /// <param name="moneyGroup">The money group.</param>
+        /// <param name="moneyNumber">The money number.</param>
+        /// <remarks>
+        /// Is sent by the server when: Money dropped on the ground.
+        /// Causes reaction on client side: The client adds the money to the ground.
+        /// </remarks>
+        public static void SendMoneyDropped075(this IConnection connection, ushort @id, bool @isFreshDrop, byte @positionX, byte @positionY, uint @amount, byte @itemCount = 1, byte @moneyGroup = 14, byte @moneyNumber = 15)
+        {
+            using var writer = connection.StartWriteMoneyDropped075();
+            var packet = writer.Packet;
+            packet.ItemCount = @itemCount;
+            packet.Id = @id;
+            packet.IsFreshDrop = @isFreshDrop;
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.MoneyNumber = @moneyNumber;
+            packet.MoneyGroup = @moneyGroup;
+            packet.Amount = @amount;
             writer.Commit();
         }
 
@@ -4353,6 +4469,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="ObjectWalked075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct ObjectWalked075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectWalked075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public ObjectWalked075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new ObjectWalked075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(ObjectWalked075.Length).Slice(0, ObjectWalked075.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public ObjectWalked075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="ObjectWalked075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(ObjectWalked075.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="ExperienceGained"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct ExperienceGainedThreadSafeWriter
@@ -4459,6 +4628,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="MapChanged075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct MapChanged075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapChanged075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public MapChanged075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new MapChanged075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(MapChanged075.Length).Slice(0, MapChanged075.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public MapChanged075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="MapChanged075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(MapChanged075.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="MoneyDropped"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct MoneyDroppedThreadSafeWriter
@@ -4499,6 +4721,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(MoneyDropped.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="MoneyDropped075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct MoneyDropped075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoneyDropped075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public MoneyDropped075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new MoneyDropped075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(MoneyDropped075.Length).Slice(0, MoneyDropped075.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public MoneyDropped075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="MoneyDropped075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(MoneyDropped075.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

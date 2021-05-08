@@ -22,6 +22,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// </summary>
     [PlugIn("ObjectMovedPlugIn", "The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("29ee689f-636c-47e7-a930-b60ce8e8993c")]
+    [MinimumClient(0,90, ClientLanguage.Invariant)]
     public class ObjectMovedPlugIn : IObjectMovedPlugIn
     {
         private const short TeleportTargetNumber = 0x0F;
@@ -74,6 +75,36 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
         }
 
+        /// <summary>
+        /// Sends the network message.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="objectId">The object identifier.</param>
+        /// <param name="targetPoint">The target point.</param>
+        /// <param name="steps">The steps.</param>
+        /// <param name="rotation">The rotation.</param>
+        /// <param name="stepsLength">Length of the steps.</param>
+        protected virtual void SendMessage(IConnection connection, ushort objectId, Point targetPoint, Span<Direction> steps, Direction rotation, int stepsLength)
+        {
+            var stepsSize = steps == default ? 1 : (steps.Length / 2) + 2;
+            using var writer = connection.StartSafeWrite(
+                Network.Packets.ServerToClient.ObjectWalked.HeaderType,
+                Network.Packets.ServerToClient.ObjectWalked.GetRequiredSize(stepsSize));
+            var walkPacket = new ObjectWalked(writer.Span)
+            {
+                HeaderCode = this.GetWalkCode(),
+                ObjectId = objectId,
+                TargetX = targetPoint.X,
+                TargetY = targetPoint.Y,
+                TargetRotation = rotation.ToPacketByte(),
+                StepCount = (byte)stepsLength,
+            };
+
+            this.SetStepData(walkPacket, steps, stepsSize);
+
+            writer.Commit();
+        }
+
         private void ObjectWalked(ILocateable obj)
         {
             var connection = this.player.Connection;
@@ -87,6 +118,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             var stepsLength = 0;
             Point targetPoint;
             var rotation = Direction.Undefined;
+            if (obj is IRotatable rotatable)
+            {
+                rotation = rotatable.Rotation;
+            }
+
             if (obj is ISupportWalk supportWalk)
             {
                 if (this.SendWalkDirections)
@@ -106,29 +142,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             else
             {
                 targetPoint = obj.Position;
-                if (obj is IRotatable rotatable)
-                {
-                    rotation = rotatable.Rotation;
-                }
             }
 
-            var stepsSize = steps == default ? 1 : (steps.Length / 2) + 2;
-            using var writer = connection.StartSafeWrite(
-                Network.Packets.ServerToClient.ObjectWalked.HeaderType,
-                Network.Packets.ServerToClient.ObjectWalked.GetRequiredSize(stepsSize));
-            var walkPacket = new ObjectWalked(writer.Span)
-            {
-                HeaderCode = this.GetWalkCode(),
-                ObjectId = objectId,
-                TargetX = targetPoint.X,
-                TargetY = targetPoint.Y,
-                TargetRotation = rotation.ToPacketByte(),
-                StepCount = (byte)stepsLength,
-            };
-
-            this.SetStepData(walkPacket, steps, stepsSize);
-
-            writer.Commit();
+            this.SendMessage(connection, objectId, targetPoint, steps, rotation, stepsLength);
         }
 
         private void SetStepData(ObjectWalked walkPacket, Span<Direction> steps, int stepsSize)

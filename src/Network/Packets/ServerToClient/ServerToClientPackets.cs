@@ -4173,6 +4173,112 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: An object in the observed scope (including the own player) walked to another position.
+    /// Causes reaction on client side: The object is animated to walk to the new position.
+    /// </summary>
+    public readonly ref struct ObjectWalked075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectWalked075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ObjectWalked075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectWalked075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private ObjectWalked075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x10;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the object id.
+        /// </summary>
+        public ushort ObjectId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the target x.
+        /// </summary>
+        public byte TargetX
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target y.
+        /// </summary>
+        public byte TargetY
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target rotation.
+        /// </summary>
+        public byte TargetRotation
+        {
+            get => this.data.Slice(7).GetByteValue(4, 4);
+            set => this.data.Slice(7).SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="ObjectWalked075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator ObjectWalked075(Span<byte> packet) => new ObjectWalked075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ObjectWalked075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(ObjectWalked075 packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: A player gained experience.
     /// Causes reaction on client side: The experience is added to the experience counter and bar.
     /// </summary>
@@ -4389,6 +4495,119 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(MapChanged packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The map was changed on the server side.
+    /// Causes reaction on client side: The game client changes to the specified map and coordinates.
+    /// </summary>
+    public readonly ref struct MapChanged075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapChanged075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MapChanged075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapChanged075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MapChanged075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1C;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x0F;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 14;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the map number.
+        /// </summary>
+        public ushort MapNumber
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the position x.
+        /// </summary>
+        public byte PositionX
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position y.
+        /// </summary>
+        public byte PositionY
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MapChanged075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MapChanged075(Span<byte> packet) => new MapChanged075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MapChanged075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MapChanged075 packet) => packet.data; 
     }
 
 
@@ -4765,6 +4984,142 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(MoneyDropped packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: Money dropped on the ground.
+    /// Causes reaction on client side: The client adds the money to the ground.
+    /// </summary>
+    public readonly ref partial struct MoneyDropped075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoneyDropped075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MoneyDropped075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoneyDropped075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MoneyDropped075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)Math.Min(data.Length, Length);
+                this.ItemCount = 1;
+                this.MoneyNumber = 15;
+                this.MoneyGroup = 14;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x20;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 14;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new C2Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the item count.
+        /// </summary>
+        public byte ItemCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public ushort Id
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(5));
+            set => WriteUInt16BigEndian(this.data.Slice(5), value);
+        }
+
+        /// <summary>
+        /// Gets or sets if this flag is set, the money is added to the map with an animation and sound. Otherwise it's just added like it was already on the ground before.
+        /// </summary>
+        public bool IsFreshDrop
+        {
+            get => this.data.Slice(5).GetBoolean(7);
+            set => this.data.Slice(5).SetBoolean(value, 7);
+        }
+
+        /// <summary>
+        /// Gets or sets the position x.
+        /// </summary>
+        public byte PositionX
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position y.
+        /// </summary>
+        public byte PositionY
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the money number.
+        /// </summary>
+        public byte MoneyNumber
+        {
+            get => this.data.Slice(9).GetByteValue(4, 0);
+            set => this.data.Slice(9).SetByteValue(value, 4, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the money group.
+        /// </summary>
+        public byte MoneyGroup
+        {
+            get => this.data.Slice(9).GetByteValue(4, 4);
+            set => this.data.Slice(9).SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MoneyDropped075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MoneyDropped075(Span<byte> packet) => new MoneyDropped075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MoneyDropped075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MoneyDropped075 packet) => packet.data; 
     }
 
 
