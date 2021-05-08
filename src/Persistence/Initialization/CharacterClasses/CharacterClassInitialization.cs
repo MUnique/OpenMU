@@ -29,6 +29,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
         }
 
         /// <summary>
+        /// Gets a value indicating whether to use classic PVP, which uses no shield stats and the same attack/defense rate as PvM.
+        /// </summary>
+        protected virtual bool UseClassicPvp { get; } = false;
+
+        /// <summary>
         /// Creates the character classes.
         /// </summary>
         public override void Initialize()
@@ -79,7 +84,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
         private void AddCommonBaseAttributeValues(ICollection<ConstValueAttribute> baseAttributeValues, bool isMaster)
         {
             baseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
-            baseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.TwoHandedWeaponDamageIncrease));
@@ -88,6 +92,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             if (isMaster)
             {
                 baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MasterExperienceRate));
+            }
+
+            if (!this.UseClassicPvp)
+            {
+                baseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
             }
         }
     }

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
 {
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -85,6 +86,23 @@ namespace MUnique.OpenMU.Persistence.Initialization
         protected CharacterClass? GetCharacterClass(CharacterClassNumber classNumber)
         {
             return this.GameConfiguration.CharacterClasses.FirstOrDefault(c => c.Number == (byte)classNumber);
+        }
+
+        /// <summary>
+        /// Creates the power up definition with the given values.
+        /// </summary>
+        /// <param name="attributeDefinition">The attribute definition.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="aggregateType">Type of the aggregate.</param>
+        /// <returns>The created power up definition.</returns>
+        protected PowerUpDefinition CreatePowerUpDefinition(AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
+        {
+            var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+            powerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
+            powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            powerUpDefinition.Boost.ConstantValue.Value = value;
+            powerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+            return powerUpDefinition;
         }
     }
 }

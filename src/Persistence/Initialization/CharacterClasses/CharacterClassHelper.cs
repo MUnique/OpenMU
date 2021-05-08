@@ -115,5 +115,32 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
                 }
             }
         }
+
+        /// <summary>
+        /// Determines the <see cref="CharacterClass"/>es, depending on the given classes which are provided by original configuration files.
+        /// </summary>
+        /// <param name="gameConfiguration">The game configuration which contains the character classes.</param>
+        /// <param name="wizardClass">Class of the wizard class.</param>
+        /// <param name="knightClass">Class of the knight class.</param>
+        /// <param name="elfClass">Class of the elf class.</param>
+        /// <returns>The corresponding <see cref="CharacterClass"/>es of the provided class ranks.</returns>
+        public static IEnumerable<CharacterClass> DetermineCharacterClasses(this GameConfiguration gameConfiguration, bool wizardClass, bool knightClass, bool elfClass)
+        {
+            var characterClasses = gameConfiguration.CharacterClasses;
+            if (wizardClass)
+            {
+                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DarkWizard);
+            }
+
+            if (knightClass)
+            {
+                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DarkKnight);
+            }
+
+            if (elfClass)
+            {
+                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.FairyElf);
+            }
+        }
     }
 }

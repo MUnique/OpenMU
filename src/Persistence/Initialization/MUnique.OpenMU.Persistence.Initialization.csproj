@@ -17,6 +17,12 @@
     <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Persistence.Initialization.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\075_Terrain1.att" />
+    <None Remove="Resources\075_Terrain2.att" />
+    <None Remove="Resources\075_Terrain3.att" />
+    <None Remove="Resources\075_Terrain4.att" />
+    <None Remove="Resources\075_Terrain5.att" />
+    <None Remove="Resources\075_Terrain8.att" />
     <None Remove="Resources\Terrain1.att" />
     <None Remove="Resources\Terrain10.att" />
     <None Remove="Resources\Terrain11.att" />
@@ -93,6 +99,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\075_Terrain1.att" />
+    <EmbeddedResource Include="Resources\075_Terrain2.att" />
+    <EmbeddedResource Include="Resources\075_Terrain3.att" />
+    <EmbeddedResource Include="Resources\075_Terrain4.att" />
+    <EmbeddedResource Include="Resources\075_Terrain5.att" />
+    <EmbeddedResource Include="Resources\075_Terrain8.att" />
     <EmbeddedResource Include="Resources\Terrain1.att" />
     <EmbeddedResource Include="Resources\Terrain10.att" />
     <EmbeddedResource Include="Resources\Terrain11.att" />
