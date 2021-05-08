@@ -10,7 +10,9 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
     using MUnique.OpenMU.Network.Packets;
+    using MUnique.OpenMU.Network.PlugIns;
     using static System.Buffers.Binary.BinaryPrimitives;
 
     /// <summary>
@@ -21,10 +23,14 @@ namespace MUnique.OpenMU.Network.Analyzer
         private const string ClientToServerPacketsFile = "ClientToServerPackets.xml";
         private const string ServerToClientPacketsFile = "ServerToClientPackets.xml";
         private const string CommonFile = "CommonEnums.xml";
+        private const int DefaultVersionValue = 090;
+
         private readonly IList<IDisposable> watchers = new List<IDisposable>();
         private PacketDefinitions? clientPacketDefinitions;
         private PacketDefinitions? serverPacketDefinitions;
         private PacketDefinitions? commonDefinitions;
+        private ClientVersion clientVersion;
+        private int clientVersionValue = DefaultVersionValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PacketAnalyzer"/> class.
@@ -38,6 +44,19 @@ namespace MUnique.OpenMU.Network.Analyzer
         }
 
         /// <summary>
+        /// Gets or sets the client version.
+        /// </summary>
+        public ClientVersion ClientVersion
+        {
+            get => this.clientVersion;
+            set
+            {
+                this.clientVersion = value;
+                this.clientVersionValue = value.Season * 100 + value.Episode;
+            }
+        }
+
+        /// <summary>
         /// Extracts the information of the packet and returns it as a formatted string.
         /// </summary>
         /// <param name="packet">The packet.</param>
@@ -45,7 +64,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         public string ExtractInformation(Packet packet)
         {
             var definitions = packet.ToServer ? this.clientPacketDefinitions : this.serverPacketDefinitions;
-            var definition = definitions?.Packets?.FirstOrDefault(p => (byte)p.Type == packet.Type && p.Code == packet.Code && (!p.SubCodeSpecified || p.SubCode == packet.SubCode));
+            var definition = this.DeterminePacketDefinition(packet);
             if (definition != null)
             {
                 var stringBuilder = new StringBuilder()
@@ -73,6 +92,60 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
 
             this.watchers.Clear();
+        }
+
+        private PacketDefinition? DeterminePacketDefinition(Packet packet)
+        {
+            var allDefinitions = packet.ToServer ? this.clientPacketDefinitions : this.serverPacketDefinitions;
+            if (allDefinitions is null)
+            {
+                return null;
+            }
+
+            int GetVersion(string name)
+            {
+                var match = Regex.Match(name, "^[A-Za-z]+?([0-9]{3})$");
+                if (match.Success)
+                {
+                    return int.Parse(match.Groups[1].Value);
+                }
+
+                return DefaultVersionValue;
+            }
+
+            var filteredDefinitions = allDefinitions.Packets?
+                .Where(p => (byte)p.Type == packet.Type && p.Code == packet.Code && (!p.SubCodeSpecified || p.SubCode == packet.SubCode))
+                .Select(p => (Version: GetVersion(p.Name ?? string.Empty), Definition: p))
+                .OrderBy(pair => pair.Version)
+                .ToList();
+
+            if (filteredDefinitions is null || !filteredDefinitions.Any())
+            {
+                return null;
+            }
+
+            if (filteredDefinitions.Count == 1)
+            {
+                return filteredDefinitions[0].Definition;
+            }
+
+            if (filteredDefinitions.FirstOrDefault(d => d.Version == this.clientVersionValue) is { Definition: { Name: { } } } exactMatch)
+            {
+                return exactMatch.Definition;
+            }
+
+            var current = filteredDefinitions.First();
+            foreach (var def in filteredDefinitions.Skip(1))
+            {
+                if (def.Version > this.clientVersionValue)
+                {
+                    break;
+                }
+
+                current = def;
+            }
+
+            return current.Definition;
         }
 
         private void LoadAndWatchConfiguration(Action<PacketDefinitions?> assignAction, string fileName)
