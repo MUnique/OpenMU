@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -17,6 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     /// </summary>
     [PlugIn("Quest state list request (legacy)", "Packet handler for the quest state list request for the legacy quest system (0xA0 identifier)")]
     [Guid("C886C499-2DF4-48CE-BE8D-C1D6484C7C3D")]
+    [MinimumClient(0, 90, ClientLanguage.Invariant)]
     public class QuestStateListLegacyRequestHandlerPlugIn : IPacketHandlerPlugIn
     {
         /// <inheritdoc />

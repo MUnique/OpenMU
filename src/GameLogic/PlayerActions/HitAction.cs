@@ -40,15 +40,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             player.Rotation = lookingDirection;
             target.AttackBy(player, null);
-            player.ObserverLock.EnterReadLock();
-            try
-            {
-                player.Observers.ForEach(observer => observer.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(player, attackAnimation, target, lookingDirection));
-            }
-            finally
-            {
-                player.ObserverLock.ExitReadLock();
-            }
+
+            player.ForEachObservingPlayer(observer => observer.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(player, attackAnimation, target, lookingDirection), false);
         }
     }
 }

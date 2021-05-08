@@ -3302,6 +3302,121 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
+    /// Is sent by the client when: A player wants to walk on the game map.
+    /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
+    /// </summary>
+    public readonly ref struct WalkRequest075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WalkRequest075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public WalkRequest075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WalkRequest075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private WalkRequest075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x10;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the source x.
+        /// </summary>
+        public byte SourceX
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the source y.
+        /// </summary>
+        public byte SourceY
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the step count.
+        /// </summary>
+        public byte StepCount
+        {
+            get => this.data.Slice(5).GetByteValue(4, 0);
+            set => this.data.Slice(5).SetByteValue(value, 4, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the target rotation.
+        /// </summary>
+        public byte TargetRotation
+        {
+            get => this.data.Slice(5).GetByteValue(4, 4);
+            set => this.data.Slice(5).SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets the directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.
+        /// </summary>
+        public Span<byte> Directions
+        {
+            get => this.data.Slice(6);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="WalkRequest075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator WalkRequest075(Span<byte> packet) => new WalkRequest075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="WalkRequest075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(WalkRequest075 packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified length of <see cref="Directions"/>.
+        /// </summary>
+        /// <param name="directionsLength">The length in bytes of <see cref="Directions"/> on which the required size depends.</param>
+        public static int GetRequiredSize(int directionsLength) => directionsLength + 6;
+    }
+
+
+    /// <summary>
     /// Is sent by the client when: It's sent when the player performs specific skills.
     /// Causes reaction on server side: Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.
     /// </summary>
