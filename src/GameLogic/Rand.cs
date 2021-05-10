@@ -4,14 +4,19 @@
 
 namespace MUnique.OpenMU.GameLogic
 {
+    using System;
+
     /// <summary>
     /// A static class to provide random functions by encapsulating the default Randomizer <see cref="System.Random"/>.
     /// </summary>
     public static class Rand
     {
-        private static readonly System.Random RandomInstance = new System.Random();
+        [ThreadStatic]
+        private static Random? randomInstance;
 
         private static readonly IRandomizer Randomizer = new SimpleRandomizer();
+
+        private static Random RandomInstance => randomInstance ??= new ();
 
         /// <summary>
         /// Gets the default Randomizer which is implementing the interface <see cref="IRandomizer"/>.
@@ -50,6 +55,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>Random boolean value.</returns>
         public static bool NextRandomBool(double chance)
         {
+            if (chance == 0.0)
+            {
+                return false;
+            }
+
             var lot = RandomInstance.NextDouble();
             return lot <= chance;
         }
