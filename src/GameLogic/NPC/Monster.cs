@@ -55,7 +55,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.plugInManager = plugInManager;
             this.intelligence.Npc = this;
             this.intelligence.Start();
-            this.Initialize();
         }
 
         /// <inheritdoc/>

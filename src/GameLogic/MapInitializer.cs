@@ -102,8 +102,16 @@ namespace MUnique.OpenMU.GameLogic
                         npc = new NonPlayerCharacter(spawn, monsterDef, createdMap);
                     }
 
-                    npc.Initialize();
-                    createdMap.Add(npc);
+                    try
+                    {
+                        npc.Initialize();
+                        createdMap.Add(npc);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.LogError(ex, $"Object {spawn} couldn't be initialized.", spawn);
+                        npc.Dispose();
+                    }
                 }
             }
 

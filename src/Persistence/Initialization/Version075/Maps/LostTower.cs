@@ -161,7 +161,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps
             yield return this.CreateMonsterSpawn(this.NpcDictionary[39], 165, 241);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[39], 184, 246);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[34], 191, 244);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[39], 200, 245);
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[39], 198, 245);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[39], 214, 245);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[39], 228, 245);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[39], 245, 246);

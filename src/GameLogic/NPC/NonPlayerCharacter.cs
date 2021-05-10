@@ -71,16 +71,24 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// </summary>
         public virtual void Initialize()
         {
-            var spawnPoint = this.GetNewSpawnPoint(this.SpawnArea);
-            if (this.SpawnArea.Quantity > 1)
+            const int maxRetry = 20;
+            Point? spawnPoint = null;
+
+            for (var retry = 0; retry < maxRetry && spawnPoint is null; retry++)
             {
-                while (!(!this.CurrentMap.Terrain.SafezoneMap[spawnPoint.X, spawnPoint.Y] && this.CurrentMap.Terrain.WalkMap[spawnPoint.X, spawnPoint.Y]))
+                spawnPoint = this.GetNewSpawnPoint(this.SpawnArea);
+                if (spawnPoint is not null)
                 {
-                    spawnPoint = this.GetNewSpawnPoint(this.SpawnArea);
+                    break;
                 }
             }
 
-            this.Position = spawnPoint;
+            if (spawnPoint == null)
+            {
+                throw new Exception("No valid spawn area");
+            }
+
+            this.Position = spawnPoint.Value;
             this.Rotation = GetSpawnDirection(this.SpawnArea.Direction);
         }
 
@@ -161,11 +169,26 @@ namespace MUnique.OpenMU.GameLogic.NPC
             return configuredDirection;
         }
 
-        private Point GetNewSpawnPoint(MonsterSpawnArea spawnArea)
+        private Point? GetNewSpawnPoint(MonsterSpawnArea spawnArea)
         {
             var x = Rand.NextInt(spawnArea.X1, spawnArea.X2 + 1);
             var y = Rand.NextInt(spawnArea.Y1, spawnArea.Y2 + 1);
-            return new Point((byte)x, (byte)y);
+            var point = new Point((byte)x, (byte)y);
+            if (this.IsValidSpawnPoint(point))
+            {
+                return point;
+            }
+
+            return null;
+        }
+
+        private bool IsValidSpawnPoint(Point spawnPoint)
+        {
+            var isSafezoneAllowed = this.Definition.ObjectKind != NpcObjectKind.Monster && this.Definition.ObjectKind != NpcObjectKind.Trap;
+            var isInSafezone = this.CurrentMap.Terrain.SafezoneMap[spawnPoint.X, spawnPoint.Y];
+            var npcCanWalk = this.Definition.ObjectKind == NpcObjectKind.Monster || this.Definition.ObjectKind == NpcObjectKind.Guard;
+            var isWalkable = this.CurrentMap.Terrain.WalkMap[spawnPoint.X, spawnPoint.Y];
+            return (isSafezoneAllowed || !isInSafezone) && (!npcCanWalk || isWalkable);
         }
     }
 }
