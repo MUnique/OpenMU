@@ -753,6 +753,68 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>1E</Code>
+      <Name>AreaSkillAnimation075</Name>
+      <Length>9</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object performs a skill which has effect on an area.</SentWhen>
+      <CausedReaction>The animation is shown on the user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>PointX</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>PointY</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>19</Code>
+      <Name>SkillAnimation075</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object performs a skill which is directly targetted to another object.</SentWhen>
+      <CausedReaction>The animation is shown on the user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>25</Code>
       <Name>AppearanceChanged</Name>
       <Direction>ServerToClient</Direction>

@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public override void HandlePacket(Player player, Span<byte> packet)
         {
             TargetedSkill075 message = packet;
-            var skill = player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.GetSkillByIndex(message.SkillId);
+            var skill = player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.GetSkillByIndex(message.SkillIndex);
             if (skill is null)
             {
                 return;

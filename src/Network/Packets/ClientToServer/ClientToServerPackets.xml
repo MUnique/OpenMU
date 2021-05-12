@@ -465,6 +465,29 @@
       </Enums>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>26</Code>
+      <Name>ConsumeItemRequest075</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.</SentWhen>
+      <CausedReaction>The server tries to 'consume' the specified item and responses accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+          <Description>The inventory slot index of the item which should be consumed.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetSlot</Name>
+          <Description>If the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>30</Code>
       <Name>TalkToNpcRequest</Name>
@@ -1239,7 +1262,8 @@
         <Field>
           <Index>3</Index>
           <Type>Byte</Type>
-          <Name>SkillId</Name>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the skill list.</Description>
         </Field>
         <Field>
           <Index>4</Index>
@@ -1332,6 +1356,91 @@
           <Description>A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</Description>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>1E</Code>
+      <Name>AreaSkill075</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player is performing an skill which affects an area of the map.</SentWhen>
+      <CausedReaction>It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the skill list.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>1D</Code>
+      <Name>AreaSkillHit075</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>An area skill was performed and the client decided to hit one or more targets.</SentWhen>
+      <CausedReaction>The server is calculating the damage and applying it to the targets. The attacker gets a response back with the caused damage.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the skill list.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>TargetCount</Name>
+          <Description>The number of targets which are hit.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>TargetData</TypeName>
+          <Name>Targets</Name>
+          <ItemCountField>TargetCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>TargetData</Name>
+          <Description>Contains the data of the target</Description>
+          <Length>2</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>TargetId</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>

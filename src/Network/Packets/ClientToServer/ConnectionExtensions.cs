@@ -220,6 +220,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="ConsumeItemRequest075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
+        /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
+        /// </remarks>
+        public static ConsumeItemRequest075ThreadSafeWriter StartWriteConsumeItemRequest075(this IConnection connection)
+        {
+          return new ConsumeItemRequest075ThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="TalkToNpcRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -633,6 +646,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static AreaSkillHitThreadSafeWriter StartWriteAreaSkillHit(this IConnection connection)
         {
           return new AreaSkillHitThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="AreaSkill075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+        /// </remarks>
+        public static AreaSkill075ThreadSafeWriter StartWriteAreaSkill075(this IConnection connection)
+        {
+          return new AreaSkill075ThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -1418,6 +1444,25 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="ConsumeItemRequest075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="itemSlot">The inventory slot index of the item which should be consumed.</param>
+        /// <param name="targetSlot">If the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
+        /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
+        /// </remarks>
+        public static void SendConsumeItemRequest075(this IConnection connection, byte @itemSlot, byte @targetSlot)
+        {
+            using var writer = connection.StartWriteConsumeItemRequest075();
+            var packet = writer.Packet;
+            packet.ItemSlot = @itemSlot;
+            packet.TargetSlot = @targetSlot;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="TalkToNpcRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1994,17 +2039,17 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="TargetedSkill075" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        /// <param name="skillId">The skill id.</param>
+        /// <param name="skillIndex">The index of the skill in the skill list.</param>
         /// <param name="targetId">The target id.</param>
         /// <remarks>
         /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
         /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
         /// </remarks>
-        public static void SendTargetedSkill075(this IConnection connection, byte @skillId, ushort @targetId)
+        public static void SendTargetedSkill075(this IConnection connection, byte @skillIndex, ushort @targetId)
         {
             using var writer = connection.StartWriteTargetedSkill075();
             var packet = writer.Packet;
-            packet.SkillId = @skillId;
+            packet.SkillIndex = @skillIndex;
             packet.TargetId = @targetId;
             writer.Commit();
         }
@@ -2060,6 +2105,29 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             packet.HitCounter = @hitCounter;
             packet.TargetId = @targetId;
             packet.AnimationCounter = @animationCounter;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="AreaSkill075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillIndex">The index of the skill in the skill list.</param>
+        /// <param name="targetX">The target x.</param>
+        /// <param name="targetY">The target y.</param>
+        /// <param name="rotation">The rotation.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+        /// </remarks>
+        public static void SendAreaSkill075(this IConnection connection, byte @skillIndex, byte @targetX, byte @targetY, byte @rotation)
+        {
+            using var writer = connection.StartWriteAreaSkill075();
+            var packet = writer.Packet;
+            packet.SkillIndex = @skillIndex;
+            packet.TargetX = @targetX;
+            packet.TargetY = @targetY;
+            packet.Rotation = @rotation;
             writer.Commit();
         }
 
@@ -3473,6 +3541,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.Advance(ConsumeItemRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="ConsumeItemRequest075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct ConsumeItemRequest075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsumeItemRequest075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public ConsumeItemRequest075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new ConsumeItemRequest075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(ConsumeItemRequest075.Length).Slice(0, ConsumeItemRequest075.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public ConsumeItemRequest075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="ConsumeItemRequest075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(ConsumeItemRequest075.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 
@@ -5169,6 +5290,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.Advance(AreaSkillHit.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="AreaSkill075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct AreaSkill075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkill075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public AreaSkill075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new AreaSkill075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkill075.Length).Slice(0, AreaSkill075.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public AreaSkill075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="AreaSkill075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(AreaSkill075.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

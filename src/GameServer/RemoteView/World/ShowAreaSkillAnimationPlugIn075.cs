@@ -1,4 +1,4 @@
-﻿// <copyright file="ShowAreaSkillAnimationPlugIn.cs" company="MUnique">
+﻿// <copyright file="ShowAreaSkillAnimationPlugIn075.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Pathfinding;
@@ -18,25 +17,25 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// <summary>
     /// The default implementation of the <see cref="IShowAreaSkillAnimationPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    [PlugIn(nameof(ShowAreaSkillAnimationPlugIn), "The default implementation of the IShowAreaSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("4cc09cdd-55a3-4191-94fc-b8e684b87cac")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
-    public class ShowAreaSkillAnimationPlugIn : IShowAreaSkillAnimationPlugIn
+    [PlugIn(nameof(ShowAreaSkillAnimationPlugIn075), "The default implementation of the IShowAreaSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.")]
+    [Guid("DB239A54-A5BD-4796-A96C-50D247D288F3")]
+    [MaximumClient(0, 89, ClientLanguage.Invariant)]
+    public class ShowAreaSkillAnimationPlugIn075 : IShowAreaSkillAnimationPlugIn
     {
         private readonly RemotePlayer player;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShowAreaSkillAnimationPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="ShowAreaSkillAnimationPlugIn075"/> class.
         /// </summary>
         /// <param name="player">The player.</param>
-        public ShowAreaSkillAnimationPlugIn(RemotePlayer player) => this.player = player;
+        public ShowAreaSkillAnimationPlugIn075(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
         public void ShowAreaSkillAnimation(Player playerWhichPerformsSkill, Skill skill, Point point, byte rotation)
         {
-            var skillId = NumberConversionExtensions.ToUnsigned(skill.Number);
+            var skillId = (byte)skill.Number;
             var playerId = playerWhichPerformsSkill.GetId(this.player);
-            this.player.Connection?.SendAreaSkillAnimation(skillId, playerId, point.X, point.Y, rotation);
+            this.player.Connection?.SendAreaSkillAnimation075(skillId, playerId, point.X, point.Y, rotation);
         }
     }
 }

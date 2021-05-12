@@ -9,13 +9,15 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// Handler for item consume packets.
     /// </summary>
-    [PlugIn("ConsumeItemHandlerPlugIn", "Handler for item consume packets.")]
+    [PlugIn(nameof(ConsumeItemHandlerPlugIn), "Handler for item consume packets.")]
     [Guid("53992288-0d11-49df-98a3-2912b7616558")]
+    [MinimumClient(0, 90, ClientLanguage.Invariant)]
     internal class ConsumeItemHandlerPlugIn : IPacketHandlerPlugIn
     {
         private readonly ItemConsumeAction consumeAction = new ItemConsumeAction();
