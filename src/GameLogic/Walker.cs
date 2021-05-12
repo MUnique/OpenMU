@@ -131,6 +131,7 @@ namespace MUnique.OpenMU.GameLogic
             {
                 if (this.walkTimer != null)
                 {
+                    this.walkTimer.Change(Timeout.Infinite, Timeout.Infinite);
                     this.walkTimer.Dispose(); // reuse timer?
                     this.walkTimer = null;
                     this.nextSteps.Clear();
