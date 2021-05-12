@@ -56,7 +56,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
         {
             var contextProvider = new InMemoryPersistenceContextProvider();
             var dataInitialization = new Version075.DataInitialization(contextProvider, new NullLoggerFactory());
-            dataInitialization.CreateInitialData(1, false);
+            dataInitialization.CreateInitialData(1, true);
         }
 
         private void TestDataInitialization(IPersistenceContextProvider contextProvider)

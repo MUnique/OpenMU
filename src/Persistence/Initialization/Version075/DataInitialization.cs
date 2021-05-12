@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Network.PlugIns;
+    using MUnique.OpenMU.Persistence.Initialization.Version075.TestAccounts;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -43,7 +44,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         protected override IGameMapsInitializer GameMapsInitializer => new GameMapsInitializer(this.Context, this.GameConfiguration);
 
         /// <inheritdoc />
-        protected override IInitializer? TestAccountsInitializer => null;
+        protected override IInitializer? TestAccountsInitializer => new TestAccountsInitialization(this.Context, this.GameConfiguration);
 
         /// <inheritdoc />
         protected override void CreateGameClientDefinition()
