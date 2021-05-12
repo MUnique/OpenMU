@@ -71,8 +71,11 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the maps which is meant to be hosted by the game.
         /// </summary>
         /// <param name="mapId">The map identifier.</param>
-        /// <returns>The hosted GameMap instance.</returns>
-        GameMap? GetMap(ushort mapId);
+        /// <param name="createIfNotExists">If set to <c>true</c>, the map is created if it doesn't exist yet.</param>
+        /// <returns>
+        /// The hosted GameMap instance.
+        /// </returns>
+        GameMap? GetMap(ushort mapId, bool createIfNotExists = true);
 
         /// <summary>
         /// Gets the player object by character name.

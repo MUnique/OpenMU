@@ -143,13 +143,14 @@ namespace MUnique.OpenMU.GameLogic.Resets
 
         private void MoveHome()
         {
-            var homeMap = this.player.SelectedCharacter!.CharacterClass!.HomeMap;
-            if (homeMap?.SafezoneMap?.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } randomSpawn)
+            var homeMapDef = this.player.SelectedCharacter!.CharacterClass!.HomeMap;
+            if (homeMapDef is { }
+                && this.player.GameContext.GetMap((ushort)homeMapDef.Number) is { SafeZoneSpawnGate: { } spawnGate })
             {
-                this.player.SelectedCharacter.PositionX = (byte)Rand.NextInt(randomSpawn.X1, randomSpawn.X2);
-                this.player.SelectedCharacter.PositionY = (byte)Rand.NextInt(randomSpawn.Y1, randomSpawn.Y2);
-                this.player.SelectedCharacter.CurrentMap = randomSpawn.Map;
-                this.player.Rotation = randomSpawn.Direction;
+                this.player.SelectedCharacter.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
+                this.player.SelectedCharacter.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
+                this.player.SelectedCharacter.CurrentMap = spawnGate.Map;
+                this.player.Rotation = spawnGate.Direction;
             }
         }
 

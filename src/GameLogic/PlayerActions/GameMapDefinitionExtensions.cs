@@ -38,5 +38,18 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             return false;
         }
+
+        /// <summary>
+        /// Gets the safezone gate of a map.
+        /// </summary>
+        /// <param name="gameMapDefinition">The game map definition.</param>
+        /// <param name="terrain">The terrain, if available.</param>
+        /// <returns>The safezone gate of a map.</returns>
+        public static ExitGate? GetSafezoneGate(this GameMapDefinition gameMapDefinition, GameMapTerrain? terrain = null)
+        {
+            terrain ??= new GameMapTerrain(gameMapDefinition);
+            return gameMapDefinition.ExitGates.FirstOrDefault(g => g.IsSpawnGate && terrain.SafezoneMap[g.X1, g.Y1])
+                   ?? gameMapDefinition.ExitGates.FirstOrDefault(g => g.IsSpawnGate);
+        }
     }
 }

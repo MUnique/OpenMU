@@ -3,6 +3,7 @@
 // </copyright>
 
 using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 
 namespace MUnique.OpenMU.GameLogic
 {
@@ -1067,11 +1068,11 @@ namespace MUnique.OpenMU.GameLogic
                 throw new InvalidOperationException("CurrentMap is not set. Can't determine spawn gate.");
             }
 
-            var spawnTargetMap = this.CurrentMap.Definition.SafezoneMap ?? this.CurrentMap.Definition;
-            var terrain = this.CurrentMap.Definition == spawnTargetMap ? this.CurrentMap.Terrain : new GameMapTerrain(spawnTargetMap);
-            var safeSpawn = spawnTargetMap.ExitGates.Where(g => g.IsSpawnGate && terrain.SafezoneMap[g.X1, g.Y1]).SelectRandom()
-                                ?? spawnTargetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
-            return safeSpawn;
+            var spawnTargetMapDefinition = this.CurrentMap.Definition.SafezoneMap ?? this.CurrentMap.Definition;
+            var targetMap = this.GameContext.GetMap((ushort)spawnTargetMapDefinition.Number, false);
+            return targetMap?.SafeZoneSpawnGate
+                   ?? spawnTargetMapDefinition.GetSafezoneGate()
+                   ?? throw new InvalidOperationException($"Game map {spawnTargetMapDefinition}has no spawn gate.");
         }
 
         private void Hit(HitInfo hitInfo, IAttacker attacker, Skill? skill)

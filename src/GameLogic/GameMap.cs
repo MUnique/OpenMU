@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.GameLogic.PlayerActions;
+
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
@@ -29,6 +31,8 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly IdGenerator dropIdGenerator;
 
+        private readonly ExitGate? safezoneSpawnGate;
+
         private int playerCount;
 
         /// <summary>
@@ -46,6 +50,8 @@ namespace MUnique.OpenMU.GameLogic
             this.areaOfInterestManager = new BucketAreaOfInterestManager(chunkSize);
             this.objectIdGenerator = new IdGenerator(ViewExtensions.ConstantPlayerId + 1, 0x7FFF);
             this.dropIdGenerator = new IdGenerator(0, ViewExtensions.ConstantPlayerId - 1);
+
+            this.safezoneSpawnGate = this.Definition.GetSafezoneGate(this.Terrain);
         }
 
         /// <summary>
@@ -67,6 +73,11 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the terrain of the map.
         /// </summary>
         public GameMapTerrain Terrain { get; }
+
+        /// <summary>
+        /// Gets the safe zone spawn gate.
+        /// </summary>
+        public ExitGate? SafeZoneSpawnGate => this.safezoneSpawnGate;
 
         /// <summary>
         /// Gets the time in seconds of how long drops are laying on the ground until they are disappearing.

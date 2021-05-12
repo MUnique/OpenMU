@@ -112,11 +112,16 @@ namespace MUnique.OpenMU.GameLogic
         public ILoggerFactory LoggerFactory { get; }
 
         /// <inheritdoc/>
-        public GameMap? GetMap(ushort mapId)
+        public GameMap? GetMap(ushort mapId, bool createIfNotExists = true)
         {
             if (this.mapList.TryGetValue(mapId, out var map))
             {
                 return map;
+            }
+
+            if (!createIfNotExists)
+            {
+                return null;
             }
 
             GameMap? createdMap;

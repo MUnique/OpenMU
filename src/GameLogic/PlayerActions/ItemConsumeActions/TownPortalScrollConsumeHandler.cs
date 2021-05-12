@@ -6,7 +6,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
 {
-    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
 
@@ -25,11 +24,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
         {
             if (base.ConsumeItem(player, item, targetItem, fruitUsage))
             {
-                var targetMap = player.CurrentMap!.Definition.SafezoneMap ?? player.SelectedCharacter!.CharacterClass!.HomeMap;
-                if (targetMap is { })
+                var targetMapDef = player.CurrentMap!.Definition.SafezoneMap ?? player.SelectedCharacter!.CharacterClass!.HomeMap;
+                if (targetMapDef is { }
+                    && player.GameContext.GetMap((ushort)targetMapDef.Number) is { SafeZoneSpawnGate: { } spawnGate })
                 {
-                    var exitGate = targetMap.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
-                    player.WarpTo(exitGate);
+                    player.WarpTo(spawnGate);
                     return true;
                 }
             }
