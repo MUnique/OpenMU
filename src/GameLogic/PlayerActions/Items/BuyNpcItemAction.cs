@@ -33,7 +33,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
         /// <param name="slot">The slot of the item.</param>
         public void BuyItem(Player player, byte slot)
         {
-            if (player.OpenedNpc is null || player.PlayerState.CurrentState != PlayerState.NpcDialogOpened)
+            if (player.OpenedNpc is null)
             {
                 player.ViewPlugIns.GetPlugIn<IBuyNpcItemFailedPlugIn>()?.BuyNpcItemFailed();
                 return;
