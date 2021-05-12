@@ -159,9 +159,14 @@ namespace MUnique.OpenMU.Network
         /// </summary>
         /// <param name="packet">The packet.</param>
         /// <returns>The sub type of the packet.</returns>
-        public static byte GetPacketSubType(this Span<byte> packet)
+        public static byte? GetPacketSubType(this Span<byte> packet)
         {
-            return packet[packet.GetPacketHeaderSize() + 1];
+            if (packet.Length > packet.GetPacketHeaderSize())
+            {
+                return packet[packet.GetPacketHeaderSize() + 1];
+            }
+
+            return null;
         }
 
         /// <summary>

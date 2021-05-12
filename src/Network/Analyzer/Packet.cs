@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// Gets the sub code of the packet, which further specifies the kind of the message, if specified.
         /// </summary>
-        public byte SubCode => this.innerData.AsSpan().GetPacketSubType();
+        public byte? SubCode => this.innerData.AsSpan().GetPacketSubType();
 
         /// <summary>
         /// Gets the direction as string.
