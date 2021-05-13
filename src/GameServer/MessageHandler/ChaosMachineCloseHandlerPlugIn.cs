@@ -14,9 +14,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// <summary>
     /// Handler for chaos mix packets.
     /// </summary>
-    [PlugIn("ChaosMachineCloseHandlerPlugIn", "Handler for chaos mix packets.")]
+    [PlugIn(nameof(CraftingDialogCloseRequestHandlerPlugIn), "Handler for packets which should close the crafting dialog (Chaos Machine).")]
     [Guid("1857513c-d09c-4e03-8bf4-f4ead19ea60f")]
-    internal class ChaosMachineCloseHandlerPlugIn : IPacketHandlerPlugIn
+    internal class CraftingDialogCloseRequestHandlerPlugIn : IPacketHandlerPlugIn
     {
         private readonly CloseNpcDialogAction closeNpcDialogAction = new CloseNpcDialogAction();
 
@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => CloseChaosMachineRequest.Code;
+        public byte Key => CraftingDialogCloseRequest.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)

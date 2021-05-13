@@ -6694,25 +6694,25 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
     /// Causes reaction on server side: The server updates the state of the player accordingly.
     /// </summary>
-    public readonly ref struct CloseChaosMachineRequest
+    public readonly ref struct CraftingDialogCloseRequest
     {
         private readonly Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloseChaosMachineRequest"/> struct.
+        /// Initializes a new instance of the <see cref="CraftingDialogCloseRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public CloseChaosMachineRequest(Span<byte> data)
+        public CraftingDialogCloseRequest(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloseChaosMachineRequest"/> struct.
+        /// Initializes a new instance of the <see cref="CraftingDialogCloseRequest"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private CloseChaosMachineRequest(Span<byte> data, bool initialize)
+        private CraftingDialogCloseRequest(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -6745,18 +6745,18 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C1Header Header => new C1Header(this.data);
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="CloseChaosMachineRequest"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CraftingDialogCloseRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator CloseChaosMachineRequest(Span<byte> packet) => new CloseChaosMachineRequest(packet, false);
+        public static implicit operator CraftingDialogCloseRequest(Span<byte> packet) => new CraftingDialogCloseRequest(packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CloseChaosMachineRequest"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="CraftingDialogCloseRequest"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(CloseChaosMachineRequest packet) => packet.data; 
+        public static implicit operator Span<byte>(CraftingDialogCloseRequest packet) => packet.data; 
     }
 
 

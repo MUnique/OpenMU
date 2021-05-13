@@ -52,7 +52,7 @@
   * [C1 82 01 - SetVaultPin (by client)](C1-82-01-SetVaultPin_by-client.md)
   * [C1 82 02 - RemoveVaultPin (by client)](C1-82-02-RemoveVaultPin_by-client.md)
   * [C1 86 - ChaosMachineMixRequest (by client)](C1-86-ChaosMachineMixRequest_by-client.md)
-  * [C1 87 - CloseChaosMachineRequest (by client)](C1-87-CloseChaosMachineRequest_by-client.md)
+  * [C1 87 - CraftingDialogCloseRequest (by client)](C1-87-CraftingDialogCloseRequest_by-client.md)
   * [C1 8E 02 - WarpCommandRequest (by client)](C1-8E-02-WarpCommandRequest_by-client.md)
   * [C1 A0 - LegacyQuestStateRequest (by client)](C1-A0-LegacyQuestStateRequest_by-client.md)
   * [C1 A2 - LegacyQuestStateSetRequest (by client)](C1-A2-LegacyQuestStateSetRequest_by-client.md)

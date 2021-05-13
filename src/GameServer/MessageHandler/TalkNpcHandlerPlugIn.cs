@@ -17,6 +17,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [MinimumClient(0, 90, ClientLanguage.Invariant)]
     internal class TalkNpcHandlerPlugIn : TalkNpcHandlerPlugInBase
     {
+        /// <inheritdoc />
+        public override bool IsEncryptionExpected => true;
+
         /// <inheritdoc/>
         protected override TalkNpcAction TalkNpcAction { get; } = new ();
     }

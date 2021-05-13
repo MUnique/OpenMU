@@ -18,6 +18,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     internal class TalkNpcHandlerPlugIn075 : TalkNpcHandlerPlugInBase
     {
         /// <inheritdoc/>
-        protected override TalkNpcAction TalkNpcAction { get; } = new () { AdvancePlayerState = false };
+        protected override TalkNpcAction TalkNpcAction { get; } = new TalkNpcAction075();
     }
 }

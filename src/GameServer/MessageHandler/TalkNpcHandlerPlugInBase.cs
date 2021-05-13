@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     internal abstract class TalkNpcHandlerPlugInBase : IPacketHandlerPlugIn
     {
         /// <inheritdoc/>
-        public bool IsEncryptionExpected => false;
+        public virtual bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
         public byte Key => TalkToNpcRequest.Code;

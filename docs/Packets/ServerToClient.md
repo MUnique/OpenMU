@@ -79,6 +79,7 @@
   * [C1 82 - VaultClosed (by server)](C1-82-VaultClosed_by-server.md)
   * [C1 83 - VaultProtectionInformation (by server)](C1-83-VaultProtectionInformation_by-server.md)
   * [C1 86 - ItemCraftingResult (by server)](C1-86-ItemCraftingResult_by-server.md)
+  * [C1 87 - CraftingDialogClosed075 (by server)](C1-87-CraftingDialogClosed075_by-server.md)
   * [C1 A0 - LegacyQuestStateList (by server)](C1-A0-LegacyQuestStateList_by-server.md)
   * [C1 A1 - LegacyQuestStateDialog (by server)](C1-A1-LegacyQuestStateDialog_by-server.md)
   * [C1 A2 - LegacySetQuestStateResponse (by server)](C1-A2-LegacySetQuestStateResponse_by-server.md)

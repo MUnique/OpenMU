@@ -1,4 +1,4 @@
-# C1 87 - CloseChaosMachineRequest (by client)
+# C1 87 - CraftingDialogCloseRequest (by client)
 
 ## Is sent when
 

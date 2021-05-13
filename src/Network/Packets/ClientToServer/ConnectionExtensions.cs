@@ -857,16 +857,16 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Starts a safe write of a <see cref="CloseChaosMachineRequest" /> to this connection.
+        /// Starts a safe write of a <see cref="CraftingDialogCloseRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
         /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
         /// Causes reaction on server side: The server updates the state of the player accordingly.
         /// </remarks>
-        public static CloseChaosMachineRequestThreadSafeWriter StartWriteCloseChaosMachineRequest(this IConnection connection)
+        public static CraftingDialogCloseRequestThreadSafeWriter StartWriteCraftingDialogCloseRequest(this IConnection connection)
         {
-          return new CloseChaosMachineRequestThreadSafeWriter(connection);
+          return new CraftingDialogCloseRequestThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -2431,16 +2431,16 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Sends a <see cref="CloseChaosMachineRequest" /> to this connection.
+        /// Sends a <see cref="CraftingDialogCloseRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
         /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
         /// Causes reaction on server side: The server updates the state of the player accordingly.
         /// </remarks>
-        public static void SendCloseChaosMachineRequest(this IConnection connection)
+        public static void SendCraftingDialogCloseRequest(this IConnection connection)
         {
-            using var writer = connection.StartWriteCloseChaosMachineRequest();
+            using var writer = connection.StartWriteCraftingDialogCloseRequest();
             writer.Commit();
         }
 
@@ -6151,17 +6151,17 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     }
       
     /// <summary>
-    /// A helper struct to write a <see cref="CloseChaosMachineRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// A helper struct to write a <see cref="CraftingDialogCloseRequest"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
-    public readonly ref struct CloseChaosMachineRequestThreadSafeWriter
+    public readonly ref struct CraftingDialogCloseRequestThreadSafeWriter
     {
         private readonly IConnection connection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloseChaosMachineRequestThreadSafeWriter" /> struct.
+        /// Initializes a new instance of the <see cref="CraftingDialogCloseRequestThreadSafeWriter" /> struct.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        public CloseChaosMachineRequestThreadSafeWriter(IConnection connection)
+        public CraftingDialogCloseRequestThreadSafeWriter(IConnection connection)
         {
             this.connection = connection;
             Monitor.Enter(this.connection);
@@ -6170,7 +6170,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
                 // Initialize header and default values
                 var span = this.Span;
                 span.Clear();
-                _ = new CloseChaosMachineRequest(span);
+                _ = new CraftingDialogCloseRequest(span);
             }
             catch (InvalidOperationException)
             {
@@ -6180,17 +6180,17 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CloseChaosMachineRequest.Length).Slice(0, CloseChaosMachineRequest.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CraftingDialogCloseRequest.Length).Slice(0, CraftingDialogCloseRequest.Length);
 
         /// <summary>Gets the packet to write at.</summary>
-        public CloseChaosMachineRequest Packet => this.Span;
+        public CraftingDialogCloseRequest Packet => this.Span;
 
         /// <summary>
-        /// Commits the data of the <see cref="CloseChaosMachineRequest" />.
+        /// Commits the data of the <see cref="CraftingDialogCloseRequest" />.
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(CloseChaosMachineRequest.Length);
+            this.connection.Output.Advance(CraftingDialogCloseRequest.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

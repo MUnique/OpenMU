@@ -1819,8 +1819,8 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>87</Code>
-      <Name>CloseChaosMachineRequest</Name>
-      <Caption>Close Chaos Machine</Caption>
+      <Name>CraftingDialogCloseRequest</Name>
+      <Caption>Close Crafting Dialog</Caption>
       <Length>3</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player closes the dialog which was opened by an interaction with the chaos machine goblin.</SentWhen>

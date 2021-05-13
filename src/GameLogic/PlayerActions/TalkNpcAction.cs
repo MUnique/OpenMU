@@ -23,11 +23,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     public class TalkNpcAction
     {
         /// <summary>
-        /// Gets a value indicating whether this action advances the player state to <see cref="PlayerState.NpcDialogOpened"/>.
-        /// </summary>
-        public bool AdvancePlayerState { get; init; } = true;
-
-        /// <summary>
         /// Talks to the specified Monster.
         /// </summary>
         /// <param name="player">The player.</param>
@@ -36,7 +31,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         {
             var npcStats = npc.Definition;
 
-            if (this.AdvancePlayerState)
+            if (this.AdvancePlayerState(npc))
             {
                 if (!player.PlayerState.TryAdvanceTo(PlayerState.NpcDialogOpened))
                 {
@@ -62,6 +57,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 this.ShowDialogOfOpenedNpc(player);
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this action advances the player state to <see cref="PlayerState.NpcDialogOpened" />.
+        /// </summary>
+        /// <param name="npc">The NPC whose dialog is about to be opened.</param>
+        /// <returns>A value indicating whether this action advances the player state to <see cref="PlayerState.NpcDialogOpened" />.</returns>
+        protected virtual bool AdvancePlayerState(NonPlayerCharacter npc) => true;
 
         private void ShowDialogOfOpenedNpc(Player player)
         {

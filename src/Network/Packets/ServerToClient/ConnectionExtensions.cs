@@ -987,6 +987,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="CraftingDialogClosed075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the player requested to close the crafting dialog, this confirmation is sent back to the client.
+        /// Causes reaction on client side: The game client closes the crafting dialog.
+        /// </remarks>
+        public static CraftingDialogClosed075ThreadSafeWriter StartWriteCraftingDialogClosed075(this IConnection connection)
+        {
+          return new CraftingDialogClosed075ThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="LegacyQuestStateDialog" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2527,7 +2540,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Is sent by the server when: After a skill got added to the skill list, e.g. by equipping an item or learning a skill.
         /// Causes reaction on client side: The skill is added to the skill list on client side.
         /// </remarks>
-        public static void SendSkillAdded075(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 0xFE)
+        public static void SendSkillAdded075(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 1)
         {
             using var writer = connection.StartWriteSkillAdded075();
             var packet = writer.Packet;
@@ -2548,7 +2561,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Is sent by the server when: After a skill got removed from the skill list, e.g. by removing an equipped item.
         /// Causes reaction on client side: The skill is added to the skill list on client side.
         /// </remarks>
-        public static void SendSkillRemoved075(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 0xFF)
+        public static void SendSkillRemoved075(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 0)
         {
             using var writer = connection.StartWriteSkillRemoved075();
             var packet = writer.Packet;
@@ -3078,6 +3091,20 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             var packet = new ItemCraftingResult(writer.Span);
             packet.Result = @result;
             @itemData.CopyTo(packet.ItemData);
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="CraftingDialogClosed075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the player requested to close the crafting dialog, this confirmation is sent back to the client.
+        /// Causes reaction on client side: The game client closes the crafting dialog.
+        /// </remarks>
+        public static void SendCraftingDialogClosed075(this IConnection connection)
+        {
+            using var writer = connection.StartWriteCraftingDialogClosed075();
             writer.Commit();
         }
 
@@ -7337,6 +7364,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(VaultProtectionInformation.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="CraftingDialogClosed075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct CraftingDialogClosed075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CraftingDialogClosed075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public CraftingDialogClosed075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new CraftingDialogClosed075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(CraftingDialogClosed075.Length).Slice(0, CraftingDialogClosed075.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public CraftingDialogClosed075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="CraftingDialogClosed075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(CraftingDialogClosed075.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

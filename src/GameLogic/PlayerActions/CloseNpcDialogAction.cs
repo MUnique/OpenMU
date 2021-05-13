@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.Views.NPC;
 
     /// <summary>
     /// Action to close a npc dialog.
@@ -18,11 +20,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         public void CloseNpcDialog(Player player)
         {
             using var loggerScope = player.Logger.BeginScope(this.GetType());
-            if (player.OpenedNpc != null && player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld))
+            var npc = player.OpenedNpc;
+            if (npc != null && player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld))
             {
                 player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {player.OpenedNpc}");
                 player.OpenedNpc = null;
                 player.Vault = null;
+                player.ViewPlugIns.GetPlugIn<INpcDialogClosedPlugIn>()?.DialogClosed(npc.Definition);
             }
             else
             {

@@ -131,7 +131,14 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             }
             else
             {
-                preview[index] |= highNibble ? this.GetOrMaskForHighNibble(item.Definition.Number) : this.GetOrMaskForLowNibble(item.Definition.Number);
+                var number = item.Definition.Number;
+                if (number >= 10)
+                {
+                    // Elf items start again at 0. What a stupid logic, as there are only 15 sets anyway.
+                    number -= 10;
+                }
+
+                preview[index] |= highNibble ? this.GetOrMaskForHighNibble(number) : this.GetOrMaskForLowNibble(number);
             }
         }
 

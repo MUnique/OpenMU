@@ -3236,7 +3236,7 @@
       <Code>F3</Code>
       <SubCode>11</SubCode>
       <Name>SkillAdded075</Name>
-      <Length>10</Length>
+      <Length>8</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After a skill got added to the skill list, e.g. by equipping an item or learning a skill.</SentWhen>
       <CausedReaction>The skill is added to the skill list on client side.</CausedReaction>
@@ -3245,7 +3245,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Flag</Name>
-          <DefaultValue>0xFE</DefaultValue>
+          <DefaultValue>1</DefaultValue>
         </Field>
         <Field>
           <Index>5</Index>
@@ -3273,7 +3273,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Flag</Name>
-          <DefaultValue>0xFF</DefaultValue>
+          <DefaultValue>0</DefaultValue>
         </Field>
         <Field>
           <Index>5</Index>
@@ -4542,6 +4542,16 @@
           </Values>
         </Enum>
       </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>87</Code>
+      <Name>CraftingDialogClosed075</Name>
+      <Length>3</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to close the crafting dialog, this confirmation is sent back to the client.</SentWhen>
+      <CausedReaction>The game client closes the crafting dialog.</CausedReaction>
+      <Fields />
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
