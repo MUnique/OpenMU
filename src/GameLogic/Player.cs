@@ -658,7 +658,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
             this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
-            
+
             this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned());
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
             this.IsAlive = true;
@@ -1072,7 +1072,7 @@ namespace MUnique.OpenMU.GameLogic
             var targetMap = this.GameContext.GetMap((ushort)spawnTargetMapDefinition.Number, false);
             return targetMap?.SafeZoneSpawnGate
                    ?? spawnTargetMapDefinition.GetSafezoneGate()
-                   ?? throw new InvalidOperationException($"Game map {spawnTargetMapDefinition}has no spawn gate.");
+                   ?? throw new InvalidOperationException($"Game map {spawnTargetMapDefinition} has no spawn gate.");
         }
 
         private void Hit(HitInfo hitInfo, IAttacker attacker, Skill? skill)
