@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
 
             this.BuildSkillList();
 
-            using var writer = connection.StartSafeWrite(SkillListUpdate.HeaderType, SkillListUpdate.GetRequiredSize(this.SkillList.Count));
+            using var writer = connection.StartSafeWrite(SkillListUpdate075.HeaderType, SkillListUpdate075.GetRequiredSize(this.SkillList.Count));
             var packet = new SkillListUpdate075(writer.Span)
             {
                 Count = (byte)this.SkillList.Count,
