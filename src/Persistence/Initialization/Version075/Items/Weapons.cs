@@ -148,7 +148,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
             this.CreateWeapon(4, 4, 1, 24, 2, 4, true, "Tiger Bow", 40, 42, 52, 30, 43, 0, 0, 30, 100, 0, 0, 0, 0, 1);
             this.CreateWeapon(4, 5, 1, 24, 2, 4, true, "Silver Bow", 56, 59, 71, 40, 48, 0, 0, 30, 100, 0, 0, 0, 0, 1);
             this.CreateWeapon(4, 6, 1, 24, 2, 4, false, "Chaos Nature Bow", 75, 88, 106, 35, 68, 0, 0, 40, 150, 0, 0, 0, 0, 1);
-            this.CreateWeapon(4, 7, 1, 0, 1, 1, false, "Bolt", 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+            this.CreateAmmunition(4, 7, 1, 1, 2, false, "Bolt", 0, 255, 0, 0, 1);
             this.CreateWeapon(4, 8, 0, 24, 2, 2, true, "Crossbow", 4, 5, 8, 40, 22, 0, 0, 20, 90, 0, 0, 0, 0, 1);
             this.CreateWeapon(4, 9, 0, 24, 2, 2, true, "Golden Crossbow", 12, 13, 19, 40, 26, 0, 0, 30, 90, 0, 0, 0, 0, 1);
             this.CreateWeapon(4, 10, 0, 24, 2, 2, true, "Arquebus", 20, 22, 30, 40, 31, 0, 0, 30, 90, 0, 0, 0, 0, 1);
@@ -156,7 +156,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
             this.CreateWeapon(4, 12, 0, 24, 2, 3, true, "Serpent Crossbow", 48, 50, 61, 40, 45, 0, 0, 30, 100, 0, 0, 0, 0, 1);
             this.CreateWeapon(4, 13, 0, 24, 2, 3, true, "Bluewing Crossbow", 68, 68, 82, 40, 56, 0, 0, 40, 110, 0, 0, 0, 0, 1);
             this.CreateWeapon(4, 14, 0, 24, 2, 3, true, "Aquagold Crossbow", 72, 78, 92, 30, 60, 0, 0, 50, 130, 0, 0, 0, 0, 1);
-            this.CreateWeapon(4, 15, 0, 0, 1, 1, false, "Arrows", 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+            this.CreateAmmunition(4, 15, 0, 1, 2, false, "Arrows", 0, 255, 0, 0, 1);
 
             this.CreateWeapon(5, 0, 0, 0, 1, 3, true, "Skull Staff", 6, 3, 4, 20, 20, 6, 0, 40, 0, 0, 0, 1, 0, 0);
             this.CreateWeapon(5, 1, 0, 0, 2, 3, true, "Angelic Staff", 18, 10, 12, 25, 38, 20, 0, 50, 0, 0, 0, 1, 0, 0);
@@ -169,6 +169,49 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
         }
 
         /// <summary>
+        /// Creates the ammunition.
+        /// </summary>
+        /// <param name="group">The group.</param>
+        /// <param name="number">The number.</param>
+        /// <param name="slot">The slot.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <param name="dropsFromMonsters">if set to <c>true</c>, the item drops from monsters.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="dropLevel">The drop level.</param>
+        /// <param name="durability">The durability.</param>
+        /// <param name="wizardClass">The wizard class.</param>
+        /// <param name="knightClass">The knight class.</param>
+        /// <param name="elfClass">The elf class.</param>
+        protected void CreateAmmunition(byte @group, byte number, byte slot, byte width, byte height, bool dropsFromMonsters, string name, byte dropLevel, byte durability, int wizardClass, int knightClass, int elfClass)
+        {
+            var item = this.Context.CreateNew<ItemDefinition>();
+            this.GameConfiguration.Items.Add(item);
+            item.Name = name;
+            item.Group = group;
+            item.Number = number;
+            item.Height = height;
+            item.Width = width;
+            item.DropLevel = dropLevel;
+            item.MaximumItemLevel = 0;
+            item.DropsFromMonsters = dropsFromMonsters;
+            if (slot == 0 && knightClass > 0 && width == 1)
+            {
+                item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
+            }
+            else
+            {
+                item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(slot));
+            }
+
+            item.Durability = durability;
+            var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass == 1, knightClass == 1, elfClass == 1);
+            qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
+
+            item.IsAmmunition = true;
+        }
+
+        /// <summary>
         /// Creates the item with the specified parameters.
         /// </summary>
         /// <param name="group">The group number.</param>
@@ -177,7 +220,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
         /// <param name="skillNumber">The skill number.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        /// <param name="dropsFromMonsters">if set to <c>true</c> [drops from monsters].</param>
+        /// <param name="dropsFromMonsters">if set to <c>true</c>, the item drops from monsters.</param>
         /// <param name="name">The name.</param>
         /// <param name="dropLevel">The drop level.</param>
         /// <param name="minimumDamage">The minimum damage.</param>
@@ -193,11 +236,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
         /// <param name="wizardClass">The wizard class.</param>
         /// <param name="knightClass">The knight class.</param>
         /// <param name="elfClass">The elf class.</param>
+        /// <param name="isAmmunition">If set to <c>true</c>, the item is ammunition for a weapon.</param>
         protected void CreateWeapon(byte @group, byte number, byte slot, int skillNumber, byte width, byte height,
             bool dropsFromMonsters, string name, byte dropLevel, int minimumDamage, int maximumDamage, int attackSpeed,
             byte durability, int staffRise, int levelRequirement, int strengthRequirement, int agilityRequirement,
             int energyRequirement, int vitalityRequirement,
-            int wizardClass, int knightClass, int elfClass)
+            int wizardClass, int knightClass, int elfClass, bool isAmmunition = false)
         {
             var item = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(item);
@@ -208,7 +252,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
             item.Height = height;
             item.Width = width;
             item.DropLevel = dropLevel;
-            item.MaximumItemLevel = Constants.MaximumItemLevel;
+            item.MaximumItemLevel = isAmmunition ? (byte)0 : Constants.MaximumItemLevel;
             item.DropsFromMonsters = dropsFromMonsters;
             if (slot == 0 && knightClass > 0 && width == 1)
             {
@@ -278,15 +322,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
                 item.BasePowerUpAttributes.Add(staffRisePowerUpMaxDmg);
             }
 
-            if (group == (int)ItemGroups.Bows && height > 1)
+            item.IsAmmunition = isAmmunition;
+            if (!item.IsAmmunition)
             {
                 var ammunitionConsumption = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 ammunitionConsumption.TargetAttribute = Stats.AmmunitionConsumptionRate.GetPersistent(this.GameConfiguration);
                 ammunitionConsumption.BaseValue = 1.0f;
                 item.BasePowerUpAttributes.Add(ammunitionConsumption);
             }
-
-            item.IsAmmunition = group == (int)ItemGroups.Bows && height == 1;
 
             if (group != (int)ItemGroups.Bows && width == 2)
             {

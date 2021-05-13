@@ -45,15 +45,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
                 this.ItemHelper.CreatePotion(7, 8, 1, 0),    // Antidote +0 x1
                 this.ItemHelper.CreatePotion(15, 8, 3, 0),    // Antidote +0 x3
 
-                this.ItemHelper.CreateWeapon(24, ItemGroups.Bows, 7, 0, 0, false, false, null), // Bolt
-                this.ItemHelper.CreateWeapon(25, ItemGroups.Bows, 7, 1, 0, false, false, null), // Bolt +1
-                this.ItemHelper.CreateWeapon(26, ItemGroups.Bows, 7, 2, 0, false, false, null), // Bolt +2
-
-                this.ItemHelper.CreateWeapon(27, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
-                this.ItemHelper.CreateWeapon(28, ItemGroups.Bows, 15, 1, 0, false, false, null), // Arrow +1
-                this.ItemHelper.CreateWeapon(29, ItemGroups.Bows, 15, 2, 0, false, false, null), // Arrow +2
-
-                this.ItemHelper.CreateItem(32, 10, 14, 1, 0), // Town Portal Scroll
+                this.ItemHelper.CreateWeapon(16, ItemGroups.Bows, 7, 0, 0, false, false, null), // Bolt
+                this.ItemHelper.CreateWeapon(17, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
+                this.ItemHelper.CreateItem(18, 10, 14, 1, 0), // Town Portal Scroll
             };
             return this.CreateMerchantStore(itemList);
         }
@@ -217,15 +211,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
                 this.ItemHelper.CreatePotion(7, 8, 1, 0),    // Antidote +0 x1
                 this.ItemHelper.CreatePotion(15, 8, 3, 0),    // Antidote +0 x3
 
-                this.ItemHelper.CreateOrb(24, 8),
-                this.ItemHelper.CreateOrb(25, 9),
-                this.ItemHelper.CreateOrb(26, 10),
+                this.ItemHelper.CreateOrb(16, 8),
+                this.ItemHelper.CreateOrb(17, 9),
+                this.ItemHelper.CreateOrb(18, 10),
 
-                this.ItemHelper.CreateSummonOrb(27, 0), // Orb of Summon "Goblin"
-                this.ItemHelper.CreateSummonOrb(28, 1), // Orb of Summon + 1 "Stone Golem"
-                this.ItemHelper.CreateSummonOrb(29, 2), // Orb of Summon + 2 "Assassin"
-                this.ItemHelper.CreateSummonOrb(30, 3), // Orb of Summon + 3 "Elite Yeti"
-                this.ItemHelper.CreateSummonOrb(31, 4), // Orb of Summon + 4 "Dark Knight"
+                this.ItemHelper.CreateItem(21, 10, 14, 1, 0), // Town Portal Scroll
+                this.ItemHelper.CreateWeapon(22, ItemGroups.Bows, 7, 0, 0, false, false, null), // Bolt
+                this.ItemHelper.CreateWeapon(23, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
+
+                this.ItemHelper.CreateSummonOrb(24, 0), // Orb of Summon "Goblin"
+                this.ItemHelper.CreateSummonOrb(25, 1), // Orb of Summon + 1 "Stone Golem"
+                this.ItemHelper.CreateSummonOrb(26, 2), // Orb of Summon + 2 "Assassin"
+                this.ItemHelper.CreateSummonOrb(27, 3), // Orb of Summon + 3 "Elite Yeti"
+                this.ItemHelper.CreateSummonOrb(28, 4), // Orb of Summon + 4 "Dark Knight"
 
                 this.ItemHelper.CreateSetItem(32, 10, ItemGroups.Helm, null, 0, 1, true),    // Vine Helme +0+4+L
                 this.ItemHelper.CreateSetItem(34, 10, ItemGroups.Armor, null, 0, 1, true),    // Vine Armor +0+4+L
@@ -245,15 +243,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
                 this.ItemHelper.CreateSetItem(82, 12, ItemGroups.Gloves, null, 3, 1, true),    // Wind Gloves +3+4+L
                 this.ItemHelper.CreateSetItem(84, 12, ItemGroups.Boots, null, 3, 1, true),    // Wind Boots +3+4+L
 
-                this.ItemHelper.CreateItem(96, 10, 14, 1, 0), // Town Portal Scroll
 
-                this.ItemHelper.CreateWeapon(97, ItemGroups.Bows, 7, 0, 0, false, false, null), // Bolt
-                this.ItemHelper.CreateWeapon(98, ItemGroups.Bows, 7, 1, 0, false, false, null), // Bolt +1
-                this.ItemHelper.CreateWeapon(99, ItemGroups.Bows, 7, 2, 0, false, false, null), // Bolt +2
-
-                this.ItemHelper.CreateWeapon(100, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
-                this.ItemHelper.CreateWeapon(101, ItemGroups.Bows, 15, 1, 0, false, false, null), // Arrow +1
-                this.ItemHelper.CreateWeapon(102, ItemGroups.Bows, 15, 2, 0, false, false, null), // Arrow +2
             };
 
             return this.CreateMerchantStore(itemList);
@@ -291,27 +281,20 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
                 this.ItemHelper.CreatePotion(7, 8, 1, 0),    // Antidote +0 x1
                 this.ItemHelper.CreatePotion(15, 8, 3, 0),    // Antidote +0 x3
 
-                this.ItemHelper.CreateSetItem(24, 3, ItemGroups.Helm, null, 3, 1, true), // Legendary Helm +3+Luck+4
-                this.ItemHelper.CreateSetItem(26, 3, ItemGroups.Armor, null, 3, 1, true), // Legendary Armor +3+Luck+4
-                this.ItemHelper.CreateSetItem(28, 3, ItemGroups.Pants, null, 3, 1, true), // Legendary Pants +3+Luck+4
-                this.ItemHelper.CreateSetItem(30, 3, ItemGroups.Gloves, null, 3, 1, true), // Legendary Glover +3+Luck+4
-                this.ItemHelper.CreateSetItem(40, 3, ItemGroups.Boots, null, 3, 1, true), // Legendary Boots +3+Luck+4
-                this.ItemHelper.CreateItem(44, 10, 14, 1, 0), // Town Portal Scroll
+                this.ItemHelper.CreateSetItem(16, 3, ItemGroups.Helm, null, 3, 1, true), // Legendary Helm +3+Luck+4
+                this.ItemHelper.CreateSetItem(18, 3, ItemGroups.Armor, null, 3, 1, true), // Legendary Armor +3+Luck+4
+                this.ItemHelper.CreateSetItem(20, 3, ItemGroups.Pants, null, 3, 1, true), // Legendary Pants +3+Luck+4
+                this.ItemHelper.CreateSetItem(22, 3, ItemGroups.Gloves, null, 3, 1, true), // Legendary Glover +3+Luck+4
+                this.ItemHelper.CreateSetItem(32, 3, ItemGroups.Boots, null, 3, 1, true), // Legendary Boots +3+Luck+4
+                this.ItemHelper.CreateItem(34, 10, 14, 1, 0), // Town Portal Scroll
+                this.ItemHelper.CreateWeapon(35, ItemGroups.Bows, 7, 0, 0, false, false, null), // Bolt
+                this.ItemHelper.CreateWeapon(36, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
+                this.ItemHelper.CreateScroll(37, 4), // Scroll of Flame
+                this.ItemHelper.CreateScroll(38, 7), // Scroll of Twister
 
-                this.ItemHelper.CreateWeapon(45, ItemGroups.Bows, 7, 0, 0, false, false, null), // Bolt
-                this.ItemHelper.CreateWeapon(46, ItemGroups.Bows, 7, 1, 0, false, false, null), // Bolt +1
-                this.ItemHelper.CreateWeapon(47, ItemGroups.Bows, 7, 2, 0, false, false, null), // Bolt +2
-
-                this.ItemHelper.CreateWeapon(53, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
-                this.ItemHelper.CreateWeapon(54, ItemGroups.Bows, 15, 1, 0, false, false, null), // Arrow +1
-                this.ItemHelper.CreateWeapon(55, ItemGroups.Bows, 15, 2, 0, false, false, null), // Arrow +2
-
-                this.ItemHelper.CreateWeapon(56, ItemGroups.Staff, 4, 3, 1, true, false, null), // Gordon Staff +3+Luck+4
-                this.ItemHelper.CreateWeapon(58, ItemGroups.Staff, 5, 3, 1, true, false, null), // Legendary Staff +3+Luck+4
-                this.ItemHelper.CreateWeapon(59, ItemGroups.Shields, 14, 3, 2, true, false, null), // Legendary Shield +3+Luck+5
-
-                this.ItemHelper.CreateScroll(61, 4), // Scroll of Flame
-                this.ItemHelper.CreateScroll(62, 7), // Scroll of Twister
+                this.ItemHelper.CreateWeapon(48, ItemGroups.Staff, 4, 3, 1, true, false, null), // Gordon Staff +3+Luck+4
+                this.ItemHelper.CreateWeapon(50, ItemGroups.Staff, 5, 3, 1, true, false, null), // Legendary Staff +3+Luck+4
+                this.ItemHelper.CreateWeapon(52, ItemGroups.Shields, 14, 3, 2, true, false, null), // Legendary Shield +3+Luck+5
             };
 
             return this.CreateMerchantStore(itemList);

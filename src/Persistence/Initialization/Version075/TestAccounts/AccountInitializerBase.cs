@@ -265,15 +265,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.TestAccounts
             inventory.Items.Add(this.CreateJewelOfSoul(25));
             inventory.Items.Add(this.CreateJewelOfSoul(26));
             inventory.Items.Add(this.CreateJewelOfSoul(27));
-            inventory.Items.Add(this.CreateJewelOfChaos(36));
-            inventory.Items.Add(this.CreateJewelOfChaos(37));
-            inventory.Items.Add(this.CreateJewelOfChaos(38));
-            inventory.Items.Add(this.CreateJewelOfChaos(39));
-            inventory.Items.Add(this.CreateJewelOfChaos(40));
-            inventory.Items.Add(this.CreateJewelOfChaos(41));
-            inventory.Items.Add(this.CreateJewelOfChaos(42));
-            inventory.Items.Add(this.CreateJewelOfChaos(43));
-            inventory.Items.Add(this.CreateJewelOfChaos(44));
+            inventory.Items.Add(this.CreateJewelOfChaos(28));
+            inventory.Items.Add(this.CreateJewelOfChaos(29));
+            inventory.Items.Add(this.CreateJewelOfChaos(30));
+            inventory.Items.Add(this.CreateJewelOfChaos(31));
+            inventory.Items.Add(this.CreateJewelOfChaos(32));
+            inventory.Items.Add(this.CreateJewelOfChaos(33));
+            inventory.Items.Add(this.CreateJewelOfChaos(34));
+            inventory.Items.Add(this.CreateJewelOfChaos(35));
         }
 
         /// <summary>
@@ -453,7 +452,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.TestAccounts
         protected Item CreateArrows(byte itemSlot)
         {
             var arrows = this.Context.CreateNew<Item>();
-            arrows.Definition = this.GameConfiguration.Items.First(def => def.Group == 4 && def.Number == 15); // short bow
+            arrows.Definition = this.GameConfiguration.Items.First(def => def.Group == 4 && def.Number == 15);
             arrows.Durability = 255;
             arrows.ItemSlot = itemSlot;
             return arrows;
