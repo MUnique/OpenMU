@@ -1672,7 +1672,7 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>Byte</Type>
           <Name>MapNumber</Name>
         </Field>
         <Field>

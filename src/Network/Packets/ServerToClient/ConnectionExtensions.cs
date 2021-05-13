@@ -1892,7 +1892,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Is sent by the server when: The map was changed on the server side.
         /// Causes reaction on client side: The game client changes to the specified map and coordinates.
         /// </remarks>
-        public static void SendMapChanged075(this IConnection connection, ushort @mapNumber, byte @positionX, byte @positionY, byte @rotation)
+        public static void SendMapChanged075(this IConnection connection, byte @mapNumber, byte @positionX, byte @positionY, byte @rotation)
         {
             using var writer = connection.StartWriteMapChanged075();
             var packet = writer.Packet;

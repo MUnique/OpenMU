@@ -4774,10 +4774,10 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the map number.
         /// </summary>
-        public ushort MapNumber
+        public byte MapNumber
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => this.data[4];
+            set => this.data[4] = value;
         }
 
         /// <summary>

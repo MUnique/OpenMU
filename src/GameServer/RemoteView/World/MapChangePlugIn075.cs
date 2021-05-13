@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.World;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
@@ -14,7 +13,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// <summary>
     /// The default implementation of the <see cref="IMapChangePlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    [PlugIn("MapChangePlugIn 0.75", "The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.")]
+    [PlugIn(nameof(MapChangePlugIn075), "The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("88195844-06C7-4EDA-8501-8B75A8B4B3F4")]
     [MaximumClient(0, 89, ClientLanguage.Invariant)]
     public class MapChangePlugIn075 : IMapChangePlugIn
@@ -35,7 +34,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 return;
             }
 
-            var mapNumber = this.player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
+            var mapNumber = (byte)this.player.SelectedCharacter.CurrentMap.Number;
             var position = this.player.IsWalking ? this.player.WalkTarget : this.player.Position;
 
             this.player.Connection?.SendMapChanged075(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte());
