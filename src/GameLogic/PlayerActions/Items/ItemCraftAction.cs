@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
 
         private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)
         {
-            if (crafting.ItemCraftingHandlerClassName != null)
+            if (!string.IsNullOrWhiteSpace(crafting.ItemCraftingHandlerClassName))
             {
                 var type = Type.GetType(crafting.ItemCraftingHandlerClassName);
                 if (type != null)
