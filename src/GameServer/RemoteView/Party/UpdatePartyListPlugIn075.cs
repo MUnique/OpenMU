@@ -1,4 +1,4 @@
-﻿// <copyright file="UpdatePartyListPlugIn.cs" company="MUnique">
+﻿// <copyright file="UpdatePartyListPlugIn075.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,18 +14,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
     /// <summary>
     /// The default implementation of the <see cref="IUpdatePartyListPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    [PlugIn(nameof(UpdatePartyListPlugIn), "The default implementation of the IUpdatePartyListPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("bf880a4b-f4f6-41f0-adff-6eab0e99d985")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
-    public class UpdatePartyListPlugIn : IUpdatePartyListPlugIn
+    [PlugIn(nameof(UpdatePartyListPlugIn075), "The default implementation of the IUpdatePartyListPlugIn which is forwarding everything to the game client with specific data packets.")]
+    [Guid("125303BA-9614-45CE-A0C5-A82F1535367A")]
+    [MaximumClient(0, 89, ClientLanguage.Invariant)]
+    public class UpdatePartyListPlugIn075 : IUpdatePartyListPlugIn
     {
         private readonly RemotePlayer player;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdatePartyListPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="UpdatePartyListPlugIn075"/> class.
         /// </summary>
         /// <param name="player">The player.</param>
-        public UpdatePartyListPlugIn(RemotePlayer player) => this.player = player;
+        public UpdatePartyListPlugIn075(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
         public void UpdatePartyList()
@@ -39,8 +39,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
 
             var partyList = party.PartyList;
             var partyListCount = partyList.Count;
-            using var writer = connection.StartSafeWrite(PartyList.HeaderType, PartyList.GetRequiredSize(partyListCount));
-            var packet = new PartyList(writer.Span)
+            using var writer = connection.StartSafeWrite(PartyList075.HeaderType, PartyList075.GetRequiredSize(partyListCount));
+            var packet = new PartyList075(writer.Span)
             {
                 Count = (byte)partyListCount,
             };
@@ -54,8 +54,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
                 partyMemberBlock.MapId = (byte)(partyMember.CurrentMap?.MapId ?? 0);
                 partyMemberBlock.PositionX = partyMember.Position.X;
                 partyMemberBlock.PositionY = partyMember.Position.Y;
-                partyMemberBlock.CurrentHealth = partyMember.CurrentHealth;
-                partyMemberBlock.MaximumHealth = partyMember.MaximumHealth;
             }
 
             writer.Commit();

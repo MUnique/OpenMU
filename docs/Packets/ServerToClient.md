@@ -63,6 +63,7 @@
   * [C1 3F 3 - PlayerShopClosed (by server)](C1-3F-3-PlayerShopClosed_by-server.md)
   * [C1 40 - PartyRequest (by server)](C1-40-PartyRequest_by-server.md)
   * [C1 42 01 - PartyList (by server)](C1-42-01-PartyList_by-server.md)
+  * [C1 42 01 - PartyList075 (by server)](C1-42-01-PartyList075_by-server.md)
   * [C1 43 - RemovePartyMember (by server)](C1-43-RemovePartyMember_by-server.md)
   * [C1 44 - PartyHealthUpdate (by server)](C1-44-PartyHealthUpdate_by-server.md)
   * [C1 50 - GuildJoinRequest (by server)](C1-50-GuildJoinRequest_by-server.md)

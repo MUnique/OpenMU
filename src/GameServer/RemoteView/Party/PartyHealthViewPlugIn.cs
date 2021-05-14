@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
     using MUnique.OpenMU.GameLogic.Views.Party;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -16,6 +17,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Party
     /// </summary>
     [PlugIn("Party View", "The default implementation of the party view which is forwarding everything to the game client which specific data packets.")]
     [Guid("CEE58BCB-FB8C-4AEB-9FC8-5D3A11FA7C03")]
+    [MinimumClient(0, 90, ClientLanguage.Invariant)]
     public class PartyHealthViewPlugIn : IPartyHealthViewPlugIn
     {
         private readonly RemotePlayer player;

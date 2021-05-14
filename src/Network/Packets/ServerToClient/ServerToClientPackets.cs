@@ -2590,6 +2590,166 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: A player joined a party or requested the current party list by opening the party dialog.
+    /// Causes reaction on client side: The party list is updated.
+    /// </summary>
+    public readonly ref struct PartyList075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyList075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PartyList075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyList075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PartyList075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x42;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the count.
+        /// </summary>
+        public byte Count
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="PartyMember"/> of the specified index.
+        /// </summary>
+        public PartyMember this[int index] => new PartyMember(this.data.Slice(5 + (index * PartyMember.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyList075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PartyList075(Span<byte> packet) => new PartyList075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PartyList075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PartyList075 packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="PartyMember"/>.
+        /// </summary>
+        /// <param name="membersCount">The count of <see cref="PartyMember"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int membersCount) => membersCount * PartyMember.Length + 5;
+
+
+    /// <summary>
+    /// Data about a party member..
+    /// </summary>
+    public readonly ref struct PartyMember
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyMember"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PartyMember(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 14;
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => this.data.ExtractString(0, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(0, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        public byte Index
+        {
+            get => this.data[10];
+            set => this.data[10] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the map id.
+        /// </summary>
+        public byte MapId
+        {
+            get => this.data[11];
+            set => this.data[11] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position x.
+        /// </summary>
+        public byte PositionX
+        {
+            get => this.data[12];
+            set => this.data[12] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position y.
+        /// </summary>
+        public byte PositionY
+        {
+            get => this.data[13];
+            set => this.data[13] = value;
+        }
+    }
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: A party member got removed from a party in which the player is in.
     /// Causes reaction on client side: The party member with the specified index is removed from the party list on the user interface.
     /// </summary>
