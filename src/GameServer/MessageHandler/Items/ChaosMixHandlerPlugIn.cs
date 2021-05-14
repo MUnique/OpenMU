@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     /// <summary>
     /// Handler for chaos mix packets.
     /// </summary>
-    [PlugIn("ChaosMixHandlerPlugIn", "Handler for chaos mix packets.")]
+    [PlugIn(nameof(ChaosMixHandlerPlugIn), "Handler for chaos mix packets.")]
     [Guid("0693e102-0adc-41e4-b0d4-ce22687b6dbb")]
     internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
     {
@@ -31,8 +31,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
         {
             ChaosMachineMixRequest message = packet;
             var socketSlot = packet.Length > 4 ? message.SocketSlot : (byte)0;
-
-            this.mixAction.MixItems(player, (byte)message.MixType, socketSlot);
+            var mixType = packet.Length > 3 ? message.MixType : ChaosMachineMixRequest.ChaosMachineMixType.ChaosWeapon;
+            this.mixAction.MixItems(player, (byte)mixType, socketSlot);
         }
     }
 }
