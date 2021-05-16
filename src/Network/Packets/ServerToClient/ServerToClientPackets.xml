@@ -3160,6 +3160,28 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
+      <SubCode>07</SubCode>
+      <Name>PoisonDamage</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The character got damaged by being poisoned.</SentWhen>
+      <CausedReaction>Shows poison damage, colors the health bar green.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>HealthDamage</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ShieldDamage</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
       <SubCode>08</SubCode>
       <Name>HeroStateChanged</Name>
       <Length>7</Length>

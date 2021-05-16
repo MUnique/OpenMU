@@ -49,14 +49,21 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             {
                 var healthDamage = (ushort)System.Math.Min(0xFFFF, remainingHealthDamage);
                 var shieldDamage = (ushort)System.Math.Min(0xFFFF, remainingShieldDamage);
-                this.player.Connection?.SendObjectHit(
-                    this.operation,
-                    targetId,
-                    healthDamage,
-                    this.GetDamageKind(hitInfo.Attributes),
-                    hitInfo.Attributes.HasFlag(DamageAttributes.Double),
-                    hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
-                    shieldDamage);
+                if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison) && this.player == target)
+                {
+                    this.player.Connection?.SendPoisonDamage(healthDamage, shieldDamage);
+                }
+                else
+                {
+                    this.player.Connection?.SendObjectHit(
+                        this.operation,
+                        targetId,
+                        healthDamage,
+                        this.GetDamageKind(hitInfo.Attributes),
+                        hitInfo.Attributes.HasFlag(DamageAttributes.Double),
+                        hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
+                        shieldDamage);
+                }
 
                 remainingShieldDamage -= shieldDamage;
                 remainingHealthDamage -= healthDamage;

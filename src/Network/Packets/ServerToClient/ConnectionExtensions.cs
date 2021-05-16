@@ -675,6 +675,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="PoisonDamage" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The character got damaged by being poisoned.
+        /// Causes reaction on client side: Shows poison damage, colors the health bar green.
+        /// </remarks>
+        public static PoisonDamageThreadSafeWriter StartWritePoisonDamage(this IConnection connection)
+        {
+          return new PoisonDamageThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="HeroStateChanged" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2476,6 +2489,25 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static void SendCharacterCreationFailed(this IConnection connection)
         {
             using var writer = connection.StartWriteCharacterCreationFailed();
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="PoisonDamage" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="healthDamage">The health damage.</param>
+        /// <param name="shieldDamage">The shield damage.</param>
+        /// <remarks>
+        /// Is sent by the server when: The character got damaged by being poisoned.
+        /// Causes reaction on client side: Shows poison damage, colors the health bar green.
+        /// </remarks>
+        public static void SendPoisonDamage(this IConnection connection, ushort @healthDamage, ushort @shieldDamage)
+        {
+            using var writer = connection.StartWritePoisonDamage();
+            var packet = writer.Packet;
+            packet.HealthDamage = @healthDamage;
+            packet.ShieldDamage = @shieldDamage;
             writer.Commit();
         }
 
@@ -6126,6 +6158,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(CharacterCreationFailed.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="PoisonDamage"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct PoisonDamageThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PoisonDamageThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public PoisonDamageThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new PoisonDamage(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(PoisonDamage.Length).Slice(0, PoisonDamage.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public PoisonDamage Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="PoisonDamage" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(PoisonDamage.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

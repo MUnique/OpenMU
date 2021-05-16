@@ -115,6 +115,7 @@
   * [C3 F3 03 - CharacterInformation075 (by server)](C3-F3-03-CharacterInformation075_by-server.md)
   * [C1 F3 05 - CharacterLevelUpdate (by server)](C1-F3-05-CharacterLevelUpdate_by-server.md)
   * [C1 F3 06 - CharacterStatIncreaseResponse (by server)](C1-F3-06-CharacterStatIncreaseResponse_by-server.md)
+  * [C1 F3 07 - PoisonDamage (by server)](C1-F3-07-PoisonDamage_by-server.md)
   * [C1 F3 08 - HeroStateChanged (by server)](C1-F3-08-HeroStateChanged_by-server.md)
   * [C4 F3 10 - CharacterInventory (by server)](C4-F3-10-CharacterInventory_by-server.md)
   * [C1 F3 11 - SkillAdded (by server)](C1-F3-11-SkillAdded_by-server.md)
