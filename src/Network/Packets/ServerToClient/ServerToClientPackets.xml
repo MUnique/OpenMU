@@ -4530,7 +4530,7 @@
       </Fields>
     </Packet>
     <Packet>
-      <HeaderType>C1Header</HeaderType>
+      <HeaderType>C2Header</HeaderType>
       <Code>5A</Code>
       <Name>GuildInformations075</Name>
       <Direction>ServerToClient</Direction>
@@ -4576,6 +4576,34 @@
           </Fields>
         </Structure>
       </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>5C</Code>
+      <Name>SingleGuildInformation075</Name>
+      <Length>45</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a guild has been created. However, in OpenMU, we just send the GuildInformations075 message, because it works just the same.</SentWhen>
+      <CausedReaction>The players which belong to the guild are shown as guild players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>GuildId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>GuildName</Name>
+          <Length>8</Length>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Binary</Type>
+          <Name>Logo</Name>
+          <Length>32</Length>
+        </Field>
+      </Fields>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>

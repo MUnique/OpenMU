@@ -12961,14 +12961,14 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)data.Length;
+                header.Length = (ushort)data.Length;
             }
         }
 
         /// <summary>
         /// Gets the header type of this data packet.
         /// </summary>
-        public static byte HeaderType => 0xC1;
+        public static byte HeaderType => 0xC2;
 
         /// <summary>
         /// Gets the operation code of this data packet.
@@ -12978,7 +12978,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C2Header Header => new C2Header(this.data);
 
         /// <summary>
         /// Gets or sets the guild count.
@@ -13062,6 +13062,102 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             get => this.data.Slice(10, 32);
         }
     }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a guild has been created. However, in OpenMU, we just send the GuildInformations075 message, because it works just the same.
+    /// Causes reaction on client side: The players which belong to the guild are shown as guild players.
+    /// </summary>
+    public readonly ref struct SingleGuildInformation075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SingleGuildInformation075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SingleGuildInformation075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SingleGuildInformation075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private SingleGuildInformation075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x5C;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 45;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the guild id.
+        /// </summary>
+        public ushort GuildId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the guild name.
+        /// </summary>
+        public string GuildName
+        {
+            get => this.data.ExtractString(5, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(5, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the logo.
+        /// </summary>
+        public Span<byte> Logo
+        {
+            get => this.data.Slice(13, 32);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SingleGuildInformation075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator SingleGuildInformation075(Span<byte> packet) => new SingleGuildInformation075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SingleGuildInformation075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(SingleGuildInformation075 packet) => packet.data; 
     }
 
 

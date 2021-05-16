@@ -948,6 +948,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="SingleGuildInformation075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a guild has been created. However, in OpenMU, we just send the GuildInformations075 message, because it works just the same.
+        /// Causes reaction on client side: The players which belong to the guild are shown as guild players.
+        /// </remarks>
+        public static SingleGuildInformation075ThreadSafeWriter StartWriteSingleGuildInformation075(this IConnection connection)
+        {
+          return new SingleGuildInformation075ThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="VaultMoneyUpdate" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -3018,6 +3031,27 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             packet.GuildId = @guildId;
             packet.GuildType = @guildType;
             packet.AllianceGuildName = @allianceGuildName;
+            packet.GuildName = @guildName;
+            @logo.CopyTo(packet.Logo);
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="SingleGuildInformation075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="guildId">The guild id.</param>
+        /// <param name="guildName">The guild name.</param>
+        /// <param name="logo">The logo.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a guild has been created. However, in OpenMU, we just send the GuildInformations075 message, because it works just the same.
+        /// Causes reaction on client side: The players which belong to the guild are shown as guild players.
+        /// </remarks>
+        public static void SendSingleGuildInformation075(this IConnection connection, ushort @guildId, string @guildName, Span<byte> @logo)
+        {
+            using var writer = connection.StartWriteSingleGuildInformation075();
+            var packet = writer.Packet;
+            packet.GuildId = @guildId;
             packet.GuildName = @guildName;
             @logo.CopyTo(packet.Logo);
             writer.Commit();
@@ -7205,6 +7239,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(GuildInformation.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="SingleGuildInformation075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct SingleGuildInformation075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SingleGuildInformation075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public SingleGuildInformation075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new SingleGuildInformation075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(SingleGuildInformation075.Length).Slice(0, SingleGuildInformation075.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public SingleGuildInformation075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="SingleGuildInformation075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(SingleGuildInformation075.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

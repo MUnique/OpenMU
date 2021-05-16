@@ -1,4 +1,4 @@
-# C1 5A - GuildInformations075 (by server)
+# C2 5A - GuildInformations075 (by server)
 
 ## Is sent when
 
@@ -12,9 +12,9 @@ The players which belong to the guild are shown as guild players.
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |      | Packet header - length of the packet |
-| 2 | 1 |    Byte   | 0x5A  | Packet header - packet type identifier |
+| 0 | 1 |   Byte   | 0xC2  | [Packet type](PacketTypes.md) |
+| 1 | 2 |    Short   |      | Packet header - length of the packet |
+| 3 | 1 |    Byte   | 0x5A  | Packet header - packet type identifier |
 | 4 | 1 | Byte |  | GuildCount |
 | 5 | GuildInfo.Length * GuildCount | Array of GuildInfo |  | Guilds |
 
