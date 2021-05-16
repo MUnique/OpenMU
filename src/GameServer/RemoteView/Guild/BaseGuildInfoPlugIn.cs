@@ -17,7 +17,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
     /// <typeparam name="T">The type of the actual <see cref="IShowGuildInfoPlugIn"/>. Required, so there is one cache per type.</typeparam>
     // ReSharper disable once UnusedTypeParameter we just use it to get type specific static fields.
     public abstract class BaseGuildInfoPlugIn<T>
-        where T : IShowGuildInfoPlugIn
     {
         /// <summary>
         /// The cache for already serialized guilds. This data doesn't change, but is requested often.

@@ -805,6 +805,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="GuildCreateRequest075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: When a player wants to create a guild.
+        /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
+        /// </remarks>
+        public static GuildCreateRequest075ThreadSafeWriter StartWriteGuildCreateRequest075(this IConnection connection)
+        {
+          return new GuildCreateRequest075ThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="GuildMasterAnswer" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2354,6 +2367,25 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static void SendGuildCreateRequest(this IConnection connection, string @guildName, Span<byte> @guildEmblem)
         {
             using var writer = connection.StartWriteGuildCreateRequest();
+            var packet = writer.Packet;
+            packet.GuildName = @guildName;
+            @guildEmblem.CopyTo(packet.GuildEmblem);
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="GuildCreateRequest075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="guildName">The guild name.</param>
+        /// <param name="guildEmblem">The guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.</param>
+        /// <remarks>
+        /// Is sent by the client when: When a player wants to create a guild.
+        /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
+        /// </remarks>
+        public static void SendGuildCreateRequest075(this IConnection connection, string @guildName, Span<byte> @guildEmblem)
+        {
+            using var writer = connection.StartWriteGuildCreateRequest075();
             var packet = writer.Packet;
             packet.GuildName = @guildName;
             @guildEmblem.CopyTo(packet.GuildEmblem);
@@ -5926,6 +5958,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.Advance(GuildCreateRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="GuildCreateRequest075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct GuildCreateRequest075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildCreateRequest075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public GuildCreateRequest075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new GuildCreateRequest075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildCreateRequest075.Length).Slice(0, GuildCreateRequest075.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public GuildCreateRequest075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="GuildCreateRequest075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(GuildCreateRequest075.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

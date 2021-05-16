@@ -1681,6 +1681,30 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>55</Code>
+      <Name>GuildCreateRequest075</Name>
+      <Length>43</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>When a player wants to create a guild.</SentWhen>
+      <CausedReaction>The guild is created and the player is set as the new guild master of the guild.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>GuildName</Name>
+          <Length>8</Length>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Binary</Type>
+          <Name>GuildEmblem</Name>
+          <Length>32</Length>
+          <Description>The guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>54</Code>
       <Name>GuildMasterAnswer</Name>
       <Length>4</Length>

@@ -4194,6 +4194,68 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>52</Code>
+      <Name>GuildList075</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a game client requested the list of players of his guild, which is usually the case when the player opens the guild dialog at the game client.</SentWhen>
+      <CausedReaction>The list of player is available at the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>IsInGuild</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>GuildMemberCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>TotalScore</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>CurrentScore</Name>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Structure[]</Type>
+          <TypeName>GuildMember</TypeName>
+          <Name>Members</Name>
+          <ItemCountField>GuildMemberCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>GuildMember</Name>
+          <Description>Contains the data of one guild member.</Description>
+          <Length>12</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>10</Index>
+              <Type>Byte</Type>
+              <Name>ServerId</Name>
+            </Field>
+            <Field>
+              <Index>11</Index>
+              <Type>Byte</Type>
+              <Name>ServerId2</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>53</Code>
       <Name>GuildKickResponse</Name>
@@ -4388,6 +4450,47 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>5B</Code>
+      <Name>AssignCharacterToGuild075</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server wants to visibly assign a player to a guild, e.g. when two players met each other and one of them is a guild member.</SentWhen>
+      <CausedReaction>The players which belong to the guild are shown as guild players. If the game client doesn't met a player of this guild yet, it will send another request to get the guild information.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>PlayerCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>GuildMemberRelation</TypeName>
+          <Name>Members</Name>
+          <ItemCountField>PlayerCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>GuildMemberRelation</Name>
+          <Description>Relation between a guild and a member.</Description>
+          <Length>4</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>PlayerId</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>GuildId</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>66</Code>
       <Name>GuildInformation</Name>
@@ -4425,6 +4528,54 @@
           <Length>32</Length>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>5A</Code>
+      <Name>GuildInformations075</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A player went into the scope of one or more guild members.</SentWhen>
+      <CausedReaction>The players which belong to the guild are shown as guild players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>GuildCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>GuildInfo</TypeName>
+          <Name>Guilds</Name>
+          <ItemCountField>GuildCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>GuildInfo</Name>
+          <Description>Information about one guild.</Description>
+          <Length>42</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>GuildId</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>String</Type>
+              <Name>GuildName</Name>
+              <Length>8</Length>
+            </Field>
+            <Field>
+              <Index>10</Index>
+              <Type>Binary</Type>
+              <Name>Logo</Name>
+              <Length>32</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>

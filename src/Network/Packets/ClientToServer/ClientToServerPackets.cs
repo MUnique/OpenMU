@@ -6305,6 +6305,93 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
+    /// Is sent by the client when: When a player wants to create a guild.
+    /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
+    /// </summary>
+    public readonly ref struct GuildCreateRequest075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildCreateRequest075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildCreateRequest075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildCreateRequest075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildCreateRequest075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x55;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 43;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the guild name.
+        /// </summary>
+        public string GuildName
+        {
+            get => this.data.ExtractString(3, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.
+        /// </summary>
+        public Span<byte> GuildEmblem
+        {
+            get => this.data.Slice(11, 32);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildCreateRequest075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildCreateRequest075(Span<byte> packet) => new GuildCreateRequest075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildCreateRequest075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildCreateRequest075 packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the client when: The player has the dialog of the guild master NPC opened and decided about its next step.
     /// Causes reaction on server side: It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.
     /// </summary>
