@@ -3068,7 +3068,7 @@
             </Field>
             <Field>
               <Index>11</Index>
-              <Type>ShortLittleEndian</Type>
+              <Type>ShortBigEndian</Type>
               <Name>Level</Name>
             </Field>
             <Field>

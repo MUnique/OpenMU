@@ -29,7 +29,7 @@ Length: 24 Bytes
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 | Byte |  | SlotIndex |
 | 1 | 10 | String |  | Name |
-| 11 | 2 | ShortLittleEndian |  | Level |
+| 11 | 2 | ShortBigEndian |  | Level |
 | 13 | 4 bit | CharacterStatus |  | Status |
 | 13 << 4 | 1 bit | Boolean |  | IsItemBlockActive |
 | 14 | 9 | Binary |  | Appearance |

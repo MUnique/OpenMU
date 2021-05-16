@@ -8729,8 +8729,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public ushort Level
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(11));
-            set => WriteUInt16LittleEndian(this.data.Slice(11), value);
+            get => ReadUInt16BigEndian(this.data.Slice(11));
+            set => WriteUInt16BigEndian(this.data.Slice(11), value);
         }
 
         /// <summary>
