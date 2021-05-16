@@ -2,9 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel;
-using MUnique.OpenMU.GameLogic.PlayerActions;
-
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
@@ -14,10 +11,12 @@ namespace MUnique.OpenMU.GameLogic
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.AttributeSystem;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.Character;
@@ -624,27 +623,54 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="gate">The gate to which the player should be moved.</param>
         public void WarpTo(ExitGate gate)
         {
-            var currentMap = this.CurrentMap;
-            if (currentMap is null)
+            if (!this.TryRemoveFromCurrentMap())
             {
                 return;
             }
 
-            currentMap.Remove(this);
-            this.IsAlive = false;
-            this.IsTeleporting = false;
-            this.walker.Stop();
-            this.observerToWorldViewAdapter.ClearObservingObjectsList();
-            this.SelectedCharacter!.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
-            this.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
-            this.SelectedCharacter.CurrentMap = gate.Map;
-            this.Rotation = gate.Direction;
+            this.PlaceAtGate(gate);
             this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
             this.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChange();
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
             // the map and is ready to receive the new meet player/monster etc.
             // Then ClientReadyAfterMapChange is called.
+        }
+
+        /// <summary>
+        /// Respawns the player to the specified gate.
+        /// </summary>
+        /// <param name="gate">The gate at which the player should be respawned.</param>
+        public void RespawnAt(ExitGate gate)
+        {
+            if (!this.TryRemoveFromCurrentMap())
+            {
+                return;
+            }
+
+            this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
+            this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
+            this.PlaceAtGate(gate);
+
+            if (this.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>() is { } respawnPlugIn)
+            {
+                // Older clients use separate packet for the respawn, while newer don't.
+                // It requires a slightly different logic.
+                this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter!.CurrentMap!.Number.ToUnsigned());
+                respawnPlugIn.Respawn();
+                this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
+                this.IsAlive = true;
+                this.CurrentMap!.Add(this);
+            }
+            else
+            {
+                this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
+                this.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChange();
+
+                // after this, the Client will send us a F3 12 packet, to tell us it loaded
+                // the map and is ready to receive the new meet player/monster etc.
+                // Then ClientReadyAfterMapChange is called.
+            }
         }
 
         /// <summary>
@@ -1009,6 +1035,31 @@ namespace MUnique.OpenMU.GameLogic
             throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
         }
 
+        private bool TryRemoveFromCurrentMap()
+        {
+            var currentMap = this.CurrentMap;
+            if (currentMap is null)
+            {
+                return false;
+            }
+
+            currentMap.Remove(this);
+            this.IsAlive = false;
+            this.IsTeleporting = false;
+            this.walker.Stop();
+            this.observerToWorldViewAdapter.ClearObservingObjectsList();
+
+            return true;
+        }
+
+        private void PlaceAtGate(ExitGate gate)
+        {
+            this.SelectedCharacter!.PositionX = (byte)Rand.NextInt(gate.X1, gate.X2);
+            this.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
+            this.SelectedCharacter.CurrentMap = gate.Map;
+            this.Rotation = gate.Direction;
+        }
+
         private void RemoveFromCurrentMap()
         {
             if (this.CurrentMap != null)
@@ -1141,7 +1192,7 @@ namespace MUnique.OpenMU.GameLogic
               {
                   await Task.Delay(3000, this.respawnAfterDeathToken).ConfigureAwait(false);
                   this.SetReclaimableAttributesToMaximum();
-                  this.WarpTo(this.GetSpawnGateOfCurrentMap());
+                  this.RespawnAt(this.GetSpawnGateOfCurrentMap());
               },
               this.respawnAfterDeathToken);
 

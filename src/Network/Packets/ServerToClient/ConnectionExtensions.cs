@@ -675,6 +675,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="RespawnAfterDeath075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The character respawned after death.
+        /// Causes reaction on client side: The character respawns with the specified attributes at the specified map.
+        /// </remarks>
+        public static RespawnAfterDeath075ThreadSafeWriter StartWriteRespawnAfterDeath075(this IConnection connection)
+        {
+          return new RespawnAfterDeath075ThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="PoisonDamage" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2489,6 +2502,37 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static void SendCharacterCreationFailed(this IConnection connection)
         {
             using var writer = connection.StartWriteCharacterCreationFailed();
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="RespawnAfterDeath075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="positionX">The position x.</param>
+        /// <param name="positionY">The position y.</param>
+        /// <param name="mapNumber">The map number.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="currentHealth">The current health.</param>
+        /// <param name="currentMana">The current mana.</param>
+        /// <param name="experience">The experience.</param>
+        /// <param name="money">The money.</param>
+        /// <remarks>
+        /// Is sent by the server when: The character respawned after death.
+        /// Causes reaction on client side: The character respawns with the specified attributes at the specified map.
+        /// </remarks>
+        public static void SendRespawnAfterDeath075(this IConnection connection, byte @positionX, byte @positionY, byte @mapNumber, byte @direction, ushort @currentHealth, ushort @currentMana, uint @experience, uint @money)
+        {
+            using var writer = connection.StartWriteRespawnAfterDeath075();
+            var packet = writer.Packet;
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.MapNumber = @mapNumber;
+            packet.Direction = @direction;
+            packet.CurrentHealth = @currentHealth;
+            packet.CurrentMana = @currentMana;
+            packet.Experience = @experience;
+            packet.Money = @money;
             writer.Commit();
         }
 
@@ -6158,6 +6202,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(CharacterCreationFailed.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="RespawnAfterDeath075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct RespawnAfterDeath075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RespawnAfterDeath075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public RespawnAfterDeath075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new RespawnAfterDeath075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(RespawnAfterDeath075.Length).Slice(0, RespawnAfterDeath075.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public RespawnAfterDeath075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="RespawnAfterDeath075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(RespawnAfterDeath075.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 
