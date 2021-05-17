@@ -33,7 +33,7 @@ Contains the data of an NPC.
 | 33 | 1 | Byte |  | TargetPositionY |
 | 34 | 4 bit | Byte |  | Rotation |
 | 34 << 0 | 4 bit | CharacterHeroState |  | HeroState |
-| 35 | 1 | Byte |  | EffectCount; Defines the number of effects which would be sent after this field. This is currently not supported. |
+| 35 | 1 | Byte |  | EffectCount; Defines the number of effects which would be sent after this field. |
 | 36 | EffectId.Length * EffectCount | Array of EffectId |  | Effects |
 
 ### CharacterHeroState Enum

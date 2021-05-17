@@ -1273,6 +1273,22 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>1B</Code>
+      <Name>MagicEffectCancelRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.</SentWhen>
+      <CausedReaction>The effect is cancelled and an update is sent to the player and all surrounding players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>1E</Code>
       <Name>AreaSkill</Name>
@@ -1722,6 +1738,22 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>61</Code>
+      <Name>GuildWarResponse</Name>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A guild master requested a guild war against another guild.</SentWhen>
+      <CausedReaction>If the guild master confirms, the war is declared.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Accepted</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>66</Code>
       <Name>GuildInfoRequest</Name>
       <Length>6</Length>
@@ -2000,6 +2032,61 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A7</Code>
+      <Name>PetCommandRequest</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to command its equipped pet (raven).</SentWhen>
+      <CausedReaction></CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>PetType</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>PetCommandMode</TypeName>
+          <Name>CommandMode</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>A9</Code>
+      <Name>PetInfoRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player hovers over a pet. The client sends this request to retrieve information (level, experience) of the pet (dark raven, horse).</SentWhen>
+      <CausedReaction>The server sends a PetInfoResponse.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>PetType</TypeName>
+          <Name>Pet</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>StorageType</TypeName>
+          <Name>Storage</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F6</Code>
       <SubCode>0A</SubCode>
@@ -2230,6 +2317,89 @@
           <Name>Red</Name>
           <Description>This state is only sent to the client. After some seconds the client is changing back to normal Unchecked.</Description>
           <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>StorageType</Name>
+      <Description>Describes the type of storage.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Inventory</Name>
+          <Description>The inventory of the player.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Vault</Name>
+          <Description>The vault of the player.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>TradeOwn</Name>
+          <Description>The own trading storage.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>TradeOther</Name>
+          <Description>The trading storage of the other player.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Crafting</Name>
+          <Description>The crafting storage of the player.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PersonalShop</Name>
+          <Description>The shop storage of another player.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>InventoryPetSlot</Name>
+          <Description>The inventory slot of the pet. That's used when a pet leveled up.</Description>
+          <Value>254</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>PetType</Name>
+      <Description>Describes the type of pet.</Description>
+      <Values>
+        <EnumValue>
+          <Name>DarkRaven</Name>
+          <Description>The dark raven pet.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DarkHorse</Name>
+          <Description>The dark horse pet.</Description>
+          <Value>1</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>PetCommandMode</Name>
+      <Description>Describes the pet command mode.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Normal</Name>
+          <Description>The pet is in a normal mode, where it doesn't attack.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>AttackRandom</Name>
+          <Description>The pet attacks random targets.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>AttackWithOwner</Name>
+          <Description>The pet attacks the same targets as the owner.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>AttackTarget</Name>
+          <Description>The pet attacks a specific target until it's dead.</Description>
+          <Value>3</Value>
         </EnumValue>
       </Values>
     </Enum>

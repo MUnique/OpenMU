@@ -623,6 +623,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="MagicEffectCancelRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
+        /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
+        /// </remarks>
+        public static MagicEffectCancelRequestThreadSafeWriter StartWriteMagicEffectCancelRequest(this IConnection connection)
+        {
+          return new MagicEffectCancelRequestThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="AreaSkill" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -831,6 +844,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="GuildWarResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: A guild master requested a guild war against another guild.
+        /// Causes reaction on server side: If the guild master confirms, the war is declared.
+        /// </remarks>
+        public static GuildWarResponseThreadSafeWriter StartWriteGuildWarResponse(this IConnection connection)
+        {
+          return new GuildWarResponseThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="GuildInfoRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -984,6 +1010,32 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static LegacyQuestStateSetRequestThreadSafeWriter StartWriteLegacyQuestStateSetRequest(this IConnection connection)
         {
           return new LegacyQuestStateSetRequestThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="PetCommandRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player wants to command its equipped pet (raven).
+        /// Causes reaction on server side: 
+        /// </remarks>
+        public static PetCommandRequestThreadSafeWriter StartWritePetCommandRequest(this IConnection connection)
+        {
+          return new PetCommandRequestThreadSafeWriter(connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="PetInfoRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player hovers over a pet. The client sends this request to retrieve information (level, experience) of the pet (dark raven, horse).
+        /// Causes reaction on server side: The server sends a PetInfoResponse.
+        /// </remarks>
+        public static PetInfoRequestThreadSafeWriter StartWritePetInfoRequest(this IConnection connection)
+        {
+          return new PetInfoRequestThreadSafeWriter(connection);
         }
 
         /// <summary>
@@ -2068,6 +2120,23 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="MagicEffectCancelRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillId">The skill id.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
+        /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
+        /// </remarks>
+        public static void SendMagicEffectCancelRequest(this IConnection connection, ushort @skillId)
+        {
+            using var writer = connection.StartWriteMagicEffectCancelRequest();
+            var packet = writer.Packet;
+            packet.SkillId = @skillId;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="AreaSkill" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2410,6 +2479,23 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="GuildWarResponse" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="accepted">The accepted.</param>
+        /// <remarks>
+        /// Is sent by the client when: A guild master requested a guild war against another guild.
+        /// Causes reaction on server side: If the guild master confirms, the war is declared.
+        /// </remarks>
+        public static void SendGuildWarResponse(this IConnection connection, bool @accepted)
+        {
+            using var writer = connection.StartWriteGuildWarResponse();
+            var packet = writer.Packet;
+            packet.Accepted = @accepted;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="GuildInfoRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2614,6 +2700,48 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             var packet = writer.Packet;
             packet.QuestNumber = @questNumber;
             packet.NewState = @newState;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="PetCommandRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="petType">The pet type.</param>
+        /// <param name="commandMode">The command mode.</param>
+        /// <param name="targetId">The target id.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player wants to command its equipped pet (raven).
+        /// Causes reaction on server side: 
+        /// </remarks>
+        public static void SendPetCommandRequest(this IConnection connection, byte @petType, PetCommandMode @commandMode, ushort @targetId)
+        {
+            using var writer = connection.StartWritePetCommandRequest();
+            var packet = writer.Packet;
+            packet.PetType = @petType;
+            packet.CommandMode = @commandMode;
+            packet.TargetId = @targetId;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="PetInfoRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="pet">The pet.</param>
+        /// <param name="storage">The storage.</param>
+        /// <param name="itemSlot">The item slot.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player hovers over a pet. The client sends this request to retrieve information (level, experience) of the pet (dark raven, horse).
+        /// Causes reaction on server side: The server sends a PetInfoResponse.
+        /// </remarks>
+        public static void SendPetInfoRequest(this IConnection connection, PetType @pet, StorageType @storage, byte @itemSlot)
+        {
+            using var writer = connection.StartWritePetInfoRequest();
+            var packet = writer.Packet;
+            packet.Pet = @pet;
+            packet.Storage = @storage;
+            packet.ItemSlot = @itemSlot;
             writer.Commit();
         }
 
@@ -5229,6 +5357,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="MagicEffectCancelRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct MagicEffectCancelRequestThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MagicEffectCancelRequestThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public MagicEffectCancelRequestThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new MagicEffectCancelRequest(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(MagicEffectCancelRequest.Length).Slice(0, MagicEffectCancelRequest.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public MagicEffectCancelRequest Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="MagicEffectCancelRequest" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(MagicEffectCancelRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="AreaSkill"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct AreaSkillThreadSafeWriter
@@ -6077,6 +6258,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="GuildWarResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct GuildWarResponseThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarResponseThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public GuildWarResponseThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new GuildWarResponse(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarResponse.Length).Slice(0, GuildWarResponse.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public GuildWarResponse Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="GuildWarResponse" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(GuildWarResponse.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="GuildInfoRequest"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct GuildInfoRequestThreadSafeWriter
@@ -6700,6 +6934,112 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.Advance(LegacyQuestStateSetRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="PetCommandRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct PetCommandRequestThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetCommandRequestThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public PetCommandRequestThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new PetCommandRequest(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(PetCommandRequest.Length).Slice(0, PetCommandRequest.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public PetCommandRequest Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="PetCommandRequest" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(PetCommandRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="PetInfoRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct PetInfoRequestThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetInfoRequestThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public PetInfoRequestThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new PetInfoRequest(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(PetInfoRequest.Length).Slice(0, PetInfoRequest.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public PetInfoRequest Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="PetInfoRequest" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(PetInfoRequest.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

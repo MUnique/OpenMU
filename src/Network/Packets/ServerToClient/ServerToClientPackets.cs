@@ -746,7 +746,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Gets or sets defines the number of effects which would be sent after this field. This is currently not supported.
+        /// Gets or sets defines the number of effects which would be sent after this field.
         /// </summary>
         public byte EffectCount
         {
@@ -1406,6 +1406,445 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         {
             get => this.data.Slice(8).GetByteValue(4, 4);
             set => this.data.Slice(8).SetByteValue(value, 4, 4);
+        }
+    }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: One or more summoned monsters got into the observed scope of the player.
+    /// Causes reaction on client side: The client adds the monsters to the shown map.
+    /// </summary>
+    public readonly ref partial struct AddSummonedMonstersToScope
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddSummonedMonstersToScope"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AddSummonedMonstersToScope(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddSummonedMonstersToScope"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AddSummonedMonstersToScope(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1F;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new C2Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the monster count.
+        /// </summary>
+        public byte MonsterCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AddSummonedMonstersToScope"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AddSummonedMonstersToScope(Span<byte> packet) => new AddSummonedMonstersToScope(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AddSummonedMonstersToScope"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AddSummonedMonstersToScope packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="SummonedMonsterData"/> and it's size.
+        /// </summary>
+        /// <param name="summonedMonstersCount">The count of <see cref="SummonedMonsterData"/> from which the size will be calculated.</param>
+        /// <param name="structLength">The length of <see cref="SummonedMonsterData"/> from which the size will be calculated.</param>
+          public static int GetRequiredSize(int summonedMonstersCount, int structLength) => summonedMonstersCount * structLength + 5;
+
+
+    /// <summary>
+    /// Contains the data of an NPC..
+    /// </summary>
+    public readonly ref struct SummonedMonsterData
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SummonedMonsterData"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SummonedMonsterData(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public ushort Id
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(0));
+            set => WriteUInt16BigEndian(this.data.Slice(0), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the type number.
+        /// </summary>
+        public ushort TypeNumber
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(2));
+            set => WriteUInt16BigEndian(this.data.Slice(2), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current position x.
+        /// </summary>
+        public byte CurrentPositionX
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the current position y.
+        /// </summary>
+        public byte CurrentPositionY
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target position x.
+        /// </summary>
+        public byte TargetPositionX
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target position y.
+        /// </summary>
+        public byte TargetPositionY
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data.Slice(8).GetByteValue(4, 4);
+            set => this.data.Slice(8).SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets the owner character name.
+        /// </summary>
+        public string OwnerCharacterName
+        {
+            get => this.data.ExtractString(9, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(9, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets defines the number of effects which would be sent after this field. This is currently not supported.
+        /// </summary>
+        public byte EffectCount
+        {
+            get => this.data[19];
+            set => this.data[19] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="EffectId"/> of the specified index.
+        /// </summary>
+        public EffectId this[int index] => new EffectId(this.data.Slice(20 + (index * EffectId.Length)));
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="EffectId"/>.
+        /// </summary>
+        /// <param name="effectsCount">The count of <see cref="EffectId"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int effectsCount) => effectsCount * EffectId.Length + 20;
+    }
+
+
+    /// <summary>
+    /// Contains the id of a magic effect..
+    /// </summary>
+    public readonly ref struct EffectId
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EffectId"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public EffectId(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 1;
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public byte Id
+        {
+            get => this.data[0];
+            set => this.data[0] = value;
+        }
+    }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: One or more summoned monsters got into the observed scope of the player.
+    /// Causes reaction on client side: The client adds the monsters to the shown map.
+    /// </summary>
+    public readonly ref struct AddSummonedMonstersToScope075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddSummonedMonstersToScope075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AddSummonedMonstersToScope075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddSummonedMonstersToScope075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AddSummonedMonstersToScope075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1F;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new C2Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the monster count.
+        /// </summary>
+        public byte MonsterCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="SummonedMonsterData"/> of the specified index.
+        /// </summary>
+        public SummonedMonsterData this[int index] => new SummonedMonsterData(this.data.Slice(5 + (index * SummonedMonsterData.Length)));
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AddSummonedMonstersToScope075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AddSummonedMonstersToScope075(Span<byte> packet) => new AddSummonedMonstersToScope075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AddSummonedMonstersToScope075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AddSummonedMonstersToScope075 packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="SummonedMonsterData"/>.
+        /// </summary>
+        /// <param name="summonedMonstersCount">The count of <see cref="SummonedMonsterData"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int summonedMonstersCount) => summonedMonstersCount * SummonedMonsterData.Length + 5;
+
+
+    /// <summary>
+    /// Contains the data of an NPC..
+    /// </summary>
+    public readonly ref struct SummonedMonsterData
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SummonedMonsterData"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SummonedMonsterData(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 19;
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public ushort Id
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(0));
+            set => WriteUInt16BigEndian(this.data.Slice(0), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the type number.
+        /// </summary>
+        public byte TypeNumber
+        {
+            get => this.data[2];
+            set => this.data[2] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the is poisoned.
+        /// </summary>
+        public bool IsPoisoned
+        {
+            get => this.data.Slice(3).GetBoolean(0);
+            set => this.data.Slice(3).SetBoolean(value, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the is iced.
+        /// </summary>
+        public bool IsIced
+        {
+            get => this.data.Slice(3).GetBoolean(1);
+            set => this.data.Slice(3).SetBoolean(value, 1);
+        }
+
+        /// <summary>
+        /// Gets or sets the is damage buffed.
+        /// </summary>
+        public bool IsDamageBuffed
+        {
+            get => this.data.Slice(3).GetBoolean(2);
+            set => this.data.Slice(3).SetBoolean(value, 2);
+        }
+
+        /// <summary>
+        /// Gets or sets the is defense buffed.
+        /// </summary>
+        public bool IsDefenseBuffed
+        {
+            get => this.data.Slice(3).GetBoolean(3);
+            set => this.data.Slice(3).SetBoolean(value, 3);
+        }
+
+        /// <summary>
+        /// Gets or sets the current position x.
+        /// </summary>
+        public byte CurrentPositionX
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the current position y.
+        /// </summary>
+        public byte CurrentPositionY
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target position x.
+        /// </summary>
+        public byte TargetPositionX
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target position y.
+        /// </summary>
+        public byte TargetPositionY
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data.Slice(8).GetByteValue(4, 4);
+            set => this.data.Slice(8).SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets the owner character name.
+        /// </summary>
+        public string OwnerCharacterName
+        {
+            get => this.data.ExtractString(9, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(9, 10).WriteString(value, System.Text.Encoding.UTF8);
         }
     }
     }
@@ -2152,6 +2591,182 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(SkillAnimation075 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A player cancelled a specific magic effect of a skill (Infinity Arrow, Wizardry Enhance), or an effect was removed due a timeout (Ice, Poison) or antidote.
+    /// Causes reaction on client side: The effect is removed from the target object.
+    /// </summary>
+    public readonly ref struct MagicEffectCancelled
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MagicEffectCancelled"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MagicEffectCancelled(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MagicEffectCancelled"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MagicEffectCancelled(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1B;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the skill id.
+        /// </summary>
+        public ushort SkillId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(5));
+            set => WriteUInt16BigEndian(this.data.Slice(5), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MagicEffectCancelled"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MagicEffectCancelled(Span<byte> packet) => new MagicEffectCancelled(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MagicEffectCancelled"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MagicEffectCancelled packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A player cancelled a specific magic effect of a skill (Infinity Arrow, Wizardry Enhance), or an effect was removed due a timeout (Ice, Poison) or antidote.
+    /// Causes reaction on client side: The effect is removed from the target object.
+    /// </summary>
+    public readonly ref struct MagicEffectCancelled075
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MagicEffectCancelled075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MagicEffectCancelled075(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MagicEffectCancelled075"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MagicEffectCancelled075(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1B;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the skill id.
+        /// </summary>
+        public byte SkillId
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(4));
+            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MagicEffectCancelled075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MagicEffectCancelled075(Span<byte> packet) => new MagicEffectCancelled075(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MagicEffectCancelled075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MagicEffectCancelled075 packet) => packet.data; 
     }
 
 
@@ -11249,6 +11864,291 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: When health of a summoned monster (Elf Skill) changed.
+    /// Causes reaction on client side: The health is updated on the user interface.
+    /// </summary>
+    public readonly ref struct SummonHealthUpdate
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SummonHealthUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SummonHealthUpdate(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SummonHealthUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private SummonHealthUpdate(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x20;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the health percent.
+        /// </summary>
+        public byte HealthPercent
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SummonHealthUpdate"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator SummonHealthUpdate(Span<byte> packet) => new SummonHealthUpdate(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SummonHealthUpdate"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(SummonHealthUpdate packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: Every second during a guild soccer match.
+    /// Causes reaction on client side: The time is updated on the user interface.
+    /// </summary>
+    public readonly ref struct GuildSoccerTimeUpdate
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildSoccerTimeUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildSoccerTimeUpdate(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildSoccerTimeUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildSoccerTimeUpdate(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x22;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the seconds.
+        /// </summary>
+        public ushort Seconds
+        {
+            get => ReadUInt16LittleEndian(this.data.Slice(4));
+            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildSoccerTimeUpdate"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildSoccerTimeUpdate(Span<byte> packet) => new GuildSoccerTimeUpdate(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildSoccerTimeUpdate"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildSoccerTimeUpdate packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: Whenever the score of the soccer game changed, and at the beginning of the match.
+    /// Causes reaction on client side: The score is updated on the user interface.
+    /// </summary>
+    public readonly ref struct GuildSoccerScoreUpdate
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildSoccerScoreUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildSoccerScoreUpdate(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildSoccerScoreUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildSoccerScoreUpdate(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x23;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 22;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+
+        /// <summary>
+        /// Gets or sets the red team name.
+        /// </summary>
+        public string RedTeamName
+        {
+            get => this.data.ExtractString(4, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(4, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the red team goals.
+        /// </summary>
+        public byte RedTeamGoals
+        {
+            get => this.data[12];
+            set => this.data[12] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the blue team name.
+        /// </summary>
+        public string BlueTeamName
+        {
+            get => this.data.ExtractString(13, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(13, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the blue team goals.
+        /// </summary>
+        public byte BlueTeamGoals
+        {
+            get => this.data[21];
+            set => this.data[21] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildSoccerScoreUpdate"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildSoccerScoreUpdate(Span<byte> packet) => new GuildSoccerScoreUpdate(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildSoccerScoreUpdate"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildSoccerScoreUpdate packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: After entering the game with a master class character.
     /// Causes reaction on client side: The master related data is available.
     /// </summary>
@@ -12788,6 +13688,482 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(GuildMemberLeftGuild packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A guild master requested a guild war against another guild.
+    /// Causes reaction on client side: The guild master of the other guild gets this request.
+    /// </summary>
+    public readonly ref struct GuildWarRequestResult
+    {
+        /// <summary>
+        /// Describes the result of the guild war request.
+        /// </summary>
+        public enum RequestResult
+        {
+            /// <summary>
+            /// Failed, because player is not in a guild.
+            /// </summary>
+            NotInGuild = 0,
+
+            /// <summary>
+            /// The guild war starts successfully.
+            /// </summary>
+            Success = 3,
+
+            /// <summary>
+            /// The guild war (soccer) can't start, because the soccer arena is already in use.
+            /// </summary>
+            SoccerBattleGroundInUse = 4,
+
+            /// <summary>
+            /// Failed, because the requested guild is already in a war.
+            /// </summary>
+            AlreadyInWar = 6,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarRequestResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildWarRequestResult(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarRequestResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildWarRequestResult(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x60;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public byte Result
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildWarRequestResult"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildWarRequestResult(Span<byte> packet) => new GuildWarRequestResult(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildWarRequestResult"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildWarRequestResult packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A guild master requested a guild war against another guild.
+    /// Causes reaction on client side: The guild master of the other guild gets this request.
+    /// </summary>
+    public readonly ref struct GuildWarRequest
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildWarRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildWarRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x61;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the guild name.
+        /// </summary>
+        public string GuildName
+        {
+            get => this.data.ExtractString(3, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public GuildWarType Type
+        {
+            get => (GuildWarType)this.data.Slice(11)[0];
+            set => this.data.Slice(11)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildWarRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildWarRequest(Span<byte> packet) => new GuildWarRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildWarRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildWarRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A guild master requested a guild war against another guild.
+    /// Causes reaction on client side: The guild master of the other guild gets this request.
+    /// </summary>
+    public readonly ref struct GuildWarDeclared
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarDeclared"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildWarDeclared(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarDeclared"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildWarDeclared(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x62;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the guild name.
+        /// </summary>
+        public string GuildName
+        {
+            get => this.data.ExtractString(3, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public GuildWarType Type
+        {
+            get => (GuildWarType)this.data.Slice(11)[0];
+            set => this.data.Slice(11)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the team code.
+        /// </summary>
+        public byte TeamCode
+        {
+            get => this.data[12];
+            set => this.data[12] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildWarDeclared"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildWarDeclared(Span<byte> packet) => new GuildWarDeclared(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildWarDeclared"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildWarDeclared packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The guild war ended.
+    /// Causes reaction on client side: The guild war is shown as ended on the client side.
+    /// </summary>
+    public readonly ref struct GuildWarEnded
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarEnded"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildWarEnded(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarEnded"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildWarEnded(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x63;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public byte Result
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the guild name.
+        /// </summary>
+        public string GuildName
+        {
+            get => this.data.ExtractString(4, 8, System.Text.Encoding.UTF8);
+            set => this.data.Slice(4, 8).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildWarEnded"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildWarEnded(Span<byte> packet) => new GuildWarEnded(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildWarEnded"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildWarEnded packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The guild war score changed.
+    /// Causes reaction on client side: The guild score is updated on the client side.
+    /// </summary>
+    public readonly ref struct GuildWarScoreUpdate
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarScoreUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildWarScoreUpdate(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarScoreUpdate"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildWarScoreUpdate(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                this.Type = 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x64;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the score of own guild.
+        /// </summary>
+        public byte ScoreOfOwnGuild
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the score of enemy guild.
+        /// </summary>
+        public byte ScoreOfEnemyGuild
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public byte Type
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildWarScoreUpdate"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildWarScoreUpdate(Span<byte> packet) => new GuildWarScoreUpdate(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildWarScoreUpdate"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildWarScoreUpdate packet) => packet.data; 
     }
 
 
@@ -14513,6 +15889,351 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             set => WriteUInt32LittleEndian(this.data.Slice(4), value);
         }
     }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the client sent a PetAttackCommand (as confirmation), or when the previous command finished and the pet is reset to Normal-mode.
+    /// Causes reaction on client side: The client updates the pet mode in its user interface.
+    /// </summary>
+    public readonly ref struct PetMode
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetMode"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PetMode(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetMode"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PetMode(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                this.Pet = ClientToServer.PetType.DarkRaven;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA7;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the pet.
+        /// </summary>
+        public ClientToServer.PetType Pet
+        {
+            get => (ClientToServer.PetType)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the pet command mode.
+        /// </summary>
+        public ClientToServer.PetCommandMode PetCommandMode
+        {
+            get => (ClientToServer.PetCommandMode)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => ReadUInt16LittleEndian(this.data.Slice(5));
+            set => WriteUInt16LittleEndian(this.data.Slice(5), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PetMode"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PetMode(Span<byte> packet) => new PetMode(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PetMode"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PetMode packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the client sent a PetAttackCommand, the pet attacks automatically. For each attack, the player and all observing players get this message.
+    /// Causes reaction on client side: The client shows the pet attacking the target.
+    /// </summary>
+    public readonly ref struct PetAttack
+    {
+        /// <summary>
+        /// Describes the type of the pet attack.
+        /// </summary>
+        public enum PetSkillType
+        {
+            /// <summary>
+            /// A single target attack, used for critical and excellent hits.
+            /// </summary>
+            SingleTarget = 0,
+
+            /// <summary>
+            /// A range attack for multiple targets, usually up to 3 additional targets which all get their own PetAttack messages with 'SingleTarget' right after the first 'Range' message.
+            /// </summary>
+            Range = 1,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetAttack"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PetAttack(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetAttack"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PetAttack(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                this.Pet = ClientToServer.PetType.DarkRaven;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA8;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the pet.
+        /// </summary>
+        public ClientToServer.PetType Pet
+        {
+            get => (ClientToServer.PetType)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the skill type.
+        /// </summary>
+        public PetAttack.PetSkillType SkillType
+        {
+            get => (PetSkillType)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the owner id.
+        /// </summary>
+        public ushort OwnerId
+        {
+            get => ReadUInt16LittleEndian(this.data.Slice(5));
+            set => WriteUInt16LittleEndian(this.data.Slice(5), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => ReadUInt16LittleEndian(this.data.Slice(7));
+            set => WriteUInt16LittleEndian(this.data.Slice(7), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PetAttack"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PetAttack(Span<byte> packet) => new PetAttack(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PetAttack"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PetAttack packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the client sent a PetInfoRequest for a pet (dark raven, horse).
+    /// Causes reaction on client side: The client shows the information about the pet.
+    /// </summary>
+    public readonly ref struct PetInfoResponse
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetInfoResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PetInfoResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetInfoResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PetInfoResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA9;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the pet.
+        /// </summary>
+        public ClientToServer.PetType Pet
+        {
+            get => (ClientToServer.PetType)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the storage.
+        /// </summary>
+        public ClientToServer.StorageType Storage
+        {
+            get => (ClientToServer.StorageType)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the item slot.
+        /// </summary>
+        public byte ItemSlot
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the level.
+        /// </summary>
+        public byte Level
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the experience.
+        /// </summary>
+        public uint Experience
+        {
+            get => ReadUInt32LittleEndian(this.data.Slice(7));
+            set => WriteUInt32LittleEndian(this.data.Slice(7), value);
+        }
+
+        /// <summary>
+        /// Gets or sets the health.
+        /// </summary>
+        public byte Health
+        {
+            get => this.data[11];
+            set => this.data[11] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PetInfoResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PetInfoResponse(Span<byte> packet) => new PetInfoResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PetInfoResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PetInfoResponse packet) => packet.data; 
     }
 
 
@@ -16648,6 +18369,22 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             /// The character is not a member, therefore the role is undefined.
             /// </summary>
             Undefined = 255,
+        }
+
+        /// <summary>
+        /// Describes the type of the guild war.
+        /// </summary>
+        public enum GuildWarType
+        {
+            /// <summary>
+            /// A normal guild war.
+            /// </summary>
+            Normal = 0,
+
+            /// <summary>
+            /// A guild soccer match.
+            /// </summary>
+            Soccer = 1,
         }
 
         /// <summary>

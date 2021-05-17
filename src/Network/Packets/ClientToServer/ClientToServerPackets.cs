@@ -4734,6 +4734,85 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
+    /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
+    /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
+    /// </summary>
+    public readonly ref struct MagicEffectCancelRequest
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MagicEffectCancelRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MagicEffectCancelRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MagicEffectCancelRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MagicEffectCancelRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1B;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 5;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the skill id.
+        /// </summary>
+        public ushort SkillId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(3));
+            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MagicEffectCancelRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MagicEffectCancelRequest(Span<byte> packet) => new MagicEffectCancelRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MagicEffectCancelRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MagicEffectCancelRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the client when: A player is performing an skill which affects an area of the map.
     /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
     /// </summary>
@@ -6471,6 +6550,85 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
+    /// Is sent by the client when: A guild master requested a guild war against another guild.
+    /// Causes reaction on server side: If the guild master confirms, the war is declared.
+    /// </summary>
+    public readonly ref struct GuildWarResponse
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public GuildWarResponse(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuildWarResponse"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private GuildWarResponse(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x61;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the accepted.
+        /// </summary>
+        public bool Accepted
+        {
+            get => this.data.Slice(3).GetBoolean();
+            set => this.data.Slice(3).SetBoolean(value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildWarResponse"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator GuildWarResponse(Span<byte> packet) => new GuildWarResponse(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GuildWarResponse"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(GuildWarResponse packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the client when: A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
     /// Causes reaction on server side: The server sends a response which includes the guild name and emblem.
     /// </summary>
@@ -7507,6 +7665,200 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
+    /// Is sent by the client when: The player wants to command its equipped pet (raven).
+    /// Causes reaction on server side: 
+    /// </summary>
+    public readonly ref struct PetCommandRequest
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetCommandRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PetCommandRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetCommandRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PetCommandRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA7;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the pet type.
+        /// </summary>
+        public byte PetType
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the command mode.
+        /// </summary>
+        public PetCommandMode CommandMode
+        {
+            get => (PetCommandMode)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => ReadUInt16BigEndian(this.data.Slice(5));
+            set => WriteUInt16BigEndian(this.data.Slice(5), value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PetCommandRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PetCommandRequest(Span<byte> packet) => new PetCommandRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PetCommandRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PetCommandRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: The player hovers over a pet. The client sends this request to retrieve information (level, experience) of the pet (dark raven, horse).
+    /// Causes reaction on server side: The server sends a PetInfoResponse.
+    /// </summary>
+    public readonly ref struct PetInfoRequest
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetInfoRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public PetInfoRequest(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PetInfoRequest"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private PetInfoRequest(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xA9;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Gets or sets the pet.
+        /// </summary>
+        public PetType Pet
+        {
+            get => (PetType)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the storage.
+        /// </summary>
+        public StorageType Storage
+        {
+            get => (StorageType)this.data.Slice(4)[0];
+            set => this.data.Slice(4)[0] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the item slot.
+        /// </summary>
+        public byte ItemSlot
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="PetInfoRequest"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator PetInfoRequest(Span<byte> packet) => new PetInfoRequest(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PetInfoRequest"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(PetInfoRequest packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the client when: The client opened an quest NPC dialog and selected an available quests.
     /// Causes reaction on server side: If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.
     /// </summary>
@@ -8440,6 +8792,89 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             /// This state is only sent to the client. After some seconds the client is changing back to normal Unchecked.
             /// </summary>
             Red = 2,
+        }
+
+        /// <summary>
+        /// Describes the type of storage.
+        /// </summary>
+        public enum StorageType
+        {
+            /// <summary>
+            /// The inventory of the player.
+            /// </summary>
+            Inventory = 0,
+
+            /// <summary>
+            /// The vault of the player.
+            /// </summary>
+            Vault = 1,
+
+            /// <summary>
+            /// The own trading storage.
+            /// </summary>
+            TradeOwn = 2,
+
+            /// <summary>
+            /// The trading storage of the other player.
+            /// </summary>
+            TradeOther = 3,
+
+            /// <summary>
+            /// The crafting storage of the player.
+            /// </summary>
+            Crafting = 4,
+
+            /// <summary>
+            /// The shop storage of another player.
+            /// </summary>
+            PersonalShop = 5,
+
+            /// <summary>
+            /// The inventory slot of the pet. That's used when a pet leveled up.
+            /// </summary>
+            InventoryPetSlot = 254,
+        }
+
+        /// <summary>
+        /// Describes the type of pet.
+        /// </summary>
+        public enum PetType
+        {
+            /// <summary>
+            /// The dark raven pet.
+            /// </summary>
+            DarkRaven = 0,
+
+            /// <summary>
+            /// The dark horse pet.
+            /// </summary>
+            DarkHorse = 1,
+        }
+
+        /// <summary>
+        /// Describes the pet command mode.
+        /// </summary>
+        public enum PetCommandMode
+        {
+            /// <summary>
+            /// The pet is in a normal mode, where it doesn't attack.
+            /// </summary>
+            Normal = 0,
+
+            /// <summary>
+            /// The pet attacks random targets.
+            /// </summary>
+            AttackRandom = 1,
+
+            /// <summary>
+            /// The pet attacks the same targets as the owner.
+            /// </summary>
+            AttackWithOwner = 2,
+
+            /// <summary>
+            /// The pet attacks a specific target until it's dead.
+            /// </summary>
+            AttackTarget = 3,
         }
 
 }
