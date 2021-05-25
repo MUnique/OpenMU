@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -143,7 +144,9 @@ namespace MUnique.OpenMU.GameLogic
         protected virtual GameMap InternalCreateGameMap(GameMapDefinition definition)
         {
             this.logger.LogDebug("Creating GameMap {0}", definition);
-            return new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
+            return definition.BattleZone?.Type == BattleType.Soccer
+                ? new SoccerGameMap(definition, this.ItemDropDuration, this.ChunkSize)
+                : new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
         }
 
         private INpcIntelligence? TryCreateConfiguredNpcIntelligence(MonsterDefinition monsterDefinition, GameMap createdMap)
