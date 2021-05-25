@@ -98,5 +98,57 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
                 _ => throw new NotImplementedException($"The case {errorDetail} is not implemented."),
             };
         }
+
+        /// <summary>
+        /// Converts a <see cref="GameLogic.GuildWar.GuildWarType"/> into a <see cref="Network.Packets.ServerToClient.GuildWarType"/>.
+        /// </summary>
+        /// <param name="guildWarType">The <see cref="GameLogic.GuildWar.GuildWarType"/> which should be converted.</param>
+        /// <returns>The converted <see cref="Network.Packets.ServerToClient.GuildWarType"/>.</returns>
+        public static Network.Packets.ServerToClient.GuildWarType Convert(this GameLogic.GuildWar.GuildWarType guildWarType)
+        {
+            return guildWarType switch
+            {
+                GameLogic.GuildWar.GuildWarType.Normal => Network.Packets.ServerToClient.GuildWarType.Normal,
+                GameLogic.GuildWar.GuildWarType.Soccer => Network.Packets.ServerToClient.GuildWarType.Soccer,
+                _ => throw new NotImplementedException($"The case {guildWarType} is not implemented."),
+            };
+        }
+
+        /// <summary>
+        /// Converts a <see cref="GameLogic.Views.Guild.GuildWarResult"/> into a <see cref="GuildWarEnded.GuildWarResult"/>.
+        /// </summary>
+        /// <param name="guildWarResult">The <see cref="GameLogic.Views.Guild.GuildWarResult"/> which should be converted.</param>
+        /// <returns>The converted <see cref="GuildWarEnded.GuildWarResult"/>.</returns>
+        public static GuildWarEnded.GuildWarResult Convert(this GuildWarResult guildWarResult)
+        {
+            return guildWarResult switch
+            {
+                GuildWarResult.Lost => GuildWarEnded.GuildWarResult.Lost,
+                GuildWarResult.Won => GuildWarEnded.GuildWarResult.Won,
+                GuildWarResult.CancelledWar => GuildWarEnded.GuildWarResult.CancelledWar,
+                GuildWarResult.OtherGuildMasterCancelledWar => GuildWarEnded.GuildWarResult.OtherGuildMasterCancelledWar,
+                _ => throw new NotImplementedException($"The case {guildWarResult} is not implemented."),
+            };
+        }
+
+        /// <summary>
+        /// Converts a <see cref="GameLogic.Views.Guild.GuildWarRequestResult"/> into a <see cref="Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult"/>.
+        /// </summary>
+        /// <param name="result">The <see cref="GameLogic.Views.Guild.GuildWarRequestResult"/> which should be converted.</param>
+        /// <returns>The converted <see cref="Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult"/>.</returns>
+        public static Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult Convert(this GameLogic.Views.Guild.GuildWarRequestResult result)
+        {
+            return result switch
+            {
+                GameLogic.Views.Guild.GuildWarRequestResult.AlreadyInWar => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.AlreadyInWar,
+                GameLogic.Views.Guild.GuildWarRequestResult.Failed => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.Failed,
+                GameLogic.Views.Guild.GuildWarRequestResult.GuildMasterOffline => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.GuildMasterOffline,
+                GameLogic.Views.Guild.GuildWarRequestResult.GuildNotFound => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.GuildNotFound,
+                GameLogic.Views.Guild.GuildWarRequestResult.NotInGuild => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.NotInGuild,
+                GameLogic.Views.Guild.GuildWarRequestResult.NotTheGuildMaster => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.NotTheGuildMaster,
+                GameLogic.Views.Guild.GuildWarRequestResult.RequestSentToGuildMaster => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.RequestSentToGuildMaster,
+                _ => throw new NotImplementedException($"The case {result} is not implemented."),
+            };
+        }
     }
 }
