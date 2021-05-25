@@ -32,14 +32,39 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps
         protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
         {
             yield return this.CreateMonsterSpawn(this.NpcDictionary[240], 58, 58, 140, 140, 1, Direction.SouthWest);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[200], 63, 63, 160, 160, 1, Direction.SouthWest);
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[200], 62, 62, 160, 160, 1, Direction.SouthWest);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[239], 67, 67, 140, 140, 1, Direction.SouthWest);
+        }
+
+        /// <inheritdoc/>
+        protected override void AdditionalInitialization(GameMapDefinition mapDefinition)
+        {
+            var battleZone = this.Context.CreateNew<BattleZoneDefinition>();
+            battleZone.Type = BattleType.Soccer;
+            battleZone.LeftTeamSpawnPointX = 60;
+            battleZone.LeftTeamSpawnPointY = 156;
+            battleZone.RightTeamSpawnPointX = 60;
+            battleZone.RightTeamSpawnPointY = 164;
+            battleZone.Ground = this.CreateRectangle(54, 141, 70, 180);
+            battleZone.LeftGoal = this.CreateRectangle(60, 139, 64, 140);
+            battleZone.RightGoal = this.CreateRectangle(60, 181, 64, 182);
+            mapDefinition.BattleZone = battleZone;
         }
 
         /// <inheritdoc/>
         protected override void CreateMonsters()
         {
             // no monsters to create
+        }
+
+        private Rectangle CreateRectangle(byte x1, byte y1, byte x2, byte y2)
+        {
+            var rectangle = this.Context.CreateNew<Rectangle>();
+            rectangle.X1 = x1;
+            rectangle.X2 = x2;
+            rectangle.Y1 = y1;
+            rectangle.Y2 = y2;
+            return rectangle;
         }
     }
 }

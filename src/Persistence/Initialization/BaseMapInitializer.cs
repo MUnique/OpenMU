@@ -106,6 +106,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.CreateMapAttributeRequirements();
 
             this.InitializeDropItemGroups();
+            this.AdditionalInitialization(this.mapDefinition);
             this.GameConfiguration.Maps.Add(this.mapDefinition);
         }
 
@@ -141,6 +142,15 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// Clears the default drop item groups.
         /// </summary>
         internal static void ClearDefaultDropItemGroups() => DefaultDropItemGroups.Clear();
+
+        /// <summary>
+        /// Does additional initialization.
+        /// </summary>
+        /// <param name="mapDefinition">The map definition.</param>
+        protected virtual void AdditionalInitialization(GameMapDefinition mapDefinition)
+        {
+            // can be overwritten
+        }
 
         /// <summary>
         /// Initializes the drop item groups for this map.

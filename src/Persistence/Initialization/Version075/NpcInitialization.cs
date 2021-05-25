@@ -204,7 +204,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
                 var def = this.Context.CreateNew<MonsterDefinition>();
                 def.Number = 200;
                 def.Designation = "Soccerball";
-                def.ObjectKind = NpcObjectKind.Statue;
+                def.ObjectKind = NpcObjectKind.SoccerBall;
                 this.GameConfiguration.Monsters.Add(def);
             }
         }
