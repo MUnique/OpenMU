@@ -75,6 +75,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// Gets or sets the battle zone.
         /// This is usually just defined by the Arena map.
         /// </summary>
+        [MemberOfAggregate]
         public virtual BattleZoneDefinition? BattleZone { get; set; }
 
         /// <summary>
