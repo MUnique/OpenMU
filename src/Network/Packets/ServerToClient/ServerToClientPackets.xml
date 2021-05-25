@@ -4864,7 +4864,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>62</Code>
       <Name>GuildWarDeclared</Name>
-      <Length>12</Length>
+      <Length>13</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>A guild master requested a guild war against another guild.</SentWhen>
       <CausedReaction>The guild master of the other guild gets this request.</CausedReaction>
