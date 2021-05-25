@@ -844,6 +844,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="CancelGuildCreation" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player has the dialog of the guild creation dialog opened and decided against creating a guild.
+        /// Causes reaction on server side: It either cancels the guild creation.
+        /// </remarks>
+        public static CancelGuildCreationThreadSafeWriter StartWriteCancelGuildCreation(this IConnection connection)
+        {
+          return new CancelGuildCreationThreadSafeWriter(connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="GuildWarResponse" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2475,6 +2488,20 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             using var writer = connection.StartWriteGuildMasterAnswer();
             var packet = writer.Packet;
             packet.ShowCreationDialog = @showCreationDialog;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="CancelGuildCreation" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player has the dialog of the guild creation dialog opened and decided against creating a guild.
+        /// Causes reaction on server side: It either cancels the guild creation.
+        /// </remarks>
+        public static void SendCancelGuildCreation(this IConnection connection)
+        {
+            using var writer = connection.StartWriteCancelGuildCreation();
             writer.Commit();
         }
 
@@ -6245,6 +6272,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.Advance(GuildMasterAnswer.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="CancelGuildCreation"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct CancelGuildCreationThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CancelGuildCreationThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public CancelGuildCreationThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new CancelGuildCreation(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(CancelGuildCreation.Length).Slice(0, CancelGuildCreation.Length);
+
+        /// <summary>Gets the packet to write at.</summary>
+        public CancelGuildCreation Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="CancelGuildCreation" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(CancelGuildCreation.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

@@ -6550,6 +6550,76 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
 
 
     /// <summary>
+    /// Is sent by the client when: The player has the dialog of the guild creation dialog opened and decided against creating a guild.
+    /// Causes reaction on server side: It either cancels the guild creation.
+    /// </summary>
+    public readonly ref struct CancelGuildCreation
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CancelGuildCreation"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public CancelGuildCreation(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CancelGuildCreation"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private CancelGuildCreation(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x57;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new C1Header(this.data);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CancelGuildCreation"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator CancelGuildCreation(Span<byte> packet) => new CancelGuildCreation(packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="CancelGuildCreation"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(CancelGuildCreation packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the client when: A guild master requested a guild war against another guild.
     /// Causes reaction on server side: If the guild master confirms, the war is declared.
     /// </summary>
