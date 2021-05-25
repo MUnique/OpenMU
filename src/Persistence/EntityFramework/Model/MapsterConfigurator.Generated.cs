@@ -75,6 +75,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.SkillEntry, MUnique.OpenMU.DataModel.Entities.SkillEntry>()
                 .Include<SkillEntry, BasicModel.SkillEntry>();
 
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition, MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>()
+                .Include<BattleZoneDefinition, BasicModel.BattleZoneDefinition>();
+
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CharacterClass, MUnique.OpenMU.DataModel.Configuration.CharacterClass>()
                 .Include<CharacterClass, BasicModel.CharacterClass>();
 
@@ -140,6 +143,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea, MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea>()
                 .Include<MonsterSpawnArea, BasicModel.MonsterSpawnArea>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Rectangle, MUnique.OpenMU.DataModel.Configuration.Rectangle>()
+                .Include<Rectangle, BasicModel.Rectangle>();
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Skill, MUnique.OpenMU.DataModel.Configuration.Skill>()
                 .Include<Skill, BasicModel.Skill>();
