@@ -1,18 +1,10 @@
-﻿// <copyright file="00000000000000_Initial.cs" company="MUnique">
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
-// </copyright>
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
-    using System;
-    using Microsoft.EntityFrameworkCore.Migrations;
-
-    /// <summary>
-    /// The initial schema migration.
-    /// </summary>
     public partial class Initial : Migration
     {
-        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
@@ -181,6 +173,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Rectangle",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    X1 = table.Column<byte>(type: "smallint", nullable: false),
+                    Y1 = table.Column<byte>(type: "smallint", nullable: false),
+                    X2 = table.Column<byte>(type: "smallint", nullable: false),
+                    Y2 = table.Column<byte>(type: "smallint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rectangle", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SimpleCraftingSettings",
                 schema: "config",
                 columns: table => new
@@ -288,38 +296,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.GameConfigurationId,
                         principalSchema: "config",
                         principalTable: "GameConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GameMapDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    SafezoneMapId = table.Column<Guid>(type: "uuid", nullable: true),
-                    GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Number = table.Column<short>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    TerrainData = table.Column<byte[]>(type: "bytea", nullable: true),
-                    ExpMultiplier = table.Column<double>(type: "double precision", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GameMapDefinition", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GameMapDefinition_GameConfiguration_GameConfigurationId",
-                        column: x => x.GameConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "GameConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_GameMapDefinition_GameMapDefinition_SafezoneMapId",
-                        column: x => x.SafezoneMapId,
-                        principalSchema: "config",
-                        principalTable: "GameMapDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -526,6 +502,47 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BattleZoneDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    GroundId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LeftGoalId = table.Column<Guid>(type: "uuid", nullable: true),
+                    RightGoalId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    LeftTeamSpawnPointX = table.Column<byte>(type: "smallint", nullable: true),
+                    LeftTeamSpawnPointY = table.Column<byte>(type: "smallint", nullable: false),
+                    RightTeamSpawnPointX = table.Column<byte>(type: "smallint", nullable: true),
+                    RightTeamSpawnPointY = table.Column<byte>(type: "smallint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BattleZoneDefinition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BattleZoneDefinition_Rectangle_GroundId",
+                        column: x => x.GroundId,
+                        principalSchema: "config",
+                        principalTable: "Rectangle",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BattleZoneDefinition_Rectangle_LeftGoalId",
+                        column: x => x.LeftGoalId,
+                        principalSchema: "config",
+                        principalTable: "Rectangle",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BattleZoneDefinition_Rectangle_RightGoalId",
+                        column: x => x.RightGoalId,
+                        principalSchema: "config",
+                        principalTable: "Rectangle",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemCraftingRequiredItem",
                 schema: "config",
                 columns: table => new
@@ -619,103 +636,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CharacterClass",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    NextGenerationClassId = table.Column<Guid>(type: "uuid", nullable: true),
-                    HomeMapId = table.Column<Guid>(type: "uuid", nullable: true),
-                    GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Number = table.Column<byte>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    CanGetCreated = table.Column<bool>(type: "boolean", nullable: false),
-                    LevelRequirementByCreation = table.Column<short>(type: "smallint", nullable: false),
-                    CreationAllowedFlag = table.Column<byte>(type: "smallint", nullable: false),
-                    IsMasterClass = table.Column<bool>(type: "boolean", nullable: false),
-                    LevelWarpRequirementReductionPercent = table.Column<int>(type: "integer", nullable: false),
-                    FruitCalculation = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CharacterClass", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CharacterClass_CharacterClass_NextGenerationClassId",
-                        column: x => x.NextGenerationClassId,
-                        principalSchema: "config",
-                        principalTable: "CharacterClass",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CharacterClass_GameConfiguration_GameConfigurationId",
-                        column: x => x.GameConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "GameConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CharacterClass_GameMapDefinition_HomeMapId",
-                        column: x => x.HomeMapId,
-                        principalSchema: "config",
-                        principalTable: "GameMapDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExitGate",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    MapId = table.Column<Guid>(type: "uuid", nullable: true),
-                    X1 = table.Column<byte>(type: "smallint", nullable: false),
-                    Y1 = table.Column<byte>(type: "smallint", nullable: false),
-                    X2 = table.Column<byte>(type: "smallint", nullable: false),
-                    Y2 = table.Column<byte>(type: "smallint", nullable: false),
-                    Direction = table.Column<int>(type: "integer", nullable: false),
-                    IsSpawnGate = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExitGate", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExitGate_GameMapDefinition_MapId",
-                        column: x => x.MapId,
-                        principalSchema: "config",
-                        principalTable: "GameMapDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GameServerConfigurationGameMapDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    GameServerConfigurationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    GameMapDefinitionId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GameServerConfigurationGameMapDefinition", x => new { x.GameServerConfigurationId, x.GameMapDefinitionId });
-                    table.ForeignKey(
-                        name: "FK_GameServerConfigurationGameMapDefinition_GameMapDefinition_~",
-                        column: x => x.GameMapDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "GameMapDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GameServerConfigurationGameMapDefinition_GameServerConfigur~",
-                        column: x => x.GameServerConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "GameServerConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GameServerEndpoint",
                 schema: "config",
                 columns: table => new
@@ -741,6 +661,46 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.GameServerDefinitionId,
                         principalSchema: "config",
                         principalTable: "GameServerDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GameMapDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SafezoneMapId = table.Column<Guid>(type: "uuid", nullable: true),
+                    BattleZoneId = table.Column<Guid>(type: "uuid", nullable: true),
+                    GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Number = table.Column<short>(type: "smallint", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    TerrainData = table.Column<byte[]>(type: "bytea", nullable: true),
+                    ExpMultiplier = table.Column<double>(type: "double precision", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameMapDefinition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GameMapDefinition_BattleZoneDefinition_BattleZoneId",
+                        column: x => x.BattleZoneId,
+                        principalSchema: "config",
+                        principalTable: "BattleZoneDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GameMapDefinition_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GameMapDefinition_GameMapDefinition_SafezoneMapId",
+                        column: x => x.SafezoneMapId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -880,6 +840,163 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.PowerUpDefinitionId,
                         principalSchema: "config",
                         principalTable: "PowerUpDefinitionWithDuration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CharacterClass",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    NextGenerationClassId = table.Column<Guid>(type: "uuid", nullable: true),
+                    HomeMapId = table.Column<Guid>(type: "uuid", nullable: true),
+                    GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Number = table.Column<byte>(type: "smallint", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    CanGetCreated = table.Column<bool>(type: "boolean", nullable: false),
+                    LevelRequirementByCreation = table.Column<short>(type: "smallint", nullable: false),
+                    CreationAllowedFlag = table.Column<byte>(type: "smallint", nullable: false),
+                    IsMasterClass = table.Column<bool>(type: "boolean", nullable: false),
+                    LevelWarpRequirementReductionPercent = table.Column<int>(type: "integer", nullable: false),
+                    FruitCalculation = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CharacterClass", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CharacterClass_CharacterClass_NextGenerationClassId",
+                        column: x => x.NextGenerationClassId,
+                        principalSchema: "config",
+                        principalTable: "CharacterClass",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CharacterClass_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CharacterClass_GameMapDefinition_HomeMapId",
+                        column: x => x.HomeMapId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExitGate",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MapId = table.Column<Guid>(type: "uuid", nullable: true),
+                    X1 = table.Column<byte>(type: "smallint", nullable: false),
+                    Y1 = table.Column<byte>(type: "smallint", nullable: false),
+                    X2 = table.Column<byte>(type: "smallint", nullable: false),
+                    Y2 = table.Column<byte>(type: "smallint", nullable: false),
+                    Direction = table.Column<int>(type: "integer", nullable: false),
+                    IsSpawnGate = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExitGate", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExitGate_GameMapDefinition_MapId",
+                        column: x => x.MapId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GameServerConfigurationGameMapDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    GameServerConfigurationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GameMapDefinitionId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameServerConfigurationGameMapDefinition", x => new { x.GameServerConfigurationId, x.GameMapDefinitionId });
+                    table.ForeignKey(
+                        name: "FK_GameServerConfigurationGameMapDefinition_GameMapDefinition_~",
+                        column: x => x.GameMapDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "GameMapDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GameServerConfigurationGameMapDefinition_GameServerConfigur~",
+                        column: x => x.GameServerConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameServerConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemOptionOfLevel",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PowerUpDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IncreasableItemOptionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Level = table.Column<int>(type: "integer", nullable: false),
+                    RequiredItemLevel = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemOptionOfLevel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemOptionOfLevel_IncreasableItemOption_IncreasableItemOpti~",
+                        column: x => x.IncreasableItemOptionId,
+                        principalSchema: "config",
+                        principalTable: "IncreasableItemOption",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ItemOptionOfLevel_PowerUpDefinition_PowerUpDefinitionId",
+                        column: x => x.PowerUpDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "PowerUpDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CombinationBonusRequirement",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OptionTypeId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ItemOptionCombinationBonusId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SubOptionType = table.Column<int>(type: "integer", nullable: false),
+                    MinimumCount = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CombinationBonusRequirement", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CombinationBonusRequirement_ItemOptionCombinationBonus_Item~",
+                        column: x => x.ItemOptionCombinationBonusId,
+                        principalSchema: "config",
+                        principalTable: "ItemOptionCombinationBonus",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CombinationBonusRequirement_ItemOptionType_OptionTypeId",
+                        column: x => x.OptionTypeId,
+                        principalSchema: "config",
+                        principalTable: "ItemOptionType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1163,66 +1280,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.GameConfigurationId,
                         principalSchema: "config",
                         principalTable: "GameConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ItemOptionOfLevel",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PowerUpDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    IncreasableItemOptionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Level = table.Column<int>(type: "integer", nullable: false),
-                    RequiredItemLevel = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemOptionOfLevel", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ItemOptionOfLevel_IncreasableItemOption_IncreasableItemOpti~",
-                        column: x => x.IncreasableItemOptionId,
-                        principalSchema: "config",
-                        principalTable: "IncreasableItemOption",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ItemOptionOfLevel_PowerUpDefinition_PowerUpDefinitionId",
-                        column: x => x.PowerUpDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "PowerUpDefinition",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CombinationBonusRequirement",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    OptionTypeId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ItemOptionCombinationBonusId = table.Column<Guid>(type: "uuid", nullable: true),
-                    SubOptionType = table.Column<int>(type: "integer", nullable: false),
-                    MinimumCount = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CombinationBonusRequirement", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CombinationBonusRequirement_ItemOptionCombinationBonus_Item~",
-                        column: x => x.ItemOptionCombinationBonusId,
-                        principalSchema: "config",
-                        principalTable: "ItemOptionCombinationBonus",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CombinationBonusRequirement_ItemOptionType_OptionTypeId",
-                        column: x => x.OptionTypeId,
-                        principalSchema: "config",
-                        principalTable: "ItemOptionType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -2582,6 +2639,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "SkillId1");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BattleZoneDefinition_GroundId",
+                schema: "config",
+                table: "BattleZoneDefinition",
+                column: "GroundId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BattleZoneDefinition_LeftGoalId",
+                schema: "config",
+                table: "BattleZoneDefinition",
+                column: "LeftGoalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BattleZoneDefinition_RightGoalId",
+                schema: "config",
+                table: "BattleZoneDefinition",
+                column: "RightGoalId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Character_AccountId",
                 schema: "data",
                 table: "Character",
@@ -2731,6 +2806,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "ExitGate",
                 column: "MapId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameMapDefinition_BattleZoneId",
+                schema: "config",
+                table: "GameMapDefinition",
+                column: "BattleZoneId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameMapDefinition_GameConfigurationId",
@@ -3767,6 +3848,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.DropTable(
                 name: "ItemStorage",
                 schema: "data");
+
+            migrationBuilder.DropTable(
+                name: "BattleZoneDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "Rectangle",
+                schema: "config");
 
             migrationBuilder.DropTable(
                 name: "GameConfiguration",

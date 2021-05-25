@@ -203,6 +203,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// The npc is a statue.
         /// </summary>
         Statue,
+
+        /// <summary>
+        /// The npc is a soccer ball.
+        /// </summary>
+        SoccerBall,
     }
 
     /// <summary>

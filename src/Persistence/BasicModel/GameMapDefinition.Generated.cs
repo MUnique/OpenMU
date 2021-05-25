@@ -162,6 +162,26 @@ namespace MUnique.OpenMU.Persistence.BasicModel
             set => base.SafezoneMap = value;
         }
 
+        /// <summary>
+        /// Gets the raw object of <see cref="BattleZone" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("battleZone")]
+        [System.Text.Json.Serialization.JsonPropertyName("battleZone")]
+        public BattleZoneDefinition RawBattleZone
+        {
+            get => base.BattleZone as BattleZoneDefinition;
+            set => base.BattleZone = value;
+        }
+
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition BattleZone
+        {
+            get => base.BattleZone;
+            set => base.BattleZone = value;
+        }
+
 
         /// <inheritdoc/>
         public override bool Equals(object obj)

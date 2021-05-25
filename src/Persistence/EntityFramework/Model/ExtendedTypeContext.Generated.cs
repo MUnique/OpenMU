@@ -38,6 +38,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterBody>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint>();
@@ -60,6 +61,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Rectangle>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Skill>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.WarpInfo>();

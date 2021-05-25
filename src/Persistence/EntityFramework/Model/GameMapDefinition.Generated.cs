@@ -97,6 +97,32 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
             }
         }
 
+        /// <summary>
+        /// Gets or sets the identifier of <see cref="BattleZone"/>.
+        /// </summary>
+        public Guid? BattleZoneId { get; set; }
+
+        /// <summary>
+        /// Gets the raw object of <see cref="BattleZone" />.
+        /// </summary>
+        [ForeignKey(nameof(BattleZoneId))]
+        public BattleZoneDefinition RawBattleZone
+        {
+            get => base.BattleZone as BattleZoneDefinition;
+            set => base.BattleZone = value;
+        }
+
+        /// <inheritdoc/>
+        [NotMapped]
+        public override MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition BattleZone
+        {
+            get => base.BattleZone;set
+            {
+                base.BattleZone = value;
+                this.BattleZoneId = this.RawBattleZone?.Id;
+            }
+        }
+
 
         /// <inheritdoc/>
         public override bool Equals(object obj)

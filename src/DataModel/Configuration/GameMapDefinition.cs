@@ -72,6 +72,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public virtual GameMapDefinition? SafezoneMap { get; set; }
 
         /// <summary>
+        /// Gets or sets the battle zone.
+        /// This is usually just defined by the Arena map.
+        /// </summary>
+        public virtual BattleZoneDefinition? BattleZone { get; set; }
+
+        /// <summary>
         /// Gets or sets the spawn gates.
         /// </summary>
         [MemberOfAggregate]

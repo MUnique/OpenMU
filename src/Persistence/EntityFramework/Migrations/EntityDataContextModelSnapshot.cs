@@ -208,6 +208,47 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("AttributeRequirement", "config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.BattleZoneDefinition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("GroundId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("LeftGoalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte?>("LeftTeamSpawnPointX")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("LeftTeamSpawnPointY")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid?>("RightGoalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte?>("RightTeamSpawnPointX")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("RightTeamSpawnPointY")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroundId");
+
+                    b.HasIndex("LeftGoalId");
+
+                    b.HasIndex("RightGoalId");
+
+                    b.ToTable("BattleZoneDefinition", "config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>
                 {
                     b.Property<Guid>("Id")
@@ -812,6 +853,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("BattleZoneId")
+                        .HasColumnType("uuid");
+
                     b.Property<double>("ExpMultiplier")
                         .HasColumnType("double precision");
 
@@ -832,6 +876,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("bytea");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BattleZoneId");
 
                     b.HasIndex("GameConfigurationId");
 
@@ -2300,6 +2346,29 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("QuestReward", "config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Rectangle", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<byte>("X1")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("X2")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("Y1")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("Y2")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Rectangle", "config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2634,6 +2703,27 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawAttribute");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.BattleZoneDefinition", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Rectangle", "RawGround")
+                        .WithMany()
+                        .HasForeignKey("GroundId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Rectangle", "RawLeftGoal")
+                        .WithMany()
+                        .HasForeignKey("LeftGoalId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Rectangle", "RawRightGoal")
+                        .WithMany()
+                        .HasForeignKey("RightGoalId");
+
+                    b.Navigation("RawGround");
+
+                    b.Navigation("RawLeftGoal");
+
+                    b.Navigation("RawRightGoal");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", null)
@@ -2827,6 +2917,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.BattleZoneDefinition", "RawBattleZone")
+                        .WithMany()
+                        .HasForeignKey("BattleZoneId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawMaps")
                         .HasForeignKey("GameConfigurationId");
@@ -2834,6 +2928,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameMapDefinition", "RawSafezoneMap")
                         .WithMany()
                         .HasForeignKey("SafezoneMapId");
+
+                    b.Navigation("RawBattleZone");
 
                     b.Navigation("RawSafezoneMap");
                 });
