@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public MagicEffectsList MagicEffectList { get; }
 
         /// <inheritdoc />
-        public bool IsAlive { get; }
+        public bool IsAlive => true;
 
         /// <inheritdoc />
         public bool IsTeleporting => false;
