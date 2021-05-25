@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => CancelGuildCreation.Code;
+        public byte Key => GuildWarResponse.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
