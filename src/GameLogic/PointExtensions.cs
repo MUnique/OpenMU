@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic
             return point.X >= rectangle.X1
                    && point.X <= rectangle.X2
                    && point.Y >= rectangle.Y1
-                   && point.Y >= rectangle.Y2;
+                   && point.Y <= rectangle.Y2;
         }
     }
 }
