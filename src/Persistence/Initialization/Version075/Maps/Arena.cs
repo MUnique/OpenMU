@@ -45,9 +45,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps
             battleZone.LeftTeamSpawnPointY = 156;
             battleZone.RightTeamSpawnPointX = 60;
             battleZone.RightTeamSpawnPointY = 164;
-            battleZone.Ground = this.CreateRectangle(54, 141, 70, 180);
-            battleZone.LeftGoal = this.CreateRectangle(60, 139, 64, 140);
-            battleZone.RightGoal = this.CreateRectangle(60, 181, 64, 182);
+            battleZone.Ground = this.CreateRectangle(55, 141, 69, 180);
+            battleZone.LeftGoal = this.CreateRectangle(61, 139, 63, 140);
+            battleZone.RightGoal = this.CreateRectangle(61, 181, 63, 182);
             mapDefinition.BattleZone = battleZone;
         }
 
