@@ -100,6 +100,16 @@ namespace MUnique.OpenMU.GuildServer
             return guild.Key;
         }
 
+        /// <inheritdoc />
+        public void IncreaseGuildScore(uint guildId)
+        {
+            if (this.guildDictionary.TryGetValue(guildId, out var guildContainer))
+            {
+                guildContainer.Guild.Score++;
+                guildContainer.DatabaseContext.SaveChanges();
+            }
+        }
+
         /// <inheritdoc/>
         public GuildMemberStatus? CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
         {

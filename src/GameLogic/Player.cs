@@ -15,6 +15,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.GuildWar;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.PlugIns;
@@ -257,6 +258,16 @@ namespace MUnique.OpenMU.GameLogic
         public IPartyMember? LastPartyRequester { get; set; }
 
         /// <summary>
+        /// Gets or sets the last guild requester.
+        /// </summary>
+        public Player? LastGuildRequester { get; set; }
+
+        /// <summary>
+        /// Gets or sets the guild war context.
+        /// </summary>
+        public GuildWarContext? GuildWarContext { get; set; }
+
+        /// <summary>
         /// Gets the skill list.
         /// </summary>
         public ISkillList? SkillList { get; private set; }
@@ -347,11 +358,6 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <inheritdoc/>
         public int InfoRange => this.GameContext.Configuration.InfoRange;
-
-        /// <summary>
-        /// Gets or sets the last guild requester.
-        /// </summary>
-        public Player? LastGuildRequester { get; set; }
 
         /// <inheritdoc/>
         IAttributeSystem IAttackable.Attributes => this.Attributes!;
@@ -1117,6 +1123,21 @@ namespace MUnique.OpenMU.GameLogic
             if (this.CurrentMap is null)
             {
                 throw new InvalidOperationException("CurrentMap is not set. Can't determine spawn gate.");
+            }
+
+            if (this.GuildWarContext?.WarType == GuildWarType.Soccer
+                && this.GuildWarContext.State == GuildWarState.Started
+                && this.CurrentMap is SoccerGameMap soccerGameMap
+                && soccerGameMap.Definition.BattleZone?.Ground is { } ground)
+            {
+                return new ExitGate
+                {
+                    Map = soccerGameMap.Definition,
+                    X1 = ground.X1,
+                    X2 = ground.X2,
+                    Y1 = ground.Y1,
+                    Y2 = ground.Y2,
+                };
             }
 
             var spawnTargetMapDefinition = this.CurrentMap.Definition.SafezoneMap ?? this.CurrentMap.Definition;

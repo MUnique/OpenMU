@@ -37,12 +37,5 @@ namespace MUnique.OpenMU.GameServer
         {
             return this.serverDefinition.ServerConfiguration?.Maps.FirstOrDefault(map => map.Number == mapNumber);
         }
-
-        /// <inheritdoc/>
-        protected override GameMap InternalCreateGameMap(GameMapDefinition definition)
-        {
-            var gameMap = base.InternalCreateGameMap(definition);
-            return gameMap;
-        }
     }
 }

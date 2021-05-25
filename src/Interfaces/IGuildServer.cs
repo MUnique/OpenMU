@@ -121,6 +121,12 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="characterId">The character identifier.</param>
         /// <returns>The guild position.</returns>
         GuildPosition? GetGuildPosition(Guid characterId);
+
+        /// <summary>
+        /// Increases the guild score by one.
+        /// </summary>
+        /// <param name="guildId">The identifier of the guild.</param>
+        void IncreaseGuildScore(uint guildId);
     }
 
     /// <summary>
