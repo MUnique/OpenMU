@@ -4788,7 +4788,8 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>RequestResult</TypeName>
           <Name>Result</Name>
         </Field>
       </Fields>
@@ -4798,19 +4799,34 @@
           <Description>Describes the result of the guild war request.</Description>
           <Values>
             <EnumValue>
-              <Name>NotInGuild</Name>
-              <Description>Failed, because player is not in a guild.</Description>
+              <Name>GuildNotFound</Name>
+              <Description>Failed, guild not found.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
-              <Name>Success</Name>
-              <Description>The guild war starts successfully.</Description>
+              <Name>RequestSentToGuildMaster</Name>
+              <Description>Request has been sent to the guild master. Waiting for his answer.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildMasterOffline</Name>
+              <Description>Failed, because the guild master is offline.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotInGuild</Name>
+              <Description>Failed, because player is not in a guild.</Description>
               <Value>3</Value>
             </EnumValue>
             <EnumValue>
-              <Name>SoccerBattleGroundInUse</Name>
-              <Description>The guild war (soccer) can't start, because the soccer arena is already in use.</Description>
+              <Name>Failed</Name>
+              <Description>The guild war couldn't be started, e.g. because the soccer arena is already in use.</Description>
               <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotTheGuildMaster</Name>
+              <Description>Failed, because player is not the guild master.</Description>
+              <Value>5</Value>
             </EnumValue>
             <EnumValue>
               <Name>AlreadyInWar</Name>
@@ -4883,7 +4899,8 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>GuildWarResult</TypeName>
           <Name>Result</Name>
         </Field>
         <Field>
@@ -4893,6 +4910,34 @@
           <Length>8</Length>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>GuildWarResult</Name>
+          <Description>Describes the result of the guild war.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Lost</Name>
+              <Description>The war was lost.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Won</Name>
+              <Description>The war was won.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>OtherGuildMasterCancelledWar</Name>
+              <Description>The war was cancelled by the other guild master.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CancelledWar</Name>
+              <Description>The war was cancelled by the own guild master.</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
