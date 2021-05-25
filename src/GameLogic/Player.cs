@@ -1202,7 +1202,8 @@ namespace MUnique.OpenMU.GameLogic
             this.respawnAfterDeathToken = default;
             this.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IObjectGotKilledPlugIn>()?.ObjectGotKilled(this, killer), true);
 
-            if (killer is Player killerAfterKilled)
+            if (killer is Player killerAfterKilled
+                && !(killerAfterKilled.GuildWarContext?.Score is { } score && score == this.GuildWarContext?.Score))
             {
                 killerAfterKilled.AfterKilledPlayer();
             }
