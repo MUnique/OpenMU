@@ -96,6 +96,11 @@ namespace MUnique.OpenMU.GameLogic
                         this.logger.LogDebug("Creating trap {spawn}", spawn);
                         npc = new Trap(spawn, monsterDef, createdMap, intelligence ?? new RandomAttackInRangeTrapIntelligence(createdMap));
                     }
+                    else if (monsterDef.ObjectKind == NpcObjectKind.SoccerBall)
+                    {
+                        this.logger.LogDebug("Creating soccer ball {spawn}", spawn);
+                        npc = new SoccerBall(spawn, monsterDef, createdMap);
+                    }
                     else
                     {
                         this.logger.LogDebug("Creating npc {spawn}", spawn);
