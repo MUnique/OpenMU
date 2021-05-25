@@ -3360,7 +3360,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Is sent by the server when: A guild master requested a guild war against another guild.
         /// Causes reaction on client side: The guild master of the other guild gets this request.
         /// </remarks>
-        public static void SendGuildWarRequestResult(this IConnection connection, byte @result)
+        public static void SendGuildWarRequestResult(this IConnection connection, GuildWarRequestResult.RequestResult @result)
         {
             using var writer = connection.StartWriteGuildWarRequestResult();
             var packet = writer.Packet;
@@ -3418,7 +3418,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Is sent by the server when: The guild war ended.
         /// Causes reaction on client side: The guild war is shown as ended on the client side.
         /// </remarks>
-        public static void SendGuildWarEnded(this IConnection connection, byte @result, string @guildName)
+        public static void SendGuildWarEnded(this IConnection connection, GuildWarEnded.GuildWarResult @result, string @guildName)
         {
             using var writer = connection.StartWriteGuildWarEnded();
             var packet = writer.Packet;

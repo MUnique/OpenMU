@@ -13703,19 +13703,34 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public enum RequestResult
         {
             /// <summary>
+            /// Failed, guild not found.
+            /// </summary>
+            GuildNotFound = 0,
+
+            /// <summary>
+            /// Request has been sent to the guild master. Waiting for his answer.
+            /// </summary>
+            RequestSentToGuildMaster = 1,
+
+            /// <summary>
+            /// Failed, because the guild master is offline.
+            /// </summary>
+            GuildMasterOffline = 2,
+
+            /// <summary>
             /// Failed, because player is not in a guild.
             /// </summary>
-            NotInGuild = 0,
+            NotInGuild = 3,
 
             /// <summary>
-            /// The guild war starts successfully.
+            /// The guild war couldn't be started, e.g. because the soccer arena is already in use.
             /// </summary>
-            Success = 3,
+            Failed = 4,
 
             /// <summary>
-            /// The guild war (soccer) can't start, because the soccer arena is already in use.
+            /// Failed, because player is not the guild master.
             /// </summary>
-            SoccerBattleGroundInUse = 4,
+            NotTheGuildMaster = 5,
 
             /// <summary>
             /// Failed, because the requested guild is already in a war.
@@ -13774,10 +13789,10 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the result.
         /// </summary>
-        public byte Result
+        public GuildWarRequestResult.RequestResult Result
         {
-            get => this.data[3];
-            set => this.data[3] = value;
+            get => (RequestResult)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>
@@ -13987,6 +14002,32 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// </summary>
     public readonly ref struct GuildWarEnded
     {
+        /// <summary>
+        /// Describes the result of the guild war.
+        /// </summary>
+        public enum GuildWarResult
+        {
+            /// <summary>
+            /// The war was lost.
+            /// </summary>
+            Lost = 0,
+
+            /// <summary>
+            /// The war was won.
+            /// </summary>
+            Won = 1,
+
+            /// <summary>
+            /// The war was cancelled by the other guild master.
+            /// </summary>
+            OtherGuildMasterCancelledWar = 2,
+
+            /// <summary>
+            /// The war was cancelled by the own guild master.
+            /// </summary>
+            CancelledWar = 3,
+        }
+
         private readonly Span<byte> data;
 
         /// <summary>
@@ -14038,10 +14079,10 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets or sets the result.
         /// </summary>
-        public byte Result
+        public GuildWarEnded.GuildWarResult Result
         {
-            get => this.data[3];
-            set => this.data[3] = value;
+            get => (GuildWarResult)this.data.Slice(3)[0];
+            set => this.data.Slice(3)[0] = (byte)value;
         }
 
         /// <summary>
