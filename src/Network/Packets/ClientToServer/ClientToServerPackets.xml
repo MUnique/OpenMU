@@ -1738,6 +1738,17 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>57</Code>
+      <Name>CancelGuildCreation</Name>
+      <Length>3</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player has the dialog of the guild creation dialog opened and decided against creating a guild.</SentWhen>
+      <CausedReaction>It either cancels the guild creation.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>61</Code>
       <Name>GuildWarResponse</Name>
       <Length>4</Length>

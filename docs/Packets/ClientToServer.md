@@ -47,6 +47,7 @@
   * [C1 54 - GuildMasterAnswer (by client)](C1-54-GuildMasterAnswer_by-client.md)
   * [C1 55 - GuildCreateRequest (by client)](C1-55-GuildCreateRequest_by-client.md)
   * [C1 55 - GuildCreateRequest075 (by client)](C1-55-GuildCreateRequest075_by-client.md)
+  * [C1 57 - CancelGuildCreation (by client)](C1-57-CancelGuildCreation_by-client.md)
   * [C1 61 - GuildWarResponse (by client)](C1-61-GuildWarResponse_by-client.md)
   * [C1 66 - GuildInfoRequest (by client)](C1-66-GuildInfoRequest_by-client.md)
   * [C1 81 - VaultMoveMoneyRequest (by client)](C1-81-VaultMoveMoneyRequest_by-client.md)
