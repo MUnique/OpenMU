@@ -48,8 +48,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
         public static ExitGate? GetSafezoneGate(this GameMapDefinition gameMapDefinition, GameMapTerrain? terrain = null)
         {
             terrain ??= new GameMapTerrain(gameMapDefinition);
-            return gameMapDefinition.ExitGates.FirstOrDefault(g => g.IsSpawnGate && terrain.SafezoneMap[g.X1, g.Y1])
-                   ?? gameMapDefinition.ExitGates.FirstOrDefault(g => g.IsSpawnGate);
+            return gameMapDefinition.ExitGates?.FirstOrDefault(g => g.IsSpawnGate && terrain.SafezoneMap[g.X1, g.Y1])
+                   ?? gameMapDefinition.ExitGates?.FirstOrDefault(g => g.IsSpawnGate);
         }
     }
 }

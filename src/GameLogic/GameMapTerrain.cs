@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="definition">The game map definition.</param>
         public GameMapTerrain(GameMapDefinition definition)
-            : this(definition.TerrainData)
+            : this(definition?.TerrainData)
         {
         }
 
