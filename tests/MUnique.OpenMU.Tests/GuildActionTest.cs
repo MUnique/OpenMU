@@ -141,7 +141,7 @@ namespace MUnique.OpenMU.Tests
             gameConfiguration.Maps.Add(new GameMapDefinition());
             var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>());
             var gameServer = new GameServerContext(
-                new GameServerDefinition { GameConfiguration = gameConfiguration },
+                new GameServerDefinition { GameConfiguration = gameConfiguration, ServerConfiguration = new DataModel.Configuration.GameServerConfiguration() },
                 this.GuildServer,
                 new Mock<ILoginServer>().Object,
                 new Mock<IFriendServer>().Object,
