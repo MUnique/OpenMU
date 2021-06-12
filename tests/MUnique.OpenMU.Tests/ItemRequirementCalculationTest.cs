@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Tests
     using NUnit.Framework;
     using IncreasableItemOption = MUnique.OpenMU.Persistence.BasicModel.IncreasableItemOption;
     using ItemDefinition = MUnique.OpenMU.Persistence.BasicModel.ItemDefinition;
+    using ItemSlotType = MUnique.OpenMU.Persistence.BasicModel.ItemSlotType;
 
     /// <summary>
     /// Unit tests for <see cref="ItemExtensions.GetRequirement"/>.
@@ -47,6 +48,7 @@ namespace MUnique.OpenMU.Tests
             item.Definition = new ItemDefinition();
             item.Definition.DropLevel = 6;
             item.Definition.Group = 7;
+            item.Definition.ItemSlot = new ItemSlotType();
             var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
             var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 60 };
 
@@ -70,6 +72,7 @@ namespace MUnique.OpenMU.Tests
             item.Definition = new ItemDefinition();
             item.Definition.DropLevel = 6;
             item.Definition.Group = 7;
+            item.Definition.ItemSlot = new ItemSlotType();
             item.ItemOptions.Add(new ItemOptionLink { Level = 2, ItemOption = new IncreasableItemOption { OptionType = ItemOptionTypes.Option } });
             var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 30 };
             var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 60 };
@@ -113,6 +116,7 @@ namespace MUnique.OpenMU.Tests
             item.Definition = new ItemDefinition();
             item.Definition.DropLevel = 147;
             item.Definition.Group = 8;
+            item.Definition.ItemSlot = new ItemSlotType();
             var strengthRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalStrengthRequirementValue, MinimumValue = 62 };
             var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 16 };
 
@@ -157,6 +161,7 @@ namespace MUnique.OpenMU.Tests
             item.Definition.Skill = new Skill();
             item.Definition.DropLevel = 59;
             item.Definition.Group = 5;
+            item.Definition.ItemSlot = new ItemSlotType();
             var energyRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalEnergyRequirementValue, MinimumValue = 168 };
             var agilityRequirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.TotalAgilityRequirementValue, MinimumValue = 25 };
 
