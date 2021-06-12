@@ -74,15 +74,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the tick count.
         /// </summary>
         public uint TickCount
         {
-            get => ReadUInt32LittleEndian(this.data.Slice(4));
-            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt32LittleEndian(this.data[4..]);
+            set => WriteUInt32LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator Ping(Span<byte> packet) => new Ping(packet, false);
+        public static implicit operator Ping(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Ping"/> to a Span of bytes.
@@ -184,7 +184,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the character.
@@ -209,7 +209,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PublicChatMessage(Span<byte> packet) => new PublicChatMessage(packet, false);
+        public static implicit operator PublicChatMessage(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PublicChatMessage"/> to a Span of bytes.
@@ -273,7 +273,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the receiver name.
@@ -298,7 +298,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator WhisperMessage(Span<byte> packet) => new WhisperMessage(packet, false);
+        public static implicit operator WhisperMessage(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="WhisperMessage"/> to a Span of bytes.
@@ -374,7 +374,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the user name, "encrypted" with Xor3.
@@ -397,8 +397,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => ReadUInt32BigEndian(this.data.Slice(34));
-            set => WriteUInt32BigEndian(this.data.Slice(34), value);
+            get => ReadUInt32BigEndian(this.data[34..]);
+            set => WriteUInt32BigEndian(this.data[34..], value);
         }
 
         /// <summary>
@@ -414,7 +414,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LoginLongPassword(Span<byte> packet) => new LoginLongPassword(packet, false);
+        public static implicit operator LoginLongPassword(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="LoginLongPassword"/> to a Span of bytes.
@@ -484,7 +484,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the user name, "encrypted" with Xor3.
@@ -507,8 +507,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => ReadUInt32BigEndian(this.data.Slice(24));
-            set => WriteUInt32BigEndian(this.data.Slice(24), value);
+            get => ReadUInt32BigEndian(this.data[24..]);
+            set => WriteUInt32BigEndian(this.data[24..], value);
         }
 
         /// <summary>
@@ -524,7 +524,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LoginShortPassword(Span<byte> packet) => new LoginShortPassword(packet, false);
+        public static implicit operator LoginShortPassword(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="LoginShortPassword"/> to a Span of bytes.
@@ -594,7 +594,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the user name, "encrypted" with Xor3.
@@ -617,8 +617,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint TickCount
         {
-            get => ReadUInt32BigEndian(this.data.Slice(24));
-            set => WriteUInt32BigEndian(this.data.Slice(24), value);
+            get => ReadUInt32BigEndian(this.data[24..]);
+            set => WriteUInt32BigEndian(this.data[24..], value);
         }
 
         /// <summary>
@@ -634,7 +634,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator Login075(Span<byte> packet) => new Login075(packet, false);
+        public static implicit operator Login075(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Login075"/> to a Span of bytes.
@@ -704,15 +704,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
         public LogOutType Type
         {
-            get => (LogOutType)this.data.Slice(4)[0];
-            set => this.data.Slice(4)[0] = (byte)value;
+            get => (LogOutType)this.data[4];
         }
 
         /// <summary>
@@ -720,7 +719,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LogOut(Span<byte> packet) => new LogOut(packet, false);
+        public static implicit operator LogOut(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="LogOut"/> to a Span of bytes.
@@ -790,7 +789,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the item slot.
@@ -806,8 +805,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint Price
         {
-            get => ReadUInt32LittleEndian(this.data.Slice(5));
-            set => WriteUInt32LittleEndian(this.data.Slice(5), value);
+            get => ReadUInt32LittleEndian(this.data[5..]);
+            set => WriteUInt32LittleEndian(this.data[5..], value);
         }
 
         /// <summary>
@@ -815,7 +814,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PlayerShopSetItemPrice(Span<byte> packet) => new PlayerShopSetItemPrice(packet, false);
+        public static implicit operator PlayerShopSetItemPrice(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PlayerShopSetItemPrice"/> to a Span of bytes.
@@ -885,7 +884,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the store name.
@@ -901,7 +900,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PlayerShopOpen(Span<byte> packet) => new PlayerShopOpen(packet, false);
+        public static implicit operator PlayerShopOpen(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PlayerShopOpen"/> to a Span of bytes.
@@ -971,14 +970,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopClose"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PlayerShopClose(Span<byte> packet) => new PlayerShopClose(packet, false);
+        public static implicit operator PlayerShopClose(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PlayerShopClose"/> to a Span of bytes.
@@ -1048,15 +1047,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the player id.
         /// </summary>
         public ushort PlayerId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => ReadUInt16BigEndian(this.data[4..]);
+            set => WriteUInt16BigEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -1073,7 +1072,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PlayerShopItemListRequest(Span<byte> packet) => new PlayerShopItemListRequest(packet, false);
+        public static implicit operator PlayerShopItemListRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PlayerShopItemListRequest"/> to a Span of bytes.
@@ -1143,15 +1142,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new C3HeaderWithSubCode(this.data);
+        public C3HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the player id.
         /// </summary>
         public ushort PlayerId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => ReadUInt16BigEndian(this.data[4..]);
+            set => WriteUInt16BigEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -1177,7 +1176,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PlayerShopItemBuyRequest(Span<byte> packet) => new PlayerShopItemBuyRequest(packet, false);
+        public static implicit operator PlayerShopItemBuyRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PlayerShopItemBuyRequest"/> to a Span of bytes.
@@ -1240,15 +1239,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the item id.
         /// </summary>
         public ushort ItemId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -1256,7 +1255,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PickupItemRequest(Span<byte> packet) => new PickupItemRequest(packet, false);
+        public static implicit operator PickupItemRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PickupItemRequest"/> to a Span of bytes.
@@ -1319,15 +1318,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the item id.
         /// </summary>
         public ushort ItemId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -1335,7 +1334,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PickupItemRequest075(Span<byte> packet) => new PickupItemRequest075(packet, false);
+        public static implicit operator PickupItemRequest075(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PickupItemRequest075"/> to a Span of bytes.
@@ -1398,7 +1397,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the target x.
@@ -1432,7 +1431,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator DropItemRequest(Span<byte> packet) => new DropItemRequest(packet, false);
+        public static implicit operator DropItemRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="DropItemRequest"/> to a Span of bytes.
@@ -1495,15 +1494,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the from storage.
         /// </summary>
         public ItemStorageKind FromStorage
         {
-            get => (ItemStorageKind)this.data.Slice(3)[0];
-            set => this.data.Slice(3)[0] = (byte)value;
+            get => (ItemStorageKind)this.data[3];
         }
 
         /// <summary>
@@ -1528,8 +1526,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ItemStorageKind ToStorage
         {
-            get => (ItemStorageKind)this.data.Slice(17)[0];
-            set => this.data.Slice(17)[0] = (byte)value;
+            get => (ItemStorageKind)this.data[17];
         }
 
         /// <summary>
@@ -1546,7 +1543,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ItemMoveRequest(Span<byte> packet) => new ItemMoveRequest(packet, false);
+        public static implicit operator ItemMoveRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ItemMoveRequest"/> to a Span of bytes.
@@ -1625,7 +1622,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the inventory slot index of the item which should be consumed.
@@ -1650,8 +1647,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ConsumeItemRequest.FruitUsage FruitConsumption
         {
-            get => (FruitUsage)this.data.Slice(5)[0];
-            set => this.data.Slice(5)[0] = (byte)value;
+            get => (FruitUsage)this.data[5];
         }
 
         /// <summary>
@@ -1659,7 +1655,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ConsumeItemRequest(Span<byte> packet) => new ConsumeItemRequest(packet, false);
+        public static implicit operator ConsumeItemRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ConsumeItemRequest"/> to a Span of bytes.
@@ -1722,7 +1718,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the inventory slot index of the item which should be consumed.
@@ -1747,7 +1743,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ConsumeItemRequest075(Span<byte> packet) => new ConsumeItemRequest075(packet, false);
+        public static implicit operator ConsumeItemRequest075(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ConsumeItemRequest075"/> to a Span of bytes.
@@ -1810,15 +1806,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the npc id.
         /// </summary>
         public ushort NpcId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -1826,7 +1822,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator TalkToNpcRequest(Span<byte> packet) => new TalkToNpcRequest(packet, false);
+        public static implicit operator TalkToNpcRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="TalkToNpcRequest"/> to a Span of bytes.
@@ -1889,14 +1885,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="CloseNpcRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator CloseNpcRequest(Span<byte> packet) => new CloseNpcRequest(packet, false);
+        public static implicit operator CloseNpcRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="CloseNpcRequest"/> to a Span of bytes.
@@ -1959,7 +1955,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets item Slot (NPC Store)
@@ -1975,7 +1971,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator BuyItemFromNpcRequest(Span<byte> packet) => new BuyItemFromNpcRequest(packet, false);
+        public static implicit operator BuyItemFromNpcRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="BuyItemFromNpcRequest"/> to a Span of bytes.
@@ -2038,7 +2034,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets item Slot (Inventory)
@@ -2054,7 +2050,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator SellItemToNpcRequest(Span<byte> packet) => new SellItemToNpcRequest(packet, false);
+        public static implicit operator SellItemToNpcRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="SellItemToNpcRequest"/> to a Span of bytes.
@@ -2117,7 +2113,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets inventory item slot of the target item. If it's 0xFF, the player wants to repair all items - this is only possible with some opened NPC dialogs. Repairing the pet item slot (8) is only possible when the pet trainer npc is opened.
@@ -2133,7 +2129,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator RepairItemRequest(Span<byte> packet) => new RepairItemRequest(packet, false);
+        public static implicit operator RepairItemRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="RepairItemRequest"/> to a Span of bytes.
@@ -2203,15 +2199,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the index of the entry in the warp list.
         /// </summary>
         public ushort WarpInfoIndex
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(8));
-            set => WriteUInt16LittleEndian(this.data.Slice(8), value);
+            get => ReadUInt16LittleEndian(this.data[8..]);
+            set => WriteUInt16LittleEndian(this.data[8..], value);
         }
 
         /// <summary>
@@ -2219,7 +2215,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator WarpCommandRequest(Span<byte> packet) => new WarpCommandRequest(packet, false);
+        public static implicit operator WarpCommandRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="WarpCommandRequest"/> to a Span of bytes.
@@ -2282,15 +2278,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the gate number.
         /// </summary>
         public ushort GateNumber
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -2316,7 +2312,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator EnterGateRequest(Span<byte> packet) => new EnterGateRequest(packet, false);
+        public static implicit operator EnterGateRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="EnterGateRequest"/> to a Span of bytes.
@@ -2386,15 +2382,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the pin.
         /// </summary>
         public ushort Pin
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -2402,7 +2398,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator UnlockVault(Span<byte> packet) => new UnlockVault(packet, false);
+        public static implicit operator UnlockVault(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="UnlockVault"/> to a Span of bytes.
@@ -2472,15 +2468,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the pin.
         /// </summary>
         public ushort Pin
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -2497,7 +2493,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator SetVaultPin(Span<byte> packet) => new SetVaultPin(packet, false);
+        public static implicit operator SetVaultPin(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="SetVaultPin"/> to a Span of bytes.
@@ -2567,7 +2563,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the password of the account, which is required to remove the vault pin.
@@ -2583,7 +2579,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator RemoveVaultPin(Span<byte> packet) => new RemoveVaultPin(packet, false);
+        public static implicit operator RemoveVaultPin(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="RemoveVaultPin"/> to a Span of bytes.
@@ -2646,14 +2642,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="VaultClosed"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator VaultClosed(Span<byte> packet) => new VaultClosed(packet, false);
+        public static implicit operator VaultClosed(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="VaultClosed"/> to a Span of bytes.
@@ -2732,15 +2728,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the direction.
         /// </summary>
         public VaultMoveMoneyRequest.VaultMoneyMoveDirection Direction
         {
-            get => (VaultMoneyMoveDirection)this.data.Slice(3)[0];
-            set => this.data.Slice(3)[0] = (byte)value;
+            get => (VaultMoneyMoveDirection)this.data[3];
         }
 
         /// <summary>
@@ -2748,8 +2743,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint Amount
         {
-            get => ReadUInt32LittleEndian(this.data.Slice(4));
-            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt32LittleEndian(this.data[4..]);
+            set => WriteUInt32LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -2757,7 +2752,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator VaultMoveMoneyRequest(Span<byte> packet) => new VaultMoveMoneyRequest(packet, false);
+        public static implicit operator VaultMoveMoneyRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="VaultMoveMoneyRequest"/> to a Span of bytes.
@@ -2913,15 +2908,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the operation.
         /// </summary>
         public LahapJewelMixRequest.MixType Operation
         {
-            get => (MixType)this.data.Slice(3)[0];
-            set => this.data.Slice(3)[0] = (byte)value;
+            get => (MixType)this.data[3];
         }
 
         /// <summary>
@@ -2929,8 +2923,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public LahapJewelMixRequest.ItemType Item
         {
-            get => (ItemType)this.data.Slice(4)[0];
-            set => this.data.Slice(4)[0] = (byte)value;
+            get => (ItemType)this.data[4];
         }
 
         /// <summary>
@@ -2938,8 +2931,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public LahapJewelMixRequest.StackSize MixingStackSize
         {
-            get => (StackSize)this.data.Slice(5)[0];
-            set => this.data.Slice(5)[0] = (byte)value;
+            get => (StackSize)this.data[5];
         }
 
         /// <summary>
@@ -2956,7 +2948,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LahapJewelMixRequest(Span<byte> packet) => new LahapJewelMixRequest(packet, false);
+        public static implicit operator LahapJewelMixRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="LahapJewelMixRequest"/> to a Span of bytes.
@@ -3019,14 +3011,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyListRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PartyListRequest(Span<byte> packet) => new PartyListRequest(packet, false);
+        public static implicit operator PartyListRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PartyListRequest"/> to a Span of bytes.
@@ -3089,7 +3081,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the player index.
@@ -3105,7 +3097,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PartyPlayerKickRequest(Span<byte> packet) => new PartyPlayerKickRequest(packet, false);
+        public static implicit operator PartyPlayerKickRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PartyPlayerKickRequest"/> to a Span of bytes.
@@ -3168,15 +3160,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the target player id.
         /// </summary>
         public ushort TargetPlayerId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -3184,7 +3176,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PartyInviteRequest(Span<byte> packet) => new PartyInviteRequest(packet, false);
+        public static implicit operator PartyInviteRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PartyInviteRequest"/> to a Span of bytes.
@@ -3247,15 +3239,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the accepted.
         /// </summary>
         public bool Accepted
         {
-            get => this.data.Slice(3).GetBoolean();
-            set => this.data.Slice(3).SetBoolean(value);
+            get => this.data[3..].GetBoolean();
+            set => this.data[3..].SetBoolean(value);
         }
 
         /// <summary>
@@ -3263,7 +3255,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PartyInviteResponse(Span<byte> packet) => new PartyInviteResponse(packet, false);
+        public static implicit operator PartyInviteResponse(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PartyInviteResponse"/> to a Span of bytes.
@@ -3321,7 +3313,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the source x.
@@ -3346,8 +3338,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public byte StepCount
         {
-            get => this.data.Slice(5).GetByteValue(4, 0);
-            set => this.data.Slice(5).SetByteValue(value, 4, 0);
+            get => this.data[5..].GetByteValue(4, 0);
+            set => this.data[5..].SetByteValue(value, 4, 0);
         }
 
         /// <summary>
@@ -3355,8 +3347,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public byte TargetRotation
         {
-            get => this.data.Slice(5).GetByteValue(4, 4);
-            set => this.data.Slice(5).SetByteValue(value, 4, 4);
+            get => this.data[5..].GetByteValue(4, 4);
+            set => this.data[5..].SetByteValue(value, 4, 4);
         }
 
         /// <summary>
@@ -3372,7 +3364,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator WalkRequest(Span<byte> packet) => new WalkRequest(packet, false);
+        public static implicit operator WalkRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="WalkRequest"/> to a Span of bytes.
@@ -3436,7 +3428,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the source x.
@@ -3461,8 +3453,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public byte StepCount
         {
-            get => this.data.Slice(5).GetByteValue(4, 0);
-            set => this.data.Slice(5).SetByteValue(value, 4, 0);
+            get => this.data[5..].GetByteValue(4, 0);
+            set => this.data[5..].SetByteValue(value, 4, 0);
         }
 
         /// <summary>
@@ -3470,8 +3462,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public byte TargetRotation
         {
-            get => this.data.Slice(5).GetByteValue(4, 4);
-            set => this.data.Slice(5).SetByteValue(value, 4, 4);
+            get => this.data[5..].GetByteValue(4, 4);
+            set => this.data[5..].SetByteValue(value, 4, 4);
         }
 
         /// <summary>
@@ -3487,7 +3479,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator WalkRequest075(Span<byte> packet) => new WalkRequest075(packet, false);
+        public static implicit operator WalkRequest075(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="WalkRequest075"/> to a Span of bytes.
@@ -3556,7 +3548,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the target x.
@@ -3581,7 +3573,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator InstantMoveRequest(Span<byte> packet) => new InstantMoveRequest(packet, false);
+        public static implicit operator InstantMoveRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="InstantMoveRequest"/> to a Span of bytes.
@@ -3644,7 +3636,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the rotation.
@@ -3669,7 +3661,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator AnimationRequest(Span<byte> packet) => new AnimationRequest(packet, false);
+        public static implicit operator AnimationRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="AnimationRequest"/> to a Span of bytes.
@@ -3739,14 +3731,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="RequestCharacterList"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator RequestCharacterList(Span<byte> packet) => new RequestCharacterList(packet, false);
+        public static implicit operator RequestCharacterList(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="RequestCharacterList"/> to a Span of bytes.
@@ -3816,7 +3808,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the name of the character which should be created.
@@ -3832,8 +3824,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public CharacterClassNumber Class
         {
-            get => (CharacterClassNumber)this.data.Slice(14).GetByteValue(6, 2);
-            set => this.data.Slice(14).SetByteValue((byte)value, 6, 2);
+            get => (CharacterClassNumber)this.data[14..].GetByteValue(6, 2);
         }
 
         /// <summary>
@@ -3841,7 +3832,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator CreateCharacter(Span<byte> packet) => new CreateCharacter(packet, false);
+        public static implicit operator CreateCharacter(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="CreateCharacter"/> to a Span of bytes.
@@ -3911,7 +3902,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the name of the character which should be deleted.
@@ -3936,7 +3927,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator DeleteCharacter(Span<byte> packet) => new DeleteCharacter(packet, false);
+        public static implicit operator DeleteCharacter(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="DeleteCharacter"/> to a Span of bytes.
@@ -4012,7 +4003,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the name of the character with which the player wants to join the game world
@@ -4028,7 +4019,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator SelectCharacter(Span<byte> packet) => new SelectCharacter(packet, false);
+        public static implicit operator SelectCharacter(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="SelectCharacter"/> to a Span of bytes.
@@ -4098,7 +4089,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the name.
@@ -4114,7 +4105,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator FocusCharacter(Span<byte> packet) => new FocusCharacter(packet, false);
+        public static implicit operator FocusCharacter(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="FocusCharacter"/> to a Span of bytes.
@@ -4184,15 +4175,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the stat type.
         /// </summary>
         public CharacterStatAttribute StatType
         {
-            get => (CharacterStatAttribute)this.data.Slice(4)[0];
-            set => this.data.Slice(4)[0] = (byte)value;
+            get => (CharacterStatAttribute)this.data[4];
         }
 
         /// <summary>
@@ -4200,7 +4190,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator IncreaseCharacterStatPoint(Span<byte> packet) => new IncreaseCharacterStatPoint(packet, false);
+        public static implicit operator IncreaseCharacterStatPoint(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="IncreaseCharacterStatPoint"/> to a Span of bytes.
@@ -4270,14 +4260,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="ClientReadyAfterMapChange"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ClientReadyAfterMapChange(Span<byte> packet) => new ClientReadyAfterMapChange(packet, false);
+        public static implicit operator ClientReadyAfterMapChange(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ClientReadyAfterMapChange"/> to a Span of bytes.
@@ -4342,7 +4332,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the binary data of the key configuration
@@ -4357,7 +4347,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator SaveKeyConfiguration(Span<byte> packet) => new SaveKeyConfiguration(packet, false);
+        public static implicit operator SaveKeyConfiguration(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="SaveKeyConfiguration"/> to a Span of bytes.
@@ -4433,15 +4423,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the skill id.
         /// </summary>
         public ushort SkillId
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -4449,7 +4439,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator AddMasterSkillPoint(Span<byte> packet) => new AddMasterSkillPoint(packet, false);
+        public static implicit operator AddMasterSkillPoint(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="AddMasterSkillPoint"/> to a Span of bytes.
@@ -4512,15 +4502,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the target id.
         /// </summary>
         public ushort TargetId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -4546,7 +4536,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator HitRequest(Span<byte> packet) => new HitRequest(packet, false);
+        public static implicit operator HitRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="HitRequest"/> to a Span of bytes.
@@ -4609,15 +4599,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the skill id.
         /// </summary>
         public ushort SkillId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -4625,8 +4615,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(5));
-            set => WriteUInt16BigEndian(this.data.Slice(5), value);
+            get => ReadUInt16BigEndian(this.data[5..]);
+            set => WriteUInt16BigEndian(this.data[5..], value);
         }
 
         /// <summary>
@@ -4634,7 +4624,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator TargetedSkill(Span<byte> packet) => new TargetedSkill(packet, false);
+        public static implicit operator TargetedSkill(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="TargetedSkill"/> to a Span of bytes.
@@ -4697,7 +4687,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the index of the skill in the skill list.
@@ -4713,8 +4703,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(4));
-            set => WriteUInt16BigEndian(this.data.Slice(4), value);
+            get => ReadUInt16BigEndian(this.data[4..]);
+            set => WriteUInt16BigEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -4722,7 +4712,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator TargetedSkill075(Span<byte> packet) => new TargetedSkill075(packet, false);
+        public static implicit operator TargetedSkill075(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="TargetedSkill075"/> to a Span of bytes.
@@ -4785,15 +4775,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the skill id.
         /// </summary>
         public ushort SkillId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -4801,7 +4791,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator MagicEffectCancelRequest(Span<byte> packet) => new MagicEffectCancelRequest(packet, false);
+        public static implicit operator MagicEffectCancelRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="MagicEffectCancelRequest"/> to a Span of bytes.
@@ -4864,15 +4854,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the skill id.
         /// </summary>
         public ushort SkillId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -4907,8 +4897,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort ExtraTargetId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(9));
-            set => WriteUInt16BigEndian(this.data.Slice(9), value);
+            get => ReadUInt16BigEndian(this.data[9..]);
+            set => WriteUInt16BigEndian(this.data[9..], value);
         }
 
         /// <summary>
@@ -4925,7 +4915,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator AreaSkill(Span<byte> packet) => new AreaSkill(packet, false);
+        public static implicit operator AreaSkill(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="AreaSkill"/> to a Span of bytes.
@@ -4988,15 +4978,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the skill id.
         /// </summary>
         public ushort SkillId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -5031,8 +5021,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(9));
-            set => WriteUInt16BigEndian(this.data.Slice(9), value);
+            get => ReadUInt16BigEndian(this.data[9..]);
+            set => WriteUInt16BigEndian(this.data[9..], value);
         }
 
         /// <summary>
@@ -5049,7 +5039,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator AreaSkillHit(Span<byte> packet) => new AreaSkillHit(packet, false);
+        public static implicit operator AreaSkillHit(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="AreaSkillHit"/> to a Span of bytes.
@@ -5112,7 +5102,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the index of the skill in the skill list.
@@ -5155,7 +5145,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator AreaSkill075(Span<byte> packet) => new AreaSkill075(packet, false);
+        public static implicit operator AreaSkill075(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="AreaSkill075"/> to a Span of bytes.
@@ -5213,7 +5203,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the index of the skill in the skill list.
@@ -5254,14 +5244,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the <see cref="TargetData"/> of the specified index.
         /// </summary>
-        public TargetData this[int index] => new TargetData(this.data.Slice(7 + (index * TargetData.Length)));
+        public TargetData this[int index] => new (this.data[(7 + index * TargetData.Length)..]);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkillHit075"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator AreaSkillHit075(Span<byte> packet) => new AreaSkillHit075(packet, false);
+        public static implicit operator AreaSkillHit075(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="AreaSkillHit075"/> to a Span of bytes.
@@ -5303,8 +5293,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(0));
-            set => WriteUInt16BigEndian(this.data.Slice(0), value);
+            get => ReadUInt16BigEndian(this.data);
+            set => WriteUInt16BigEndian(this.data, value);
         }
     }
     }
@@ -5362,14 +5352,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeCancel"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator TradeCancel(Span<byte> packet) => new TradeCancel(packet, false);
+        public static implicit operator TradeCancel(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="TradeCancel"/> to a Span of bytes.
@@ -5432,15 +5422,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the new state.
         /// </summary>
         public TradeButtonState NewState
         {
-            get => (TradeButtonState)this.data.Slice(3)[0];
-            set => this.data.Slice(3)[0] = (byte)value;
+            get => (TradeButtonState)this.data[3];
         }
 
         /// <summary>
@@ -5448,7 +5437,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator TradeButtonStateChange(Span<byte> packet) => new TradeButtonStateChange(packet, false);
+        public static implicit operator TradeButtonStateChange(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="TradeButtonStateChange"/> to a Span of bytes.
@@ -5511,15 +5500,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the player id.
         /// </summary>
         public ushort PlayerId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -5527,7 +5516,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator TradeRequest(Span<byte> packet) => new TradeRequest(packet, false);
+        public static implicit operator TradeRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="TradeRequest"/> to a Span of bytes.
@@ -5590,15 +5579,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the trade accepted.
         /// </summary>
         public bool TradeAccepted
         {
-            get => this.data.Slice(3).GetBoolean();
-            set => this.data.Slice(3).SetBoolean(value);
+            get => this.data[3..].GetBoolean();
+            set => this.data[3..].SetBoolean(value);
         }
 
         /// <summary>
@@ -5606,7 +5595,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator TradeRequestResponse(Span<byte> packet) => new TradeRequestResponse(packet, false);
+        public static implicit operator TradeRequestResponse(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="TradeRequestResponse"/> to a Span of bytes.
@@ -5669,15 +5658,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the amount.
         /// </summary>
         public uint Amount
         {
-            get => ReadUInt32LittleEndian(this.data.Slice(4));
-            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt32LittleEndian(this.data[4..]);
+            set => WriteUInt32LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -5685,7 +5674,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator SetTradeMoney(Span<byte> packet) => new SetTradeMoney(packet, false);
+        public static implicit operator SetTradeMoney(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="SetTradeMoney"/> to a Span of bytes.
@@ -5748,15 +5737,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the letter index.
         /// </summary>
         public ushort LetterIndex
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -5764,7 +5753,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LetterDeleteRequest(Span<byte> packet) => new LetterDeleteRequest(packet, false);
+        public static implicit operator LetterDeleteRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="LetterDeleteRequest"/> to a Span of bytes.
@@ -5822,15 +5811,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C4Header Header => new C4Header(this.data);
+        public C4Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the letter id.
         /// </summary>
         public uint LetterId
         {
-            get => ReadUInt32LittleEndian(this.data.Slice(4));
-            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt32LittleEndian(this.data[4..]);
+            set => WriteUInt32LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -5883,7 +5872,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LetterSendRequest(Span<byte> packet) => new LetterSendRequest(packet, false);
+        public static implicit operator LetterSendRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="LetterSendRequest"/> to a Span of bytes.
@@ -5952,15 +5941,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the letter index.
         /// </summary>
         public ushort LetterIndex
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -5968,7 +5957,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LetterReadRequest(Span<byte> packet) => new LetterReadRequest(packet, false);
+        public static implicit operator LetterReadRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="LetterReadRequest"/> to a Span of bytes.
@@ -6026,7 +6015,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the player name.
@@ -6051,7 +6040,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildKickPlayerRequest(Span<byte> packet) => new GuildKickPlayerRequest(packet, false);
+        public static implicit operator GuildKickPlayerRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GuildKickPlayerRequest"/> to a Span of bytes.
@@ -6120,15 +6109,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the guild master player id.
         /// </summary>
         public ushort GuildMasterPlayerId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(3));
-            set => WriteUInt16BigEndian(this.data.Slice(3), value);
+            get => ReadUInt16BigEndian(this.data[3..]);
+            set => WriteUInt16BigEndian(this.data[3..], value);
         }
 
         /// <summary>
@@ -6136,7 +6125,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildJoinRequest(Span<byte> packet) => new GuildJoinRequest(packet, false);
+        public static implicit operator GuildJoinRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GuildJoinRequest"/> to a Span of bytes.
@@ -6199,15 +6188,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the accepted.
         /// </summary>
         public bool Accepted
         {
-            get => this.data.Slice(3).GetBoolean();
-            set => this.data.Slice(3).SetBoolean(value);
+            get => this.data[3..].GetBoolean();
+            set => this.data[3..].SetBoolean(value);
         }
 
         /// <summary>
@@ -6215,7 +6204,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildJoinResponse(Span<byte> packet) => new GuildJoinResponse(packet, false);
+        public static implicit operator GuildJoinResponse(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GuildJoinResponse"/> to a Span of bytes.
@@ -6278,14 +6267,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildListRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildListRequest(Span<byte> packet) => new GuildListRequest(packet, false);
+        public static implicit operator GuildListRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GuildListRequest"/> to a Span of bytes.
@@ -6348,7 +6337,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the guild name.
@@ -6372,7 +6361,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildCreateRequest(Span<byte> packet) => new GuildCreateRequest(packet, false);
+        public static implicit operator GuildCreateRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GuildCreateRequest"/> to a Span of bytes.
@@ -6435,7 +6424,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the guild name.
@@ -6459,7 +6448,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildCreateRequest075(Span<byte> packet) => new GuildCreateRequest075(packet, false);
+        public static implicit operator GuildCreateRequest075(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GuildCreateRequest075"/> to a Span of bytes.
@@ -6522,15 +6511,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets a value whether the guild creation dialog should be shown. Otherwise, the guild creation is cancelled and the dialog was closed.
         /// </summary>
         public bool ShowCreationDialog
         {
-            get => this.data.Slice(3).GetBoolean();
-            set => this.data.Slice(3).SetBoolean(value);
+            get => this.data[3..].GetBoolean();
+            set => this.data[3..].SetBoolean(value);
         }
 
         /// <summary>
@@ -6538,7 +6527,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildMasterAnswer(Span<byte> packet) => new GuildMasterAnswer(packet, false);
+        public static implicit operator GuildMasterAnswer(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GuildMasterAnswer"/> to a Span of bytes.
@@ -6601,14 +6590,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="CancelGuildCreation"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator CancelGuildCreation(Span<byte> packet) => new CancelGuildCreation(packet, false);
+        public static implicit operator CancelGuildCreation(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="CancelGuildCreation"/> to a Span of bytes.
@@ -6671,15 +6660,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the accepted.
         /// </summary>
         public bool Accepted
         {
-            get => this.data.Slice(3).GetBoolean();
-            set => this.data.Slice(3).SetBoolean(value);
+            get => this.data[3..].GetBoolean();
+            set => this.data[3..].SetBoolean(value);
         }
 
         /// <summary>
@@ -6687,7 +6676,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildWarResponse(Span<byte> packet) => new GuildWarResponse(packet, false);
+        public static implicit operator GuildWarResponse(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GuildWarResponse"/> to a Span of bytes.
@@ -6750,15 +6739,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the guild id.
         /// </summary>
         public uint GuildId
         {
-            get => ReadUInt32LittleEndian(this.data.Slice(4));
-            set => WriteUInt32LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt32LittleEndian(this.data[4..]);
+            set => WriteUInt32LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -6766,7 +6755,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator GuildInfoRequest(Span<byte> packet) => new GuildInfoRequest(packet, false);
+        public static implicit operator GuildInfoRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GuildInfoRequest"/> to a Span of bytes.
@@ -6829,7 +6818,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3Header Header => new C3Header(this.data);
+        public C3Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the inventory slot of the target item. If it's 0xFF, the player requests to repair all items with the help of an NPC. If it's 8 (Pet slot), using the pet trainer NPC is mandatory, too.
@@ -6845,7 +6834,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ItemRepair(Span<byte> packet) => new ItemRepair(packet, false);
+        public static implicit operator ItemRepair(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ItemRepair"/> to a Span of bytes.
@@ -6969,15 +6958,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the identifier which tells the server which kind of mix should be executed.
         /// </summary>
         public ChaosMachineMixRequest.ChaosMachineMixType MixType
         {
-            get => (ChaosMachineMixType)this.data.Slice(3)[0];
-            set => this.data.Slice(3)[0] = (byte)value;
+            get => (ChaosMachineMixType)this.data[3];
         }
 
         /// <summary>
@@ -6994,7 +6982,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ChaosMachineMixRequest(Span<byte> packet) => new ChaosMachineMixRequest(packet, false);
+        public static implicit operator ChaosMachineMixRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ChaosMachineMixRequest"/> to a Span of bytes.
@@ -7057,14 +7045,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="CraftingDialogCloseRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator CraftingDialogCloseRequest(Span<byte> packet) => new CraftingDialogCloseRequest(packet, false);
+        public static implicit operator CraftingDialogCloseRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="CraftingDialogCloseRequest"/> to a Span of bytes.
@@ -7127,7 +7115,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the friend name.
@@ -7143,7 +7131,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator FriendAddRequest(Span<byte> packet) => new FriendAddRequest(packet, false);
+        public static implicit operator FriendAddRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="FriendAddRequest"/> to a Span of bytes.
@@ -7206,7 +7194,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the friend name.
@@ -7222,7 +7210,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator FriendDelete(Span<byte> packet) => new FriendDelete(packet, false);
+        public static implicit operator FriendDelete(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="FriendDelete"/> to a Span of bytes.
@@ -7285,7 +7273,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the friend name.
@@ -7301,7 +7289,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatRoomCreateRequest(Span<byte> packet) => new ChatRoomCreateRequest(packet, false);
+        public static implicit operator ChatRoomCreateRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ChatRoomCreateRequest"/> to a Span of bytes.
@@ -7364,15 +7352,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the accepted.
         /// </summary>
         public bool Accepted
         {
-            get => this.data.Slice(3).GetBoolean();
-            set => this.data.Slice(3).SetBoolean(value);
+            get => this.data[3..].GetBoolean();
+            set => this.data[3..].SetBoolean(value);
         }
 
         /// <summary>
@@ -7389,7 +7377,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator FriendAddResponse(Span<byte> packet) => new FriendAddResponse(packet, false);
+        public static implicit operator FriendAddResponse(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="FriendAddResponse"/> to a Span of bytes.
@@ -7452,15 +7440,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the online state.
         /// </summary>
         public bool OnlineState
         {
-            get => this.data.Slice(3).GetBoolean();
-            set => this.data.Slice(3).SetBoolean(value);
+            get => this.data[3..].GetBoolean();
+            set => this.data[3..].SetBoolean(value);
         }
 
         /// <summary>
@@ -7468,7 +7456,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator SetFriendOnlineState(Span<byte> packet) => new SetFriendOnlineState(packet, false);
+        public static implicit operator SetFriendOnlineState(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="SetFriendOnlineState"/> to a Span of bytes.
@@ -7531,7 +7519,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the friend name.
@@ -7547,8 +7535,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort RoomId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(13));
-            set => WriteUInt16BigEndian(this.data.Slice(13), value);
+            get => ReadUInt16BigEndian(this.data[13..]);
+            set => WriteUInt16BigEndian(this.data[13..], value);
         }
 
         /// <summary>
@@ -7556,8 +7544,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public uint RequestId
         {
-            get => ReadUInt32BigEndian(this.data.Slice(15));
-            set => WriteUInt32BigEndian(this.data.Slice(15), value);
+            get => ReadUInt32BigEndian(this.data[15..]);
+            set => WriteUInt32BigEndian(this.data[15..], value);
         }
 
         /// <summary>
@@ -7565,7 +7553,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatRoomInvitationRequest(Span<byte> packet) => new ChatRoomInvitationRequest(packet, false);
+        public static implicit operator ChatRoomInvitationRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ChatRoomInvitationRequest"/> to a Span of bytes.
@@ -7628,14 +7616,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacyQuestStateRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LegacyQuestStateRequest(Span<byte> packet) => new LegacyQuestStateRequest(packet, false);
+        public static implicit operator LegacyQuestStateRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="LegacyQuestStateRequest"/> to a Span of bytes.
@@ -7698,7 +7686,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the quest number.
@@ -7714,8 +7702,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public LegacyQuestState NewState
         {
-            get => (LegacyQuestState)this.data.Slice(4)[0];
-            set => this.data.Slice(4)[0] = (byte)value;
+            get => (LegacyQuestState)this.data[4];
         }
 
         /// <summary>
@@ -7723,7 +7710,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator LegacyQuestStateSetRequest(Span<byte> packet) => new LegacyQuestStateSetRequest(packet, false);
+        public static implicit operator LegacyQuestStateSetRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="LegacyQuestStateSetRequest"/> to a Span of bytes.
@@ -7786,7 +7773,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the pet type.
@@ -7802,8 +7789,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public PetCommandMode CommandMode
         {
-            get => (PetCommandMode)this.data.Slice(4)[0];
-            set => this.data.Slice(4)[0] = (byte)value;
+            get => (PetCommandMode)this.data[4];
         }
 
         /// <summary>
@@ -7811,8 +7797,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort TargetId
         {
-            get => ReadUInt16BigEndian(this.data.Slice(5));
-            set => WriteUInt16BigEndian(this.data.Slice(5), value);
+            get => ReadUInt16BigEndian(this.data[5..]);
+            set => WriteUInt16BigEndian(this.data[5..], value);
         }
 
         /// <summary>
@@ -7820,7 +7806,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PetCommandRequest(Span<byte> packet) => new PetCommandRequest(packet, false);
+        public static implicit operator PetCommandRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PetCommandRequest"/> to a Span of bytes.
@@ -7883,15 +7869,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the pet.
         /// </summary>
         public PetType Pet
         {
-            get => (PetType)this.data.Slice(3)[0];
-            set => this.data.Slice(3)[0] = (byte)value;
+            get => (PetType)this.data[3];
         }
 
         /// <summary>
@@ -7899,8 +7884,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public StorageType Storage
         {
-            get => (StorageType)this.data.Slice(4)[0];
-            set => this.data.Slice(4)[0] = (byte)value;
+            get => (StorageType)this.data[4];
         }
 
         /// <summary>
@@ -7917,7 +7901,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator PetInfoRequest(Span<byte> packet) => new PetInfoRequest(packet, false);
+        public static implicit operator PetInfoRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="PetInfoRequest"/> to a Span of bytes.
@@ -7987,15 +7971,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the quest number.
         /// </summary>
         public ushort QuestNumber
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -8003,8 +7987,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(6));
-            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
+            get => ReadUInt16LittleEndian(this.data[6..]);
+            set => WriteUInt16LittleEndian(this.data[6..], value);
         }
 
         /// <summary>
@@ -8021,7 +8005,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator QuestSelectRequest(Span<byte> packet) => new QuestSelectRequest(packet, false);
+        public static implicit operator QuestSelectRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="QuestSelectRequest"/> to a Span of bytes.
@@ -8112,15 +8096,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the quest number.
         /// </summary>
         public ushort QuestNumber
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -8128,8 +8112,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(6));
-            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
+            get => ReadUInt16LittleEndian(this.data[6..]);
+            set => WriteUInt16LittleEndian(this.data[6..], value);
         }
 
         /// <summary>
@@ -8137,8 +8121,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public QuestProceedRequest.QuestProceedAction ProceedAction
         {
-            get => (QuestProceedAction)this.data.Slice(8)[0];
-            set => this.data.Slice(8)[0] = (byte)value;
+            get => (QuestProceedAction)this.data[8];
         }
 
         /// <summary>
@@ -8146,7 +8129,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator QuestProceedRequest(Span<byte> packet) => new QuestProceedRequest(packet, false);
+        public static implicit operator QuestProceedRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="QuestProceedRequest"/> to a Span of bytes.
@@ -8216,15 +8199,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the quest number.
         /// </summary>
         public ushort QuestNumber
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -8232,8 +8215,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(6));
-            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
+            get => ReadUInt16LittleEndian(this.data[6..]);
+            set => WriteUInt16LittleEndian(this.data[6..], value);
         }
 
         /// <summary>
@@ -8241,7 +8224,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator QuestCompletionRequest(Span<byte> packet) => new QuestCompletionRequest(packet, false);
+        public static implicit operator QuestCompletionRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="QuestCompletionRequest"/> to a Span of bytes.
@@ -8311,15 +8294,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the quest number.
         /// </summary>
         public ushort QuestNumber
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -8327,8 +8310,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(6));
-            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
+            get => ReadUInt16LittleEndian(this.data[6..]);
+            set => WriteUInt16LittleEndian(this.data[6..], value);
         }
 
         /// <summary>
@@ -8336,7 +8319,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator QuestCancelRequest(Span<byte> packet) => new QuestCancelRequest(packet, false);
+        public static implicit operator QuestCancelRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="QuestCancelRequest"/> to a Span of bytes.
@@ -8406,15 +8389,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the quest number.
         /// </summary>
         public ushort QuestNumber
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -8422,8 +8405,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(6));
-            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
+            get => ReadUInt16LittleEndian(this.data[6..]);
+            set => WriteUInt16LittleEndian(this.data[6..], value);
         }
 
         /// <summary>
@@ -8431,7 +8414,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator QuestClientActionRequest(Span<byte> packet) => new QuestClientActionRequest(packet, false);
+        public static implicit operator QuestClientActionRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="QuestClientActionRequest"/> to a Span of bytes.
@@ -8501,14 +8484,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="ActiveQuestListRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ActiveQuestListRequest(Span<byte> packet) => new ActiveQuestListRequest(packet, false);
+        public static implicit operator ActiveQuestListRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ActiveQuestListRequest"/> to a Span of bytes.
@@ -8578,15 +8561,15 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the quest number.
         /// </summary>
         public ushort QuestNumber
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -8594,8 +8577,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public ushort QuestGroup
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(6));
-            set => WriteUInt16LittleEndian(this.data.Slice(6), value);
+            get => ReadUInt16LittleEndian(this.data[6..]);
+            set => WriteUInt16LittleEndian(this.data[6..], value);
         }
 
         /// <summary>
@@ -8603,7 +8586,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator QuestStateRequest(Span<byte> packet) => new QuestStateRequest(packet, false);
+        public static implicit operator QuestStateRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="QuestStateRequest"/> to a Span of bytes.
@@ -8673,14 +8656,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="EventQuestStateListRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator EventQuestStateListRequest(Span<byte> packet) => new EventQuestStateListRequest(packet, false);
+        public static implicit operator EventQuestStateListRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="EventQuestStateListRequest"/> to a Span of bytes.
@@ -8750,14 +8733,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="AvailableQuestsRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator AvailableQuestsRequest(Span<byte> packet) => new AvailableQuestsRequest(packet, false);
+        public static implicit operator AvailableQuestsRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="AvailableQuestsRequest"/> to a Span of bytes.
@@ -8827,14 +8810,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="NpcBuffRequest"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator NpcBuffRequest(Span<byte> packet) => new NpcBuffRequest(packet, false);
+        public static implicit operator NpcBuffRequest(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="NpcBuffRequest"/> to a Span of bytes.

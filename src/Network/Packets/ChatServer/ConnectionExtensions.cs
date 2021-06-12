@@ -12,6 +12,8 @@
 
 // ReSharper disable RedundantVerbatimPrefix
 // ReSharper disable AssignmentIsFullyDiscarded
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UseObjectOrCollectionInitializer
 namespace MUnique.OpenMU.Network.Packets.ChatServer
 {
     using System;
@@ -34,7 +36,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </remarks>
         public static AuthenticateThreadSafeWriter StartWriteAuthenticate(this IConnection connection)
         {
-          return new AuthenticateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </remarks>
         public static ChatRoomClientJoinedThreadSafeWriter StartWriteChatRoomClientJoined(this IConnection connection)
         {
-          return new ChatRoomClientJoinedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </remarks>
         public static ChatRoomClientLeftThreadSafeWriter StartWriteChatRoomClientLeft(this IConnection connection)
         {
-          return new ChatRoomClientLeftThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </remarks>
         public static KeepAliveThreadSafeWriter StartWriteKeepAlive(this IConnection connection)
         {
-          return new KeepAliveThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -197,7 +199,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(Authenticate.Length).Slice(0, Authenticate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(Authenticate.Length)[..Authenticate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public Authenticate Packet => this.Span;
@@ -250,7 +252,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomClientJoined.Length).Slice(0, ChatRoomClientJoined.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomClientJoined.Length)[..ChatRoomClientJoined.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ChatRoomClientJoined Packet => this.Span;
@@ -303,7 +305,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomClientLeft.Length).Slice(0, ChatRoomClientLeft.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomClientLeft.Length)[..ChatRoomClientLeft.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ChatRoomClientLeft Packet => this.Span;
@@ -356,7 +358,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(KeepAlive.Length).Slice(0, KeepAlive.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(KeepAlive.Length)[..KeepAlive.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public KeepAlive Packet => this.Span;

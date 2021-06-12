@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
         /// &lt;/summary&gt;
         public </xsl:text>
       <xsl:value-of select="pd:HeaderType"/>
-      <xsl:text> Header => new </xsl:text><xsl:value-of select="pd:HeaderType"/><xsl:text>(this.data);</xsl:text>
+      <xsl:text> Header => new (this.data);</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:apply-templates select="pd:Fields" />
       <xsl:call-template name="implicitConversions">
@@ -398,9 +398,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
         /// &lt;returns&gt;The packet as struct.&lt;/returns&gt;
         public static implicit operator </xsl:text>
       <xsl:apply-templates select="pd:Name" />
-      <xsl:text>(Span&lt;byte&gt; packet) => new </xsl:text>
-      <xsl:apply-templates select="pd:Name" />
-      <xsl:text>(packet, false);
+      <xsl:text>(Span&lt;byte&gt; packet) => new (packet, false);
 
         /// &lt;summary&gt;
         /// Performs an implicit conversion from &lt;see cref="</xsl:text><xsl:apply-templates select="pd:Name" /><xsl:text>"/&gt; to a Span of bytes.
@@ -437,11 +435,10 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
           <xsl:text> this[int index] => new </xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      
-      <xsl:value-of select="pd:TypeName"/>
-      <xsl:text>(this.data.Slice(</xsl:text>
+
+      <xsl:text>(this.data[(</xsl:text>
       <xsl:value-of select="pd:Index"/>
-      <xsl:text> + (index * </xsl:text>
+      <xsl:text> + index * </xsl:text>
 
       <xsl:choose>
         <xsl:when test="$arrayOfVariableStruct">
@@ -452,7 +449,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
           <xsl:text>.Length</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:text>)));</xsl:text>
+      <xsl:text>)..]);</xsl:text>
       
       <xsl:value-of select="$newline"/>
     </xsl:template>
@@ -469,14 +466,12 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <xsl:value-of select="pd:TypeName"/>
     <xsl:text> Get</xsl:text>
     <xsl:value-of select="pd:TypeName"/>
-    <xsl:text>(int index) => new </xsl:text>
-    <xsl:value-of select="pd:TypeName"/>
-    <xsl:text>(this.data.Slice(</xsl:text>
+    <xsl:text>(int index) => new (this.data[(</xsl:text>
     <xsl:value-of select="pd:Index"/>
-    <xsl:text> + (index * </xsl:text>
+    <xsl:text> + index * </xsl:text>
     <xsl:value-of select="pd:TypeName"/>
     <xsl:text>.Length</xsl:text>
-    <xsl:text>)));</xsl:text>
+    <xsl:text>)..]);</xsl:text>
 
     <xsl:value-of select="$newline"/>
   </xsl:template>
@@ -562,7 +557,9 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <!-- Getter/Setter implementations: -->
     <xsl:template match="pd:Field[pd:Type = 'Boolean']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).GetBoolean(</xsl:text>
+      <xsl:text>            get =&gt; </xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>.GetBoolean(</xsl:text>
       <xsl:if test="pd:LeftShifted">
         <xsl:value-of select="pd:LeftShifted"/>
       </xsl:if>
@@ -570,7 +567,9 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'Boolean']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>).SetBoolean(value</xsl:text>
+      <xsl:text>            set =&gt; </xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>.SetBoolean(value</xsl:text>
       <xsl:if test="pd:LeftShifted">
         <xsl:text>, </xsl:text>
         <xsl:value-of select="pd:LeftShifted"/>
@@ -578,11 +577,14 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       <xsl:text>);</xsl:text>
     </xsl:template>
 
-    <xsl:template match="pd:Field[pd:Type = 'Byte']" mode="get">
+    <xsl:template match="pd:Field[pd:Type = 'Byte' or pd:Type = 'Enum']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; this.data</xsl:text>
+      <xsl:text>            get =&gt; </xsl:text>
+      <xsl:if test="pd:Type = 'Enum'">
+        <xsl:text>(</xsl:text><xsl:value-of select="pd:TypeName"/><xsl:text>)</xsl:text>
+      </xsl:if>
       <xsl:if test="pd:Length or pd:LeftShifted">
-        <xsl:text>.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>)</xsl:text>
+        <xsl:call-template name="SliceData"/>
       </xsl:if>
       <xsl:choose>
         <xsl:when test="pd:Length and pd:LeftShifted">
@@ -603,111 +605,146 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
           <xsl:text>)</xsl:text>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:text>[</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>]</xsl:text>
+          <xsl:text>this.data[</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>]</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
       <xsl:text>;</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'Byte']" mode="set">
+      <xsl:variable name="value">
+        <xsl:if test="pd:Type = 'Enum'">
+          <xsl:text>(byte)</xsl:text>
+        </xsl:if>
+        <xsl:text>value</xsl:text>
+      </xsl:variable>
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; this.data</xsl:text>
+      <xsl:text>            set =&gt; </xsl:text>
       <xsl:if test="pd:Length or pd:LeftShifted">
-        <xsl:text>.Slice(</xsl:text>
-        <xsl:value-of select="pd:Index"/>
-        <xsl:text>)</xsl:text>
+        <xsl:call-template name="SliceData"/>
       </xsl:if>
       <xsl:choose>
         <xsl:when test="pd:Length and pd:LeftShifted">
-          <xsl:text>.SetByteValue(value, </xsl:text>
+          <xsl:text>.SetByteValue(</xsl:text>
+          <xsl:value-of select="$value"/>
+          <xsl:text>, </xsl:text>
           <xsl:value-of select="pd:Length"/>
           <xsl:text>, </xsl:text>
           <xsl:value-of select="pd:LeftShifted"/>
           <xsl:text>)</xsl:text>
         </xsl:when>
         <xsl:when test="pd:Length">
-          <xsl:text>.SetByteValue((byte)value, </xsl:text>
+          <xsl:text>.SetByteValue(</xsl:text>
+          <xsl:value-of select="$value"/>
+          <xsl:text>, </xsl:text>
           <xsl:value-of select="pd:Length"/>
           <xsl:text>, 0)</xsl:text>
         </xsl:when>
         <xsl:when test="pd:LeftShifted">
-          <xsl:text>.SetByteValue((byte)value, 8, </xsl:text>
+          <xsl:text>.SetByteValue(</xsl:text>
+          <xsl:value-of select="$value"/>
+          <xsl:text>, 8, </xsl:text>
           <xsl:value-of select="pd:LeftShifted"/>
           <xsl:text>)</xsl:text>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:text>[</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>] = value</xsl:text>
+          <xsl:text>this.data[</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>] = </xsl:text>
+          <xsl:value-of select="$value"/>
         </xsl:otherwise>
       </xsl:choose>
       <xsl:text>;</xsl:text>
     </xsl:template>
 
-    <xsl:template match="pd:Field[pd:Type = 'ShortLittleEndian']" mode="get">
+  <xsl:template match="pd:Field[pd:Type = 'ShortLittleEndian']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt16LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; ReadUInt16LittleEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>);</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'ShortLittleEndian']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt16LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; WriteUInt16LittleEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>, value);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'ShortBigEndian']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt16BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; ReadUInt16BigEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>);</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'ShortBigEndian']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt16BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; WriteUInt16BigEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>, value);</xsl:text>
     </xsl:template>
     
     <xsl:template match="pd:Field[pd:Type = 'IntegerLittleEndian']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt32LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; ReadUInt32LittleEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>);</xsl:text>
     </xsl:template>
     
     <xsl:template match="pd:Field[pd:Type = 'IntegerLittleEndian']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt32LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; WriteUInt32LittleEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>, value);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'IntegerBigEndian']" mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt32BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; ReadUInt32BigEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>);</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'IntegerBigEndian']" mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt32BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; WriteUInt32BigEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>, value);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'LongLittleEndian']"  mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt64LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; ReadUInt64LittleEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>);</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'LongLittleEndian']"  mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt64LittleEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; WriteUInt64LittleEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>, value);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'LongBigEndian']"  mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; ReadUInt64BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; ReadUInt64BigEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>);</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'LongBigEndian']"  mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; WriteUInt64BigEndian(this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>), value);</xsl:text>
+      <xsl:text>            set =&gt; WriteUInt64BigEndian(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>, value);</xsl:text>
     </xsl:template>
 
     <!-- Floats can be optimized I think-->
     <xsl:template match="pd:Field[pd:Type = 'Float']"  mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; BitConverter.ToSingle(this.data.Slice(</xsl:text>
-      <xsl:value-of select="pd:Index"/>
-      <xsl:text>));</xsl:text>
+      <xsl:text>            get =&gt; BitConverter.ToSingle(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>);</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'Float']"  mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; BitConverter.GetBytes(value).CopyTo(this.data.Slice(</xsl:text>
-      <xsl:value-of select="pd:Index"/>
-      <xsl:text>));</xsl:text>
+      <xsl:text>            set =&gt; BitConverter.GetBytes(value).CopyTo(</xsl:text>
+      <xsl:call-template name="SliceData"/>
+      <xsl:text>);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'String']"  mode="get">
@@ -743,58 +780,16 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       <xsl:text>);</xsl:text>
     </xsl:template>
 
-    <xsl:template match="pd:Field[pd:Type = 'Enum']" mode="get">
-      <xsl:value-of select="$newline"/>
-      <xsl:text>            get =&gt; (</xsl:text><xsl:value-of select="pd:TypeName"/><xsl:text>)this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>)</xsl:text>
-      <xsl:choose>
-        <xsl:when test="pd:Length and pd:LeftShifted">
-          <xsl:text>.GetByteValue(</xsl:text>
-          <xsl:value-of select="pd:Length"/>
-          <xsl:text>, </xsl:text>
-          <xsl:value-of select="pd:LeftShifted"/>
-          <xsl:text>)</xsl:text>
-        </xsl:when>
-        <xsl:when test="pd:Length">
-          <xsl:text>.GetByteValue(</xsl:text>
-          <xsl:value-of select="pd:Length"/>
-          <xsl:text>, 0)</xsl:text>
-        </xsl:when>
-        <xsl:when test="pd:LeftShifted">
-          <xsl:text>.GetByteValue(8, </xsl:text>
-          <xsl:value-of select="pd:LeftShifted"/>
-          <xsl:text>)</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:text>[0]</xsl:text>
-        </xsl:otherwise>
-      </xsl:choose>
-      <xsl:text>;</xsl:text>
-    </xsl:template>
-    <xsl:template match="pd:Field[pd:Type = 'Enum']" mode="set">
-      <xsl:value-of select="$newline"/>
-      <xsl:text>            set =&gt; this.data.Slice(</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>)</xsl:text>
-      <xsl:choose>
-        <xsl:when test="pd:Length and pd:LeftShifted">
-          <xsl:text>.SetByteValue((byte)value, </xsl:text>
-          <xsl:value-of select="pd:Length"/>
-          <xsl:text>, </xsl:text>
-          <xsl:value-of select="pd:LeftShifted"/>
-          <xsl:text>)</xsl:text>
-        </xsl:when>
-        <xsl:when test="pd:Length">
-          <xsl:text>.SetByteValue((byte)value, </xsl:text>
-          <xsl:value-of select="pd:Length"/>
-          <xsl:text>, 0)</xsl:text>
-        </xsl:when>
-        <xsl:when test="pd:LeftShifted">
-          <xsl:text>.SetByteValue((byte)value, 8, </xsl:text>
-          <xsl:value-of select="pd:LeftShifted"/>
-          <xsl:text>)</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>[0] = (byte)value</xsl:otherwise>
-      </xsl:choose>
-      <xsl:text>;</xsl:text>
-    </xsl:template>
+  <xsl:template name="SliceData">
+    <xsl:choose>
+      <xsl:when test="pd:Index = 0">
+        <xsl:text>this.data</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>this.data[</xsl:text><xsl:value-of select="pd:Index"/><xsl:text>..]</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 
     <xsl:template match="text()" mode="get"></xsl:template>
     <xsl:template match="text()" mode="set"></xsl:template>

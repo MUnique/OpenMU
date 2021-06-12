@@ -67,15 +67,15 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the room id.
         /// </summary>
         public ushort RoomId
         {
-            get => ReadUInt16LittleEndian(this.data.Slice(4));
-            set => WriteUInt16LittleEndian(this.data.Slice(4), value);
+            get => ReadUInt16LittleEndian(this.data[4..]);
+            set => WriteUInt16LittleEndian(this.data[4..], value);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator Authenticate(Span<byte> packet) => new Authenticate(packet, false);
+        public static implicit operator Authenticate(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Authenticate"/> to a Span of bytes.
@@ -162,7 +162,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the client index.
@@ -187,7 +187,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatRoomClientJoined(Span<byte> packet) => new ChatRoomClientJoined(packet, false);
+        public static implicit operator ChatRoomClientJoined(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ChatRoomClientJoined"/> to a Span of bytes.
@@ -257,7 +257,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new C1HeaderWithSubCode(this.data);
+        public C1HeaderWithSubCode Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the client index.
@@ -282,7 +282,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatRoomClientLeft(Span<byte> packet) => new ChatRoomClientLeft(packet, false);
+        public static implicit operator ChatRoomClientLeft(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ChatRoomClientLeft"/> to a Span of bytes.
@@ -340,7 +340,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C2Header Header => new C2Header(this.data);
+        public C2Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the client count.
@@ -354,14 +354,14 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// <summary>
         /// Gets the <see cref="ChatClient"/> of the specified index.
         /// </summary>
-        public ChatClient this[int index] => new ChatClient(this.data.Slice(8 + (index * ChatClient.Length)));
+        public ChatClient this[int index] => new (this.data[(8 + index * ChatClient.Length)..]);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClients"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatRoomClients(Span<byte> packet) => new ChatRoomClients(packet, false);
+        public static implicit operator ChatRoomClients(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ChatRoomClients"/> to a Span of bytes.
@@ -466,7 +466,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Gets or sets the sender index.
@@ -500,7 +500,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatMessage(Span<byte> packet) => new ChatMessage(packet, false);
+        public static implicit operator ChatMessage(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ChatMessage"/> to a Span of bytes.
@@ -569,14 +569,14 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1Header Header => new C1Header(this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
         /// Performs an implicit conversion from a Span of bytes to a <see cref="KeepAlive"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator KeepAlive(Span<byte> packet) => new KeepAlive(packet, false);
+        public static implicit operator KeepAlive(Span<byte> packet) => new (packet, false);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="KeepAlive"/> to a Span of bytes.

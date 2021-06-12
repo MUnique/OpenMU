@@ -23,6 +23,8 @@
 
 // ReSharper disable RedundantVerbatimPrefix
 // ReSharper disable AssignmentIsFullyDiscarded
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UseObjectOrCollectionInitializer
 namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <xsl:if test="$subNamespace">
       <xsl:text>.</xsl:text>
@@ -80,7 +82,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
         }
 
         /// &lt;summary&gt;Gets the span to write at.&lt;/summary&gt;
-        private Span&lt;byte&gt; Span => this.connection.Output.GetSpan(%NAME%.Length).Slice(0, %NAME%.Length);
+        private Span&lt;byte&gt; Span => this.connection.Output.GetSpan(%NAME%.Length)[..%NAME%.Length];
 
         /// &lt;summary&gt;Gets the packet to write at.&lt;/summary&gt;
         public %NAME% Packet => this.Span;
@@ -131,9 +133,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <xsl:text>(this IConnection connection)</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:text>        {
-          return new </xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>ThreadSafeWriter(connection);</xsl:text>
+          return new (connection);</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:text>        }</xsl:text>
   </xsl:template>

@@ -144,8 +144,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         public ushort Length
         {
-            get => ReadUInt16BigEndian(this.data.Slice(1));
-            set => WriteUInt16BigEndian(this.data.Slice(1), value);
+            get => ReadUInt16BigEndian(this.data[1..]);
+            set => WriteUInt16BigEndian(this.data[1..], value);
         }
 
         /// <summary>
@@ -189,8 +189,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         public ushort Length
         {
-            get => ReadUInt16BigEndian(this.data.Slice(1));
-            set => WriteUInt16BigEndian(this.data.Slice(1), value);
+            get => ReadUInt16BigEndian(this.data[1..]);
+            set => WriteUInt16BigEndian(this.data[1..], value);
         }
 
         /// <summary>
@@ -342,8 +342,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         public ushort Length
         {
-            get => ReadUInt16BigEndian(this.data.Slice(1));
-            set => WriteUInt16BigEndian(this.data.Slice(1), value);
+            get => ReadUInt16BigEndian(this.data[1..]);
+            set => WriteUInt16BigEndian(this.data[1..], value);
         }
 
         /// <summary>
@@ -387,8 +387,8 @@ namespace MUnique.OpenMU.Network.Packets
         /// </summary>
         public ushort Length
         {
-            get => ReadUInt16BigEndian(this.data.Slice(1));
-            set => WriteUInt16BigEndian(this.data.Slice(1), value);
+            get => ReadUInt16BigEndian(this.data[1..]);
+            set => WriteUInt16BigEndian(this.data[1..], value);
         }
 
         /// <summary>

@@ -12,6 +12,8 @@
 
 // ReSharper disable RedundantVerbatimPrefix
 // ReSharper disable AssignmentIsFullyDiscarded
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UseObjectOrCollectionInitializer
 namespace MUnique.OpenMU.Network.Packets.ServerToClient
 {
     using System;
@@ -34,7 +36,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GameServerEnteredThreadSafeWriter StartWriteGameServerEntered(this IConnection connection)
         {
-          return new GameServerEnteredThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MagicEffectStatusThreadSafeWriter StartWriteMagicEffectStatus(this IConnection connection)
         {
-          return new MagicEffectStatusThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static WeatherStatusUpdateThreadSafeWriter StartWriteWeatherStatusUpdate(this IConnection connection)
         {
-          return new WeatherStatusUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ObjectGotKilledThreadSafeWriter StartWriteObjectGotKilled(this IConnection connection)
         {
-          return new ObjectGotKilledThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -86,7 +88,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ObjectAnimationThreadSafeWriter StartWriteObjectAnimation(this IConnection connection)
         {
-          return new ObjectAnimationThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -99,7 +101,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static AreaSkillAnimationThreadSafeWriter StartWriteAreaSkillAnimation(this IConnection connection)
         {
-          return new AreaSkillAnimationThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -112,7 +114,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static SkillAnimationThreadSafeWriter StartWriteSkillAnimation(this IConnection connection)
         {
-          return new SkillAnimationThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -125,7 +127,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static AreaSkillAnimation075ThreadSafeWriter StartWriteAreaSkillAnimation075(this IConnection connection)
         {
-          return new AreaSkillAnimation075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -138,7 +140,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static SkillAnimation075ThreadSafeWriter StartWriteSkillAnimation075(this IConnection connection)
         {
-          return new SkillAnimation075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -151,7 +153,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MagicEffectCancelledThreadSafeWriter StartWriteMagicEffectCancelled(this IConnection connection)
         {
-          return new MagicEffectCancelledThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -164,7 +166,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MagicEffectCancelled075ThreadSafeWriter StartWriteMagicEffectCancelled075(this IConnection connection)
         {
-          return new MagicEffectCancelled075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -177,7 +179,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static PartyRequestThreadSafeWriter StartWritePartyRequest(this IConnection connection)
         {
-          return new PartyRequestThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -190,7 +192,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static RemovePartyMemberThreadSafeWriter StartWriteRemovePartyMember(this IConnection connection)
         {
-          return new RemovePartyMemberThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -203,7 +205,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static PlayerShopOpenSuccessfulThreadSafeWriter StartWritePlayerShopOpenSuccessful(this IConnection connection)
         {
-          return new PlayerShopOpenSuccessfulThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -216,7 +218,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static TradeButtonStateChangedThreadSafeWriter StartWriteTradeButtonStateChanged(this IConnection connection)
         {
-          return new TradeButtonStateChangedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -229,7 +231,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static TradeMoneySetResponseThreadSafeWriter StartWriteTradeMoneySetResponse(this IConnection connection)
         {
-          return new TradeMoneySetResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -242,7 +244,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static TradeMoneyUpdateThreadSafeWriter StartWriteTradeMoneyUpdate(this IConnection connection)
         {
-          return new TradeMoneyUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -255,7 +257,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static TradeRequestAnswerThreadSafeWriter StartWriteTradeRequestAnswer(this IConnection connection)
         {
-          return new TradeRequestAnswerThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -268,7 +270,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static TradeRequestThreadSafeWriter StartWriteTradeRequest(this IConnection connection)
         {
-          return new TradeRequestThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -281,7 +283,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static TradeFinishedThreadSafeWriter StartWriteTradeFinished(this IConnection connection)
         {
-          return new TradeFinishedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -294,7 +296,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static TradeItemRemovedThreadSafeWriter StartWriteTradeItemRemoved(this IConnection connection)
         {
-          return new TradeItemRemovedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -307,7 +309,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static LoginResponseThreadSafeWriter StartWriteLoginResponse(this IConnection connection)
         {
-          return new LoginResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -320,7 +322,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static LogoutResponseThreadSafeWriter StartWriteLogoutResponse(this IConnection connection)
         {
-          return new LogoutResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -333,7 +335,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ObjectHitThreadSafeWriter StartWriteObjectHit(this IConnection connection)
         {
-          return new ObjectHitThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -346,7 +348,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ObjectMovedThreadSafeWriter StartWriteObjectMoved(this IConnection connection)
         {
-          return new ObjectMovedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -359,7 +361,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ObjectWalked075ThreadSafeWriter StartWriteObjectWalked075(this IConnection connection)
         {
-          return new ObjectWalked075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -372,7 +374,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ExperienceGainedThreadSafeWriter StartWriteExperienceGained(this IConnection connection)
         {
-          return new ExperienceGainedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -385,7 +387,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MapChangedThreadSafeWriter StartWriteMapChanged(this IConnection connection)
         {
-          return new MapChangedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -398,7 +400,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MapChanged075ThreadSafeWriter StartWriteMapChanged075(this IConnection connection)
         {
-          return new MapChanged075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -411,7 +413,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MoneyDroppedThreadSafeWriter StartWriteMoneyDropped(this IConnection connection)
         {
-          return new MoneyDroppedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -424,7 +426,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MoneyDropped075ThreadSafeWriter StartWriteMoneyDropped075(this IConnection connection)
         {
-          return new MoneyDropped075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -437,7 +439,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ItemDropResponseThreadSafeWriter StartWriteItemDropResponse(this IConnection connection)
         {
-          return new ItemDropResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -450,7 +452,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ItemPickUpRequestFailedThreadSafeWriter StartWriteItemPickUpRequestFailed(this IConnection connection)
         {
-          return new ItemPickUpRequestFailedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -463,7 +465,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static InventoryMoneyUpdateThreadSafeWriter StartWriteInventoryMoneyUpdate(this IConnection connection)
         {
-          return new InventoryMoneyUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -476,7 +478,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CurrentHealthAndShieldThreadSafeWriter StartWriteCurrentHealthAndShield(this IConnection connection)
         {
-          return new CurrentHealthAndShieldThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -489,7 +491,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MaximumHealthAndShieldThreadSafeWriter StartWriteMaximumHealthAndShield(this IConnection connection)
         {
-          return new MaximumHealthAndShieldThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -502,7 +504,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ItemConsumptionFailedThreadSafeWriter StartWriteItemConsumptionFailed(this IConnection connection)
         {
-          return new ItemConsumptionFailedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -515,7 +517,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CurrentManaAndAbilityThreadSafeWriter StartWriteCurrentManaAndAbility(this IConnection connection)
         {
-          return new CurrentManaAndAbilityThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -528,7 +530,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MaximumManaAndAbilityThreadSafeWriter StartWriteMaximumManaAndAbility(this IConnection connection)
         {
-          return new MaximumManaAndAbilityThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -541,7 +543,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ItemRemovedThreadSafeWriter StartWriteItemRemoved(this IConnection connection)
         {
-          return new ItemRemovedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -554,7 +556,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ConsumeItemWithEffectThreadSafeWriter StartWriteConsumeItemWithEffect(this IConnection connection)
         {
-          return new ConsumeItemWithEffectThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -567,7 +569,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ItemDurabilityChangedThreadSafeWriter StartWriteItemDurabilityChanged(this IConnection connection)
         {
-          return new ItemDurabilityChangedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -580,7 +582,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static FruitConsumptionResponseThreadSafeWriter StartWriteFruitConsumptionResponse(this IConnection connection)
         {
-          return new FruitConsumptionResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -593,7 +595,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static NpcWindowResponseThreadSafeWriter StartWriteNpcWindowResponse(this IConnection connection)
         {
-          return new NpcWindowResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -606,7 +608,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static NpcItemBuyFailedThreadSafeWriter StartWriteNpcItemBuyFailed(this IConnection connection)
         {
-          return new NpcItemBuyFailedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -619,7 +621,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static NpcItemSellResultThreadSafeWriter StartWriteNpcItemSellResult(this IConnection connection)
         {
-          return new NpcItemSellResultThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -632,7 +634,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static PlayerShopSetItemPriceResponseThreadSafeWriter StartWritePlayerShopSetItemPriceResponse(this IConnection connection)
         {
-          return new PlayerShopSetItemPriceResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -645,7 +647,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static PlayerShopClosedThreadSafeWriter StartWritePlayerShopClosed(this IConnection connection)
         {
-          return new PlayerShopClosedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -658,7 +660,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static PlayerShopItemSoldToPlayerThreadSafeWriter StartWritePlayerShopItemSoldToPlayer(this IConnection connection)
         {
-          return new PlayerShopItemSoldToPlayerThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -671,7 +673,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ClosePlayerShopDialogThreadSafeWriter StartWriteClosePlayerShopDialog(this IConnection connection)
         {
-          return new ClosePlayerShopDialogThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -684,7 +686,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CharacterCreationSuccessfulThreadSafeWriter StartWriteCharacterCreationSuccessful(this IConnection connection)
         {
-          return new CharacterCreationSuccessfulThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -697,7 +699,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CharacterCreationFailedThreadSafeWriter StartWriteCharacterCreationFailed(this IConnection connection)
         {
-          return new CharacterCreationFailedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -710,7 +712,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static RespawnAfterDeath075ThreadSafeWriter StartWriteRespawnAfterDeath075(this IConnection connection)
         {
-          return new RespawnAfterDeath075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -723,7 +725,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static PoisonDamageThreadSafeWriter StartWritePoisonDamage(this IConnection connection)
         {
-          return new PoisonDamageThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -736,7 +738,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static HeroStateChangedThreadSafeWriter StartWriteHeroStateChanged(this IConnection connection)
         {
-          return new HeroStateChangedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -749,7 +751,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static SkillAddedThreadSafeWriter StartWriteSkillAdded(this IConnection connection)
         {
-          return new SkillAddedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -762,7 +764,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static SkillRemovedThreadSafeWriter StartWriteSkillRemoved(this IConnection connection)
         {
-          return new SkillRemovedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -775,7 +777,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static SkillAdded075ThreadSafeWriter StartWriteSkillAdded075(this IConnection connection)
         {
-          return new SkillAdded075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -788,7 +790,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static SkillRemoved075ThreadSafeWriter StartWriteSkillRemoved075(this IConnection connection)
         {
-          return new SkillRemoved075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -801,7 +803,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CharacterFocusedThreadSafeWriter StartWriteCharacterFocused(this IConnection connection)
         {
-          return new CharacterFocusedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -814,7 +816,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CharacterStatIncreaseResponseThreadSafeWriter StartWriteCharacterStatIncreaseResponse(this IConnection connection)
         {
-          return new CharacterStatIncreaseResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -827,7 +829,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CharacterDeleteResponseThreadSafeWriter StartWriteCharacterDeleteResponse(this IConnection connection)
         {
-          return new CharacterDeleteResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -840,7 +842,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CharacterLevelUpdateThreadSafeWriter StartWriteCharacterLevelUpdate(this IConnection connection)
         {
-          return new CharacterLevelUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -853,7 +855,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CharacterInformationThreadSafeWriter StartWriteCharacterInformation(this IConnection connection)
         {
-          return new CharacterInformationThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -866,7 +868,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CharacterInformation075ThreadSafeWriter StartWriteCharacterInformation075(this IConnection connection)
         {
-          return new CharacterInformation075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -879,7 +881,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static SummonHealthUpdateThreadSafeWriter StartWriteSummonHealthUpdate(this IConnection connection)
         {
-          return new SummonHealthUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -892,7 +894,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildSoccerTimeUpdateThreadSafeWriter StartWriteGuildSoccerTimeUpdate(this IConnection connection)
         {
-          return new GuildSoccerTimeUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -905,7 +907,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildSoccerScoreUpdateThreadSafeWriter StartWriteGuildSoccerScoreUpdate(this IConnection connection)
         {
-          return new GuildSoccerScoreUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -918,7 +920,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MasterStatsUpdateThreadSafeWriter StartWriteMasterStatsUpdate(this IConnection connection)
         {
-          return new MasterStatsUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -931,7 +933,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static MasterSkillLevelUpdateThreadSafeWriter StartWriteMasterSkillLevelUpdate(this IConnection connection)
         {
-          return new MasterSkillLevelUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -944,7 +946,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildJoinRequestThreadSafeWriter StartWriteGuildJoinRequest(this IConnection connection)
         {
-          return new GuildJoinRequestThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -957,7 +959,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildJoinResponseThreadSafeWriter StartWriteGuildJoinResponse(this IConnection connection)
         {
-          return new GuildJoinResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -970,7 +972,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildKickResponseThreadSafeWriter StartWriteGuildKickResponse(this IConnection connection)
         {
-          return new GuildKickResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -983,7 +985,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ShowGuildMasterDialogThreadSafeWriter StartWriteShowGuildMasterDialog(this IConnection connection)
         {
-          return new ShowGuildMasterDialogThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -996,7 +998,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ShowGuildCreationDialogThreadSafeWriter StartWriteShowGuildCreationDialog(this IConnection connection)
         {
-          return new ShowGuildCreationDialogThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1009,7 +1011,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildCreationResultThreadSafeWriter StartWriteGuildCreationResult(this IConnection connection)
         {
-          return new GuildCreationResultThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1022,7 +1024,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildMemberLeftGuildThreadSafeWriter StartWriteGuildMemberLeftGuild(this IConnection connection)
         {
-          return new GuildMemberLeftGuildThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1035,7 +1037,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildWarRequestResultThreadSafeWriter StartWriteGuildWarRequestResult(this IConnection connection)
         {
-          return new GuildWarRequestResultThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1048,7 +1050,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildWarRequestThreadSafeWriter StartWriteGuildWarRequest(this IConnection connection)
         {
-          return new GuildWarRequestThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1061,7 +1063,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildWarDeclaredThreadSafeWriter StartWriteGuildWarDeclared(this IConnection connection)
         {
-          return new GuildWarDeclaredThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1074,7 +1076,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildWarEndedThreadSafeWriter StartWriteGuildWarEnded(this IConnection connection)
         {
-          return new GuildWarEndedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1087,7 +1089,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildWarScoreUpdateThreadSafeWriter StartWriteGuildWarScoreUpdate(this IConnection connection)
         {
-          return new GuildWarScoreUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1100,7 +1102,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static GuildInformationThreadSafeWriter StartWriteGuildInformation(this IConnection connection)
         {
-          return new GuildInformationThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1113,7 +1115,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static SingleGuildInformation075ThreadSafeWriter StartWriteSingleGuildInformation075(this IConnection connection)
         {
-          return new SingleGuildInformation075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1126,7 +1128,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static VaultMoneyUpdateThreadSafeWriter StartWriteVaultMoneyUpdate(this IConnection connection)
         {
-          return new VaultMoneyUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1139,7 +1141,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static VaultClosedThreadSafeWriter StartWriteVaultClosed(this IConnection connection)
         {
-          return new VaultClosedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1152,7 +1154,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static VaultProtectionInformationThreadSafeWriter StartWriteVaultProtectionInformation(this IConnection connection)
         {
-          return new VaultProtectionInformationThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1165,7 +1167,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static CraftingDialogClosed075ThreadSafeWriter StartWriteCraftingDialogClosed075(this IConnection connection)
         {
-          return new CraftingDialogClosed075ThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1178,7 +1180,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static LegacyQuestStateDialogThreadSafeWriter StartWriteLegacyQuestStateDialog(this IConnection connection)
         {
-          return new LegacyQuestStateDialogThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1191,7 +1193,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static LegacySetQuestStateResponseThreadSafeWriter StartWriteLegacySetQuestStateResponse(this IConnection connection)
         {
-          return new LegacySetQuestStateResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1204,7 +1206,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static LegacyQuestRewardThreadSafeWriter StartWriteLegacyQuestReward(this IConnection connection)
         {
-          return new LegacyQuestRewardThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1217,7 +1219,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static LegacyQuestMonsterKillInfoThreadSafeWriter StartWriteLegacyQuestMonsterKillInfo(this IConnection connection)
         {
-          return new LegacyQuestMonsterKillInfoThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1230,7 +1232,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static PetModeThreadSafeWriter StartWritePetMode(this IConnection connection)
         {
-          return new PetModeThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1243,7 +1245,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static PetAttackThreadSafeWriter StartWritePetAttack(this IConnection connection)
         {
-          return new PetAttackThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1256,7 +1258,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static PetInfoResponseThreadSafeWriter StartWritePetInfoResponse(this IConnection connection)
         {
-          return new PetInfoResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1269,7 +1271,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static FriendAddedThreadSafeWriter StartWriteFriendAdded(this IConnection connection)
         {
-          return new FriendAddedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1282,7 +1284,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static FriendRequestThreadSafeWriter StartWriteFriendRequest(this IConnection connection)
         {
-          return new FriendRequestThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1295,7 +1297,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static FriendDeletedThreadSafeWriter StartWriteFriendDeleted(this IConnection connection)
         {
-          return new FriendDeletedThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1308,7 +1310,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static FriendOnlineStateUpdateThreadSafeWriter StartWriteFriendOnlineStateUpdate(this IConnection connection)
         {
-          return new FriendOnlineStateUpdateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1321,7 +1323,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static LetterSendResponseThreadSafeWriter StartWriteLetterSendResponse(this IConnection connection)
         {
-          return new LetterSendResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1334,7 +1336,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static AddLetterThreadSafeWriter StartWriteAddLetter(this IConnection connection)
         {
-          return new AddLetterThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1347,7 +1349,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static RemoveLetterThreadSafeWriter StartWriteRemoveLetter(this IConnection connection)
         {
-          return new RemoveLetterThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1360,7 +1362,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static ChatRoomConnectionInfoThreadSafeWriter StartWriteChatRoomConnectionInfo(this IConnection connection)
         {
-          return new ChatRoomConnectionInfoThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1373,7 +1375,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static FriendInvitationResultThreadSafeWriter StartWriteFriendInvitationResult(this IConnection connection)
         {
-          return new FriendInvitationResultThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1386,7 +1388,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static QuestEventResponseThreadSafeWriter StartWriteQuestEventResponse(this IConnection connection)
         {
-          return new QuestEventResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1399,7 +1401,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static QuestStepInfoThreadSafeWriter StartWriteQuestStepInfo(this IConnection connection)
         {
-          return new QuestStepInfoThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1412,7 +1414,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static QuestProgressThreadSafeWriter StartWriteQuestProgress(this IConnection connection)
         {
-          return new QuestProgressThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1425,7 +1427,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static QuestCompletionResponseThreadSafeWriter StartWriteQuestCompletionResponse(this IConnection connection)
         {
-          return new QuestCompletionResponseThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1438,7 +1440,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static QuestCancelledThreadSafeWriter StartWriteQuestCancelled(this IConnection connection)
         {
-          return new QuestCancelledThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1451,7 +1453,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static QuestStateThreadSafeWriter StartWriteQuestState(this IConnection connection)
         {
-          return new QuestStateThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -1464,7 +1466,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </remarks>
         public static OpenNpcDialogThreadSafeWriter StartWriteOpenNpcDialog(this IConnection connection)
         {
-          return new OpenNpcDialogThreadSafeWriter(connection);
+          return new (connection);
         }
 
         /// <summary>
@@ -4026,7 +4028,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GameServerEntered.Length).Slice(0, GameServerEntered.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GameServerEntered.Length)[..GameServerEntered.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GameServerEntered Packet => this.Span;
@@ -4079,7 +4081,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MagicEffectStatus.Length).Slice(0, MagicEffectStatus.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MagicEffectStatus.Length)[..MagicEffectStatus.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MagicEffectStatus Packet => this.Span;
@@ -4132,7 +4134,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(WeatherStatusUpdate.Length).Slice(0, WeatherStatusUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(WeatherStatusUpdate.Length)[..WeatherStatusUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public WeatherStatusUpdate Packet => this.Span;
@@ -4185,7 +4187,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ObjectGotKilled.Length).Slice(0, ObjectGotKilled.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ObjectGotKilled.Length)[..ObjectGotKilled.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ObjectGotKilled Packet => this.Span;
@@ -4238,7 +4240,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ObjectAnimation.Length).Slice(0, ObjectAnimation.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ObjectAnimation.Length)[..ObjectAnimation.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ObjectAnimation Packet => this.Span;
@@ -4291,7 +4293,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkillAnimation.Length).Slice(0, AreaSkillAnimation.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkillAnimation.Length)[..AreaSkillAnimation.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public AreaSkillAnimation Packet => this.Span;
@@ -4344,7 +4346,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SkillAnimation.Length).Slice(0, SkillAnimation.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillAnimation.Length)[..SkillAnimation.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public SkillAnimation Packet => this.Span;
@@ -4397,7 +4399,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkillAnimation075.Length).Slice(0, AreaSkillAnimation075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkillAnimation075.Length)[..AreaSkillAnimation075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public AreaSkillAnimation075 Packet => this.Span;
@@ -4450,7 +4452,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SkillAnimation075.Length).Slice(0, SkillAnimation075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillAnimation075.Length)[..SkillAnimation075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public SkillAnimation075 Packet => this.Span;
@@ -4503,7 +4505,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MagicEffectCancelled.Length).Slice(0, MagicEffectCancelled.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MagicEffectCancelled.Length)[..MagicEffectCancelled.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MagicEffectCancelled Packet => this.Span;
@@ -4556,7 +4558,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MagicEffectCancelled075.Length).Slice(0, MagicEffectCancelled075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MagicEffectCancelled075.Length)[..MagicEffectCancelled075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MagicEffectCancelled075 Packet => this.Span;
@@ -4609,7 +4611,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PartyRequest.Length).Slice(0, PartyRequest.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(PartyRequest.Length)[..PartyRequest.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public PartyRequest Packet => this.Span;
@@ -4662,7 +4664,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(RemovePartyMember.Length).Slice(0, RemovePartyMember.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(RemovePartyMember.Length)[..RemovePartyMember.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public RemovePartyMember Packet => this.Span;
@@ -4715,7 +4717,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopOpenSuccessful.Length).Slice(0, PlayerShopOpenSuccessful.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopOpenSuccessful.Length)[..PlayerShopOpenSuccessful.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public PlayerShopOpenSuccessful Packet => this.Span;
@@ -4768,7 +4770,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeButtonStateChanged.Length).Slice(0, TradeButtonStateChanged.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(TradeButtonStateChanged.Length)[..TradeButtonStateChanged.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public TradeButtonStateChanged Packet => this.Span;
@@ -4821,7 +4823,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeMoneySetResponse.Length).Slice(0, TradeMoneySetResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(TradeMoneySetResponse.Length)[..TradeMoneySetResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public TradeMoneySetResponse Packet => this.Span;
@@ -4874,7 +4876,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeMoneyUpdate.Length).Slice(0, TradeMoneyUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(TradeMoneyUpdate.Length)[..TradeMoneyUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public TradeMoneyUpdate Packet => this.Span;
@@ -4927,7 +4929,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeRequestAnswer.Length).Slice(0, TradeRequestAnswer.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(TradeRequestAnswer.Length)[..TradeRequestAnswer.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public TradeRequestAnswer Packet => this.Span;
@@ -4980,7 +4982,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeRequest.Length).Slice(0, TradeRequest.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(TradeRequest.Length)[..TradeRequest.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public TradeRequest Packet => this.Span;
@@ -5033,7 +5035,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeFinished.Length).Slice(0, TradeFinished.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(TradeFinished.Length)[..TradeFinished.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public TradeFinished Packet => this.Span;
@@ -5086,7 +5088,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeItemRemoved.Length).Slice(0, TradeItemRemoved.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(TradeItemRemoved.Length)[..TradeItemRemoved.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public TradeItemRemoved Packet => this.Span;
@@ -5139,7 +5141,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LoginResponse.Length).Slice(0, LoginResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(LoginResponse.Length)[..LoginResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public LoginResponse Packet => this.Span;
@@ -5192,7 +5194,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LogoutResponse.Length).Slice(0, LogoutResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(LogoutResponse.Length)[..LogoutResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public LogoutResponse Packet => this.Span;
@@ -5245,7 +5247,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ObjectHit.Length).Slice(0, ObjectHit.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ObjectHit.Length)[..ObjectHit.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ObjectHit Packet => this.Span;
@@ -5298,7 +5300,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ObjectMoved.Length).Slice(0, ObjectMoved.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ObjectMoved.Length)[..ObjectMoved.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ObjectMoved Packet => this.Span;
@@ -5351,7 +5353,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ObjectWalked075.Length).Slice(0, ObjectWalked075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ObjectWalked075.Length)[..ObjectWalked075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ObjectWalked075 Packet => this.Span;
@@ -5404,7 +5406,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ExperienceGained.Length).Slice(0, ExperienceGained.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ExperienceGained.Length)[..ExperienceGained.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ExperienceGained Packet => this.Span;
@@ -5457,7 +5459,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MapChanged.Length).Slice(0, MapChanged.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MapChanged.Length)[..MapChanged.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MapChanged Packet => this.Span;
@@ -5510,7 +5512,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MapChanged075.Length).Slice(0, MapChanged075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MapChanged075.Length)[..MapChanged075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MapChanged075 Packet => this.Span;
@@ -5563,7 +5565,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MoneyDropped.Length).Slice(0, MoneyDropped.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MoneyDropped.Length)[..MoneyDropped.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MoneyDropped Packet => this.Span;
@@ -5616,7 +5618,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MoneyDropped075.Length).Slice(0, MoneyDropped075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MoneyDropped075.Length)[..MoneyDropped075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MoneyDropped075 Packet => this.Span;
@@ -5669,7 +5671,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ItemDropResponse.Length).Slice(0, ItemDropResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ItemDropResponse.Length)[..ItemDropResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ItemDropResponse Packet => this.Span;
@@ -5722,7 +5724,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ItemPickUpRequestFailed.Length).Slice(0, ItemPickUpRequestFailed.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ItemPickUpRequestFailed.Length)[..ItemPickUpRequestFailed.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ItemPickUpRequestFailed Packet => this.Span;
@@ -5775,7 +5777,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(InventoryMoneyUpdate.Length).Slice(0, InventoryMoneyUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(InventoryMoneyUpdate.Length)[..InventoryMoneyUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public InventoryMoneyUpdate Packet => this.Span;
@@ -5828,7 +5830,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CurrentHealthAndShield.Length).Slice(0, CurrentHealthAndShield.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CurrentHealthAndShield.Length)[..CurrentHealthAndShield.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CurrentHealthAndShield Packet => this.Span;
@@ -5881,7 +5883,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MaximumHealthAndShield.Length).Slice(0, MaximumHealthAndShield.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MaximumHealthAndShield.Length)[..MaximumHealthAndShield.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MaximumHealthAndShield Packet => this.Span;
@@ -5934,7 +5936,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ItemConsumptionFailed.Length).Slice(0, ItemConsumptionFailed.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ItemConsumptionFailed.Length)[..ItemConsumptionFailed.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ItemConsumptionFailed Packet => this.Span;
@@ -5987,7 +5989,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CurrentManaAndAbility.Length).Slice(0, CurrentManaAndAbility.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CurrentManaAndAbility.Length)[..CurrentManaAndAbility.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CurrentManaAndAbility Packet => this.Span;
@@ -6040,7 +6042,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MaximumManaAndAbility.Length).Slice(0, MaximumManaAndAbility.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MaximumManaAndAbility.Length)[..MaximumManaAndAbility.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MaximumManaAndAbility Packet => this.Span;
@@ -6093,7 +6095,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ItemRemoved.Length).Slice(0, ItemRemoved.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ItemRemoved.Length)[..ItemRemoved.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ItemRemoved Packet => this.Span;
@@ -6146,7 +6148,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ConsumeItemWithEffect.Length).Slice(0, ConsumeItemWithEffect.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ConsumeItemWithEffect.Length)[..ConsumeItemWithEffect.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ConsumeItemWithEffect Packet => this.Span;
@@ -6199,7 +6201,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ItemDurabilityChanged.Length).Slice(0, ItemDurabilityChanged.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ItemDurabilityChanged.Length)[..ItemDurabilityChanged.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ItemDurabilityChanged Packet => this.Span;
@@ -6252,7 +6254,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FruitConsumptionResponse.Length).Slice(0, FruitConsumptionResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(FruitConsumptionResponse.Length)[..FruitConsumptionResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public FruitConsumptionResponse Packet => this.Span;
@@ -6305,7 +6307,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(NpcWindowResponse.Length).Slice(0, NpcWindowResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(NpcWindowResponse.Length)[..NpcWindowResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public NpcWindowResponse Packet => this.Span;
@@ -6358,7 +6360,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(NpcItemBuyFailed.Length).Slice(0, NpcItemBuyFailed.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(NpcItemBuyFailed.Length)[..NpcItemBuyFailed.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public NpcItemBuyFailed Packet => this.Span;
@@ -6411,7 +6413,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(NpcItemSellResult.Length).Slice(0, NpcItemSellResult.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(NpcItemSellResult.Length)[..NpcItemSellResult.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public NpcItemSellResult Packet => this.Span;
@@ -6464,7 +6466,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopSetItemPriceResponse.Length).Slice(0, PlayerShopSetItemPriceResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopSetItemPriceResponse.Length)[..PlayerShopSetItemPriceResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public PlayerShopSetItemPriceResponse Packet => this.Span;
@@ -6517,7 +6519,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopClosed.Length).Slice(0, PlayerShopClosed.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopClosed.Length)[..PlayerShopClosed.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public PlayerShopClosed Packet => this.Span;
@@ -6570,7 +6572,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopItemSoldToPlayer.Length).Slice(0, PlayerShopItemSoldToPlayer.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopItemSoldToPlayer.Length)[..PlayerShopItemSoldToPlayer.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public PlayerShopItemSoldToPlayer Packet => this.Span;
@@ -6623,7 +6625,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ClosePlayerShopDialog.Length).Slice(0, ClosePlayerShopDialog.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ClosePlayerShopDialog.Length)[..ClosePlayerShopDialog.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ClosePlayerShopDialog Packet => this.Span;
@@ -6676,7 +6678,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CharacterCreationSuccessful.Length).Slice(0, CharacterCreationSuccessful.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterCreationSuccessful.Length)[..CharacterCreationSuccessful.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CharacterCreationSuccessful Packet => this.Span;
@@ -6729,7 +6731,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CharacterCreationFailed.Length).Slice(0, CharacterCreationFailed.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterCreationFailed.Length)[..CharacterCreationFailed.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CharacterCreationFailed Packet => this.Span;
@@ -6782,7 +6784,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(RespawnAfterDeath075.Length).Slice(0, RespawnAfterDeath075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(RespawnAfterDeath075.Length)[..RespawnAfterDeath075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public RespawnAfterDeath075 Packet => this.Span;
@@ -6835,7 +6837,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PoisonDamage.Length).Slice(0, PoisonDamage.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(PoisonDamage.Length)[..PoisonDamage.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public PoisonDamage Packet => this.Span;
@@ -6888,7 +6890,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(HeroStateChanged.Length).Slice(0, HeroStateChanged.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(HeroStateChanged.Length)[..HeroStateChanged.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public HeroStateChanged Packet => this.Span;
@@ -6941,7 +6943,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SkillAdded.Length).Slice(0, SkillAdded.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillAdded.Length)[..SkillAdded.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public SkillAdded Packet => this.Span;
@@ -6994,7 +6996,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SkillRemoved.Length).Slice(0, SkillRemoved.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillRemoved.Length)[..SkillRemoved.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public SkillRemoved Packet => this.Span;
@@ -7047,7 +7049,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SkillAdded075.Length).Slice(0, SkillAdded075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillAdded075.Length)[..SkillAdded075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public SkillAdded075 Packet => this.Span;
@@ -7100,7 +7102,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SkillRemoved075.Length).Slice(0, SkillRemoved075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillRemoved075.Length)[..SkillRemoved075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public SkillRemoved075 Packet => this.Span;
@@ -7153,7 +7155,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CharacterFocused.Length).Slice(0, CharacterFocused.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterFocused.Length)[..CharacterFocused.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CharacterFocused Packet => this.Span;
@@ -7206,7 +7208,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CharacterStatIncreaseResponse.Length).Slice(0, CharacterStatIncreaseResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterStatIncreaseResponse.Length)[..CharacterStatIncreaseResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CharacterStatIncreaseResponse Packet => this.Span;
@@ -7259,7 +7261,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CharacterDeleteResponse.Length).Slice(0, CharacterDeleteResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterDeleteResponse.Length)[..CharacterDeleteResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CharacterDeleteResponse Packet => this.Span;
@@ -7312,7 +7314,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CharacterLevelUpdate.Length).Slice(0, CharacterLevelUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterLevelUpdate.Length)[..CharacterLevelUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CharacterLevelUpdate Packet => this.Span;
@@ -7365,7 +7367,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CharacterInformation.Length).Slice(0, CharacterInformation.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterInformation.Length)[..CharacterInformation.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CharacterInformation Packet => this.Span;
@@ -7418,7 +7420,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CharacterInformation075.Length).Slice(0, CharacterInformation075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterInformation075.Length)[..CharacterInformation075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CharacterInformation075 Packet => this.Span;
@@ -7471,7 +7473,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SummonHealthUpdate.Length).Slice(0, SummonHealthUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(SummonHealthUpdate.Length)[..SummonHealthUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public SummonHealthUpdate Packet => this.Span;
@@ -7524,7 +7526,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildSoccerTimeUpdate.Length).Slice(0, GuildSoccerTimeUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildSoccerTimeUpdate.Length)[..GuildSoccerTimeUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildSoccerTimeUpdate Packet => this.Span;
@@ -7577,7 +7579,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildSoccerScoreUpdate.Length).Slice(0, GuildSoccerScoreUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildSoccerScoreUpdate.Length)[..GuildSoccerScoreUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildSoccerScoreUpdate Packet => this.Span;
@@ -7630,7 +7632,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MasterStatsUpdate.Length).Slice(0, MasterStatsUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MasterStatsUpdate.Length)[..MasterStatsUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MasterStatsUpdate Packet => this.Span;
@@ -7683,7 +7685,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MasterSkillLevelUpdate.Length).Slice(0, MasterSkillLevelUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(MasterSkillLevelUpdate.Length)[..MasterSkillLevelUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public MasterSkillLevelUpdate Packet => this.Span;
@@ -7736,7 +7738,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildJoinRequest.Length).Slice(0, GuildJoinRequest.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildJoinRequest.Length)[..GuildJoinRequest.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildJoinRequest Packet => this.Span;
@@ -7789,7 +7791,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildJoinResponse.Length).Slice(0, GuildJoinResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildJoinResponse.Length)[..GuildJoinResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildJoinResponse Packet => this.Span;
@@ -7842,7 +7844,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildKickResponse.Length).Slice(0, GuildKickResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildKickResponse.Length)[..GuildKickResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildKickResponse Packet => this.Span;
@@ -7895,7 +7897,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ShowGuildMasterDialog.Length).Slice(0, ShowGuildMasterDialog.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ShowGuildMasterDialog.Length)[..ShowGuildMasterDialog.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ShowGuildMasterDialog Packet => this.Span;
@@ -7948,7 +7950,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ShowGuildCreationDialog.Length).Slice(0, ShowGuildCreationDialog.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ShowGuildCreationDialog.Length)[..ShowGuildCreationDialog.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ShowGuildCreationDialog Packet => this.Span;
@@ -8001,7 +8003,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildCreationResult.Length).Slice(0, GuildCreationResult.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildCreationResult.Length)[..GuildCreationResult.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildCreationResult Packet => this.Span;
@@ -8054,7 +8056,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildMemberLeftGuild.Length).Slice(0, GuildMemberLeftGuild.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildMemberLeftGuild.Length)[..GuildMemberLeftGuild.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildMemberLeftGuild Packet => this.Span;
@@ -8107,7 +8109,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarRequestResult.Length).Slice(0, GuildWarRequestResult.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarRequestResult.Length)[..GuildWarRequestResult.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildWarRequestResult Packet => this.Span;
@@ -8160,7 +8162,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarRequest.Length).Slice(0, GuildWarRequest.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarRequest.Length)[..GuildWarRequest.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildWarRequest Packet => this.Span;
@@ -8213,7 +8215,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarDeclared.Length).Slice(0, GuildWarDeclared.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarDeclared.Length)[..GuildWarDeclared.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildWarDeclared Packet => this.Span;
@@ -8266,7 +8268,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarEnded.Length).Slice(0, GuildWarEnded.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarEnded.Length)[..GuildWarEnded.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildWarEnded Packet => this.Span;
@@ -8319,7 +8321,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarScoreUpdate.Length).Slice(0, GuildWarScoreUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarScoreUpdate.Length)[..GuildWarScoreUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildWarScoreUpdate Packet => this.Span;
@@ -8372,7 +8374,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildInformation.Length).Slice(0, GuildInformation.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(GuildInformation.Length)[..GuildInformation.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public GuildInformation Packet => this.Span;
@@ -8425,7 +8427,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SingleGuildInformation075.Length).Slice(0, SingleGuildInformation075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(SingleGuildInformation075.Length)[..SingleGuildInformation075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public SingleGuildInformation075 Packet => this.Span;
@@ -8478,7 +8480,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(VaultMoneyUpdate.Length).Slice(0, VaultMoneyUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(VaultMoneyUpdate.Length)[..VaultMoneyUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public VaultMoneyUpdate Packet => this.Span;
@@ -8531,7 +8533,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(VaultClosed.Length).Slice(0, VaultClosed.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(VaultClosed.Length)[..VaultClosed.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public VaultClosed Packet => this.Span;
@@ -8584,7 +8586,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(VaultProtectionInformation.Length).Slice(0, VaultProtectionInformation.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(VaultProtectionInformation.Length)[..VaultProtectionInformation.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public VaultProtectionInformation Packet => this.Span;
@@ -8637,7 +8639,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CraftingDialogClosed075.Length).Slice(0, CraftingDialogClosed075.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(CraftingDialogClosed075.Length)[..CraftingDialogClosed075.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public CraftingDialogClosed075 Packet => this.Span;
@@ -8690,7 +8692,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestStateDialog.Length).Slice(0, LegacyQuestStateDialog.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestStateDialog.Length)[..LegacyQuestStateDialog.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public LegacyQuestStateDialog Packet => this.Span;
@@ -8743,7 +8745,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LegacySetQuestStateResponse.Length).Slice(0, LegacySetQuestStateResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacySetQuestStateResponse.Length)[..LegacySetQuestStateResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public LegacySetQuestStateResponse Packet => this.Span;
@@ -8796,7 +8798,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestReward.Length).Slice(0, LegacyQuestReward.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestReward.Length)[..LegacyQuestReward.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public LegacyQuestReward Packet => this.Span;
@@ -8849,7 +8851,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestMonsterKillInfo.Length).Slice(0, LegacyQuestMonsterKillInfo.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestMonsterKillInfo.Length)[..LegacyQuestMonsterKillInfo.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public LegacyQuestMonsterKillInfo Packet => this.Span;
@@ -8902,7 +8904,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PetMode.Length).Slice(0, PetMode.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(PetMode.Length)[..PetMode.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public PetMode Packet => this.Span;
@@ -8955,7 +8957,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PetAttack.Length).Slice(0, PetAttack.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(PetAttack.Length)[..PetAttack.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public PetAttack Packet => this.Span;
@@ -9008,7 +9010,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PetInfoResponse.Length).Slice(0, PetInfoResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(PetInfoResponse.Length)[..PetInfoResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public PetInfoResponse Packet => this.Span;
@@ -9061,7 +9063,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FriendAdded.Length).Slice(0, FriendAdded.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(FriendAdded.Length)[..FriendAdded.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public FriendAdded Packet => this.Span;
@@ -9114,7 +9116,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FriendRequest.Length).Slice(0, FriendRequest.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(FriendRequest.Length)[..FriendRequest.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public FriendRequest Packet => this.Span;
@@ -9167,7 +9169,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FriendDeleted.Length).Slice(0, FriendDeleted.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(FriendDeleted.Length)[..FriendDeleted.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public FriendDeleted Packet => this.Span;
@@ -9220,7 +9222,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FriendOnlineStateUpdate.Length).Slice(0, FriendOnlineStateUpdate.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(FriendOnlineStateUpdate.Length)[..FriendOnlineStateUpdate.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public FriendOnlineStateUpdate Packet => this.Span;
@@ -9273,7 +9275,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LetterSendResponse.Length).Slice(0, LetterSendResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(LetterSendResponse.Length)[..LetterSendResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public LetterSendResponse Packet => this.Span;
@@ -9326,7 +9328,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AddLetter.Length).Slice(0, AddLetter.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(AddLetter.Length)[..AddLetter.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public AddLetter Packet => this.Span;
@@ -9379,7 +9381,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(RemoveLetter.Length).Slice(0, RemoveLetter.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(RemoveLetter.Length)[..RemoveLetter.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public RemoveLetter Packet => this.Span;
@@ -9432,7 +9434,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomConnectionInfo.Length).Slice(0, ChatRoomConnectionInfo.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomConnectionInfo.Length)[..ChatRoomConnectionInfo.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public ChatRoomConnectionInfo Packet => this.Span;
@@ -9485,7 +9487,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FriendInvitationResult.Length).Slice(0, FriendInvitationResult.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(FriendInvitationResult.Length)[..FriendInvitationResult.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public FriendInvitationResult Packet => this.Span;
@@ -9538,7 +9540,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestEventResponse.Length).Slice(0, QuestEventResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestEventResponse.Length)[..QuestEventResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public QuestEventResponse Packet => this.Span;
@@ -9591,7 +9593,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestStepInfo.Length).Slice(0, QuestStepInfo.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestStepInfo.Length)[..QuestStepInfo.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public QuestStepInfo Packet => this.Span;
@@ -9644,7 +9646,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestProgress.Length).Slice(0, QuestProgress.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestProgress.Length)[..QuestProgress.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public QuestProgress Packet => this.Span;
@@ -9697,7 +9699,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestCompletionResponse.Length).Slice(0, QuestCompletionResponse.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestCompletionResponse.Length)[..QuestCompletionResponse.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public QuestCompletionResponse Packet => this.Span;
@@ -9750,7 +9752,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestCancelled.Length).Slice(0, QuestCancelled.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestCancelled.Length)[..QuestCancelled.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public QuestCancelled Packet => this.Span;
@@ -9803,7 +9805,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestState.Length).Slice(0, QuestState.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(QuestState.Length)[..QuestState.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public QuestState Packet => this.Span;
@@ -9856,7 +9858,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(OpenNpcDialog.Length).Slice(0, OpenNpcDialog.Length);
+        private Span<byte> Span => this.connection.Output.GetSpan(OpenNpcDialog.Length)[..OpenNpcDialog.Length];
 
         /// <summary>Gets the packet to write at.</summary>
         public OpenNpcDialog Packet => this.Span;
