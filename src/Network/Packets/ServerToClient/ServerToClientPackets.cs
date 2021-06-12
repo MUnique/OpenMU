@@ -173,6 +173,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ConditionType Type
         {
             get => (ConditionType)this.data[0];
+            set => this.data[0] = (byte)value;
         }
 
         /// <summary>
@@ -239,6 +240,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public RewardType Type
         {
             get => (RewardType)this.data[0];
+            set => this.data[0] = (byte)value;
         }
 
         /// <summary>
@@ -740,6 +742,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterHeroState HeroState
         {
             get => (CharacterHeroState)this.data[34..].GetByteValue(4, 0);
+            set => this.data[34..].SetByteValue((byte)value, 4, 0);
         }
 
         /// <summary>
@@ -1015,6 +1018,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterHeroState HeroState
         {
             get => (CharacterHeroState)this.data[26..].GetByteValue(4, 0);
+            set => this.data[26..].SetByteValue((byte)value, 4, 0);
         }
     }
     }
@@ -3733,6 +3737,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public TradeButtonStateChanged.TradeButtonState State
         {
             get => (TradeButtonState)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -4183,6 +4188,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public TradeFinished.TradeResult Result
         {
             get => (TradeResult)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -4516,6 +4522,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LoginResponse.LoginResult Success
         {
             get => (LoginResult)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -4601,6 +4608,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LogOutType Type
         {
             get => (LogOutType)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -4690,6 +4698,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ChatMessage.ChatMessageType Type
         {
             get => (ChatMessageType)this.data[2];
+            set => this.data[2] = (byte)value;
         }
 
         /// <summary>
@@ -4865,6 +4874,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ObjectHit.DamageKind Kind
         {
             get => (DamageKind)this.data[7..].GetByteValue(4, 0);
+            set => this.data[7..].SetByteValue((byte)value, 4, 0);
         }
 
         /// <summary>
@@ -6474,6 +6484,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ItemPickUpRequestFailed.ItemPickUpFailReason FailReason
         {
             get => (ItemPickUpFailReason)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -6633,6 +6644,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ItemStorageKind TargetStorageType
         {
             get => (ItemStorageKind)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -7405,6 +7417,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ConsumeItemWithEffect.ConsumedItemType ItemType
         {
             get => (ConsumedItemType)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -7681,6 +7694,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public FruitConsumptionResponse.FruitConsumptionResult Result
         {
             get => (FruitConsumptionResult)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -7698,6 +7712,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public FruitConsumptionResponse.FruitStatType StatType
         {
             get => (FruitStatType)this.data[6];
+            set => this.data[6] = (byte)value;
         }
 
         /// <summary>
@@ -7902,6 +7917,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public NpcWindowResponse.NpcWindow Window
         {
             get => (NpcWindow)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -7996,6 +8012,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public StoreItemList.ItemWindow Type
         {
             get => (ItemWindow)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -8405,6 +8422,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public PlayerShopSetItemPriceResponse.ItemPriceSetResult Result
         {
             get => (ItemPriceSetResult)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -8779,6 +8797,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public PlayerShopItemList.ActionKind Action
         {
             get => (ActionKind)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -9158,6 +9177,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterStatus Status
         {
             get => (CharacterStatus)this.data[14..].GetByteValue(4, 0);
+            set => this.data[14..].SetByteValue((byte)value, 4, 0);
         }
 
         /// <summary>
@@ -9183,6 +9203,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildMemberRole GuildPosition
         {
             get => (GuildMemberRole)this.data[33];
+            set => this.data[33] = (byte)value;
         }
     }
     }
@@ -9333,6 +9354,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterStatus Status
         {
             get => (CharacterStatus)this.data[13..].GetByteValue(4, 0);
+            set => this.data[13..].SetByteValue((byte)value, 4, 0);
         }
 
         /// <summary>
@@ -9459,6 +9481,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterClassNumber Class
         {
             get => (CharacterClassNumber)this.data[18..].GetByteValue(8, 3);
+            set => this.data[18..].SetByteValue((byte)value, 8, 3);
         }
 
         /// <summary>
@@ -9897,6 +9920,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterHeroState NewState
         {
             get => (CharacterHeroState)this.data[6];
+            set => this.data[6] = (byte)value;
         }
 
         /// <summary>
@@ -10781,6 +10805,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterStatAttribute Attribute
         {
             get => (CharacterStatAttribute)this.data[4..].GetByteValue(4, 0);
+            set => this.data[4..].SetByteValue((byte)value, 4, 0);
         }
 
         /// <summary>
@@ -10914,6 +10939,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterDeleteResponse.CharacterDeleteResult Result
         {
             get => (CharacterDeleteResult)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -11337,6 +11363,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterHeroState HeroState
         {
             get => (CharacterHeroState)this.data[56];
+            set => this.data[56] = (byte)value;
         }
 
         /// <summary>
@@ -11345,6 +11372,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterStatus Status
         {
             get => (CharacterStatus)this.data[57];
+            set => this.data[57] = (byte)value;
         }
 
         /// <summary>
@@ -11619,6 +11647,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterHeroState HeroState
         {
             get => (CharacterHeroState)this.data[40];
+            set => this.data[40] = (byte)value;
         }
 
         /// <summary>
@@ -11627,6 +11656,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public CharacterStatus Status
         {
             get => (CharacterStatus)this.data[41];
+            set => this.data[41] = (byte)value;
         }
 
         /// <summary>
@@ -12634,6 +12664,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ServerMessage.MessageType Type
         {
             get => (MessageType)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -12852,6 +12883,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildJoinResponse.GuildJoinRequestResult Result
         {
             get => (GuildJoinRequestResult)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -13044,6 +13076,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildMemberRole Role
         {
             get => (GuildMemberRole)this.data[12];
+            set => this.data[12] = (byte)value;
         }
     }
     }
@@ -13307,6 +13340,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildKickResponse.GuildKickSuccess Result
         {
             get => (GuildKickSuccess)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -13550,6 +13584,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildCreationResult.GuildCreationErrorType Error
         {
             get => (GuildCreationErrorType)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -13757,6 +13792,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildWarRequestResult.RequestResult Result
         {
             get => (RequestResult)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -13844,6 +13880,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildWarType Type
         {
             get => (GuildWarType)this.data[11];
+            set => this.data[11] = (byte)value;
         }
 
         /// <summary>
@@ -13931,6 +13968,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildWarType Type
         {
             get => (GuildWarType)this.data[11];
+            set => this.data[11] = (byte)value;
         }
 
         /// <summary>
@@ -14044,6 +14082,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildWarEnded.GuildWarResult Result
         {
             get => (GuildWarResult)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -14289,6 +14328,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public GuildMemberRole Role
         {
             get => (GuildMemberRole)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -15045,6 +15085,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public VaultProtectionInformation.VaultProtectionState ProtectionState
         {
             get => (VaultProtectionState)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -15179,6 +15220,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ItemCraftingResult.CraftingResult Result
         {
             get => (CraftingResult)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -15354,6 +15396,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LegacyQuestState ScrollOfEmperorState
         {
             get => (LegacyQuestState)this.data[4..].GetByteValue(2, 0);
+            set => this.data[4..].SetByteValue((byte)value, 2, 0);
         }
 
         /// <summary>
@@ -15362,6 +15405,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LegacyQuestState ThreeTreasuresOfMuState
         {
             get => (LegacyQuestState)this.data[4..].GetByteValue(2, 2);
+            set => this.data[4..].SetByteValue((byte)value, 2, 2);
         }
 
         /// <summary>
@@ -15370,6 +15414,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LegacyQuestState GainHeroStatusState
         {
             get => (LegacyQuestState)this.data[4..].GetByteValue(2, 4);
+            set => this.data[4..].SetByteValue((byte)value, 2, 4);
         }
 
         /// <summary>
@@ -15378,6 +15423,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LegacyQuestState SecretOfDarkStoneState
         {
             get => (LegacyQuestState)this.data[4..].GetByteValue(2, 6);
+            set => this.data[4..].SetByteValue((byte)value, 2, 6);
         }
 
         /// <summary>
@@ -15386,6 +15432,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LegacyQuestState CertificateOfStrengthState
         {
             get => (LegacyQuestState)this.data[5..].GetByteValue(2, 0);
+            set => this.data[5..].SetByteValue((byte)value, 2, 0);
         }
 
         /// <summary>
@@ -15394,6 +15441,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LegacyQuestState InfiltrationOfBarrackState
         {
             get => (LegacyQuestState)this.data[5..].GetByteValue(2, 2);
+            set => this.data[5..].SetByteValue((byte)value, 2, 2);
         }
 
         /// <summary>
@@ -15402,6 +15450,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LegacyQuestState InfiltrationOfRefugeState
         {
             get => (LegacyQuestState)this.data[5..].GetByteValue(2, 4);
+            set => this.data[5..].SetByteValue((byte)value, 2, 4);
         }
 
         /// <summary>
@@ -15410,6 +15459,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LegacyQuestState UnusedQuestState
         {
             get => (LegacyQuestState)this.data[5..].GetByteValue(2, 6);
+            set => this.data[5..].SetByteValue((byte)value, 2, 6);
         }
 
         /// <summary>
@@ -15713,6 +15763,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LegacyQuestReward.QuestRewardType Reward
         {
             get => (QuestRewardType)this.data[5];
+            set => this.data[5] = (byte)value;
         }
 
         /// <summary>
@@ -15943,6 +15994,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ClientToServer.PetType Pet
         {
             get => (ClientToServer.PetType)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -15951,6 +16003,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ClientToServer.PetCommandMode PetCommandMode
         {
             get => (ClientToServer.PetCommandMode)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -16055,6 +16108,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ClientToServer.PetType Pet
         {
             get => (ClientToServer.PetType)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -16063,6 +16117,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public PetAttack.PetSkillType SkillType
         {
             get => (PetSkillType)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -16159,6 +16214,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ClientToServer.PetType Pet
         {
             get => (ClientToServer.PetType)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -16167,6 +16223,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public ClientToServer.StorageType Storage
         {
             get => (ClientToServer.StorageType)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -16819,6 +16876,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public LetterSendResponse.LetterSendRequestResult Result
         {
             get => (LetterSendRequestResult)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -16954,6 +17012,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public AddLetter.LetterState State
         {
             get => (LetterState)this.data[78];
+            set => this.data[78] = (byte)value;
         }
 
         /// <summary>

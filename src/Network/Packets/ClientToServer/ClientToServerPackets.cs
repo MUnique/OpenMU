@@ -712,6 +712,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public LogOutType Type
         {
             get => (LogOutType)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -1502,6 +1503,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public ItemStorageKind FromStorage
         {
             get => (ItemStorageKind)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -1527,6 +1529,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public ItemStorageKind ToStorage
         {
             get => (ItemStorageKind)this.data[17];
+            set => this.data[17] = (byte)value;
         }
 
         /// <summary>
@@ -1648,6 +1651,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public ConsumeItemRequest.FruitUsage FruitConsumption
         {
             get => (FruitUsage)this.data[5];
+            set => this.data[5] = (byte)value;
         }
 
         /// <summary>
@@ -2736,6 +2740,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public VaultMoveMoneyRequest.VaultMoneyMoveDirection Direction
         {
             get => (VaultMoneyMoveDirection)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -2916,6 +2921,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public LahapJewelMixRequest.MixType Operation
         {
             get => (MixType)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -2924,6 +2930,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public LahapJewelMixRequest.ItemType Item
         {
             get => (ItemType)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -2932,6 +2939,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public LahapJewelMixRequest.StackSize MixingStackSize
         {
             get => (StackSize)this.data[5];
+            set => this.data[5] = (byte)value;
         }
 
         /// <summary>
@@ -3825,6 +3833,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public CharacterClassNumber Class
         {
             get => (CharacterClassNumber)this.data[14..].GetByteValue(6, 2);
+            set => this.data[14..].SetByteValue((byte)value, 6, 2);
         }
 
         /// <summary>
@@ -4183,6 +4192,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public CharacterStatAttribute StatType
         {
             get => (CharacterStatAttribute)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -5430,6 +5440,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public TradeButtonState NewState
         {
             get => (TradeButtonState)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -6966,6 +6977,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public ChaosMachineMixRequest.ChaosMachineMixType MixType
         {
             get => (ChaosMachineMixType)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -7703,6 +7715,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public LegacyQuestState NewState
         {
             get => (LegacyQuestState)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -7790,6 +7803,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public PetCommandMode CommandMode
         {
             get => (PetCommandMode)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -7877,6 +7891,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public PetType Pet
         {
             get => (PetType)this.data[3];
+            set => this.data[3] = (byte)value;
         }
 
         /// <summary>
@@ -7885,6 +7900,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public StorageType Storage
         {
             get => (StorageType)this.data[4];
+            set => this.data[4] = (byte)value;
         }
 
         /// <summary>
@@ -8122,6 +8138,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public QuestProceedRequest.QuestProceedAction ProceedAction
         {
             get => (QuestProceedAction)this.data[8];
+            set => this.data[8] = (byte)value;
         }
 
         /// <summary>

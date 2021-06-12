@@ -610,7 +610,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
       </xsl:choose>
       <xsl:text>;</xsl:text>
     </xsl:template>
-    <xsl:template match="pd:Field[pd:Type = 'Byte']" mode="set">
+    <xsl:template match="pd:Field[pd:Type = 'Byte' or pd:Type = 'Enum']" mode="set">
       <xsl:variable name="value">
         <xsl:if test="pd:Type = 'Enum'">
           <xsl:text>(byte)</xsl:text>
