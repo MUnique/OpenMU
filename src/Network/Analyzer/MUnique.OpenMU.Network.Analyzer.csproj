@@ -38,10 +38,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DG.AdvancedDataGridView" Version="1.2.25807.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MUnique.OpenMU.Network.csproj" />

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Network.Analyzer
 {
+    using System;
     using System.ComponentModel;
     using System.IO;
 
@@ -19,7 +20,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         public SavedConnection(string filePath)
         {
             this.PacketList = new BindingList<Packet>();
-            this.PacketList.LoadFromFile(filePath);
+            this.StartTimestamp = this.PacketList.LoadFromFile(filePath);
             this.Name = new FileInfo(filePath).Name;
         }
 
@@ -33,5 +34,10 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// Gets the packets of the connection.
         /// </summary>
         public BindingList<Packet> PacketList { get; }
+
+        /// <summary>
+        /// Gets the start timestamp.
+        /// </summary>
+        public DateTime StartTimestamp { get; }
     }
 }

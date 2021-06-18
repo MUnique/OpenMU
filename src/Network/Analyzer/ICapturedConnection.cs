@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Network.Analyzer
 {
+    using System;
     using System.ComponentModel;
 
     /// <summary>
@@ -20,5 +21,10 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// Gets the packets of the connection.
         /// </summary>
         BindingList<Packet> PacketList { get; }
+
+        /// <summary>
+        /// Gets the start timestamp.
+        /// </summary>
+        DateTime StartTimestamp { get; }
     }
 }

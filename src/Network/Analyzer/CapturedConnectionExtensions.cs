@@ -25,6 +25,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
             using var file = File.OpenWrite(path);
             using var writer = new StreamWriter(file);
+            writer.WriteLine(connection.StartTimestamp);
             for (var i = 0; i < connection.PacketList.Count; i++)
             {
                 var packet = connection.PacketList[i];
@@ -43,10 +44,13 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// </summary>
         /// <param name="packetList">The packet list.</param>
         /// <param name="path">The path.</param>
-        public static void LoadFromFile(this BindingList<Packet> packetList, string path)
+        /// <returns>The <see cref="ICapturedConnection.StartTimestamp"/>.</returns>
+        public static DateTime LoadFromFile(this BindingList<Packet> packetList, string path)
         {
             using var stream = File.OpenRead(path);
             using var reader = new StreamReader(stream);
+            DateTime.TryParse(reader.ReadLine(), out var start);
+
             while (!reader.EndOfStream)
             {
                 var currentLine = reader.ReadLine();
@@ -58,13 +62,15 @@ namespace MUnique.OpenMU.Network.Analyzer
                     && int.TryParse(splittedLine[2], out var size)
                     && TryParseArray(splittedLine[3], size, out var data))
                 {
-                    packetList.Add(new Packet(new DateTime(ticks), data, toServer));
+                    packetList.Add(new Packet(new TimeSpan(ticks), data, toServer));
                 }
                 else
                 {
                     Debug.Fail($"Invalid line: {currentLine}");
                 }
             }
+
+            return start;
         }
 
         /// <summary>

@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// Gets the packet list of all captured packets.
         /// </summary>
-        public BindingList<Packet> PacketList { get; } = new BindingList<Packet>();
+        public BindingList<Packet> PacketList { get; } = new ();
 
         /// <summary>
         /// Gets or sets the name of the proxied connection.
@@ -90,6 +90,9 @@ namespace MUnique.OpenMU.Network.Analyzer
                 }
             }
         }
+
+        /// <inheritdoc />
+        public DateTime StartTimestamp { get; } = DateTime.UtcNow;
 
         /// <summary>
         /// Gets a value indicating whether this instance is connected to the client and server.
@@ -113,7 +116,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <param name="data">The data.</param>
         public void SendToServer(byte[] data)
         {
-            var packet = new Packet(data, true);
+            var packet = new Packet(DateTime.UtcNow - this.StartTimestamp, data, true);
             this.logger.LogInformation(packet.ToString());
             this.serverConnection.Output.Write(data);
             this.serverConnection.Output.FlushAsync();
@@ -128,7 +131,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
             this.clientConnection.Output.Write(data);
             this.clientConnection.Output.FlushAsync();
-            var packet = new Packet(data, false);
+            var packet = new Packet(DateTime.UtcNow - this.StartTimestamp, data, false);
             this.logger.LogInformation(packet.ToString());
             this.invokeAction((Action)(() => this.PacketList.Add(packet)));
         }

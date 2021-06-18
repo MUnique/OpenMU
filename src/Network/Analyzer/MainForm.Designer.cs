@@ -33,13 +33,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.packetGridView = new System.Windows.Forms.DataGridView();
-            this.Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PacketSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Code = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PacketData = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.packetGridView = new Zuby.ADGV.AdvancedDataGridView();
             this.packetBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.rawDataTextBox = new System.Windows.Forms.TextBox();
             this.packetInfoGroup = new System.Windows.Forms.GroupBox();
@@ -66,6 +60,12 @@
             this.clientBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.trafficGroup = new System.Windows.Forms.GroupBox();
             this.leftPanel = new System.Windows.Forms.Panel();
+            this.Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PacketSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Code = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PacketData = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.packetGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.packetBindingSource)).BeginInit();
             this.packetInfoGroup.SuspendLayout();
@@ -96,70 +96,18 @@
             this.Direction,
             this.PacketData});
             this.packetGridView.DataSource = this.packetBindingSource;
+            this.packetGridView.FilterAndSortEnabled = true;
             this.packetGridView.Location = new System.Drawing.Point(4, 18);
             this.packetGridView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.packetGridView.MultiSelect = false;
             this.packetGridView.Name = "packetGridView";
             this.packetGridView.ReadOnly = true;
+            this.packetGridView.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.packetGridView.RowHeadersWidth = 20;
             this.packetGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.packetGridView.Size = new System.Drawing.Size(595, 689);
             this.packetGridView.TabIndex = 27;
-            this.packetGridView.SelectionChanged += new System.EventHandler(this.PacketSelected);
-            // 
-            // Timestamp
-            // 
-            this.Timestamp.DataPropertyName = "Timestamp";
-            dataGridViewCellStyle1.Format = "o";
-            this.Timestamp.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Timestamp.HeaderText = "Timestamp";
-            this.Timestamp.Name = "Timestamp";
-            this.Timestamp.ReadOnly = true;
-            this.Timestamp.Width = 125;
-            // 
-            // PacketSize
-            // 
-            this.PacketSize.DataPropertyName = "Size";
-            this.PacketSize.HeaderText = "Size";
-            this.PacketSize.Name = "PacketSize";
-            this.PacketSize.ReadOnly = true;
-            this.PacketSize.Width = 50;
-            // 
-            // Type
-            // 
-            this.Type.DataPropertyName = "Type";
-            dataGridViewCellStyle2.Format = "X2";
-            this.Type.DefaultCellStyle = dataGridViewCellStyle2;
-            this.Type.HeaderText = "Type";
-            this.Type.Name = "Type";
-            this.Type.ReadOnly = true;
-            this.Type.Width = 50;
-            // 
-            // Code
-            // 
-            this.Code.DataPropertyName = "Code";
-            dataGridViewCellStyle3.Format = "X2";
-            this.Code.DefaultCellStyle = dataGridViewCellStyle3;
-            this.Code.HeaderText = "Code";
-            this.Code.Name = "Code";
-            this.Code.ReadOnly = true;
-            this.Code.Width = 50;
-            // 
-            // Direction
-            // 
-            this.Direction.DataPropertyName = "Direction";
-            this.Direction.HeaderText = "Direction";
-            this.Direction.Name = "Direction";
-            this.Direction.ReadOnly = true;
-            this.Direction.Width = 75;
-            // 
-            // PacketData
-            // 
-            this.PacketData.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PacketData.DataPropertyName = "PacketData";
-            this.PacketData.HeaderText = "Data";
-            this.PacketData.Name = "PacketData";
-            this.PacketData.ReadOnly = true;
+            this.packetGridView.SelectionChanged += new System.EventHandler(this.OnPacketSelected);
             // 
             // packetBindingSource
             // 
@@ -394,7 +342,7 @@
             this.connectedClientsListBox.Name = "connectedClientsListBox";
             this.connectedClientsListBox.Size = new System.Drawing.Size(229, 499);
             this.connectedClientsListBox.TabIndex = 0;
-            this.connectedClientsListBox.SelectedIndexChanged += new System.EventHandler(this.ConnectionSelected);
+            this.connectedClientsListBox.SelectedIndexChanged += new System.EventHandler(this.OnConnectionSelected);
             // 
             // connectionContextMenu
             // 
@@ -405,35 +353,35 @@
             this.openPacketSenderStripMenuItem});
             this.connectionContextMenu.Name = "connectionContextMenu";
             this.connectionContextMenu.Size = new System.Drawing.Size(149, 92);
-            this.connectionContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.BeforeContextMenuOpens);
+            this.connectionContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.OnBeforeContextMenuOpens);
             // 
             // disconnectToolStripMenuItem
             // 
             this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
             this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.disconnectToolStripMenuItem.Text = "Disconnect";
-            this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.DisconnectClient);
+            this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.OnDisconnectClientClick);
             // 
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
             this.loadToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.loadToolStripMenuItem.Text = "Load from file";
-            this.loadToolStripMenuItem.Click += new System.EventHandler(this.LoadFromFile);
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.OnLoadFromFileClick);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.saveToolStripMenuItem.Text = "Save to file";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToFile);
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.OnSaveToFileClick);
             // 
             // openPacketSenderStripMenuItem
             // 
             this.openPacketSenderStripMenuItem.Name = "openPacketSenderStripMenuItem";
             this.openPacketSenderStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.openPacketSenderStripMenuItem.Text = "Packet Sender";
-            this.openPacketSenderStripMenuItem.Click += new System.EventHandler(this.SendPacket);
+            this.openPacketSenderStripMenuItem.Click += new System.EventHandler(this.OnSendPacketClick);
             // 
             // trafficGroup
             // 
@@ -460,6 +408,71 @@
             this.leftPanel.Name = "leftPanel";
             this.leftPanel.Size = new System.Drawing.Size(233, 714);
             this.leftPanel.TabIndex = 35;
+            // 
+            // Timestamp
+            // 
+            this.Timestamp.DataPropertyName = "Timestamp";
+            dataGridViewCellStyle1.Format = "g";
+            this.Timestamp.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Timestamp.HeaderText = "Timestamp";
+            this.Timestamp.MinimumWidth = 22;
+            this.Timestamp.Name = "Timestamp";
+            this.Timestamp.ReadOnly = true;
+            this.Timestamp.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // PacketSize
+            // 
+            this.PacketSize.DataPropertyName = "Size";
+            this.PacketSize.HeaderText = "Size";
+            this.PacketSize.MinimumWidth = 22;
+            this.PacketSize.Name = "PacketSize";
+            this.PacketSize.ReadOnly = true;
+            this.PacketSize.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.PacketSize.Width = 55;
+            // 
+            // Type
+            // 
+            this.Type.DataPropertyName = "Type";
+            dataGridViewCellStyle2.Format = "X2";
+            this.Type.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Type.HeaderText = "Type";
+            this.Type.MinimumWidth = 22;
+            this.Type.Name = "Type";
+            this.Type.ReadOnly = true;
+            this.Type.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.Type.Width = 55;
+            // 
+            // Code
+            // 
+            this.Code.DataPropertyName = "Code";
+            dataGridViewCellStyle3.Format = "X2";
+            this.Code.DefaultCellStyle = dataGridViewCellStyle3;
+            this.Code.HeaderText = "Code";
+            this.Code.MinimumWidth = 22;
+            this.Code.Name = "Code";
+            this.Code.ReadOnly = true;
+            this.Code.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.Code.Width = 55;
+            // 
+            // Direction
+            // 
+            this.Direction.DataPropertyName = "Direction";
+            this.Direction.HeaderText = "Direction";
+            this.Direction.MinimumWidth = 22;
+            this.Direction.Name = "Direction";
+            this.Direction.ReadOnly = true;
+            this.Direction.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.Direction.Width = 75;
+            // 
+            // PacketData
+            // 
+            this.PacketData.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PacketData.DataPropertyName = "PacketData";
+            this.PacketData.HeaderText = "Data";
+            this.PacketData.MinimumWidth = 22;
+            this.PacketData.Name = "PacketData";
+            this.PacketData.ReadOnly = true;
+            this.PacketData.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
             // MainForm
             // 
@@ -491,7 +504,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridView packetGridView;
+        private Zuby.ADGV.AdvancedDataGridView packetGridView;
         private System.Windows.Forms.TextBox rawDataTextBox;
         private System.Windows.Forms.GroupBox packetInfoGroup;
         private System.Windows.Forms.TextBox extractedInfoTextBox;
@@ -511,12 +524,6 @@
         private System.Windows.Forms.GroupBox trafficGroup;
         private System.Windows.Forms.BindingSource clientBindingSource;
         private System.Windows.Forms.BindingSource packetBindingSource;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Timestamp;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PacketSize;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Type;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Code;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Direction;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PacketData;
         private System.Windows.Forms.Panel leftPanel;
         private System.Windows.Forms.ContextMenuStrip connectionContextMenu;
         private System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
@@ -524,6 +531,12 @@
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openPacketSenderStripMenuItem;
         private System.Windows.Forms.ComboBox clientVersionComboBox;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Timestamp;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PacketSize;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Type;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Code;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Direction;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PacketData;
     }
 }
 

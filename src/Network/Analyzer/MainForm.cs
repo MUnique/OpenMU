@@ -8,20 +8,26 @@ namespace MUnique.OpenMU.Network.Analyzer
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.ComponentModel.Design;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Linq.Dynamic.Core;
+    using System.Linq.Expressions;
+    using System.Text;
     using System.Windows.Forms;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
+    using Zuby.ADGV;
 
     /// <summary>
     /// The main form of the analyzer.
     /// </summary>
     public partial class MainForm : Form
     {
-        private readonly IList<ICapturedConnection> proxiedConnections = new BindingList<ICapturedConnection>();
+        private readonly BindingList<ICapturedConnection> proxiedConnections = new ();
 
-        private readonly Dictionary<ClientVersion, string> clientVersions = new Dictionary<ClientVersion, string>
+        private readonly Dictionary<ClientVersion, string> clientVersions = new ()
         {
             { new ClientVersion(6, 3, ClientLanguage.English), "S6E3 (1.04d)" },
             { new ClientVersion(1, 0, ClientLanguage.Invariant), "Season 1 - 6" },
@@ -34,6 +40,9 @@ namespace MUnique.OpenMU.Network.Analyzer
         private readonly PlugInManager plugInManager;
 
         private LiveConnectionListener? clientListener;
+        private BindingList<Packet>? unfilteredList;
+        private Delegate? filterMethod;
+        private LambdaExpression? filterExpression;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
@@ -50,9 +59,9 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.connectedClientsListBox.Update();
 
             this.analyzer = new PacketAnalyzer();
-            this.Disposed += (_, __) => this.analyzer.Dispose();
+            this.Disposed += (_, _) => this.analyzer.Dispose();
 
-            this.clientVersionComboBox.SelectedIndexChanged += (_, __) =>
+            this.clientVersionComboBox.SelectedIndexChanged += (_, _) =>
             {
                 if (this.clientListener is { } listener)
                 {
@@ -65,7 +74,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             this.clientVersionComboBox.DisplayMember = "Value";
             this.clientVersionComboBox.ValueMember = "Key";
 
-            this.targetHostTextBox.TextChanged += (_, __) =>
+            this.targetHostTextBox.TextChanged += (_, _) =>
             {
                 var listener = this.clientListener;
                 if (listener != null)
@@ -73,7 +82,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                     listener.TargetHost = this.targetHostTextBox.Text;
                 }
             };
-            this.targetPortNumericUpDown.ValueChanged += (_, __) =>
+            this.targetPortNumericUpDown.ValueChanged += (_, _) =>
             {
                 var listener = this.clientListener;
                 if (listener != null)
@@ -81,6 +90,12 @@ namespace MUnique.OpenMU.Network.Analyzer
                     listener.TargetPort = (int)this.targetPortNumericUpDown.Value;
                 }
             };
+
+            this.packetGridView.FilterStringChanged += this.OnPacketFilterStringChanged;
+            foreach (DataGridViewColumn column in this.packetGridView.Columns)
+            {
+                this.packetGridView.SetSortEnabled(column, false);
+            }
         }
 
         private ClientVersion SelectedClientVersion
@@ -96,6 +111,20 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
+        private ICapturedConnection? SelectedConnection
+        {
+            get
+            {
+                var index = this.connectedClientsListBox.SelectedIndex;
+                if (index < 0)
+                {
+                    return null;
+                }
+
+                return this.proxiedConnections[index];
+            }
+        }
+
         /// <inheritdoc />
         protected override void OnClosed(EventArgs e)
         {
@@ -106,6 +135,127 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
 
             base.OnClosed(e);
+        }
+
+        private static string ConvertFilterStringToExpressionString(string filter)
+        {
+            var result = new StringBuilder();
+
+            filter = filter.Replace("(", string.Empty).Replace(")", string.Empty);
+
+            var andOperator = string.Empty;
+            foreach (var columnFilter in filter.Split("AND"))
+            {
+                // Example: [Type] IN 'C1', 'C2'
+                result.Append(andOperator);
+
+                var temp1 = columnFilter.Trim().Split("IN");
+                var columnName = temp1[0].Split('[', ']')[1].Trim();
+
+                // prepare beginning of linq statement
+                result.Append("(")
+                    .Append(columnName)
+                    .Append(" != null && (");
+
+                string orOperator = string.Empty;
+
+                var filterValues = temp1[1].Split(',').Select(v => v.Replace("\'", string.Empty).Trim());
+
+                foreach (var filterValue in filterValues)
+                {
+                    result.Append(orOperator).Append(columnName);
+                    if (double.TryParse(filterValue, out _))
+                    {
+                        result.Append(" = ").Append(filterValue);
+                    }
+                    else
+                    {
+                        result.Append(".Contains(\"").Append(filterValue).Append("\")");
+                    }
+
+                    orOperator = " OR ";
+                }
+
+                result.Append("))");
+
+                andOperator = " AND ";
+            }
+
+            // replace all single quotes with double quotes
+            return result.ToString();
+        }
+
+        private void UpdateFilterExpression()
+        {
+            var filterString = this.packetGridView.FilterString;
+            if (string.IsNullOrEmpty(filterString))
+            {
+                this.filterExpression = null;
+                this.filterMethod = null;
+            }
+            else
+            {
+                var filterExpressionString = ConvertFilterStringToExpressionString(filterString);
+                this.filterExpression = DynamicExpressionParser.ParseLambda(ParsingConfig.Default, true, typeof(Packet), typeof(bool), filterExpressionString);
+                this.filterMethod = this.filterExpression.Compile(false);
+            }
+        }
+
+        private void SetPacketDataSource()
+        {
+            if (this.unfilteredList is { } oldList)
+            {
+                oldList.ListChanged -= this.OnUnfilteredListChanged;
+            }
+
+            this.unfilteredList = this.SelectedConnection?.PacketList;
+
+            if (this.unfilteredList is null)
+            {
+                return;
+            }
+
+            if (this.filterExpression is null)
+            {
+                this.packetBindingSource.DataSource = this.SelectedConnection?.PacketList;
+            }
+            else
+            {
+                this.packetBindingSource.DataSource = this.unfilteredList.AsQueryable().Where(this.filterExpression).ToList();
+                this.unfilteredList.ListChanged += this.OnUnfilteredListChanged;
+            }
+        }
+
+        private void OnUnfilteredListChanged(object sender, ListChangedEventArgs e)
+        {
+            if (e.ListChangedType != ListChangedType.ItemAdded
+                || this.filterMethod is not { } filter
+                || this.unfilteredList is not { } sourceList
+                || this.unfilteredList?.Count < e.NewIndex
+                || e.NewIndex < 0)
+            {
+                return;
+            }
+
+            var newPacket = sourceList[e.NewIndex];
+
+            if (filter.DynamicInvoke(newPacket) is true)
+            {
+                this.packetBindingSource.Add(newPacket);
+            }
+        }
+
+        private void OnPacketFilterStringChanged(object? sender, AdvancedDataGridView.FilterEventArgs e)
+        {
+            try
+            {
+                this.UpdateFilterExpression();
+                this.SetPacketDataSource();
+            }
+            catch (Exception ex)
+            {
+                Debug.Fail(ex.Message, ex.StackTrace);
+            }
         }
 
         private void StartProxy(object sender, System.EventArgs e)
@@ -143,7 +293,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                 if (this.proxiedConnections.Count == 1)
                 {
                     this.connectedClientsListBox.SelectedItem = e.Connection;
-                    this.ConnectionSelected(this, EventArgs.Empty);
+                    this.OnConnectionSelected(this, EventArgs.Empty);
                 }
             }));
         }
@@ -165,7 +315,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
-        private void PacketSelected(object sender, System.EventArgs e)
+        private void OnPacketSelected(object sender, EventArgs e)
         {
             this.SuspendLayout();
             try
@@ -190,25 +340,22 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
-        private void ConnectionSelected(object sender, EventArgs e)
+        private void OnConnectionSelected(object sender, EventArgs e)
         {
-            var index = this.connectedClientsListBox.SelectedIndex;
-            if (index < 0)
+            this.SetPacketDataSource();
+            if (this.SelectedConnection is { } connection)
             {
-                this.packetBindingSource.DataSource = null;
-                this.trafficGroup.Enabled = false;
-                this.trafficGroup.Text = "Traffic";
+                this.trafficGroup.Enabled = true;
+                this.trafficGroup.Text = $"Traffic ({connection.Name})";
             }
             else
             {
-                var proxy = this.proxiedConnections[index];
-                this.packetBindingSource.DataSource = proxy.PacketList;
-                this.trafficGroup.Enabled = true;
-                this.trafficGroup.Text = $"Traffic ({proxy.Name})";
+                this.trafficGroup.Enabled = false;
+                this.trafficGroup.Text = "Traffic";
             }
         }
 
-        private void DisconnectClient(object sender, EventArgs e)
+        private void OnDisconnectClientClick(object sender, EventArgs e)
         {
             var index = this.connectedClientsListBox.SelectedIndex;
             if (index < 0)
@@ -220,7 +367,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             proxy?.Disconnect();
         }
 
-        private void LoadFromFile(object sender, EventArgs e)
+        private void OnLoadFromFileClick(object sender, EventArgs e)
         {
             using var loadFileDialog = new OpenFileDialog { Filter = "Analyzer files (*.mucap)|*.mucap" };
             if (loadFileDialog.ShowDialog(this) == DialogResult.OK)
@@ -234,15 +381,15 @@ namespace MUnique.OpenMU.Network.Analyzer
                 {
                     this.proxiedConnections.Add(loadedConnection);
                     this.connectedClientsListBox.SelectedItem = loadedConnection;
-                    this.ConnectionSelected(this, EventArgs.Empty);
+                    this.OnConnectionSelected(this, EventArgs.Empty);
                 }
             }
         }
 
-        private void SaveToFile(object sender, EventArgs e)
+        private void OnSaveToFileClick(object sender, EventArgs e)
         {
             var index = this.connectedClientsListBox.SelectedIndex;
-            if (index < 0 || this.proxiedConnections[index] is not ICapturedConnection capturedConnection)
+            if (index < 0 || this.proxiedConnections[index] is not { } capturedConnection)
             {
                 return;
             }
@@ -259,12 +406,11 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
-        private void SendPacket(object sender, EventArgs e)
+        private void OnSendPacketClick(object sender, EventArgs e)
         {
             var index = this.connectedClientsListBox.SelectedIndex;
             if (index < 0
-                || this.proxiedConnections[index] is not LiveConnection liveConnection
-                || !liveConnection.IsConnected)
+                || this.proxiedConnections[index] is not LiveConnection { IsConnected: true } liveConnection)
             {
                 return;
             }
@@ -273,13 +419,13 @@ namespace MUnique.OpenMU.Network.Analyzer
             packetSender.Show(this);
         }
 
-        private void BeforeContextMenuOpens(object sender, CancelEventArgs e)
+        private void OnBeforeContextMenuOpens(object sender, CancelEventArgs e)
         {
             var index = this.connectedClientsListBox.SelectedIndex;
             var selectedConnection = index < 0 ? null : this.proxiedConnections[index];
             this.disconnectToolStripMenuItem.Enabled = selectedConnection is LiveConnection;
             this.saveToolStripMenuItem.Enabled = selectedConnection != null;
-            this.openPacketSenderStripMenuItem.Enabled = selectedConnection is LiveConnection liveConnection && liveConnection.IsConnected;
+            this.openPacketSenderStripMenuItem.Enabled = selectedConnection is LiveConnection { IsConnected: true };
         }
     }
 }

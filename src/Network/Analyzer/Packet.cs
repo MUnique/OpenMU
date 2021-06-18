@@ -18,20 +18,10 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// Initializes a new instance of the <see cref="Packet"/> class.
         /// </summary>
-        /// <param name="data">The data.</param>
-        /// <param name="toServer">If set to <c>true</c>, the packet was sent to server; Otherwise it was sent to the client.</param>
-        public Packet(byte[] data, bool toServer)
-            : this(DateTime.Now, data, toServer)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Packet"/> class.
-        /// </summary>
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="data">The data.</param>
         /// <param name="toServer">If set to <c>true</c>, the packet was sent to server; Otherwise it was sent to the client.</param>
-        public Packet(DateTime timestamp, byte[] data, bool toServer)
+        public Packet(TimeSpan timestamp, byte[] data, bool toServer)
         {
             this.innerData = data;
             this.Timestamp = timestamp;
@@ -42,7 +32,7 @@ namespace MUnique.OpenMU.Network.Analyzer
         /// <summary>
         /// Gets the timestamp.
         /// </summary>
-        public DateTime Timestamp { get; }
+        public TimeSpan Timestamp { get; }
 
         /// <summary>
         /// Gets the raw data of the packet.
