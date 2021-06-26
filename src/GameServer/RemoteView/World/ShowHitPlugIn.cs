@@ -45,10 +45,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             var targetId = target.GetId(this.player);
             var remainingHealthDamage = hitInfo.HealthDamage;
             var remainingShieldDamage = hitInfo.ShieldDamage;
-            while (remainingHealthDamage > 0 || remainingShieldDamage > 0)
+
+            // do/while, so that a 'miss' with 0 damage sends a message, too.
+            do
             {
-                var healthDamage = (ushort)System.Math.Min(0xFFFF, remainingHealthDamage);
-                var shieldDamage = (ushort)System.Math.Min(0xFFFF, remainingShieldDamage);
+                var healthDamage = (ushort) System.Math.Min(0xFFFF, remainingHealthDamage);
+                var shieldDamage = (ushort) System.Math.Min(0xFFFF, remainingShieldDamage);
                 if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison) && this.player == target)
                 {
                     this.player.Connection?.SendPoisonDamage(healthDamage, shieldDamage);
@@ -68,6 +70,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 remainingShieldDamage -= shieldDamage;
                 remainingHealthDamage -= healthDamage;
             }
+            while (remainingHealthDamage > 0 || remainingShieldDamage > 0);
         }
 
         private byte DetermineOperation()
