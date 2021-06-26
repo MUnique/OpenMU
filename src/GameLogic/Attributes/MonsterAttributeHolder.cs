@@ -104,6 +104,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
                 var nullValue = element.AggregateType == AggregateType.Multiplicate ? 1 : 0;
                 attrValue = Math.Abs(attrValue) < 0.01f ? nullValue : attrValue;
                 attribute.AddElement(new SimpleElement { Value = attrValue });
+                attributeDictionary.Add(targetAttribute, attribute);
             }
 
             attribute.AddElement(element);
