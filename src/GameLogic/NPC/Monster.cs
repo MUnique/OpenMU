@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using MUnique.OpenMU.AttributeSystem;
@@ -388,8 +389,15 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// </summary>
         private void Respawn()
         {
-            this.Initialize();
-            this.CurrentMap.Respawn(this);
+            try
+            {
+                this.Initialize();
+                this.CurrentMap.Respawn(this);
+            }
+            catch (Exception ex)
+            {
+                Debug.Fail(ex.Message, ex.StackTrace);
+            }
         }
 
         private void Hit(HitInfo hitInfo, IAttacker attacker, Skill? skill)

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
+    using System.Diagnostics;
     using System.Threading;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.Pathfinding;
@@ -102,9 +103,17 @@ namespace MUnique.OpenMU.GameLogic
             var timer = this.removeTimer;
             if (timer != null)
             {
-                this.removeTimer = null;
-                timer.Dispose();
-                this.CurrentMap.Remove(this);
+                try
+                {
+                    this.removeTimer = null;
+                    timer.Dispose();
+                    this.CurrentMap.Remove(this);
+                }
+                catch (Exception e)
+                {
+                    Debug.Fail(e.Message, e.StackTrace);
+                    throw;
+                }
             }
         }
     }

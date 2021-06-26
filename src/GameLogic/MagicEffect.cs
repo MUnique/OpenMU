@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.GameLogic
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
-
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence;
@@ -115,9 +115,15 @@ namespace MUnique.OpenMU.GameLogic
 
         private void OnEffectTimeOut()
         {
-            this.EffectTimeOut?.Invoke(this, EventArgs.Empty);
-
-            this.Dispose();
+            try
+            {
+                this.EffectTimeOut?.Invoke(this, EventArgs.Empty);
+                this.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Debug.Fail(ex.Message, ex.StackTrace);
+            }
         }
 
         /// <summary>

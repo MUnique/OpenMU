@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
 
@@ -56,7 +57,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         public void Start()
         {
-            this.aiTimer = new Timer(state => this.Tick(), null, this.Trap.Definition.AttackDelay, this.Trap.Definition.AttackDelay);
+            this.aiTimer = new Timer(state => this.SafeTick(), null, this.Trap.Definition.AttackDelay, this.Trap.Definition.AttackDelay);
         }
 
         /// <inheritdoc/>
@@ -93,5 +94,17 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// Function which is executed in an interval.
         /// </summary>
         protected abstract void Tick();
+
+        private void SafeTick()
+        {
+            try
+            {
+                this.Tick();
+            }
+            catch (Exception ex)
+            {
+                Debug.Fail(ex.Message, ex.StackTrace);
+            }
+        }
     }
 }

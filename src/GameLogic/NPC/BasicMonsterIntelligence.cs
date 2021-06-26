@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         public void Start()
         {
-            this.aiTimer = new Timer(state => this.Tick(), null, this.Npc.Definition.AttackDelay, this.Npc.Definition.AttackDelay);
+            this.aiTimer = new Timer(_ => this.SafeTick(), null, this.Npc.Definition.AttackDelay, this.Npc.Definition.AttackDelay);
         }
 
         /// <inheritdoc/>
@@ -117,6 +117,18 @@ namespace MUnique.OpenMU.GameLogic.NPC
             finally
             {
                 this.Npc.ObserverLock.ExitReadLock();
+            }
+        }
+
+        private void SafeTick()
+        {
+            try
+            {
+                this.Tick();
+            }
+            catch (Exception ex)
+            {
+                Debug.Fail(ex.Message, ex.StackTrace);
             }
         }
 

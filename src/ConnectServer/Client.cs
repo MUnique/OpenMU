@@ -47,7 +47,7 @@ namespace MUnique.OpenMU.ConnectServer
             this.logger = logger;
             this.lastReceive = DateTime.Now;
             var checkInterval = new TimeSpan(0, 0, 20);
-            this.onlineTimer = new Timer(this.OnlineTimer_Elapsed, null, checkInterval, checkInterval);
+            this.onlineTimer = new Timer(this.OnOnlineTimerElapsed, null, checkInterval, checkInterval);
             this.receiveBuffer = new byte[maxPacketSize];
         }
 
@@ -116,12 +116,19 @@ namespace MUnique.OpenMU.ConnectServer
             writer.Commit();
         }
 
-        private void OnlineTimer_Elapsed(object? state)
+        private void OnOnlineTimerElapsed(object? state)
         {
-            if (this.Connection.Connected && DateTime.Now.Subtract(this.lastReceive) > this.Timeout)
+            try
             {
-                this.logger.LogDebug("Connection Timeout ({0}): Address {1}:{2} will be disconnected.", this.Timeout, this.Address, this.Port);
-                this.Connection.Disconnect();
+                if (this.Connection.Connected && DateTime.Now.Subtract(this.lastReceive) > this.Timeout)
+                {
+                    this.logger.LogDebug("Connection Timeout ({0}): Address {1}:{2} will be disconnected.", this.Timeout, this.Address, this.Port);
+                    this.Connection.Disconnect();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Error when disconnecting client.  Address {1}:{2}", this.Address, this.Port);
             }
         }
 
