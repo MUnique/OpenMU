@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GameLogic.PlayerActions;
-
 namespace MUnique.OpenMU.GameLogic
 {
     using System;
@@ -13,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Threading;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Pathfinding;
@@ -57,7 +56,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// Occurs when an object was added to the map.
         /// </summary>
-        public event EventHandler<(GameMap Map , ILocateable Object)>? ObjectAdded;
+        public event EventHandler<(GameMap Map, ILocateable Object)>? ObjectAdded;
 
         /// <summary>
         /// Occurs when an object was removed from the map.

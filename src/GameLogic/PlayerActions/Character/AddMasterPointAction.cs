@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel;
-
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
 {
     using System.Linq;
     using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Views.Character;

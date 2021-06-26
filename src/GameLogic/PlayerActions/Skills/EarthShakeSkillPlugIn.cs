@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel;
-
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
 {
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.NPC;
