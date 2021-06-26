@@ -778,6 +778,7 @@ namespace MUnique.OpenMU.GameLogic
             var currentMap = this.CurrentMap;
             if (currentMap != null)
             {
+                this.walker.Stop();
                 this.Logger.LogDebug("WalkTo: Player is walking to {0}", target);
                 this.walker.WalkTo(target, steps);
                 currentMap.Move(this, target, this.moveLock, MoveType.Walk);
