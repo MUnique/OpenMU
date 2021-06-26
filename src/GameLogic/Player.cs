@@ -34,6 +34,7 @@ namespace MUnique.OpenMU.GameLogic
     /// The base implementation of a player.
     /// </summary>
     public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable
+    public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable, ILoggerOwner<Player>
     {
         private readonly object moveLock = new object();
 
@@ -92,9 +93,10 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public event EventHandler? PlayerLeftWorld;
 
-        /// <summary>
-        /// Gets the logger of this player.
-        /// </summary>
+        /// <inheritdoc />
+        ILogger ILoggerOwner.Logger => this.Logger;
+
+        /// <inheritdoc />
         public ILogger<Player> Logger { get; }
 
         /// <inheritdoc />
