@@ -91,12 +91,12 @@ export class World extends THREE.Object3D {
 
     public killObject(killedObjectId: number, killerObjectId: number) {
         var killedObject = this.getObjectById(killedObjectId);
-        killedObject.gotKilled();
+        killedObject?.gotKilled();
     }
 
     public objectMoved(id: number, newX: number, newY: number, moveType: any, walkDelay: number, steps: Step[]) {
         let obj = this.getObjectById(id);
-        obj.moveTo(newX, newY, moveType, walkDelay, steps);
+        obj?.moveTo(newX, newY, moveType, walkDelay, steps);
     }
 
     public addSkillAnimation(playerId: number, targetId: number, skill: number) {
