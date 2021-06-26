@@ -14,6 +14,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
+    using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.Pathfinding;
 
     /// <summary>
@@ -264,7 +265,7 @@ namespace MUnique.OpenMU.GameLogic
                 player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to his party.");
                 result = false;
             }
-            else if (skill.TargetRestriction == SkillTargetRestriction.Player && target is not Player)
+            else if (skill.TargetRestriction == SkillTargetRestriction.Player && target is not Player && target is Monster { SummonedBy: null })
             {
                 player.Logger.LogWarning($"Player '{player.Name}' tried to perform Skill '{skill.Name}' on target '{target}', but the skill is restricted to players.");
                 result = false;

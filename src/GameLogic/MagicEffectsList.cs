@@ -110,7 +110,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             (this.owner as Player)?.ViewPlugIns.GetPlugIn<IDeactivateMagicEffectPlugIn>()?.DeactivateMagicEffect(effect, this.owner);
-            if (effect.Definition.InformObservers)
+            if (effect.Definition.InformObservers && this.owner.IsAlive)
             {
                 (this.owner as IObservable)?.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IDeactivateMagicEffectPlugIn>()?.DeactivateMagicEffect(effect, this.owner), false);
             }

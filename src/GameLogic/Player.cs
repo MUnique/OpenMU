@@ -33,7 +33,6 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// The base implementation of a player.
     /// </summary>
-    public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable
     public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable, ILoggerOwner<Player>
     {
         private readonly object moveLock = new object();
@@ -57,6 +56,7 @@ namespace MUnique.OpenMU.GameLogic
         private IDisposable? characterLoggingScope;
 
         private IDisposable? accountLoggingScope;
+
         private Account? account;
 
         /// <summary>
@@ -273,6 +273,11 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the skill list.
         /// </summary>
         public ISkillList? SkillList { get; private set; }
+
+        /// <summary>
+        /// Gets the summon.
+        /// </summary>
+        public (Monster, INpcIntelligence)? Summon { get; private set; }
 
         /// <inheritdoc/>
         public GuildMemberStatus? GuildStatus { get; set; }
@@ -638,6 +643,7 @@ namespace MUnique.OpenMU.GameLogic
 
             this.PlaceAtGate(gate);
             this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
+
             this.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChange();
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
@@ -697,6 +703,11 @@ namespace MUnique.OpenMU.GameLogic
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
             this.IsAlive = true;
             this.CurrentMap!.Add(this);
+
+            if (this.Summon?.Item1 is { IsAlive: true } summon)
+            {
+                this.CurrentMap.Add(summon);
+            }
         }
 
         /// <summary>
@@ -832,6 +843,10 @@ namespace MUnique.OpenMU.GameLogic
             catch (InvalidOperationException)
             {
                 // may happen after a character disconnected in the mean time.
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Unexpected error when regenerating.");
             }
             finally
             {
@@ -977,6 +992,36 @@ namespace MUnique.OpenMU.GameLogic
             skillEntry.PowerUpDuration = this.Attributes!.CreateElement(powerUpDef.Duration);
         }
 
+        public void CreateSummonedMonster(MonsterDefinition definition)
+        {
+            if (this.CurrentMap is not { } gameMap)
+            {
+                throw new InvalidOperationException("Can't add a summon for a player which isn't spawned yet.");
+            }
+
+            var area = new MonsterSpawnArea
+            {
+                GameMap = gameMap.Definition,
+                MonsterDefinition = definition,
+                SpawnTrigger = SpawnTrigger.OnceAtEventStart,
+                Quantity = 1,
+                X1 = (byte) Math.Max(this.Position.X - 3, byte.MinValue),
+                X2 = (byte) Math.Min(this.Position.X + 3, byte.MaxValue),
+                Y1 = (byte) Math.Max(this.Position.Y - 3, byte.MinValue),
+                Y2 = (byte) Math.Min(this.Position.Y + 3, byte.MaxValue),
+            };
+            var intelligence = new SummonedMonsterIntelligence(this);
+            var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager);
+            this.Summon = (monster, intelligence);
+            monster.Initialize();
+            gameMap.Add(monster);
+        }
+
+        public void SummonDied()
+        {
+            this.Summon = null;
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -1057,6 +1102,10 @@ namespace MUnique.OpenMU.GameLogic
             this.IsTeleporting = false;
             this.walker.Stop();
             this.observerToWorldViewAdapter.ClearObservingObjectsList();
+            if (this.Summon?.Item1 is { IsAlive: true } summon)
+            {
+                this.CurrentMap?.Remove(summon);
+            }
 
             return true;
         }
@@ -1067,6 +1116,12 @@ namespace MUnique.OpenMU.GameLogic
             this.SelectedCharacter.PositionY = (byte)Rand.NextInt(gate.Y1, gate.Y2);
             this.SelectedCharacter.CurrentMap = gate.Map;
             this.Rotation = gate.Direction;
+
+            if (this.Summon?.Item1 is { IsAlive: true } summon)
+            {
+                summon.Position = new Point((byte)Rand.NextInt(gate.X1, gate.X2), (byte)Rand.NextInt(gate.Y1, gate.Y2));
+                summon.Rotation = gate.Direction;
+            }
         }
 
         private void RemoveFromCurrentMap()
@@ -1152,6 +1207,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private void Hit(HitInfo hitInfo, IAttacker attacker, Skill? skill)
         {
+            this.Summon?.Item2.RegisterHit(attacker);
             int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
             if (oversd < 0)
             {
@@ -1216,6 +1272,13 @@ namespace MUnique.OpenMU.GameLogic
               async () =>
               {
                   await Task.Delay(3000, this.respawnAfterDeathToken).ConfigureAwait(false);
+                  if (this.Summon?.Item1 is { } summon)
+                  {
+                      summon.CurrentMap.Remove(summon);
+                      summon.Dispose();
+                      this.Summon = null;
+                  }
+
                   this.SetReclaimableAttributesToMaximum();
                   this.RespawnAt(this.GetSpawnGateOfCurrentMap());
               },

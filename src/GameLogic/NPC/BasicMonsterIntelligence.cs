@@ -6,28 +6,24 @@ namespace MUnique.OpenMU.GameLogic.NPC
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
 
     /// <summary>
     /// A basic monster AI which is pretty basic.
     /// </summary>
-    public sealed class BasicMonsterIntelligence : INpcIntelligence, IDisposable
+    public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     {
-        private readonly GameMap map;
-
-        private IAttackable? currentTarget;
-
         private Timer? aiTimer;
         private Monster? monster;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BasicMonsterIntelligence"/> class.
+        /// Finalizes an instance of the <see cref="BasicMonsterIntelligence"/> class.
         /// </summary>
-        /// <param name="map">The map.</param>
-        public BasicMonsterIntelligence(GameMap map)
+        ~BasicMonsterIntelligence()
         {
-            this.map = map;
+            this.Dispose();
         }
 
         /// <inheritdoc/>
@@ -46,6 +42,27 @@ namespace MUnique.OpenMU.GameLogic.NPC
             set => this.monster = value;
         }
 
+        /// <summary>
+        /// Gets the current target.
+        /// </summary>
+        protected IAttackable? CurrentTarget { get; private set; }
+
+        private bool IsObservedByAttacker
+        {
+            get
+            {
+                this.Monster.ObserverLock.EnterReadLock();
+                try
+                {
+                    return this.Monster.Observers.OfType<IAttacker>().Any();
+                }
+                finally
+                {
+                    this.Monster.ObserverLock.ExitReadLock();
+                }
+            }
+        }
+
         /// <inheritdoc/>
         public void Start()
         {
@@ -55,6 +72,25 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         public void Dispose()
         {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc/>
+        public virtual void RegisterHit(IAttacker attacker)
+        {
+            if (this.CurrentTarget is null && attacker is IAttackable attackable)
+            {
+                this.CurrentTarget = attackable;
+            }
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="managed"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool managed)
+        {
             if (this.aiTimer != null)
             {
                 this.aiTimer.Dispose();
@@ -62,16 +98,11 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
         }
 
-        /// <inheritdoc/>
-        public void RegisterHit(IAttacker attacker)
-        {
-            if (this.currentTarget is null && attacker is IAttackable attackable)
-            {
-                this.currentTarget = attackable;
-            }
-        }
-
-        private IAttackable? SearchNextTarget()
+        /// <summary>
+        /// Searches the next target in view range.
+        /// </summary>
+        /// <returns>The next target.</returns>
+        protected virtual IAttackable? SearchNextTarget()
         {
             List<IWorldObserver> tempObservers;
             this.Npc.ObserverLock.EnterReadLock();
@@ -84,28 +115,32 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 this.Npc.ObserverLock.ExitReadLock();
             }
 
-            double closestdistance = 100;
-            IAttackable? closest = null;
+            var possibleTargets = tempObservers.OfType<IAttackable>()
+                .Where(a => a.IsActive() && !a.IsAtSafezone())
+                .ToList();
+            var summons = possibleTargets.OfType<Player>()
+                .Select(p => p.Summon?.Item1)
+                .Where(s => s is not null)
+                .Cast<IAttackable>()
+                .WhereActive()
+                .ToList();
+            possibleTargets.AddRange(summons);
+            var closestTarget = possibleTargets
+                .OrderBy(a => a.GetDistanceTo(this.Npc))
+                .FirstOrDefault();
 
-            foreach (var attackable in tempObservers.OfType<IAttackable>().Where(a => !a.IsTeleporting))
-            {
-                if (this.map.Terrain.SafezoneMap[attackable.Position.X, attackable.Position.Y])
-                {
-                    continue;
-                }
-
-                double d = attackable.GetDistanceTo(this.Npc);
-                if (closestdistance > d)
-                {
-                    closest = attackable;
-                    closestdistance = d;
-                }
-            }
-
-            return closest;
+            return closestTarget;
 
             // todo: check the walk distance
         }
+
+        /// <summary>
+        /// Determines whether this instance can attack.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if this instance can attack; otherwise, <c>false</c>.
+        /// </returns>
+        protected virtual bool CanAttack() => true;
 
         private bool IsTargetInObservers(IAttackable target)
         {
@@ -144,40 +179,49 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 return;
             }
 
-            var target = this.currentTarget;
+            if (!this.CanAttack())
+            {
+                return;
+            }
+
+            var target = this.CurrentTarget;
             if (target != null)
             {
                 // Old Target out of Range?
                 if (!target.IsAlive
                     || target.IsTeleporting
                     || target.IsAtSafezone()
-                    || !this.IsTargetInObservers(target))
+                    || !target.IsInRange(this.Monster.Position, this.Npc.Definition.ViewRange)
+                    || (target is IWorldObserver && !this.IsTargetInObservers(target)))
                 {
-                    this.currentTarget = this.SearchNextTarget();
+                    target = this.CurrentTarget = this.SearchNextTarget();
                 }
             }
             else
             {
-                this.currentTarget = this.SearchNextTarget();
+                target = this.CurrentTarget = this.SearchNextTarget();
             }
 
             // no target?
             if (target is null)
             {
                 // we move around randomly, so the monster does not look dead when watched from distance.
-                this.Monster.RandomMove();
+                if (this.IsObservedByAttacker)
+                {
+                    this.Monster.RandomMove();
+                }
+
                 return;
             }
 
             // Target in Attack Range?
-            ushort dist = (ushort)target.GetDistanceTo(this.Npc);
-            if (this.Monster.Definition.AttackRange + 1 >= dist)
+            if (target.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange + 1) && !this.Monster.IsAtSafezone())
             {
                 this.Monster.Attack(target);  // yes, attack
             }
 
             // Target in View Range?
-            else if (this.Npc.Definition.ViewRange + 1 >= dist)
+            else if (target.IsInRange(this.Monster.Position, this.Monster.Definition.ViewRange + 1))
             {
                 // no, walk to the target
                 var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, this.Monster.Definition.AttackRange);

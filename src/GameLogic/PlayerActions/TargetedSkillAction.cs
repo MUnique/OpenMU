@@ -18,6 +18,17 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
     /// </summary>
     public class TargetedSkillAction
     {
+        private static readonly Dictionary<short, short> SummonSkillToMonsterMapping = new ()
+        {
+            { 30, 26 }, // Goblin
+            { 31, 32 }, // Stone Golem
+            { 32, 21 }, // Assassin
+            { 33, 20 }, // Elite Yeti
+            { 34, 10 }, // Dark Knight
+            { 35, 150 }, // Bali
+            { 36, 151 }, // Soldier
+        };
+
         /// <summary>
         /// Performs the skill.
         /// </summary>
@@ -60,6 +71,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return;
             }
 
+            if (skill.SkillType == SkillType.SummonMonster && player.Summon is { } summon)
+            {
+                // remove summon, if exists
+                summon.Item1.Dispose();
+                player.SummonDied();
+                return;
+            }
+
             // enough mana, ag etc?
             if (!player.TryConsumeForSkill(skill))
             {
@@ -77,13 +96,25 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 target.MoveRandomly();
             }
 
-            this.ApplySkill(player, target, skillEntry!);
+            if (skill.SkillType == SkillType.SummonMonster)
+            {
+                if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
+                    && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is { } monsterDefinition)
+                {
+                    player.CreateSummonedMonster(monsterDefinition);
+                }
+            }
+            else
+            {
+                this.ApplySkill(player, target, skillEntry!);
+            }
         }
 
         private void ApplySkill(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
         {
             skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
             var skill = skillEntry.Skill;
+
             var targets = this.DetermineTargets(player, targetedTarget, skill);
             foreach (var target in targets)
             {

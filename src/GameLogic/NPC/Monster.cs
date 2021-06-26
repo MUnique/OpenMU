@@ -102,6 +102,11 @@ namespace MUnique.OpenMU.GameLogic.NPC
             set => this.health = value;
         }
 
+        /// <summary>
+        /// Gets the target by which this instance was summoned by.
+        /// </summary>
+        public Player? SummonedBy => (this.intelligence as SummonedMonsterIntelligence)?.Owner;
+
         /// <inheritdoc/>
         public bool IsAlive { get; set; }
 
@@ -127,16 +132,16 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <summary>
-        /// Attacks the specified player.
+        /// Attacks the specified target.
         /// </summary>
-        /// <param name="player">The player.</param>
-        public void Attack(IAttackable player)
+        /// <param name="target">The target.</param>
+        public void Attack(IAttackable target)
         {
-            player.AttackBy(this, null);
-            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, MonsterAttackAnimation, player, this.GetDirectionTo(player)), true);
+            target.AttackBy(this, null);
+            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, MonsterAttackAnimation, target, this.GetDirectionTo(target)), true);
             if (this.Definition.AttackSkill is { } attackSkill)
             {
-                this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, player, attackSkill), true);
+                this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, target, attackSkill), true);
             }
         }
 
@@ -200,6 +205,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <param name="steps">The steps.</param>
         public void WalkTo(Point target, Span<WalkingStep> steps)
         {
+            this.walker.Stop();
             this.walker.WalkTo(target, steps);
             this.Move(target, MoveType.Walk);
         }
@@ -262,13 +268,16 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         protected override void Dispose(bool managed)
         {
-            base.Dispose(managed);
             if (managed)
             {
                 this.respawnTimer?.Dispose();
                 this.walker.Dispose();
                 (this.intelligence as IDisposable)?.Dispose();
+                this.CurrentMap?.Remove(this);
+                this.IsAlive = false;
             }
+
+            base.Dispose(managed);
         }
 
         /// <inheritdoc />
@@ -371,15 +380,30 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 this.ObserverLock.ExitWriteLock();
             }
 
-            if (attacker is Player player)
+            var player = attacker as Player ?? (attacker as Monster)?.SummonedBy;
+            if (player is { })
             {
                 int exp = player.Party?.DistributeExperienceAfterKill(this, player) ?? player.AddExpAfterKill(this);
                 this.DropItem(exp, player);
-                player.AfterKilledMonster();
+                if (attacker == player)
+                {
+                    player.AfterKilledMonster();
+                }
+
                 player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, attacker);
                 if (player.SelectedCharacter!.State > HeroState.Normal)
                 {
                     player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
+                }
+            }
+
+            if (this.SpawnArea.SpawnTrigger == SpawnTrigger.OnceAtEventStart)
+            {
+                this.CurrentMap.Remove(this);
+                this.Dispose();
+                if (this.intelligence is SummonedMonsterIntelligence summonedMonsterIntelligence)
+                {
+                    summonedMonsterIntelligence.Owner.SummonDied();
                 }
             }
         }
@@ -408,7 +432,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
 
             var killed = this.TryHit(hitInfo.HealthDamage + hitInfo.ShieldDamage, attacker);
-            if (attacker is Player player)
+
+            var player = attacker as Player ?? (attacker as Monster)?.SummonedBy ?? this.SummonedBy;
+            if (player is not null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
                 player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);

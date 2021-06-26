@@ -90,7 +90,7 @@ namespace MUnique.OpenMU.GameLogic
                     if (monsterDef.ObjectKind == NpcObjectKind.Monster)
                     {
                         this.logger.LogDebug("Creating monster {spawn}", spawn);
-                        npc = new Monster(spawn, monsterDef, createdMap, this.defaultDropGenerator, intelligence ?? new BasicMonsterIntelligence(createdMap), this.PlugInManager);
+                        npc = new Monster(spawn, monsterDef, createdMap, this.defaultDropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager);
                     }
                     else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
                     {

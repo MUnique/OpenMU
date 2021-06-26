@@ -40,16 +40,30 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 return;
             }
 
-            var newObjectList = newObjects.ToList();
-            using var writer = connection.StartSafeWrite(AddNpcsToScope075.HeaderType, AddNpcsToScope075.GetRequiredSize(newObjectList.Count));
+            var summons = newObjects.OfType<Monster>().Where(m => m.SummonedBy is { }).ToList();
+            var npcs = newObjects.Except(summons).ToList();
+            if (npcs.Any())
+            {
+                NpcsInScope(isSpawned, connection, npcs);
+            }
+
+            if (summons.Any())
+            {
+                SummonedMonstersInScope(isSpawned, connection, summons);
+            }
+        }
+
+        private static void NpcsInScope(bool isSpawned, IConnection connection, ICollection<NonPlayerCharacter> npcs)
+        {
+            using var writer = connection.StartSafeWrite(AddNpcsToScope075.HeaderType, AddNpcsToScope075.GetRequiredSize(npcs.Count));
 
             var packet = new AddNpcsToScope075(writer.Span)
             {
-                NpcCount = (byte)newObjectList.Count,
+                NpcCount = (byte) npcs.Count,
             };
 
             int i = 0;
-            foreach (var npc in newObjectList)
+            foreach (var npc in npcs)
             {
                 var npcBlock = packet[i];
                 npcBlock.Id = npc.Id;
@@ -58,7 +72,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                     npcBlock.Id |= 0x8000;
                 }
 
-                npcBlock.TypeNumber = (byte)npc.Definition.Number;
+                npcBlock.TypeNumber = (byte) npc.Definition.Number;
                 npcBlock.CurrentPositionX = npc.Position.X;
                 npcBlock.CurrentPositionY = npc.Position.Y;
                 if (npc is Monster monster)
@@ -82,6 +96,53 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 }
 
                 npcBlock.Rotation = npc.Rotation.ToPacketByte();
+                i++;
+            }
+
+            writer.Commit();
+        }
+
+        private static void SummonedMonstersInScope(bool isSpawned, IConnection connection, ICollection<Monster> summons)
+        {
+            using var writer = connection.StartSafeWrite(AddSummonedMonstersToScope075.HeaderType, AddSummonedMonstersToScope075.GetRequiredSize(summons.Count));
+
+            var packet = new AddSummonedMonstersToScope075(writer.Span)
+            {
+                MonsterCount = (byte)summons.Count,
+            };
+
+            int i = 0;
+            foreach (var summon in summons)
+            {
+                var block = packet[i];
+                block.Id = summon.Id;
+                if (isSpawned)
+                {
+                    block.Id |= 0x8000;
+                }
+
+                block.TypeNumber = (byte)summon.Definition.Number;
+                block.CurrentPositionX = summon.Position.X;
+                block.CurrentPositionY = summon.Position.Y;
+                block.IsPoisoned = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
+                block.IsIced = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
+                block.IsDamageBuffed = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
+                block.IsDefenseBuffed = summon.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
+
+                var supportWalk = summon as ISupportWalk;
+                if (supportWalk?.IsWalking ?? false)
+                {
+                    block.TargetPositionX = supportWalk.WalkTarget.X;
+                    block.TargetPositionY = supportWalk.WalkTarget.Y;
+                }
+                else
+                {
+                    block.TargetPositionX = summon.Position.X;
+                    block.TargetPositionY = summon.Position.Y;
+                }
+
+                block.Rotation = summon.Rotation.ToPacketByte();
+                block.OwnerCharacterName = summon.SummonedBy?.Name ?? string.Empty;
                 i++;
             }
 
