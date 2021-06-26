@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Threading.Tasks;
+
 namespace MUnique.OpenMU.AdminPanel.Components.Form
 {
     using System.ComponentModel.DataAnnotations;
@@ -30,14 +32,14 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         [CascadingParameter]
         public BlazoredModalInstance BlazoredModal { get; set; } = null!;
 
-        private void Submit()
+        private Task SubmitAsync()
         {
-            this.BlazoredModal.Close(ModalResult.Ok(this.Item));
+            return this.BlazoredModal.CloseAsync(ModalResult.Ok(this.Item));
         }
 
-        private void Cancel()
+        private Task CancelAsync()
         {
-            this.BlazoredModal.Cancel();
+            return this.BlazoredModal.CancelAsync();
         }
     }
 }

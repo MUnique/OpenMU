@@ -25,14 +25,14 @@
         await base.OnParametersSetAsync();
         if (this.CancellationToken.IsCancellationRequested)
         {
-            await this.InvokeAsync(this.Modal.Close);
+            await this.InvokeAsync(this.Modal.CloseAsync);
             await this.InvokeAsync(this.StateHasChanged);
             return;
         }
 
         this.tokenRegistration = this.CancellationToken.Register(() =>
         {
-            this.InvokeAsync(this.Modal.Close);
+            this.InvokeAsync(this.Modal.CloseAsync);
             this.InvokeAsync(this.StateHasChanged).WaitWithoutException();
         });
     }

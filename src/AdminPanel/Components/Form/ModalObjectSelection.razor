@@ -7,6 +7,6 @@
 <EditForm Model="@this">
     <LookupField TObject="TItem" @bind-Value="@Item" Label="@typeof(TItem).Name"/>
 
-    <button type="submit" @onclick="@Submit" class="btn-primary">OK</button>
-    <button @onclick="@Cancel" class="btn-secondary">Cancel</button>
+    <button type="submit" @onclick="@SubmitAsync" class="btn-primary">OK</button>
+    <button @onclick="@CancelAsync" class="btn-secondary">Cancel</button>
 </EditForm>

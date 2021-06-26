@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                 _ = mock.Object;
             });
 
-            Assert.That(exception.InnerException, Is.InstanceOf<ArgumentException>());
+            Assert.That(exception?.InnerException, Is.InstanceOf<ArgumentException>());
         }
 
         /// <summary>

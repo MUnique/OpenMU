@@ -8,8 +8,8 @@
 
         <ValidationSummary />
     </CascadingValue>
-    <button type="submit" @onclick="@Submit" class="btn-primary">Submit</button>
-    <button @onclick="@Cancel" class="btn-secondary">Cancel</button>
+    <button type="submit" @onclick="@SubmitAsync" class="btn-primary">Submit</button>
+    <button @onclick="@CancelAsync" class="btn-secondary">Cancel</button>
 </EditForm>
 
 @code {
@@ -32,13 +32,13 @@
     [Parameter]
     public IContext PersistenceContext { get; set; } = null!;
 
-    private void Submit()
+    private Task SubmitAsync()
     {
-        this.BlazoredModal.Close(ModalResult.Ok(Item));
+        return this.BlazoredModal.CloseAsync(ModalResult.Ok(Item));
     }
 
-    private void Cancel()
+    private Task CancelAsync()
     {
-        this.BlazoredModal.Cancel();
+        return this.BlazoredModal.CancelAsync();
     }
 }
