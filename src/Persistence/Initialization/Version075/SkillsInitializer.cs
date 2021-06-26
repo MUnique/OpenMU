@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Version075
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
@@ -67,16 +68,49 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
             this.CreateSkill(SkillNumber.Heal, "Heal", 0, 0, 20, 0, 6, 52, 0, -1, 0, 0, 0, 0, 0, 1, SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
             this.CreateSkill(SkillNumber.GreaterDefense, "Greater Defense", 0, 0, 30, 0, 6, 72, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
             this.CreateSkill(SkillNumber.GreaterDamage, "Greater Damage", 0, 0, 40, 0, 6, 92, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
-            this.CreateSkill(SkillNumber.SummonGoblin, "Summon Goblin", 0, 0, 40, 0, 0, 90, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonStoneGolem, "Summon Stone Golem", 0, 0, 70, 0, 0, 170, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonAssassin, "Summon Assassin", 0, 0, 110, 0, 0, 190, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonEliteYeti, "Summon Elite Yeti", 0, 0, 160, 0, 0, 230, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonDarkKnight, "Summon Dark Knight", 0, 0, 200, 0, 0, 250, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Other);
+            this.CreateSkill(SkillNumber.SummonGoblin, "Summon Goblin", 0, 0, 40, 0, 0, 90, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonStoneGolem, "Summon Stone Golem", 0, 0, 70, 0, 0, 170, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonAssassin, "Summon Assassin", 0, 0, 110, 0, 0, 190, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonEliteYeti, "Summon Elite Yeti", 0, 0, 160, 0, 0, 230, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonDarkKnight, "Summon Dark Knight", 0, 0, 200, 0, 0, 250, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
             this.CreateSkill(SkillNumber.SummonBali, "Summon Bali", 0, 0, 250, 0, 0, 260, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Other);
             this.CreateSkill(SkillNumber.FlameofEvil, "Flame of Evil (Monster)", 60, 120, 160, 0, 0, 100, 0, -1, -1, 0, 0, 0, 0, 0);
 
             this.InitializeEffects();
             this.MapSkillsToEffects();
+            this.CreateSpecialSummonMonsters();
+        }
+
+        private void CreateSpecialSummonMonsters()
+        {
+            var bali = this.Context.CreateNew<MonsterDefinition>();
+            this.GameConfiguration.Monsters.Add(bali);
+            bali.Number = 150;
+            bali.Designation = "Bali";
+            bali.MoveRange = 3;
+            bali.AttackRange = 1;
+            bali.ViewRange = 7;
+            bali.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+            bali.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
+            bali.RespawnDelay = new TimeSpan(100 * TimeSpan.TicksPerSecond);
+            bali.Attribute = 2;
+            bali.NumberOfMaximumItemDrops = 1;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.Level, 52 },
+                { Stats.MaximumHealth, 5000 },
+                { Stats.MinimumPhysBaseDmg, 165 },
+                { Stats.MaximumPhysBaseDmg, 170 },
+                { Stats.DefenseBase, 100 },
+                { Stats.AttackRatePvm, 260 },
+                { Stats.DefenseRatePvm, 75 },
+                { Stats.PoisonResistance, 6 },
+                { Stats.IceResistance, 6 },
+                { Stats.WaterResistance, 6 },
+                { Stats.FireResistance, 6 },
+            };
+
+            bali.AddAttributes(attributes, this.Context, this.GameConfiguration);
         }
 
         private void InitializeEffects()

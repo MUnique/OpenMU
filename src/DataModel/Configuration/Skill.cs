@@ -91,9 +91,14 @@ namespace MUnique.OpenMU.DataModel.Configuration
         PassiveBoost = 7,
 
         /// <summary>
+        /// The skill type for monster summoning.
+        /// </summary>
+        SummonMonster = 8,
+
+        /// <summary>
         /// Other skill type.
         /// </summary>
-        Other = 8,
+        Other = 9,
     }
 
     /// <summary>

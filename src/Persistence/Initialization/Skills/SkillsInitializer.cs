@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Skills
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
@@ -106,13 +107,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.CreateSkill(SkillNumber.Heal, "Heal", 0, 0, 20, 0, 6, 52, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
             this.CreateSkill(SkillNumber.GreaterDefense, "Greater Defense", 0, 0, 30, 0, 6, 72, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
             this.CreateSkill(SkillNumber.GreaterDamage, "Greater Damage", 0, 0, 40, 0, 6, 92, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
-            this.CreateSkill(SkillNumber.SummonGoblin, "Summon Goblin", 0, 0, 40, 0, 0, 90, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonStoneGolem, "Summon Stone Golem", 0, 0, 70, 0, 0, 170, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonAssassin, "Summon Assassin", 0, 0, 110, 0, 0, 190, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonEliteYeti, "Summon Elite Yeti", 0, 0, 160, 0, 0, 230, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonDarkKnight, "Summon Dark Knight", 0, 0, 200, 0, 0, 250, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonBali, "Summon Bali", 0, 0, 250, 0, 0, 260, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Other);
-            this.CreateSkill(SkillNumber.SummonSoldier, "Summon Soldier", 0, 0, 350, 0, 0, 280, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.Other);
+            this.CreateSkill(SkillNumber.SummonGoblin, "Summon Goblin", 0, 0, 40, 0, 0, 90, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonStoneGolem, "Summon Stone Golem", 0, 0, 70, 0, 0, 170, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonAssassin, "Summon Assassin", 0, 0, 110, 0, 0, 190, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonEliteYeti, "Summon Elite Yeti", 0, 0, 160, 0, 0, 230, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonDarkKnight, "Summon Dark Knight", 0, 0, 200, 0, 0, 250, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonBali, "Summon Bali", 0, 0, 250, 0, 0, 260, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonSoldier, "Summon Soldier", 0, 0, 350, 0, 0, 280, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, SkillType.SummonMonster);
             this.CreateSkill(SkillNumber.Decay, "Decay", 0, 95, 110, 7, 6, 953, 0, 1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.IceStorm, "Ice Storm", 0, 80, 100, 5, 6, 849, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.Nova, "Nova", 100, 0, 180, 45, 6, 1052, 0, 3, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, SkillType.Other);
@@ -484,6 +485,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             this.InitializeEffects();
             this.MapSkillsToEffects();
             this.InitializeMasterSkillData();
+            this.CreateSpecialSummonMonsters();
         }
 
         private void InitializeEffects()
@@ -835,6 +837,71 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
                 skill.Target = replacedSkill.Target;
                 skill.TargetRestriction = replacedSkill.TargetRestriction;
                 skill.MagicEffectDef = replacedSkill.MagicEffectDef;
+            }
+        }
+
+        private void CreateSpecialSummonMonsters()
+        {
+            {
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
+                monster.Number = 150;
+                monster.Designation = "Bali";
+                monster.MoveRange = 3;
+                monster.AttackRange = 1;
+                monster.ViewRange = 7;
+                monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+                monster.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
+                monster.RespawnDelay = new TimeSpan(100 * TimeSpan.TicksPerSecond);
+                monster.Attribute = 2;
+                monster.NumberOfMaximumItemDrops = 1;
+                var attributes = new Dictionary<AttributeDefinition, float>
+                {
+                    { Stats.Level, 52 },
+                    { Stats.MaximumHealth, 5000 },
+                    { Stats.MinimumPhysBaseDmg, 165 },
+                    { Stats.MaximumPhysBaseDmg, 170 },
+                    { Stats.DefenseBase, 100 },
+                    { Stats.AttackRatePvm, 260 },
+                    { Stats.DefenseRatePvm, 75 },
+                    { Stats.PoisonResistance, 6 },
+                    { Stats.IceResistance, 6 },
+                    { Stats.WaterResistance, 6 },
+                    { Stats.FireResistance, 6 },
+                };
+
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            }
+
+            {
+                var monster = this.Context.CreateNew<MonsterDefinition>();
+                this.GameConfiguration.Monsters.Add(monster);
+                monster.Number = 151;
+                monster.Designation = "Soldier";
+                monster.MoveRange = 3;
+                monster.AttackRange = 4;
+                monster.ViewRange = 7;
+                monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+                monster.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
+                monster.RespawnDelay = new TimeSpan(100 * TimeSpan.TicksPerSecond);
+                monster.Attribute = 2;
+                monster.NumberOfMaximumItemDrops = 1;
+                var attributes = new Dictionary<AttributeDefinition, float>
+                {
+                    { Stats.Level, 58 },
+                    { Stats.MaximumHealth, 4000 },
+                    { Stats.MinimumPhysBaseDmg, 175 },
+                    { Stats.MaximumPhysBaseDmg, 180 },
+                    { Stats.DefenseBase, 110 },
+                    { Stats.AttackRatePvm, 290 },
+                    { Stats.DefenseRatePvm, 86 },
+                    { Stats.PoisonResistance, 6 },
+                    { Stats.IceResistance, 6 },
+                    { Stats.WaterResistance, 6 },
+                    { Stats.FireResistance, 6 },
+                };
+
+                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }
         }
     }
