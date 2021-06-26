@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.AdminPanel
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Blazored.Modal;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -68,6 +69,7 @@ namespace MUnique.OpenMU.AdminPanel
                     serviceCollection.AddSingleton(this.changeListener);
                     serviceCollection.AddSingleton(this.loggerFactory);
                     serviceCollection.AddSingleton(this.plugInChangeListener);
+                    serviceCollection.AddBlazoredModal();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
