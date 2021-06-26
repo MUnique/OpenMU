@@ -9,8 +9,10 @@ namespace MUnique.OpenMU.GameLogic
     using System.Diagnostics;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Pathfinding;
+    using Nito.AsyncEx;
 
     /// <summary>
     /// Class which manages walking for instances of <see cref="ISupportWalk"/>.
@@ -19,9 +21,9 @@ namespace MUnique.OpenMU.GameLogic
     {
         private readonly ISupportWalk walkSupporter;
         private readonly Func<TimeSpan> stepDelay;
-        private readonly Queue<WalkingStep> nextSteps = new Queue<WalkingStep>(5);
+        private readonly Queue<WalkingStep> nextSteps = new (5);
         private readonly ReaderWriterLockSlim walkLock;
-        private Timer? walkTimer;
+        private CancellationTokenSource? walkCts;
         private bool isDisposed;
 
         /// <summary>
@@ -62,13 +64,15 @@ namespace MUnique.OpenMU.GameLogic
                 {
                     this.nextSteps.Enqueue(step);
                 }
+
+                var cts = new CancellationTokenSource();
+                this.walkCts = cts;
+                Task.Run(async () => await this.WalkLoop(cts.Token), cts.Token);
             }
             finally
             {
                 this.walkLock.ExitWriteLock();
             }
-
-            this.walkTimer = new Timer(this.WalkStep, null, TimeSpan.Zero, this.stepDelay());
         }
 
         /// <summary>
@@ -129,11 +133,11 @@ namespace MUnique.OpenMU.GameLogic
             this.walkLock.EnterWriteLock();
             try
             {
-                if (this.walkTimer != null)
+                if (this.walkCts != null)
                 {
-                    this.walkTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                    this.walkTimer.Dispose(); // reuse timer?
-                    this.walkTimer = null;
+                    this.walkCts.Cancel(false);
+                    this.walkCts.Dispose();
+                    this.walkCts = null;
                     this.nextSteps.Clear();
                     this.CurrentTarget = default;
                 }
@@ -150,7 +154,7 @@ namespace MUnique.OpenMU.GameLogic
         public void Dispose()
         {
             this.isDisposed = true;
-            if (this.walkTimer != null)
+            if (this.walkCts != null)
             {
                 this.Stop();
             }
@@ -158,11 +162,36 @@ namespace MUnique.OpenMU.GameLogic
             this.walkLock.Dispose();
         }
 
+        private async Task WalkLoop(CancellationToken cancellationToken)
+        {
+            var delay = this.stepDelay().Subtract(TimeSpan.FromMilliseconds(50));
+
+            // Task.Delay might take longer than we specify. We need to compensate that.
+            var lastOffset = TimeSpan.Zero;
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var sw = Stopwatch.StartNew();
+                this.WalkStep(cancellationToken);
+
+                var nextDelay = delay - lastOffset;
+                if (nextDelay > TimeSpan.Zero)
+                {
+                    // ReSharper disable once MethodSupportsCancellation if we pass this, we get a lot of unwanted TaskCancelledExceptions, so we rather wait.
+                    await Task.Delay(nextDelay).ConfigureAwait(false);
+                    sw.Stop();
+                    lastOffset = sw.Elapsed - delay;
+                }
+                else
+                {
+                    lastOffset = nextDelay.Negate();
+                }
+            }
+        }
+
         /// <summary>
         /// Performs the next step of a walk.
         /// </summary>
-        /// <param name="state">The state.</param>
-        private void WalkStep(object? state)
+        private void WalkStep(CancellationToken cancellationToken)
         {
             try
             {
@@ -176,7 +205,7 @@ namespace MUnique.OpenMU.GameLogic
                 this.walkLock.EnterReadLock();
                 try
                 {
-                    stop = this.ShouldWalkerStop();
+                    stop = !cancellationToken.IsCancellationRequested && this.ShouldWalkerStop();
                 }
                 finally
                 {
@@ -186,13 +215,17 @@ namespace MUnique.OpenMU.GameLogic
                 if (stop)
                 {
                     this.Stop();
-                    return;
                 }
 
                 // Update new coords
                 this.walkLock.EnterWriteLock();
                 try
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     this.WalkNextStepIfStepAvailable();
                 }
                 finally
@@ -200,9 +233,9 @@ namespace MUnique.OpenMU.GameLogic
                     this.walkLock.ExitWriteLock();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.Fail(e.Message, e.StackTrace);
+                Debug.Fail(ex.Message, ex.StackTrace);
             }
         }
 
