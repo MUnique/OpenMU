@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             assignAction(PacketDefinitions.Load(fileName));
             var watcher = new FileSystemWatcher(Environment.CurrentDirectory, fileName);
 
-            watcher.Changed += (sender, args) =>
+            watcher.Changed += (_, _) =>
             {
                 PacketDefinitions? definitions;
                 try
@@ -221,7 +221,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             {
                 return fieldSize.HasValue
                     ? data.Slice(field.Index, fieldSize.Value).AsString()
-                    : data.Slice(field.Index).AsString();
+                    : data[field.Index..].AsString();
             }
 
             if (data.Length < field.Index + fieldSize)
@@ -231,19 +231,19 @@ namespace MUnique.OpenMU.Network.Analyzer
 
             return field.Type switch
             {
-                FieldType.Byte => data.Slice(field.Index)
+                FieldType.Byte => data[field.Index..]
                     .GetByteValue(field.LengthSpecified ? field.Length : 8, field.LeftShifted)
                     .ToString(),
-                FieldType.Boolean => data.Slice(field.Index).GetBoolean(field.LeftShifted).ToString(),
-                FieldType.IntegerLittleEndian => ReadUInt32LittleEndian(data.Slice(field.Index)).ToString(),
-                FieldType.IntegerBigEndian => ReadUInt32BigEndian(data.Slice(field.Index)).ToString(),
-                FieldType.ShortLittleEndian => ReadUInt16LittleEndian(data.Slice(field.Index)).ToString(),
-                FieldType.ShortBigEndian => ReadUInt16BigEndian(data.Slice(field.Index)).ToString(),
-                FieldType.LongLittleEndian => ReadUInt64LittleEndian(data.Slice(field.Index)).ToString(),
-                FieldType.LongBigEndian => ReadUInt64BigEndian(data.Slice(field.Index)).ToString(),
+                FieldType.Boolean => data[field.Index..].GetBoolean(field.LeftShifted).ToString(),
+                FieldType.IntegerLittleEndian => ReadUInt32LittleEndian(data[field.Index..]).ToString(),
+                FieldType.IntegerBigEndian => ReadUInt32BigEndian(data[field.Index..]).ToString(),
+                FieldType.ShortLittleEndian => ReadUInt16LittleEndian(data[field.Index..]).ToString(),
+                FieldType.ShortBigEndian => ReadUInt16BigEndian(data[field.Index..]).ToString(),
+                FieldType.LongLittleEndian => ReadUInt64LittleEndian(data[field.Index..]).ToString(),
+                FieldType.LongBigEndian => ReadUInt64BigEndian(data[field.Index..]).ToString(),
                 FieldType.Enum => this.ExtractEnumValue(data, field, packet, definitions),
                 FieldType.StructureArray => this.ExtractStructureArrayValues(data, field, packet, definitions),
-                FieldType.Float => BitConverter.ToSingle(data.Slice(field.Index)).ToString(CultureInfo.InvariantCulture),
+                FieldType.Float => BitConverter.ToSingle(data[field.Index..]).ToString(CultureInfo.InvariantCulture),
                 _ => string.Empty
             };
         }
@@ -255,7 +255,7 @@ namespace MUnique.OpenMU.Network.Analyzer
                        ?? this.commonDefinitions?.Structures?.FirstOrDefault(s => s.Name == field.TypeName);
             if (type is null)
             {
-                return data.Slice(field.Index).AsString();
+                return data[field.Index..].AsString();
             }
 
             var countField = packet.Fields?.FirstOrDefault(f => f.Name == field.ItemCountField)
@@ -268,13 +268,13 @@ namespace MUnique.OpenMU.Network.Analyzer
 
             var typeLength = type.Length > 0 ? type.Length : this.DetermineFixedStructLength(data, field, type, count);
             var stringBuilder = new StringBuilder();
-            var restData = data.Slice(field.Index);
+            var restData = data[field.Index..];
 
             for (int i = 0; i < count; i++)
             {
                 var currentLength = typeLength ?? this.DetermineDynamicStructLength(restData, type, packet);
-                var elementData = restData.Slice(0, currentLength);
-                restData = restData.Slice(currentLength);
+                var elementData = restData[..currentLength];
+                restData = restData[currentLength..];
 
                 stringBuilder.Append(Environment.NewLine)
                     .Append(field.Name + $"[{i}]:");
@@ -292,7 +292,7 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private string ExtractEnumValue(Span<byte> data, Field field, PacketDefinition packet, PacketDefinitions definitions)
         {
-            var byteValue = data.Slice(field.Index).GetByteValue(field.LengthSpecified ? field.Length : 8, field.LeftShifted);
+            var byteValue = data[field.Index..].GetByteValue(field.LengthSpecified ? field.Length : 8, field.LeftShifted);
             var enumDefinition = packet.Enums?.FirstOrDefault(e => e.Name == field.TypeName)
                                  ?? definitions.Enums?.FirstOrDefault(e => e.Name == field.TypeName)
                                  ?? this.commonDefinitions?.Enums?.FirstOrDefault(e => e.Name == field.TypeName);
