@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// The default implementation of the <see cref="IShowDroppedItemsPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
     [PlugIn("ShowMoneyDrop 0.75", "The default implementation of the IShowMoneyDropPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("f89308c3-5fe7-46e2-adfc-85a56ba23232")]
+    [Guid("2C00F283-3229-48A8-A974-3DE0C543DC17")]
     [MaximumClient(0, 89, ClientLanguage.Invariant)]
     public class ShowMoneyDrop075 : IShowMoneyDropPlugIn
     {
