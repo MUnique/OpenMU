@@ -570,11 +570,11 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 };
                 World.prototype.killObject = function (killedObjectId, killerObjectId) {
                     var killedObject = this.getObjectById(killedObjectId);
-                    killedObject.gotKilled();
+                    killedObject === null || killedObject === void 0 ? void 0 : killedObject.gotKilled();
                 };
                 World.prototype.objectMoved = function (id, newX, newY, moveType, walkDelay, steps) {
                     var obj = this.getObjectById(id);
-                    obj.moveTo(newX, newY, moveType, walkDelay, steps);
+                    obj === null || obj === void 0 ? void 0 : obj.moveTo(newX, newY, moveType, walkDelay, steps);
                 };
                 World.prototype.addSkillAnimation = function (playerId, targetId, skill) {
                     var animating = this.getObjectById(playerId);
