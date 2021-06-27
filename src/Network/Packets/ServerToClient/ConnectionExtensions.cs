@@ -2149,14 +2149,16 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="positionX">The position x.</param>
         /// <param name="positionY">The position y.</param>
         /// <param name="rotation">The rotation.</param>
+        /// <param name="isMapChange">If false, it shows the teleport animation (white bubbles), and the client doesn't remove all of the objects in its scope.</param>
         /// <remarks>
         /// Is sent by the server when: The map was changed on the server side.
         /// Causes reaction on client side: The game client changes to the specified map and coordinates.
         /// </remarks>
-        public static void SendMapChanged075(this IConnection connection, byte @mapNumber, byte @positionX, byte @positionY, byte @rotation)
+        public static void SendMapChanged075(this IConnection connection, byte @mapNumber, byte @positionX, byte @positionY, byte @rotation, bool @isMapChange = true)
         {
             using var writer = connection.StartWriteMapChanged075();
             var packet = writer.Packet;
+            packet.IsMapChange = @isMapChange;
             packet.MapNumber = @mapNumber;
             packet.PositionX = @positionX;
             packet.PositionY = @positionY;

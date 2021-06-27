@@ -1958,32 +1958,38 @@
       </Fields>
     </Packet>
     <Packet>
-      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <HeaderType>C3Header</HeaderType>
       <Code>1C</Code>
-      <SubCode>0F</SubCode>
       <Name>MapChanged075</Name>
-      <Length>14</Length>
+      <Length>8</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The map was changed on the server side.</SentWhen>
       <CausedReaction>The game client changes to the specified map and coordinates.</CausedReaction>
       <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>IsMapChange</Name>
+          <Description>If false, it shows the teleport animation (white bubbles), and the client doesn't remove all of the objects in its scope.</Description>
+          <DefaultValue>true</DefaultValue>
+        </Field>
         <Field>
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>MapNumber</Name>
         </Field>
         <Field>
-          <Index>6</Index>
+          <Index>5</Index>
           <Type>Byte</Type>
           <Name>PositionX</Name>
         </Field>
         <Field>
-          <Index>7</Index>
+          <Index>6</Index>
           <Type>Byte</Type>
           <Name>PositionY</Name>
         </Field>
         <Field>
-          <Index>8</Index>
+          <Index>7</Index>
           <Type>Byte</Type>
           <Name>Rotation</Name>
         </Field>

@@ -5516,7 +5516,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 header.Type = HeaderType;
                 header.Code = Code;
                 header.Length = (byte)Math.Min(data.Length, Length);
-                header.SubCode = SubCode;
+                this.IsMapChange = true;
             }
         }
 
@@ -5531,20 +5531,23 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static byte Code => 0x1C;
 
         /// <summary>
-        /// Gets the operation sub-code of this data packet.
-        /// The <see cref="Code" /> is used as a grouping key.
-        /// </summary>
-        public static byte SubCode => 0x0F;
-
-        /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 14;
+        public static int Length => 8;
 
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C3HeaderWithSubCode Header => new (this.data);
+        public C3Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets if false, it shows the teleport animation (white bubbles), and the client doesn't remove all of the objects in its scope.
+        /// </summary>
+        public bool IsMapChange
+        {
+            get => this.data[3..].GetBoolean();
+            set => this.data[3..].SetBoolean(value);
+        }
 
         /// <summary>
         /// Gets or sets the map number.
@@ -5560,8 +5563,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public byte PositionX
         {
-            get => this.data[6];
-            set => this.data[6] = value;
+            get => this.data[5];
+            set => this.data[5] = value;
         }
 
         /// <summary>
@@ -5569,8 +5572,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public byte PositionY
         {
-            get => this.data[7];
-            set => this.data[7] = value;
+            get => this.data[6];
+            set => this.data[6] = value;
         }
 
         /// <summary>
@@ -5578,8 +5581,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public byte Rotation
         {
-            get => this.data[8];
-            set => this.data[8] = value;
+            get => this.data[7];
+            set => this.data[7] = value;
         }
 
         /// <summary>

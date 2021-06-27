@@ -34,8 +34,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 return;
             }
 
+            var mapNumber = (byte)this.player.SelectedCharacter.CurrentMap.Number;
             var position = this.player.Position;
-            this.player.Connection?.SendMapChanged075(0, position.X, position.Y, this.player.Rotation.ToPacketByte());
+            this.player.Connection?.SendMapChanged075(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte(), isMapChange: false);
         }
     }
 }
