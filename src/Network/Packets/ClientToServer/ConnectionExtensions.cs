@@ -326,6 +326,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="EnterGateRequest075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
+        /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
+        /// </remarks>
+        public static EnterGateRequest075ThreadSafeWriter StartWriteEnterGateRequest075(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="UnlockVault" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1655,6 +1668,27 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static void SendEnterGateRequest(this IConnection connection, ushort @gateNumber, byte @teleportTargetX, byte @teleportTargetY)
         {
             using var writer = connection.StartWriteEnterGateRequest();
+            var packet = writer.Packet;
+            packet.GateNumber = @gateNumber;
+            packet.TeleportTargetX = @teleportTargetX;
+            packet.TeleportTargetY = @teleportTargetY;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="EnterGateRequest075" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="gateNumber">The gate number.</param>
+        /// <param name="teleportTargetX">The teleport target x.</param>
+        /// <param name="teleportTargetY">The teleport target y.</param>
+        /// <remarks>
+        /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
+        /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
+        /// </remarks>
+        public static void SendEnterGateRequest075(this IConnection connection, byte @gateNumber, byte @teleportTargetX, byte @teleportTargetY)
+        {
+            using var writer = connection.StartWriteEnterGateRequest075();
             var packet = writer.Packet;
             packet.GateNumber = @gateNumber;
             packet.TeleportTargetX = @teleportTargetX;
@@ -4154,6 +4188,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.Advance(EnterGateRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="EnterGateRequest075"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct EnterGateRequest075ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnterGateRequest075ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public EnterGateRequest075ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new EnterGateRequest075(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(EnterGateRequest075.Length)[..EnterGateRequest075.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public EnterGateRequest075 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="EnterGateRequest075" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(EnterGateRequest075.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

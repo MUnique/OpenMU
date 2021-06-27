@@ -1,4 +1,4 @@
-﻿// <copyright file="TeleportPlugIn.cs" company="MUnique">
+﻿// <copyright file="TeleportPlugIn075.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.World;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
@@ -14,18 +13,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// <summary>
     /// The default implementation of the <see cref="ITeleportPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    [PlugIn(nameof(TeleportPlugIn), "The default implementation of the ITeleportPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("9506F77B-CA72-4150-87E3-57C889C91F02")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
-    public class TeleportPlugIn : ITeleportPlugIn
+    [PlugIn(nameof(TeleportPlugIn075), "The default implementation of the ITeleportPlugIn which is forwarding everything to the game client with specific data packets.")]
+    [Guid("490DB5E5-9DB6-4068-9708-E7D69F82BF3B")]
+    [MaximumClient(0, 89, ClientLanguage.Invariant)]
+    public class TeleportPlugIn075 : ITeleportPlugIn
     {
         private readonly RemotePlayer player;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TeleportPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="TeleportPlugIn075"/> class.
         /// </summary>
         /// <param name="player">The player.</param>
-        public TeleportPlugIn(RemotePlayer player) => this.player = player;
+        public TeleportPlugIn075(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
         public void ShowTeleported()
@@ -35,9 +34,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 return;
             }
 
-            var mapNumber = this.player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
+            var mapNumber = (byte)this.player.SelectedCharacter.CurrentMap.Number;
             var position = this.player.Position;
-            this.player.Connection?.SendMapChanged(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte(), false);
+            this.player.Connection?.SendMapChanged075(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte());
         }
     }
 }

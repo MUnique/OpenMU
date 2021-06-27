@@ -1,4 +1,4 @@
-﻿// <copyright file="WarpGateHandlerPlugIn.cs" company="MUnique">
+﻿// <copyright file="WarpGateHandler075PlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -19,10 +19,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// Handler for warp gate packets.
     /// This one is called when a player has entered a gate area, and sends a gate enter request.
     /// </summary>
-    [PlugIn(nameof(WarpGateHandlerPlugIn), "Handler for warp gate packets.")]
-    [Guid("d8f56da4-774b-42af-96ac-12a10ea0187b")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
-    internal class WarpGateHandlerPlugIn : IPacketHandlerPlugIn
+    [PlugIn(nameof(WarpGateHandler075PlugIn), "Handler for warp gate packets.")]
+    [Guid("264CFC8C-30D1-4536-97FD-6811A9544997")]
+    [MaximumClient(0, 89, ClientLanguage.Invariant)]
+    internal class WarpGateHandler075PlugIn : IPacketHandlerPlugIn
     {
         private readonly WarpGateAction warpAction = new WarpGateAction();
 
@@ -32,17 +32,17 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => EnterGateRequest.Code;
+        public byte Key => EnterGateRequest075.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length < EnterGateRequest.Length)
+            if (packet.Length < EnterGateRequest075.Length)
             {
                 return;
             }
 
-            EnterGateRequest request = packet;
+            EnterGateRequest075 request = packet;
             var gateNumber = request.GateNumber;
 
             if (gateNumber == 0)
@@ -54,7 +54,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
             var gate = player.SelectedCharacter?.CurrentMap?.EnterGates.FirstOrDefault(g => g.Number == gateNumber);
             if (gate is null)
             {
-                player.Logger.LogWarning("Gate {0} not found in current map {1}", gateNumber,  player.SelectedCharacter?.CurrentMap);
+                player.Logger.LogWarning("Gate {0} not found in current map {1}", gateNumber, player.SelectedCharacter?.CurrentMap);
                 return;
             }
 

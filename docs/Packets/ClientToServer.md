@@ -11,6 +11,7 @@
   * [C3 19 - TargetedSkill075 (by client)](C3-19-TargetedSkill075_by-client.md)
   * [C1 1B - MagicEffectCancelRequest (by client)](C1-1B-MagicEffectCancelRequest_by-client.md)
   * [C3 1C - EnterGateRequest (by client)](C3-1C-EnterGateRequest_by-client.md)
+  * [C3 1C - EnterGateRequest075 (by client)](C3-1C-EnterGateRequest075_by-client.md)
   * [C1 1D - AreaSkillHit075 (by client)](C1-1D-AreaSkillHit075_by-client.md)
   * [C3 1E - AreaSkill (by client)](C3-1E-AreaSkill_by-client.md)
   * [C1 1E - AreaSkill075 (by client)](C1-1E-AreaSkill075_by-client.md)
