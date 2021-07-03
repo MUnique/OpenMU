@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.DataModel.Attributes
     public class PowerUpDefinitionWithDuration : PowerUpDefinition
     {
         /// <summary>
-        /// Gets or sets the duration which describes how long the boost applies.
+        /// Gets or sets the duration which describes how long the boost applies, in seconds.
         /// </summary>
         [MemberOfAggregate]
         public virtual PowerUpDefinitionValue? Duration { get; set; }
