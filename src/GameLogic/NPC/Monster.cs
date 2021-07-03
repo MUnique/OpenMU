@@ -24,7 +24,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// </summary>
     public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISupportWalk, IMovable
     {
-        private const byte MonsterAttackAnimation = 0x78;
         private readonly IDropGenerator dropGenerator;
         private readonly object moveLock = new object();
         private readonly INpcIntelligence intelligence;
@@ -138,7 +137,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public void Attack(IAttackable target)
         {
             target.AttackBy(this, null);
-            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, MonsterAttackAnimation, target, this.GetDirectionTo(target)), true);
+            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowMonsterAttackAnimation(this, target, this.GetDirectionTo(target)), true);
             if (this.Definition.AttackSkill is { } attackSkill)
             {
                 this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, target, attackSkill), true);

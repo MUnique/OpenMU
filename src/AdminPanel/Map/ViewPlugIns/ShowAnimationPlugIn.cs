@@ -17,6 +17,8 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
     /// </summary>
     public class ShowAnimationPlugIn : JsViewPlugInBase, IShowAnimationPlugIn
     {
+        private const byte MonsterAttackAnimation = 0x78;
+
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
 
         /// <summary>
@@ -34,6 +36,12 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         public async void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable? targetObj, Direction direction)
         {
             await this.InvokeAsync(animatingObj.Id, animation, targetObj?.Id ?? 0, direction);
+        }
+
+        /// <inheritdoc />
+        public async void ShowMonsterAttackAnimation(IIdentifiable animatingObj, IIdentifiable? targetObj, Direction direction)
+        {
+            await this.InvokeAsync(animatingObj.Id, MonsterAttackAnimation, targetObj?.Id ?? 0, direction);
         }
     }
 }

@@ -9,15 +9,16 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The default implementation of the <see cref="IShowAnimationPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    [PlugIn("ShowAnimationPlugIn", "The default implementation of the IShowAnimationPlugIn which is forwarding everything to the game client with specific data packets.")]
+    [PlugIn(nameof(ShowAnimationPlugIn), "The default implementation of the IShowAnimationPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("d89cbf82-5ac1-423b-a478-f792136fce3c")]
+    [MinimumClient(0, 90, ClientLanguage.Invariant)]
     public class ShowAnimationPlugIn : IShowAnimationPlugIn
     {
         private readonly RemotePlayer player;
@@ -27,6 +28,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// </summary>
         /// <param name="player">The player.</param>
         public ShowAnimationPlugIn(RemotePlayer player) => this.player = player;
+
+        /// <summary>
+        /// Gets the monster attack animation id.
+        /// </summary>
+        protected virtual byte MonsterAttackAnimation => 120;
 
         /// <inheritdoc/>
         /// <remarks>
@@ -38,6 +44,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             var animatingId = animatingObj.GetId(this.player);
             var targetId = targetObj?.GetId(this.player) ?? 0;
             this.player.Connection?.SendObjectAnimation(animatingId, direction.ToPacketByte(), animation, targetId);
+        }
+
+        /// <inheritdoc/>
+        public void ShowMonsterAttackAnimation(IIdentifiable animatingObj, IIdentifiable? targetObj, Direction direction)
+        {
+            this.ShowAnimation(animatingObj, this.MonsterAttackAnimation, targetObj, direction);
         }
     }
 }

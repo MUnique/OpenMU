@@ -19,5 +19,13 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// <param name="targetObj">The target object.</param>
         /// <param name="direction">The direction.</param>
         void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable? targetObj, Direction direction);
+
+        /// <summary>
+        /// Shows the monster attack animation.
+        /// </summary>
+        /// <param name="animatingObj">The animating monster.</param>
+        /// <param name="targetObj">The target object.</param>
+        /// <param name="direction">The direction.</param>
+        void ShowMonsterAttackAnimation(IIdentifiable animatingObj, IIdentifiable? targetObj, Direction direction);
     }
 }
