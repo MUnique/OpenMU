@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.PlayerActions;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
     using MUnique.OpenMU.Network.PlugIns;
