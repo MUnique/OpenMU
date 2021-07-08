@@ -11,12 +11,13 @@ derived from the DataModel (e.g. subfolder *EntityFramework/Model*).
 
 There are currently two implementations:
 
-  1. *MUnique.OpenMU.Persistence.EntityFramework*: Implements it by using the
-     Entity Framework Core.
-  2. *MUnique.OpenMU.Persistence.InMemory*: For testing and demo purposes. Changes
-     are directly "persistent" to all contexts of the same IPersistenceContextProvider.
-     All application logic uses the contexts provided by the InMemoryPersistentContextProvider,
-     until the application closes, of course.
+1. *MUnique.OpenMU.Persistence.EntityFramework*: Implements it by using the
+   Entity Framework Core.
+
+2. *MUnique.OpenMU.Persistence.InMemory*: For testing and demo purposes. Changes
+   are directly "persistent" to all contexts of the same IPersistenceContextProvider.
+   All application logic uses the contexts provided by the InMemoryPersistentContextProvider,
+   until the application closes, of course.
 
 This projects also contains some base classes for a repository pattern - these
 are however only implementation details and don't necessarily need to be used

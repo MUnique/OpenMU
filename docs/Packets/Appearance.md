@@ -5,8 +5,6 @@ Webzen did a "good" job saving one bit here and there, so it's a bit complicated
 sometimes (e.g. wings and pets).
 It seems like the structure is historically grown.
 
-
-
 ## Structure
 
 Please read this table like a stream of bits. E.g. if there are 8 bits of 1 byte
@@ -109,7 +107,6 @@ else (see table above).
 | Fenrir                | xxxxxx11 |           | xxxxxx1x  |
 | None                  | xxxxxx11 | xxxxxxx0  |
 
-
 And some other pets:
 
 | Item                  | 16th byte |
@@ -120,7 +117,6 @@ And some other pets:
 | Rudolph               | 100000xx  |
 | Spirit of Guardian    | 010000xx  |
 | Demon                 | 001000xx  |
-
 
 #### Wings
 

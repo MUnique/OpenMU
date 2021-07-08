@@ -67,23 +67,36 @@ at least of level 10.
 ## Client implementation
 
 Some short notes about the client:
-  * There is a message for the master level etc. (F3 50)
-    * It contains health and mana, too. If this packet isn't sent, a master
-      character appears without health/mana.
-  * There is a message for the learned master skills (F3 53)
-    * The information about each skill contains:
-      * Skill Number
-      * Skill Index
-        * Defines were the skill is located in the clients interface
-        * I wonder why they need this in the message, since the client already
-          knows the index of a skill itself
-        * May differ between character classes
-      * Current Level
-      * Value of its effect at the current level
-      * Value of its effect at the next level
-    * Even if no skill was learned, this message needs to be sent - otherwise it
-      may still contain the master information about the previously played master
-      character.
+
+* There is a message for the master level etc. (F3 50)
+
+  * It contains health and mana, too. If this packet isn't sent, a master
+    character appears without health/mana.
+
+* There is a message for the learned master skills (F3 53)
+
+  * The information about each skill contains:
+
+    * Skill Number
+
+    * Skill Index
+
+      * Defines were the skill is located in the clients interface
+
+      * I wonder why they need this in the message, since the client already
+        knows the index of a skill itself
+
+      * May differ between character classes
+
+    * Current Level
+
+    * Value of its effect at the current level
+
+    * Value of its effect at the next level
+
+  * Even if no skill was learned, this message needs to be sent - otherwise it
+    may still contain the master information about the previously played master
+    character.
 
 ## Server implementation
 

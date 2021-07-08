@@ -76,9 +76,12 @@ be bound to separate tcp ports for different client versions, too.
 ### Data access
 
 The access pattern is mainly this:
-  * At server start, the game configuration is loaded
-  * When a game client logged in, it's account is loaded
-  * During the game, the account data is saved at specific points and in an
+
+* At server start, the game configuration is loaded
+
+* When a game client logged in, it's account is loaded
+
+* During the game, the account data is saved at specific points and in an
     time interval
 
 #### Design goal

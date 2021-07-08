@@ -7,24 +7,32 @@ MU Online game, connect or chat server, using the MU Online network protocol.
 
 As you might know, every MU Online data packet has the following structure:
 
-  * The first byte contains the type of the packet
-    * 0xC1: A packet which is not (or very weakly) encrypted, with the maximum
-            size of 255 bytes (1-byte length field)
-    * 0xC2: A packet which is not (or very weakly) encrypted, with the maximum
-            size of 65535 bytes (2-byte length field)
-    * 0xC3: A packet which is encrypted, with the maximum size of 255 bytes
-            (1-byte length field)
-    * 0xC4: A packet which is encrypted, with the maximum size of 65535 bytes
-            (2-byte length field)
-  * The next byte(s) contains the length of the packet.
-    * 0xC1 and 0xC3: One byte containing the length of the packet
-    * 0xC2 and 0xC4: Two bytes containing the length of the packet
-  * The following bytes are the payload, which might be encrypted or not,
-    depending on the first byte. If it's a 0xC3 or 0xC4, the first byte of the
-    encrypted payload also is a counter which goes from 0x00 to 0xFF, so that the
-    consecutive encrypted packets always look different and replay attacks are
-    difficult. However, this counter is not included in the packet given to the
-    PacketReceived-EventHandler.
+* The first byte contains the type of the packet
+
+  * 0xC1: A packet which is not (or very weakly) encrypted, with the maximum
+          size of 255 bytes (1-byte length field)
+
+  * 0xC2: A packet which is not (or very weakly) encrypted, with the maximum
+          size of 65535 bytes (2-byte length field)
+
+  * 0xC3: A packet which is encrypted, with the maximum size of 255 bytes
+          (1-byte length field)
+
+  * 0xC4: A packet which is encrypted, with the maximum size of 65535 bytes
+          (2-byte length field)
+
+* The next byte(s) contains the length of the packet.
+
+  * 0xC1 and 0xC3: One byte containing the length of the packet
+
+  * 0xC2 and 0xC4: Two bytes containing the length of the packet
+
+* The following bytes are the payload, which might be encrypted or not,
+  depending on the first byte. If it's a 0xC3 or 0xC4, the first byte of the
+  encrypted payload also is a counter which goes from 0x00 to 0xFF, so that the
+  consecutive encrypted packets always look different and replay attacks are
+  difficult. However, this counter is not included in the packet given to the
+  PacketReceived-EventHandler.
 
 ## Pipes
 
@@ -112,7 +120,9 @@ The first variant used 16 encryption keys which were used to encrypt blocks of
 * A counter got added to the first encrypted payload byte, so that every
   encrypted packet looked different and replay attacks were prevented (at least
   if you couldn't count ;-)).
+
 * The XOR encryption with the 32 byte long key got added.
+
 * The block size got reduced from 32 bytes to 8 bytes (unencrypted). That also
   means, each block is only encrypted by 4 instead of previously 16 keys.
 

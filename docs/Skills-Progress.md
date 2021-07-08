@@ -4,12 +4,15 @@ I want to give a overview about which skills are already implemented and which
 ones need some rework.
 
 Some general notes:
-  * Elemental effects (poison, ice, etc.) are not yet implemented at all
-  * Area Damage Skills with explicit damage packets work, but are vulnerable to
-    cheaters
-  * Area Damage Skills with implicit damage work, but directions are not
-    considered yet - they hit targets in all directions.
-  * All kind of skills which are somehow special are not working
+
+* Elemental effects (poison, ice, etc.) are not yet implemented at all
+
+* Area Damage Skills with explicit damage packets work, but are vulnerable to cheaters
+
+* Area Damage Skills with implicit damage work, but directions are not
+  considered yet - they hit targets in all directions.
+
+* All kind of skills which are somehow special are not working
 
 ## Normal Skills
 

@@ -17,25 +17,39 @@ workarounds to the whole data model here.
 
 The code generation adds the following stuff to the inherited entity classes:
 
-  * Object Identifier, "Id"-Property as GUID
-  * Overriding of Equals and GetHashCode, based on the Id-Property
-  * Foreign Key Id-Properties for navigation properties
-  * Because every type is different, it has do to the following stuff for
+* Object Identifier, "Id"-Property as GUID
+
+* Overriding of Equals and GetHashCode, based on the Id-Property
+
+* Foreign Key Id-Properties for navigation properties
+
+* Because every type is different, it has do to the following stuff for
     navigation properties:
-    * Overrides every property which uses the base type, adds a NotMappedAttribute and sets the foreign key property value in the setter.
-    * Adds new properties which use the inherited type and maps it to the Foreign Key Id-Property. Getter and Setter is accessing the base property.
-  * For the same reason, (1:n) collection properties need special handling:
-    * It adds new "Raw" properites which are ICollections of the inherited classes
-    * It initializes the base collection properties with [1:n collection adapters](../CollectionAdapter.cs)
-      which adapt between base and inherited classes, accessing the "Raw" collection.
-  * For the n:m-collection properties (which are a bit tricky to get detected as such):
-    * Additional join entity classes are created
-    * Collection properties for these join entities are added
-    * [Many-to-many collection adapters](ManyToManyCollectionAdapter.cs) are used
-  * It adds a schema name ("config" or "data") to the TableAttribute
-  * It creates a new [DbContext](Model/ExtendedTypeContext.Generated.cs) which
-    defines Ignores for all base types and adds join definitions for all 1:n
-    and n:m relationships.
+
+  * Overrides every property which uses the base type, adds a NotMappedAttribute and sets the foreign key property value in the setter.
+
+  * Adds new properties which use the inherited type and maps it to the Foreign Key Id-Property. Getter and Setter is accessing the base property.
+  
+* For the same reason, (1:n) collection properties need special handling:
+
+  * It adds new "Raw" properites which are ICollections of the inherited classes
+
+  * It initializes the base collection properties with [1:n collection adapters](../CollectionAdapter.cs)
+    which adapt between base and inherited classes, accessing the "Raw" collection.
+
+* For the n:m-collection properties (which are a bit tricky to get detected as such):
+
+  * Additional join entity classes are created
+
+  * Collection properties for these join entities are added
+
+  * [Many-to-many collection adapters](ManyToManyCollectionAdapter.cs) are used
+
+* It adds a schema name ("config" or "data") to the TableAttribute
+
+* It creates a new [DbContext](Model/ExtendedTypeContext.Generated.cs) which
+  defines Ignores for all base types and adds join definitions for all 1:n
+  and n:m relationships.
 
 If you're interested of how the result looks like, have a look at the subfolder *Model*.
 

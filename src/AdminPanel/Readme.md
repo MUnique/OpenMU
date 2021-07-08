@@ -7,13 +7,14 @@ The current features are:
 
 ## Server list
 
-  * Start / Shutdown
-  * Player count monitoring
-  * Links to show live maps (see below)
+* Start / Shutdown
+* Player count monitoring
+* Links to show live maps (see below)
 
 Ideas for the future:
-  * Expand-Buttons to show the players which are playing on a server
-  * Button to disconnect a player
+
+* Expand-Buttons to show the players which are playing on a server
+* Button to disconnect a player
 
 ## Edit Pages
 
@@ -30,11 +31,14 @@ the future.
 ## Account list
 
 It shows the list of accounts, ordered by the login name. Functions:
-  * Creating new accounts
-  * Banning/deactivating accounts
-  * Clicking on Edit sends you to the generic edit page for the account. 
-    For example, creating Characters involves some initialization logic which
-    is not done yet on the web interface.
+
+* Creating new accounts
+
+* Banning/deactivating accounts
+
+* Clicking on Edit sends you to the generic edit page for the account. 
+  For example, creating Characters involves some initialization logic which
+  is not done yet on the web interface.
 
 ## Game Configuration
 
@@ -49,29 +53,31 @@ specific player, server, and/or logger.
 ## Live map
 
 It's a graphical representation of a specific map to monitor some kind of actions
-on it: 
-  * player / npc movements
-  * player attacks
+on it:
+
+* player / npc movements
+* player attacks
 
 It's implemented in WebGL (by three.js) and makes use of Blazors javascript interop
 to update the visible entites.
 
 Ideas for the future:
-  * Zooming in to monitor players more closely
-  * Display of all kind of skill animations
-  * Display of active magic effects (buffs etc.)
-  * Display of health status
-  * Functions to detect and show suspicious players
-  * Functions to directly ban suspicious players
-  * Overview with several maps on the same page
-  * View of public chats
-  * Game-Master features, such as:
-    * Dropping of items
-    * Starting automated events
-    * Sending chat messages
-    * Sending global messages (the golden ones)
+
+* Zooming in to monitor players more closely
+* Display of all kind of skill animations
+* Display of active magic effects (buffs etc.)
+* Display of health status
+* Functions to detect and show suspicious players
+* Functions to directly ban suspicious players
+* Overview with several maps on the same page
+* View of public chats
+* Game-Master features, such as:
+  * Dropping of items
+  * Starting automated events
+  * Sending chat messages
+  * Sending global messages (the golden ones)
 
 ## Other feature ideas
 
-  * Based on the Live Map, we could create a graphical editor for monster spawn
-    areas, gates, etc.
+* Based on the Live Map, we could create a graphical editor for monster spawn
+  areas, gates, etc.

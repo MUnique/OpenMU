@@ -13,13 +13,14 @@ of this entity.
 ## And how is it used?
 
 For example a attribute system of a player can contain the following attributes:
-  * Strength
-  * Agility
-  * Vitality
-  * Health
-  * Level
-  * Physical Damage (min)
-  * Physical Damage (max)
+  
+* Strength
+* Agility
+* Vitality
+* Health
+* Level
+* Physical Damage (min)
+* Physical Damage (max)
 
 Attributes can depend on each other and attributes values are calculated automatically.
 For example we can define that Health is calculated by multiplying Vitality by
@@ -30,6 +31,7 @@ We can define such relationships by AttributeRelationship objects.
 To make this work there need to be attributes which don't depend on other ones
 and can be influenced by the player. These are called "StatAttributes".
 StatAttributes are for example:
+
 * Level (increasable by gaining experience)
 * Base Strength (increasable by distributing free level up points)
 
