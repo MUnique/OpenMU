@@ -2,11 +2,11 @@
 
 Contributions are welcome if they meet the following criteria:
 
-  * Language is english.
-  * Code should be StyleCop compliant - this project uses the [StyleCop.Analyzers](https://www.nuget.org/packages/StyleCop.Analyzers/)
-    for VS2019 so you should see issues directly as warnings.
-  * Coding style (naming, etc.) and quality should fit to the current state.
-  * No code copied/converted from the well-known decompiled source of the
+* Language is english.
+* Code should be StyleCop compliant - this project uses the [StyleCop.Analyzers](https://www.nuget.org/packages/StyleCop.Analyzers/)
+  for VS2019 so you should see issues directly as warnings.
+* Coding style (naming, etc.) and quality should fit to the current state.
+* No code copied/converted from the well-known decompiled source of the
     original server.
 
 If you want to contribute, please create a new issue for the feature or bug (if
