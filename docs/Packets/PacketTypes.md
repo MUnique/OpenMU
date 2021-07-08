@@ -1,4 +1,4 @@
-﻿## Packet type ##
+﻿# Packet types
 
 Depending on the first byte of a packet, the packet has different attributes.
 

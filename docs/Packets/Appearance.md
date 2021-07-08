@@ -1,14 +1,16 @@
-# Appearance #
+# Appearance
 
 The appearance of characters is serialized as follows. 
-Webzen did a "good" job saving one bit here and there, so it's a bit complicated sometimes (e.g. wings and pets).
+Webzen did a "good" job saving one bit here and there, so it's a bit complicated
+sometimes (e.g. wings and pets).
 It seems like the structure is historically grown.
 
 
 
-## Structure ##
+## Structure
 
-Please read this table like a stream of bits. E.g. if there are 8 bits of 1 byte are specified in a row, the highest bits come first.
+Please read this table like a stream of bits. E.g. if there are 8 bits of 1 byte
+are specified in a row, the highest bits come first.
 
 |  Byte index | Length | Data type | Description |
 |----------|---------|-------------|------------|
@@ -72,7 +74,7 @@ Please read this table like a stream of bits. E.g. if there are 8 bits of 1 byte
 | 17 | 3 | bit | unused |
 | 17 | 1 | bit | Gold fenrir flag |
 
-### Character pose ###
+### Character pose
 
 | Value | Meaning |
 |-------|---------|
@@ -82,19 +84,21 @@ Please read this table like a stream of bits. E.g. if there are 8 bits of 1 byte
 |   3   | Leaning (e.g. against a wall) |
 |   4   | Hanging (at these strange things in Noria) |
 
-Note: At Season 10 and above, the values are different. Sitting is at 1, Leaning 2, Hanging 3. So, they removed the unused value.
+Note: At Season 10 and above, the values are different.
+Sitting is at 1, Leaning 2, Hanging 3. So, they removed the unused value.
 
-### Item level calculation ###
+### Item level calculation
 
 The item levels are calculated with the following formula: ([Item Level] - 1) / 2.
 
 This works until item level of 15, because it fits into 4 bits.
 
-### Item indexes ###
+### Item indexes
 
-The bytes are represented in binary format. X means the bit is used by something else (see table above).
+The bytes are represented in binary format. X means the bit is used by something
+else (see table above).
 
-#### Pet items ####
+#### Pet items
 
 | Item                  | 5th byte | 10th byte | 12th byte |
 |-----------------------|----------|-----------|-----------|
@@ -118,8 +122,7 @@ And some other pets:
 | Demon                 | 001000xx  |
 
 
-#### Wings ####
-
+#### Wings
 
 | Item                  | Character Class | 5th byte | 9th byte |
 |-----------------------|-----------------|----------|----------|
@@ -143,7 +146,7 @@ And some other pets:
 | Cape of Overrule      | Fist Master     | xxxx11xx | xxxxx111 |
 | None                  |                 | xxxx00xx | xxxxx000 |
 
-#### Small Wings ####
+#### Small Wings
 
 | Wing Item             | 5th byte | 17th byte |
 |-----------------------|----------|-------|
