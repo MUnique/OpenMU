@@ -40,7 +40,7 @@ export class Attacks extends THREE.Points {
         this.geometry = animatedPointsGeometry;
     }
 
-    update() : void {
+    update(): void {
     }
 
     public addAttack(attacker: any, target: any) {

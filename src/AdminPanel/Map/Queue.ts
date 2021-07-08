@@ -9,16 +9,16 @@
         this._storage = [];
     }
 
-    public size() : number {
+    public size(): number {
         return this._newestIndex - this._oldestIndex;
     }
 
-    public enqueue(data: T) : void {
+    public enqueue(data: T): void {
         this._storage[this._newestIndex] = data;
         this._newestIndex++;
     }
 
-    public dequeue() : T {
+    public dequeue(): T {
         const oldestIndex = this._oldestIndex;
         const newestIndex = this._newestIndex;
 
@@ -33,7 +33,7 @@
         return null;
     }
 
-    public peek() : T {
+    public peek(): T {
         if (this._oldestIndex !== this._newestIndex) {
             return this._storage[this._oldestIndex];
         }

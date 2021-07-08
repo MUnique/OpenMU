@@ -46,7 +46,7 @@ export class World extends THREE.Object3D {
         });
     }
 
-    public update() : void {
+    public update(): void {
         this.attacks.update();
         const objects = this.objects;
         for (let o in objects) {
@@ -89,24 +89,24 @@ export class World extends THREE.Object3D {
         }
     }
 
-    public killObject(killedObjectId: number, killerObjectId: number) : void {
+    public killObject(killedObjectId: number, killerObjectId: number): void {
         const killedObject = this.getObjectById(killedObjectId);
         killedObject?.gotKilled();
     }
 
-    public objectMoved(id: number, newX: number, newY: number, moveType: any, walkDelay: number, steps: Step[]) : void {
+    public objectMoved(id: number, newX: number, newY: number, moveType: any, walkDelay: number, steps: Step[]): void {
         const obj = this.getObjectById(id);
         obj?.moveTo(newX, newY, moveType, walkDelay, steps);
     }
 
-    public addSkillAnimation(playerId: number, targetId: number, skill: number) : void {
+    public addSkillAnimation(playerId: number, targetId: number, skill: number): void {
         const animating = this.getObjectById(playerId);
         const target = this.getObjectById(targetId);
         this.attacks.addAttack(animating, target);
         // todo add effect
     }
 
-    public addAreaSkillAnimation(playerId: number, skill: number, x: number, y: number, rotation: number) : void {
+    public addAreaSkillAnimation(playerId: number, skill: number, x: number, y: number, rotation: number): void {
         const animating = this.getObjectById(playerId);
         if (animating !== undefined && animating !== null) {
             animating.rotateTo(rotation);
@@ -114,7 +114,7 @@ export class World extends THREE.Object3D {
         }
     }
 
-    public addAnimation(animatingId: number, animation: number, targetId: number, direction: number) : void {
+    public addAnimation(animatingId: number, animation: number, targetId: number, direction: number): void {
         const animating = this.getObjectById(animatingId);
         if (animating !== undefined && animating !== null) {
             animating.rotateTo(direction / 0x10);
@@ -127,18 +127,18 @@ export class World extends THREE.Object3D {
         }
     }
 
-    public dispose() : void {
+    public dispose(): void {
         delete this.objects;
     }
 
-    public highlightOn(objectId: number) : void {
+    public highlightOn(objectId: number): void {
         const player = this.getObjectById(objectId) as Player;
         if (player != null) {
             player.data = { ... player.data, isHighlighted: true };
         }
     }
 
-    public highlightOff(objectId: number) : void {
+    public highlightOff(objectId: number): void {
         const player = this.getObjectById(objectId) as Player;
         if (player != null) {
             player.data = { ... player.data, isHighlighted: false };

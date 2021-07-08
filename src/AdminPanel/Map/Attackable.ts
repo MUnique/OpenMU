@@ -20,7 +20,7 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         this.moveTween = null;
     }
 
-    public gotKilled() : void {
+    public gotKilled(): void {
         // we fade the color out
         const state = { opacity: 1 };
         const tween = new TWEEN.Tween(state)
@@ -30,7 +30,7 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
             .start();
     }
 
-    public respawn(newData: TData) : void {
+    public respawn(newData: TData): void {
         this.data = newData;
         this.material.opacity = 1.0;
         const state = { scale: 0 };
@@ -43,7 +43,7 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         this.setRotation(this.data.direction);
     }
 
-    public moveTo(newX: number, newY: number, moveType: any, walkDelay: number, steps: Step[]) : void {
+    public moveTo(newX: number, newY: number, moveType: any, walkDelay: number, steps: Step[]): void {
         const state = { x: this.data.x, y: this.data.y };
         this.data = this.data = Object.assign({}, this.data, { x: newX, y: newY });
 
@@ -73,7 +73,7 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         this.moveTween.start();
     }
 
-    public rotateTo(rotation: Direction) : void {
+    public rotateTo(rotation: Direction): void {
         if (this.data !== undefined) {
             this.data = Object.assign({}, this.data, rotation);
         }
@@ -83,11 +83,11 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         this.setRotation(rotation);
     }
 
-    private setRotation(value: Direction) : void {
+    private setRotation(value: Direction): void {
         this.rotation.z = THREE.Math.degToRad((value * 360) / 8);
     }
 
-    private setObjectPositionOnMap(newX: number, newY: number) : void {
+    private setObjectPositionOnMap(newX: number, newY: number): void {
         const offset = 128;
 
         this.position.y = offset - newX;

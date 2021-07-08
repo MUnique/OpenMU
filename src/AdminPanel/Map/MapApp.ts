@@ -52,7 +52,7 @@ export class MapApp {
         this.animate(); //starts the rendering loop
     }
 
-    public dispose() : void {
+    public dispose(): void {
         if (this.isDisposing || this.isDisposed) {
             return;
         }
@@ -74,7 +74,7 @@ export class MapApp {
     }
 
 
-    private animate(time?: number) : void {
+    private animate(time?: number): void {
         if (this.isDisposing || this.isDisposed) {
             return;
         }
@@ -89,7 +89,7 @@ export class MapApp {
     /*
      * Creates an orthographic camera which looks down to the map plane from the center.
      */
-    private createCamera() : THREE.Camera {
+    private createCamera(): THREE.Camera {
         const MAP_SIZE = 256;
         const NEAR = 0.1, FAR = 10000;
 
@@ -101,7 +101,7 @@ export class MapApp {
     /*
      * Handles the window resizing by updating the resolution of the renderer.
      */
-    private onWindowResize() : void {
+    private onWindowResize(): void {
         const margin = 50;
         const preferredWidth = window.innerWidth - this.container.offsetLeft - margin;
         const preferredHeigth = window.innerHeight - this.container.offsetTop - margin;

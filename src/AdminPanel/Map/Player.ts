@@ -17,7 +17,7 @@ export class Player extends Attackable<PlayerData> {
         );
     }
 
-    public update() : void {
+    public update(): void {
         if (this.data.isHighlighted) {
             this.scale.setScalar(1.5);
         } else {
