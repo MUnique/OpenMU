@@ -9,21 +9,21 @@
         this._storage = [];
     }
 
-    size() {
+    public size() : number {
         return this._newestIndex - this._oldestIndex;
     }
 
-    enqueue(data: T) {
+    public enqueue(data: T) : void {
         this._storage[this._newestIndex] = data;
         this._newestIndex++;
     }
 
-    dequeue() {
-        let oldestIndex = this._oldestIndex,
-            newestIndex = this._newestIndex;
+    public dequeue() : T {
+        const oldestIndex = this._oldestIndex;
+        const newestIndex = this._newestIndex;
 
         if (oldestIndex !== newestIndex) {
-            let deletedData = this._storage[oldestIndex];
+            const deletedData = this._storage[oldestIndex];
             delete this._storage[oldestIndex];
             this._oldestIndex++;
 
@@ -33,7 +33,7 @@
         return null;
     }
 
-    peek() {
+    public peek() : T {
         if (this._oldestIndex !== this._newestIndex) {
             return this._storage[this._oldestIndex];
         }

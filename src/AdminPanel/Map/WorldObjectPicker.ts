@@ -1,26 +1,27 @@
 ﻿import * as THREE from "three";
 import { ObjectData } from "./Types";
 import { GameObject } from "./Attackable";
+import { World } from "./World";
 
 export class WorldObjectPicker {
-    constructor(worldCanvas: any, worldMesh: any, camera: any, onObjectPicked: (data: ObjectData) => void) {
-        var raycaster = new THREE.Raycaster();
-        var mouse = new THREE.Vector2();
+    constructor(worldCanvas: HTMLElement, worldMesh: World, camera: THREE.Camera, onObjectPicked: (data: ObjectData) => void) {
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
         raycaster.setFromCamera(mouse, camera);
-        worldCanvas.addEventListener('click', (mouseEvent: any) => {
+        worldCanvas.addEventListener('click', (mouseEvent: MouseEvent) => {
             mouse.x = (mouseEvent.offsetX / worldCanvas.clientWidth) * 2 - 1;
             mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
-            let intersects = raycaster.intersectObjects(worldMesh.children, true);
+            const intersects = raycaster.intersectObjects(worldMesh.children, true);
             if (intersects.length > 0 && onObjectPicked) {
-                let data = this.extractObjectData(intersects[0]);
+                const data = this.extractObjectData(intersects[0]);
                 onObjectPicked(data);
             }
         }, false);
     }
 
-    extractObjectData(intersection: THREE.Intersection): ObjectData {
-        let attackable = intersection.object as GameObject;
+    private extractObjectData(intersection: THREE.Intersection) : ObjectData {
+        const attackable = intersection.object as GameObject;
         if (attackable != null) {
             return attackable.data;
         }

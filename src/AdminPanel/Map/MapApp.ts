@@ -23,11 +23,16 @@ export class MapApp {
     private renderer: THREE.Renderer;
     private container: HTMLElement;
     private picker: WorldObjectPicker;
-    private isDisposing: boolean = false;
-    private isDisposed: boolean = false;
+    private isDisposing = false;
+    private isDisposed = false;
     private resizeEventListener: () => void;
 
-    constructor(stats: Stats, serverId: number, mapId: number, mapContainer: HTMLElement, onPickObjectHandler: (data: ObjectData) => void) {
+    constructor(
+        stats: Stats,
+        serverId: number,
+        mapId: number,
+        mapContainer: HTMLElement,
+        onPickObjectHandler: (data: ObjectData) => void) {
         this.stats = stats;
         this.container = mapContainer;
         this.renderer = new THREE.WebGLRenderer({ antialias: false });
@@ -47,14 +52,14 @@ export class MapApp {
         this.animate(); //starts the rendering loop
     }
 
-    public dispose() {
+    public dispose() : void {
         if (this.isDisposing || this.isDisposed) {
             return;
         }
 
         this.isDisposing = true;
         window.removeEventListener("resize", this.resizeEventListener);
-        var webGlRenderer = this.renderer as THREE.WebGLRenderer;
+        const webGlRenderer = this.renderer as THREE.WebGLRenderer;
         if (webGlRenderer != null) {
             webGlRenderer.dispose();
         }
@@ -69,7 +74,7 @@ export class MapApp {
     }
 
 
-    private animate(time?: any) {
+    private animate(time?: number) : void {
         if (this.isDisposing || this.isDisposed) {
             return;
         }
@@ -84,11 +89,11 @@ export class MapApp {
     /*
      * Creates an orthographic camera which looks down to the map plane from the center.
      */
-    private createCamera(): THREE.Camera {
+    private createCamera() : THREE.Camera {
         const MAP_SIZE = 256;
         const NEAR = 0.1, FAR = 10000;
 
-        var camera = new THREE.OrthographicCamera(MAP_SIZE / -2, MAP_SIZE / 2, MAP_SIZE / 2, MAP_SIZE / -2, NEAR, FAR);
+        const camera = new THREE.OrthographicCamera(MAP_SIZE / -2, MAP_SIZE / 2, MAP_SIZE / 2, MAP_SIZE / -2, NEAR, FAR);
         camera.position.z = 1000;
         return camera;
     }
@@ -96,11 +101,11 @@ export class MapApp {
     /*
      * Handles the window resizing by updating the resolution of the renderer.
      */
-    private onWindowResize() {
-        
-        var preferredWidth = window.innerWidth - this.container.offsetLeft - 50;
-        var preferredHeigth = window.innerHeight - this.container.offsetTop - 50;
-        var newSize = Math.min(preferredWidth, preferredHeigth);
+    private onWindowResize() : void {
+        const margin = 50;
+        const preferredWidth = window.innerWidth - this.container.offsetLeft - margin;
+        const preferredHeigth = window.innerHeight - this.container.offsetTop - margin;
+        const newSize = Math.min(preferredWidth, preferredHeigth);
         this.renderer.setSize(newSize, newSize);
         this.world.onSizeChanged(newSize);
     }

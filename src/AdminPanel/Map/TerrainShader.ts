@@ -1,24 +1,10 @@
 ﻿import * as THREE from "three";
 
-
 /*
- * A shader for the terrain of the map. It highlights the edges (detected by color changes in nearby pixels) of the map texture.
+ * A shader for the terrain of the map. It highlights the edges
+ * (detected by color changes in nearby pixels) of the map texture.
  */
 export const terrainShader: THREE.ShaderMaterialParameters = {
-    uniforms: {
-        tColor: { type: "t", value: 0 },
-        tPixelSize: { type: "f", value: 0.3 }
-    },
-    side: THREE.DoubleSide,
-
-    vertexShader: [
-        "varying vec2 vUv;",
-        "void main() {",
-        "vUv = vec2(uv.x, uv.y);",
-        "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-        "}"
-    ].join("\n"),
-
     fragmentShader: [
         "uniform sampler2D tColor;",
         "uniform float tPixelSize;",
@@ -35,5 +21,20 @@ export const terrainShader: THREE.ShaderMaterialParameters = {
         "}",
         "gl_FragColor = texel * multi;",
         "}"
-    ].join("\n")
+    ].join("\n"),
+
+    side: THREE.DoubleSide,
+
+    uniforms: {
+        tColor: { type: "t", value: 0 },
+        tPixelSize: { type: "f", value: 0.3 },
+    },
+
+    vertexShader: [
+        "varying vec2 vUv;",
+        "void main() {",
+        "vUv = vec2(uv.x, uv.y);",
+        "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+        "}"
+    ].join("\n"),
 };

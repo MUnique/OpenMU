@@ -6,6 +6,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -79,7 +81,8 @@ System.register("Queue", [], function (exports_1, context_1) {
                     this._newestIndex++;
                 };
                 Queue.prototype.dequeue = function () {
-                    var oldestIndex = this._oldestIndex, newestIndex = this._newestIndex;
+                    var oldestIndex = this._oldestIndex;
+                    var newestIndex = this._newestIndex;
                     if (oldestIndex !== newestIndex) {
                         var deletedData = this._storage[oldestIndex];
                         delete this._storage[oldestIndex];
@@ -132,7 +135,7 @@ System.register("Attack", ["three", "tween", "Queue"], function (exports_2, cont
                     var animatedPointsGeometry = new THREE.Geometry();
                     var queue = new Queue_1.Queue();
                     for (var i = 0; i < maximumAnimatedPoints; i++) {
-                        animatedPointsGeometry.vertices.push(new THREE.Vector3(0, 0, -100));
+                        animatedPointsGeometry.vertices.push(new THREE.Vector3(0, 0, -Infinity));
                         var color = new THREE.Color();
                         color.setHex(0xEE0000);
                         colors.push(color);
@@ -163,17 +166,19 @@ System.register("Attack", ["three", "tween", "Queue"], function (exports_2, cont
                     }
                     this.geometry.colors[newIndex].setHex(0xFF0000 + attacker.data.Id);
                     this.geometry.colorsNeedUpdate = true;
+                    var visibleZ = 0;
+                    var invisibleZ = -Infinity;
                     var vertice = this.geometry.vertices[newIndex];
-                    vertice.set(attacker.position.x, attacker.position.y, 0);
+                    vertice.set(attacker.position.x, attacker.position.y, visibleZ);
                     var state = { x: vertice.x, y: vertice.y };
                     var tween = new tween_1.default.Tween(state)
                         .to({ x: target.position.x, y: target.position.y }, this.pointLifetimeInMs)
                         .onUpdate(function () {
-                        vertice.set(state.x, state.y, 0);
+                        vertice.set(state.x, state.y, visibleZ);
                         _this.geometry.verticesNeedUpdate = true;
                     })
                         .onComplete(function () {
-                        vertice.z = -100;
+                        vertice.z = invisibleZ;
                         _this.geometry.verticesNeedUpdate = true;
                         _this.freeAttackIndexes.enqueue(newIndex);
                     })
@@ -308,9 +313,9 @@ System.register("Attackable", ["three", "tween"], function (exports_4, context_4
         }
     };
 });
-System.register("WorldObjectPicker", ["three"], function (exports_5, context_5) {
+System.register("TerrainShader", ["three"], function (exports_5, context_5) {
     "use strict";
-    var THREE, WorldObjectPicker;
+    var THREE, terrainShader;
     var __moduleName = context_5 && context_5.id;
     return {
         setters: [
@@ -319,61 +324,7 @@ System.register("WorldObjectPicker", ["three"], function (exports_5, context_5) 
             }
         ],
         execute: function () {
-            WorldObjectPicker = (function () {
-                function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked) {
-                    var _this = this;
-                    var raycaster = new THREE.Raycaster();
-                    var mouse = new THREE.Vector2();
-                    raycaster.setFromCamera(mouse, camera);
-                    worldCanvas.addEventListener('click', function (mouseEvent) {
-                        mouse.x = (mouseEvent.offsetX / worldCanvas.clientWidth) * 2 - 1;
-                        mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
-                        raycaster.setFromCamera(mouse, camera);
-                        var intersects = raycaster.intersectObjects(worldMesh.children, true);
-                        if (intersects.length > 0 && onObjectPicked) {
-                            var data = _this.extractObjectData(intersects[0]);
-                            onObjectPicked(data);
-                        }
-                    }, false);
-                }
-                WorldObjectPicker.prototype.extractObjectData = function (intersection) {
-                    var attackable = intersection.object;
-                    if (attackable != null) {
-                        return attackable.data;
-                    }
-                    return null;
-                };
-                return WorldObjectPicker;
-            }());
-            exports_5("WorldObjectPicker", WorldObjectPicker);
-            ;
-        }
-    };
-});
-System.register("TerrainShader", ["three"], function (exports_6, context_6) {
-    "use strict";
-    var THREE, terrainShader;
-    var __moduleName = context_6 && context_6.id;
-    return {
-        setters: [
-            function (THREE_4) {
-                THREE = THREE_4;
-            }
-        ],
-        execute: function () {
-            exports_6("terrainShader", terrainShader = {
-                uniforms: {
-                    tColor: { type: "t", value: 0 },
-                    tPixelSize: { type: "f", value: 0.3 }
-                },
-                side: THREE.DoubleSide,
-                vertexShader: [
-                    "varying vec2 vUv;",
-                    "void main() {",
-                    "vUv = vec2(uv.x, uv.y);",
-                    "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-                    "}"
-                ].join("\n"),
+            exports_5("terrainShader", terrainShader = {
                 fragmentShader: [
                     "uniform sampler2D tColor;",
                     "uniform float tPixelSize;",
@@ -390,19 +341,31 @@ System.register("TerrainShader", ["three"], function (exports_6, context_6) {
                     "}",
                     "gl_FragColor = texel * multi;",
                     "}"
-                ].join("\n")
+                ].join("\n"),
+                side: THREE.DoubleSide,
+                uniforms: {
+                    tColor: { type: "t", value: 0 },
+                    tPixelSize: { type: "f", value: 0.3 },
+                },
+                vertexShader: [
+                    "varying vec2 vUv;",
+                    "void main() {",
+                    "vUv = vec2(uv.x, uv.y);",
+                    "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+                    "}"
+                ].join("\n"),
             });
         }
     };
 });
-System.register("Player", ["three", "Attackable"], function (exports_7, context_7) {
+System.register("Player", ["three", "Attackable"], function (exports_6, context_6) {
     "use strict";
     var THREE, Attackable_1, Player;
-    var __moduleName = context_7 && context_7.id;
+    var __moduleName = context_6 && context_6.id;
     return {
         setters: [
-            function (THREE_5) {
-                THREE = THREE_5;
+            function (THREE_4) {
+                THREE = THREE_4;
             },
             function (Attackable_1_1) {
                 Attackable_1 = Attackable_1_1;
@@ -412,7 +375,11 @@ System.register("Player", ["three", "Attackable"], function (exports_7, context_
             Player = (function (_super) {
                 __extends(Player, _super);
                 function Player(data) {
-                    return _super.call(this, data, Player.defaultGeometry, new THREE.MeshBasicMaterial({ color: 0xFF0000 + data.id, alphaMap: Attackable_1.attackableAlphaMapTexture, transparent: true })) || this;
+                    return _super.call(this, data, Player.defaultGeometry, new THREE.MeshBasicMaterial({
+                        color: 0xFF0000 + data.id,
+                        alphaMap: Attackable_1.attackableAlphaMapTexture,
+                        transparent: true
+                    })) || this;
                 }
                 Player.prototype.update = function () {
                     if (this.data.isHighlighted) {
@@ -422,22 +389,23 @@ System.register("Player", ["three", "Attackable"], function (exports_7, context_
                         this.scale.setScalar(1.0);
                     }
                 };
-                Player.defaultGeometry = new THREE.BoxGeometry(4, 4, 4);
+                Player.size = 4;
+                Player.defaultGeometry = new THREE.BoxGeometry(Player.size, Player.size, Player.size);
                 return Player;
             }(Attackable_1.Attackable));
-            exports_7("Player", Player);
+            exports_6("Player", Player);
             ;
         }
     };
 });
-System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_8, context_8) {
+System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_7, context_7) {
     "use strict";
     var THREE, Attackable_2, NonPlayerCharacter;
-    var __moduleName = context_8 && context_8.id;
+    var __moduleName = context_7 && context_7.id;
     return {
         setters: [
-            function (THREE_6) {
-                THREE = THREE_6;
+            function (THREE_5) {
+                THREE = THREE_5;
             },
             function (Attackable_2_1) {
                 Attackable_2 = Attackable_2_1;
@@ -449,22 +417,23 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 function NonPlayerCharacter(data) {
                     return _super.call(this, data, NonPlayerCharacter.defaultGeometry, new THREE.MeshBasicMaterial({ color: 0x00FFFF, alphaMap: Attackable_2.attackableAlphaMapTexture, transparent: true })) || this;
                 }
-                NonPlayerCharacter.defaultGeometry = new THREE.BoxGeometry(4, 4, 4);
+                NonPlayerCharacter.size = 4;
+                NonPlayerCharacter.defaultGeometry = new THREE.BoxGeometry(NonPlayerCharacter.size, NonPlayerCharacter.size, NonPlayerCharacter.size);
                 return NonPlayerCharacter;
             }(Attackable_2.Attackable));
-            exports_8("NonPlayerCharacter", NonPlayerCharacter);
+            exports_7("NonPlayerCharacter", NonPlayerCharacter);
             ;
         }
     };
 });
-System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter"], function (exports_9, context_9) {
+System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter"], function (exports_8, context_8) {
     "use strict";
     var THREE, Attack_1, TerrainShader_1, Player_1, Attackable_3, NonPlayerCharacter_1, World;
-    var __moduleName = context_9 && context_9.id;
+    var __moduleName = context_8 && context_8.id;
     return {
         setters: [
-            function (THREE_7) {
-                THREE = THREE_7;
+            function (THREE_6) {
+                THREE = THREE_6;
             },
             function (Attack_1_1) {
                 Attack_1 = Attack_1_1;
@@ -640,7 +609,49 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 };
                 return World;
             }(THREE.Object3D));
-            exports_9("World", World);
+            exports_8("World", World);
+            ;
+        }
+    };
+});
+System.register("WorldObjectPicker", ["three"], function (exports_9, context_9) {
+    "use strict";
+    var THREE, WorldObjectPicker;
+    var __moduleName = context_9 && context_9.id;
+    return {
+        setters: [
+            function (THREE_7) {
+                THREE = THREE_7;
+            }
+        ],
+        execute: function () {
+            WorldObjectPicker = (function () {
+                function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked) {
+                    var _this = this;
+                    var raycaster = new THREE.Raycaster();
+                    var mouse = new THREE.Vector2();
+                    raycaster.setFromCamera(mouse, camera);
+                    worldCanvas.addEventListener('click', function (mouseEvent) {
+                        mouse.x = (mouseEvent.offsetX / worldCanvas.clientWidth) * 2 - 1;
+                        mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
+                        raycaster.setFromCamera(mouse, camera);
+                        var intersects = raycaster.intersectObjects(worldMesh.children, true);
+                        if (intersects.length > 0 && onObjectPicked) {
+                            var data = _this.extractObjectData(intersects[0]);
+                            onObjectPicked(data);
+                        }
+                    }, false);
+                }
+                WorldObjectPicker.prototype.extractObjectData = function (intersection) {
+                    var attackable = intersection.object;
+                    if (attackable != null) {
+                        return attackable.data;
+                    }
+                    return null;
+                };
+                return WorldObjectPicker;
+            }());
+            exports_9("WorldObjectPicker", WorldObjectPicker);
             ;
         }
     };
@@ -721,8 +732,9 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     return camera;
                 };
                 MapApp.prototype.onWindowResize = function () {
-                    var preferredWidth = window.innerWidth - this.container.offsetLeft - 50;
-                    var preferredHeigth = window.innerHeight - this.container.offsetTop - 50;
+                    var margin = 50;
+                    var preferredWidth = window.innerWidth - this.container.offsetLeft - margin;
+                    var preferredHeigth = window.innerHeight - this.container.offsetTop - margin;
                     var newSize = Math.min(preferredWidth, preferredHeigth);
                     this.renderer.setSize(newSize, newSize);
                     this.world.onSizeChanged(newSize);
