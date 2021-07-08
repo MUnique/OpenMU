@@ -2,7 +2,7 @@
 
 The admin panel is meant to offer functions for administrative tasks.
 
-It's implemented with ASP.NET Core Blazor Server and it's accessible via http://localhost:1234/
+It's implemented with ASP.NET Core Blazor Server and it's accessible via <http://localhost:1234/>
 The current features are:
 
 ## Server list
@@ -36,7 +36,7 @@ It shows the list of accounts, ordered by the login name. Functions:
 
 * Banning/deactivating accounts
 
-* Clicking on Edit sends you to the generic edit page for the account. 
+* Clicking on Edit sends you to the generic edit page for the account.
   For example, creating Characters involves some initialization logic which
   is not done yet on the web interface.
 
@@ -64,13 +64,21 @@ to update the visible entites.
 Ideas for the future:
 
 * Zooming in to monitor players more closely
+
 * Display of all kind of skill animations
+
 * Display of active magic effects (buffs etc.)
+
 * Display of health status
+
 * Functions to detect and show suspicious players
+
 * Functions to directly ban suspicious players
+
 * Overview with several maps on the same page
+
 * View of public chats
+
 * Game-Master features, such as:
   * Dropping of items
   * Starting automated events
