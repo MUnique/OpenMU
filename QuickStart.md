@@ -3,13 +3,9 @@
 General requirements:
 
 * Free TCP ports:
-
   * 1234 (admin panel)
-
   * 55901, 55902, 55903 (game servers)
-
   * 44405 (connect server)
-
   * 55980 (chat server)
 
 * Knowledge or way to start a game client, connecting to the server (I wont
@@ -23,11 +19,13 @@ manual way.
 
 ## Docker
 
-This guide assumes you know how to use docker in general and have docker installed (e.g. by using Docker Desktop on Windows).
+This guide assumes you know how to use docker in general and have docker
+installed (e.g. by using Docker Desktop on Windows).
 
 ### Generates certificate
 
 The project needs a certificate to run the public API.
+
 * How to create one depends on your host OS, see below.
 
 * `{ password here }` must be replaced with your certificate password.
@@ -59,7 +57,7 @@ setx CERTIFICATE_PASSWORD "{ password here }"
 ### Demo Mode
 
 If you just want to play around with the server, you can find the newest docker
-image on the Docker Hub: https://hub.docker.com/r/munique/openmu
+image on the Docker Hub: <https://hub.docker.com/r/munique/openmu>
 
 To pull and run the latest docker image, run this command:
 > docker run --name openmu -d -p 1234:1234 -p 44405:44405 -p 55901:55901 -p 55902:55902 -p 55903:55903 -p 55980:55980 munique/openmu:latest -demo
@@ -139,12 +137,13 @@ If you have that, you'll need to do:
 
   * You can reinstall the database by adding a '-reinit' parameter
 
-  * Optional: you can add the parameter '-resolveIP:' to bind the servers tcp     listeners to an ip address of a local network interface. Look at this
+  * Optional: you can add the parameter '-resolveIP:' to bind the servers tcp
+    listeners to an ip address of a local network interface. Look at this
     [Readme](src/Startup/Readme.md) for more information.
 
   * Optional: you can add the parameter '-autostart' to save the next step.
 
-* When the Admin Panel is initialized, go to http://localhost:1234/. Then you
+* When the Admin Panel is initialized, go to <http://localhost:1234/>. Then you
   should see three gameservers, the chat server and the connect server. Start
   the connect server and at least one gameserver.
   If all goes well, you should be able to expand a gameserver and see the
@@ -159,14 +158,14 @@ when the database is initialized.
 
 These are the user names:
 
-  * test0 - test9: General test accounts, level 1 to 90, in 10 level steps
-  * test300: General test account with level 300
-  * test400: General test account with level 400, master characters
-  * testgm: Test account of a game master
-  * quest1: Test account for the level 150 quests
-  * quest2: Test account for the level 220 quests
-  * quest3: Test account for the level 400 quests
-  * ancient: Test account with ancient item sets, level 330 characters
-  * socket: Test account with socket item sets, level 380 characters
+* test0 - test9: General test accounts, level 1 to 90, in 10 level steps
+* test300: General test account with level 300
+* test400: General test account with level 400, master characters
+* testgm: Test account of a game master
+* quest1: Test account for the level 150 quests
+* quest2: Test account for the level 220 quests
+* quest3: Test account for the level 400 quests
+* ancient: Test account with ancient item sets, level 330 characters
+* socket: Test account with socket item sets, level 380 characters
 
 The passwords of these accounts are the same as the user name.

@@ -4,7 +4,7 @@ This directory should contain all the (technical) documentation of the OpenMU
 project, including [packets descriptions](Packets/Readme.md), game mechanics
 and software architecture.
 
-### Why not using the wiki?
+## Why not using the wiki?
 
 We think that a lot of the documentation (especially packet descriptions) is
 based on the actual code. So it makes sense that all the (technical)
@@ -57,7 +57,7 @@ with the [view interface plugins](https://github.com/MUnique/OpenMU/tree/master/
 
 As you can see, the GameLogic itself does not know how the player actions are
 triggered or how the "view" look like.
-Instead of working with the network, there could be an implementation of 
+Instead of working with the network, there could be an implementation of
 [view plugins](https://github.com/MUnique/OpenMU/tree/master/src/GameLogic/Views/IViewPlugIn.cs)
 which is literally a graphical user interface.
 Also instead of calling the player actions by packet handler plugins, a user
@@ -71,7 +71,6 @@ It's also possible to offer different protocols to work on the same game world,
 by implementing multiple view and packet handlers with different client
 versions attributes. Each game server can have multiple tcp listeners which can
 be bound to separate tcp ports for different client versions, too.
-
 
 ### Data access
 
@@ -115,7 +114,7 @@ implementation may need to track these objects.
 It takes care of a lot of things, e.g. creating new objects. Contexts can be
 created with the [PersistenceContextProvider](https://github.com/MUnique/OpenMU/tree/master/src/Persistence/IPersistenceContextProvider.cs).
 
-#### Current implementation and supported database ####
+#### Current implementation and supported database
 
 At the moment the persistence layer is implemented by [MUnique.OpenMU.Persistence.EntityFramework](../src/Persistence/EntityFramework/Readme.md)
 which uses the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
@@ -124,7 +123,7 @@ and [PostgreSQL](https://www.postgresql.org/) as database.
 #### Future
 
 Because the data model is pretty complicated (which is required if the
-configuration should be that flexible), a full relational model 
+configuration should be that flexible), a full relational model
 on a database is probably not the best thing to do (performance wise).
 Currently, we use an approach to load the game configuration or account with
 just one big dynamically generated query which gives us the data as json.
@@ -135,14 +134,25 @@ If there might be a problem in the future, we could go further and mix
 relational tables with json columns or to fully switch to a document based
 database (e.g. RavenDB).
 
-
 ### Further information
 
-  * [Packets](Packets/Readme.md): Information about the packet structures
-  * [Master Skill System](MasterSystem.md): Description about the master skill system
-  * [GameMap](GameMap.md): Description about the GameMap implementation
-  * [Progress](Progress.md)/[Skills Progress](Skills-Progress.md): Information about the feature implementation progress of the project
-  * [Admin Panel](https://github.com/MUnique/OpenMU/tree/master/src/AdminPanel): The user inferface of the server
-  * [Attribute System](https://github.com/MUnique/OpenMU/tree/master/src/AttributeSystem): Damage calculation and player attributes are based on that
-  * [Network](https://github.com/MUnique/OpenMU/tree/master/src/Network): About the network communication
-  * [Startup](https://github.com/MUnique/OpenMU/tree/master/src/Startup): It's the project for the executeable which puts every piece of the puzzle together
+* [Packets](Packets/Readme.md): Information about the packet structures
+
+* [Master Skill System](MasterSystem.md): Description about the master skill system
+
+* [GameMap](GameMap.md): Description about the GameMap implementation
+
+* [Progress](Progress.md)/[Skills Progress](Skills-Progress.md): Information about
+  the feature implementation progress of the project
+
+* [Admin Panel](https://github.com/MUnique/OpenMU/tree/master/src/AdminPanel):
+  The user inferface of the server
+
+* [Attribute System](https://github.com/MUnique/OpenMU/tree/master/src/AttributeSystem):
+  Damage calculation and player attributes are based on that
+
+* [Network](https://github.com/MUnique/OpenMU/tree/master/src/Network): About the
+  network communication
+
+* [Startup](https://github.com/MUnique/OpenMU/tree/master/src/Startup): It's the
+  project for the executeable which puts every piece of the puzzle together
