@@ -85,7 +85,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
             if (spawnPoint == null)
             {
-                throw new Exception("No valid spawn area");
+                throw new InvalidOperationException("No valid spawn point found. Spawn area might not contain valid points.");
             }
 
             this.Position = spawnPoint.Value;
