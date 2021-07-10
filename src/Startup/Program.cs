@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.Startup
         public async Task Initialize(string[] args)
         {
             Log.Info("Creating host...");
-            this.serverHost = await this.CreateHost(args);
+            this.serverHost = await this.CreateHost(args).ConfigureAwait(false);
 
             if (args.Contains("-autostart") || !this.IsAdminPanelEnabled(args))
             {
@@ -120,7 +120,7 @@ namespace MUnique.OpenMU.Startup
             };
 
             using var program = new Program();
-            await program.Initialize(args);
+            await program.Initialize(args).ConfigureAwait(false);
             while (!exitToken.IsCancellationRequested)
             {
                 await Task.Delay(100).ConfigureAwait(false);
