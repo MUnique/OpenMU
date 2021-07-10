@@ -30,12 +30,17 @@ export class World extends THREE.Object3D {
     constructor(serverId: number, mapId: number) {
         super();
         this.objects = {};
+
+        const attacksZ = 100;
         this.attacks = new Attacks();
-        this.attacks.position.z = 100;
+        this.attacks.position.z = attacksZ;
         this.add(this.attacks);
 
+        const sideLength = 256;
+        const segments = 1;
+
         const planeMesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(256, 256, 1, 1),
+            new THREE.PlaneGeometry(sideLength, sideLength, segments, segments),
             new THREE.ShaderMaterial(terrainShader));
         this.add(planeMesh);
 
@@ -49,7 +54,7 @@ export class World extends THREE.Object3D {
     public update(): void {
         this.attacks.update();
         const objects = this.objects;
-        for (let o in objects) {
+        for (const o in objects) {
             if (objects.hasOwnProperty(o)) {
                 const object = objects[o];
                 if (object instanceof Player) {
@@ -59,11 +64,12 @@ export class World extends THREE.Object3D {
         }
     }
 
-    public async addOrUpdateNpc(npcData: NpcData) {
+    public async addOrUpdateNpc(npcData: NpcData): Promise<void> {
         const obj = this.getObjectById(npcData.id);
         if (obj === undefined || obj === null) {
+            const waitTimeMs = 50;
             while (attackableAlphaMapTexture === undefined) {
-                await new Promise(resolve => setTimeout(resolve, 50));
+                await new Promise(resolve => setTimeout(resolve, waitTimeMs));
             }
 
             console.debug("Adding npc", npcData);
@@ -74,11 +80,12 @@ export class World extends THREE.Object3D {
         }
     }
 
-    public async addOrUpdatePlayer(playerData: PlayerData) {
+    public async addOrUpdatePlayer(playerData: PlayerData): Promise<void> {
         const obj = this.getObjectById(playerData.id);
         if (obj === undefined || obj === null) {
+            const waitTimeMs = 50;
             while (attackableAlphaMapTexture === undefined) {
-                await new Promise(resolve => setTimeout(resolve, 50));
+                await new Promise(resolve => setTimeout(resolve, waitTimeMs));
             }
 
             console.debug("Adding player", playerData);
@@ -117,7 +124,8 @@ export class World extends THREE.Object3D {
     public addAnimation(animatingId: number, animation: number, targetId: number, direction: number): void {
         const animating = this.getObjectById(animatingId);
         if (animating !== undefined && animating !== null) {
-            animating.rotateTo(direction / 0x10);
+            const rotationMultiplier = 0x10;
+            animating.rotateTo(direction / rotationMultiplier);
         }
 
         if (targetId !== null) {
@@ -149,14 +157,14 @@ export class World extends THREE.Object3D {
      * Is called when the size of the render target changed.
      * This will set the size of the highlighted edges - their width should be exactly 1 pixel
      */
-    public onSizeChanged(newSize: number) {
+    public onSizeChanged(newSize: number): void {
         terrainShader.uniforms.tPixelSize.value = 256.0 / newSize;
     }
 
     /*
      * Adds a new non-player-character to the map with the specified data.
      */
-    public addNpc(data: NpcData) {
+    public addNpc(data: NpcData): void {
         const npc = new NPC(data);
         this.addObjectMesh(npc);
         npc.respawn(data);
@@ -165,7 +173,7 @@ export class World extends THREE.Object3D {
     /*
      * Adds a new player to the map with the specified data.
      */
-    public addPlayer(data: PlayerData) {
+    public addPlayer(data: PlayerData): void {
         const player = new Player(data);
         this.addObjectMesh(player);
         player.respawn(data);
@@ -174,7 +182,7 @@ export class World extends THREE.Object3D {
     /*
      * Removes the object with the specified id from the map.
      */
-    public removeObject(objectId: number) {
+    public removeObject(objectId: number): void {
         const mesh = this.objects[objectId];
         console.debug("Removing object", mesh.data);
         this.remove(mesh as THREE.Object3D);
@@ -188,7 +196,7 @@ export class World extends THREE.Object3D {
         return this.objects[objectId];
     }
 
-    private addObjectMesh(mesh: GameObject) {
+    private addObjectMesh(mesh: GameObject): void {
         this.add(mesh);
         this.objects[mesh.data.id] = mesh;
     }

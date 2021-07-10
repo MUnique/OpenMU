@@ -1,20 +1,20 @@
 ﻿import * as THREE from "three";
 import TWEEN from "tween";
 import { Queue } from "./Queue";
+import { GameObject } from "./Attackable";
 
 export class Attacks extends THREE.Points {
-    // private static readonly visibleZ = 0;
-    // private static readonly invisibleZ = -100; // below the map plane
+    private static readonly defaultPointsLifetimeMs : number = 500; // attack particles survive 500 ms by default
+    private freeAttackIndexes: Queue<number>;
+    private pointLifetimeInMs: number;
 
-    freeAttackIndexes: Queue<number>;
-    pointLifetimeInMs: number;
-    geometry: THREE.Geometry;
+    public geometry: THREE.Geometry;
 
     constructor() {
         const pointsMaterial = new THREE.PointsMaterial({
             size: 2,
+            sizeAttenuation: false,
             vertexColors: THREE.VertexColors,
-            sizeAttenuation: false
         });
         pointsMaterial.needsUpdate = true;
         const colors: THREE.Color[] = [];
@@ -35,15 +35,15 @@ export class Attacks extends THREE.Points {
         animatedPointsGeometry.elementsNeedUpdate = true;
 
         super(animatedPointsGeometry, pointsMaterial);
-        this.pointLifetimeInMs = 500; // attack particles survive 500 ms
+        this.pointLifetimeInMs = Attacks.defaultPointsLifetimeMs;
         this.freeAttackIndexes = queue;
         this.geometry = animatedPointsGeometry;
     }
 
-    update(): void {
+    public update(): void {
     }
 
-    public addAttack(attacker: any, target: any) {
+    public addAttack(attacker: GameObject, target: GameObject): void {
         if (this.freeAttackIndexes.peek() === null) {
             return;
         }
@@ -57,7 +57,8 @@ export class Attacks extends THREE.Points {
             return;
         }
 
-        this.geometry.colors[newIndex].setHex(0xFF0000 + attacker.data.Id); // attacker id is only a 16 bit integer, so we can just add it to the red color.
+        // attacker id is only a 16 bit integer, so we can just add it to the red color.
+        this.geometry.colors[newIndex].setHex(0xFF0000 + attacker.data.id);
         this.geometry.colorsNeedUpdate = true;
 
         const visibleZ = 0;

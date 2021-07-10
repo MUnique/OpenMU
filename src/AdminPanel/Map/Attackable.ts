@@ -11,9 +11,10 @@ export interface GameObject extends THREE.Object3D {
 }
 
 export class Attackable<TData extends ObjectData> extends THREE.Mesh implements GameObject {
-    data: TData;
-    moveTween: TWEEN.Tween;
-    material: THREE.Material;
+    private moveTween: TWEEN.Tween;
+    public data: TData;
+    public material: THREE.Material;
+
     constructor(data: TData, geometry: THREE.Geometry, material: THREE.Material) {
         super(geometry, material);
         this.data = data;
@@ -22,9 +23,13 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
 
     public gotKilled(): void {
         // we fade the color out
-        const state = { opacity: 1 };
+        const fadeOutDurationMs = 1000;
+        const startingOpacity = 1;
+        const fadedOutOpacity = 0.1;
+        
+        const state = { opacity: startingOpacity };
         const tween = new TWEEN.Tween(state)
-            .to({ opacity: 0.1 }, 1000)
+            .to({ opacity: fadedOutOpacity }, fadeOutDurationMs)
             .onUpdate(() => this.material.opacity = state.opacity)
             .easing(TWEEN.Easing.Circular.Out)
             .start();
@@ -55,10 +60,11 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
             .onUpdate(() => this.setObjectPositionOnMap(state.x, state.y));
 
         if (moveType === "Instant" || moveType === 1) {
+            const moveDurationMs = 300;
             this.moveTween = this.moveTween.easing(TWEEN.Easing.Elastic.Out)
-                .to({ x: newX, y: newY }, 300);
+                .to({ x: newX, y: newY }, moveDurationMs);
         } else {
-            for (let i in steps) {
+            for (const i in steps) {
                 if (steps.hasOwnProperty(i)) {
                     const step = steps[i];
                     const stepTween = new TWEEN.Tween(state)
@@ -84,7 +90,9 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
     }
 
     private setRotation(value: Direction): void {
-        this.rotation.z = THREE.Math.degToRad((value * 360) / 8);
+        const degreesOfOneTurn = 360;
+        const numberOfDirectionValues = 8;
+        this.rotation.z = THREE.Math.degToRad((value * degreesOfOneTurn) / numberOfDirectionValues);
     }
 
     private setObjectPositionOnMap(newX: number, newY: number): void {

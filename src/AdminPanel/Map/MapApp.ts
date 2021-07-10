@@ -23,8 +23,8 @@ export class MapApp {
     private renderer: THREE.Renderer;
     private container: HTMLElement;
     private picker: WorldObjectPicker;
-    private isDisposing = false;
-    private isDisposed = false;
+    private isDisposing : boolean = false;
+    private isDisposed : boolean = false;
     private resizeEventListener: () => void;
 
     constructor(
@@ -93,7 +93,13 @@ export class MapApp {
         const MAP_SIZE = 256;
         const NEAR = 0.1, FAR = 10000;
 
-        const camera = new THREE.OrthographicCamera(MAP_SIZE / -2, MAP_SIZE / 2, MAP_SIZE / 2, MAP_SIZE / -2, NEAR, FAR);
+        const camera = new THREE.OrthographicCamera(
+            MAP_SIZE / -2,
+            MAP_SIZE / 2,
+            MAP_SIZE / 2,
+            MAP_SIZE / -2,
+            NEAR,
+            FAR);
         camera.position.z = 1000;
         return camera;
     }
