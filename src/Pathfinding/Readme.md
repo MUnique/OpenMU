@@ -20,7 +20,7 @@ because the expected open list lengths and estimated costs are always different.
 In the sub-folder PreCalculation includes a pathfinder which makes use of
 pre-calculated paths. It's not used yet by OpenMU and needs some further testing.
 
-For more information, visit http://www.gamedev.net/page/resources/_/technical/artificial-intelligence/precalculated-pathfinding-revisited-r1939.
+For more information, visit <http://www.gamedev.net/page/resources/_/technical/artificial-intelligence/precalculated-pathfinding-revisited-r1939>.
 
 ## Further optimizations
 

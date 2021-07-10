@@ -18,6 +18,7 @@ Here are my notes about how to (re-)generate entity framework core migrations.
   Migration-Attribute (paste from clipboard)
 
 ## Replacing the initial migration
+
 Replacing the initial migration is only allowed until a stable version of OpenMU
 is released. After that, just new migrations should be added.
 

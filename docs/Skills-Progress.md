@@ -129,8 +129,7 @@ Some general notes:
 | 269    | Charge                      | ?                                                                |
 | 270    | Phoenix Shot                | ?                                                                |
 
-
-## Master Skills:
+## Master Skills
 
 Note: Some skills have the state *unused*. They're not used in the game at
 season 6, but probably in later seasons. Therefore, they are also *not implemented*.
@@ -408,5 +407,3 @@ season 6, but probably in later seasons. Therefore, they are also *not implement
 | 615    | Increase Ignore Def Chance    | unused          |
 | 616    | Recovers SD Fully             | unused          |
 | 617    | Increase Triple Damage Chance | unused          |
-
-

@@ -54,4 +54,3 @@ project.
 
 This project also includes some unit tests for AttributeSystem, so check it out
 if you want to find out how that works as a whole.
-

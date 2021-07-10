@@ -46,10 +46,13 @@ Just one example how they can be chained:
 ```csharp
 private async Task EncryptDecryptFromClientToServer(byte[] packet)
 {
-    // this pipe connects the encryptor with the decryptor. You can imagine this as the client-to-server network connection, for example.
+    // this pipe connects the encryptor with the decryptor.
+    // You can imagine this as the client-to-server network
+    // connection, for example.
     var pipe = new Pipe();
 
-    var encryptor = new PipelinedXor32Encryptor(new PipelinedSimpleModulusEncryptor(pipe.Writer, PipelinedSimpleModulusEncryptor.DefaultClientKey).Writer);
+    var encryptor = new PipelinedXor32Encryptor(
+      new PipelinedSimpleModulusEncryptor(pipe.Writer, PipelinedSimpleModulusEncryptor.DefaultClientKey).Writer);
     var decryptor = new PipelinedXor32Decryptor(new PipelinedSimpleModulusDecryptor(pipe.Reader).Reader);
     encryptor.Writer.Write(packet);
     await encryptor.Writer.FlushAsync();
@@ -73,8 +76,11 @@ scenarios where multiple threads want to do that.
 A simple example of the usage:
 
 ```csharp
-// The next line requests 5 bytes from the pipe writer of the connection, locks the connection and sets the header bytes for packet type and length (e.g. C1 05).
-// Disposing the writer is releasing the lock, so you don't want to keep this open too long.
+// The next line requests 5 bytes from the pipe writer of the connection,
+// locks the connection and sets the header bytes for packet type and
+// length (e.g. C1 05).
+// Disposing the writer is releasing the lock, so you don't want to keep
+// this open too long.
 using (var writer = connection.StartSafeWrite(0xC1, 5)) 
 {
     var packet = writer.Span;
@@ -83,11 +89,11 @@ using (var writer = connection.StartSafeWrite(0xC1, 5))
     packet[4] = requester.Id.GetLowByte();
 
     // Commit advances the pipe writer by 5 bytes.
-    // An overload exists to advance it by a custom length for dynamically sized packets.
+    // An overload exists to advance it by a custom length for dynamically
+    // sized packets.
     writer.Commit();
 }
 ```
-
 
 ## Encryption
 
@@ -111,6 +117,7 @@ As far as we know, there wasn't a packet encryption in the earliest versions
 below 0.74.
 
 #### Version 0.74.01 and higher
+
 According to a korean change log, SimpleModulus got added with version **0.74.01**.
 The first variant used 16 encryption keys which were used to encrypt blocks of
 32 bytes size.

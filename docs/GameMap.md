@@ -32,7 +32,7 @@ You may ask, why I introduced such a structure and not simply use a list of
 objects and compare the distance to them when moving to decide if a object
 should be sent (add/remove) to the game client.
 As far as I know, the original server works like that and has a lot of lag when
-a lot of players (more than thousand at castle siege) are on the same map, all 
+a lot of players (more than thousand at castle siege) are on the same map, all
 moving around.
 This is a O(n²) problem where n is the number of objects on the same map - this
 can get pretty complex very fast.

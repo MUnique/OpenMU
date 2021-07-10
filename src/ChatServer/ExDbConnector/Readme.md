@@ -36,7 +36,6 @@ client to game server.
 You can't edit this key at the original ChatServer of Webzen, that's the reason
 why it's pretty hard to get the ChatServer working on a private server.
 
-
 ## Communication between ExDB-Server and ChatServer
 
 The ExDB server usually leaves the tcp port 55906 open, so that the ChatServer
@@ -46,7 +45,6 @@ The ExDB server usually leaves the tcp port 55906 open, so that the ChatServer
 
 When the ChatServer connects to the ExDB server, it sends a data packet to
 register itself. It has the following struture:
-
 
 |  Length  | Data type | Value | Description |
 |----------|---------|-------------|---------|

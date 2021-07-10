@@ -26,10 +26,12 @@ The code generation adds the following stuff to the inherited entity classes:
 * Because every type is different, it has do to the following stuff for
     navigation properties:
 
-  * Overrides every property which uses the base type, adds a NotMappedAttribute and sets the foreign key property value in the setter.
+  * Overrides every property which uses the base type, adds a NotMappedAttribute
+    and sets the foreign key property value in the setter.
 
-  * Adds new properties which use the inherited type and maps it to the Foreign Key Id-Property. Getter and Setter is accessing the base property.
-  
+  * Adds new properties which use the inherited type and maps it to the
+    Foreign Key Id-Property. Getter and Setter is accessing the base property.
+
 * For the same reason, (1:n) collection properties need special handling:
 
   * It adds new "Raw" properites which are ICollections of the inherited classes
@@ -38,11 +40,8 @@ The code generation adds the following stuff to the inherited entity classes:
     which adapt between base and inherited classes, accessing the "Raw" collection.
 
 * For the n:m-collection properties (which are a bit tricky to get detected as such):
-
   * Additional join entity classes are created
-
   * Collection properties for these join entities are added
-
   * [Many-to-many collection adapters](ManyToManyCollectionAdapter.cs) are used
 
 * It adds a schema name ("config" or "data") to the TableAttribute
@@ -104,7 +103,7 @@ data access by implementing persistence for a NoSQL document database, too.
 Here we would use one document for each Account, keeping the game configuration
 in another document.
 
-All this happens in the [GenericRepository<T>](GenericRepository.cs).
+All this happens in the [GenericRepository of T](GenericRepository.cs).
 To load all whole object graphs, the repositories are iterating through the
 navigation and collection properties of the loaded object.
 If they are not loaded yet (specified by each EntityEntry), it loads them by
@@ -120,8 +119,8 @@ You can read about it
 [here](https://munique.net/loading-complex-data-with-postgresql-json-functions/)
 and [here](https://github.com/MUnique/OpenMU/issues/10).
 
-
 ### Context management
+
 The concept of a context is probably most common when working with
 EntityFramework ORMs.
 

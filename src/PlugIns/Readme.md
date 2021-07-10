@@ -23,6 +23,7 @@ dynamically created proxy object which iterates through all active plugins of
 the same type when a method of a plugin is executed.
 
 Example:
+
 ```csharp
   // The following call would execute the function "ExecuteSomeMethod" of
   // all active plugins which implement "ISomePlugIn":
@@ -41,15 +42,18 @@ decides which one of the actual implementations are currently *effective*.
 
 Example:
 
-* We have a ```ViewPlugInContainer : ICustomPlugInContainer<IViewPlugIn>``` which collects and manages all *IViewPlugIns*.
+* We have a ```ViewPlugInContainer : ICustomPlugInContainer<IViewPlugIn>```
+  which collects and manages all *IViewPlugIns*.
   Depending of the client version, it provides the plugins which fit best.
 
 * We have a plugin interface ```IChatViewPlugIn : IViewPlugIn```.
 
-* We have several implementations for the *IChatViewPlugIn*, e.g. for different client versions.
+* We have several implementations for the *IChatViewPlugIn*, e.g. for different
+  client versions.
 
 ```csharp
-  // assume that we have a manager which has already some active implementations for IChatViewPlugIn available
+  // assume that we have a manager which has already some active implementations
+  // for IChatViewPlugIn available
   var container = new ViewPlugInContainer(manager);
   container.GetPlugIn<IChatViewPlugIn>()?.ShowMessage("Bob", "Hello World");
 ```
@@ -108,14 +112,14 @@ public interface IExamplePlugIn
 
 As you can see, there are two additional attributes at it:
 
-* **Guid**: Every plugin interface needs a unique identifier. 
+* **Guid**: Every plugin interface needs a unique identifier.
             This id is compiled into ```typeof(IExamplePlugIn).GUID``` -
             when it's missing, it's just some random number. We want fixed GUID,
             so we can safely reference it later. They need to be unique for
             every interface, of course.
 
- * **PlugInPoint**: This one defines the name and description and that it
-                     should be picked up by the plugin manager.
+* **PlugInPoint**: This one defines the name and description and that it
+                   should be picked up by the plugin manager.
 
 ### Defining Strategy Plugins
 
@@ -142,7 +146,6 @@ public interface IExampleStrategyPlugIn : IStrategyPlugIn<string>
 }
 ```
 
-
 ### Defining custom plugin containers and plugins
 
 This works slightly different from what you have seen above. Instead of using
@@ -159,7 +162,9 @@ using System.Runtime.InteropServices;
 /// Common interface for all plugins of a custom plugin container.
 /// </summary>
 [Guid("D6A56A13-AC5B-442B-B185-857587C59A32")]
-[CustomPlugInContainer("Example Custom PlugIn Container", "This plugin container is an example.")]
+[CustomPlugInContainer(
+  "Example Custom PlugIn Container",
+  "This plugin container is an example.")]
 public interface IViewPlugIn
 {
 }
@@ -205,14 +210,14 @@ internal class ExamplePlugIn : IExamplePlugIn
 
 Again, there are two additionally required attributes:
 
-* **Guid**: Every plugin needs a unique identifier. 
-              This id is compiled into ```typeof(ExamplePlugIn).GUID``` -
-              when it's missing, it's just some random number. We want fixed GUIDs,
-              so we can safely reference it in configurations. They need to be
-              unique for every implemented plugin, of course.
+* **Guid**: Every plugin needs a unique identifier.
+            This id is compiled into ```typeof(ExamplePlugIn).GUID``` -
+            when it's missing, it's just some random number. We want fixed GUIDs,
+            so we can safely reference it in configurations. They need to be
+            unique for every implemented plugin, of course.
 
 * **PlugIn**: This one defines the name and description and that it should be
-                picked up by the plugin manager.
+              picked up by the plugin manager.
 
 ## Configuration
 
@@ -237,4 +242,3 @@ by custom ones. Currently, there are two ways to load custom plugins:
 From a compatibility point of view, the last option is to prefer, because the
 source is always referencing the currently loaded assemblies. Compile errors
 would come up on the start of the server and could be fixed in a short time.
-

@@ -33,8 +33,8 @@ replaced skill.
 The master skill tree consists of three roots.
 The skills are put into rows which defines the *rank* of a skill.
 By default, there 5 ranks available. However, the game client would support up
-to 9 ranks. Each skill usually can have up to 20 levels, some only have 10. The client probably
-supports more than that.
+to 9 ranks. Each skill usually can have up to 20 levels, some only have 10. The
+client probably supports more than that.
 
 A skill can be defined to depend on a skill of the same or the previous rank of
 the same root.
@@ -44,7 +44,6 @@ exclusive to the character class. So, one skill can be available for multiple
 character classes.
 The root and rank for a skill is always the same for all character classes.
 The visual appearance on the client may differ (more on that later).
-
 
 ## Requisitions of learning a skill
 
