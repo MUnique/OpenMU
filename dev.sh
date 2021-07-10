@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function generate_certificates {
   docker run --rm --entrypoint "" \
     -v $PWD/certificates:/certificates \
