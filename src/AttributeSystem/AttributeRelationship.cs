@@ -4,8 +4,6 @@
 
 namespace MUnique.OpenMU.AttributeSystem
 {
-    using System;
-
     /// <summary>
     /// The operator which is applied between the input attribute and the input operand.
     /// </summary>

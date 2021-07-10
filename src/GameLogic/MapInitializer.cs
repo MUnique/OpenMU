@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameLogic
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.NPC;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

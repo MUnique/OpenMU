@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 

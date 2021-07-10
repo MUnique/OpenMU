@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.DataModel.Entities
 {
     using System.Collections.Generic;
-    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>

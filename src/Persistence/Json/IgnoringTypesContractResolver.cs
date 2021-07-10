@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.Json
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.SymbolStore;
     using System.Linq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;

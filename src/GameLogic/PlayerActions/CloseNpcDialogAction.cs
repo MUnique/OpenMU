@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
     using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Views.NPC;
 
     /// <summary>

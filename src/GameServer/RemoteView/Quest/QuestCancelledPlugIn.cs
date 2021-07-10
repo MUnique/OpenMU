@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest
     using MUnique.OpenMU.DataModel.Configuration.Quests;
     using MUnique.OpenMU.GameLogic.Views.Quest;
     using MUnique.OpenMU.GameServer.MessageHandler.Quests;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 

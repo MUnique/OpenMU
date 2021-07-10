@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Vault
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic.Views.Vault;
-    using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
     using MUnique.OpenMU.PlugIns;
 

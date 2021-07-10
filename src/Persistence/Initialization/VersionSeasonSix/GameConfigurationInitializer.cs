@@ -13,7 +13,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
     using MUnique.OpenMU.Persistence.Initialization.Items;
-    using MUnique.OpenMU.Persistence.Initialization.Skills;
     using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
     using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 

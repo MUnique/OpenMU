@@ -12,7 +12,6 @@ namespace MUnique.OpenMU.GameLogic
     using System.Threading.Tasks;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Pathfinding;
-    using Nito.AsyncEx;
 
     /// <summary>
     /// Class which manages walking for instances of <see cref="ISupportWalk"/>.
