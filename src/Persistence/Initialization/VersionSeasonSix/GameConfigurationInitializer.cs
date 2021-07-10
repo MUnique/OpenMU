@@ -10,6 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Configuration.Items;
+    using MUnique.OpenMU.DataModel.Configuration.Skills;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
     using MUnique.OpenMU.Persistence.Initialization.Items;
