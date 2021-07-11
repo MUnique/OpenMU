@@ -164,10 +164,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                     { Stats.DefenseBase, 30 },
                     { Stats.AttackRatePvm, 160 },
                     { Stats.DefenseRatePvm, 20 },
-                    { Stats.PoisonResistance, 1 },
-                    { Stats.IceResistance, 1 },
-                    { Stats.FireResistance, 1 },
-                    { Stats.LightningResistance, 1 },
+                    { Stats.PoisonResistance, 1f / 255 },
+                    { Stats.IceResistance, 1f / 255 },
+                    { Stats.FireResistance, 1f / 255 },
+                    { Stats.LightningResistance, 1f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -196,10 +196,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                     { Stats.DefenseBase, 40 },
                     { Stats.AttackRatePvm, 180 },
                     { Stats.DefenseRatePvm, 30 },
-                    { Stats.PoisonResistance, 1 },
-                    { Stats.IceResistance, 1 },
-                    { Stats.FireResistance, 1 },
-                    { Stats.LightningResistance, 1 },
+                    { Stats.PoisonResistance, 1f / 255 },
+                    { Stats.IceResistance, 1f / 255 },
+                    { Stats.FireResistance, 1f / 255 },
+                    { Stats.LightningResistance, 1f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

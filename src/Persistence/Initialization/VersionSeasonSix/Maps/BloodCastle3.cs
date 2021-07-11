@@ -163,10 +163,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                     { Stats.DefenseBase, 185 },
                     { Stats.AttackRatePvm, 380 },
                     { Stats.DefenseRatePvm, 125 },
-                    { Stats.PoisonResistance, 5 },
-                    { Stats.IceResistance, 5 },
-                    { Stats.FireResistance, 5 },
-                    { Stats.LightningResistance, 5 },
+                    { Stats.PoisonResistance, 5f / 255 },
+                    { Stats.IceResistance, 5f / 255 },
+                    { Stats.FireResistance, 5f / 255 },
+                    { Stats.LightningResistance, 5f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -194,10 +194,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                     { Stats.DefenseBase, 190 },
                     { Stats.AttackRatePvm, 420 },
                     { Stats.DefenseRatePvm, 130 },
-                    { Stats.PoisonResistance, 5 },
-                    { Stats.IceResistance, 5 },
-                    { Stats.FireResistance, 5 },
-                    { Stats.LightningResistance, 5 },
+                    { Stats.PoisonResistance, 5f / 255 },
+                    { Stats.IceResistance, 5f / 255 },
+                    { Stats.FireResistance, 5f / 255 },
+                    { Stats.LightningResistance, 5f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -225,10 +225,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                     { Stats.DefenseBase, 220 },
                     { Stats.AttackRatePvm, 470 },
                     { Stats.DefenseRatePvm, 175 },
-                    { Stats.PoisonResistance, 5 },
-                    { Stats.IceResistance, 5 },
-                    { Stats.FireResistance, 5 },
-                    { Stats.LightningResistance, 5 },
+                    { Stats.PoisonResistance, 5f / 255 },
+                    { Stats.IceResistance, 5f / 255 },
+                    { Stats.FireResistance, 5f / 255 },
+                    { Stats.LightningResistance, 5f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -257,10 +257,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                     { Stats.DefenseBase, 300 },
                     { Stats.AttackRatePvm, 520 },
                     { Stats.DefenseRatePvm, 190 },
-                    { Stats.PoisonResistance, 5 },
-                    { Stats.IceResistance, 5 },
-                    { Stats.FireResistance, 5 },
-                    { Stats.LightningResistance, 5 },
+                    { Stats.PoisonResistance, 5f / 255 },
+                    { Stats.IceResistance, 5f / 255 },
+                    { Stats.FireResistance, 5f / 255 },
+                    { Stats.LightningResistance, 5f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -288,10 +288,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                     { Stats.DefenseBase, 400 },
                     { Stats.AttackRatePvm, 650 },
                     { Stats.DefenseRatePvm, 200 },
-                    { Stats.PoisonResistance, 5 },
-                    { Stats.IceResistance, 5 },
-                    { Stats.FireResistance, 5 },
-                    { Stats.LightningResistance, 5 },
+                    { Stats.PoisonResistance, 5f / 255 },
+                    { Stats.IceResistance, 5f / 255 },
+                    { Stats.FireResistance, 5f / 255 },
+                    { Stats.LightningResistance, 5f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -320,10 +320,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                     { Stats.DefenseBase, 450 },
                     { Stats.AttackRatePvm, 720 },
                     { Stats.DefenseRatePvm, 260 },
-                    { Stats.PoisonResistance, 8 },
-                    { Stats.IceResistance, 8 },
-                    { Stats.FireResistance, 8 },
-                    { Stats.LightningResistance, 8 },
+                    { Stats.PoisonResistance, 8f / 255 },
+                    { Stats.IceResistance, 8f / 255 },
+                    { Stats.FireResistance, 8f / 255 },
+                    { Stats.LightningResistance, 8f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
