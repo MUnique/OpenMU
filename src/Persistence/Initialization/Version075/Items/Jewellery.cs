@@ -129,21 +129,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
 
             if (resistanceAttribute != null)
             {
-                // TODO: Implement elemental attacks and resistancies.
-                // Not sure how these resistancies work. If I remember correctly, it worked at the original server this way:
-                //   - it only considers the maximum resistance of all equipped items
-                //   - officially there were only rings/pendant up to level 4 and they worked pretty well
-                //     -> one item level means about 20% less chance to get affected by the element (iced, poisoned etc.).
-                //   - I'm not sure if they prevent hits or lower the damage. For example, you could miss an attack but still apply ice or poison to an opponent.
                 var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 item.BasePowerUpAttributes.Add(powerUp);
-                powerUp.BaseValue = 0.2f;
+                powerUp.BaseValue = 0.1f;
                 powerUp.TargetAttribute = resistanceAttribute.GetPersistent(this.GameConfiguration);
-                for (int i = 1; i <= 4; i++)
+                for (int lvl = 1; lvl <= 4; lvl++)
                 {
                     var levelBonus = this.Context.CreateNew<LevelBonus>();
-                    levelBonus.Level = i;
-                    levelBonus.AdditionalValue = (1 + i) * 0.2f;
+                    levelBonus.Level = lvl;
+                    levelBonus.AdditionalValue = lvl * 0.1f;
                     powerUp.BonusPerLevel.Add(levelBonus);
                 }
             }
