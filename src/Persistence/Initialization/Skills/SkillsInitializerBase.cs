@@ -108,14 +108,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills
             {
                 case ElementalType.Ice:
                     skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
-                    skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Iced, Stats.IsIced, 5);
+                    skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Iced, Stats.IsIced, 10);
                     break;
                 case ElementalType.Poison:
                     skill.ElementalModifierTarget = Stats.PoisonResistance.GetPersistent(this.GameConfiguration);
 
                     // Poison Skill applies damage 7 times, while decay three times. We assume that we apply each damage
-                    // every 2 seconds. We leave one extra second, so that the damage is applied for sure.
-                    var durationInSeconds = skill.Number == (short)SkillNumber.Poison ? 15 : 7;
+                    // every 3 seconds. We leave one or two extra seconds, so that the damage is applied for sure.
+                    var durationInSeconds = skill.Number == (short)SkillNumber.Poison ? 20 : 10;
                     skill.MagicEffectDef = this.CreateEffect(ElementalType.Poison, MagicEffectNumber.Poisoned, Stats.IsPoisoned, durationInSeconds);
                     break;
                 case ElementalType.Lightning:
