@@ -66,5 +66,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="reflector">The reflector.</param>
         /// <param name="damage">The damage.</param>
         void ReflectDamage(IAttacker reflector, uint damage);
+
+        /// <summary>
+        /// Applies the poison damage.
+        /// </summary>
+        /// <param name="initialAttacker">The initial attacker.</param>
+        /// <param name="damage">The damage.</param>
+        void ApplyPoisonDamage(IAttacker initialAttacker, uint damage);
     }
 }

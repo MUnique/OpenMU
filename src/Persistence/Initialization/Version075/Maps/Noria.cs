@@ -85,11 +85,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps
                     { Stats.DefenseBase, 2 },
                     { Stats.AttackRatePvm, 13 },
                     { Stats.DefenseRatePvm, 2 },
-                    { Stats.WindResistance, 0 },
-                    { Stats.PoisonResistance, 0 },
-                    { Stats.IceResistance, 0 },
-                    { Stats.WaterResistance, 0 },
-                    { Stats.FireResistance, 0 },
+                    { Stats.WindResistance, 0f / 255 },
+                    { Stats.PoisonResistance, 0f / 255 },
+                    { Stats.IceResistance, 0f / 255 },
+                    { Stats.WaterResistance, 0f / 255 },
+                    { Stats.FireResistance, 0f / 255 },
                 };
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             }

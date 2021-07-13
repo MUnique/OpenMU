@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -13,6 +14,28 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
     /// </summary>
     public static class CharacterClassHelper
     {
+        private static readonly (CharacterClasses Classes, CharacterClassNumber Number)[] NumberMapping =
+        {
+            (CharacterClasses.GrandMaster, CharacterClassNumber.GrandMaster),
+            (CharacterClasses.SoulMaster, CharacterClassNumber.SoulMaster),
+            (CharacterClasses.DarkWizard, CharacterClassNumber.DarkWizard),
+            (CharacterClasses.BladeMaster, CharacterClassNumber.BladeMaster),
+            (CharacterClasses.BladeKnight, CharacterClassNumber.BladeKnight),
+            (CharacterClasses.DarkKnight, CharacterClassNumber.DarkKnight),
+            (CharacterClasses.HighElf, CharacterClassNumber.HighElf),
+            (CharacterClasses.MuseElf, CharacterClassNumber.MuseElf),
+            (CharacterClasses.FairyElf, CharacterClassNumber.FairyElf),
+            (CharacterClasses.DuelMaster, CharacterClassNumber.DuelMaster),
+            (CharacterClasses.MagicGladiator, CharacterClassNumber.MagicGladiator),
+            (CharacterClasses.LordEmperor, CharacterClassNumber.LordEmperor),
+            (CharacterClasses.DarkLord, CharacterClassNumber.DarkLord),
+            (CharacterClasses.DimensionMaster, CharacterClassNumber.DimensionMaster),
+            (CharacterClasses.BloodySummoner, CharacterClassNumber.BloodySummoner),
+            (CharacterClasses.Summoner, CharacterClassNumber.Summoner),
+            (CharacterClasses.FistMaster, CharacterClassNumber.FistMaster),
+            (CharacterClasses.RageFighter, CharacterClassNumber.RageFighter),
+        };
+
         /// <summary>
         /// Determines the <see cref="CharacterClass"/>es, depending on the given class ranks which are provided by original configuration files.
         /// </summary>
@@ -25,6 +48,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
         /// <param name="summonerClass">Class rank of the summoner class.</param>
         /// <param name="ragefighterClass">Class rank of the ragefighter class.</param>
         /// <returns>The corresponding <see cref="CharacterClass"/>es of the provided class ranks.</returns>
+        [Obsolete("Use the overload with the CharacterClasses enum instead.")]
         public static IEnumerable<CharacterClass> DetermineCharacterClasses(this GameConfiguration gameConfiguration, int wizardClass, int knightClass, int elfClass, int magicGladiatorClass, int darkLordClass, int summonerClass, int ragefighterClass)
         {
             var characterClasses = gameConfiguration.CharacterClasses;
@@ -113,6 +137,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
                         yield return rageFighter;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Determines the <see cref="CharacterClass" />es, depending on the given class ranks which are provided by original configuration files.
+        /// </summary>
+        /// <param name="gameConfiguration">The game configuration which contains the character classes.</param>
+        /// <param name="classes">The flags enum of character classes.</param>
+        /// <param name="ignoreMissing">If set to <c>true</c>, missing classes are ignored and throw no exception.</param>
+        /// <returns>
+        /// The corresponding <see cref="CharacterClass" />es of the provided class ranks.
+        /// </returns>
+        public static IEnumerable<CharacterClass> DetermineCharacterClasses(this GameConfiguration gameConfiguration, CharacterClasses classes, bool ignoreMissing = false)
+        {
+            var characterClasses = gameConfiguration.CharacterClasses;
+            foreach (var characterClassNumber in NumberMapping.Where(c => classes.HasFlag(c.Classes)).Select(c => c.Number))
+            {
+                yield return characterClasses.First(c => c.Number == (int)characterClassNumber);
             }
         }
 

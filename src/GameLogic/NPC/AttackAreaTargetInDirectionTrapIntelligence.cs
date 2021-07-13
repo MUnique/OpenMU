@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
             if (hasAttacked && this.Trap.Definition.AttackSkill is { } attackSkill)
             {
-                this.Trap.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this.Trap, null, attackSkill), true);
+                this.Trap.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this.Trap, null, attackSkill, true), true);
             }
         }
     }

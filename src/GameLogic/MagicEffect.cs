@@ -14,14 +14,11 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.Persistence;
 
     /// <summary>
-    /// Skill Effect, used by Skill Effect List in each
-    /// Player Instance.
-    /// Additional needed information should be get through the
-    /// global list, to save memory.
+    /// A magic effect, usually given by an applied skill or consumed item.
     /// </summary>
-    public sealed class MagicEffect : IDisposable
+    public class MagicEffect : Disposable
     {
-        private Timer? finishTimer;
+        private readonly Timer finishTimer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MagicEffect"/> class.
@@ -89,23 +86,12 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         public MagicEffectDefinition Definition { get; }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            if (this.finishTimer != null)
-            {
-                this.finishTimer.Dispose();
-                this.finishTimer = null;
-                this.OnEffectTimeOut();
-            }
-        }
-
         /// <summary>
         /// Resets the timer.
         /// </summary>
         public void ResetTimer()
         {
-            if (this.finishTimer is null)
+            if (this.IsDisposed)
             {
                 throw new ObjectDisposedException(nameof(MagicEffect));
             }
@@ -113,12 +99,22 @@ namespace MUnique.OpenMU.GameLogic
             this.finishTimer.Change((int)this.Duration.TotalMilliseconds, Timeout.Infinite);
         }
 
+        /// <inheritdoc/>
+        protected override void Dispose(bool dispose)
+        {
+            this.finishTimer.Dispose();
+            this.OnEffectTimeOut();
+        }
+
         private void OnEffectTimeOut()
         {
             try
             {
-                this.EffectTimeOut?.Invoke(this, EventArgs.Empty);
-                this.Dispose();
+                if (!this.IsDisposed && !this.IsDisposing)
+                {
+                    this.EffectTimeOut?.Invoke(this, EventArgs.Empty);
+                    this.Dispose();
+                }
             }
             catch (Exception ex)
             {

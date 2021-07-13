@@ -70,6 +70,7 @@
   * [C1 42 01 - PartyList075 (by server)](C1-42-01-PartyList075_by-server.md)
   * [C1 43 - RemovePartyMember (by server)](C1-43-RemovePartyMember_by-server.md)
   * [C1 44 - PartyHealthUpdate (by server)](C1-44-PartyHealthUpdate_by-server.md)
+  * [C2 45 - AddTransformedCharactersToScope075 (by server)](C2-45-AddTransformedCharactersToScope075_by-server.md)
   * [C1 50 - GuildJoinRequest (by server)](C1-50-GuildJoinRequest_by-server.md)
   * [C1 51 - GuildJoinResponse (by server)](C1-51-GuildJoinResponse_by-server.md)
   * [C2 52 - GuildList (by server)](C2-52-GuildList_by-server.md)

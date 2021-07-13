@@ -17,7 +17,8 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// <param name="attacker">The attacking object.</param>
         /// <param name="target">The target.</param>
         /// <param name="skill">The skill.</param>
-        void ShowSkillAnimation(IAttacker attacker, IAttackable? target, Skill skill);
+        /// <param name="effectApplied">Flag, if a magic effect was applied with the skill.</param>
+        void ShowSkillAnimation(IAttacker attacker, IAttackable? target, Skill skill, bool effectApplied);
 
         /// <summary>
         /// Shows the skill animation.
@@ -25,6 +26,7 @@ namespace MUnique.OpenMU.GameLogic.Views.World
         /// <param name="attacker">The attacking object.</param>
         /// <param name="target">The target.</param>
         /// <param name="skillNumber">The skill number, see also <see cref="Skill.Number"/>.</param>
-        void ShowSkillAnimation(IAttacker attacker, IAttackable? target, short skillNumber);
+        /// <param name="effectApplied">Flag, if a magic effect was applied with the skill.</param>
+        void ShowSkillAnimation(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied);
     }
 }

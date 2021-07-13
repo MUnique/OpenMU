@@ -83,7 +83,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             if (target.CheckSkillTargetRestrictions(player, skillEntry.Skill))
             {
                 target.AttackBy(player, skillEntry);
-                target.ApplyElementalEffects(player, skillEntry);
+                target.TryApplyElementalEffects(player, skillEntry);
                 player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number)?.AfterTargetGotAttacked(player, target, skillEntry, targetAreaCenter);
             }
         }

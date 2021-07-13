@@ -91,6 +91,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         }
 
         /// <inheritdoc />
+        public void ApplyPoisonDamage(IAttacker initialAttacker, uint damage)
+        {
+            // A ball doesn't take any damage
+        }
+
+        /// <inheritdoc />
         public void Move(Point target)
         {
             var old = this.Position;

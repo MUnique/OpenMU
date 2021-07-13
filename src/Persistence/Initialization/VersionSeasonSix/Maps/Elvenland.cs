@@ -205,10 +205,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                     { Stats.DefenseBase, 33 },
                     { Stats.AttackRatePvm, 10 },
                     { Stats.DefenseRatePvm, 33 },
-                    { Stats.PoisonResistance, 4 },
-                    { Stats.IceResistance, 4 },
-                    { Stats.WaterResistance, 4 },
-                    { Stats.FireResistance, 4 },
+                    { Stats.PoisonResistance, 4f / 255 },
+                    { Stats.IceResistance, 4f / 255 },
+                    { Stats.WaterResistance, 4f / 255 },
+                    { Stats.FireResistance, 4f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

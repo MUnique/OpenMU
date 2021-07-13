@@ -68,6 +68,10 @@ namespace MUnique.OpenMU.GameLogic
                     (this.owner as IObservable)?.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IActivateMagicEffectPlugIn>()?.ActivateMagicEffect(effect, this.owner), false);
                 }
             }
+            else
+            {
+                effect.Dispose();
+            }
         }
 
         /// <summary>

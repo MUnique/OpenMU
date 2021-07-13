@@ -218,7 +218,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps
                     { Stats.DefenseBase, 14 },
                     { Stats.AttackRatePvm, 62 },
                     { Stats.DefenseRatePvm, 14 },
-                    { Stats.FireResistance, 1 },
+                    { Stats.FireResistance, 1f / 255 },
                 };
                 lich.AddAttributes(attributes, this.Context, this.GameConfiguration);
                 lich.MoveRange = 3;

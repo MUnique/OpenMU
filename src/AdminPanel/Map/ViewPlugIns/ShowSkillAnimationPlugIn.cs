@@ -31,13 +31,13 @@ namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
         }
 
         /// <inheritdoc />
-        public void ShowSkillAnimation(IAttacker attacker, IAttackable? target, Skill skill)
+        public void ShowSkillAnimation(IAttacker attacker, IAttackable? target, Skill skill, bool effectApplied)
         {
-            this.ShowSkillAnimation(attacker, target, skill.Number);
+            this.ShowSkillAnimation(attacker, target, skill.Number, effectApplied);
         }
 
         /// <inheritdoc />
-        public async void ShowSkillAnimation(IAttacker attacker, IAttackable? target, short skillNumber)
+        public async void ShowSkillAnimation(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied)
         {
             await this.InvokeAsync(attacker.Id, target?.Id ?? 0, skillNumber);
         }

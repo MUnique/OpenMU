@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
     /// <summary>
     /// Initialization logic for <see cref="Skill"/>s.
     /// </summary>
-    internal class SkillsInitializer : InitializerBase
+    internal class SkillsInitializer : SkillsInitializerBase
     {
         private static readonly IDictionary<SkillNumber, MagicEffectNumber> EffectsOfSkills = new Dictionary<SkillNumber, MagicEffectNumber>
         {
@@ -39,46 +39,55 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <summary>
         /// Initializes this instance.
         /// </summary>
-        /// <remarks>
-        /// Regex: (?m)^\s*(\d+)\s+\"(.+?)\"\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(-*\d+)\s(-*\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s*$
-        /// Replace by: this.CreateSkill($1, "$2", $3, $4, $5, $6, $7, $9, $10, $11, $12, $13, $15, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28);.
-        /// </remarks>
         public override void Initialize()
         {
-            this.CreateSkill(SkillNumber.Poison, "Poison", 0, 12, 42, 0, 6, 140, 0, 1, 1, 0, 0, 1, 0, 0);
-            this.CreateSkill(SkillNumber.Meteorite, "Meteorite", 0, 21, 12, 0, 6, 104, 0, 4, 1, 0, 0, 1, 0, 0);
-            this.CreateSkill(SkillNumber.Lightning, "Lightning", 0, 17, 15, 0, 6, 72, 0, 2, 1, 0, 0, 1, 0, 0);
-            this.CreateSkill(SkillNumber.FireBall, "Fire Ball", 0, 8, 3, 0, 6, 40, 0, 3, 1, 0, 0, 1, 0, 0);
-            this.CreateSkill(SkillNumber.Flame, "Flame", 0, 25, 50, 0, 6, 160, 0, 3, 1, 0, 0, 1, 0, 0, SkillType.AreaSkillExplicitHits);
-            this.CreateSkill(SkillNumber.Teleport, "Teleport", 0, 0, 30, 0, 6, 88, 0, -1, 1, 0, 0, 1, 0, 0, SkillType.Other);
-            this.CreateSkill(SkillNumber.Ice, "Ice", 0, 10, 38, 0, 6, 120, 0, 0, 1, 0, 0, 1, 0, 0);
-            this.CreateSkill(SkillNumber.Twister, "Twister", 0, 35, 60, 0, 6, 180, 0, 5, 1, 0, 0, 1, 0, 0, SkillType.AreaSkillExplicitHits);
-            this.CreateSkill(SkillNumber.EvilSpirit, "Evil Spirit", 0, 45, 90, 0, 6, 220, 0, -1, 1, 0, 0, 1, 0, 0, SkillType.AreaSkillExplicitHits);
-            this.CreateSkill(SkillNumber.Hellfire, "Hellfire", 0, 120, 160, 0, 0, 260, 0, 3, 1, 0, 0, 1, 0, 0, SkillType.AreaSkillExplicitHits);
-            this.CreateSkill(SkillNumber.PowerWave, "Power Wave", 0, 14, 5, 0, 6, 56, 0, -1, 1, 0, 0, 1, 0, 0);
-            this.CreateSkill(SkillNumber.AquaBeam, "Aqua Beam", 0, 80, 140, 0, 6, 345, 0, 6, 1, 0, 0, 1, 0, 0, SkillType.AreaSkillExplicitHits);
-            this.CreateSkill(SkillNumber.EnergyBall, "Energy Ball", 0, 3, 1, 0, 6, 0, 0, -1, 1, 0, 0, 1, 0, 0);
-            this.CreateSkill(SkillNumber.Defense, "Defense", 0, 0, 30, 0, 0, 0, 0, -1, -1, 0, 0, 0, 1, 0, SkillType.Buff, SkillTarget.Explicit, 0, SkillTargetRestriction.Self);
-            this.CreateSkill(SkillNumber.FallingSlash, "Falling Slash", 0, 0, 9, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 0, movesToTarget: true, movesTarget: true);
-            this.CreateSkill(SkillNumber.Lunge, "Lunge", 0, 0, 9, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, movesToTarget: true, movesTarget: true);
-            this.CreateSkill(SkillNumber.Uppercut, "Uppercut", 0, 0, 8, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, movesToTarget: true, movesTarget: true);
-            this.CreateSkill(SkillNumber.Cyclone, "Cyclone", 0, 0, 9, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, movesToTarget: true, movesTarget: true);
-            this.CreateSkill(SkillNumber.Slash, "Slash", 0, 0, 10, 0, 2, 0, 0, -1, 0, 0, 0, 0, 1, 0, movesToTarget: true, movesTarget: true);
-            this.CreateSkill(SkillNumber.TripleShot, "Triple Shot", 0, 0, 5, 0, 6, 0, 0, -1, 0, 0, 0, 0, 0, 1, SkillType.AreaSkillExplicitHits);
-            this.CreateSkill(SkillNumber.Heal, "Heal", 0, 0, 20, 0, 6, 52, 0, -1, 0, 0, 0, 0, 0, 1, SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
-            this.CreateSkill(SkillNumber.GreaterDefense, "Greater Defense", 0, 0, 30, 0, 6, 72, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
-            this.CreateSkill(SkillNumber.GreaterDamage, "Greater Damage", 0, 0, 40, 0, 6, 92, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
-            this.CreateSkill(SkillNumber.SummonGoblin, "Summon Goblin", 0, 0, 40, 0, 0, 90, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
-            this.CreateSkill(SkillNumber.SummonStoneGolem, "Summon Stone Golem", 0, 0, 70, 0, 0, 170, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
-            this.CreateSkill(SkillNumber.SummonAssassin, "Summon Assassin", 0, 0, 110, 0, 0, 190, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
-            this.CreateSkill(SkillNumber.SummonEliteYeti, "Summon Elite Yeti", 0, 0, 160, 0, 0, 230, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
-            this.CreateSkill(SkillNumber.SummonDarkKnight, "Summon Dark Knight", 0, 0, 200, 0, 0, 250, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.SummonMonster);
-            this.CreateSkill(SkillNumber.SummonBali, "Summon Bali", 0, 0, 250, 0, 0, 260, 0, -1, -1, 0, 0, 0, 0, 1, SkillType.Other);
-            this.CreateSkill(SkillNumber.FlameofEvil, "Flame of Evil (Monster)", 60, 120, 160, 0, 0, 100, 0, -1, -1, 0, 0, 0, 0, 0);
+            this.CreateSkill(SkillNumber.Poison, "Poison", CharacterClasses.DarkWizard, DamageType.Wizardry, 12, 6, manaConsumption: 42, energyRequirement: 140, elementalModifier: ElementalType.Poison);
+            this.CreateSkill(SkillNumber.Meteorite, "Meteorite", CharacterClasses.DarkWizard, DamageType.Wizardry, 21, 6, manaConsumption: 12, energyRequirement: 104, elementalModifier: ElementalType.Earth);
+            this.CreateSkill(SkillNumber.Lightning, "Lightning", CharacterClasses.DarkWizard, DamageType.Wizardry, 17, 6, manaConsumption: 15, energyRequirement: 72, elementalModifier: ElementalType.Lightning);
+            this.CreateSkill(SkillNumber.FireBall, "Fire Ball", CharacterClasses.DarkWizard, DamageType.Wizardry, 8, 6, manaConsumption: 3, energyRequirement: 40, elementalModifier: ElementalType.Fire);
+            this.CreateSkill(SkillNumber.Flame, "Flame", CharacterClasses.DarkWizard, DamageType.Wizardry, 25, 6, manaConsumption: 50, energyRequirement: 160, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillExplicitHits);
+            this.CreateSkill(SkillNumber.Teleport, "Teleport", CharacterClasses.DarkWizard, DamageType.Wizardry, distance: 6, manaConsumption: 30, energyRequirement: 88, skillType: SkillType.Other);
+            this.CreateSkill(SkillNumber.Ice, "Ice", CharacterClasses.DarkWizard, DamageType.Wizardry, 10, 6, manaConsumption: 38, energyRequirement: 120, elementalModifier: ElementalType.Ice);
+            this.CreateSkill(SkillNumber.Twister, "Twister", CharacterClasses.DarkWizard, DamageType.Wizardry, 35, 6, manaConsumption: 60, energyRequirement: 180, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillExplicitHits);
+            this.CreateSkill(SkillNumber.EvilSpirit, "Evil Spirit", CharacterClasses.DarkWizard, DamageType.Wizardry, 45, 6, manaConsumption: 90, energyRequirement: 220, skillType: SkillType.AreaSkillExplicitHits);
+            this.CreateSkill(SkillNumber.Hellfire, "Hellfire", CharacterClasses.DarkWizard, DamageType.Wizardry, 120, manaConsumption: 160, energyRequirement: 260, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillExplicitHits);
+            this.CreateSkill(SkillNumber.PowerWave, "Power Wave", CharacterClasses.DarkWizard, DamageType.Wizardry, 14, 6, manaConsumption: 5, energyRequirement: 56);
+            this.CreateSkill(SkillNumber.AquaBeam, "Aqua Beam", CharacterClasses.DarkWizard, DamageType.Wizardry, 80, 6, manaConsumption: 140, energyRequirement: 345, elementalModifier: ElementalType.Water, skillType: SkillType.AreaSkillExplicitHits);
+            this.CreateSkill(SkillNumber.EnergyBall, "Energy Ball", CharacterClasses.DarkWizard, DamageType.Wizardry, 3, 6, manaConsumption: 1);
+            this.CreateSkill(SkillNumber.Defense, "Defense", CharacterClasses.DarkKnight, manaConsumption: 30, skillType: SkillType.Buff, skillTarget: SkillTarget.Explicit, implicitTargetRange: 0, targetRestriction: SkillTargetRestriction.Self);
+            this.CreateSkill(SkillNumber.FallingSlash, "Falling Slash", CharacterClasses.DarkKnight, DamageType.Physical, distance: 3, manaConsumption: 9, movesToTarget: true, movesTarget: true);
+            this.CreateSkill(SkillNumber.Lunge, "Lunge", CharacterClasses.DarkKnight, DamageType.Physical, distance: 2, manaConsumption: 9, movesToTarget: true, movesTarget: true);
+            this.CreateSkill(SkillNumber.Uppercut, "Uppercut", CharacterClasses.DarkKnight, DamageType.Physical, distance: 2, manaConsumption: 8, movesToTarget: true, movesTarget: true);
+            this.CreateSkill(SkillNumber.Cyclone, "Cyclone", CharacterClasses.DarkKnight, DamageType.Physical, distance: 2, manaConsumption: 9, movesToTarget: true, movesTarget: true);
+            this.CreateSkill(SkillNumber.Slash, "Slash", CharacterClasses.DarkKnight, DamageType.Physical, distance: 2, manaConsumption: 10, movesToTarget: true, movesTarget: true);
+            this.CreateSkill(SkillNumber.TripleShot, "Triple Shot", CharacterClasses.FairyElf, DamageType.Physical, distance: 6, manaConsumption: 5, skillType: SkillType.AreaSkillExplicitHits);
+            this.CreateSkill(SkillNumber.Heal, "Heal", CharacterClasses.FairyElf, distance: 6, manaConsumption: 20, energyRequirement: 52, skillType: SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
+            this.CreateSkill(SkillNumber.GreaterDefense, "Greater Defense", CharacterClasses.FairyElf, distance: 6, manaConsumption: 30, energyRequirement: 72, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
+            this.CreateSkill(SkillNumber.GreaterDamage, "Greater Damage", CharacterClasses.FairyElf, distance: 6, manaConsumption: 40, energyRequirement: 92, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
+            this.CreateSkill(SkillNumber.SummonGoblin, "Summon Goblin", CharacterClasses.FairyElf, manaConsumption: 40, energyRequirement: 90, skillType: SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonStoneGolem, "Summon Stone Golem", CharacterClasses.FairyElf, manaConsumption: 70, energyRequirement: 170, skillType: SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonAssassin, "Summon Assassin", CharacterClasses.FairyElf, manaConsumption: 110, energyRequirement: 190, skillType: SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonEliteYeti, "Summon Elite Yeti", CharacterClasses.FairyElf, manaConsumption: 160, energyRequirement: 230, skillType: SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonDarkKnight, "Summon Dark Knight", CharacterClasses.FairyElf, manaConsumption: 200, energyRequirement: 250, skillType: SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.SummonBali, "Summon Bali", CharacterClasses.FairyElf, manaConsumption: 250, energyRequirement: 260, skillType: SkillType.SummonMonster);
+            this.CreateSkill(SkillNumber.FlameofEvil, "Flame of Evil (Monster)", damage: 120, manaConsumption: 160, levelRequirement: 60, energyRequirement: 100);
 
             this.InitializeEffects();
             this.MapSkillsToEffects();
             this.CreateSpecialSummonMonsters();
+            this.FixMagicEffectNumbers();
+        }
+
+        private void FixMagicEffectNumbers()
+        {
+            foreach (var skill in this.GameConfiguration.Skills.Where(s => s.MagicEffectDef is { }))
+            {
+                var effect = skill.MagicEffectDef;
+                if (effect?.Number >= 0)
+                {
+                    effect.Number = skill.Number;
+                }
+            }
         }
 
         private void CreateSpecialSummonMonsters()
@@ -104,10 +113,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
                 { Stats.DefenseBase, 100 },
                 { Stats.AttackRatePvm, 260 },
                 { Stats.DefenseRatePvm, 75 },
-                { Stats.PoisonResistance, 6 },
-                { Stats.IceResistance, 6 },
-                { Stats.WaterResistance, 6 },
-                { Stats.FireResistance, 6 },
+                { Stats.PoisonResistance, 6f / 255 },
+                { Stats.IceResistance, 6f / 255 },
+                { Stats.WaterResistance, 6f / 255 },
+                { Stats.FireResistance, 6f / 255 },
             };
 
             bali.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -129,65 +138,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
                 var effect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)effectOfSkill.Value);
                 skill.MagicEffectDef = effect;
             }
-        }
-
-        private void CreateSkill(SkillNumber skillId, string name, int levelRequirement, int damage, int manaConsumption, int abilityConsumption, short distance, int energyRequirement, int leadershipRequirement, int elementalModifier,
-            int attackType, int useType, int count, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel,
-            SkillType skillType = SkillType.DirectHit, SkillTarget skillTarget = SkillTarget.Explicit, short implicitTargetRange = 0, SkillTargetRestriction targetRestriction = SkillTargetRestriction.Undefined, bool movesToTarget = false,
-            bool movesTarget = false)
-        {
-            var skill = this.Context.CreateNew<Skill>();
-            this.GameConfiguration.Skills.Add(skill);
-            skill.Number = (short)skillId;
-            skill.Name = name;
-            skill.MovesToTarget = movesToTarget;
-            skill.MovesTarget = movesTarget;
-            skill.AttackDamage = damage;
-
-            this.CreateSkillRequirementIfNeeded(skill, Stats.Level, levelRequirement);
-            this.CreateSkillRequirementIfNeeded(skill, Stats.TotalLeadership, leadershipRequirement);
-            this.CreateSkillRequirementIfNeeded(skill, Stats.TotalEnergy, energyRequirement);
-            this.CreateSkillConsumeRequirementIfNeeded(skill, Stats.CurrentMana, manaConsumption);
-            this.CreateSkillConsumeRequirementIfNeeded(skill, Stats.CurrentAbility, abilityConsumption);
-
-            skill.Range = distance;
-            skill.DamageType = attackType == 1 ? DamageType.Wizardry : DamageType.Physical;
-            skill.SkillType = skillType;
-            if (useType == 3)
-            {
-                skill.SkillType = SkillType.PassiveBoost;
-            }
-
-            skill.ImplicitTargetRange = implicitTargetRange;
-            skill.Target = skillTarget;
-            skill.TargetRestriction = targetRestriction;
-            var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel == 1, darkKnightClassLevel == 1, elfClassLevel == 1);
-            foreach (var characterClass in classes)
-            {
-                skill.QualifiedCharacters.Add(characterClass);
-            }
-        }
-
-        private void CreateSkillConsumeRequirementIfNeeded(Skill skill, AttributeDefinition attribute, int requiredValue)
-        {
-            if (requiredValue == 0)
-            {
-                return;
-            }
-
-            var requirement = this.CreateRequirement(attribute, requiredValue);
-            skill.ConsumeRequirements.Add(requirement);
-        }
-
-        private void CreateSkillRequirementIfNeeded(Skill skill, AttributeDefinition attribute, int requiredValue)
-        {
-            if (requiredValue == 0)
-            {
-                return;
-            }
-
-            var requirement = this.CreateRequirement(attribute, requiredValue);
-            skill.Requirements.Add(requirement);
         }
     }
 }

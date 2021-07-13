@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             if (target.CheckSkillTargetRestrictions(player, skill.Skill))
             {
                 target.AttackBy(player, skill);
-                target.ApplyElementalEffects(player, skill);
+                target.TryApplyElementalEffects(player, skill);
             }
         }
     }

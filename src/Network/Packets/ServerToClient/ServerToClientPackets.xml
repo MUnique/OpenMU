@@ -928,7 +928,7 @@
       <Name>SkillAnimation</Name>
       <Length>9</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>An object performs a skill which is directly targetted to another object.</SentWhen>
+      <SentWhen>An object performs a skill which is directly targeted to another object.</SentWhen>
       <CausedReaction>The animation is shown on the user interface.</CausedReaction>
       <Fields>
         <Field>
@@ -990,7 +990,7 @@
       <Name>SkillAnimation075</Name>
       <Length>8</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>An object performs a skill which is directly targetted to another object.</SentWhen>
+      <SentWhen>An object performs a skill which is directly targeted to another object.</SentWhen>
       <CausedReaction>The animation is shown on the user interface.</CausedReaction>
       <Fields>
         <Field>
@@ -1007,6 +1007,12 @@
           <Index>6</Index>
           <Type>ShortBigEndian</Type>
           <Name>TargetId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Boolean</Type>
+          <LeftShifted>7</LeftShifted>
+          <Name>EffectApplied</Name>
         </Field>
       </Fields>
     </Packet>
@@ -3183,6 +3189,112 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>45</Code>
+      <Name>AddTransformedCharactersToScope075</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player wears a monster transformation ring.</SentWhen>
+      <CausedReaction>The character appears as monster, defined by the Skin property.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CharacterCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>CharacterData</TypeName>
+          <Name>Characters</Name>
+          <ItemCountField>CharacterCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>CharacterData</Name>
+          <Description>Contains the data of an character.</Description>
+          <Length>19</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>Id</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>CurrentPositionX</Name>
+            </Field>
+            <Field>
+              <Index>3</Index>
+              <Type>Byte</Type>
+              <Name>CurrentPositionY</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>Byte</Type>
+              <Name>Skin</Name>
+            </Field>
+            <Field>
+              <Index>5</Index>
+              <LeftShifted>0</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsPoisoned</Name>
+            </Field>
+            <Field>
+              <Index>5</Index>
+              <LeftShifted>1</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsIced</Name>
+            </Field>
+            <Field>
+              <Index>5</Index>
+              <LeftShifted>2</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsDamageBuffed</Name>
+            </Field>
+            <Field>
+              <Index>5</Index>
+              <LeftShifted>3</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsDefenseBuffed</Name>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>16</Index>
+              <Type>Byte</Type>
+              <Name>TargetPositionX</Name>
+            </Field>
+            <Field>
+              <Index>17</Index>
+              <Type>Byte</Type>
+              <Name>TargetPositionY</Name>
+            </Field>
+            <Field>
+              <Index>18</Index>
+              <LeftShifted>4</LeftShifted>
+              <Type>Byte</Type>
+              <Name>Rotation</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>18</Index>
+              <LeftShifted>0</LeftShifted>
+              <Type>Enum</Type>
+              <TypeName>CharacterHeroState</TypeName>
+              <Name>HeroState</Name>
+              <Length>4</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
       <SubCode>00</SubCode>
@@ -3461,8 +3573,8 @@
       <Name>PoisonDamage</Name>
       <Length>8</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>The character got damaged by being poisoned.</SentWhen>
-      <CausedReaction>Shows poison damage, colors the health bar green.</CausedReaction>
+      <SentWhen>The character got damaged by being poisoned on old client versions.</SentWhen>
+      <CausedReaction>Removes the damage from the health without showing a damage number.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -3472,7 +3584,7 @@
         <Field>
           <Index>6</Index>
           <Type>ShortBigEndian</Type>
-          <Name>ShieldDamage</Name>
+          <Name>CurrentShield</Name>
         </Field>
       </Fields>
     </Packet>

@@ -2,17 +2,17 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.DataModel;
-using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.Views.World;
-
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.DataModel;
+    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic.NPC;
+    using MUnique.OpenMU.GameLogic.Views.World;
+
     /// <summary>
     /// Action to perform a skill which is explicitly aimed to a target.
     /// </summary>
@@ -85,7 +85,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
                 return;
             }
 
-            player.ForEachWorldObserver(obs => obs.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(player, target, skill), true);
             if (skill.MovesToTarget)
             {
                 player.Move(target.Position);
@@ -96,6 +95,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
                 target.MoveRandomly();
             }
 
+            var effectApplied = false;
             if (skill.SkillType == SkillType.SummonMonster)
             {
                 if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
@@ -106,32 +106,36 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
             }
             else
             {
-                this.ApplySkill(player, target, skillEntry!);
+                effectApplied = this.ApplySkill(player, target, skillEntry!);
             }
+
+            player.ForEachWorldObserver(obs => obs.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(player, target, skill, effectApplied), true);
         }
 
-        private void ApplySkill(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
+        private bool ApplySkill(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
         {
             skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
             var skill = skillEntry.Skill;
-
+            var success = false;
             var targets = this.DetermineTargets(player, targetedTarget, skill);
             foreach (var target in targets)
             {
                 if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
                 {
                     target.AttackBy(player, skillEntry);
-                    target.ApplyElementalEffects(player, skillEntry);
+                    success = target.TryApplyElementalEffects(player, skillEntry) || success;
                 }
                 else if (skill.MagicEffectDef != null)
                 {
                     if (skill.SkillType == SkillType.Buff)
                     {
                         target.ApplyMagicEffect(player, skillEntry);
+                        success = true;
                     }
                     else if (skill.SkillType == SkillType.Regeneration)
                     {
                         target.ApplyRegeneration(player, skillEntry);
+                        success = true;
                     }
                     else
                     {
@@ -143,6 +147,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
                     player.Logger.LogWarning($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
                 }
             }
+
+            return success;
         }
 
         private IEnumerable<IAttackable> DetermineTargets(Player player, IAttackable targetedTarget, Skill skill)
