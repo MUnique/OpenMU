@@ -109,7 +109,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
-        /// Is sent by the server when: An object performs a skill which is directly targetted to another object.
+        /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
         /// Causes reaction on client side: The animation is shown on the user interface.
         /// </remarks>
         public static SkillAnimationThreadSafeWriter StartWriteSkillAnimation(this IConnection connection)
@@ -135,7 +135,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
-        /// Is sent by the server when: An object performs a skill which is directly targetted to another object.
+        /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
         /// Causes reaction on client side: The animation is shown on the user interface.
         /// </remarks>
         public static SkillAnimation075ThreadSafeWriter StartWriteSkillAnimation075(this IConnection connection)
@@ -720,8 +720,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
-        /// Is sent by the server when: The character got damaged by being poisoned.
-        /// Causes reaction on client side: Shows poison damage, colors the health bar green.
+        /// Is sent by the server when: The character got damaged by being poisoned on old client versions.
+        /// Causes reaction on client side: Removes the damage from the health without showing a damage number.
         /// </remarks>
         public static PoisonDamageThreadSafeWriter StartWritePoisonDamage(this IConnection connection)
         {
@@ -1609,7 +1609,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="playerId">The player id.</param>
         /// <param name="targetId">The target id.</param>
         /// <remarks>
-        /// Is sent by the server when: An object performs a skill which is directly targetted to another object.
+        /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
         /// Causes reaction on client side: The animation is shown on the user interface.
         /// </remarks>
         public static void SendSkillAnimation(this IConnection connection, ushort @skillId, ushort @playerId, ushort @targetId)
@@ -1654,17 +1654,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="skillId">The skill id.</param>
         /// <param name="playerId">The player id.</param>
         /// <param name="targetId">The target id.</param>
+        /// <param name="effectApplied">The effect applied.</param>
         /// <remarks>
-        /// Is sent by the server when: An object performs a skill which is directly targetted to another object.
+        /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
         /// Causes reaction on client side: The animation is shown on the user interface.
         /// </remarks>
-        public static void SendSkillAnimation075(this IConnection connection, byte @skillId, ushort @playerId, ushort @targetId)
+        public static void SendSkillAnimation075(this IConnection connection, byte @skillId, ushort @playerId, ushort @targetId, bool @effectApplied)
         {
             using var writer = connection.StartWriteSkillAnimation075();
             var packet = writer.Packet;
             packet.SkillId = @skillId;
             packet.PlayerId = @playerId;
             packet.TargetId = @targetId;
+            packet.EffectApplied = @effectApplied;
             writer.Commit();
         }
 
@@ -2752,17 +2754,17 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="healthDamage">The health damage.</param>
-        /// <param name="shieldDamage">The shield damage.</param>
+        /// <param name="currentShield">The current shield.</param>
         /// <remarks>
-        /// Is sent by the server when: The character got damaged by being poisoned.
-        /// Causes reaction on client side: Shows poison damage, colors the health bar green.
+        /// Is sent by the server when: The character got damaged by being poisoned on old client versions.
+        /// Causes reaction on client side: Removes the damage from the health without showing a damage number.
         /// </remarks>
-        public static void SendPoisonDamage(this IConnection connection, ushort @healthDamage, ushort @shieldDamage)
+        public static void SendPoisonDamage(this IConnection connection, ushort @healthDamage, ushort @currentShield)
         {
             using var writer = connection.StartWritePoisonDamage();
             var packet = writer.Packet;
             packet.HealthDamage = @healthDamage;
-            packet.ShieldDamage = @shieldDamage;
+            packet.CurrentShield = @currentShield;
             writer.Commit();
         }
 

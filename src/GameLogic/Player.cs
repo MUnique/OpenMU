@@ -433,6 +433,12 @@ namespace MUnique.OpenMU.GameLogic
             this.Hit(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector, null);
         }
 
+        /// <inheritdoc/>
+        public void ApplyPoisonDamage(IAttacker initialAttacker, uint damage)
+        {
+            this.Hit(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
+        }
+
         /// <summary>
         /// Teleports this player to the specified target with the specified skill animation.
         /// </summary>
@@ -453,7 +459,7 @@ namespace MUnique.OpenMU.GameLogic
                 var previous = this.Position;
                 this.Position = target;
 
-                this.ForEachWorldObserver(o => o.ViewPlugIns?.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, this, teleportSkill), true);
+                this.ForEachWorldObserver(o => o.ViewPlugIns?.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, this, teleportSkill, true), true);
 
                 await Task.Delay(300).ConfigureAwait(false);
 
@@ -812,32 +818,34 @@ namespace MUnique.OpenMU.GameLogic
         {
             try
             {
-                if (this.Attributes is null)
+                var attributes = this.Attributes;
+                if (attributes is null)
                 {
                     return;
                 }
 
                 foreach (var r in Stats.IntervalRegenerationAttributes.Where(r =>
-                    this.Attributes[r.RegenerationMultiplier] > 0 || this.Attributes[r.AbsoluteAttribute] > 0))
+                    attributes[r.RegenerationMultiplier] > 0 || attributes[r.AbsoluteAttribute] > 0))
                 {
                     if (r.CurrentAttribute == Stats.CurrentShield && !this.IsAtSafezone() &&
-                        this.Attributes[Stats.ShieldRecoveryEverywhere] < 1)
+                        attributes[Stats.ShieldRecoveryEverywhere] < 1)
                     {
                         // Shield recovery is only possible at safe-zone, except the character has an specific attribute which has the effect that it's recovered everywhere.
                         // This attribute is usually provided by a level 380 armor and a Guardian Option.
                         continue;
                     }
 
-                    this.Attributes[r.CurrentAttribute] = Math.Min(
-                        this.Attributes[r.CurrentAttribute] +
-                        ((this.Attributes[r.MaximumAttribute] * this.Attributes[r.RegenerationMultiplier]) +
-                         this.Attributes[r.AbsoluteAttribute]),
-                        this.Attributes[r.MaximumAttribute]);
+                    attributes[r.CurrentAttribute] = Math.Min(
+                        attributes[r.CurrentAttribute] +
+                        ((attributes[r.MaximumAttribute] * attributes[r.RegenerationMultiplier]) +
+                         attributes[r.AbsoluteAttribute]),
+                        attributes[r.MaximumAttribute]);
                 }
 
                 this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
                 this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
 
+                // this.ApplyPoisonDamage();
                 this.RegenerateHeroState();
             }
             catch (InvalidOperationException)
@@ -853,6 +861,35 @@ namespace MUnique.OpenMU.GameLogic
                 this.lastRegenerate = DateTime.UtcNow;
             }
         }
+
+        //private void ApplyPoisonDamage()
+        //{
+        //    var attributes = this.Attributes;
+        //    if (attributes is null)
+        //    {
+        //        return;
+        //    }
+
+        //    if (attributes[Stats.IsPoisoned] <= 0)
+        //    {
+        //        return;
+        //    }
+
+        //    var currentHealth = attributes[Stats.CurrentHealth];
+        //    if (currentHealth <= 0)
+        //    {
+        //        return;
+        //    }
+
+        //    var posionDamage = currentHealth * attributes[Stats.PoisonDamageMultiplier];
+        //    if (posionDamage < 1)
+        //    {
+        //        return;
+        //    }
+
+        //    var hitInfo = new HitInfo((uint)posionDamage, 0, DamageAttributes.Poison);
+        //    this.Hit(hitInfo, this, null);
+        //}
 
         /// <summary>
         /// Disconnects the player from the game. Remote connections will be closed and data will be saved.
@@ -1220,14 +1257,20 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             this.Attributes[Stats.CurrentHealth] -= hitInfo.HealthDamage;
-            this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
             this.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
             (attacker as Player)?.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
             this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
 
             if (this.Attributes[Stats.CurrentHealth] < 1)
             {
+                this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
                 this.OnDeath(attacker);
+            }
+
+            if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison))
+            {
+                // Poison Damage does not reflect to the attacker.
+                return;
             }
 
             var reflectPercentage = this.Attributes[Stats.DamageReflection];

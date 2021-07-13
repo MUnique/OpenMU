@@ -430,6 +430,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition ShieldRecoveryMultiplier { get; } = new AttributeDefinition(new Guid("6B99AA99-C1A3-413B-8C70-602567EB5163"), "Shield Recovery Multiplier", string.Empty);
 
         /// <summary>
+        /// Gets the poison damage multiplier attribute definition.
+        /// </summary>
+        public static AttributeDefinition PoisonDamageMultiplier { get; } = new AttributeDefinition(new Guid("8581CD4D-C6AE-4C35-9147-9642DE7CC013"), "Poison Damage Multiplier", string.Empty);
+
+        /// <summary>
         /// Gets the mana recovery absolute attribute definition.
         /// </summary>
         public static AttributeDefinition ManaRecoveryAbsolute { get; } = new AttributeDefinition(new Guid("33DE588D-1FAB-493A-8FB1-837BF9C5131F"), "Mana Recovery Absolute Increase", string.Empty);

@@ -140,7 +140,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowMonsterAttackAnimation(this, target, this.GetDirectionTo(target)), true);
             if (this.Definition.AttackSkill is { } attackSkill)
             {
-                this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, target, attackSkill), true);
+                this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, target, attackSkill, true), true);
             }
         }
 
@@ -234,6 +234,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public void ReflectDamage(IAttacker reflector, uint damage)
         {
             this.Hit(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector, null);
+        }
+
+        /// <inheritdoc />
+        public void ApplyPoisonDamage(IAttacker initialAttacker, uint damage)
+        {
+            this.Hit(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
         }
 
         /// <inheritdoc/>

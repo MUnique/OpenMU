@@ -2,11 +2,11 @@
 
 ## Is sent when
 
-The character got damaged by being poisoned.
+The character got damaged by being poisoned on old client versions.
 
 ## Causes the following actions on the client side
 
-Shows poison damage, colors the health bar green.
+Removes the damage from the health without showing a damage number.
 
 ## Structure
 
@@ -17,4 +17,4 @@ Shows poison damage, colors the health bar green.
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x07  | Packet header - sub packet type identifier |
 | 4 | 2 | ShortBigEndian |  | HealthDamage |
-| 6 | 2 | ShortBigEndian |  | ShieldDamage |
+| 6 | 2 | ShortBigEndian |  | CurrentShield |

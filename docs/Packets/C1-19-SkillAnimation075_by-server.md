@@ -2,7 +2,7 @@
 
 ## Is sent when
 
-An object performs a skill which is directly targetted to another object.
+An object performs a skill which is directly targeted to another object.
 
 ## Causes the following actions on the client side
 
@@ -18,3 +18,4 @@ The animation is shown on the user interface.
 | 3 | 1 | Byte |  | SkillId |
 | 4 | 2 | ShortBigEndian |  | PlayerId |
 | 6 | 2 | ShortBigEndian |  | TargetId |
+| 6 << 7 | 1 bit | Boolean |  | EffectApplied |

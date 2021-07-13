@@ -153,7 +153,10 @@ namespace MUnique.OpenMU.GameLogic
                 player.CreateMagicEffectPowerUp(skillEntry);
             }
 
-            var magicEffect = new MagicEffect(skillEntry.BuffPowerUp!, skillEntry.Skill!.MagicEffectDef!, TimeSpan.FromSeconds(skillEntry.PowerUpDuration!.Value));
+            var magicEffect = skillEntry.Skill!.MagicEffectDef?.PowerUpDefinition!.TargetAttribute == Stats.IsPoisoned
+                ? new PoisonMagicEffect(skillEntry.BuffPowerUp!, skillEntry.Skill!.MagicEffectDef!, TimeSpan.FromSeconds(skillEntry.PowerUpDuration!.Value), player, target)
+                : new MagicEffect(skillEntry.BuffPowerUp!, skillEntry.Skill!.MagicEffectDef!, TimeSpan.FromSeconds(skillEntry.PowerUpDuration!.Value));
+
             target.MagicEffectList.AddEffect(magicEffect);
         }
 
@@ -196,19 +199,25 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="target">The target.</param>
         /// <param name="player">The player.</param>
         /// <param name="skillEntry">The skill entry.</param>
-        public static void ApplyElementalEffects(this IAttackable target, Player player, SkillEntry skillEntry)
+        /// <returns>The success of the appliance.</returns>
+        public static bool TryApplyElementalEffects(this IAttackable target, Player player, SkillEntry skillEntry)
         {
             skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
             var modifier = skillEntry.Skill.ElementalModifierTarget;
             if (modifier is null)
             {
-                return;
+                return false;
             }
 
             var resistance = target.Attributes[modifier];
             if (resistance >= 1.0f)
             {
-                return;
+               return false;
+            }
+
+            if (target.MagicEffectList.ActiveEffects.ContainsKey(skillEntry.Skill.MagicEffectDef!.Number))
+            {
+                return false;
             }
 
             if (Rand.NextRandomBool(1.0f - resistance))
@@ -224,6 +233,8 @@ namespace MUnique.OpenMU.GameLogic
                     target.MoveRandomly();
                 }
             }
+
+            return true;
         }
 
         /// <summary>

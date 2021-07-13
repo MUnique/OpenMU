@@ -2,7 +2,7 @@
 
 ## Is sent when
 
-An object performs a skill which is directly targetted to another object.
+An object performs a skill which is directly targeted to another object.
 
 ## Causes the following actions on the client side
 

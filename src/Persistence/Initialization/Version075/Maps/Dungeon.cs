@@ -668,6 +668,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps
                     { Stats.AttackRatePvm, 230 },
                     { Stats.DefenseRatePvm, 61 },
                     { Stats.PoisonResistance, 6f / 255 },
+                    { Stats.PoisonDamageMultiplier, 0.03f },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -787,6 +788,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps
                     { Stats.DefenseBase, 31 },
                     { Stats.AttackRatePvm, 125 },
                     { Stats.DefenseRatePvm, 31 },
+                    { Stats.PoisonDamageMultiplier, 0.03f },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

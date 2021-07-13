@@ -75,6 +75,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
             this.InitializeEffects();
             this.MapSkillsToEffects();
             this.CreateSpecialSummonMonsters();
+            this.FixMagicEffectNumbers();
+        }
+
+        private void FixMagicEffectNumbers()
+        {
+            foreach (var skill in this.GameConfiguration.Skills.Where(s => s.MagicEffectDef is { }))
+            {
+                var effect = skill.MagicEffectDef;
+                if (effect?.Number >= 0)
+                {
+                    effect.Number = skill.Number;
+                }
+            }
         }
 
         private void CreateSpecialSummonMonsters()

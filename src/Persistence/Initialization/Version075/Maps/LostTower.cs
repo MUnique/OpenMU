@@ -834,6 +834,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps
                     { Stats.IceResistance, 4f / 255 },
                     { Stats.WaterResistance, 4f / 255 },
                     { Stats.FireResistance, 6f / 255 },
+                    { Stats.PoisonDamageMultiplier, 0.03f },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

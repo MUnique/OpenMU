@@ -30,18 +30,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         public ShowSkillAnimationPlugIn075(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
-        public void ShowSkillAnimation(IAttacker attacker, IAttackable? target, Skill skill)
+        public void ShowSkillAnimation(IAttacker attacker, IAttackable? target, Skill skill, bool effectApplied)
         {
-            this.ShowSkillAnimation(attacker, target, skill.Number);
+            this.ShowSkillAnimation(attacker, target, skill.Number, effectApplied);
         }
 
         /// <inheritdoc/>
-        public void ShowSkillAnimation(IAttacker attacker, IAttackable? target, short skillNumber)
+        public void ShowSkillAnimation(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied)
         {
             var playerId = attacker.GetId(this.player);
             var targetId = target.GetId(this.player);
             var skillId = (byte)skillNumber;
-            this.player.Connection?.SendSkillAnimation075(skillId, playerId, targetId);
+
+            this.player.Connection?.SendSkillAnimation075(skillId, playerId, targetId, effectApplied);
         }
     }
 }
