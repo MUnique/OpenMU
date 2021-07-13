@@ -47,9 +47,9 @@ namespace MUnique.OpenMU.GameLogic
         public IAttacker Attacker { get; }
 
         /// <inheritdoc />
-        protected override void Dispose(bool dispose)
+        protected override void Dispose(bool disposing)
         {
-            base.Dispose(dispose);
+            base.Dispose(disposing);
             this.damageTimer.Stop();
             this.damageTimer.Dispose();
         }
