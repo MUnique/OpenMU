@@ -1208,18 +1208,19 @@ namespace MUnique.OpenMU.GameLogic
         private void Hit(HitInfo hitInfo, IAttacker attacker, Skill? skill)
         {
             this.Summon?.Item2.RegisterHit(attacker);
+            var healthDamage = hitInfo.HealthDamage;
             int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
             if (oversd < 0)
             {
                 this.Attributes[Stats.CurrentShield] = 0;
-                hitInfo.HealthDamage += (uint)(oversd * (-1));
+                healthDamage += (uint)(oversd * (-1));
             }
             else
             {
                 this.Attributes[Stats.CurrentShield] = oversd;
             }
 
-            this.Attributes[Stats.CurrentHealth] -= hitInfo.HealthDamage;
+            this.Attributes[Stats.CurrentHealth] -= healthDamage;
             this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
             this.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
             (attacker as Player)?.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
