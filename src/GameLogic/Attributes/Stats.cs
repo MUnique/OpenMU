@@ -568,7 +568,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         /// <summary>
         /// Gets the fully recover health after hit chance definition.
         /// </summary>
-        public static AttributeDefinition FullyRecoverHealthAfterHitChance { get; } = new AttributeDefinition(new Guid("3CA72C07-9C2C-4FC5-8BCB-9BD737F83664"), "Chance to fully recover mana when getting hit", "3rd Wing Option");
+        public static AttributeDefinition FullyRecoverHealthAfterHitChance { get; } = new AttributeDefinition(new Guid("3CA72C07-9C2C-4FC5-8BCB-9BD737F83664"), "Chance to fully recover health when getting hit", "3rd Wing Option");
 
         /// <summary>
         /// Gets the health loss after hit definition.
