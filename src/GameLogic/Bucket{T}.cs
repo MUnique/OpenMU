@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator()
         {
-            return new LockedEnumerator<T>(this.locker, this.innerList.GetEnumerator());
+            return new LockingEnumerator<T>(this.locker, this.innerList.GetEnumerator());
         }
 
         /// <inheritdoc/>
@@ -106,12 +106,12 @@ namespace MUnique.OpenMU.GameLogic
             this.locker.Dispose();
         }
 
-        private class LockedEnumerator<TEnumerated> : IEnumerator<TEnumerated>
+        private sealed class LockingEnumerator<TEnumerated> : IEnumerator<TEnumerated>
         {
             private readonly ReaderWriterLockSlim locker;
             private readonly IEnumerator<TEnumerated> enumerator;
 
-            public LockedEnumerator(ReaderWriterLockSlim locker, IEnumerator<TEnumerated> innerEnumerator)
+            public LockingEnumerator(ReaderWriterLockSlim locker, IEnumerator<TEnumerated> innerEnumerator)
             {
                 this.locker = locker;
 
