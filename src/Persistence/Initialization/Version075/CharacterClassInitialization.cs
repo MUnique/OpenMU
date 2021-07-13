@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
     /// <summary>
     /// Initialization of character classes data for Version 0.75.
     /// </summary>
-    internal class CharacterClassInitialization : CharacterClasses.CharacterClassInitialization
+    internal class CharacterClassInitialization : Initialization.CharacterClasses.CharacterClassInitialization
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterClassInitialization"/> class.
