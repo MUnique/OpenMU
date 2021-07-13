@@ -845,7 +845,6 @@ namespace MUnique.OpenMU.GameLogic
                 this.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
                 this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
 
-                // this.ApplyPoisonDamage();
                 this.RegenerateHeroState();
             }
             catch (InvalidOperationException)
@@ -861,35 +860,6 @@ namespace MUnique.OpenMU.GameLogic
                 this.lastRegenerate = DateTime.UtcNow;
             }
         }
-
-        //private void ApplyPoisonDamage()
-        //{
-        //    var attributes = this.Attributes;
-        //    if (attributes is null)
-        //    {
-        //        return;
-        //    }
-
-        //    if (attributes[Stats.IsPoisoned] <= 0)
-        //    {
-        //        return;
-        //    }
-
-        //    var currentHealth = attributes[Stats.CurrentHealth];
-        //    if (currentHealth <= 0)
-        //    {
-        //        return;
-        //    }
-
-        //    var posionDamage = currentHealth * attributes[Stats.PoisonDamageMultiplier];
-        //    if (posionDamage < 1)
-        //    {
-        //        return;
-        //    }
-
-        //    var hitInfo = new HitInfo((uint)posionDamage, 0, DamageAttributes.Poison);
-        //    this.Hit(hitInfo, this, null);
-        //}
 
         /// <summary>
         /// Disconnects the player from the game. Remote connections will be closed and data will be saved.
