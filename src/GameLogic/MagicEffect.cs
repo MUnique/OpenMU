@@ -100,19 +100,21 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        protected override void Dispose(bool dispose)
+        protected override void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
             this.finishTimer.Dispose();
             this.OnEffectTimeOut();
+            this.EffectTimeOut = null;
         }
 
         private void OnEffectTimeOut()
         {
             try
             {
+                this.EffectTimeOut?.Invoke(this, EventArgs.Empty);
                 if (!this.IsDisposed && !this.IsDisposing)
                 {
-                    this.EffectTimeOut?.Invoke(this, EventArgs.Empty);
                     this.Dispose();
                 }
             }
