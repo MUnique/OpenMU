@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         ~Disposable()
         {
-            this.Dispose();
+            this.Dispose(false);
         }
 
         /// <summary>
