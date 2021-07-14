@@ -156,7 +156,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             // byte 13: begin message
             foreach (var keyValuePair in this.messagePrefixes)
             {
-                if (message.StartsWith(keyValuePair.Key))
+                if (message.StartsWith(keyValuePair.Key, StringComparison.InvariantCulture))
                 {
                     return keyValuePair.Value;
                 }

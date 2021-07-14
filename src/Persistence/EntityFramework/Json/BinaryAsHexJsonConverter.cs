@@ -58,7 +58,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
                 return;
             }
 
-            var arrayString = ByteArrayPrefix + BitConverter.ToString(array).Replace("-", string.Empty).ToLowerInvariant();
+            var arrayString = ByteArrayPrefix + BitConverter.ToString(array)
+                .Replace("-", string.Empty, StringComparison.InvariantCulture)
+                .ToLowerInvariant();
             writer.WriteValue(arrayString);
         }
 

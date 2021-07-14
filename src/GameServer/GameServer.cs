@@ -204,7 +204,7 @@ namespace MUnique.OpenMU.GameServer
 
             string messageSend = message;
 
-            if (!messageSend.StartsWith("@"))
+            if (!messageSend.StartsWith("@", StringComparison.InvariantCulture))
             {
                 messageSend = "@" + message;
             }
@@ -224,7 +224,7 @@ namespace MUnique.OpenMU.GameServer
 
             string messageSend = message;
 
-            if (!messageSend.StartsWith("@@"))
+            if (!messageSend.StartsWith("@@", StringComparison.InvariantCulture))
             {
                 messageSend = "@@" + message;
             }

@@ -58,7 +58,17 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
             }
             catch (Exception e)
             {
-                context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("foo", $"{e.GetType()}: {e}", "error", "error", DiagnosticSeverity.Error, true), Location.None, DiagnosticSeverity.Error));
+                context.ReportDiagnostic(
+                    Diagnostic.Create(
+                        new DiagnosticDescriptor(
+                            "foo",
+                            $"{e.GetType()}: {e}",
+                            "error",
+                            "error",
+                            DiagnosticSeverity.Error,
+                            true),
+                        Location.None,
+                        DiagnosticSeverity.Error));
                 Console.WriteLine($"{e.GetType()}: {e}");
                 throw;
             }
@@ -71,24 +81,24 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
         /// <returns><c>true</c> if the given type is a configuration type; otherwise, <c>false</c>.</returns>
         protected static bool IsConfigurationType(Type type)
         {
-            if (type.Namespace != null && type.Namespace.StartsWith(ConfigurationNamespace))
+            if (type.Namespace != null
+                && type.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
             {
                 return true;
             }
 
-            if (type.BaseType != null && type.BaseType.Namespace != null &&
-                type.BaseType.Namespace.StartsWith(ConfigurationNamespace))
+            if (type.BaseType is { Namespace: { } }
+                && type.BaseType.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
             {
                 return true;
             }
 
-            if (type.Name.Contains("Definition"))
+            if (type.Name.Contains("Definition", StringComparison.InvariantCulture))
             {
                 return true;
             }
 
-            if (type.Name == "AttributeRelationship" || type.Name == "PlugInConfiguration" ||
-                type.Name == "ConstValueAttribute")
+            if (type.Name is "AttributeRelationship" or "PlugInConfiguration" or "ConstValueAttribute")
             {
                 return true;
             }
@@ -106,7 +116,9 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
             var result = new StringBuilder();
             foreach (var p in parameters)
             {
-                result.Append(p.ParameterType.GetCSharpFullName()).Append(" ").Append(p.Name);
+                result.Append(p.ParameterType.GetCSharpFullName())
+                    .Append(" ")
+                    .Append(p.Name);
                 if (parameters.Count > p.Position + 1)
                 {
                     result.Append(", ");

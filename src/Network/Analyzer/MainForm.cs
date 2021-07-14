@@ -141,7 +141,9 @@ namespace MUnique.OpenMU.Network.Analyzer
         {
             var result = new StringBuilder();
 
-            filter = filter.Replace("(", string.Empty).Replace(")", string.Empty);
+            filter = filter
+                .Replace("(", string.Empty, StringComparison.InvariantCulture)
+                .Replace(")", string.Empty, StringComparison.InvariantCulture);
 
             var andOperator = string.Empty;
             foreach (var columnFilter in filter.Split("AND"))

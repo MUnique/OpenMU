@@ -45,7 +45,9 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            this.isEditable = typeof(TItem).Namespace?.StartsWith(nameof(MUnique)) ?? false;
+            this.isEditable = typeof(TItem).Namespace
+                ?.StartsWith(nameof(MUnique), StringComparison.InvariantCulture) 
+                              ?? false;
             var isMemberOfAggregate = this.ValueExpression!.IsAccessToMemberOfAggregate();
             this.isAddingSupported = !isMemberOfAggregate;
             this.isCreatingSupported = isMemberOfAggregate;

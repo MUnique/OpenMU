@@ -28,7 +28,10 @@ namespace MUnique.OpenMU.Persistence.Json
         public override bool CanRead => true;
 
         /// <inheritdoc />
-        public override bool CanConvert(Type objectType) => !objectType.IsEnum && !objectType.IsGenericType && (objectType.Namespace?.StartsWith("MUnique.OpenMU.") ?? false);
+        public override bool CanConvert(Type objectType) =>
+            !objectType.IsEnum
+            && !objectType.IsGenericType
+            && (objectType.Namespace?.StartsWith("MUnique.OpenMU.", StringComparison.InvariantCulture) ?? false);
 
         /// <summary>
         /// Resolves the delayed references.

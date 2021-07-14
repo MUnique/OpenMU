@@ -64,12 +64,12 @@ namespace MUnique.OpenMU.SimpleModulusKeyGenerator
         {
             if (fileName.StartsWith("Enc", StringComparison.InvariantCultureIgnoreCase))
             {
-                return fileName.Replace("Enc", "Dec");
+                return fileName.Replace("Enc", "Dec", StringComparison.InvariantCultureIgnoreCase);
             }
 
             if (fileName.StartsWith("Dec", StringComparison.InvariantCultureIgnoreCase))
             {
-                return fileName.Replace("Dec", "Enc");
+                return fileName.Replace("Dec", "Enc", StringComparison.InvariantCultureIgnoreCase);
             }
 
             throw new ArgumentException("File name does not begin with 'Enc' or 'Dec'.", nameof(fileName));

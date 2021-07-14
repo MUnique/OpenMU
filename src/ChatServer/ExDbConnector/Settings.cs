@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ChatServer.ExDbConnector
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
 
@@ -32,7 +33,9 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
             foreach (var line in File.ReadAllLines(file))
             {
                 var elements = line.Split('=');
-                if (elements.Length > 1 && !elements[0].StartsWith("#") && !this.settingsDictionary.ContainsKey(elements[0]))
+                if (elements.Length > 1
+                    && !elements[0].StartsWith("#", StringComparison.InvariantCulture)
+                    && !this.settingsDictionary.ContainsKey(elements[0]))
                 {
                     this.settingsDictionary.Add(elements[0], elements[1]);
                 }

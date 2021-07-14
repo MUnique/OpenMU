@@ -76,22 +76,24 @@ namespace MUnique.OpenMU.Persistence
         /// </returns>
         public static bool IsConfigurationType(this Type type)
         {
-            if (type.Namespace != null && type.Namespace.StartsWith(ConfigurationNamespace))
+            if (type.Namespace != null
+                && type.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
             {
                 return true;
             }
 
-            if (type.BaseType != null && type.BaseType.Namespace != null && type.BaseType.Namespace.StartsWith(ConfigurationNamespace))
+            if (type.BaseType is { Namespace: { } }
+                && type.BaseType.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
             {
                 return true;
             }
 
-            if (type.Name.Contains("Definition"))
+            if (type.Name.Contains("Definition", StringComparison.InvariantCulture))
             {
                 return true;
             }
 
-            if (type.Name == "AttributeRelationship" || type.Name == "PlugInConfiguration" || type.Name == "ConstValueAttribute")
+            if (type.Name is "AttributeRelationship" or "PlugInConfiguration" or "ConstValueAttribute")
             {
                 return true;
             }
