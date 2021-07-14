@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.Tests
         private Player DoTheWalk()
         {
             var packet = new byte[] { 0xC1, 0x08, (byte)PacketType.Walk, 147, 120, 0x44, 0x33, 0x44 };
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var moveHandler = new CharacterWalkHandlerPlugIn();
             moveHandler.HandlePacket(player, packet);
 

@@ -23,6 +23,6 @@ namespace MUnique.OpenMU.Network
         }
 
         /// <inheritdoc />
-        public IPAddress GetIPv4() => this.address;
+        public IPAddress ResolveIPv4() => this.address;
     }
 }

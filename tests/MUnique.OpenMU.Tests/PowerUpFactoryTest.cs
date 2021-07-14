@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void ItemOptions()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var factory = this.GetPowerUpFactory();
             var item = this.GetItemWithOption();
             var result = factory.GetPowerUps(item, player.Attributes!);
@@ -48,7 +48,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void ItemBasePowerUpLevel0()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var factory = this.GetPowerUpFactory();
             var item = this.GetItemWithBasePowerUp();
             var result = factory.GetPowerUps(item, player.Attributes!);
@@ -61,7 +61,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void ItemBasePowerUpLevel3()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var factory = this.GetPowerUpFactory();
             var item = this.GetItemWithBasePowerUp();
             item.Level = 3;
@@ -75,7 +75,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void NoPowerUpsWhenItemBroken()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var factory = this.GetPowerUpFactory();
             var item = this.GetItemWithBasePowerUp();
             item.Durability = 0;
@@ -89,7 +89,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void NoPowerUpsWhenItemUnwearable()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var factory = this.GetPowerUpFactory();
             var item = this.GetItemWithBasePowerUp();
             item.ItemSlot = UnwearableSlot;
@@ -103,7 +103,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void NoPowerUpsInItem()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var factory = this.GetPowerUpFactory();
             var item = this.GetItem();
             var result = factory.GetPowerUps(item, player.Attributes!);

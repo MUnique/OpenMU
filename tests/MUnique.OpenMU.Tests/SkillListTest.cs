@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void LearnedSkill()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             player.SelectedCharacter!.LearnedSkills.Add(this.CreateSkillEntry(LearnedSkillId));
             var skillList = new SkillList(player);
             Assert.That(skillList.ContainsSkill(LearnedSkillId), Is.True);
@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void ItemSkill()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var item = this.CreateItemWithSkill();
             item.Durability = 1;
             player.Inventory!.AddItem(0, item);
@@ -53,7 +53,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void ItemSkillAddedLater()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var skillList = player.SkillList as SkillList;
             player.Inventory!.AddItem(0, this.CreateItemWithSkill());
 
@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void ItemSkillRemoved()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var item = this.CreateItemWithSkill();
             item.Durability = 1;
             player.Inventory!.AddItem(0, item);
@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void NonLearnedSkill()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             Assert.That(player.SkillList!.ContainsSkill(NonLearnedSkillId), Is.False);
         }
 

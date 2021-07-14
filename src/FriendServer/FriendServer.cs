@@ -42,6 +42,9 @@ namespace MUnique.OpenMU.FriendServer
         /// </summary>
         public static int InvisibleServerId { get; } = (int)SpecialServerId.Invisible;
 
+        /// <inheritdoc/>
+        public string ChatServerIp => this.chatServer?.IpAddress ?? string.Empty;
+
         /// <summary>
         /// Gets the online friends dictionary. The key is the name of the character of the corresponding OnlineFriend object.
         /// </summary>
@@ -254,12 +257,6 @@ namespace MUnique.OpenMU.FriendServer
                 this.OnlineFriends.Remove(observer.PlayerName);
                 observer.OnCompleted();
             }
-        }
-
-        /// <inheritdoc/>
-        public string GetChatserverIP()
-        {
-            return this.chatServer?.GetIpAddress() ?? string.Empty;
         }
 
         /// <inheritdoc/>

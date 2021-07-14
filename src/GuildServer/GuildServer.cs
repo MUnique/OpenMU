@@ -332,7 +332,7 @@ namespace MUnique.OpenMU.GuildServer
 
         private GuildContainer CreateGuildContainer(Guild guild, IGuildServerContext databaseContext)
         {
-            var id = (uint)this.idGenerator.GetId();
+            var id = (uint)this.idGenerator.GenerateId();
 
             var guildContainer = new GuildContainer(guild, id, databaseContext);
             this.guildDictionary.Add(id, guildContainer);

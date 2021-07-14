@@ -18,10 +18,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
     public class CreationAutoFields : AutoFields
     {
         /// <inheritdoc />
-        protected override IEnumerable<PropertyInfo> GetProperties()
-        {
-            return base.GetProperties()
-                .Where(p => p.GetCustomAttribute<HiddenAtCreationAttribute>() is null);
-        }
+        protected override IEnumerable<PropertyInfo> Properties =>
+            base.Properties.Where(p => p.GetCustomAttribute<HiddenAtCreationAttribute>() is null);
     }
 }

@@ -23,6 +23,6 @@ namespace MUnique.OpenMU.GameLogic
         /// <returns>
         /// The item drops which are generated when a monster got killed by a player.
         /// </returns>
-        IEnumerable<Item> GetItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney);
+        IEnumerable<Item> GenerateItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney);
     }
 }

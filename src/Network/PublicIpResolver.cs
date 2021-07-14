@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.Network
         /// Gets the public IPv4 address with the help of the following api: https://www.ipify.org/.
         /// </summary>
         /// <returns>The public IPv4 address.</returns>
-        public IPAddress GetIPv4()
+        public IPAddress ResolveIPv4()
         {
             if (this.lastRequest + this.maximumCachedAddressLifetime < DateTime.Now)
             {

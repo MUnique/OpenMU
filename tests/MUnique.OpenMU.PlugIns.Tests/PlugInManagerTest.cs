@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var plugIn = new ExamplePlugIn();
             manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
 
@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
             manager.DeactivatePlugIn<ExamplePlugIn>();
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
 
@@ -83,7 +83,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             manager.DeactivatePlugIn<ExamplePlugIn>();
             manager.DeactivatePlugIn<ExamplePlugIn>();
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
 
@@ -104,7 +104,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             manager.ActivatePlugIn<ExamplePlugIn>();
             manager.ActivatePlugIn<ExamplePlugIn>();
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
 
@@ -127,7 +127,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             manager.ActivatePlugIn<ExamplePlugIn.NestedPlugIn>();
             manager.DeactivatePlugIn<ExamplePlugIn.NestedPlugIn>();
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
 
@@ -150,7 +150,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                 IsActive = active,
             };
             var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
 
@@ -195,7 +195,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
                     }",
             };
             var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
 
@@ -265,7 +265,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             manager.DeactivatePlugIn<ExamplePlugIn>();
             manager.ActivatePlugIn<ExamplePlugIn>();
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
 

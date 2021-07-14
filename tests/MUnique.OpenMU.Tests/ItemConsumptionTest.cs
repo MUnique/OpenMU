@@ -380,7 +380,7 @@ namespace MUnique.OpenMU.Tests
 
         private Player GetPlayer()
         {
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
 
             player.SelectedCharacter!.Attributes.Add(new StatAttribute(Stats.Level, 100));
             player.SelectedCharacter.Attributes.Add(new StatAttribute(Stats.CurrentHealth, 0));

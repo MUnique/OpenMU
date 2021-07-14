@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic
         public static IDropGenerator Instance => instance ??= new NullDropGenerator();
 
         /// <inheritdoc />
-        public IEnumerable<Item> GetItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney)
+        public IEnumerable<Item> GenerateItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney)
         {
             droppedMoney = null;
             return Enumerable.Empty<Item>();

@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.Network
     public class LocalIpResolver : IIpAddressResolver
     {
         /// <inheritdoc/>
-        public IPAddress GetIPv4()
+        public IPAddress ResolveIPv4()
         {
             if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
             {

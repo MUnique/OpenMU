@@ -10,6 +10,12 @@ namespace MUnique.OpenMU.Interfaces
     public interface IChatServer : IManageableServer
     {
         /// <summary>
+        /// Gets the ip address.
+        /// </summary>
+        /// <returns>The ip address.</returns>
+        string IpAddress { get; }
+
+        /// <summary>
         /// Registers the client to the server.
         /// </summary>
         /// <param name="roomId">The room identifier.</param>
@@ -22,11 +28,5 @@ namespace MUnique.OpenMU.Interfaces
         /// </summary>
         /// <returns>The new chat room id.</returns>
         ushort CreateChatRoom();
-
-        /// <summary>
-        /// Gets the ip address.
-        /// </summary>
-        /// <returns>The ip address.</returns>
-        string GetIpAddress();
     }
 }

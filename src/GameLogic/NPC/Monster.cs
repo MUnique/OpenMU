@@ -331,7 +331,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private void DropItem(int exp, Player killer)
         {
-            var generatedItems = this.dropGenerator.GetItemDrops(this.Definition, exp, killer, out var droppedMoney);
+            var generatedItems = this.dropGenerator.GenerateItemDrops(this.Definition, exp, killer, out var droppedMoney);
             if (droppedMoney > 0)
             {
                 this.HandleMoneyDrop(droppedMoney.Value, killer);

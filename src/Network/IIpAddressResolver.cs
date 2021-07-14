@@ -15,6 +15,6 @@ namespace MUnique.OpenMU.Network
         /// Gets the resolved IPv4.
         /// </summary>
         /// <returns>The resolved IPv4.</returns>
-        IPAddress GetIPv4();
+        IPAddress ResolveIPv4();
     }
 }

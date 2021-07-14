@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public IEnumerable<Item> GetItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney)
+        public IEnumerable<Item> GenerateItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney)
         {
             droppedMoney = null;
             var character = player.SelectedCharacter;
@@ -78,7 +78,7 @@ namespace MUnique.OpenMU.GameLogic
                     continue;
                 }
 
-                var item = this.GetItemDropOrMoney(monster, group, gainedExperience, out droppedMoney);
+                var item = this.GenerateItemDropOrMoney(monster, group, gainedExperience, out droppedMoney);
                 if (item != null)
                 {
                     droppedItems ??= new List<Item>(1);
@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="monsterLvl">The monster level.</param>
         /// <param name="socketItems">if set to <c>true</c> [socket items].</param>
         /// <returns>A random item.</returns>
-        protected Item? GetRandomItem(int monsterLvl, bool socketItems)
+        protected Item? GenerateRandomItem(int monsterLvl, bool socketItems)
         {
             var possible = this.GetPossibleList(monsterLvl);
             if (possible is null || !possible.Any())
@@ -146,7 +146,7 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="monsterLvl">The monster level.</param>
         /// <returns>A random excellent item.</returns>
-        protected Item? GetRandomExcellentItem(int monsterLvl)
+        protected Item? GenerateRandomExcellentItem(int monsterLvl)
         {
             if (monsterLvl < 25)
             {
@@ -176,7 +176,7 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets a random ancient item.
         /// </summary>
         /// <returns>A random ancient item.</returns>
-        protected Item GetRandomAncient()
+        protected Item GenerateRandomAncient()
         {
             Item item = new TemporaryItem();
             item.Definition = this.ancientItems.SelectRandom(this.randomizer);
@@ -287,7 +287,7 @@ namespace MUnique.OpenMU.GameLogic
             }
         }
 
-        private Item? GetItemDropOrMoney(MonsterDefinition monster, DropItemGroup selectedGroup, int gainedExperience, out uint? droppedMoney)
+        private Item? GenerateItemDropOrMoney(MonsterDefinition monster, DropItemGroup selectedGroup, int gainedExperience, out uint? droppedMoney)
         {
             droppedMoney = null;
             if (selectedGroup.PossibleItems?.Count > 0)
@@ -306,13 +306,13 @@ namespace MUnique.OpenMU.GameLogic
             switch (selectedGroup.ItemType)
             {
                 case SpecialItemType.Ancient:
-                    return this.GetRandomAncient();
+                    return this.GenerateRandomAncient();
                 case SpecialItemType.Excellent:
-                    return this.GetRandomExcellentItem((int)monster[Stats.Level]);
+                    return this.GenerateRandomExcellentItem((int)monster[Stats.Level]);
                 case SpecialItemType.RandomItem:
-                    return this.GetRandomItem((int)monster[Stats.Level], false);
+                    return this.GenerateRandomItem((int)monster[Stats.Level], false);
                 case SpecialItemType.SocketItem:
-                    return this.GetRandomItem((int)monster[Stats.Level], true);
+                    return this.GenerateRandomItem((int)monster[Stats.Level], true);
                 case SpecialItemType.Money:
                     droppedMoney = (uint)(gainedExperience + BaseMoneyDrop);
                     return null;

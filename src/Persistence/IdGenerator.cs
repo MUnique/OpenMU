@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.Persistence
         public IdGenerator(int firstValue, int maxValue)
         {
             this.maxValue = maxValue;
-            this.currentValue = firstValue - 1; // will be increased by 1 by GetId
+            this.currentValue = firstValue - 1; // will be increased by 1 by GenerateId
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.Persistence
         public enum ReUsePolicy
         {
             /// <summary>
-            /// The given back id is reused on the next call of <see cref="IdGenerator.GetId"/>.
+            /// The given back id is reused on the next call of <see cref="IdGenerator.GenerateId"/>.
             /// </summary>
             ReUseOnNextRetrieve,
 
@@ -59,7 +59,7 @@ namespace MUnique.OpenMU.Persistence
         /// </summary>
         /// <returns>An identifier which is unique within this generator instance.</returns>
         /// <exception cref="InvalidOperationException">Maximum object id exceeded.</exception>
-        public int GetId()
+        public int GenerateId()
         {
             if (this.ReUseSetting == ReUsePolicy.ReUseOnNextRetrieve
                 && this.givenBack.TryDequeue(out int next))

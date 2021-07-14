@@ -116,8 +116,8 @@ namespace MUnique.OpenMU.Tests
         [Test]
         public void TradeItems()
         {
-            var trader1 = TestHelper.GetPlayer();
-            var trader2 = TestHelper.GetPlayer();
+            var trader1 = TestHelper.CreatePlayer();
+            var trader2 = TestHelper.CreatePlayer();
             var tradeRequestAction = new TradeRequestAction();
             var tradeResponseAction = new TradeAcceptAction();
 

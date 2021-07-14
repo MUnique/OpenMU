@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.Tests
         /// Gets the player.
         /// </summary>
         /// <returns>The test player.</returns>
-        public static Player GetPlayer()
+        public static Player CreatePlayer()
         {
             var gameConfig = new Mock<GameConfiguration>();
             gameConfig.SetupAllProperties();
@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.Tests
             var mapInitializer = new MapInitializer(gameConfig.Object, new NullLogger<MapInitializer>());
             var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null));
             mapInitializer.PlugInManager = gameContext.PlugInManager;
-            return GetPlayer(gameContext);
+            return CreatePlayer(gameContext);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace MUnique.OpenMU.Tests
         /// <returns>
         /// The test player.
         /// </returns>
-        public static Player GetPlayer(IGameContext gameContext)
+        public static Player CreatePlayer(IGameContext gameContext)
         {
             var characterMock = new Mock<Character>();
             characterMock.SetupAllProperties();

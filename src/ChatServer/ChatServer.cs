@@ -110,6 +110,12 @@ namespace MUnique.OpenMU.ChatServer
         /// <inheritdoc/>
         public int CurrentConnections => this.connectedClients.Count;
 
+        /// <summary>
+        /// Gets the ip address of the server.
+        /// </summary>
+        /// <returns>The ip address of the server.</returns>
+        public string IpAddress => this.publicIp ??= this.addressResolver.ResolveIPv4().ToString();
+
         /// <inheritdoc/>
         public ChatServerAuthenticationInfo RegisterClient(ushort roomId, string clientName)
         {
@@ -206,15 +212,6 @@ namespace MUnique.OpenMU.ChatServer
 
             this.ServerState = OpenMU.Interfaces.ServerState.Stopped;
             this.logger.LogInformation("Finished shutdown");
-        }
-
-        /// <summary>
-        /// Gets the ip address of the server.
-        /// </summary>
-        /// <returns>The ip address of the server.</returns>
-        public string GetIpAddress()
-        {
-            return this.publicIp ??= this.addressResolver.GetIPv4().ToString();
         }
 
         /// <summary>

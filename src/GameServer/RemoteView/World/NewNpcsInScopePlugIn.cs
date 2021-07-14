@@ -137,7 +137,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 block.Rotation = summon.Rotation.ToPacketByte();
                 block.OwnerCharacterName = summon.SummonedBy?.Name ?? string.Empty;
 
-                var activeEffects = summon.MagicEffectList.GetVisibleEffects();
+                var activeEffects = summon.MagicEffectList.VisibleEffects;
                 block.EffectCount = (byte)activeEffects.Count;
                 for (int e = block.EffectCount - 1; e >= 0; e--)
                 {

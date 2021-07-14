@@ -159,20 +159,20 @@ namespace MUnique.OpenMU.GameLogic
             switch (locateable)
             {
                 case DroppedItem droppedItem:
-                    droppedItem.Id = (ushort)this.dropIdGenerator.GetId();
+                    droppedItem.Id = (ushort)this.dropIdGenerator.GenerateId();
                     break;
                 case DroppedMoney droppedMoney:
-                    droppedMoney.Id = (ushort)this.dropIdGenerator.GetId();
+                    droppedMoney.Id = (ushort)this.dropIdGenerator.GenerateId();
                     break;
                 case Player player:
-                    player.Id = (ushort)this.objectIdGenerator.GetId();
+                    player.Id = (ushort)this.objectIdGenerator.GenerateId();
                     Interlocked.Increment(ref this.playerCount);
                     break;
                 case NonPlayerCharacter npc:
-                    npc.Id = (ushort)this.objectIdGenerator.GetId();
+                    npc.Id = (ushort)this.objectIdGenerator.GenerateId();
                     break;
                 case ISupportIdUpdate idUpdate:
-                    idUpdate.Id = (ushort)this.objectIdGenerator.GetId();
+                    idUpdate.Id = (ushort)this.objectIdGenerator.GenerateId();
                     break;
                 default:
                     throw new ArgumentException($"Adding an object of type {locateable.GetType()} is not supported.");

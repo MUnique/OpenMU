@@ -68,11 +68,48 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         [Inject]
         public IChangeNotificationService NotificationService { get; set; } = null!;
 
+        /// <summary>
+        /// Gets the properties which should be shown in this component.
+        /// </summary>
+        /// <returns>The properties which should be shown in this component.</returns>
+        protected virtual IEnumerable<PropertyInfo> Properties
+        {
+            get
+            {
+                if (this.Context?.Model is null)
+                {
+                    Log.Error(this.Context is null ? "Context is null" : "Model is null");
+                    return Enumerable.Empty<PropertyInfo>();
+                }
+
+                try
+                {
+                    return this.Context.Model.GetType()
+                        .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+                        .Where(p => p.GetCustomAttribute<TransientAttribute>() is null)
+                        .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true)
+                        .Where(p => !p.Name.StartsWith("Raw", StringComparison.InvariantCulture))
+                        .Where(p => !p.Name.StartsWith("Joined", StringComparison.InvariantCulture))
+                        .Where(p => !p.GetIndexParameters().Any())
+                        .OrderByDescending(p => p.PropertyType == typeof(string))
+                        .ThenByDescending(p => p.PropertyType.IsValueType)
+                        .ThenByDescending(p => !p.PropertyType.IsGenericType)
+                        .ToList();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Error during determining properties of type {this.Context.Model.GetType()}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
+                }
+
+                return Enumerable.Empty<PropertyInfo>();
+            }
+        }
+
         /// <inheritdoc />
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             int i = 0;
-            foreach (var propertyInfo in this.GetProperties())
+            foreach (var propertyInfo in this.Properties)
             {
                 IComponentBuilder? componentBuilder = null;
                 try
@@ -88,39 +125,6 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
                     Log.Error($"Error building component for property {this.Context.Model.GetType().Name}.{propertyInfo.Name} with component builder {componentBuilder}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets the properties which should be shown in this component.
-        /// </summary>
-        /// <returns>The properties which should be shown in this component.</returns>
-        protected virtual IEnumerable<PropertyInfo> GetProperties()
-        {
-            if (this.Context?.Model is null)
-            {
-                Log.Error(this.Context is null ? "Context is null" : "Model is null");
-                return Enumerable.Empty<PropertyInfo>();
-            }
-
-            try
-            {
-                return this.Context.Model.GetType()
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
-                    .Where(p => p.GetCustomAttribute<TransientAttribute>() is null)
-                    .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true)
-                    .Where(p => !p.Name.StartsWith("Raw") && !p.Name.StartsWith("Joined"))
-                    .Where(p => !p.GetIndexParameters().Any())
-                    .OrderByDescending(p => p.PropertyType == typeof(string))
-                    .ThenByDescending(p => p.PropertyType.IsValueType)
-                    .ThenByDescending(p => !p.PropertyType.IsGenericType)
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Error during determining properties of type {this.Context.Model.GetType()}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
-            }
-
-            return Enumerable.Empty<PropertyInfo>();
         }
     }
 }

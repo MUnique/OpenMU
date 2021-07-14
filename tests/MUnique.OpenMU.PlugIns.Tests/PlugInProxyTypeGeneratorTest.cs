@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var generator = new PlugInProxyTypeGenerator();
             var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
             var firstMock = new Mock<IExamplePlugIn>();
@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var generator = new PlugInProxyTypeGenerator();
             var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
             var firstMock = new Mock<IExamplePlugIn>();
@@ -104,7 +104,7 @@ namespace MUnique.OpenMU.PlugIns.Tests
             var generator = new PlugInProxyTypeGenerator();
             var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
 
-            var player = TestHelper.GetPlayer();
+            var player = TestHelper.CreatePlayer();
             var command = "test";
             var args = new MyEventArgs();
             var firstMock = new Mock<IExamplePlugIn>();

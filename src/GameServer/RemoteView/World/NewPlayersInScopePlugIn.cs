@@ -113,7 +113,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                 playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
                 playerBlock.HeroState = selectedCharacter.State.Convert();
 
-                var activeEffects = newPlayer.MagicEffectList.GetVisibleEffects();
+                var activeEffects = newPlayer.MagicEffectList.VisibleEffects;
                 playerBlock.EffectCount = (byte)activeEffects.Count;
                 for (int e = playerBlock.EffectCount - 1; e >= 0; e--)
                 {

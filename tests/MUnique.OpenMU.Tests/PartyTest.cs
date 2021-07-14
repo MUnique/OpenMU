@@ -180,7 +180,7 @@ namespace MUnique.OpenMU.Tests
 
         private Player CreatePartyMember()
         {
-            var result = TestHelper.GetPlayer(this.GetGameContext());
+            var result = TestHelper.CreatePlayer(this.GetGameContext());
             result.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
             return result;
         }

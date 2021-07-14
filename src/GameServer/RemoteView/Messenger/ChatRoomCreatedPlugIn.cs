@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
         /// <inheritdoc/>
         public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success)
         {
-            var chatServerIp = this.player.GameServerContext.FriendServer.GetChatserverIP();
+            var chatServerIp = this.player.GameServerContext.FriendServer.ChatServerIp;
             this.player.Connection?.SendChatRoomConnectionInfo(chatServerIp, authenticationInfo.RoomId, uint.Parse(authenticationInfo.AuthenticationToken), friendName, success);
         }
     }

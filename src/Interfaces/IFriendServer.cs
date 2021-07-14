@@ -31,6 +31,12 @@ namespace MUnique.OpenMU.Interfaces
     public interface IFriendServer
     {
         /// <summary>
+        /// Gets the chat server ip.
+        /// </summary>
+        /// <returns>The chat server ip.</returns>
+        string ChatServerIp { get; }
+
+        /// <summary>
         /// Forwards the letter.
         /// </summary>
         /// <param name="letter">The letter.</param>
@@ -66,12 +72,6 @@ namespace MUnique.OpenMU.Interfaces
         /// <param name="characterName">Name of the character.</param>
         /// <param name="serverId">The server identifier.</param>
         void SetOnlineState(Guid characterId, string characterName, int serverId);
-
-        /// <summary>
-        /// Gets the chat server ip.
-        /// </summary>
-        /// <returns>The chat server ip.</returns>
-        string GetChatserverIP();
 
         /// <summary>
         /// Sends a friend request to the friend, and adds a new friend view item to the players friend list.

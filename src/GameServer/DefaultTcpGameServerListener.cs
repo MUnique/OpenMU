@@ -78,7 +78,7 @@ namespace MUnique.OpenMU.GameServer
                 this.logger.LogWarning("GameServer endpoint of port {0} has registered an alternative public port of {1}.", this.endPoint.NetworkPort, port);
             }
 
-            this.stateObserver.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.GetIPv4(), port));
+            this.stateObserver.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.ResolveIPv4(), port));
             Task.Run(this.BeginAccept);
             this.logger.LogInformation("Server listener started.");
         }
