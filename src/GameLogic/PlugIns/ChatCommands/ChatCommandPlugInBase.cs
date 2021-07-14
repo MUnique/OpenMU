@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// </summary>
     /// <typeparam name="T">The type of arguments base.</typeparam>
     public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
-        where T : ArgumentsBase
+        where T : ArgumentsBase, new()
     {
         /// <inheritdoc/>
         public abstract string Key { get; }

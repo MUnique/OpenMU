@@ -25,9 +25,10 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <typeparam name="T">The type.</typeparam>
         /// <returns>Returns the initialized type.</returns>
         public static T ParseArguments<T>(this string command)
+            where T : new()
         {
-            var instance = (T)Activator.CreateInstance(typeof(T))!;
-            var properties = instance.GetType().GetProperties()
+            var instance = new T();
+            var properties = typeof(T).GetProperties()
                 .Where(property => property.SetMethod is { })
                 .ToList();
             var arguments = command.Split(' ').Where(x => !x.Contains("/")).ToList();
