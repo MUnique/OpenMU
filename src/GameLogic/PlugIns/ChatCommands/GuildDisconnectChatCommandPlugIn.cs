@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
 {
-    using System;
     using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
