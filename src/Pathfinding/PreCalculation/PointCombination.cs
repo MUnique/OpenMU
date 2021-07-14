@@ -45,16 +45,16 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
             return base.Equals(obj);
         }
 
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(this.Start, this.End);
-        }
-
         /// <inheritdoc/>
         public bool Equals(PointCombination other)
         {
             return other.Start == this.Start && other.End == this.End;
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.Start, this.End);
         }
     }
 }

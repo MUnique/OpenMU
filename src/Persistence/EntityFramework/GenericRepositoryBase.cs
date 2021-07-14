@@ -154,6 +154,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <summary>
+        /// Loads the dependent data of the objects from the corresponding repositories.
+        /// </summary>
+        /// <param name="loadedObjects">The loaded objects.</param>
+        /// <param name="currentContext">The current context with which the objects got loaded. It is necessary to retrieve the foreign key ids.</param>
+        protected virtual void LoadDependentData(IEnumerable loadedObjects, DbContext currentContext)
+        {
+            foreach (var obj in loadedObjects)
+            {
+                this.LoadDependentData(obj, currentContext);
+            }
+        }
+
+        /// <summary>
         /// Loads the navigation collection.
         /// </summary>
         /// <param name="entityEntry">The entity entry.</param>
@@ -258,19 +271,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 {
                     this.logger.LogError($"Repository not found for navigation target type {navigation.TargetEntityType}.");
                 }
-            }
-        }
-
-        /// <summary>
-        /// Loads the dependent data of the objects from the corresponding repositories.
-        /// </summary>
-        /// <param name="loadedObjects">The loaded objects.</param>
-        /// <param name="currentContext">The current context with which the objects got loaded. It is necessary to retrieve the foreign key ids.</param>
-        protected virtual void LoadDependentData(IEnumerable loadedObjects, DbContext currentContext)
-        {
-            foreach (var obj in loadedObjects)
-            {
-                this.LoadDependentData(obj, currentContext);
             }
         }
 

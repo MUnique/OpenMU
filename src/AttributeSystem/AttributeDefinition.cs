@@ -89,12 +89,6 @@ namespace MUnique.OpenMU.AttributeSystem
             return !(lhs == rhs);
         }
 
-        /// <inheritdoc />
-        public bool Equals(AttributeDefinition? other)
-        {
-            return this.Id == other?.Id;
-        }
-
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
@@ -104,6 +98,12 @@ namespace MUnique.OpenMU.AttributeSystem
         public override string? ToString()
         {
             return this.Designation;
+        }
+
+        /// <inheritdoc />
+        public bool Equals(AttributeDefinition? other)
+        {
+            return this.Id == other?.Id;
         }
 
         /// <summary>

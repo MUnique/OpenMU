@@ -50,16 +50,16 @@ namespace MUnique.OpenMU.Pathfinding
             return base.Equals(obj);
         }
 
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(this.PreviousPoint, this.ThisPoint);
-        }
-
         /// <inheritdoc/>
         public bool Equals(PathResultNode other)
         {
             return this.ThisPoint == other.ThisPoint && this.PreviousPoint == other.PreviousPoint;
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.PreviousPoint, this.ThisPoint);
         }
     }
 }

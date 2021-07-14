@@ -240,25 +240,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
             return wing;
         }
 
-        private IncreasableItemOption CreateOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, float valueIncrementPerLevel)
-        {
-            var itemOption = this.Context.CreateNew<IncreasableItemOption>();
-            itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
-            itemOption.Number = number;
-
-            itemOption.PowerUpDefinition = this.CreatePowerUpDefinition(attributeDefinition, value, aggregateType);
-
-            for (int level = 1; level <= MaximumOptionLevel; level++)
-            {
-                var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
-                optionOfLevel.Level = level;
-                optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(itemOption.PowerUpDefinition.TargetAttribute!, level * valueIncrementPerLevel, aggregateType);
-                itemOption.LevelDependentOptions.Add(optionOfLevel);
-            }
-
-            return itemOption;
-        }
-
         private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
         {
             var wing = this.Context.CreateNew<ItemDefinition>();
@@ -298,6 +279,25 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
             wing.BasePowerUpAttributes.Add(canFlyPowerUp);
 
             return wing;
+        }
+
+        private IncreasableItemOption CreateOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, float valueIncrementPerLevel)
+        {
+            var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+            itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
+            itemOption.Number = number;
+
+            itemOption.PowerUpDefinition = this.CreatePowerUpDefinition(attributeDefinition, value, aggregateType);
+
+            for (int level = 1; level <= MaximumOptionLevel; level++)
+            {
+                var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
+                optionOfLevel.Level = level;
+                optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(itemOption.PowerUpDefinition.TargetAttribute!, level * valueIncrementPerLevel, aggregateType);
+                itemOption.LevelDependentOptions.Add(optionOfLevel);
+            }
+
+            return itemOption;
         }
 
         private void CreateDamageIncreaseBonusPerLevel()

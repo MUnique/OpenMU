@@ -83,6 +83,26 @@ namespace MUnique.OpenMU.PlugIns
         }
 
         /// <summary>
+        /// Discovers and registers plug ins of the specified assembly.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        public void DiscoverAndRegisterPlugIns(Assembly assembly)
+        {
+            var plugIns = this.DiscoverNewPlugIns(this.DiscoverPlugIns(assembly));
+            this.RegisterPlugIns(plugIns);
+        }
+
+        /// <summary>
+        /// Discovers the and register plug ins of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the plugins which should be discovered.</typeparam>
+        public void DiscoverAndRegisterPlugInsOf<T>()
+        {
+            var plugIns = this.DiscoverAllPlugIns().Where(type => typeof(T).IsAssignableFrom(type));
+            this.RegisterPlugIns(plugIns);
+        }
+
+        /// <summary>
         /// Gets the known plug ins of the given interface type.
         /// </summary>
         /// <typeparam name="T">The plugin interface type. Type parameter of a <see cref="CustomPlugInContainerBase{TPlugIn}"/>.</typeparam>
@@ -110,26 +130,6 @@ namespace MUnique.OpenMU.PlugIns
             }
 
             return Enumerable.Empty<TPlugIn>();
-        }
-
-        /// <summary>
-        /// Discovers and registers plug ins of the specified assembly.
-        /// </summary>
-        /// <param name="assembly">The assembly.</param>
-        public void DiscoverAndRegisterPlugIns(Assembly assembly)
-        {
-            var plugIns = this.DiscoverNewPlugIns(this.DiscoverPlugIns(assembly));
-            this.RegisterPlugIns(plugIns);
-        }
-
-        /// <summary>
-        /// Discovers the and register plug ins of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of the plugins which should be discovered.</typeparam>
-        public void DiscoverAndRegisterPlugInsOf<T>()
-        {
-            var plugIns = this.DiscoverAllPlugIns().Where(type => typeof(T).IsAssignableFrom(type));
-            this.RegisterPlugIns(plugIns);
         }
 
         /// <summary>
