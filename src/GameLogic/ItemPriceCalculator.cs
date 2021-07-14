@@ -27,6 +27,21 @@ namespace MUnique.OpenMU.GameLogic
         private const float DestroyedPetPenalty = 2.0f;
         private const float DestroyedItemPenalty = 1.4f;
 
+        private static readonly Dictionary<byte, int> DropLevelIncreaseByLevel = new ()
+        {
+            { 5, 4 },
+            { 6, 10 },
+            { 7, 25 },
+            { 8, 45 },
+            { 9, 65 },
+            { 10, 95 },
+            { 11, 135 },
+            { 12, 185 },
+            { 13, 245 },
+            { 14, 305 },
+            { 15, 365 },
+        };
+
         private static readonly HashSet<short> WingIds = new HashSet<short>
         {
             0, 1, 2, 3, 4, 5, 6,
@@ -362,22 +377,9 @@ namespace MUnique.OpenMU.GameLogic
             }
             else
             {
-                switch (item.Level)
+                if (DropLevelIncreaseByLevel.TryGetValue(item.Level, out var dropLevelIncrease))
                 {
-                    case 5: dropLevel += 4; break;
-                    case 6: dropLevel += 10; break;
-                    case 7: dropLevel += 25; break;
-                    case 8: dropLevel += 45; break;
-                    case 9: dropLevel += 65; break;
-                    case 10: dropLevel += 95; break;
-                    case 11: dropLevel += 135; break;
-                    case 12: dropLevel += 185; break;
-                    case 13: dropLevel += 245; break;
-                    case 14: dropLevel += 305; break;
-                    case 15: dropLevel += 365; break;
-                    default:
-                        // other levels don't add value.
-                        break;
+                    dropLevel += dropLevelIncrease;
                 }
 
                 // Wings
