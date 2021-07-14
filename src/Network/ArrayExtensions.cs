@@ -222,7 +222,7 @@ namespace MUnique.OpenMU.Network
                     packet[2] = (byte)(size & 0x00FF);
                     break;
                 default:
-                    throw new ArgumentException($"Unknown packet type {packet[0]:X}");
+                    throw new ArgumentException($"Unknown packet type {packet[0]:X}", nameof(packet));
             }
         }
     }

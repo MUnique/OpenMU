@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
             if (arguments.Count < requiredArgumentCount)
             {
-                throw new ArgumentException($"The command needs {requiredArgumentCount} arguments and was given {arguments.Count}.");
+                throw new ArgumentException($"The command needs {requiredArgumentCount} arguments and was given {arguments.Count}.", nameof(command));
             }
 
             for (var i = 0; i < Math.Min(arguments.Count, properties.Count); i++)

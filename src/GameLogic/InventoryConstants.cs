@@ -161,7 +161,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             if (player.SelectedCharacter is null)
             {
-                throw new ArgumentException("Player has no selected player.");
+                throw new ArgumentException("Player has no selected character.", nameof(player));
             }
 
             var size = EquippableSlotsCount +

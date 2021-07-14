@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
             this.parentAttribute = attributeHolder.GetComposableAttribute(targetAttribute);
             if (this.parentAttribute is null)
             {
-                throw new ArgumentException($"targetAttribute [{targetAttribute}] is not composable");
+                throw new ArgumentException($"Target attribute [{targetAttribute}] is not composable", nameof(targetAttribute));
             }
 
             this.element = element;
