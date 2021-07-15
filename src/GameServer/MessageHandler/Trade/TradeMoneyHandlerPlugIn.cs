@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     [Guid("3c18f0ca-4ad8-4e07-a111-0acbe81256ca")]
     internal class TradeMoneyHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly TradeMoneyAction tradeAction = new TradeMoneyAction();
+        private readonly TradeMoneyAction tradeAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

@@ -15,9 +15,9 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class MagicEffectsList
     {
-        private readonly BitArray contains = new BitArray(0x100);
+        private readonly BitArray contains = new (0x100);
         private readonly IAttackable owner;
-        private readonly object addLock = new object();
+        private readonly object addLock = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MagicEffectsList"/> class.

@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic
 
         private static readonly IRandomizer Randomizer = new SimpleRandomizer();
 
-        private static Random RandomInstance => randomInstance ??= new ();
+        private static Random RandomInstance => randomInstance ??= new Random();
 
         /// <summary>
         /// Gets the default Randomizer which is implementing the interface <see cref="IRandomizer"/>.

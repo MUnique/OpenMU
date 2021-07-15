@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <summary>
         /// Since packet handler plugins are not holding any player state, they can be kept as singleton instances to save some memory.
         /// </summary>
-        private static readonly ConcurrentDictionary<Type, THandler> HandlerCache = new ConcurrentDictionary<Type, THandler>();
+        private static readonly ConcurrentDictionary<Type, THandler> HandlerCache = new ();
 
         private readonly IClientVersionProvider clientVersionProvider;
 

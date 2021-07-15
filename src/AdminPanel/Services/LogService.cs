@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
         /// <summary>
         /// Gets the captured entries.
         /// </summary>
-        public LinkedList<LogEventData> Entries { get; } = new LinkedList<LogEventData>();
+        public LinkedList<LogEventData> Entries { get; } = new ();
 
         /// <summary>
         /// Gets or sets an event callback which occurs when the connection state to the hub changed.

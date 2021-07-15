@@ -24,9 +24,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [MaximumClient(0, 89, ClientLanguage.Invariant)]
     internal class WarpGateHandler075PlugIn : IPacketHandlerPlugIn
     {
-        private readonly WarpGateAction warpAction = new WarpGateAction();
+        private readonly WarpGateAction warpAction = new ();
 
-        private readonly WizardTeleportAction teleportAction = new WizardTeleportAction();
+        private readonly WizardTeleportAction teleportAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

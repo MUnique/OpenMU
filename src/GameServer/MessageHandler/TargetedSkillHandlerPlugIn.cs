@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [MinimumClient(3, 0, ClientLanguage.Invariant)]
     internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly TargetedSkillAction attackAction = new TargetedSkillAction();
+        private readonly TargetedSkillAction attackAction = new ();
 
         /// <inheritdoc/>
         public virtual bool IsEncryptionExpected => true;

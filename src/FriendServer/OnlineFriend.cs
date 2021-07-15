@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.FriendServer
         /// <summary>
         /// The synchronize object which is used for locks.
         /// </summary>
-        private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim readerWriterLock = new ();
 
         /// <summary>
         /// This are all subscriptions, to which this player subscribed.

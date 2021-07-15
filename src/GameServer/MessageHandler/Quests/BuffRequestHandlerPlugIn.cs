@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
     public class BuffRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly ElfSoldierBuffRequestAction buffRequestAction = new ElfSoldierBuffRequestAction();
+        private readonly ElfSoldierBuffRequestAction buffRequestAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     /// </summary>
     public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     {
-        private readonly object moveLock = new object();
+        private readonly object moveLock = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoccerBall"/> class.

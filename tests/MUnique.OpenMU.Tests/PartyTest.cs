@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Tests
     [TestFixture]
     public class PartyTest
     {
-        private readonly PartyKickAction kickAction = new();
+        private readonly PartyKickAction kickAction = new ();
 
         /// <summary>
         /// Tests if an added party member gets added to the party list.

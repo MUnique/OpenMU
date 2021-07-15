@@ -16,12 +16,12 @@ namespace MUnique.OpenMU.GameLogic
         /// <summary>
         /// The lock object for state transitions.
         /// </summary>
-        private readonly object lockObject = new object();
+        private readonly object lockObject = new ();
 
         /// <summary>
         /// A cancel event args object, which is getting reused.
         /// </summary>
-        private readonly StateChangeEventArgs cachedCancelEventArgs = new StateChangeEventArgs();
+        private readonly StateChangeEventArgs cachedCancelEventArgs = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StateMachine"/> class.

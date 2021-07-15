@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
     /// </summary>
     public class BuyRequestAction
     {
-        private readonly CloseStoreAction closeStoreAction = new CloseStoreAction();
+        private readonly CloseStoreAction closeStoreAction = new ();
 
         /// <summary>
         /// Buys the item from another player shop.

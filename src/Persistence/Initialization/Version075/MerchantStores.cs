@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreatePotionGirlItemStorage()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreatePotion(0, 0, 1, 0),     // Apple +0 x1
                 this.ItemHelper.CreatePotion(8, 0, 3, 0),    // Apple +0 x3
@@ -58,7 +58,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreateWanderingMerchant()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreateSetItem(0, 5, ItemGroups.Helm, null, 0, 1, true),     // Leather Helm     +0+4+L
                 this.ItemHelper.CreateSetItem(16, 5, ItemGroups.Armor, null, 0, 1, true),    // Leather Armor    +0+4+L
@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreateHanzoTheBlacksmith()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreateShield(0, 0, false, null, 0, 1, true),  // Small Shield     +0+4+L
                 this.ItemHelper.CreateShield(2, 4, true, null, 1, 1, true),   // Buckler          +1+4+L+S
@@ -142,7 +142,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreatePasiTheMageStore()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreateScroll(0, 3),   // Scroll of Fire Ball
                 this.ItemHelper.CreateScroll(1, 10),  // Scroll of Power Wave
@@ -185,7 +185,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreateElfLalaStore()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreatePotion(0, 0, 1, 0),     // Apple +0 x1
                 this.ItemHelper.CreatePotion(8, 0, 3, 0),     // Apple +0 x3
@@ -255,7 +255,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreateIzabelTheWizardStore()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreatePotion(0, 0, 1, 0),     // Apple +0 x1
                 this.ItemHelper.CreatePotion(8, 0, 3, 0),     // Apple +0 x3
@@ -306,7 +306,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreateEoTheCraftsmanStore()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreateSetItem(0, 13, ItemGroups.Helm, null, 3, 1, true), // Spirit Helm +3+Luck+4
                 this.ItemHelper.CreateSetItem(2, 13, ItemGroups.Armor, null, 3, 1, true), // Spirit Armor +3+Luck+4
@@ -344,7 +344,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreateZiennaStore()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreateSetItem(0, 1, ItemGroups.Helm, null, 3, 1, true), // Dragon Helm +3+Luck+4
                 this.ItemHelper.CreateSetItem(2, 1, ItemGroups.Armor, null, 3, 1, true), // Dragon Armor +3+Luck+4
@@ -378,7 +378,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreateLumenTheBarmaidStore()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreatePotion(0, 9, 1, 0), // Ale
                 this.ItemHelper.CreateItem(1, 10, 14, 1, 0), // Town Portal Scroll
@@ -393,7 +393,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
         /// <returns>The created store.</returns>
         protected virtual ItemStorage CreateCarenTheBarmaidStore()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreatePotion(0, 9, 1, 0), // Ale
                 this.ItemHelper.CreateItem(1, 10, 14, 1, 0), // Town Portal Scroll

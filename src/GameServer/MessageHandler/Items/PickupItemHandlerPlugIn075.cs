@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     [MinimumClient(0, 75, ClientLanguage.Invariant)]
     internal class PickupItemHandlerPlugIn075 : IPacketHandlerPlugIn
     {
-        private readonly PickupItemAction pickupAction = new PickupItemAction();
+        private readonly PickupItemAction pickupAction = new ();
 
         /// <inheritdoc />
         public bool IsEncryptionExpected => false;

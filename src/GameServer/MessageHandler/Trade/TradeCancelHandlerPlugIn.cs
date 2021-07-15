@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade
     [Guid("13c7ba03-0ec2-4f41-bc0a-30fb9a035240")]
     internal class TradeCancelHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly TradeCancelAction cancelHandler = new TradeCancelAction();
+        private readonly TradeCancelAction cancelHandler = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

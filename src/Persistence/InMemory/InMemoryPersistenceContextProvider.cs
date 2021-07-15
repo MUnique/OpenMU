@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.Persistence.InMemory
     /// </summary>
     public class InMemoryPersistenceContextProvider : IPersistenceContextProvider
     {
-        private readonly InMemoryRepositoryManager repositoryManager = new InMemoryRepositoryManager();
+        private readonly InMemoryRepositoryManager repositoryManager = new ();
 
         /// <inheritdoc/>
         public IContext CreateNewContext()

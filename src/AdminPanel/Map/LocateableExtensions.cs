@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.AdminPanel.Map
         /// <returns>The created map object.</returns>
         public static MapObject CreateMapObject(this ILocateable locateable)
         {
-            return new MapObject
+            return new ()
             {
                 Direction = (locateable as IRotatable)?.Rotation ?? default,
                 Id = locateable.Id,

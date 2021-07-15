@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
     public class QuestSelectRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly QuestSelectAction questSelectAction = new QuestSelectAction();
+        private readonly QuestSelectAction questSelectAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

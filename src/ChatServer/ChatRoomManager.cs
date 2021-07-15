@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         private readonly IDictionary<ushort, ChatRoom> rooms = new ConcurrentDictionary<ushort, ChatRoom>();
 
-        private readonly ConcurrentBag<ushort> freeRoomIds = new ConcurrentBag<ushort>();
+        private readonly ConcurrentBag<ushort> freeRoomIds = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatRoomManager" /> class.

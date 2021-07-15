@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.ConnectServer
 
         private readonly ILogger<Client> logger;
 
-        private readonly object disposeLock = new object();
+        private readonly object disposeLock = new ();
         private readonly byte[] receiveBuffer;
 
         private readonly Timer onlineTimer;

@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic
     {
         private readonly List<T> innerList;
 
-        private readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim locker = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bucket{T}"/> class.

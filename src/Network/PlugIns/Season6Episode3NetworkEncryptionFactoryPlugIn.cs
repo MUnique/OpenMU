@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Network.PlugIns
     public class Season6Episode3NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
     {
         /// <inheritdoc />
-        public ClientVersion Key { get; } = new ClientVersion(6, 3, ClientLanguage.English);
+        public ClientVersion Key { get; } = new (6, 3, ClientLanguage.English);
 
         /// <inheritdoc />
         public IPipelinedEncryptor CreateEncryptor(PipeWriter target, DataDirection direction)

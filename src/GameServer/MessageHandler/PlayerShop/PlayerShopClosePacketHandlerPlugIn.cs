@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
     [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
     internal class PlayerShopClosePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly CloseStoreAction closeStoreAction = new CloseStoreAction();
+        private readonly CloseStoreAction closeStoreAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => true;

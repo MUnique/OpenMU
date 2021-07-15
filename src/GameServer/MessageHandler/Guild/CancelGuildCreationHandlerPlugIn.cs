@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
     [Guid("CDB87F7F-24FC-42E1-B375-9EAAEAAC0F8C")]
     internal class CancelGuildCreationHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly GuildMasterAnswerAction answerAction = new GuildMasterAnswerAction();
+        private readonly GuildMasterAnswerAction answerAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

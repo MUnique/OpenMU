@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
     [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
     internal class CharacterKeyConfigurationPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly SaveKeyConfigurationAction saveKeyConfigurationAction = new SaveKeyConfigurationAction();
+        private readonly SaveKeyConfigurationAction saveKeyConfigurationAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

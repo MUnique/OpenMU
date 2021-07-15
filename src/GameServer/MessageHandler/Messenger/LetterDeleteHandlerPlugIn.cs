@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
     [Guid("3334483b-2de2-47ff-8d74-7407d3ddf15f")]
     internal class LetterDeleteHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly LetterDeleteAction deleteAction = new LetterDeleteAction();
+        private readonly LetterDeleteAction deleteAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

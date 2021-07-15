@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Vault
     [BelongsToGroup(VaultLockGroupPlugIn.GroupKey)]
     internal class SetVaultPinPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly SetVaultPinAction setVaultPinAction = new SetVaultPinAction();
+        private readonly SetVaultPinAction setVaultPinAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

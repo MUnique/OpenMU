@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
     [Guid("171b8f75-3927-4325-b694-54130365e4a2")]
     internal class FriendAddResponseHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly AddResponseAction responseAction = new AddResponseAction();
+        private readonly AddResponseAction responseAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.PlugIns
         /// <summary>
         /// Gets the reader writer lock which is used to add and remove plugins.
         /// </summary>
-        protected ReaderWriterLockSlim LockSlim { get; } = new ReaderWriterLockSlim();
+        protected ReaderWriterLockSlim LockSlim { get; } = new ();
 
         /// <summary>
         /// Gets the currently active plug ins.

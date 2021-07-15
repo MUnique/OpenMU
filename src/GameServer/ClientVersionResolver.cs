@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameServer
         /// <summary>
         /// Gets or sets the default version.
         /// </summary>
-        public static ClientVersion DefaultVersion { get; set; } = new ClientVersion(6, 3, ClientLanguage.English);
+        public static ClientVersion DefaultVersion { get; set; } = new (6, 3, ClientLanguage.English);
 
         /// <summary>
         /// Registers the specified version bytes.

@@ -361,7 +361,7 @@ namespace MUnique.OpenMU.Tests
             }
         }
 
-        private AttributeSystem GetAttributeSystem() => new AttributeSystem(Enumerable.Empty<IAttribute>(), Enumerable.Empty<IAttribute>(), Enumerable.Empty<AttributeRelationship>());
+        private AttributeSystem GetAttributeSystem() => new (Enumerable.Empty<IAttribute>(), Enumerable.Empty<IAttribute>(), Enumerable.Empty<AttributeRelationship>());
 
         private class TestPowerUpDefinitionValue : PowerUpDefinitionValue
         {

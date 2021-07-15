@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Party
     [Guid("759d5b1a-a2f9-4de8-a03e-023a4810111d")]
     internal class PartyRequestHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly PartyRequestAction action = new PartyRequestAction();
+        private readonly PartyRequestAction action = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

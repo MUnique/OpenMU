@@ -32,7 +32,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
         /// <summary>
         /// Gets the version for which this plugin is available.
         /// </summary>
-        public static ClientVersion Version { get; } = new ClientVersion(byte.MaxValue, byte.MaxValue, ClientLanguage.Invariant);
+        public static ClientVersion Version { get; } = new (byte.MaxValue, byte.MaxValue, ClientLanguage.Invariant);
 
         /// <inheritdoc />
         public ClientVersion Key => Version;

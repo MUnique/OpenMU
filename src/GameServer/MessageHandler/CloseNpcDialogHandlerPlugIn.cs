@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [Guid("ecb920e3-eca7-4f40-a453-bdee67e1dabf")]
     internal class CloseNpcDialogHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly CloseNpcDialogAction closeNpcDialogAction = new CloseNpcDialogAction();
+        private readonly CloseNpcDialogAction closeNpcDialogAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

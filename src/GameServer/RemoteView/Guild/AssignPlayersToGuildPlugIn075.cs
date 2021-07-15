@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
     public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersToGuildPlugIn075>, IAssignPlayersToGuildPlugIn
     {
         private readonly RemotePlayer player;
-        private readonly HashSet<uint> transmittedGuilds = new HashSet<uint>();
+        private readonly HashSet<uint> transmittedGuilds = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssignPlayersToGuildPlugIn075"/> class.

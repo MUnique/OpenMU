@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         /// <summary>
         /// The singleton instance.
         /// </summary>
-        private static readonly ConfigurationIdReferenceResolver InstanceValue = new ConfigurationIdReferenceResolver();
+        private static readonly ConfigurationIdReferenceResolver InstanceValue = new ();
 
         private readonly IDictionary<Guid, IIdentifiable> cache = new Dictionary<Guid, IIdentifiable>();
 

@@ -42,7 +42,7 @@ namespace MUnique.OpenMU.GameLogic
             { 15, 365 },
         };
 
-        private static readonly HashSet<short> WingIds = new HashSet<short>
+        private static readonly HashSet<short> WingIds = new ()
         {
             0, 1, 2, 3, 4, 5, 6,
             36, 37, 38, 39, 40,

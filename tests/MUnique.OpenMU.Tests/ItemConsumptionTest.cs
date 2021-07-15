@@ -371,7 +371,7 @@ namespace MUnique.OpenMU.Tests
 
         private Item GetItem()
         {
-            return new Item
+            return new ()
             {
                 Definition = new DataModel.Configuration.Items.ItemDefinition { Width = 1, Height = 1 },
                 Durability = 1,

@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Login
     [BelongsToGroup(LogInOutGroup.GroupKey)]
     public class LogOutHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly LogoutAction logoutAction = new LogoutAction();
+        private readonly LogoutAction logoutAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

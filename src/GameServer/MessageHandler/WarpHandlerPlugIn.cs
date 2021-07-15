@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [Guid("3d261a26-4357-4367-b999-703ea936f4e9")]
     internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly WarpAction warpAction = new WarpAction();
+        private readonly WarpAction warpAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

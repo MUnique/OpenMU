@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
     [Guid("6d10d34d-bd20-4dcf-99eb-569d38ef1c1b")]
     internal class LetterSendHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly LetterSendAction sendAction = new LetterSendAction();
+        private readonly LetterSendAction sendAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => true;

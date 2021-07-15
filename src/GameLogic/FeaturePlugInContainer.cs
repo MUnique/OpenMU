@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameLogic
     public class FeaturePlugInContainer : PlugInContainerBase<IFeaturePlugIn>, ICustomPlugInContainer<IFeaturePlugIn>
     {
         private readonly ConcurrentDictionary<Type, IFeaturePlugIn> currentlyEffectivePlugIns =
-            new ConcurrentDictionary<Type, IFeaturePlugIn>();
+            new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeaturePlugInContainer"/> class.

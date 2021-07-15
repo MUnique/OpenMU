@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
     [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
     internal class CharacterStatIncreasePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly IncreaseStatsAction increaseStatsAction = new IncreaseStatsAction();
+        private readonly IncreaseStatsAction increaseStatsAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

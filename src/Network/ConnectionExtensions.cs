@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Network
         /// <returns>An <see cref="IDisposable" /> which can be used in a using-construct. It provides the target span to write at, too.</returns>
         public static ThreadSafeWriter StartSafeWrite(this IConnection connection, byte packetType, int expectedPacketSize)
         {
-            return new ThreadSafeWriter(connection, packetType, expectedPacketSize);
+            return new (connection, packetType, expectedPacketSize);
         }
     }
 }

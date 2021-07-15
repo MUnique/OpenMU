@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items
     /// </summary>
     public class SimpleItemCraftingHandler : BaseItemCraftingHandler
     {
-        private readonly ItemPriceCalculator priceCalculator = new ItemPriceCalculator();
+        private readonly ItemPriceCalculator priceCalculator = new ();
 
         private readonly SimpleCraftingSettings settings;
 

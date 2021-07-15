@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     [MinimumClient(0, 90, ClientLanguage.Invariant)]
     internal class ConsumeItemHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly ItemConsumeAction consumeAction = new ItemConsumeAction();
+        private readonly ItemConsumeAction consumeAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

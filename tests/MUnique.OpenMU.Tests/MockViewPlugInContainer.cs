@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Tests
     /// </summary>
     public class MockViewPlugInContainer : ICustomPlugInContainer<IViewPlugIn>
     {
-        private readonly Dictionary<Type, IViewPlugIn> mocks = new Dictionary<Type, IViewPlugIn>();
+        private readonly Dictionary<Type, IViewPlugIn> mocks = new ();
 
         /// <inheritdoc />
         public T GetPlugIn<T>()

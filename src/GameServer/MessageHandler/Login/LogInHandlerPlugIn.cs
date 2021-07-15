@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Login
     {
         private readonly ISpanDecryptor decryptor = new Xor3Decryptor(0);
 
-        private readonly LoginAction loginAction = new LoginAction();
+        private readonly LoginAction loginAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => true;

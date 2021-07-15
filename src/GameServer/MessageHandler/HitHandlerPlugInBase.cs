@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     internal abstract class HitHandlerPlugInBase : IPacketHandlerPlugIn
     {
-        private readonly HitAction hitAction = new HitAction();
+        private readonly HitAction hitAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

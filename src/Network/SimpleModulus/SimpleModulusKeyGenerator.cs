@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
     /// </summary>
     public class SimpleModulusKeyGenerator
     {
-        private readonly Random randomizer = new Random();
+        private readonly Random randomizer = new ();
 
         /// <summary>
         /// Generates a new pair of keys.

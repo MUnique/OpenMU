@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
     [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
     internal class CharacterFocusPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly FocusCharacterAction focusCharacterAction = new FocusCharacterAction();
+        private readonly FocusCharacterAction focusCharacterAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

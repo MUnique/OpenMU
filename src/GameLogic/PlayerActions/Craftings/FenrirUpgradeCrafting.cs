@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
     /// </summary>
     public class FenrirUpgradeCrafting : BaseItemCraftingHandler
     {
-        private readonly ItemPriceCalculator priceCalculator = new ItemPriceCalculator();
+        private readonly ItemPriceCalculator priceCalculator = new ();
 
         /// <inheritdoc />
         protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)

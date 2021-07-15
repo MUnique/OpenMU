@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.ConnectServer
     internal class ClientConnectionCounter
     {
         private readonly IDictionary<IPAddress, int> connections = new Dictionary<IPAddress, int>();
-        private readonly object syncRoot = new object();
+        private readonly object syncRoot = new ();
 
         /// <summary>
         /// Gets the connection count of the specified ip address.

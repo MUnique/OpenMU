@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     [Guid("d6067475-a910-488d-8450-9310ae394c47")]
     internal class JewelMixHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly ItemStackAction mixAction = new ItemStackAction();
+        private readonly ItemStackAction mixAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => LahapJewelMixRequest.HeaderType >= 0xC3;

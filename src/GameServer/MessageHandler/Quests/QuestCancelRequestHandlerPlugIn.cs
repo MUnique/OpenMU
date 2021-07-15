@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Quests
     [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
     public class QuestCancelRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly QuestCancelAction questCancelAction = new QuestCancelAction();
+        private readonly QuestCancelAction questCancelAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

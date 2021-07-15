@@ -27,7 +27,7 @@ namespace MUnique.OpenMU.AdminPanel.Map
         private readonly int mapNumber;
         private readonly IJSRuntime jsRuntime;
         private readonly ObserverToWorldViewAdapter adapterToWorldView;
-        private readonly CancellationTokenSource disposeCts = new CancellationTokenSource();
+        private readonly CancellationTokenSource disposeCts = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MapController" /> class.

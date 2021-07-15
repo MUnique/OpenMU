@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.Network
     public class PublicIpResolver : IIpAddressResolver
     {
         private readonly ILogger<PublicIpResolver> logger;
-        private readonly TimeSpan maximumCachedAddressLifetime = new TimeSpan(0, 5, 0);
+        private readonly TimeSpan maximumCachedAddressLifetime = new (0, 5, 0);
         private IPAddress? publicIPv4;
         private DateTime lastRequest = DateTime.MinValue;
 

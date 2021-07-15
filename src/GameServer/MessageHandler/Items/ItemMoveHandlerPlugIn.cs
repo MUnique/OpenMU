@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     [Guid("c499c596-7711-4971-bc83-7abd9e6b5553")]
     internal class ItemMoveHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly MoveItemAction moveAction = new MoveItemAction();
+        private readonly MoveItemAction moveAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

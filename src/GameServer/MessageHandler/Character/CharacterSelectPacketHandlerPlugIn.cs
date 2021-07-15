@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
     [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
     internal class CharacterSelectPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly SelectCharacterAction characterSelectAction = new SelectCharacterAction();
+        private readonly SelectCharacterAction characterSelectAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

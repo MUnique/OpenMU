@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
     [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
     internal class CharacterAddMasterPointPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly AddMasterPointAction addMasterPointAction = new AddMasterPointAction();
+        private readonly AddMasterPointAction addMasterPointAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

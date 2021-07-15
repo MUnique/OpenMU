@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.Network
     {
         private readonly byte maxCount;
         private readonly byte minCount;
-        private readonly object lockObject = new object();
+        private readonly object lockObject = new ();
         private int counter;
 
         /// <summary>

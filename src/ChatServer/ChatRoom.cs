@@ -28,7 +28,7 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         private readonly List<IChatClient> connectedClients;
 
-        private ReaderWriterLockSlim? lockSlim = new ReaderWriterLockSlim();
+        private ReaderWriterLockSlim? lockSlim = new ();
 
         private int lastUsedClientIndex = -1;
 

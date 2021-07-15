@@ -14,8 +14,8 @@ namespace MUnique.OpenMU.Persistence
     /// </summary>
     public static class ObjectExtensions
     {
-        private static readonly ConcurrentDictionary<Type, PropertyInfo?> IdProperties = new ConcurrentDictionary<Type, PropertyInfo?>();
-        private static readonly ConcurrentDictionary<Type, PropertyInfo?> NameProperties = new ConcurrentDictionary<Type, PropertyInfo?>();
+        private static readonly ConcurrentDictionary<Type, PropertyInfo?> IdProperties = new ();
+        private static readonly ConcurrentDictionary<Type, PropertyInfo?> NameProperties = new ();
 
         /// <summary>
         /// Gets the guid identifier of an object, which has the name "Id".

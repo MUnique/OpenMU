@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence
     public class IdGenerator
     {
         private readonly int maxValue;
-        private readonly ConcurrentQueue<int> givenBack = new ConcurrentQueue<int>();
+        private readonly ConcurrentQueue<int> givenBack = new ();
         private int currentValue;
 
         /// <summary>

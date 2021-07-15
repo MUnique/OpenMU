@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests
     {
         private static readonly short ElfSoldierNumber = 257;
 
-        private static readonly MagicEffectDefinition BuffEffect = new MagicEffectDefinition
+        private static readonly MagicEffectDefinition BuffEffect = new ()
         {
             InformObservers = true,
             Name = "Elf Soldier Buff",

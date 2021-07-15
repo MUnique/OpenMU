@@ -73,48 +73,48 @@ namespace MUnique.OpenMU.Tests
             characterClassMock.Setup(c => c.StatAttributes).Returns(
                 new List<StatAttributeDefinition>
                 {
-                    new StatAttributeDefinition(Stats.Level, 0, false),
-                    new StatAttributeDefinition(Stats.BaseStrength, 28, true),
-                    new StatAttributeDefinition(Stats.BaseAgility, 20, true),
-                    new StatAttributeDefinition(Stats.BaseVitality, 25, true),
-                    new StatAttributeDefinition(Stats.BaseEnergy, 10, true),
-                    new StatAttributeDefinition(Stats.CurrentHealth, 0, false),
-                    new StatAttributeDefinition(Stats.CurrentMana, 0, false),
-                    new StatAttributeDefinition(Stats.CurrentShield, 0, false),
+                    new (Stats.Level, 0, false),
+                    new (Stats.BaseStrength, 28, true),
+                    new (Stats.BaseAgility, 20, true),
+                    new (Stats.BaseVitality, 25, true),
+                    new (Stats.BaseEnergy, 10, true),
+                    new (Stats.CurrentHealth, 0, false),
+                    new (Stats.CurrentMana, 0, false),
+                    new (Stats.CurrentShield, 0, false),
                 });
             characterClassMock.Setup(c => c.AttributeCombinations).Returns(new List<AttributeRelationship>
             {
                 // Params: TargetAttribute, Multiplier, SourceAttribute
-                new AttributeRelationship(Stats.TotalStrength, 1, Stats.BaseStrength),
-                new AttributeRelationship(Stats.TotalAgility, 1, Stats.BaseAgility),
-                new AttributeRelationship(Stats.TotalVitality, 1, Stats.BaseVitality),
-                new AttributeRelationship(Stats.TotalEnergy, 1, Stats.BaseEnergy),
+                new (Stats.TotalStrength, 1, Stats.BaseStrength),
+                new (Stats.TotalAgility, 1, Stats.BaseAgility),
+                new (Stats.TotalVitality, 1, Stats.BaseVitality),
+                new (Stats.TotalEnergy, 1, Stats.BaseEnergy),
 
-                new AttributeRelationship(Stats.MaximumAbility, 1, Stats.TotalEnergy),
-                new AttributeRelationship(Stats.MaximumAbility, 0.3f, Stats.TotalVitality),
-                new AttributeRelationship(Stats.MaximumAbility, 0.2f, Stats.TotalAgility),
-                new AttributeRelationship(Stats.MaximumAbility, 0.15f, Stats.TotalStrength),
+                new (Stats.MaximumAbility, 1, Stats.TotalEnergy),
+                new (Stats.MaximumAbility, 0.3f, Stats.TotalVitality),
+                new (Stats.MaximumAbility, 0.2f, Stats.TotalAgility),
+                new (Stats.MaximumAbility, 0.15f, Stats.TotalStrength),
 
-                new AttributeRelationship(Stats.MaximumShield, 1.2f, Stats.TotalEnergy),
-                new AttributeRelationship(Stats.MaximumShield, 1.2f, Stats.TotalVitality),
-                new AttributeRelationship(Stats.MaximumShield, 1.2f, Stats.TotalAgility),
-                new AttributeRelationship(Stats.MaximumShield, 1.2f, Stats.TotalStrength),
-                new AttributeRelationship(Stats.MaximumShield, 0.5f, Stats.DefenseBase),
+                new (Stats.MaximumShield, 1.2f, Stats.TotalEnergy),
+                new (Stats.MaximumShield, 1.2f, Stats.TotalVitality),
+                new (Stats.MaximumShield, 1.2f, Stats.TotalAgility),
+                new (Stats.MaximumShield, 1.2f, Stats.TotalStrength),
+                new (Stats.MaximumShield, 0.5f, Stats.DefenseBase),
 
-                new AttributeRelationship(Stats.MaximumMana, 1, Stats.TotalEnergy),
-                new AttributeRelationship(Stats.MaximumMana, 0.5f, Stats.Level),
-                new AttributeRelationship(Stats.MaximumHealth, 2, Stats.Level),
-                new AttributeRelationship(Stats.MaximumHealth, 3, Stats.TotalVitality),
+                new (Stats.MaximumMana, 1, Stats.TotalEnergy),
+                new (Stats.MaximumMana, 0.5f, Stats.Level),
+                new (Stats.MaximumHealth, 2, Stats.Level),
+                new (Stats.MaximumHealth, 3, Stats.TotalVitality),
             });
             characterClassMock.Setup(c => c.BaseAttributeValues).Returns(new List<ConstValueAttribute>
             {
-                new ConstValueAttribute(10, Stats.MaximumMana),
-                new ConstValueAttribute(35, Stats.MaximumHealth),
-                new ConstValueAttribute(2, Stats.SkillMultiplier),
-                new ConstValueAttribute(2, Stats.AbilityRecoveryMultiplier),
-                new ConstValueAttribute(1, Stats.DamageReceiveDecrement),
-                new ConstValueAttribute(1, Stats.AttackDamageIncrease),
-                new ConstValueAttribute(1, Stats.MoneyAmountRate),
+                new (10, Stats.MaximumMana),
+                new (35, Stats.MaximumHealth),
+                new (2, Stats.SkillMultiplier),
+                new (2, Stats.AbilityRecoveryMultiplier),
+                new (1, Stats.DamageReceiveDecrement),
+                new (1, Stats.AttackDamageIncrease),
+                new (1, Stats.MoneyAmountRate),
             });
             character.CharacterClass = characterClassMock.Object;
 

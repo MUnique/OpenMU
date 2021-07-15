@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.PublicApi.Models
         /// </returns>
         public static ConnectServerDto Create(IConnectServer connectServer, ICollection<IGameServer> gameServers)
         {
-            return new ConnectServerDto
+            return new ()
             {
                 PatchAddress = connectServer.Settings.PatchAddress,
                 CurrentPatchVersion = connectServer.Settings.CurrentPatchVersion,

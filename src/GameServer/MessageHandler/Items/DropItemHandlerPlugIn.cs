@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     [Guid("b79bc453-74a0-4eea-8bc3-014d737aaa88")]
     internal class DropItemHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly DropItemAction dropAction = new DropItemAction();
+        private readonly DropItemAction dropAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

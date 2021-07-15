@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Vault
     [Guid("7859931f-3341-4bd7-91ad-1b0b03f11198")]
     internal class VaultCloseHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly CloseNpcDialogAction closeDialogAction = new CloseNpcDialogAction();
+        private readonly CloseNpcDialogAction closeDialogAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

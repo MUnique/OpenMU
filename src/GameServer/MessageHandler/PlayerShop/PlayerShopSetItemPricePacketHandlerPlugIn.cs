@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
     [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
     internal class PlayerShopSetItemPricePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly SetItemPriceAction setPriceAction = new SetItemPriceAction();
+        private readonly SetItemPriceAction setPriceAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => true;

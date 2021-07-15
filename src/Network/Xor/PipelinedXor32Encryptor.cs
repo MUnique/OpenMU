@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Network.Xor
     public class PipelinedXor32Encryptor : PacketPipeReaderBase, IPipelinedEncryptor
     {
         private readonly PipeWriter target;
-        private readonly Pipe pipe = new Pipe();
+        private readonly Pipe pipe = new ();
         private readonly byte[] xor32Key;
 
         /// <summary>

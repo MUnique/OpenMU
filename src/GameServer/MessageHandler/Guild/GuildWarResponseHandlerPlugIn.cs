@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
     [Guid("50A96257-CD60-420F-A051-9022804241C0")]
     internal class GuildWarResponseHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly GuildWarAnswerAction answerAction = new GuildWarAnswerAction();
+        private readonly GuildWarAnswerAction answerAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

@@ -14,10 +14,10 @@ namespace MUnique.OpenMU.AttributeSystem.Tests
     [TestFixture]
     public class AttributeSystemTests
     {
-        private readonly AttributeDefinition attributeA = new AttributeDefinition(Guid.NewGuid(), "A", "The A attribute");
-        private readonly AttributeDefinition attributeB = new AttributeDefinition(Guid.NewGuid(), "B", "The B attribute");
-        private readonly AttributeDefinition attributeAplusB = new AttributeDefinition(Guid.NewGuid(), "A+B", "The A+B attribute");
-        private readonly AttributeDefinition attributeAchained = new AttributeDefinition(Guid.NewGuid(), "A'", "The chained A attribute");
+        private readonly AttributeDefinition attributeA = new (Guid.NewGuid(), "A", "The A attribute");
+        private readonly AttributeDefinition attributeB = new (Guid.NewGuid(), "B", "The B attribute");
+        private readonly AttributeDefinition attributeAplusB = new (Guid.NewGuid(), "A+B", "The A+B attribute");
+        private readonly AttributeDefinition attributeAchained = new (Guid.NewGuid(), "A'", "The chained A attribute");
 
         private List<IAttribute> statAttributes = null!;
         private List<IAttribute> baseAttributes = null!;
@@ -159,7 +159,7 @@ namespace MUnique.OpenMU.AttributeSystem.Tests
         /// <returns>The acreated attribute system, initialized with <see cref="statAttributes"/>, <see cref="baseAttributes"/> and <see cref="relationShips"/>.</returns>
         private AttributeSystem CreateAttributeSystem()
         {
-            return new AttributeSystem(this.statAttributes, this.baseAttributes, this.relationShips);
+            return new (this.statAttributes, this.baseAttributes, this.relationShips);
         }
     }
 }

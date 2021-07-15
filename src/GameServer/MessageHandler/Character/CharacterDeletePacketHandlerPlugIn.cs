@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Character
     [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
     internal class CharacterDeletePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly DeleteCharacterAction deleteCharacterAction = new DeleteCharacterAction();
+        private readonly DeleteCharacterAction deleteCharacterAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

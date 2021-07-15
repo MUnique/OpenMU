@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     [Guid("85b4a195-c90c-47f8-bae2-833b5d2ef398")]
     internal class ItemRepairHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly ItemRepairAction repairAction = new ItemRepairAction();
+        private readonly ItemRepairAction repairAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected { get; } = RepairItemRequest.HeaderType >= 0xC3;

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     [Guid("0693e102-0adc-41e4-b0d4-ce22687b6dbb")]
     internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly ItemCraftAction mixAction = new ItemCraftAction();
+        private readonly ItemCraftAction mixAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

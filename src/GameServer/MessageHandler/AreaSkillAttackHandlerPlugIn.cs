@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [MinimumClient(0, 90, ClientLanguage.Invariant)]
     internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly AreaSkillAttackAction attackAction = new AreaSkillAttackAction();
+        private readonly AreaSkillAttackAction attackAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => true;

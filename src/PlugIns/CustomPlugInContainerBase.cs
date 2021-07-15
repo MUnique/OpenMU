@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.PlugIns
     public abstract class CustomPlugInContainerBase<TPlugIn> : PlugInContainerBase<TPlugIn>, ICustomPlugInContainer<TPlugIn>
         where TPlugIn : class
     {
-        private readonly ConcurrentDictionary<Type, TPlugIn> currentlyEffectivePlugIns = new ConcurrentDictionary<Type, TPlugIn>();
+        private readonly ConcurrentDictionary<Type, TPlugIn> currentlyEffectivePlugIns = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomPlugInContainerBase{TPlugIn}"/> class.

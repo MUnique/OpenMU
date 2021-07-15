@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic.Resets
     {
         private readonly Player player;
         private readonly NonPlayerCharacter? npc;
-        private readonly LogoutAction logoutAction = new LogoutAction();
+        private readonly LogoutAction logoutAction = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResetCharacterAction"/> class.

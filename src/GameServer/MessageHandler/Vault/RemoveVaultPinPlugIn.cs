@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Vault
     [BelongsToGroup(VaultLockGroupPlugIn.GroupKey)]
     internal class RemoveVaultPinPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly RemoveVaultPinAction unlockVaultAction = new RemoveVaultPinAction();
+        private readonly RemoveVaultPinAction unlockVaultAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

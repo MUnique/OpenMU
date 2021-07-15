@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, IDisposable, ISupportWalk, IMovable, ILoggerOwner<Player>
     {
-        private readonly object moveLock = new object();
+        private readonly object moveLock = new ();
 
         private readonly Walker walker;
 
@@ -225,7 +225,7 @@ namespace MUnique.OpenMU.GameLogic
         public NonPlayerCharacter? OpenedNpc { get; set; }
 
         /// <inheritdoc/>
-        public StateMachine PlayerState { get; } = new StateMachine(GameLogic.PlayerState.Initial);
+        public StateMachine PlayerState { get; } = new (GameLogic.PlayerState.Initial);
 
         // TODO: TradeContext-object?
 
@@ -254,7 +254,7 @@ namespace MUnique.OpenMU.GameLogic
         public ISet<IWorldObserver> Observers { get; } = new HashSet<IWorldObserver>();
 
         /// <inheritdoc/>
-        public ReaderWriterLockSlim ObserverLock { get; } = new ReaderWriterLockSlim();
+        public ReaderWriterLockSlim ObserverLock { get; } = new ();
 
         /// <inheritdoc/>
         public IPartyMember? LastPartyRequester { get; set; }
@@ -299,7 +299,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public Point Position
         {
-            get => new Point(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+            get => new (this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
 
             set
             {

@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// </summary>
     public static class CharacterStatTypeExtensions
     {
-        private static readonly Dictionary<AttributeDefinition, CharacterStatAttribute> AttributesToStatTypes = new Dictionary<AttributeDefinition, CharacterStatAttribute>
+        private static readonly Dictionary<AttributeDefinition, CharacterStatAttribute> AttributesToStatTypes = new ()
         {
             { Stats.BaseAgility, CharacterStatAttribute.Agility },
             { Stats.BaseEnergy, CharacterStatAttribute.Energy },
@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
             { Stats.BaseLeadership, CharacterStatAttribute.Leadership },
         };
 
-        private static readonly Dictionary<CharacterStatAttribute, AttributeDefinition> StatTypesToAttributes = new Dictionary<CharacterStatAttribute, AttributeDefinition>
+        private static readonly Dictionary<CharacterStatAttribute, AttributeDefinition> StatTypesToAttributes = new ()
         {
             { CharacterStatAttribute.Agility, Stats.BaseAgility },
             { CharacterStatAttribute.Energy, Stats.BaseEnergy },

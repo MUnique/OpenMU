@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
     [MinimumClient(0, 90, ClientLanguage.Invariant)]
     internal class GuildCreateHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly GuildCreateAction createAction = new GuildCreateAction();
+        private readonly GuildCreateAction createAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

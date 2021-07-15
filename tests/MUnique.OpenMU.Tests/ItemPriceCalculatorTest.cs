@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.Tests
         /// <summary>
         /// The calculator which is tested.
         /// </summary>
-        private readonly ItemPriceCalculator calculator = new ItemPriceCalculator();
+        private readonly ItemPriceCalculator calculator = new ();
 
         /// <summary>
         /// Tests if the apple price is calculated correctly.

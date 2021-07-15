@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic.Attributes
 
         private readonly IDictionary<AttributeDefinition, float> statAttributes;
 
-        private readonly object attributesLock = new object();
+        private readonly object attributesLock = new ();
 
         /// <summary>
         /// Attribute dictionary of a monster instance.

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger
     [Guid("acf9263f-ba71-4d84-b8f8-84e494eb4462")]
     internal class ChatRequestHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly ChatRequestAction chatRequestAction = new ChatRequestAction();
+        private readonly ChatRequestAction chatRequestAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

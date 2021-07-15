@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <summary>
         /// Gets the lock for <see cref="Observers"/>.
         /// </summary>
-        public ReaderWriterLockSlim ObserverLock { get; } = new ReaderWriterLockSlim();
+        public ReaderWriterLockSlim ObserverLock { get; } = new ();
 
         /// <inheritdoc/>
         public GameMap CurrentMap { get; }

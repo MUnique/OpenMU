@@ -24,8 +24,8 @@ namespace MUnique.OpenMU.PlugIns
         private readonly ServiceContainer serviceContainer;
         private readonly IDictionary<Type, object> plugInPoints = new Dictionary<Type, object>();
         private readonly IDictionary<Guid, Type> knownPlugIns = new ConcurrentDictionary<Guid, Type>();
-        private readonly ConcurrentDictionary<Type, ISet<Type>> knownPlugInsPerInterfaceType = new ConcurrentDictionary<Type, ISet<Type>>();
-        private readonly ConcurrentDictionary<Guid, Type> activePlugIns = new ConcurrentDictionary<Guid, Type>();
+        private readonly ConcurrentDictionary<Type, ISet<Type>> knownPlugInsPerInterfaceType = new ();
+        private readonly ConcurrentDictionary<Guid, Type> activePlugIns = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlugInManager" /> class.

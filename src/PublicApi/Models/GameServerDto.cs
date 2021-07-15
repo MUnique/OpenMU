@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.PublicApi.Models
         /// <returns>The created DTO.</returns>
         public static GameServerDto Create(IPEndPoint endPoint, IGameServer gameServer)
         {
-            return new GameServerDto
+            return new ()
             {
                 Host = endPoint.Address.ToString(),
                 Port = endPoint.Port,

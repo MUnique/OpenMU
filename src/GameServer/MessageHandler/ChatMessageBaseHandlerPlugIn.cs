@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     internal abstract class ChatMessageBaseHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly ChatMessageAction messageAction = new ChatMessageAction();
+        private readonly ChatMessageAction messageAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

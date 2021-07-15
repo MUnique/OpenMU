@@ -22,9 +22,9 @@ namespace MUnique.OpenMU.Tests
     {
         private const byte HandlerKey = 0xF1;
 
-        private static readonly ClientVersion Season6E3English = new ClientVersion(6, 3, ClientLanguage.English);
+        private static readonly ClientVersion Season6E3English = new (6, 3, ClientLanguage.English);
 
-        private static readonly ClientVersion Season9E2English = new ClientVersion(9, 2, ClientLanguage.English);
+        private static readonly ClientVersion Season9E2English = new (9, 2, ClientLanguage.English);
 
         /// <summary>
         /// Tests if the the plug in of correct version is selected when the plugin for the exact version is available.

@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.LoginServer
     {
         private readonly IDictionary<string, byte> connectedAccounts = new Dictionary<string, byte>();
 
-        private readonly object syncRoot = new object();
+        private readonly object syncRoot = new ();
 
         /// <inheritdoc/>
         public bool TryLogin(string accountName, byte serverId)

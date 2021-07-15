@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Pathfinding
     /// <typeparam name="T">The type which should be contained in the heap.</typeparam>
     public class BinaryMinHeap<T> : IPriorityQueue<T>
     {
-        private readonly List<T> innerList = new List<T>();
+        private readonly List<T> innerList = new ();
         private readonly IComparer<T> elementComparer;
 
         /// <summary>Reused variable to reduce stack allocations.</summary>

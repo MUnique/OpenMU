@@ -15,7 +15,7 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public static class MasterSkillExtensions
     {
-        private static readonly ConcurrentDictionary<string, float[]> ValueResultCache = new ConcurrentDictionary<string, float[]>();
+        private static readonly ConcurrentDictionary<string, float[]> ValueResultCache = new ();
 
         /// <summary>
         /// Calculates the effective value of the specified skill, depending on its formula and level.

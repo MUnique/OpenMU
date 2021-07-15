@@ -480,7 +480,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
         /// <returns>The created store.</returns>
         private ItemStorage CreateAlexStore()
         {
-            List<Item> itemList = new List<Item>
+            List<Item> itemList = new ()
             {
                 this.ItemHelper.CreateWeapon(0, ItemGroups.Spears, 5, 3, 1, true, false, null), // Double Poleaxe +3+Luck+4
                 this.ItemHelper.CreateWeapon(2, ItemGroups.Spears, 1, 3, 1, true, false, null), // Spear +3+Luck+4

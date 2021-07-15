@@ -15,12 +15,12 @@ namespace MUnique.OpenMU.Network
         /// <summary>
         /// Gets the send pipe.
         /// </summary>
-        public Pipe SendPipe { get; } = new Pipe(new PipeOptions(pauseWriterThreshold: 1, resumeWriterThreshold: 1));
+        public Pipe SendPipe { get; } = new (new PipeOptions(pauseWriterThreshold: 1, resumeWriterThreshold: 1));
 
         /// <summary>
         /// Gets the receive pipe.
         /// </summary>
-        public Pipe ReceivePipe { get; } = new Pipe(new PipeOptions(pauseWriterThreshold: 1, resumeWriterThreshold: 1));
+        public Pipe ReceivePipe { get; } = new (new PipeOptions(pauseWriterThreshold: 1, resumeWriterThreshold: 1));
 
         /// <summary>
         /// Gets the input pipe reader. It's the reader of the <see cref="ReceivePipe"/>.

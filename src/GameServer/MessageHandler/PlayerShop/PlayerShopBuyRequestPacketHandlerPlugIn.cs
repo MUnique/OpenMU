@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.PlayerShop
     [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
     internal class PlayerShopBuyRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     {
-        private readonly BuyRequestAction buyAction = new BuyRequestAction();
+        private readonly BuyRequestAction buyAction = new ();
 
         /// <inheritdoc />
         public bool IsEncryptionExpected => true;

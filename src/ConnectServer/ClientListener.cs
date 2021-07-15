@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.ConnectServer
     {
         private readonly ILoggerFactory loggerFactory;
         private readonly ILogger<ClientListener> logger;
-        private readonly object clientListLock = new object();
+        private readonly object clientListLock = new ();
         private readonly IConnectServerSettings connectServerSettings;
         private readonly IPacketHandler<Client> packetHandler;
         private TcpListener? clientListener;

@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic
     /// </summary>
     public sealed class ObserverToWorldViewAdapter : IBucketMapObserver, IDisposable
     {
-        private readonly ReaderWriterLockSlim observingLock = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim observingLock = new ();
         private readonly ISet<IObservable> observingObjects = new HashSet<IObservable>();
         private readonly IWorldObserver adaptee;
 

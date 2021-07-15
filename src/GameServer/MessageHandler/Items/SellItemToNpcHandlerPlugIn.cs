@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     [Guid("8bbf8737-8731-4975-baa8-e14f77451b85")]
     internal class SellItemToNpcHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly SellItemToNpcAction sellAction = new SellItemToNpcAction();
+        private readonly SellItemToNpcAction sellAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

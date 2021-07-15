@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 
         private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
 
-        private readonly IncreaseStatsAction action = new IncreaseStatsAction();
+        private readonly IncreaseStatsAction action = new ();
 
         /// <inheritdoc />
         public string Key => Command;

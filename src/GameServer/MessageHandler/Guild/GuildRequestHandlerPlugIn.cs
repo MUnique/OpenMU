@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
     [Guid("733b8b1d-7e39-4c5a-b134-d1aac2e33216")]
     internal class GuildRequestHandlerPlugIn : IPacketHandlerPlugIn
     {
-        private readonly GuildRequestAction requestAction = new GuildRequestAction();
+        private readonly GuildRequestAction requestAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;

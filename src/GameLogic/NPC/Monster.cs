@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
     public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISupportWalk, IMovable
     {
         private readonly IDropGenerator dropGenerator;
-        private readonly object moveLock = new object();
+        private readonly object moveLock = new ();
         private readonly INpcIntelligence intelligence;
         private readonly PlugInManager plugInManager;
         private readonly Walker walker;
@@ -298,7 +298,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private static WalkingStep GetStep(PathResultNode node)
         {
-            return new WalkingStep
+            return new ()
             {
                 Direction = node.PreviousPoint.GetDirectionTo(new Point(node.X, node.Y)),
                 From = node.PreviousPoint,

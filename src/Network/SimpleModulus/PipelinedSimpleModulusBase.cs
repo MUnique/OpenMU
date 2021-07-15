@@ -98,7 +98,7 @@ namespace MUnique.OpenMU.Network.SimpleModulus
         /// <summary>
         /// Gets the pipe which is either the target (for the encryptor) or source (for the decryptor) for or of the encrypted packets.
         /// </summary>
-        protected Pipe Pipe { get; } = new Pipe();
+        protected Pipe Pipe { get; } = new ();
 
         /// <summary>
         /// Resets this instance.

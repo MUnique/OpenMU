@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [MaximumClient(0, 89, ClientLanguage.Invariant)]
     internal class AreaSkillHitHandlerPlugIn075 : IPacketHandlerPlugIn
     {
-        private readonly AreaSkillHitAction skillHitAction = new AreaSkillHitAction();
+        private readonly AreaSkillHitAction skillHitAction = new ();
 
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;
