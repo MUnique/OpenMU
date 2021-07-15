@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 return;
             }
 
-            IEnumerable<IAttackable> playersInRange = this.GetAllTargets();
+            IEnumerable<IAttackable> playersInRange = this.PossibleTargets;
             var playersOnTrap = playersInRange.Where(player => player.Position == this.Trap.Position);
 
             foreach (var player in playersOnTrap)

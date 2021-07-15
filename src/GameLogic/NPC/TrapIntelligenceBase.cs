@@ -32,8 +32,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// </summary>
         public Trap Trap
         {
-            get => trap ?? throw new InvalidOperationException("Instance is not initialized with a Trap yet");
-            set => trap = value;
+            get => this.trap ?? throw new InvalidOperationException("Instance is not initialized with a Trap yet");
+            set => this.trap = value;
         }
 
         /// <inheritdoc/>
@@ -47,6 +47,28 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// Gets the map.
         /// </summary>
         protected GameMap Map { get; }
+
+        /// <summary>
+        /// Gets all possible targets.
+        /// </summary>
+        protected IEnumerable<IAttackable> PossibleTargets
+        {
+            get
+            {
+                List<IWorldObserver> tempObservers;
+                this.Trap.ObserverLock.EnterReadLock();
+                try
+                {
+                    tempObservers = new List<IWorldObserver>(this.Trap.Observers);
+                }
+                finally
+                {
+                    this.Trap.ObserverLock.ExitReadLock();
+                }
+
+                return tempObservers.OfType<IAttackable>();
+            }
+        }
 
         /// <inheritdoc/>
         public void RegisterHit(IAttacker attacker)
@@ -63,31 +85,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (this.aiTimer != null)
-            {
-                this.aiTimer.Dispose();
-                this.aiTimer = null;
-            }
-        }
-
-        /// <summary>
-        /// Gets all possible targets.
-        /// </summary>
-        /// <returns>All possible targets.</returns>
-        protected IEnumerable<IAttackable> GetAllTargets()
-        {
-            List<IWorldObserver> tempObservers;
-            this.Trap.ObserverLock.EnterReadLock();
-            try
-            {
-                tempObservers = new List<IWorldObserver>(this.Trap.Observers);
-            }
-            finally
-            {
-                this.Trap.ObserverLock.ExitReadLock();
-            }
-
-            return tempObservers.OfType<IAttackable>();
+            this.aiTimer?.Dispose();
+            this.aiTimer = null;
         }
 
         /// <summary>
