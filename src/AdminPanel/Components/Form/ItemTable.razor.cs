@@ -46,7 +46,7 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
         {
             base.OnInitialized();
             this.isEditable = typeof(TItem).Namespace
-                ?.StartsWith(nameof(MUnique), StringComparison.InvariantCulture) 
+                ?.StartsWith(nameof(MUnique), StringComparison.InvariantCulture)
                               ?? false;
             var isMemberOfAggregate = this.ValueExpression!.IsAccessToMemberOfAggregate();
             this.isAddingSupported = !isMemberOfAggregate;

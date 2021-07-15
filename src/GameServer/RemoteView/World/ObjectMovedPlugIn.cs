@@ -20,9 +20,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// <summary>
     /// The default implementation of the <see cref="IObjectMovedPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    [PlugIn("ObjectMovedPlugIn", "The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.")]
+    [PlugIn(nameof(ObjectMovedPlugIn), "The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("29ee689f-636c-47e7-a930-b60ce8e8993c")]
-    [MinimumClient(0,90, ClientLanguage.Invariant)]
+    [MinimumClient(0, 90, ClientLanguage.Invariant)]
     public class ObjectMovedPlugIn : IObjectMovedPlugIn
     {
         private const short TeleportTargetNumber = 0x0F;

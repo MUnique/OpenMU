@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 return;
             }
 
-            var targetsInRange = this.PossibleTargets                .Where(target => this.Trap.GetDirectionTo(target) == this.Trap.Rotation)
+            var targetsInRange = this.PossibleTargets.Where(target => this.Trap.GetDirectionTo(target) == this.Trap.Rotation)
                 .Where(target => this.Trap.IsInRange(target.Position, this.Trap.Definition.AttackRange + 1))
                 .Where(target => !this.Map.Terrain.SafezoneMap[target.Position.X, target.Position.Y]);
 
