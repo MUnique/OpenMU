@@ -294,6 +294,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public bool IsTeleporting { get; private set; }
 
+        /// <inheritdoc/>
         public DeathInformation? LastDeath { get; private set; }
 
         /// <inheritdoc/>
@@ -999,6 +1000,11 @@ namespace MUnique.OpenMU.GameLogic
             skillEntry.PowerUpDuration = this.Attributes!.CreateElement(powerUpDef.Duration);
         }
 
+        /// <summary>
+        /// Creates a summoned monster for the player.
+        /// </summary>
+        /// <param name="definition">The definition.</param>
+        /// <exception cref="InvalidOperationException">Can't add a summon for a player which isn't spawned yet.</exception>
         public void CreateSummonedMonster(MonsterDefinition definition)
         {
             if (this.CurrentMap is not { } gameMap)
@@ -1024,6 +1030,9 @@ namespace MUnique.OpenMU.GameLogic
             gameMap.Add(monster);
         }
 
+        /// <summary>
+        /// Notifies the player object that the summon died.
+        /// </summary>
         public void SummonDied()
         {
             this.Summon = null;
