@@ -100,7 +100,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild
             var result = new GuildInformations075(array) { GuildCount = 1 };
 
             var guildInfo = result[0];
-            guildInfo.GuildId = (ushort) guildId;
+            guildInfo.GuildId = (ushort)guildId;
             guildInfo.GuildName = guild.Name ?? string.Empty;
             guild.Logo.CopyTo(guildInfo.Logo);
             return array.AsMemory();

@@ -49,8 +49,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             // do/while, so that a 'miss' with 0 damage sends a message, too.
             do
             {
-                var healthDamage = (ushort) System.Math.Min(0xFFFF, remainingHealthDamage);
-                var shieldDamage = (ushort) System.Math.Min(0xFFFF, remainingShieldDamage);
+                var healthDamage = (ushort)System.Math.Min(0xFFFF, remainingHealthDamage);
+                var shieldDamage = (ushort)System.Math.Min(0xFFFF, remainingShieldDamage);
 
                 this.player.Connection?.SendObjectHit(
                     this.operation,

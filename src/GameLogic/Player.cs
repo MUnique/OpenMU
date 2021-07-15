@@ -339,7 +339,7 @@ namespace MUnique.OpenMU.GameLogic
         public IStorage? Vault { get; set; }
 
         /// <summary>
-        /// Gets or sets a flag, indicating if the vault of the player is currently locked by a pin.
+        /// Gets or sets a value indicating whether the vault of the player is currently locked by a pin.
         /// </summary>
         public bool IsVaultLocked { get; set; }
 
@@ -1018,10 +1018,10 @@ namespace MUnique.OpenMU.GameLogic
                 MonsterDefinition = definition,
                 SpawnTrigger = SpawnTrigger.OnceAtEventStart,
                 Quantity = 1,
-                X1 = (byte) Math.Max(this.Position.X - 3, byte.MinValue),
-                X2 = (byte) Math.Min(this.Position.X + 3, byte.MaxValue),
-                Y1 = (byte) Math.Max(this.Position.Y - 3, byte.MinValue),
-                Y2 = (byte) Math.Min(this.Position.Y + 3, byte.MaxValue),
+                X1 = (byte)Math.Max(this.Position.X - 3, byte.MinValue),
+                X2 = (byte)Math.Min(this.Position.X + 3, byte.MaxValue),
+                Y1 = (byte)Math.Max(this.Position.Y - 3, byte.MinValue),
+                Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue),
             };
             var intelligence = new SummonedMonsterIntelligence(this);
             var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager);

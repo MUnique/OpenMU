@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
             var packet = new AddNpcsToScope(writer.Span)
             {
-                NpcCount = (byte) npcs.Count,
+                NpcCount = (byte)npcs.Count,
             };
 
             int i = 0;
