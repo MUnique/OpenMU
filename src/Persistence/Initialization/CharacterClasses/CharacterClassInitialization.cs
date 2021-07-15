@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
         /// <summary>
         /// Gets a value indicating whether to use classic PVP, which uses no shield stats and the same attack/defense rate as PvM.
         /// </summary>
-        protected virtual bool UseClassicPvp { get; } = false;
+        protected virtual bool UseClassicPvp => false;
 
         /// <summary>
         /// Creates the character classes.

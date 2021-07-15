@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
 
         private DateTime nextRunUtc = DateTime.UtcNow;
 
-        private bool isRunning = false;
+        private bool isRunning;
 
         /// <inheritdoc />
         public void ExecuteTask(GameContext gameContext)
