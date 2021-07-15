@@ -161,11 +161,12 @@ System.register("Attackable", ["three", "tween"], function (exports_3, context_3
                 };
                 Attackable.prototype.respawn = function (newData) {
                     var _this = this;
+                    var scaleUpDurationMs = 500;
                     this.data = newData;
                     this.material.opacity = 1.0;
                     var state = { scale: 0 };
                     var tween = new tween_1.default.Tween(state)
-                        .to({ scale: 1 }, 500)
+                        .to({ scale: 1 }, scaleUpDurationMs)
                         .onUpdate(function () { return _this.scale.setScalar(state.scale); })
                         .easing(tween_1.default.Easing.Back.Out)
                         .start();
@@ -470,9 +471,8 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     _this.attacks = new Attack_1.Attacks();
                     _this.attacks.position.z = attacksZ;
                     _this.add(_this.attacks);
-                    var sideLength = 256;
                     var segments = 1;
-                    var planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(sideLength, sideLength, segments, segments), new THREE.ShaderMaterial(TerrainShader_1.terrainShader));
+                    var planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments), new THREE.ShaderMaterial(TerrainShader_1.terrainShader));
                     _this.add(planeMesh);
                     var textureLoader = new THREE.TextureLoader();
                     textureLoader.load('terrain/' + serverId + '/' + mapId, function (texture) {
@@ -597,7 +597,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     }
                 };
                 World.prototype.onSizeChanged = function (newSize) {
-                    TerrainShader_1.terrainShader.uniforms.tPixelSize.value = 256.0 / newSize;
+                    TerrainShader_1.terrainShader.uniforms.tPixelSize.value = World.sideLength / newSize;
                 };
                 World.prototype.addNpc = function (data) {
                     var npc = new NonPlayerCharacter_1.NonPlayerCharacter(data);
@@ -622,6 +622,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     this.add(mesh);
                     this.objects[mesh.data.id] = mesh;
                 };
+                World.sideLength = 256;
                 return World;
             }(THREE.Object3D));
             exports_8("World", World);
