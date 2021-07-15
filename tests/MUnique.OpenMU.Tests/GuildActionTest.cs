@@ -28,7 +28,6 @@ namespace MUnique.OpenMU.Tests
     public class GuildActionTest : GuildTestBase
     {
         private Player guildMasterPlayer = null!;
-        private IGameServerContext gameServerContext = null!;
         private Player player = null!;
 
         /// <inheritdoc/>
@@ -37,13 +36,13 @@ namespace MUnique.OpenMU.Tests
         {
             base.Setup();
 
-            this.gameServerContext = this.CreateGameServer();
-            this.guildMasterPlayer = TestHelper.CreatePlayer(this.gameServerContext);
+            var gameServerContext = this.CreateGameServer();
+            this.guildMasterPlayer = TestHelper.CreatePlayer(gameServerContext);
             this.guildMasterPlayer.SelectedCharacter!.Id = this.GuildMaster.Id;
             this.guildMasterPlayer.SelectedCharacter.Name = this.GuildMaster.Name;
             this.guildMasterPlayer.GuildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, 0);
             this.guildMasterPlayer.Attributes![Stats.Level] = 100;
-            this.player = TestHelper.CreatePlayer(this.gameServerContext);
+            this.player = TestHelper.CreatePlayer(gameServerContext);
             this.player.CurrentMap!.Add(this.guildMasterPlayer);
             this.player.SelectedCharacter!.Name = "Player";
             this.player.SelectedCharacter.Id = Guid.NewGuid();
