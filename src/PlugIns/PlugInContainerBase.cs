@@ -34,6 +34,9 @@ namespace MUnique.OpenMU.PlugIns
             this.Manager.PlugInConfigurationChanged += this.OnPlugInConfigurationChanged;
         }
 
+        /// <inheritdoc />
+        IEnumerable<TPlugIn> IPlugInContainer<TPlugIn>.ActivePlugIns => this.ActivePlugIns;
+
         /// <summary>
         /// Gets the plugin manager which manages this instance.
         /// </summary>
@@ -51,9 +54,6 @@ namespace MUnique.OpenMU.PlugIns
         /// The currently active plug ins.
         /// </value>
         protected IList<TPlugIn> ActivePlugIns { get; } = new List<TPlugIn>();
-
-        /// <inheritdoc />
-        IEnumerable<TPlugIn> IPlugInContainer<TPlugIn>.ActivePlugIns => this.ActivePlugIns;
 
         /// <summary>
         /// Gets the known plug ins.
