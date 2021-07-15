@@ -4,11 +4,12 @@ import { Queue } from "./Queue";
 import { GameObject } from "./Attackable";
 
 export class Attacks extends THREE.Points {
-    private static readonly defaultPointsLifetimeMs : number = 500; // attack particles survive 500 ms by default
-    private freeAttackIndexes: Queue<number>;
-    private pointLifetimeInMs: number;
+    private static readonly defaultPointsLifetimeMs: number = 500; // attack particles survive 500 ms by default
 
     public geometry: THREE.Geometry;
+
+    private freeAttackIndexes: Queue<number>;
+    private pointLifetimeInMs: number;
 
     constructor() {
         const pointsMaterial = new THREE.PointsMaterial({

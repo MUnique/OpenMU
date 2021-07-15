@@ -6,11 +6,10 @@ import { Player } from "./Player";
 import { GameObject, attackableAlphaMapTexture } from "./Attackable";
 import { NonPlayerCharacter as NPC } from "./NonPlayerCharacter";
 
-// import { addPlayer, removePlayer, highlightPlayerOnMap, unhighlightPlayerOnMap } from "../stores/map/actions";
 import { NpcData, PlayerData, Step } from "./Types";
 
 export class World extends THREE.Object3D {
-
+    private static readonly sideLength: number = 256;
     private objects:
         {
             [id: number]: GameObject,
@@ -36,11 +35,10 @@ export class World extends THREE.Object3D {
         this.attacks.position.z = attacksZ;
         this.add(this.attacks);
 
-        const sideLength = 256;
         const segments = 1;
 
         const planeMesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(sideLength, sideLength, segments, segments),
+            new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments),
             new THREE.ShaderMaterial(terrainShader));
         this.add(planeMesh);
 
@@ -158,7 +156,7 @@ export class World extends THREE.Object3D {
      * This will set the size of the highlighted edges - their width should be exactly 1 pixel
      */
     public onSizeChanged(newSize: number): void {
-        terrainShader.uniforms.tPixelSize.value = 256.0 / newSize;
+        terrainShader.uniforms.tPixelSize.value = World.sideLength / newSize;
     }
 
     /*

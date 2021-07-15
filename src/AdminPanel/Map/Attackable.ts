@@ -11,9 +11,10 @@ export interface GameObject extends THREE.Object3D {
 }
 
 export class Attackable<TData extends ObjectData> extends THREE.Mesh implements GameObject {
-    private moveTween: TWEEN.Tween;
     public data: TData;
     public material: THREE.Material;
+
+    private moveTween: TWEEN.Tween;
 
     constructor(data: TData, geometry: THREE.Geometry, material: THREE.Material) {
         super(geometry, material);
@@ -36,11 +37,12 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
     }
 
     public respawn(newData: TData): void {
+        const scaleUpDurationMs = 500;
         this.data = newData;
         this.material.opacity = 1.0;
         const state = { scale: 0 };
         const tween = new TWEEN.Tween(state)
-            .to({ scale: 1 }, 500)
+            .to({ scale: 1 }, scaleUpDurationMs)
             .onUpdate(() => this.scale.setScalar(state.scale))
             .easing(TWEEN.Easing.Back.Out)
             .start();

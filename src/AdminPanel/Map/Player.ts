@@ -3,7 +3,7 @@ import { Attackable, attackableAlphaMapTexture } from "./Attackable";
 import { PlayerData } from "./Types";
 
 export class Player extends Attackable<PlayerData> {
-    private static readonly size : number = 4;
+    private static readonly size: number = 4;
     private static defaultGeometry: THREE.Geometry = new THREE.BoxGeometry(Player.size, Player.size, Player.size);
     constructor(data: PlayerData) {
         super(
@@ -13,7 +13,7 @@ export class Player extends Attackable<PlayerData> {
                 alphaMap: attackableAlphaMapTexture,
                 color: 0xFF0000 + data.id,
                 transparent: true,
-            })
+            }),
         );
     }
 

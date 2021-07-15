@@ -23,8 +23,8 @@ export class MapApp {
     private renderer: THREE.Renderer;
     private container: HTMLElement;
     private picker: WorldObjectPicker;
-    private isDisposing : boolean = false;
-    private isDisposed : boolean = false;
+    private isDisposing: boolean = false;
+    private isDisposed: boolean = false;
     private resizeEventListener: () => void;
 
     constructor(
