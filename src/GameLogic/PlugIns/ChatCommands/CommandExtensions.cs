@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Text;
@@ -158,7 +159,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
                     stringValue = intBool == 1 ? bool.TrueString : bool.FalseString;
                 }
 
-                propertyInfo.SetValue(instance, Convert.ChangeType(stringValue, propertyInfo.PropertyType));
+                propertyInfo.SetValue(instance, Convert.ChangeType(stringValue, propertyInfo.PropertyType, CultureInfo.InvariantCulture));
             }
             catch
             {

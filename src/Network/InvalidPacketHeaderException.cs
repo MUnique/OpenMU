@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network
 {
     using System;
     using System.Buffers;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
 
@@ -62,7 +63,7 @@ namespace MUnique.OpenMU.Network
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.Append("The packet header is invalid: ").AppendLine(this.Header.AsString())
-                .Append("Buffer position: ").AppendLine(this.Position.ToString())
+                .Append("Buffer position: ").AppendLine(this.Position.ToString(CultureInfo.InvariantCulture))
                 .Append("Buffer content: ").AppendLine(this.BufferContent.AsString());
             return stringBuilder.ToString();
         }

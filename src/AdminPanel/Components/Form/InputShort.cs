@@ -31,8 +31,8 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form
             builder.AddAttribute(4, "class", this.CssClass);
             builder.AddAttribute(5, "value", BindConverter.FormatValue(this.CurrentValueAsString));
             builder.AddAttribute(6, "onchange", EventCallback.Factory.CreateBinder<string>(this, v => this.CurrentValueAsString = v, this.CurrentValueAsString!));
-            builder.AddAttribute(7, "min", short.MinValue.ToString());
-            builder.AddAttribute(8, "max", short.MaxValue.ToString());
+            builder.AddAttribute(7, "min", short.MinValue.ToString(CultureInfo.InvariantCulture));
+            builder.AddAttribute(8, "max", short.MaxValue.ToString(CultureInfo.InvariantCulture));
             builder.CloseElement();
         }
 

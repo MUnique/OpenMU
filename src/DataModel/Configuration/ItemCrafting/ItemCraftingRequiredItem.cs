@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
 {
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
@@ -82,15 +83,9 @@ namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting
                 itemName = string.Join(", ", this.PossibleItems.Select(p => p.Name));
             }
 
-            string amount;
-            if (this.MinimumAmount == this.MaximumAmount)
-            {
-                amount = this.MinimumAmount.ToString();
-            }
-            else
-            {
-                amount = $"{this.MinimumAmount}~{this.MaximumAmount}";
-            }
+            string amount = this.MinimumAmount == this.MaximumAmount
+                ? this.MinimumAmount.ToString(CultureInfo.InvariantCulture)
+                : $"{this.MinimumAmount}~{this.MaximumAmount}";
 
             string level;
             if (this.MinimumItemLevel == this.MaximumItemLevel && this.MinimumItemLevel == 0)

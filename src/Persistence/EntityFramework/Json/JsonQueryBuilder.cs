@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
     using Microsoft.EntityFrameworkCore;
@@ -97,7 +98,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 
         private string GetNextAlias(string parentAlias)
         {
-            return ((char)(parentAlias[0] + 1)).ToString();
+            return ((char)(parentAlias[0] + 1)).ToString(CultureInfo.InvariantCulture);
         }
 
         private void AddNavigation(INavigation navigation, StringBuilder stringBuilder, string parentAlias)

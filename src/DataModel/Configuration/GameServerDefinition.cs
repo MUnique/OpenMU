@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Globalization;
     using MUnique.OpenMU.DataModel.Composition;
 
     /// <summary>
@@ -51,7 +52,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("[GameServerDefinition ServerID={0}, Description={1}]", this.ServerID, this.Description);
+            return string.Format(CultureInfo.InvariantCulture, "[GameServerDefinition ServerID={0}, Description={1}]", this.ServerID, this.Description);
         }
     }
 }

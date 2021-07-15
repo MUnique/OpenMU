@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Text;
@@ -182,7 +183,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             {
                 foreach (var editor in editors)
                 {
-                    var uri = string.Format(editor.Path, this.Id);
+                    var uri = string.Format(CultureInfo.InvariantCulture, editor.Path, this.Id);
                     stringBuilder ??= new StringBuilder();
                     stringBuilder.Append($@"<p><a href=""{uri}"">{editor.Caption}</a></p>");
                 }

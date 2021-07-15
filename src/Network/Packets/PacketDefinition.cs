@@ -96,7 +96,7 @@ namespace MUnique.OpenMU.Network.Packets
             {
                 if (!this.type.HasValue)
                 {
-                    this.type = this.HeaderType is null ? default : (PacketType)byte.Parse(this.HeaderType.Substring(0, 2), NumberStyles.HexNumber);
+                    this.type = this.HeaderType is null ? default : (PacketType)byte.Parse(this.HeaderType.Substring(0, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                 }
 
                 return this.type.Value;
@@ -105,7 +105,7 @@ namespace MUnique.OpenMU.Network.Packets
             set
             {
                 this.type = value;
-                var newHeaderType = ((byte)value).ToString("X") + "Header";
+                var newHeaderType = ((byte)value).ToString("X", CultureInfo.InvariantCulture) + "Header";
                 if (this.SubCodeSpecified)
                 {
                     newHeaderType += "WithSubCode";
@@ -121,7 +121,7 @@ namespace MUnique.OpenMU.Network.Packets
         [XmlElement(nameof(Code))]
         public string CodeAsHex
         {
-            get => this.Code.ToString("X");
+            get => this.Code.ToString("X", CultureInfo.InvariantCulture);
             set => this.Code = byte.Parse(value, NumberStyles.AllowHexSpecifier);
         }
 
@@ -131,7 +131,7 @@ namespace MUnique.OpenMU.Network.Packets
         [XmlElement(nameof(SubCode))]
         public string SubCodeAsHex
         {
-            get => this.SubCode.ToString("X");
+            get => this.SubCode.ToString("X", CultureInfo.InvariantCulture);
             set => this.SubCode = byte.Parse(value, NumberStyles.AllowHexSpecifier);
         }
 

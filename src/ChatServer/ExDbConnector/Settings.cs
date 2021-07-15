@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
 
     /// <summary>
@@ -100,7 +101,7 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector
                         var bytesAsString = keyAsString.Split(' ');
                         foreach (var byteString in bytesAsString)
                         {
-                            customXor32KeyList.Add(byte.Parse(byteString, System.Globalization.NumberStyles.HexNumber));
+                            customXor32KeyList.Add(byte.Parse(byteString, NumberStyles.HexNumber, CultureInfo.InvariantCulture));
                         }
                     }
 
