@@ -88,7 +88,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075
             new Pets(this.Context, this.GameConfiguration).Initialize();
             new Weapons(this.Context, this.GameConfiguration).Initialize();
             new Potions(this.Context, this.GameConfiguration).Initialize();
-            new Jewellery(this.Context, this.GameConfiguration).Initialize();
+            new Jewelery(this.Context, this.GameConfiguration).Initialize();
 
             new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
 

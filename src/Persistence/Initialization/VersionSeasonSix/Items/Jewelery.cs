@@ -1,10 +1,9 @@
-﻿// <copyright file="Jewellery.cs" company="MUnique">
+﻿// <copyright file="Jewelery.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
 {
-    using System.Linq;
     using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Attributes;
     using MUnique.OpenMU.DataModel.Configuration;
@@ -13,28 +12,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
     using MUnique.OpenMU.Persistence.Initialization.Items;
 
     /// <summary>
-    /// Initializer for jewellery (rings and pendants).
+    /// Initializer for jewelery (rings and pendants).
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.Persistence.Initialization.InitializerBase" />
-    internal class Jewellery : InitializerBase
+    internal class Jewelery : Version075.Items.Jewelery
     {
-        private ItemOptionDefinition? healthRecoverOptionDefinition;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="Jewellery"/> class.
+        /// Initializes a new instance of the <see cref="Jewelery"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
-        public Jewellery(IContext context, GameConfiguration gameConfiguration)
+        public Jewelery(IContext context, GameConfiguration gameConfiguration)
             : base(context, gameConfiguration)
         {
         }
 
         /// <inheritdoc/>
-        public override void Initialize()
+        protected override void CreateItems()
         {
-            this.healthRecoverOptionDefinition = this.CreateOption("Health recover for jewellery", Stats.HealthRecoveryMultiplier, 0.01f);
-
             this.CreateRing(8, "Ring of Ice", 20, 50, Stats.HealthRecoveryMultiplier, Stats.IceResistance);
             this.CreateRing(9, "Ring of Poison", 17, 50, Stats.HealthRecoveryMultiplier, Stats.PoisonResistance);
             this.CreateRing(21, "Ring of Fire", 30, 50, Stats.HealthRecoveryMultiplier, Stats.FireResistance);
@@ -71,44 +65,28 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
             this.CreateJewelery(115, 9, false, "Sapphire Necklace", 0, 0, null, null, null);
             */
 
-            /* TODO: Transformation feature
-             * Idea: There could be an attribute "IsTransformed" which we could handle in the WorldView. These rings here could just add a value to this attribute.
-            this.CreateJewelery(10, 10, false, "Transformation Ring", 0, 200, null, null, null);
-            this.CreateJewelery(39, 10, false, "Elite Transfer Skeleton Ring", 10, 255, null, null, null);
-            this.CreateJewelery(40, 10, false, "Jack Olantern Ring", 10, 100, null, null, null);
-            this.CreateJewelery(41, 10, false, "Transfer Christmas Ring", 1, 100, null, null, null);
-            this.CreateJewelery(68, 10, false, "Snowman Transformation Ring", 10, 100, null, null, null);
-            this.CreateJewelery(122, 10, false, "Skeleton Transformation Ring", 1, 255, null, null, null);
-            */
-        }
+            this.CreateTransformationRing(
+                10,
+                "Transformation Ring",
+                0,
+                200,
+                CharacterTransformationSkin.BudgeDragon,
+                CharacterTransformationSkin.Giant,
+                CharacterTransformationSkin.SkeletonWarrior,
+                CharacterTransformationSkin.PoisonBullFighter,
+                CharacterTransformationSkin.ThunderLich,
+                CharacterTransformationSkin.DeathCow);
 
-        private ItemOptionDefinition CreateOption(string name, AttributeDefinition targetAttribute, float boostPerLevel, AggregateType aggregateType = AggregateType.AddRaw)
-        {
-            var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
-            optionDefinition.AddsRandomly = true;
-            optionDefinition.Name = name;
-            optionDefinition.AddChance = 0.25f;
-            optionDefinition.MaximumOptionsPerItem = 1;
-
-            var option = this.Context.CreateNew<IncreasableItemOption>();
-            option.OptionType = ItemOptionTypes.Option;
-            option.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-            option.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
-            for (int i = 1; i <= 4; i++)
-            {
-                var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
-                optionOfLevel.Level = i;
-                optionOfLevel.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-                optionOfLevel.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-                optionOfLevel.PowerUpDefinition.Boost.ConstantValue.Value = boostPerLevel * i;
-                optionOfLevel.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
-                optionOfLevel.PowerUpDefinition.TargetAttribute = option.PowerUpDefinition.TargetAttribute;
-                option.LevelDependentOptions.Add(optionOfLevel);
-            }
-
-            optionDefinition.PossibleOptions.Add(option);
-            this.GameConfiguration.ItemOptions.Add(optionDefinition);
-            return optionDefinition;
+            this.CreateTransformationRing(39, "Elite Transfer Skeleton Ring", 10, 255, CharacterTransformationSkin.EliteSkillSoldier);
+            this.CreateTransformationRing(40, "Jack Olantern Transformation Ring", 10, 100, CharacterTransformationSkin.JackOlantern);
+            this.CreateTransformationRing(41, "Christmas Transformation Ring", 1, 100, CharacterTransformationSkin.Christmas);
+            this.CreateTransformationRing(42, "Game Master Transformation Ring", 0, 255, CharacterTransformationSkin.GameMaster);
+            this.CreateTransformationRing(68, "Snowman Transformation Ring", 10, 100, CharacterTransformationSkin.Snowman);
+            this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, CharacterTransformationSkin.Panda);
+            this.CreateTransformationRing(122, "Skeleton Transformation Ring", 1, 255, CharacterTransformationSkin.Skeleton);
+            this.CreateTransformationRing(163, "? Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
+            this.CreateTransformationRing(164, "?? Transformation Ring", 1, 255, (CharacterTransformationSkin)626);
+            this.CreateTransformationRing(165, "??? Transformation Ring", 1, 255, (CharacterTransformationSkin)642);
         }
 
         /// <summary>
@@ -188,67 +166,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
 
         private ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, string name, byte level, byte durability, ItemOptionDefinition? excellentOptionDefinition, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
         {
-            var item = this.Context.CreateNew<ItemDefinition>();
-            this.GameConfiguration.Items.Add(item);
-            item.Group = 13;
-            item.Number = number;
-            item.ItemSlot = this.GameConfiguration.ItemSlotTypes.FirstOrDefault(slotType => slotType.ItemSlots.Contains(slot));
-            item.DropsFromMonsters = dropsFromMonsters;
-            item.Name = name;
-            item.DropLevel = level;
-            item.MaximumItemLevel = 4;
-            item.Width = 1;
-            item.Height = 1;
+            var item = this.CreateJewelery(number, slot, dropsFromMonsters, name, level, durability, resistanceAttribute, optionTargetAttribute == Stats.HealthRecoveryMultiplier);
 
-            //// TODO: Requirement increases with item level
-            this.CreateItemRequirementIfNeeded(item, Stats.Level, level);
-
-            item.Durability = durability;
             if (excellentOptionDefinition != null)
             {
                 item.PossibleItemOptions.Add(excellentOptionDefinition);
             }
 
-            if (optionTargetAttribute == Stats.HealthRecoveryMultiplier)
-            {
-                item.PossibleItemOptions.Add(this.healthRecoverOptionDefinition!);
-            }
-            else if (optionTargetAttribute != null)
+            if (optionTargetAttribute != Stats.HealthRecoveryMultiplier && optionTargetAttribute is not null)
             {
                 // Then it's either maximum mana or ability increase by 1% for each option level
-                var option = this.CreateOption("Jewellery option " + optionTargetAttribute.Designation, optionTargetAttribute, 1.01f, AggregateType.Multiplicate);
+                var option = this.CreateOption("Jewelery option " + optionTargetAttribute.Designation, optionTargetAttribute, 1.01f, AggregateType.Multiplicate);
 
                 item.PossibleItemOptions.Add(option);
-            }
-            else
-            {
-                // we add no option.
-            }
-
-            if (resistanceAttribute != null)
-            {
-                // TODO: Implement elemental attacks and resistancies.
-                // Not sure how these resistancies work. If I remember correctly, it worked at the original server this way:
-                //   - it only considers the maximum resistance of all equipped items
-                //   - officially there were only rings/pendant up to level 4 and they worked pretty well
-                //     -> one item level means about 20% less chance to get affected by the element (iced, poisoned etc.).
-                //   - I'm not sure if they prevent hits or lower the damage. For example, you could miss an attack but still apply ice or poison to an opponent.
-                var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                item.BasePowerUpAttributes.Add(powerUp);
-                powerUp.BaseValue = 0.2f;
-                powerUp.TargetAttribute = resistanceAttribute.GetPersistent(this.GameConfiguration);
-                for (int i = 1; i <= 4; i++)
-                {
-                    var levelBonus = this.Context.CreateNew<LevelBonus>();
-                    levelBonus.Level = i;
-                    levelBonus.AdditionalValue = (1 + i) * 0.2f;
-                    powerUp.BonusPerLevel.Add(levelBonus);
-                }
-            }
-
-            foreach (var characterClass in this.GameConfiguration.CharacterClasses)
-            {
-                item.QualifiedCharacters.Add(characterClass);
             }
 
             return item;

@@ -170,10 +170,6 @@ namespace MUnique.OpenMU.GameLogic
             attribute.ThrowNotInitializedProperty(attribute.TargetAttribute is null, nameof(attribute.TargetAttribute));
 
             yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
-            if (item.Level == 0)
-            {
-                yield break;
-            }
 
             var levelBonus = (attribute.BonusPerLevel ?? Enumerable.Empty<LevelBonus>()).FirstOrDefault(bonus => bonus.Level == item.Level);
             if (levelBonus != null)
