@@ -1346,6 +1346,8 @@ namespace MUnique.OpenMU.GameLogic
             this.Attributes.GetOrCreateAttribute(Stats.MaximumAbility).ValueChanged += (a, b) => this.OnMaximumManaOrAbilityChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumHealth).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
             this.Attributes.GetOrCreateAttribute(Stats.MaximumShield).ValueChanged += (a, b) => this.OnMaximumHealthOrShieldChanged();
+            this.Attributes.GetOrCreateAttribute(Stats.TransformationSkin).ValueChanged += (a, b) => this.OnTransformationSkinChanged();
+
             var ammoAttribute = this.Attributes.GetOrCreateAttribute(Stats.AmmunitionAmount);
             this.Attributes[Stats.AmmunitionAmount] = this.GetAmmunitionItem()?.Durability ?? 0;
             ammoAttribute.ValueChanged += (a, b) => this.OnAmmunitionAmountChanged();
@@ -1364,6 +1366,11 @@ namespace MUnique.OpenMU.GameLogic
                     this.Logger.LogError(ex, "Error occured when initializing the messenger.");
                 }
             });
+        }
+
+        private void OnTransformationSkinChanged()
+        {
+            this.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<INewPlayersInScopePlugIn>()?.NewPlayersInScope(this.GetAsEnumerable()), true);
         }
 
         /// <summary>

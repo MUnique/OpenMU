@@ -3212,7 +3212,7 @@
       <Structures>
         <Structure>
           <Name>CharacterData</Name>
-          <Description>Contains the data of an character.</Description>
+          <Description>Contains the data of an transformed character.</Description>
           <Length>19</Length>
           <Fields>
             <Field>
@@ -3289,6 +3289,119 @@
               <TypeName>CharacterHeroState</TypeName>
               <Name>HeroState</Name>
               <Length>4</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>45</Code>
+      <Name>AddTransformedCharactersToScope</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player wears a monster transformation ring.</SentWhen>
+      <CausedReaction>The character appears as monster, defined by the Skin property.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CharacterCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>CharacterData</TypeName>
+          <Name>Characters</Name>
+          <ItemCountField>CharacterCount</ItemCountField>
+          <UseCustomIndexer>true</UseCustomIndexer>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>CharacterData</Name>
+          <Description>Contains the data of an transformed character.</Description>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>Id</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>CurrentPositionX</Name>
+            </Field>
+            <Field>
+              <Index>3</Index>
+              <Type>Byte</Type>
+              <Name>CurrentPositionY</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>Skin</Name>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>16</Index>
+              <Type>Byte</Type>
+              <Name>TargetPositionX</Name>
+            </Field>
+            <Field>
+              <Index>17</Index>
+              <Type>Byte</Type>
+              <Name>TargetPositionY</Name>
+            </Field>
+            <Field>
+              <Index>18</Index>
+              <LeftShifted>4</LeftShifted>
+              <Type>Byte</Type>
+              <Name>Rotation</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>18</Index>
+              <LeftShifted>0</LeftShifted>
+              <Type>Enum</Type>
+              <TypeName>CharacterHeroState</TypeName>
+              <Name>HeroState</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>19</Index>
+              <Type>Binary</Type>
+              <Name>Appearance</Name>
+              <Length>18</Length>
+            </Field>
+            <Field>
+              <Index>37</Index>
+              <Type>Byte</Type>
+              <Name>EffectCount</Name>
+              <Description>Defines the number of effects which would be sent after this field.</Description>
+            </Field>
+            <Field>
+              <Index>38</Index>
+              <Type>Structure[]</Type>
+              <TypeName>EffectId</TypeName>
+              <Name>Effects</Name>
+              <ItemCountField>EffectCount</ItemCountField>
+            </Field>
+          </Fields>
+        </Structure>
+        <Structure>
+          <Name>EffectId</Name>
+          <Description>Contains the id of a magic effect.</Description>
+          <Length>1</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>Id</Name>
             </Field>
           </Fields>
         </Structure>

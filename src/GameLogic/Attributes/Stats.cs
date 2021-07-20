@@ -601,6 +601,12 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition IsInSafezone { get; } = new (new Guid("82044DF9-F528-4AD6-9AAA-6FEAA4C786E7"), "Flag, if the character is located in a safezone of a game map", "Characters at the safezone recover additional health and shield.");
 
         /// <summary>
+        /// Gets the <see cref="TransformationSkin"/> attribute which defines if and how the character is skinned as a monster.
+        /// This value is > 0, when the character got skinned as a monster, by wearing a transformation ring. The value specifies the type of monster (skin).
+        /// </summary>
+        public static AttributeDefinition TransformationSkin { get; } = new (new Guid("E5B886B0-B1A6-4EA2-8EF9-08D27AADB7C3"), "Character to Monster transformation", "This value is > 0, when the character got transformed into a monster, by wearing a transformation ring. The value specifies the type of monster (skin).");
+
+        /// <summary>
         /// Gets the attribute for a strength requirement reduction. Items with this option require less strength, according to the option's value.
         /// </summary>
         /// <remarks>
