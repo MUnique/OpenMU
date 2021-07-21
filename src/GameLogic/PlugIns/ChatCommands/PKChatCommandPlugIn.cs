@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
+namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System;
     using System.Runtime.InteropServices;
@@ -14,7 +14,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// <summary>
     /// A chat command plugin which handles pk commands.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("30B7EFF0-33EE-4136-BEB0-BE503B748DC6")]
     [PlugIn("PK chat command", "Handles the chat command '/pk <char> <pk_lvl> <pk_count>'. Sets PK Level and Count for a character.")]
     [ChatCommandHelp(Command, typeof(PKChatCommandArgs), CharacterStatus.GameMaster)]

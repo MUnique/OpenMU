@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
+namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
@@ -13,7 +13,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// <summary>
     /// A chat command plugin which handles move commands.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("4564AE2B-4819-4155-B5B2-FE2ED0CF7A7F")]
     [PlugIn("Move chat command", "Handles the chat command '/move <target> <mapIdOrName?> <x?> <y?>'. Move the character to the specified destination.")]
     [ChatCommandHelp(Command, typeof(MoveChatCommandArgs), CharacterStatus.Normal)]

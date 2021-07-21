@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
+namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Linq;
     using System.Runtime.InteropServices;
@@ -13,7 +13,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// <summary>
     /// A chat command plugin which handles gm disconnect commands.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("F23262E6-0D7C-4B9C-8CD5-7E44AF4EE469")]
     [PlugIn("Guild disconnect chat command", "Handles the chat command '/guilddisconnect <guild>'. Disconnect the guild members.")]
     [ChatCommandHelp(Command, typeof(GuildDisconnectChatCommandArgs), CharacterStatus.GameMaster)]

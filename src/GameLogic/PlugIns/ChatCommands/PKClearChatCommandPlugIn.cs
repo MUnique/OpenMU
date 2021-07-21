@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
+namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
@@ -13,7 +13,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// <summary>
     /// A chat command plugin which handles pk clear commands.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("EB97A8F6-F6BD-460A-BCBE-253BF679361A")]
     [PlugIn("PK clear chat command", "Handles the chat command '/pkclear <char>'. Clears a character murders.")]
     [ChatCommandHelp(Command, typeof(PKClearChatCommandArgs), CharacterStatus.GameMaster)]

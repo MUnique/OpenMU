@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
+namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
@@ -12,7 +12,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GameMaster
     /// <summary>
     /// A chat command plugin which handles teleport commands.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("ABFE2440-E765-4F17-A588-BD9AE3799886")]
     [PlugIn("Teleport chat command", "Handles the chat command '/teleport <x> <y>'. Teleports the game master to the specified coordinate.")]
     [ChatCommandHelp(Command, typeof(TeleportChatCommandArgs), CharacterStatus.GameMaster)]

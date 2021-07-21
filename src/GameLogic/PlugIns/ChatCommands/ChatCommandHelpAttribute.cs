@@ -11,7 +11,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// An attribute which decorates an <see cref="IChatCommandPlugIn"/> with help information.
     /// This information is then used in the <see cref="HelpCommand"/>.
     /// </summary>
-    /// <seealso cref="System.Attribute" />
     [AttributeUsage(AttributeTargets.Class)]
     public class ChatCommandHelpAttribute : Attribute
     {

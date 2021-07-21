@@ -12,7 +12,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// <summary>
     /// A chat command plugin which handles move commands.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("ED2523C1-F66D-4B53-814E-D2FC0C1F46C0")]
     [PlugIn("Post chat command", "Handles the chat command '/post message'. Sends a global message to all players of the game.")]
     public class PostChatCommandPlugIn : IChatCommandPlugIn

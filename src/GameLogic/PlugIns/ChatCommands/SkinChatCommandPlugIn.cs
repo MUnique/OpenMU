@@ -5,12 +5,12 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
     using System.Linq;
-    using MUnique.OpenMU.AttributeSystem;
-    using MUnique.OpenMU.Persistence.BasicModel;
     using System.Runtime.InteropServices;
+    using MUnique.OpenMU.AttributeSystem;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
+    using MUnique.OpenMU.Persistence.BasicModel;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>

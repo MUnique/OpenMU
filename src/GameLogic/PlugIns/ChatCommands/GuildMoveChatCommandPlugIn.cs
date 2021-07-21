@@ -13,7 +13,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
     /// <summary>
     /// A chat command plugin which handles gm move commands.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
     [Guid("9163C3EA-6722-4E55-A109-20C163C05266")]
     [PlugIn("Guild move chat command", "Handles the chat command '/guildmove <guild> <map> <x?> <y?>'. Move the character from a guild to a specified map and coordinates.")]
     [ChatCommandHelp(Command, typeof(GuildMoveChatCommandArgs), CharacterStatus.GameMaster)]
