@@ -62,7 +62,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 return null;
             }
 
-            var modifier = skill.ElementalModifierTarget;
+            var modifier = skill.ElementalModifierTarget!;
             var resistance = target.Attributes[modifier];
             if (resistance >= 1.0f || !Rand.NextRandomBool(1.0f - resistance))
             {
@@ -73,8 +73,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
                 && !target.MagicEffectList.ActiveEffects.ContainsKey(skill.MagicEffectDef.Number)
                 && skill.MagicEffectDef.PowerUpDefinition is { Boost: not null, Duration: not null } powerUpDef)
             {
-                var powerUp = target.Attributes!.CreateElement(powerUpDef.Boost);
-                var powerUpDuration = target.Attributes!.CreateElement(powerUpDef.Duration);
+                var powerUp = target.Attributes!.CreateElement(powerUpDef.Boost!);
+                var powerUpDuration = target.Attributes!.CreateElement(powerUpDef.Duration!);
                 var magicEffect = skill.MagicEffectDef.PowerUpDefinition.TargetAttribute == Stats.IsPoisoned
                     ? new PoisonMagicEffect(powerUp, skill.MagicEffectDef, TimeSpan.FromSeconds(powerUpDuration.Value), player, target)
                     : new MagicEffect(powerUp, skill.MagicEffectDef, TimeSpan.FromSeconds(powerUpDuration.Value));
