@@ -16,8 +16,6 @@ namespace MUnique.OpenMU.DataModel.Entities
     public class SkillEntry : INotifyPropertyChanged
     {
         private int level;
-        private IElement? buffPowerUp;
-        private IElement? powerUpDuration;
 
         /// <summary>
         /// Occurs when a property changed.
@@ -35,10 +33,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// </summary>
         public int Level
         {
-            get
-            {
-                return this.level;
-            }
+            get => this.level;
 
             set
             {
@@ -54,11 +49,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// Gets or sets the power up element of this skill of this player. It is a "cached" element which will be created on demand and can be applied multiple times.
         /// </summary>
         [Transient]
-        public IElement? BuffPowerUp
-        {
-            get => buffPowerUp;
-            set => buffPowerUp = value;
-        }
+        public IElement? BuffPowerUp { get; set; }
 
         /// <summary>
         /// Gets or sets the duration of the <see cref="BuffPowerUp"/>.
@@ -67,11 +58,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// It is an IElement, because the duration can be dependent from the player attributes.
         /// </remarks>
         [Transient]
-        public IElement? PowerUpDuration
-        {
-            get => powerUpDuration;
-            set => powerUpDuration = value;
-        }
+        public IElement? PowerUpDuration { get; set; }
 
         /// <inheritdoc />
         public override string ToString()
