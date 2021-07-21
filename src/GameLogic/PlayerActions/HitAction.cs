@@ -4,7 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions
 {
+    using System;
+    using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.Views.World;
 
     /// <summary>
@@ -40,8 +43,51 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
 
             player.Rotation = lookingDirection;
             target.AttackBy(player, null);
+            if (player.Attributes?[Stats.TransformationSkin] is { } skin and not 0
+                && this.ApplySkinnedMonstersSkill(player, target, (short)skin) is var (skill, effectApplied))
+            {
+                player.ForEachWorldObserver(observer => observer.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(player, target, skill, effectApplied), true);
+                return;
+            }
 
             player.ForEachObservingPlayer(observer => observer.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(player, attackAnimation, target, lookingDirection), false);
+        }
+
+        private (Skill Skill, bool EffectApplied)? ApplySkinnedMonstersSkill(Player player, IAttackable target, short skin)
+        {
+            var effectApplied = false;
+            if (player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == skin)?.AttackSkill
+                is not { ElementalModifierTarget: not null } skill)
+            {
+                return null;
+            }
+
+            var modifier = skill.ElementalModifierTarget;
+            var resistance = target.Attributes[modifier];
+            if (resistance >= 1.0f || !Rand.NextRandomBool(1.0f - resistance))
+            {
+                return (skill, effectApplied);
+            }
+
+            if (skill.MagicEffectDef is not null
+                && !target.MagicEffectList.ActiveEffects.ContainsKey(skill.MagicEffectDef.Number)
+                && skill.MagicEffectDef.PowerUpDefinition is { Boost: not null, Duration: not null } powerUpDef)
+            {
+                var powerUp = target.Attributes!.CreateElement(powerUpDef.Boost);
+                var powerUpDuration = target.Attributes!.CreateElement(powerUpDef.Duration);
+                var magicEffect = skill.MagicEffectDef.PowerUpDefinition.TargetAttribute == Stats.IsPoisoned
+                    ? new PoisonMagicEffect(powerUp, skill.MagicEffectDef, TimeSpan.FromSeconds(powerUpDuration.Value), player, target)
+                    : new MagicEffect(powerUp, skill.MagicEffectDef, TimeSpan.FromSeconds(powerUpDuration.Value));
+                target.MagicEffectList.AddEffect(magicEffect);
+                effectApplied = true;
+            }
+
+            if (modifier == Stats.LightningResistance)
+            {
+                target.MoveRandomly();
+            }
+
+            return (skill, effectApplied);
         }
     }
 }
