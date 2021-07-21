@@ -68,7 +68,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
         /// <param name="dropLevel">The level.</param>
         /// <param name="durability">The durability.</param>
         /// <param name="transformationSkins">The transformation skins, per item level.</param>
-        protected void CreateTransformationRing(byte number, string name, byte dropLevel, byte durability, params CharacterTransformationSkin[] transformationSkins)
+        /// <returns>The definition of the created ring.</returns>
+        protected ItemDefinition CreateTransformationRing(byte number, string name, byte dropLevel, byte durability, params CharacterTransformationSkin[] transformationSkins)
         {
             var ring = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(ring);
@@ -100,6 +101,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
             {
                 ring.QualifiedCharacters.Add(characterClass);
             }
+
+            return ring;
         }
 
         /// <summary>

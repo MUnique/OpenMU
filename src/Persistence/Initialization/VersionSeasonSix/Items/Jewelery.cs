@@ -77,16 +77,52 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
                 CharacterTransformationSkin.ThunderLich,
                 CharacterTransformationSkin.DeathCow);
 
-            this.CreateTransformationRing(39, "Elite Transfer Skeleton Ring", 10, 255, CharacterTransformationSkin.EliteSkillSoldier);
+            var eliteSkeletonRing = this.CreateTransformationRing(39, "Elite Transfer Skeleton Ring", 10, 255, CharacterTransformationSkin.EliteSkillSoldier);
+            eliteSkeletonRing.PossibleItemOptions.Add(
+                this.CreateItemOptionDefinition("Elite Transfer Skeleton Ring",
+                    (Stats.DefenseBase, 10, AggregateType.AddRaw),
+                    (Stats.MaximumHealth, 400, AggregateType.AddRaw)));
             this.CreateTransformationRing(40, "Jack Olantern Transformation Ring", 10, 100, CharacterTransformationSkin.JackOlantern);
             this.CreateTransformationRing(41, "Christmas Transformation Ring", 1, 100, CharacterTransformationSkin.Christmas);
             this.CreateTransformationRing(42, "Game Master Transformation Ring", 0, 255, CharacterTransformationSkin.GameMaster);
             this.CreateTransformationRing(68, "Snowman Transformation Ring", 10, 100, CharacterTransformationSkin.Snowman);
-            this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, CharacterTransformationSkin.Panda);
-            this.CreateTransformationRing(122, "Skeleton Transformation Ring", 1, 255, CharacterTransformationSkin.Skeleton);
+            var pandaRing = this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, CharacterTransformationSkin.Panda);
+            pandaRing.PossibleItemOptions.Add(
+                this.CreateItemOptionDefinition("Panda Ring",
+                    (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
+                    (Stats.BaseDamageBonus, 30, AggregateType.AddRaw)));
+            var skeletonRing = this.CreateTransformationRing(122, "Skeleton Transformation Ring", 1, 255, CharacterTransformationSkin.Skeleton);
+            skeletonRing.PossibleItemOptions.Add(
+                this.CreateItemOptionDefinition("Skeleton Transformation Ring",
+                    (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
+                    (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate))); // todo: exp rate only with equipped skeleton pet
             this.CreateTransformationRing(163, "? Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
             this.CreateTransformationRing(164, "?? Transformation Ring", 1, 255, (CharacterTransformationSkin)626);
             this.CreateTransformationRing(165, "??? Transformation Ring", 1, 255, (CharacterTransformationSkin)642);
+        }
+
+        private ItemOptionDefinition CreateItemOptionDefinition(string name, params (AttributeDefinition targetOption, float value, AggregateType aggregateType)[] options)
+        {
+            var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
+            this.GameConfiguration.ItemOptions.Add(optionDefinition);
+            optionDefinition.Name = name;
+            foreach (var (targetOption, value, aggregateType) in options)
+            {
+                optionDefinition.PossibleOptions.Add(this.CreateItemOption(targetOption, value, aggregateType));
+            }
+
+            return optionDefinition;
+        }
+
+        private IncreasableItemOption CreateItemOption(AttributeDefinition targetOption, float value, AggregateType aggregateType)
+        {
+            var increaseDamage = this.Context.CreateNew<IncreasableItemOption>();
+            increaseDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+            increaseDamage.PowerUpDefinition.TargetAttribute = targetOption.GetPersistent(this.GameConfiguration);
+            increaseDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            increaseDamage.PowerUpDefinition.Boost.ConstantValue.Value = value;
+            increaseDamage.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+            return increaseDamage;
         }
 
         /// <summary>
