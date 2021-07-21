@@ -37,10 +37,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
             var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true, (Stats.DamageReceiveDecrement, 0.1f), (Stats.AttackDamageIncrease, 0.15f), (Stats.CanFly, 1.0f));
             this.AddDinorantOptions(dinorant);
             var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false);
-            this.GameConfiguration.DetermineCharacterClasses(0, 0, 0, 0, 1, 0, 0).ForEach(darkHorse.QualifiedCharacters.Add);
+            this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
             var darkRaven = this.CreatePet(5, 0, 1, 1, "Dark Raven", 218, false, false);
             darkRaven.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(1));
-            this.GameConfiguration.DetermineCharacterClasses(0, 0, 0, 0, 1, 0, 0).ForEach(darkRaven.QualifiedCharacters.Add);
+            this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkRaven.QualifiedCharacters.Add);
 
             var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true, (Stats.CanFly, 1.0f));
             this.AddFenrirOptions(fenrir);
@@ -179,7 +179,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
 
             if (addAllCharacterClasses)
             {
-                this.GameConfiguration.DetermineCharacterClasses(1, 1, 1, 1, 1, 1, 1).ForEach(pet.QualifiedCharacters.Add);
+                this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.All).ForEach(pet.QualifiedCharacters.Add);
             }
 
             this.CreateItemRequirementIfNeeded(pet, Stats.Level, dropLevelAndLevelRequirement);
