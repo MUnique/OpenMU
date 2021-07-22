@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var item = eventArgs.Item;
-            if (item is IHasBucketInformation { OldBucket: { } } hasBucketInfo && this.ObservingBuckets.Contains(hasBucketInfo.OldBucket))
+            if (item is IHasBucketInformation { OldBucket: { } oldBucket } && this.ObservingBuckets.Contains(oldBucket))
             {
                 // we already observe the bucket where the object came from
                 return;
