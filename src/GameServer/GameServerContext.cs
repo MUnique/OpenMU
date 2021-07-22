@@ -105,11 +105,11 @@ namespace MUnique.OpenMU.GameServer
 
         private void PlayerEnteredWorld(object? sender, EventArgs e)
         {
-            if (sender is Player { SelectedCharacter: { } } player)
+            if (sender is Player { SelectedCharacter: { } selectedCharacter } player)
             {
-                this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
-                player.GuildStatus = this.GuildServer.PlayerEnteredGame(player.SelectedCharacter.Id, player.SelectedCharacter.Name, this.Id);
-                if (player.GuildStatus != null)
+                this.FriendServer.SetOnlineState(selectedCharacter.Id, selectedCharacter.Name, this.Id);
+                player.GuildStatus = this.GuildServer.PlayerEnteredGame(selectedCharacter.Id, selectedCharacter.Name, this.Id);
+                if (player.GuildStatus is not null)
                 {
                     player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(player, true), true);
                 }
@@ -118,12 +118,12 @@ namespace MUnique.OpenMU.GameServer
 
         private void PlayerLeftWorld(object? sender, EventArgs e)
         {
-            if (sender is Player { SelectedCharacter: { } } player)
+            if (sender is Player { SelectedCharacter: { } selectedCharacter } player)
             {
-                this.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, 0xFF);
-                if (player.GuildStatus != null)
+                this.FriendServer.SetOnlineState(selectedCharacter.Id, selectedCharacter.Name, 0xFF);
+                if (player.GuildStatus is { } guildStatus)
                 {
-                    this.GuildServer.GuildMemberLeftGame(player.GuildStatus.GuildId, player.SelectedCharacter.Id, this.Id);
+                    this.GuildServer.GuildMemberLeftGame(guildStatus.GuildId, selectedCharacter.Id, this.Id);
                     player.GuildStatus = null;
                 }
             }
