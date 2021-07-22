@@ -39,7 +39,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
         /// Gets or sets a value indicating whether the directions provided by <see cref="ISupportWalk.GetDirections"/> should be send when an object moved.
         /// This is usually not required, because the game client calculates a proper path anyway and doesn't use the suggested path.
         /// </summary>
-        public bool SendWalkDirections { get; set; }
+        public bool SendWalkDirections { get; set; } = true;
 
         /// <inheritdoc/>
         public void ObjectMoved(ILocateable obj, MoveType type)
@@ -132,7 +132,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
                     {
                         // The last one is the rotation
                         rotation = steps[stepsLength - 1];
-                        steps = steps.Slice(0, stepsLength - 1);
+                        steps = steps[..(stepsLength - 1)];
                         stepsLength--;
                     }
                 }
@@ -155,7 +155,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
             }
 
             walkPacket.StepData[0] = (byte)(steps[0].ToPacketByte() << 4 | stepsSize);
-            for (int i = 0; i < stepsSize; i += 2)
+            for (int i = 0; i < stepsSize - 1; i += 2)
             {
                 var index = 1 + (i / 2);
                 var firstStep = steps[i].ToPacketByte();
