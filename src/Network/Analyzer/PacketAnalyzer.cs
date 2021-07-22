@@ -134,6 +134,11 @@ namespace MUnique.OpenMU.Network.Analyzer
                 return exactMatch.Definition;
             }
 
+            if (filteredDefinitions.SingleOrDefault(d => d.Definition.Length == packet.Size) is { Definition: { Name: { } } } sameLengthMatch)
+            {
+                return sameLengthMatch.Definition;
+            }
+
             var current = filteredDefinitions.First();
             foreach (var def in filteredDefinitions.Skip(1))
             {
