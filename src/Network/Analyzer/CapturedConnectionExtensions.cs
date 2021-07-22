@@ -55,8 +55,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             {
                 var currentLine = reader.ReadLine();
                 var splittedLine = currentLine?.Split(fieldSeparator);
-                if (splittedLine != null
-                    && splittedLine.Length > 3
+                if (splittedLine is { Length: > 3 }
                     && long.TryParse(splittedLine[0], out var ticks)
                     && bool.TryParse(splittedLine[1], out var toServer)
                     && int.TryParse(splittedLine[2], out var size)

@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills
             if (!player.IsInRange(target.Position, skill.Range + 2))
             {
                 // target position might be out of sync so we send the current coordinates to the client again.
-                if (!(target is ISupportWalk walker && walker.IsWalking))
+                if (!(target is ISupportWalk { IsWalking: true }))
                 {
                     player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()?.ObjectMoved(target, MoveType.Instant);
                 }

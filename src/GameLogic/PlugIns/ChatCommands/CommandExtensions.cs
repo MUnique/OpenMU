@@ -115,7 +115,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         private static void ReadNamedArguments(object instance, IList<PropertyInfo> properties, IList<string> arguments)
         {
             var argumentProperties = properties.Where(property => property.GetCustomAttribute<ArgumentAttribute>() is { }).ToList();
-            var requiredProperties = argumentProperties.Where(prop => prop.GetCustomAttribute<ArgumentAttribute>() is { } attribute && attribute.IsRequired).ToList();
+            var requiredProperties = argumentProperties.Where(prop => prop.GetCustomAttribute<ArgumentAttribute>() is { IsRequired: true }).ToList();
 
             foreach (var property in argumentProperties)
             {

@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation
                     }
 
                     var nodes = pathFinder.FindPath(new Point(x, y), start);
-                    if (nodes != null && nodes.Count > 0)
+                    if (nodes is { Count: > 0 })
                     {
                         var firstNode = nodes[0];
 

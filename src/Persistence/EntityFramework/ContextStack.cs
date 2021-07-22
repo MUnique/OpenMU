@@ -84,7 +84,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 this.contextLock.ExitReadLock();
             }
 
-            if (contextsOfCurrentThread != null && contextsOfCurrentThread.Count > 0)
+            if (contextsOfCurrentThread is { Count: > 0 })
             {
                 return contextsOfCurrentThread.Peek();
             }

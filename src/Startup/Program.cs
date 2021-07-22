@@ -270,8 +270,7 @@ namespace MUnique.OpenMU.Startup
             var parameter = args.FirstOrDefault(a => a.StartsWith($"-{parameterName}:", StringComparison.InvariantCultureIgnoreCase));
             if (parameter != null
                 && int.TryParse(parameter.Substring(parameter.IndexOf(':') + 1), out int value)
-                && value >= 0
-                && value <= ushort.MaxValue)
+                && value is >= 0 and <= ushort.MaxValue)
             {
                 return (ushort)value;
             }

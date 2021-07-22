@@ -49,9 +49,7 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var item = eventArgs.Item;
-            if (item is IHasBucketInformation hasBucketInfo
-                && hasBucketInfo.OldBucket is not null
-                && this.ObservingBuckets.Contains(hasBucketInfo.OldBucket))
+            if (item is IHasBucketInformation { OldBucket: { } } hasBucketInfo && this.ObservingBuckets.Contains(hasBucketInfo.OldBucket))
             {
                 // we already observe the bucket where the object came from
                 return;
@@ -174,7 +172,7 @@ namespace MUnique.OpenMU.GameLogic
 
             oldItems.ForEach(item => item.RemoveObserver(this.adaptee));
 
-            if (this.adaptee is IHasBucketInformation bucketInformation && bucketInformation.NewBucket is null)
+            if (this.adaptee is IHasBucketInformation { NewBucket: null })
             {
                 // adaptee (player) left the map or disconnected; it's not required to update the view
             }

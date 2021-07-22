@@ -175,7 +175,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
 
         private void BuildSets()
         {
-            var sets = this.GameConfiguration.Items.Where(item => item.Group >= 7 && item.Group <= 11).GroupBy(item => item.Number);
+            var sets = this.GameConfiguration.Items.Where(item => item.Group is >= 7 and <= 11).GroupBy(item => item.Number);
 
             var defenseRateBonus = this.Context.CreateNew<IncreasableItemOption>();
             defenseRateBonus.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();

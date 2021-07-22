@@ -98,7 +98,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         protected override void InternalDisconnect()
         {
             base.InternalDisconnect();
-            if (this.Connection != null && this.Connection.Connected)
+            if (this.Connection is { Connected: true })
             {
                 this.Connection.Disconnect();
                 this.Connection.Dispose();

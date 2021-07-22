@@ -100,9 +100,7 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         {
             var result = new StringBuilder();
             var virtualNavigationProperties = type.GetProperties()
-                .Where(p => p.GetGetMethod() is { } getMethod
-                            && getMethod.IsVirtual
-                            && !getMethod.IsFinal
+                .Where(p => p.GetGetMethod() is { IsVirtual: true, IsFinal: false }
                             && !p.PropertyType.IsValueType
                             && !p.PropertyType.IsArray).ToList();
 

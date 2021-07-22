@@ -91,7 +91,7 @@ namespace MUnique.OpenMU.Network
                     }
                 }
 
-                if (length != null && length > 0 && buffer.Length >= length)
+                if (length is > 0 && buffer.Length >= length)
                 {
                     var packet = buffer.Slice(0, length.Value);
                     await this.ReadPacket(packet).ConfigureAwait(false);

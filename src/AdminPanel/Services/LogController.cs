@@ -97,7 +97,7 @@ namespace MUnique.OpenMU.AdminPanel.Services
                 return stringProperty;
             }
 
-            if (logEventData.Properties[name] is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.String)
+            if (logEventData.Properties[name] is JsonElement { ValueKind: JsonValueKind.String } jsonElement)
             {
                 return jsonElement.GetString() ?? string.Empty;
             }

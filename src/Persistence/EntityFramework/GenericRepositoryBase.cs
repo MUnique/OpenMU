@@ -256,8 +256,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 if (repository != null)
                 {
 #pragma warning disable EF1001 // Internal EF Core API usage.
-                    if (navigation is Navigation concreteNavigation
-                        && concreteNavigation.Setter != null)
+                    if (navigation is Navigation { Setter: { } } concreteNavigation)
                     {
                         concreteNavigation.Setter.SetClrValue(entityEntry.Entity, repository.GetById(id));
                     }

@@ -289,7 +289,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
             var result = new StringBuilder();
             var virtualNavigationProperties = type
                 .GetProperties()
-                .Where(p => p.GetGetMethod() is { } getMethod && getMethod.IsVirtual && !getMethod.IsFinal && !p.PropertyType.IsValueType && !p.PropertyType.IsArray)
+                .Where(p => p.GetGetMethod() is { IsVirtual: true, IsFinal: false }
+                            && !p.PropertyType.IsValueType
+                            && !p.PropertyType.IsArray)
                 .Where(p => !(p.PropertyType.IsGenericType
                               && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
                               && StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)) || type.FullName == GameConfigurationFullName)

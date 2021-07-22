@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             if (player.SelectedCharacter.LevelUpPoints > 0)
             {
                 var attributeDef = player.SelectedCharacter.CharacterClass?.StatAttributes.FirstOrDefault(a => a.Attribute == statAttributeDefinition);
-                if (attributeDef != null && attributeDef.IncreasableByPlayer)
+                if (attributeDef is { IncreasableByPlayer: true })
                 {
                     player.Attributes![attributeDef.Attribute]++;
                     player.SelectedCharacter.LevelUpPoints--;
