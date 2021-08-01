@@ -369,7 +369,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 43;
+        public static int Length => 60;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -407,6 +407,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public Span<byte> ClientVersion
         {
             get => this.data.Slice(38, 5);
+        }
+
+        /// <summary>
+        /// Gets or sets the client serial.
+        /// </summary>
+        public Span<byte> ClientSerial
+        {
+            get => this.data.Slice(43, 16);
         }
 
         /// <summary>
@@ -479,7 +487,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 33;
+        public static int Length => 50;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -517,6 +525,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public Span<byte> ClientVersion
         {
             get => this.data.Slice(28, 5);
+        }
+
+        /// <summary>
+        /// Gets or sets the client serial.
+        /// </summary>
+        public Span<byte> ClientSerial
+        {
+            get => this.data.Slice(33, 16);
         }
 
         /// <summary>
@@ -589,7 +605,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 31;
+        public static int Length => 48;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -627,6 +643,14 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public Span<byte> ClientVersion
         {
             get => this.data.Slice(28, 3);
+        }
+
+        /// <summary>
+        /// Gets or sets the client serial.
+        /// </summary>
+        public Span<byte> ClientSerial
+        {
+            get => this.data.Slice(31, 16);
         }
 
         /// <summary>

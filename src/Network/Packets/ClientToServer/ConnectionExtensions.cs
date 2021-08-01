@@ -1267,11 +1267,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="password">The password, "encrypted" with Xor3.</param>
         /// <param name="tickCount">The tick count.</param>
         /// <param name="clientVersion">The client version.</param>
+        /// <param name="clientSerial">The client serial.</param>
         /// <remarks>
         /// Is sent by the client when: The player tries to log into the game.
         /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
         /// </remarks>
-        public static void SendLoginLongPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion)
+        public static void SendLoginLongPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
         {
             using var writer = connection.StartWriteLoginLongPassword();
             var packet = writer.Packet;
@@ -1279,6 +1280,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             @password.CopyTo(packet.Password);
             packet.TickCount = @tickCount;
             @clientVersion.CopyTo(packet.ClientVersion);
+            @clientSerial.CopyTo(packet.ClientSerial);
             writer.Commit();
         }
 
@@ -1290,11 +1292,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="password">The password, "encrypted" with Xor3.</param>
         /// <param name="tickCount">The tick count.</param>
         /// <param name="clientVersion">The client version.</param>
+        /// <param name="clientSerial">The client serial.</param>
         /// <remarks>
         /// Is sent by the client when: The player tries to log into the game.
         /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
         /// </remarks>
-        public static void SendLoginShortPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion)
+        public static void SendLoginShortPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
         {
             using var writer = connection.StartWriteLoginShortPassword();
             var packet = writer.Packet;
@@ -1302,6 +1305,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             @password.CopyTo(packet.Password);
             packet.TickCount = @tickCount;
             @clientVersion.CopyTo(packet.ClientVersion);
+            @clientSerial.CopyTo(packet.ClientSerial);
             writer.Commit();
         }
 
@@ -1313,11 +1317,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="password">The password, "encrypted" with Xor3.</param>
         /// <param name="tickCount">The tick count.</param>
         /// <param name="clientVersion">The client version.</param>
+        /// <param name="clientSerial">The client serial.</param>
         /// <remarks>
         /// Is sent by the client when: The player tries to log into the game.
         /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
         /// </remarks>
-        public static void SendLogin075(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion)
+        public static void SendLogin075(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
         {
             using var writer = connection.StartWriteLogin075();
             var packet = writer.Packet;
@@ -1325,6 +1330,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             @password.CopyTo(packet.Password);
             packet.TickCount = @tickCount;
             @clientVersion.CopyTo(packet.ClientVersion);
+            @clientSerial.CopyTo(packet.ClientSerial);
             writer.Commit();
         }
 

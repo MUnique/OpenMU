@@ -19,7 +19,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// </summary>
     [PlugIn("ObjectMovedPlugIn 0.75", "The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("3B387A61-F9E2-4866-BBD6-F236582E350A")]
-    [MaximumClient(0, 89, ClientLanguage.Invariant)]
     public class ObjectMovedPlugIn075 : ObjectMovedPlugIn
     {
         /// <summary>

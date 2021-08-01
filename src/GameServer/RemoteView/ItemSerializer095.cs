@@ -1,0 +1,84 @@
+﻿// <copyright file="ItemSerializer095.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.RemoteView
+{
+    using System;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using MUnique.OpenMU.DataModel;
+    using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Configuration.Items;
+    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.Network.PlugIns;
+    using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.PlugIns;
+
+    /// <summary>
+    /// This item serializer is used to serialize the item data to the data packets for version 0.75.
+    /// Each item is serialized into a 3-byte long part of an array.
+    /// </summary>
+    [Guid("4BD85C02-C43E-494D-B6B8-767ED94E09F0")]
+    [PlugIn(nameof(ItemSerializer095), "The item serializer for game client version 0.75")]
+    [MinimumClient(0, 95, ClientLanguage.Invariant)]
+    public class ItemSerializer095 : IItemSerializer
+    {
+        private const byte LuckFlag = 4;
+
+        private const byte SkillFlag = 128;
+
+        private const byte LevelMask = 0x78;
+
+        /// <inheritdoc/>
+        public int NeededSpace => 4;
+
+        /// <inheritdoc/>
+        public void SerializeItem(Span<byte> target, Item item)
+        {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+            
+            var itemType = (item.Definition.Number & 0x1F) + (item.Definition.Group << 5);
+            target[0] = (byte)(itemType & 0xFF);
+            if (itemType > 0xFF)
+            {
+                target[3] = 0x80;
+            }
+
+            target[1] = (byte)((item.Level << 3) & LevelMask);
+
+            var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
+            if (itemOption != null)
+            {
+                target[1] |= (byte)(itemOption.Level & 3);
+                target[3] = (byte)((itemOption.Level & 4) << 4); // The highest bit is placed into the 2nd bit of the exc byte (0x40).
+
+                // Some items (wings) can have different options (3rd wings up to 3!)
+                // Alternate options are set at array[startIndex + 3] |= 0x20 and 0x10
+                // TODO: FInd out if we have 2nd wings
+                if (itemOption.ItemOption?.Number > 0)
+                {
+                    target[3] |= (byte)((itemOption.ItemOption.Number & 0b11) << 4);
+                }
+            }
+
+            if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck))
+            {
+                target[1] |= LuckFlag;
+            }
+
+            if (item.HasSkill)
+            {
+                target[1] |= SkillFlag;
+            }
+
+            target[2] = item.Durability;
+        }
+
+        /// <inheritdoc />
+        public Item DeserializeItem(Span<byte> array, GameConfiguration gameConfiguration, IContext persistenceContext)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

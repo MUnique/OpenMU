@@ -88,7 +88,7 @@
       <Code>F1</Code>
       <SubCode>01</SubCode>
       <Name>LoginLongPassword</Name>
-      <Length>43</Length>
+      <Length>60</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player tries to log into the game.</SentWhen>
       <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
@@ -118,6 +118,12 @@
           <Name>ClientVersion</Name>
           <Length>5</Length>
         </Field>
+        <Field>
+          <Index>43</Index>
+          <Type>Binary</Type>
+          <Name>ClientSerial</Name>
+          <Length>16</Length>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -125,7 +131,7 @@
       <Code>F1</Code>
       <SubCode>01</SubCode>
       <Name>LoginShortPassword</Name>
-      <Length>33</Length>
+      <Length>50</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player tries to log into the game.</SentWhen>
       <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
@@ -155,6 +161,12 @@
           <Name>ClientVersion</Name>
           <Length>5</Length>
         </Field>
+        <Field>
+          <Index>33</Index>
+          <Type>Binary</Type>
+          <Name>ClientSerial</Name>
+          <Length>16</Length>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -162,7 +174,7 @@
       <Code>F1</Code>
       <SubCode>01</SubCode>
       <Name>Login075</Name>
-      <Length>31</Length>
+      <Length>48</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player tries to log into the game.</SentWhen>
       <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
@@ -191,6 +203,12 @@
           <Type>Binary</Type>
           <Name>ClientVersion</Name>
           <Length>3</Length>
+        </Field>
+        <Field>
+          <Index>31</Index>
+          <Type>Binary</Type>
+          <Name>ClientSerial</Name>
+          <Length>16</Length>
         </Field>
       </Fields>
     </Packet>
