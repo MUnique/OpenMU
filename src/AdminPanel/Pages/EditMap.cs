@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
     public sealed class EditMap : ComponentBase, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
-        private object? model;
+        private GameMapDefinition? model;
         private IContext? persistenceContext;
         private CancellationTokenSource? disposeCts;
 
@@ -124,6 +124,14 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                 // It would be great to have an async api with cancellation token support in the persistence layer
                 // For the moment, we swallow the exception
             }
+        }
+
+        private async Task SaveSpawn(MonsterSpawnArea spawn)
+        {
+            this.model!.MonsterSpawns.Add(spawn);
+            this.persistenceContext?.CreateNew<MonsterSpawnArea>(spawn);
+            this.persistenceContext?.SaveChanges();
+            this.StateHasChanged();
         }
 
         private Task SaveChanges()
