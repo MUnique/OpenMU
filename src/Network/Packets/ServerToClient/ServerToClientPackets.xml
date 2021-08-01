@@ -432,80 +432,6 @@
     </Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>
-      <Code>13</Code>
-      <Name>AddNpcsToScope</Name>
-      <Direction>ServerToClient</Direction>
-      <SentWhen>One or more NPCs got into the observed scope of the player.</SentWhen>
-      <CausedReaction>The client adds the NPCs to the shown map.</CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>NpcCount</Name>
-        </Field>
-        <Field>
-          <Index>5</Index>
-          <Type>Structure[]</Type>
-          <TypeName>NpcData</TypeName>
-          <Name>NPCs</Name>
-          <ItemCountField>NpcCount</ItemCountField>
-        </Field>
-      </Fields>
-      <Structures>
-        <Structure>
-          <Name>NpcData</Name>
-          <Description>Contains the data of an NPC.</Description>
-          <Length>10</Length>
-          <Fields>
-            <Field>
-              <Index>0</Index>
-              <Type>ShortBigEndian</Type>
-              <Name>Id</Name>
-            </Field>
-            <Field>
-              <Index>2</Index>
-              <Type>ShortBigEndian</Type>
-              <Name>TypeNumber</Name>
-            </Field>
-            <Field>
-              <Index>4</Index>
-              <Type>Byte</Type>
-              <Name>CurrentPositionX</Name>
-            </Field>
-            <Field>
-              <Index>5</Index>
-              <Type>Byte</Type>
-              <Name>CurrentPositionY</Name>
-            </Field>
-            <Field>
-              <Index>6</Index>
-              <Type>Byte</Type>
-              <Name>TargetPositionX</Name>
-            </Field>
-            <Field>
-              <Index>7</Index>
-              <Type>Byte</Type>
-              <Name>TargetPositionY</Name>
-            </Field>
-            <Field>
-              <Index>8</Index>
-              <LeftShifted>4</LeftShifted>
-              <Type>Byte</Type>
-              <Name>Rotation</Name>
-              <Length>4</Length>
-            </Field>
-            <Field>
-              <Index>9</Index>
-              <Type>Byte</Type>
-              <Name>EffectCount</Name>
-              <Description>Defines the number of effects which would be sent after this field. This is currently not supported.</Description>
-            </Field>
-          </Fields>
-        </Structure>
-      </Structures>
-    </Packet>
-    <Packet>
-      <HeaderType>C2Header</HeaderType>
       <Code>12</Code>
       <Name>AddCharactersToScope095</Name>
       <Direction>ServerToClient</Direction>
@@ -614,6 +540,80 @@
     <Packet>
       <HeaderType>C2Header</HeaderType>
       <Code>13</Code>
+      <Name>AddNpcsToScope</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>One or more NPCs got into the observed scope of the player.</SentWhen>
+      <CausedReaction>The client adds the NPCs to the shown map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>NpcCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>NpcData</TypeName>
+          <Name>NPCs</Name>
+          <ItemCountField>NpcCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>NpcData</Name>
+          <Description>Contains the data of an NPC.</Description>
+          <Length>10</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>Id</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>TypeNumber</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>Byte</Type>
+              <Name>CurrentPositionX</Name>
+            </Field>
+            <Field>
+              <Index>5</Index>
+              <Type>Byte</Type>
+              <Name>CurrentPositionY</Name>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>Byte</Type>
+              <Name>TargetPositionX</Name>
+            </Field>
+            <Field>
+              <Index>7</Index>
+              <Type>Byte</Type>
+              <Name>TargetPositionY</Name>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <LeftShifted>4</LeftShifted>
+              <Type>Byte</Type>
+              <Name>Rotation</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>9</Index>
+              <Type>Byte</Type>
+              <Name>EffectCount</Name>
+              <Description>Defines the number of effects which would be sent after this field. This is currently not supported.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>13</Code>
       <Name>AddNpcsToScope075</Name>
       <Direction>ServerToClient</Direction>
       <SentWhen>One or more NPCs got into the observed scope of the player.</SentWhen>
@@ -694,6 +694,98 @@
             </Field>
             <Field>
               <Index>8</Index>
+              <LeftShifted>4</LeftShifted>
+              <Type>Byte</Type>
+              <Name>Rotation</Name>
+              <Length>4</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>13</Code>
+      <Name>AddNpcsToScope095</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>One or more NPCs got into the observed scope of the player.</SentWhen>
+      <CausedReaction>The client adds the NPCs to the shown map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>NpcCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>NpcData</TypeName>
+          <Name>NPCs</Name>
+          <ItemCountField>NpcCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>NpcData</Name>
+          <Description>Contains the data of an NPC.</Description>
+          <Length>12</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>Id</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>TypeNumber</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <LeftShifted>0</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsPoisoned</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <LeftShifted>1</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsIced</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <LeftShifted>2</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsDamageBuffed</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <LeftShifted>3</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsDefenseBuffed</Name>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>Byte</Type>
+              <Name>CurrentPositionX</Name>
+            </Field>
+            <Field>
+              <Index>7</Index>
+              <Type>Byte</Type>
+              <Name>CurrentPositionY</Name>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>Byte</Type>
+              <Name>TargetPositionX</Name>
+            </Field>
+            <Field>
+              <Index>9</Index>
+              <Type>Byte</Type>
+              <Name>TargetPositionY</Name>
+            </Field>
+            <Field>
+              <Index>10</Index>
               <LeftShifted>4</LeftShifted>
               <Type>Byte</Type>
               <Name>Rotation</Name>
@@ -797,98 +889,6 @@
               <Index>0</Index>
               <Type>Byte</Type>
               <Name>Id</Name>
-            </Field>
-          </Fields>
-        </Structure>
-      </Structures>
-    </Packet>
-    <Packet>
-      <HeaderType>C2Header</HeaderType>
-      <Code>13</Code>
-      <Name>AddNpcsToScope095</Name>
-      <Direction>ServerToClient</Direction>
-      <SentWhen>One or more NPCs got into the observed scope of the player.</SentWhen>
-      <CausedReaction>The client adds the NPCs to the shown map.</CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>NpcCount</Name>
-        </Field>
-        <Field>
-          <Index>5</Index>
-          <Type>Structure[]</Type>
-          <TypeName>NpcData</TypeName>
-          <Name>NPCs</Name>
-          <ItemCountField>NpcCount</ItemCountField>
-        </Field>
-      </Fields>
-      <Structures>
-        <Structure>
-          <Name>NpcData</Name>
-          <Description>Contains the data of an NPC.</Description>
-          <Length>12</Length>
-          <Fields>
-            <Field>
-              <Index>0</Index>
-              <Type>ShortBigEndian</Type>
-              <Name>Id</Name>
-            </Field>
-            <Field>
-              <Index>2</Index>
-              <Type>Byte</Type>
-              <Name>TypeNumber</Name>
-            </Field>
-            <Field>
-              <Index>4</Index>
-              <LeftShifted>0</LeftShifted>
-              <Type>Boolean</Type>
-              <Name>IsPoisoned</Name>
-            </Field>
-            <Field>
-              <Index>4</Index>
-              <LeftShifted>1</LeftShifted>
-              <Type>Boolean</Type>
-              <Name>IsIced</Name>
-            </Field>
-            <Field>
-              <Index>4</Index>
-              <LeftShifted>2</LeftShifted>
-              <Type>Boolean</Type>
-              <Name>IsDamageBuffed</Name>
-            </Field>
-            <Field>
-              <Index>4</Index>
-              <LeftShifted>3</LeftShifted>
-              <Type>Boolean</Type>
-              <Name>IsDefenseBuffed</Name>
-            </Field>
-            <Field>
-              <Index>6</Index>
-              <Type>Byte</Type>
-              <Name>CurrentPositionX</Name>
-            </Field>
-            <Field>
-              <Index>7</Index>
-              <Type>Byte</Type>
-              <Name>CurrentPositionY</Name>
-            </Field>
-            <Field>
-              <Index>8</Index>
-              <Type>Byte</Type>
-              <Name>TargetPositionX</Name>
-            </Field>
-            <Field>
-              <Index>9</Index>
-              <Type>Byte</Type>
-              <Name>TargetPositionY</Name>
-            </Field>
-            <Field>
-              <Index>10</Index>
-              <LeftShifted>4</LeftShifted>
-              <Type>Byte</Type>
-              <Name>Rotation</Name>
-              <Length>4</Length>
             </Field>
           </Fields>
         </Structure>
@@ -3864,6 +3864,74 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
+      <SubCode>00</SubCode>
+      <Name>CharacterList095</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the game client requested it, usually after a successful login.</SentWhen>
+      <CausedReaction>The game client shows the available characters of the account.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CharacterCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>CharacterData</TypeName>
+          <Name>Characters</Name>
+          <ItemCountField>CharacterCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>CharacterData</Name>
+          <Description>Data of one character in the list.</Description>
+          <Length>26</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>SlotIndex</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Level</Name>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <Type>Enum</Type>
+              <TypeName>CharacterStatus</TypeName>
+              <Name>Status</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <LeftShifted>4</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsItemBlockActive</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>15</Index>
+              <Type>Binary</Type>
+              <Name>Appearance</Name>
+              <Length>11</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
       <SubCode>01</SubCode>
       <Name>CharacterCreationSuccessful</Name>
       <Length>42</Length>
@@ -3970,6 +4038,63 @@
         </Field>
         <Field>
           <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Money</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>04</SubCode>
+      <Name>RespawnAfterDeath095</Name>
+      <Length>22</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The character respawned after death.</SentWhen>
+      <CausedReaction>The character respawns with the specified attributes at the specified map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>PositionX</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>PositionY</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>MapNumber</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Direction</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CurrentHealth</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CurrentMana</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CurrentAbility</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Experience</Name>
+        </Field>
+        <Field>
+          <Index>18</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>Money</Name>
         </Field>
@@ -4132,74 +4257,6 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
-      <SubCode>00</SubCode>
-      <Name>CharacterList095</Name>
-      <Direction>ServerToClient</Direction>
-      <SentWhen>After the game client requested it, usually after a successful login.</SentWhen>
-      <CausedReaction>The game client shows the available characters of the account.</CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>CharacterCount</Name>
-        </Field>
-        <Field>
-          <Index>5</Index>
-          <Type>Structure[]</Type>
-          <TypeName>CharacterData</TypeName>
-          <Name>Characters</Name>
-          <ItemCountField>CharacterCount</ItemCountField>
-        </Field>
-      </Fields>
-      <Structures>
-        <Structure>
-          <Name>CharacterData</Name>
-          <Description>Data of one character in the list.</Description>
-          <Length>26</Length>
-          <Fields>
-            <Field>
-              <Index>0</Index>
-              <Type>Byte</Type>
-              <Name>SlotIndex</Name>
-            </Field>
-            <Field>
-              <Index>1</Index>
-              <Type>String</Type>
-              <Name>Name</Name>
-              <Length>10</Length>
-            </Field>
-            <Field>
-              <Index>12</Index>
-              <Type>ShortLittleEndian</Type>
-              <Name>Level</Name>
-            </Field>
-            <Field>
-              <Index>14</Index>
-              <Type>Enum</Type>
-              <TypeName>CharacterStatus</TypeName>
-              <Name>Status</Name>
-              <Length>4</Length>
-            </Field>
-            <Field>
-              <Index>14</Index>
-              <LeftShifted>4</LeftShifted>
-              <Type>Boolean</Type>
-              <Name>IsItemBlockActive</Name>
-              <Length>4</Length>
-            </Field>
-            <Field>
-              <Index>15</Index>
-              <Type>Binary</Type>
-              <Name>Appearance</Name>
-              <Length>11</Length>
-            </Field>
-          </Fields>
-        </Structure>
-      </Structures>
-    </Packet>
-    <Packet>
-      <HeaderType>C1HeaderWithSubCode</HeaderType>
-      <Code>F3</Code>
       <SubCode>11</SubCode>
       <Name>SkillAdded075</Name>
       <Length>8</Length>
@@ -4222,63 +4279,6 @@
           <Index>6</Index>
           <Type>ShortBigEndian</Type>
           <Name>SkillNumberAndLevel</Name>
-        </Field>
-      </Fields>
-    </Packet>
-    <Packet>
-      <HeaderType>C1HeaderWithSubCode</HeaderType>
-      <Code>F3</Code>
-      <SubCode>04</SubCode>
-      <Name>RespawnAfterDeath095</Name>
-      <Length>22</Length>
-      <Direction>ServerToClient</Direction>
-      <SentWhen>The character respawned after death.</SentWhen>
-      <CausedReaction>The character respawns with the specified attributes at the specified map.</CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>PositionX</Name>
-        </Field>
-        <Field>
-          <Index>5</Index>
-          <Type>Byte</Type>
-          <Name>PositionY</Name>
-        </Field>
-        <Field>
-          <Index>6</Index>
-          <Type>Byte</Type>
-          <Name>MapNumber</Name>
-        </Field>
-        <Field>
-          <Index>7</Index>
-          <Type>Byte</Type>
-          <Name>Direction</Name>
-        </Field>
-        <Field>
-          <Index>8</Index>
-          <Type>ShortLittleEndian</Type>
-          <Name>CurrentHealth</Name>
-        </Field>
-        <Field>
-          <Index>10</Index>
-          <Type>ShortLittleEndian</Type>
-          <Name>CurrentMana</Name>
-        </Field>
-        <Field>
-          <Index>12</Index>
-          <Type>ShortLittleEndian</Type>
-          <Name>CurrentAbility</Name>
-        </Field>
-        <Field>
-          <Index>14</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>Experience</Name>
-        </Field>
-        <Field>
-          <Index>18</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>Money</Name>
         </Field>
       </Fields>
     </Packet>
@@ -7305,6 +7305,157 @@
           <Name>GensContribution</Name>
           <Description>The reward is added gens contribution points.</Description>
           <Value>16</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>SocketOption</Name>
+      <Description>Defines the possible socket options.</Description>
+      <Values>
+        <EnumValue>
+          <Name>FireAttackWizByLevelIncrease</Name>
+          <Description>Fire((Level type)Attack/Wizardry increase +20)</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>FireAttackSpeedIncrease</Name>
+          <Description>Fire(Attack speed increase +7)</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>FireMaxDmgIncrease</Name>
+          <Description>Fire(Maximum attack/Wizardry increase +30)</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>FireMinDmgIncrease</Name>
+          <Description>Fire(Minimum attack/Wizardry increase +20)</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>FireAttackWizIncrease</Name>
+          <Description>Fire(Attack/Wizardry increase +20)</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>FireAgCostDecrease</Name>
+          <Description>Fire(AG cost decrease +40)</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WaterBlockRateIncrease</Name>
+          <Description>Water(Block rating increase +10)</Description>
+          <Value>10</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WaterDefenseIncrease</Name>
+          <Description>Water(Defense increase +30)</Description>
+          <Value>11</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WaterShieldProtectionIncrease</Name>
+          <Description>Water(Shield protection increase +7)</Description>
+          <Value>12</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WaterDamageReduction4</Name>
+          <Description>Water(Damage reduction +4)</Description>
+          <Value>13</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WaterDamageReduction5</Name>
+          <Description>Water(Damage reduction +5)</Description>
+          <Value>14</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>IceLifeIncrease</Name>
+          <Description>Ice(Monster destruction for the Life increase +8)</Description>
+          <Value>16</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>IceManaIncrease</Name>
+          <Description>Ice(Monster destruction for the Mana increase +8)</Description>
+          <Value>17</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>IceSkillAttackIncrease</Name>
+          <Description>Ice(Skill attack increase +37)</Description>
+          <Value>18</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>IceAttackRateIncrease</Name>
+          <Description>Ice(Attack rating increase +25)</Description>
+          <Value>19</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>IceDurabilityIncrease</Name>
+          <Description>Ice(Item durability increase +30)</Description>
+          <Value>20</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WindAutoLifeRecoveryIncrease</Name>
+          <Description>Wind(Automatic Life recovery increase +8)</Description>
+          <Value>21</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WindMaxHealthIncrease</Name>
+          <Description>Wind(Maximum Life increase +4)</Description>
+          <Value>22</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WindMaxManaIncrease</Name>
+          <Description>Wind(Maximum Mana increase +4)</Description>
+          <Value>23</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WindAutoManaRecoverIncrease</Name>
+          <Description>Wind(Automatic Mana recovery increase +7)</Description>
+          <Value>24</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WindMaxAgIncrease</Name>
+          <Description>Wind(Maximum AG increase +25)</Description>
+          <Value>25</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WindAutoAgRecoverIncrease</Name>
+          <Description>Wind(AG value increase +26)</Description>
+          <Value>26</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LightningExcDmgIncrease</Name>
+          <Description>Lightning(Excellent damage increase +15)</Description>
+          <Value>29</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LightningExcDmgRateIncrease</Name>
+          <Description>Lightning(Excellent damage rate increase +10)</Description>
+          <Value>30</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LightningCritDmgIncrease</Name>
+          <Description>Lightning(Critical damage increase +30)</Description>
+          <Value>31</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LightningCritDmgRateIncrease</Name>
+          <Description>Lightning(Critical damage rate increase +8)</Description>
+          <Value>32</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>EarthHealhIncrease</Name>
+          <Description>Earth(Health increase +30)</Description>
+          <Value>36</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>EmptySocket</Name>
+          <Description>Empty Socket</Description>
+          <Value>254</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>NoSocket</Name>
+          <Description>No Socket</Description>
+          <Value>255</Value>
         </EnumValue>
       </Values>
     </Enum>
