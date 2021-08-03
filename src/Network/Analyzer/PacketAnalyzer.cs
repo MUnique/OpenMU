@@ -134,9 +134,24 @@ namespace MUnique.OpenMU.Network.Analyzer
                 return exactMatch.Definition;
             }
 
-            if (filteredDefinitions.SingleOrDefault(d => d.Definition.Length == packet.Size) is { Definition: { Name: { } } } sameLengthMatch)
+            var sameLengthPackets = filteredDefinitions.Where(d => d.Definition.Length == packet.Size).Select(d => d.Definition).ToList();
+            if (sameLengthPackets.Count > 0)
             {
-                return sameLengthMatch.Definition;
+                if (sameLengthPackets.Count == 1 && sameLengthPackets.First() is { Name: { } } sameLengthMatch)
+                {
+                    return sameLengthMatch;
+                }
+
+                var filteredByDefaults = this.GetPacketDefinitionsFilteredByDefaultValues(packet, sameLengthPackets, allDefinitions).ToList();
+                if (filteredByDefaults.Count == 1)
+                {
+                    return filteredByDefaults.First();
+                }
+
+                if (filteredByDefaults.Count > 0)
+                {
+                    filteredDefinitions.RemoveAll(def => !filteredByDefaults.Contains(def.Definition));
+                }
             }
 
             var current = filteredDefinitions.First();
@@ -151,6 +166,25 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
 
             return current.Definition;
+        }
+
+        private IEnumerable<PacketDefinition> GetPacketDefinitionsFilteredByDefaultValues(Packet packet, IEnumerable<PacketDefinition> definitions, PacketDefinitions allDefinitions)
+        {
+            foreach (var def in definitions)
+            {
+                var defaultFields = def.Fields?.TakeWhile(f => !string.IsNullOrWhiteSpace(f.DefaultValue)).ToList();
+                if (defaultFields is null or { Count: 0 })
+                {
+                    break;
+                }
+
+                if (defaultFields.TrueForAll(field => int.TryParse(this.ExtractFieldValueOrGetError(packet.Data, field, def, allDefinitions), out var actual)
+                                                      && (int.TryParse(field.DefaultValue, out var target) || int.TryParse(field.DefaultValue!.Replace("0x", string.Empty), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out target))
+                                                      && actual == target))
+                {
+                    yield return def;
+                }
+            }
         }
 
         private void LoadAndWatchConfiguration(Action<PacketDefinitions?> assignAction, string fileName)
