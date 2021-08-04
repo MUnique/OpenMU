@@ -14,7 +14,10 @@
 
 <h3>@this.Map.Name</h3>
 
-<button type="button" class="primary-button" @onclick=this.AddSpawn disabled="@createMode">Add Spawn</button>
+@if (this.AreaFactory is not null)
+{
+    <button type="button" class="primary-button" @onclick=this.AddSpawn disabled="@createMode">Add Spawn</button>
+}
 
 <div class="map-host" width="@(scale * 255)" height="@(scale * 255)">
     <img src="@(this.terrainImage.ToBase64String(PngFormat.Instance))"
@@ -120,15 +123,15 @@
     <div class="map-object-form">
         @if (focusedObject is EnterGate enterGate)
         {
-            <AutoForm Model="@enterGate" OnValidSubmit="@this.Save"></AutoForm>
+            <AutoForm Model="@enterGate" OnValidSubmit="@this.OnValidSubmit"></AutoForm>
         }
         else if (focusedObject is ExitGate exitGate)
         {
-            <AutoForm Model="@exitGate" OnValidSubmit="@this.Save"></AutoForm>
+            <AutoForm Model="@exitGate" OnValidSubmit="@this.OnValidSubmit"></AutoForm>
         }
         else if (focusedObject is MonsterSpawnArea spawn)
         {
-            <AutoForm Model="@spawn" OnValidSubmit="@this.Save"></AutoForm>
+            <AutoForm Model="@spawn" OnValidSubmit="@this.OnValidSubmit"></AutoForm>
         }
     </div>
 }
@@ -155,10 +158,10 @@
     public EventCallback OnValidSubmit { get; set; }
 
     /// <summary>
-    /// Gets new MonsterSpawnArena <see cref="EditForm.OnValidSubmit"/> instance.
+    /// Gets or sets a factory to create new instances of <see cref="MonsterSpawnArea"/>.
     /// </summary>
     [Parameter]
-    public EventCallback SaveSpawn { get; set; }
+    public Func<MonsterSpawnArea>? AreaFactory { get; set; }
 
     /// <summary>
     /// Gets or sets the javascript runtime.
@@ -352,25 +355,8 @@
     }
 
     private void AddSpawn()
-        {
-        this.createMode = true;
-        this.focusedObject = new MonsterSpawnArea
-        {
-            GameMap = this.Map,
-            X1 = 100,
-            Y1 = 100,
-            X2 = 200,
-            Y2 = 200
-        };
-    }
-
-    private async Task Save()
     {
-        if (this.createMode) {
-            await this.SaveSpawn.InvokeAsync(this.focusedObject);
-            this.createMode = false;
-            this.focusedObject = null;
-        }
-        await this.OnValidSubmit.InvokeAsync();
+        this.createMode = true;
+        this.focusedObject = this.AreaFactory?.Invoke();
     }
 }
