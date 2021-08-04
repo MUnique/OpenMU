@@ -126,12 +126,11 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             }
         }
 
-        private async Task SaveSpawn(MonsterSpawnArea spawn)
+        private Task SaveSpawnAsync(MonsterSpawnArea spawn)
         {
-            this.model!.MonsterSpawns.Add(spawn);
-            this.persistenceContext?.CreateNew<MonsterSpawnArea>(spawn);
-            this.persistenceContext?.SaveChanges();
-            this.StateHasChanged();
+            var newSpawn = this.persistenceContext?.CreateNew<MonsterSpawnArea>(spawn);
+            this.model!.MonsterSpawns.Add(newSpawn!);
+            return this.SaveChanges();
         }
 
         private Task SaveChanges()
