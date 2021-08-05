@@ -1,4 +1,4 @@
-﻿// <copyright file="UpdateCharacterStatsPlugIn095.cs" company="MUnique">
+﻿// <copyright file="UpdateCharacterStatsPlugIn097.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -16,18 +16,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     /// <summary>
     /// The default implementation of the <see cref="IUpdateCharacterStatsPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    [PlugIn(nameof(UpdateCharacterStatsPlugIn095), "The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets.")]
+    [PlugIn(nameof(UpdateCharacterStatsPlugIn097), "The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("8ACD9D6B-6FA7-42C3-8C07-E137655CB92F")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
-    public class UpdateCharacterStatsPlugIn095 : IUpdateCharacterStatsPlugIn
+    [MinimumClient(0, 97, ClientLanguage.Invariant)]
+    public class UpdateCharacterStatsPlugIn097 : IUpdateCharacterStatsPlugIn
     {
         private readonly RemotePlayer player;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateCharacterStatsPlugIn095"/> class.
+        /// Initializes a new instance of the <see cref="UpdateCharacterStatsPlugIn097"/> class.
         /// </summary>
         /// <param name="player">The player.</param>
-        public UpdateCharacterStatsPlugIn095(RemotePlayer player) => this.player = player;
+        public UpdateCharacterStatsPlugIn097(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc/>
         public void UpdateCharacterStats()
@@ -38,9 +38,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 return;
             }
 
-            using (var writer = connection.StartSafeWrite(CharacterInformation095.HeaderType, CharacterInformation095.Length))
+            using (var writer = connection.StartSafeWrite(CharacterInformation097.HeaderType, CharacterInformation097.Length))
             {
-                _ = new CharacterInformation095(writer.Span)
+                _ = new CharacterInformation097(writer.Span)
                 {
                     X = this.player.Position.X,
                     Y = this.player.Position.Y,
@@ -67,11 +67,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
                 };
 
                 writer.Commit();
-            }
-
-            if (this.player.SelectedCharacter.CharacterClass!.IsMasterClass)
-            {
-                this.player.ViewPlugIns.GetPlugIn<IUpdateMasterStatsPlugIn>()?.SendMasterStats();
             }
 
             this.player.ViewPlugIns.GetPlugIn<IApplyKeyConfigurationPlugIn>()?.ApplyKeyConfiguration();

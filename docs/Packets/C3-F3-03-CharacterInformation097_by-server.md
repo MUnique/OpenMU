@@ -1,4 +1,4 @@
-# C3 F3 03 - CharacterInformation095 (by server)
+# C3 F3 03 - CharacterInformation097 (by server)
 
 ## Is sent when
 

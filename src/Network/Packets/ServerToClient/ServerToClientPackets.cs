@@ -13129,25 +13129,25 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </summary>
-    public readonly ref struct CharacterInformation095
+    public readonly ref struct CharacterInformation097
     {
         private readonly Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterInformation095"/> struct.
+        /// Initializes a new instance of the <see cref="CharacterInformation097"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public CharacterInformation095(Span<byte> data)
+        public CharacterInformation097(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterInformation095"/> struct.
+        /// Initializes a new instance of the <see cref="CharacterInformation097"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private CharacterInformation095(Span<byte> data, bool initialize)
+        private CharacterInformation097(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -13394,18 +13394,18 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterInformation095"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterInformation097"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator CharacterInformation095(Span<byte> packet) => new (packet, false);
+        public static implicit operator CharacterInformation097(Span<byte> packet) => new (packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CharacterInformation095"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="CharacterInformation097"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(CharacterInformation095 packet) => packet.data; 
+        public static implicit operator Span<byte>(CharacterInformation097 packet) => packet.data; 
     }
 
 

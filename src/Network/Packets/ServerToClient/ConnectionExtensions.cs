@@ -885,14 +885,14 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Starts a safe write of a <see cref="CharacterInformation095" /> to this connection.
+        /// Starts a safe write of a <see cref="CharacterInformation097" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
         /// Is sent by the server when: After the character was selected by the player and entered the game.
         /// Causes reaction on client side: The characters enters the game world.
         /// </remarks>
-        public static CharacterInformation095ThreadSafeWriter StartWriteCharacterInformation095(this IConnection connection)
+        public static CharacterInformation097ThreadSafeWriter StartWriteCharacterInformation097(this IConnection connection)
         {
           return new (connection);
         }
@@ -3145,7 +3145,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Sends a <see cref="CharacterInformation095" /> to this connection.
+        /// Sends a <see cref="CharacterInformation097" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="x">The x.</param>
@@ -3175,9 +3175,9 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Is sent by the server when: After the character was selected by the player and entered the game.
         /// Causes reaction on client side: The characters enters the game world.
         /// </remarks>
-        public static void SendCharacterInformation095(this IConnection connection, byte @x, byte @y, byte @mapId, byte @direction, uint @currentExperience, uint @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership)
+        public static void SendCharacterInformation097(this IConnection connection, byte @x, byte @y, byte @mapId, byte @direction, uint @currentExperience, uint @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership)
         {
-            using var writer = connection.StartWriteCharacterInformation095();
+            using var writer = connection.StartWriteCharacterInformation097();
             var packet = writer.Packet;
             packet.X = @x;
             packet.Y = @y;
@@ -7621,17 +7621,17 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
-    /// A helper struct to write a <see cref="CharacterInformation095"/> safely to a <see cref="IConnection.Output" />.
+    /// A helper struct to write a <see cref="CharacterInformation097"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
-    public readonly ref struct CharacterInformation095ThreadSafeWriter
+    public readonly ref struct CharacterInformation097ThreadSafeWriter
     {
         private readonly IConnection connection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterInformation095ThreadSafeWriter" /> struct.
+        /// Initializes a new instance of the <see cref="CharacterInformation097ThreadSafeWriter" /> struct.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        public CharacterInformation095ThreadSafeWriter(IConnection connection)
+        public CharacterInformation097ThreadSafeWriter(IConnection connection)
         {
             this.connection = connection;
             Monitor.Enter(this.connection);
@@ -7640,7 +7640,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 // Initialize header and default values
                 var span = this.Span;
                 span.Clear();
-                _ = new CharacterInformation095(span);
+                _ = new CharacterInformation097(span);
             }
             catch (InvalidOperationException)
             {
@@ -7650,17 +7650,17 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CharacterInformation095.Length)[..CharacterInformation095.Length];
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterInformation097.Length)[..CharacterInformation097.Length];
 
         /// <summary>Gets the packet to write at.</summary>
-        public CharacterInformation095 Packet => this.Span;
+        public CharacterInformation097 Packet => this.Span;
 
         /// <summary>
-        /// Commits the data of the <see cref="CharacterInformation095" />.
+        /// Commits the data of the <see cref="CharacterInformation097" />.
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(CharacterInformation095.Length);
+            this.connection.Output.Advance(CharacterInformation097.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

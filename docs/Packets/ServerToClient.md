@@ -131,7 +131,7 @@
   * [C1 F3 02 - CharacterDeleteResponse (by server)](C1-F3-02-CharacterDeleteResponse_by-server.md)
   * [C3 F3 03 - CharacterInformation (by server)](C3-F3-03-CharacterInformation_by-server.md)
   * [C3 F3 03 - CharacterInformation075 (by server)](C3-F3-03-CharacterInformation075_by-server.md)
-  * [C3 F3 03 - CharacterInformation095 (by server)](C3-F3-03-CharacterInformation095_by-server.md)
+  * [C3 F3 03 - CharacterInformation097 (by server)](C3-F3-03-CharacterInformation097_by-server.md)
   * [C1 F3 04 - RespawnAfterDeath075 (by server)](C1-F3-04-RespawnAfterDeath075_by-server.md)
   * [C1 F3 04 - RespawnAfterDeath095 (by server)](C1-F3-04-RespawnAfterDeath095_by-server.md)
   * [C1 F3 05 - CharacterLevelUpdate (by server)](C1-F3-05-CharacterLevelUpdate_by-server.md)

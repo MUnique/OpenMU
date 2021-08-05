@@ -4766,7 +4766,7 @@
       <HeaderType>C3HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
       <SubCode>03</SubCode>
-      <Name>CharacterInformation095</Name>
+      <Name>CharacterInformation097</Name>
       <Length>52</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the character was selected by the player and entered the game.</SentWhen>
