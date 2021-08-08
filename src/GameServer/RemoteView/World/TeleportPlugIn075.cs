@@ -15,7 +15,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// </summary>
     [PlugIn(nameof(TeleportPlugIn075), "The default implementation of the ITeleportPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("490DB5E5-9DB6-4068-9708-E7D69F82BF3B")]
-    [MaximumClient(0, 89, ClientLanguage.Invariant)]
     public class TeleportPlugIn075 : ITeleportPlugIn
     {
         private readonly RemotePlayer player;

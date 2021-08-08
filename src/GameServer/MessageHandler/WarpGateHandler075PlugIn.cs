@@ -11,7 +11,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
-    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
@@ -21,7 +20,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     [PlugIn(nameof(WarpGateHandler075PlugIn), "Handler for warp gate packets.")]
     [Guid("264CFC8C-30D1-4536-97FD-6811A9544997")]
-    [MaximumClient(0, 89, ClientLanguage.Invariant)]
     internal class WarpGateHandler075PlugIn : IPacketHandlerPlugIn
     {
         private readonly WarpGateAction warpAction = new ();
