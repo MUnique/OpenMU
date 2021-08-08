@@ -10,7 +10,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
-    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
@@ -19,7 +18,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// </summary>
     [PlugIn(nameof(ShowAreaSkillAnimationPlugIn075), "The default implementation of the IShowAreaSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("DB239A54-A5BD-4796-A96C-50D247D288F3")]
-    [MaximumClient(0, 89, ClientLanguage.Invariant)]
     public class ShowAreaSkillAnimationPlugIn075 : IShowAreaSkillAnimationPlugIn
     {
         private readonly RemotePlayer player;
