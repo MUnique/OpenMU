@@ -833,6 +833,32 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="SkillAdded095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a skill got added to the skill list, e.g. by equipping an item or learning a skill.
+        /// Causes reaction on client side: The skill is added to the skill list on client side.
+        /// </remarks>
+        public static SkillAdded095ThreadSafeWriter StartWriteSkillAdded095(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="SkillRemoved095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a skill got removed from the skill list, e.g. by removing an equipped item.
+        /// Causes reaction on client side: The skill is added to the skill list on client side.
+        /// </remarks>
+        public static SkillRemoved095ThreadSafeWriter StartWriteSkillRemoved095(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="CharacterFocused" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2999,6 +3025,48 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static void SendSkillRemoved075(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 0)
         {
             using var writer = connection.StartWriteSkillRemoved075();
+            var packet = writer.Packet;
+            packet.Flag = @flag;
+            packet.SkillIndex = @skillIndex;
+            packet.SkillNumberAndLevel = @skillNumberAndLevel;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="SkillAdded095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillIndex">The skill index.</param>
+        /// <param name="skillNumberAndLevel">The skill number and level.</param>
+        /// <param name="flag">The flag.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a skill got added to the skill list, e.g. by equipping an item or learning a skill.
+        /// Causes reaction on client side: The skill is added to the skill list on client side.
+        /// </remarks>
+        public static void SendSkillAdded095(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 0xFE)
+        {
+            using var writer = connection.StartWriteSkillAdded095();
+            var packet = writer.Packet;
+            packet.Flag = @flag;
+            packet.SkillIndex = @skillIndex;
+            packet.SkillNumberAndLevel = @skillNumberAndLevel;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="SkillRemoved095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillIndex">The skill index.</param>
+        /// <param name="skillNumberAndLevel">The skill number and level.</param>
+        /// <param name="flag">The flag.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a skill got removed from the skill list, e.g. by removing an equipped item.
+        /// Causes reaction on client side: The skill is added to the skill list on client side.
+        /// </remarks>
+        public static void SendSkillRemoved095(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 0xFF)
+        {
+            using var writer = connection.StartWriteSkillRemoved095();
             var packet = writer.Packet;
             packet.Flag = @flag;
             packet.SkillIndex = @skillIndex;
@@ -7470,6 +7538,112 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(SkillRemoved075.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="SkillAdded095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct SkillAdded095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAdded095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public SkillAdded095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new SkillAdded095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillAdded095.Length)[..SkillAdded095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public SkillAdded095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="SkillAdded095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(SkillAdded095.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="SkillRemoved095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct SkillRemoved095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillRemoved095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public SkillRemoved095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new SkillRemoved095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillRemoved095.Length)[..SkillRemoved095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public SkillRemoved095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="SkillRemoved095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(SkillRemoved095.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

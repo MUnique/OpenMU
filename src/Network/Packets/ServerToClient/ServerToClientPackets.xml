@@ -4382,6 +4382,62 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
       <SubCode>11</SubCode>
+      <Name>SkillAdded095</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a skill got added to the skill list, e.g. by equipping an item or learning a skill.</SentWhen>
+      <CausedReaction>The skill is added to the skill list on client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flag</Name>
+          <DefaultValue>0xFE</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillNumberAndLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>11</SubCode>
+      <Name>SkillRemoved095</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a skill got removed from the skill list, e.g. by removing an equipped item.</SentWhen>
+      <CausedReaction>The skill is added to the skill list on client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flag</Name>
+          <DefaultValue>0xFF</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillNumberAndLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>11</SubCode>
       <Name>SkillListUpdate075</Name>
       <Direction>ServerToClient</Direction>
       <SentWhen>Usually, when the player entered the game with a character. When skills get added or removed, this message is sent as well, but with a misleading count.</SentWhen>

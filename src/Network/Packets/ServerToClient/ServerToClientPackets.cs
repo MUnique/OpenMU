@@ -12182,6 +12182,216 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: After a skill got added to the skill list, e.g. by equipping an item or learning a skill.
+    /// Causes reaction on client side: The skill is added to the skill list on client side.
+    /// </summary>
+    public readonly ref struct SkillAdded095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAdded095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SkillAdded095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAdded095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private SkillAdded095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+                this.Flag = 0xFE;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x11;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the flag.
+        /// </summary>
+        public byte Flag
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the skill index.
+        /// </summary>
+        public byte SkillIndex
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the skill number and level.
+        /// </summary>
+        public ushort SkillNumberAndLevel
+        {
+            get => ReadUInt16BigEndian(this.data[6..]);
+            set => WriteUInt16BigEndian(this.data[6..], value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SkillAdded095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator SkillAdded095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SkillAdded095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(SkillAdded095 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a skill got removed from the skill list, e.g. by removing an equipped item.
+    /// Causes reaction on client side: The skill is added to the skill list on client side.
+    /// </summary>
+    public readonly ref struct SkillRemoved095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillRemoved095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SkillRemoved095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillRemoved095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private SkillRemoved095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+                this.Flag = 0xFF;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x11;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 10;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the flag.
+        /// </summary>
+        public byte Flag
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the skill index.
+        /// </summary>
+        public byte SkillIndex
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the skill number and level.
+        /// </summary>
+        public ushort SkillNumberAndLevel
+        {
+            get => ReadUInt16BigEndian(this.data[6..]);
+            set => WriteUInt16BigEndian(this.data[6..], value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SkillRemoved095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator SkillRemoved095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SkillRemoved095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(SkillRemoved095 packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: Usually, when the player entered the game with a character. When skills get added or removed, this message is sent as well, but with a misleading count.
     /// Causes reaction on client side: The skill list gets initialized.
     /// </summary>

@@ -146,6 +146,8 @@
   * [C1 F3 11 - SkillListUpdate (by server)](C1-F3-11-SkillListUpdate_by-server.md)
   * [C1 F3 11 - SkillAdded075 (by server)](C1-F3-11-SkillAdded075_by-server.md)
   * [C1 F3 11 - SkillRemoved075 (by server)](C1-F3-11-SkillRemoved075_by-server.md)
+  * [C1 F3 11 - SkillAdded095 (by server)](C1-F3-11-SkillAdded095_by-server.md)
+  * [C1 F3 11 - SkillRemoved095 (by server)](C1-F3-11-SkillRemoved095_by-server.md)
   * [C1 F3 11 - SkillListUpdate075 (by server)](C1-F3-11-SkillListUpdate075_by-server.md)
   * [C1 F3 14 - InventoryItemUpgraded (by server)](C1-F3-14-InventoryItemUpgraded_by-server.md)
   * [C1 F3 15 - CharacterFocused (by server)](C1-F3-15-CharacterFocused_by-server.md)
