@@ -21,7 +21,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses
             return result;
         }
 
-        private CharacterClass CreateMagicGladiator(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
+        /// <summary>
+        /// Creates the magic gladiator.
+        /// </summary>
+        /// <param name="number">The number.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="isMaster">if set to <c>true</c>, the class is a master class which has access to the master skill tree.</param>
+        /// <param name="nextGenerationClass">The next generation class.</param>
+        /// <param name="canGetCreated">If set to <c>true</c>, it can get created by the player.</param>
+        /// <returns>The created character class.</returns>
+        protected CharacterClass CreateMagicGladiator(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
         {
             var result = this.Context.CreateNew<CharacterClass>();
             this.GameConfiguration.CharacterClasses.Add(result);

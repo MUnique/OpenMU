@@ -56,8 +56,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
             this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
             this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
             this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
-
-            this.CreateFeather();
         }
 
         /// <summary>
@@ -77,12 +75,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
             {
                 switch (tuple.Item2)
                 {
-                    case OptionType.CurseDamage:
-                        yield return this.CreateOption(tuple.Item1, Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, 4f);
-                        break;
-                    case OptionType.Defense:
-                        yield return this.CreateOption(tuple.Item1, Stats.DefenseBase, 0, AggregateType.AddRaw, 4f);
-                        break;
                     case OptionType.HealthRecover:
                         yield return this.CreateOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f);
                         break;
@@ -96,20 +88,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
                         throw new ArgumentException("unknown OptionType");
                 }
             }
-        }
-
-        private void CreateFeather()
-        {
-            var feather = this.Context.CreateNew<ItemDefinition>();
-            feather.Name = "Loch's Feather";
-            feather.MaximumItemLevel = 1;
-            feather.Number = 14;
-            feather.Group = 13;
-            feather.DropLevel = 78;
-            feather.Width = 1;
-            feather.Height = 2;
-            feather.Durability = 1;
-            this.GameConfiguration.Items.Add(feather);
         }
 
         private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, List<LevelBonus> damageIncreasePerLevel, List<LevelBonus> defenseIncreasePerLevel, ItemOptionDefinition? wingOptionDefinition)

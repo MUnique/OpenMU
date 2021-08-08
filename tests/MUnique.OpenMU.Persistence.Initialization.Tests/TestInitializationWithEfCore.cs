@@ -59,6 +59,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests
             dataInitialization.CreateInitialData(1, true);
         }
 
+        /// <summary>
+        /// Tests the data initialization using the in-memory persistence.
+        /// </summary>
+        [Test]
+        public void Test095dData()
+        {
+            var contextProvider = new InMemoryPersistenceContextProvider();
+            var dataInitialization = new Version095d.DataInitialization(contextProvider, new NullLoggerFactory());
+            dataInitialization.CreateInitialData(1, true);
+        }
+
         private void TestDataInitialization(IPersistenceContextProvider contextProvider)
         {
             var initialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());

@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Persistence.Initialization.Version075;
-
 namespace MUnique.OpenMU.Persistence.Initialization.Version095d
 {
     using System.Linq;
@@ -14,7 +12,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
     using MUnique.OpenMU.DataModel.Configuration.Items;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
-    using MUnique.OpenMU.Persistence.Initialization.Version075.Items;
+    using MUnique.OpenMU.Persistence.Initialization.Items;
+    using MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
     using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
     /// <summary>
@@ -85,18 +84,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
             new Orbs(this.Context, this.GameConfiguration).Initialize();
             new Scrolls(this.Context, this.GameConfiguration).Initialize();
             new Jewels(this.Context, this.GameConfiguration).Initialize();
+            new ExcellentOptions(this.Context, this.GameConfiguration).Initialize();
             new Armors(this.Context, this.GameConfiguration).Initialize();
             new Wings(this.Context, this.GameConfiguration).Initialize();
             new Pets(this.Context, this.GameConfiguration).Initialize();
             new Weapons(this.Context, this.GameConfiguration).Initialize();
-            new Potions(this.Context, this.GameConfiguration).Initialize();
+            new Version075.Items.Potions(this.Context, this.GameConfiguration).Initialize();
             new Jewelery(this.Context, this.GameConfiguration).Initialize();
 
-            new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
+            new Version075.NpcInitialization(this.Context, this.GameConfiguration).Initialize();
 
             new GameMapsInitializer(this.Context, this.GameConfiguration).Initialize();
             this.AssignCharacterClassHomeMaps();
-            new ChaosMixes(this.Context, this.GameConfiguration).Initialize(); // todo
+            new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
             new Gates(this.Context, this.GameConfiguration).Initialize();
             //// TODO: ItemSetGroups for set bonus
         }
@@ -180,7 +180,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
 
         private void CreateItemOptionTypes()
         {
-            var optionTypes = new[] { ItemOptionTypes.Option, ItemOptionTypes.Luck };
+            var optionTypes = new[] { ItemOptionTypes.Option, ItemOptionTypes.Luck, ItemOptionTypes.Excellent };
 
             foreach (var optionType in optionTypes)
             {

@@ -111,6 +111,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             this.CreateWeapon(0, 13, 0, 22, 1, 3, true, "Double Blade", 48, 48, 56, 30, 43, 0, 0, 70, 70, 0, 0, 0, 1, 1);
             this.CreateWeapon(0, 14, 0, 22, 1, 3, true, "Lighting Sword", 59, 59, 67, 30, 50, 0, 0, 90, 50, 0, 0, 0, 1, 1);
             this.CreateWeapon(0, 15, 0, 23, 2, 3, true, "Giant Sword", 52, 60, 85, 20, 60, 0, 0, 140, 0, 0, 0, 0, 1, 0);
+            this.CreateWeapon(0, 16, 0, 22, 1, 4, true, "Sword of Destruction", 82, 82, 90, 35, 84, 0, 0, 160, 60, 0, 0, 0, 1, 0, 1);
+            this.CreateWeapon(0, 17, 0, 23, 2, 4, true, "Dark Breaker", 104, 128, 153, 40, 89, 0, 0, 180, 50, 0, 0, 0, 2, 0, 0);
+            this.CreateWeapon(0, 18, 0, 23, 2, 3, true, "Thunder Blade", 105, 140, 168, 40, 86, 0, 0, 180, 50, 0, 0, 0, 0, 0, 1);
 
             this.CreateWeapon(1, 0, 0, 0, 1, 3, true, "Small Axe", 1, 1, 6, 20, 18, 0, 0, 50, 0, 0, 0, 1, 1, 1);
             this.CreateWeapon(1, 1, 0, 0, 1, 3, true, "Hand Axe", 4, 4, 9, 30, 20, 0, 0, 70, 0, 0, 0, 1, 1, 1);
@@ -157,6 +160,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             this.CreateWeapon(4, 13, 0, 24, 2, 3, true, "Bluewing Crossbow", 68, 68, 82, 40, 56, 0, 0, 40, 110, 0, 0, 0, 0, 1);
             this.CreateWeapon(4, 14, 0, 24, 2, 3, true, "Aquagold Crossbow", 72, 78, 92, 30, 60, 0, 0, 50, 130, 0, 0, 0, 0, 1);
             this.CreateAmmunition(4, 15, 0, 1, 2, false, "Arrows", 0, 255, 0, 0, 1);
+            this.CreateWeapon(4, 16, 0, 24, 2, 4, true, "Saint Crossbow", 84, 102, 127, 35, 72, 0, 0, 50, 160, 0, 0, 0, 0, 1);
 
             this.CreateWeapon(5, 0, 0, 0, 1, 3, true, "Skull Staff", 6, 3, 4, 20, 20, 6, 0, 40, 0, 0, 0, 1, 0, 0);
             this.CreateWeapon(5, 1, 0, 0, 2, 3, true, "Angelic Staff", 18, 10, 12, 25, 38, 20, 0, 50, 0, 0, 0, 1, 0, 0);
@@ -166,6 +170,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             this.CreateWeapon(5, 5, 0, 0, 1, 4, true, "Legendary Staff", 59, 29, 31, 25, 66, 59, 0, 50, 0, 0, 0, 1, 0, 0);
             this.CreateWeapon(5, 6, 0, 0, 1, 4, true, "Staff of Resurrection", 70, 35, 39, 25, 70, 70, 0, 60, 10, 0, 0, 1, 0, 0);
             this.CreateWeapon(5, 7, 0, 0, 2, 4, false, "Chaos Lightning Staff", 75, 47, 48, 30, 70, 94, 0, 60, 10, 0, 0, 1, 0, 0);
+            this.CreateWeapon(5, 8, 0, 0, 2, 4, true, "Staff of Destruction", 90, 50, 54, 30, 85, 101, 0, 60, 10, 0, 0, 1, 0, 0, 1);
         }
 
         /// <summary>
@@ -236,12 +241,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
         /// <param name="wizardClass">The wizard class.</param>
         /// <param name="knightClass">The knight class.</param>
         /// <param name="elfClass">The elf class.</param>
+        /// <param name="magicGladiatorClass">The magic gladiator class.</param>
         /// <param name="isAmmunition">If set to <c>true</c>, the item is ammunition for a weapon.</param>
         protected void CreateWeapon(byte @group, byte number, byte slot, int skillNumber, byte width, byte height,
             bool dropsFromMonsters, string name, byte dropLevel, int minimumDamage, int maximumDamage, int attackSpeed,
             byte durability, int staffRise, int levelRequirement, int strengthRequirement, int agilityRequirement,
             int energyRequirement, int vitalityRequirement,
-            int wizardClass, int knightClass, int elfClass, bool isAmmunition = false)
+            int wizardClass, int knightClass, int elfClass, int magicGladiatorClass = 0, bool isAmmunition = false)
         {
             var item = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(item);
@@ -270,7 +276,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             }
 
             item.Durability = durability;
-            var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass == 1, knightClass == 1, elfClass == 1);
+            var classes = wizardClass == 1 ? CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator : CharacterClasses.None;
+            classes |= knightClass == 1 ? CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator : CharacterClasses.None;
+            classes |= elfClass == 1 ? CharacterClasses.FairyElf : CharacterClasses.None;
+            classes |= magicGladiatorClass == 1 ? CharacterClasses.MagicGladiator : CharacterClasses.None;
+            var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(classes);
             qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
             var minDamagePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
@@ -301,10 +311,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             if (staffRise == 0)
             {
                 item.PossibleItemOptions.Add(this.PhysicalDamageOption);
+                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
             }
             else
             {
                 item.PossibleItemOptions.Add(this.WizardryDamageOption);
+                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
 
                 var staffRisePowerUpMinDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 staffRisePowerUpMinDmg.TargetAttribute = Stats.MinimumWizBaseDmg.GetPersistent(this.GameConfiguration);

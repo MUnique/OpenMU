@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
     /// <summary>
     /// Initializes orb items which are used to learn skills.
     /// </summary>
-    public class Orbs : InitializerBase
+    internal class Orbs : InitializerBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Orbs"/> class.
@@ -31,13 +31,28 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
         /// </summary>
         public override void Initialize()
         {
-            this.CreateOrb(8, SkillNumber.Heal, 1, "Orb of Healing", 8, 0, 100, 0, 0, 800, 0, 0, 1);
-            this.CreateOrb(9, SkillNumber.GreaterDefense, 1, "Orb of Greater Defense", 13, 0, 100, 0, 0, 3000, 0, 0, 1);
-            this.CreateOrb(10, SkillNumber.GreaterDamage, 1, "Orb of Greater Damage", 18, 0, 100, 0, 0, 7000, 0, 0, 1);
-            this.CreateOrb(11, SkillNumber.SummonGoblin, 1, "Orb of Summoning", 3, 0, 0, 0, 0, 150, 0, 0, 1);
+            this.CreateOrb(8, SkillNumber.Heal, 1, "Orb of Healing", 8, 0, 100, 0, 0, 800, CharacterClasses.FairyElf);
+            this.CreateOrb(9, SkillNumber.GreaterDefense, 1, "Orb of Greater Defense", 13, 0, 100, 0, 0, 3000, CharacterClasses.FairyElf);
+            this.CreateOrb(10, SkillNumber.GreaterDamage, 1, "Orb of Greater Damage", 18, 0, 100, 0, 0, 7000, CharacterClasses.FairyElf);
+            this.CreateOrb(11, SkillNumber.SummonGoblin, 1, "Orb of Summoning", 3, 0, 0, 0, 0, 150, CharacterClasses.FairyElf);
         }
 
-        private ItemDefinition CreateOrb(byte number, SkillNumber skillNumber, byte height, string name, byte dropLevel, int levelRequirement, int energyRequirement, int strengthRequirement, int agilityRequirement, int money, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+        /// <summary>
+        /// Creates the orb definition.
+        /// </summary>
+        /// <param name="number">The number.</param>
+        /// <param name="skillNumber">The skill number.</param>
+        /// <param name="height">The height.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="dropLevel">The drop level.</param>
+        /// <param name="levelRequirement">The level requirement.</param>
+        /// <param name="energyRequirement">The energy requirement.</param>
+        /// <param name="strengthRequirement">The strength requirement.</param>
+        /// <param name="agilityRequirement">The agility requirement.</param>
+        /// <param name="money">The money.</param>
+        /// <param name="characterClasses">The character classes.</param>
+        /// <returns>The created definition.</returns>
+        protected ItemDefinition CreateOrb(byte number, SkillNumber skillNumber, byte height, string name, byte dropLevel, int levelRequirement, int energyRequirement, int strengthRequirement, int agilityRequirement, int money, CharacterClasses characterClasses)
         {
             var orb = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(orb);
@@ -62,7 +77,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
             this.CreateItemRequirementIfNeeded(orb, Stats.TotalAgility, agilityRequirement);
 
             orb.Value = money;
-            var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel == 1, darkKnightClassLevel == 1, elfClassLevel == 1);
+            var classes = this.GameConfiguration.DetermineCharacterClasses(characterClasses);
             foreach (var characterClass in classes)
             {
                 orb.QualifiedCharacters.Add(characterClass);

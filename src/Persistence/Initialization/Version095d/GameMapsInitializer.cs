@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
+    using MUnique.OpenMU.Persistence.Initialization.Version095d.Maps;
 
     /// <summary>
     /// Initializes the <see cref="GameMapDefinition"/>s.
@@ -34,69 +35,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
                 yield return typeof(Devias);
                 yield return typeof(Noria);
                 yield return typeof(LostTower);
-                yield return typeof(Version075.Maps.Exile);
-                yield return typeof(Version075.Maps.Arena);
+                yield return typeof(Exile);
+                yield return typeof(Arena);
                 yield return typeof(Atlans);
-                //yield return typeof(Tarkan);
-                //yield return typeof(DevilSquare1To4);
-                //yield return typeof(Icarus);
-                /*yield return typeof(Elvenland);
-                yield return typeof(Karutan1);
-                yield return typeof(Karutan2);
-                yield return typeof(Aida);
-                yield return typeof(Vulcanus);
-                yield return typeof(CrywolfFortress);
-                yield return typeof(LandOfTrials);
-                yield return typeof(LorenMarket);
-                yield return typeof(SantaVillage);
-                yield return typeof(SilentMap);
-                yield return typeof(ValleyOfLoren);
-                yield return typeof(BarracksOfBalgass);
-                yield return typeof(BalgassRefuge);
-                yield return typeof(Kalima1);
-                yield return typeof(Kalima2);
-                yield return typeof(Kalima3);
-                yield return typeof(Kalima4);
-                yield return typeof(Kalima5);
-                yield return typeof(Kalima6);
-                yield return typeof(Kalima7);
-                yield return typeof(KanturuRelics);
-                yield return typeof(KanturuRuins);
-                yield return typeof(KanturuEvent);
-                yield return typeof(Raklion);
-                yield return typeof(RaklionBoss);
-                yield return typeof(SwampOfCalmness);
-                yield return typeof(DuelArena);
-                yield return typeof(BloodCastle1);
-                yield return typeof(BloodCastle2);
-                yield return typeof(BloodCastle3);
-                yield return typeof(BloodCastle4);
-                yield return typeof(BloodCastle5);
-                yield return typeof(BloodCastle6);
-                yield return typeof(BloodCastle7);
-                yield return typeof(BloodCastle8);
-                yield return typeof(ChaosCastle1);
-                yield return typeof(ChaosCastle2);
-                yield return typeof(ChaosCastle3);
-                yield return typeof(ChaosCastle4);
-                yield return typeof(ChaosCastle5);
-                yield return typeof(ChaosCastle6);
-                yield return typeof(ChaosCastle7);
-                yield return typeof(IllusionTemple1);
-                yield return typeof(IllusionTemple2);
-                yield return typeof(IllusionTemple3);
-                yield return typeof(IllusionTemple4);
-                yield return typeof(IllusionTemple5);
-                yield return typeof(IllusionTemple6);
-                yield return typeof(DevilSquare5To7);
-                yield return typeof(Doppelgaenger1);
-                yield return typeof(Doppelgaenger2);
-                yield return typeof(Doppelgaenger3);
-                yield return typeof(Doppelgaenger4);
-                yield return typeof(FortressOfImperialGuardian1);
-                yield return typeof(FortressOfImperialGuardian2);
-                yield return typeof(FortressOfImperialGuardian3);
-                yield return typeof(FortressOfImperialGuardian4);*/
+                yield return typeof(Tarkan);
+                yield return typeof(DevilSquare1To4);
+                yield return typeof(Icarus);
             }
         }
     }

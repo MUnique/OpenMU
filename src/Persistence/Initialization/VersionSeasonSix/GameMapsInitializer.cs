@@ -37,8 +37,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
                 yield return typeof(Version075.Maps.Exile);
                 yield return typeof(Version075.Maps.Arena);
                 yield return typeof(Atlans);
-                yield return typeof(Tarkan);
-                yield return typeof(DevilSquare1To4);
+                yield return typeof(Version095d.Maps.Tarkan);
+                yield return typeof(Version095d.Maps.DevilSquare1To4);
                 yield return typeof(Icarus);
                 yield return typeof(Elvenland);
                 yield return typeof(Karutan1);

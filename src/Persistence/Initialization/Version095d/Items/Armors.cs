@@ -268,14 +268,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
                 armor.BasePowerUpAttributes.Add(powerUp);
             }
 
-            var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel == 1, darkKnightClassLevel == 1, elfClassLevel == 1);
-            foreach (var characterClass in classes)
+            var classes = darkWizardClassLevel == 1 ? CharacterClasses.DarkWizard : CharacterClasses.None;
+            classes |= darkKnightClassLevel == 1 ? CharacterClasses.DarkKnight : CharacterClasses.None;
+            classes |= elfClassLevel == 1 ? CharacterClasses.FairyElf : CharacterClasses.None;
+            if (armor.Group != (byte)ItemGroups.Helm && (darkKnightClassLevel == 1 || darkWizardClassLevel == 1))
+            {
+                classes |= CharacterClasses.MagicGladiator;
+            }
+
+            var characterClasses = this.GameConfiguration.DetermineCharacterClasses(classes);
+            foreach (var characterClass in characterClasses)
             {
                 armor.QualifiedCharacters.Add(characterClass);
             }
 
             armor.PossibleItemOptions.Add(this.GameConfiguration.GetLuck());
             armor.PossibleItemOptions.Add(this.GameConfiguration.GetDefenseOption());
+            armor.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.DefenseOptionsName));
 
             return armor;
         }

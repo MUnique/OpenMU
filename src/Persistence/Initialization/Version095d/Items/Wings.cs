@@ -44,8 +44,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             HealthRecover,
             PhysDamage,
             WizDamage,
-            CurseDamage,
-            Defense,
         }
 
         /// <summary>
@@ -56,8 +54,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
             this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
             this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12, this.damageIncreasePerLevelFirstWings, this.defenseBonusPerLevel, null);
-
-            this.CreateFeather();
         }
 
         /// <summary>
@@ -77,12 +73,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             {
                 switch (tuple.Item2)
                 {
-                    case OptionType.CurseDamage:
-                        yield return this.CreateOption(tuple.Item1, Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, 4f);
-                        break;
-                    case OptionType.Defense:
-                        yield return this.CreateOption(tuple.Item1, Stats.DefenseBase, 0, AggregateType.AddRaw, 4f);
-                        break;
                     case OptionType.HealthRecover:
                         yield return this.CreateOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f);
                         break;
@@ -96,20 +86,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
                         throw new ArgumentException("unknown OptionType");
                 }
             }
-        }
-
-        private void CreateFeather()
-        {
-            var feather = this.Context.CreateNew<ItemDefinition>();
-            feather.Name = "Loch's Feather";
-            feather.MaximumItemLevel = 1;
-            feather.Number = 14;
-            feather.Group = 13;
-            feather.DropLevel = 78;
-            feather.Width = 1;
-            feather.Height = 2;
-            feather.Durability = 1;
-            this.GameConfiguration.Items.Add(feather);
         }
 
         private ItemDefinition CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, List<LevelBonus> damageIncreasePerLevel, List<LevelBonus> defenseIncreasePerLevel, ItemOptionDefinition? wingOptionDefinition)
@@ -183,11 +159,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
                 wing.BasePowerUpAttributes.Add(powerUp);
             }
 
-            var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel == 1, darkKnightClassLevel == 1, elfClassLevel == 1);
-            foreach (var characterClass in classes)
-            {
-                wing.QualifiedCharacters.Add(characterClass);
-            }
+            var classes = darkWizardClassLevel == 1 ? CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator : CharacterClasses.None;
+            classes |= darkKnightClassLevel == 1 ? CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator : CharacterClasses.None;
+            classes |= elfClassLevel == 1 ? CharacterClasses.FairyElf : CharacterClasses.None;
+            var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(classes);
+            qualifiedCharacterClasses.ToList().ForEach(wing.QualifiedCharacters.Add);
 
             // add CanFly Attribute to all wings
             var canFlyPowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();

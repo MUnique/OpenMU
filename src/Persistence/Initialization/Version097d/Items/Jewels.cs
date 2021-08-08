@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version097d.Items
     /// <summary>
     /// Jewels for MU Version 0.97d.
     /// </summary>
-    public class Jewels : Version075.Items.Jewels
+    public class Jewels : Version095d.Items.Jewels
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Jewels"/> class.
@@ -26,27 +26,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version097d.Items
         public override void Initialize()
         {
             base.Initialize();
-            this.GameConfiguration.Items.Add(this.CreateJewelOfLife());
             this.GameConfiguration.Items.Add(this.CreateJewelOfCreation());
-        }
-
-        /// <summary>
-        /// Creates an <see cref="ItemDefinition"/> for the 'Jewel of Life'.
-        /// </summary>
-        /// <returns><see cref="ItemDefinition"/> for the 'Jewel of Life'.</returns>
-        private ItemDefinition CreateJewelOfLife()
-        {
-            var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-            itemDefinition.Name = "Jewel of Life";
-            itemDefinition.Number = 16;
-            itemDefinition.Group = 14;
-            itemDefinition.DropsFromMonsters = true;
-            itemDefinition.DropLevel = 72;
-            itemDefinition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.LifeJewelConsumeHandler).FullName;
-            itemDefinition.Durability = 1;
-            itemDefinition.Width = 1;
-            itemDefinition.Height = 1;
-            return itemDefinition;
         }
 
         /// <summary>

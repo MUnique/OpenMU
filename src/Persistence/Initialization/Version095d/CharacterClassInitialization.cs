@@ -31,6 +31,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
             this.CreateDarkKnight(CharacterClassNumber.DarkKnight, "Dark Knight", false, null, true);
             this.CreateDarkWizard(CharacterClassNumber.DarkWizard, "Dark Wizard", false, null, true);
             this.CreateFairyElf(CharacterClassNumber.FairyElf, "Fairy Elf", false, null, true);
+            this.CreateMagicGladiator(CharacterClassNumber.MagicGladiator, "Magic Gladiator", false, null, true);
         }
     }
 }
