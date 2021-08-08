@@ -131,6 +131,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="AreaSkillAnimation095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object performs a skill which has effect on an area.
+        /// Causes reaction on client side: The animation is shown on the user interface.
+        /// </remarks>
+        public static AreaSkillAnimation095ThreadSafeWriter StartWriteAreaSkillAnimation095(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="SkillAnimation075" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -139,6 +152,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Causes reaction on client side: The animation is shown on the user interface.
         /// </remarks>
         public static SkillAnimation075ThreadSafeWriter StartWriteSkillAnimation075(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="SkillAnimation095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
+        /// Causes reaction on client side: The animation is shown on the user interface.
+        /// </remarks>
+        public static SkillAnimation095ThreadSafeWriter StartWriteSkillAnimation095(this IConnection connection)
         {
           return new (connection);
         }
@@ -1674,6 +1700,31 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Sends a <see cref="AreaSkillAnimation095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillId">The skill id.</param>
+        /// <param name="playerId">The player id.</param>
+        /// <param name="pointX">The point x.</param>
+        /// <param name="pointY">The point y.</param>
+        /// <param name="rotation">The rotation.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object performs a skill which has effect on an area.
+        /// Causes reaction on client side: The animation is shown on the user interface.
+        /// </remarks>
+        public static void SendAreaSkillAnimation095(this IConnection connection, byte @skillId, ushort @playerId, byte @pointX, byte @pointY, byte @rotation)
+        {
+            using var writer = connection.StartWriteAreaSkillAnimation095();
+            var packet = writer.Packet;
+            packet.SkillId = @skillId;
+            packet.PlayerId = @playerId;
+            packet.PointX = @pointX;
+            packet.PointY = @pointY;
+            packet.Rotation = @rotation;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="SkillAnimation075" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1688,6 +1739,29 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static void SendSkillAnimation075(this IConnection connection, byte @skillId, ushort @playerId, ushort @targetId, bool @effectApplied)
         {
             using var writer = connection.StartWriteSkillAnimation075();
+            var packet = writer.Packet;
+            packet.SkillId = @skillId;
+            packet.PlayerId = @playerId;
+            packet.TargetId = @targetId;
+            packet.EffectApplied = @effectApplied;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="SkillAnimation095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillId">The skill id.</param>
+        /// <param name="playerId">The player id.</param>
+        /// <param name="targetId">The target id.</param>
+        /// <param name="effectApplied">The effect applied.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
+        /// Causes reaction on client side: The animation is shown on the user interface.
+        /// </remarks>
+        public static void SendSkillAnimation095(this IConnection connection, byte @skillId, ushort @playerId, ushort @targetId, bool @effectApplied)
+        {
+            using var writer = connection.StartWriteSkillAnimation095();
             var packet = writer.Packet;
             packet.SkillId = @skillId;
             packet.PlayerId = @playerId;
@@ -4547,6 +4621,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="AreaSkillAnimation095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct AreaSkillAnimation095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkillAnimation095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public AreaSkillAnimation095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new AreaSkillAnimation095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkillAnimation095.Length)[..AreaSkillAnimation095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public AreaSkillAnimation095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="AreaSkillAnimation095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(AreaSkillAnimation095.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="SkillAnimation075"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct SkillAnimation075ThreadSafeWriter
@@ -4587,6 +4714,59 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(SkillAnimation075.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="SkillAnimation095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct SkillAnimation095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAnimation095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public SkillAnimation095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new SkillAnimation095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillAnimation095.Length)[..SkillAnimation095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public SkillAnimation095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="SkillAnimation095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(SkillAnimation095.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

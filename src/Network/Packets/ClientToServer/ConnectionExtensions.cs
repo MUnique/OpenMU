@@ -638,6 +638,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="TargetedSkill095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+        /// </remarks>
+        public static TargetedSkill095ThreadSafeWriter StartWriteTargetedSkill095(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="MagicEffectCancelRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -685,6 +698,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
         /// </remarks>
         public static AreaSkill075ThreadSafeWriter StartWriteAreaSkill075(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="AreaSkill095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+        /// </remarks>
+        public static AreaSkill095ThreadSafeWriter StartWriteAreaSkill095(this IConnection connection)
         {
           return new (connection);
         }
@@ -2175,6 +2201,25 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="TargetedSkill095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillIndex">The index of the skill in the skill list.</param>
+        /// <param name="targetId">The target id.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+        /// </remarks>
+        public static void SendTargetedSkill095(this IConnection connection, byte @skillIndex, ushort @targetId)
+        {
+            using var writer = connection.StartWriteTargetedSkill095();
+            var packet = writer.Packet;
+            packet.SkillIndex = @skillIndex;
+            packet.TargetId = @targetId;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="MagicEffectCancelRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2260,6 +2305,29 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static void SendAreaSkill075(this IConnection connection, byte @skillIndex, byte @targetX, byte @targetY, byte @rotation)
         {
             using var writer = connection.StartWriteAreaSkill075();
+            var packet = writer.Packet;
+            packet.SkillIndex = @skillIndex;
+            packet.TargetX = @targetX;
+            packet.TargetY = @targetY;
+            packet.Rotation = @rotation;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="AreaSkill095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillIndex">The index of the skill in the skill list.</param>
+        /// <param name="targetX">The target x.</param>
+        /// <param name="targetY">The target y.</param>
+        /// <param name="rotation">The rotation.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+        /// </remarks>
+        public static void SendAreaSkill095(this IConnection connection, byte @skillIndex, byte @targetX, byte @targetY, byte @rotation)
+        {
+            using var writer = connection.StartWriteAreaSkill095();
             var packet = writer.Packet;
             packet.SkillIndex = @skillIndex;
             packet.TargetX = @targetX;
@@ -5479,6 +5547,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="TargetedSkill095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct TargetedSkill095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TargetedSkill095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public TargetedSkill095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new TargetedSkill095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(TargetedSkill095.Length)[..TargetedSkill095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public TargetedSkill095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="TargetedSkill095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(TargetedSkill095.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="MagicEffectCancelRequest"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct MagicEffectCancelRequestThreadSafeWriter
@@ -5678,6 +5799,59 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.Advance(AreaSkill075.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="AreaSkill095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct AreaSkill095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkill095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public AreaSkill095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new AreaSkill095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkill095.Length)[..AreaSkill095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public AreaSkill095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="AreaSkill095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(AreaSkill095.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

@@ -1295,9 +1295,31 @@
       </Fields>
     </Packet>
     <Packet>
-      <HeaderType>C3Header</HeaderType>
+      <HeaderType>C1Header</HeaderType>
       <Code>19</Code>
       <Name>TargetedSkill075</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
+      <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the skill list.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>19</Code>
+      <Name>TargetedSkill095</Name>
       <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
@@ -1481,6 +1503,96 @@
         </Field>
         <Field>
           <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>TargetData</TypeName>
+          <Name>Targets</Name>
+          <ItemCountField>TargetCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>TargetData</Name>
+          <Description>Contains the data of the target</Description>
+          <Length>2</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>TargetId</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>1E</Code>
+      <Name>AreaSkill095</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player is performing an skill which affects an area of the map.</SentWhen>
+      <CausedReaction>It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the skill list.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>1D</Code>
+      <Name>AreaSkillHit095</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>An area skill was performed and the client decided to hit one or more targets.</SentWhen>
+      <CausedReaction>The server is calculating the damage and applying it to the targets. The attacker gets a response back with the caused damage.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the skill list.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Counter</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>TargetCount</Name>
+          <Description>The number of targets which are hit.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
           <Type>Structure[]</Type>
           <TypeName>TargetData</TypeName>
           <Name>Targets</Name>

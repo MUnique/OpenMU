@@ -1,4 +1,4 @@
-﻿// <copyright file="AreaSkillHitHandlerPlugIn075.cs" company="MUnique">
+﻿// <copyright file="AreaSkillHitHandlerPlugIn095.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -17,28 +18,29 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// <remarks>
     /// TODO: It's usually required to perform a <see cref="AreaSkillAttackAction"/> before, so this check has to be implemented.
     /// </remarks>
-    [PlugIn(nameof(AreaSkillHitHandlerPlugIn075), "Handler for area skill hit packets.")]
-    [Guid("D08CA02F-C413-4527-B79C-87F3C4641B60")]
-    internal class AreaSkillHitHandlerPlugIn075 : AreaSkillHitHandlerMultiTargetPlugInBase, IPacketHandlerPlugIn
+    [PlugIn(nameof(AreaSkillHitHandlerPlugIn095), "Handler for area skill hit packets.")]
+    [Guid("71C2E116-D1B2-4F07-9A3B-41CEA1975108")]
+    [MinimumClient(0, 95, ClientLanguage.Invariant)]
+    internal class AreaSkillHitHandlerPlugIn095 : AreaSkillHitHandlerMultiTargetPlugInBase, IPacketHandlerPlugIn
     {
         /// <inheritdoc/>
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc/>
-        public byte Key => AreaSkillHit075.Code;
+        public byte Key => AreaSkillHit095.Code;
 
         /// <inheritdoc/>
         public void HandlePacket(Player player, Span<byte> packet)
         {
-            if (packet.Length < 7)
+            if (packet.Length < 8)
             {
                 return;
             }
 
-            AreaSkillHit075 message = packet;
+            AreaSkillHit095 message = packet;
 
-            if (packet.Length < AreaSkillHit075.GetRequiredSize(message.TargetCount)
-                || !this.TryGetSkillEntry(player, message.SkillIndex, out var skillEntry))
+            if (packet.Length < AreaSkillHit095.GetRequiredSize(message.TargetCount)
+             || !this.TryGetSkillEntry(player, message.SkillIndex, out var skillEntry))
             {
                 return;
             }

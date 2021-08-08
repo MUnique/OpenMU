@@ -4803,6 +4803,94 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <summary>
         /// Gets the header type of this data packet.
         /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x19;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 6;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the index of the skill in the skill list.
+        /// </summary>
+        public byte SkillIndex
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => ReadUInt16BigEndian(this.data[4..]);
+            set => WriteUInt16BigEndian(this.data[4..], value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TargetedSkill075"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator TargetedSkill075(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TargetedSkill075"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(TargetedSkill075 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </summary>
+    public readonly ref struct TargetedSkill095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TargetedSkill095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TargetedSkill095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TargetedSkill095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private TargetedSkill095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
         public static byte HeaderType => 0xC3;
 
         /// <summary>
@@ -4839,18 +4927,18 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="TargetedSkill075"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="TargetedSkill095"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator TargetedSkill075(Span<byte> packet) => new (packet, false);
+        public static implicit operator TargetedSkill095(Span<byte> packet) => new (packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="TargetedSkill075"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="TargetedSkill095"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(TargetedSkill075 packet) => packet.data; 
+        public static implicit operator Span<byte>(TargetedSkill095 packet) => packet.data; 
     }
 
 
@@ -5396,6 +5484,265 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         /// <param name="targetsCount">The count of <see cref="TargetData"/> from which the size will be calculated.</param>
         public static int GetRequiredSize(int targetsCount) => targetsCount * TargetData.Length + 7;
+
+
+    /// <summary>
+    /// Contains the data of the target.
+    /// </summary>
+    public readonly ref struct TargetData
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TargetData"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public TargetData(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 2;
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => ReadUInt16BigEndian(this.data);
+            set => WriteUInt16BigEndian(this.data, value);
+        }
+    }
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+    /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+    /// </summary>
+    public readonly ref struct AreaSkill095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkill095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AreaSkill095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkill095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AreaSkill095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1E;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the index of the skill in the skill list.
+        /// </summary>
+        public byte SkillIndex
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target x.
+        /// </summary>
+        public byte TargetX
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target y.
+        /// </summary>
+        public byte TargetY
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkill095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AreaSkill095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AreaSkill095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AreaSkill095 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the client when: An area skill was performed and the client decided to hit one or more targets.
+    /// Causes reaction on server side: The server is calculating the damage and applying it to the targets. The attacker gets a response back with the caused damage.
+    /// </summary>
+    public readonly ref struct AreaSkillHit095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkillHit095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AreaSkillHit095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkillHit095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AreaSkillHit095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1D;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the index of the skill in the skill list.
+        /// </summary>
+        public byte SkillIndex
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target x.
+        /// </summary>
+        public byte TargetX
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target y.
+        /// </summary>
+        public byte TargetY
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the counter.
+        /// </summary>
+        public byte Counter
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the number of targets which are hit.
+        /// </summary>
+        public byte TargetCount
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="TargetData"/> of the specified index.
+        /// </summary>
+        public TargetData this[int index] => new (this.data[(8 + index * TargetData.Length)..]);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkillHit095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AreaSkillHit095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AreaSkillHit095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AreaSkillHit095 packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="TargetData"/>.
+        /// </summary>
+        /// <param name="targetsCount">The count of <see cref="TargetData"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int targetsCount) => targetsCount * TargetData.Length + 8;
 
 
     /// <summary>

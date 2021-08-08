@@ -153,6 +153,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
                 }
 
                 newPlugInIsEffective = true;
+                this.DeactivatePlugIn(currentlyActivePlugIn);
             }
 
             base.ActivatePlugIn(plugIn);

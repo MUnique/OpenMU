@@ -3145,6 +3145,121 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: An object performs a skill which has effect on an area.
+    /// Causes reaction on client side: The animation is shown on the user interface.
+    /// </summary>
+    public readonly ref struct AreaSkillAnimation095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkillAnimation095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AreaSkillAnimation095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkillAnimation095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AreaSkillAnimation095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1E;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 9;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the skill id.
+        /// </summary>
+        public byte SkillId
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => ReadUInt16BigEndian(this.data[4..]);
+            set => WriteUInt16BigEndian(this.data[4..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the point x.
+        /// </summary>
+        public byte PointX
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the point y.
+        /// </summary>
+        public byte PointY
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkillAnimation095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AreaSkillAnimation095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AreaSkillAnimation095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AreaSkillAnimation095 packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
     /// Causes reaction on client side: The animation is shown on the user interface.
     /// </summary>
@@ -3247,6 +3362,112 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(SkillAnimation075 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
+    /// Causes reaction on client side: The animation is shown on the user interface.
+    /// </summary>
+    public readonly ref struct SkillAnimation095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAnimation095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SkillAnimation095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAnimation095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private SkillAnimation095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x19;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the skill id.
+        /// </summary>
+        public byte SkillId
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => ReadUInt16BigEndian(this.data[4..]);
+            set => WriteUInt16BigEndian(this.data[4..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => ReadUInt16BigEndian(this.data[6..]);
+            set => WriteUInt16BigEndian(this.data[6..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the effect applied.
+        /// </summary>
+        public bool EffectApplied
+        {
+            get => this.data[6..].GetBoolean(7);
+            set => this.data[6..].SetBoolean(value, 7);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SkillAnimation095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator SkillAnimation095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SkillAnimation095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(SkillAnimation095 packet) => packet.data; 
     }
 
 
