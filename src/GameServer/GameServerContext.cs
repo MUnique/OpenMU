@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
@@ -19,6 +21,8 @@ namespace MUnique.OpenMU.GameServer
     public class GameServerContext : GameContext, IGameServerContext
     {
         private readonly GameServerDefinition gameServerDefinition;
+
+        private readonly ConcurrentDictionary<uint, List<Player>> playersByGuild = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameServerContext" /> class.
@@ -73,6 +77,44 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc />
         public override float ExperienceRate => base.ExperienceRate * this.gameServerDefinition.ExperienceRate;
 
+        /// <inheritdoc />
+        public void ForEachGuildPlayer(uint guildId, Action<Player> action)
+        {
+            if (!this.playersByGuild.TryGetValue(guildId, out var playerList))
+            {
+                return;
+            }
+
+            lock (playerList)
+            {
+                for (int i = playerList.Count - 1; i >= 0; i--)
+                {
+                    var player = playerList[i];
+                    action(player);
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public void ForEachAlliancePlayer(uint guildId, Action<Player> action)
+        {
+            if (!this.playersByGuild.TryGetValue(guildId, out var playerList))
+            {
+                return;
+            }
+
+            // TODO: iterate other guilds of the alliance as well; maybe introduce another dictionary with alliance players
+
+            lock (playerList)
+            {
+                for (int i = playerList.Count - 1; i >= 0; i--)
+                {
+                    var player = playerList[i];
+                    action(player);
+                }
+            }
+        }
+
         /// <inheritdoc/>
         public override void AddPlayer(Player player)
         {
@@ -84,49 +126,88 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public override void RemovePlayer(Player player)
         {
-            if (player is null)
-            {
-                return;
-            }
-
             player.PlayerEnteredWorld -= this.PlayerEnteredWorld;
             player.PlayerLeftWorld -= this.PlayerLeftWorld;
             base.RemovePlayer(player);
         }
 
-        /// <summary>
-        /// Raises the <see cref="GuildDeleted"/> event.
-        /// </summary>
-        /// <param name="guildId">The guild identifier.</param>
-        internal void RaiseGuildDeleted(uint guildId)
+        /// <inheritdoc />
+        public void RemoveGuild(uint guildId)
         {
+            this.playersByGuild.Remove(guildId, out _);
             this.GuildDeleted?.Invoke(this, new GuildDeletedEventArgs(guildId));
+        }
+
+        /// <inheritdoc />
+        public void RegisterGuildMember(Player guildMember)
+        {
+            if (guildMember.GuildStatus is null)
+            {
+                return;
+            }
+
+            var guildId = guildMember.GuildStatus.GuildId;
+            var guildList = this.playersByGuild.GetOrAdd(guildId, id => new List<Player>());
+            lock (guildList)
+            {
+                guildList.Add(guildMember);
+            }
+        }
+
+        /// <inheritdoc />
+        public void UnregisterGuildMember(Player guildMember)
+        {
+            if (guildMember.GuildStatus is null)
+            {
+                return;
+            }
+
+            var guildId = guildMember.GuildStatus.GuildId;
+            if (!this.playersByGuild.TryGetValue(guildId, out var guildList))
+            {
+                return;
+            }
+
+            lock (guildList)
+            {
+                guildList.Remove(guildMember);
+            }
         }
 
         private void PlayerEnteredWorld(object? sender, EventArgs e)
         {
-            if (sender is Player { SelectedCharacter: { } selectedCharacter } player)
+            if (sender is not Player { SelectedCharacter: { } selectedCharacter } player)
             {
-                this.FriendServer.SetOnlineState(selectedCharacter.Id, selectedCharacter.Name, this.Id);
-                player.GuildStatus = this.GuildServer.PlayerEnteredGame(selectedCharacter.Id, selectedCharacter.Name, this.Id);
-                if (player.GuildStatus is not null)
-                {
-                    player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(player, true), true);
-                }
+                return;
             }
+
+            this.FriendServer.SetOnlineState(selectedCharacter.Id, selectedCharacter.Name, this.Id);
+            player.GuildStatus = this.GuildServer.PlayerEnteredGame(selectedCharacter.Id, selectedCharacter.Name, this.Id);
+            if (player.GuildStatus is null)
+            {
+                return;
+            }
+
+            player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(player, true), true);
+            this.RegisterGuildMember(player);
         }
 
         private void PlayerLeftWorld(object? sender, EventArgs e)
         {
-            if (sender is Player { SelectedCharacter: { } selectedCharacter } player)
+            if (sender is not Player { SelectedCharacter: { } selectedCharacter } player)
             {
-                this.FriendServer.SetOnlineState(selectedCharacter.Id, selectedCharacter.Name, 0xFF);
-                if (player.GuildStatus is { } guildStatus)
-                {
-                    this.GuildServer.GuildMemberLeftGame(guildStatus.GuildId, selectedCharacter.Id, this.Id);
-                    player.GuildStatus = null;
-                }
+                return;
             }
+
+            this.FriendServer.SetOnlineState(selectedCharacter.Id, selectedCharacter.Name, 0xFF);
+            if (player.GuildStatus is not { } guildStatus)
+            {
+                return;
+            }
+
+            this.GuildServer.GuildMemberLeftGame(guildStatus.GuildId, selectedCharacter.Id, this.Id);
+            this.UnregisterGuildMember(player);
+            player.GuildStatus = null;
         }
     }
 }

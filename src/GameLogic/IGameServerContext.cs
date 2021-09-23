@@ -42,5 +42,37 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets the server configuration.
         /// </summary>
         GameServerConfiguration ServerConfiguration { get; }
+
+        /// <summary>
+        /// Executes an action for each player of the guild.
+        /// </summary>
+        /// <param name="guildId">The guild id.</param>
+        /// <param name="action">The action which should be executed.</param>
+        void ForEachGuildPlayer(uint guildId, Action<Player> action);
+
+        /// <summary>
+        /// Executes an action for each player of the alliance of the guild.
+        /// </summary>
+        /// <param name="guildId">The guild id.</param>
+        /// <param name="action">The action which should be executed.</param>
+        void ForEachAlliancePlayer(uint guildId, Action<Player> action);
+
+        /// <summary>
+        /// Registers a guild member to the game, e.g. after a player entered a guild.
+        /// </summary>
+        /// <param name="guildMember">The guild member.</param>
+        void RegisterGuildMember(Player guildMember);
+
+        /// <summary>
+        /// Unregisters a guild member from the game, e.g. after a player left the game or the guild.
+        /// </summary>
+        /// <param name="guildMember">The guild member.</param>
+        void UnregisterGuildMember(Player guildMember);
+
+        /// <summary>
+        /// Removes a whole guild, usually after it has been disbanded.
+        /// </summary>
+        /// <param name="guildId">The id of the guild.</param>
+        void RemoveGuild(uint guildId);
     }
 }

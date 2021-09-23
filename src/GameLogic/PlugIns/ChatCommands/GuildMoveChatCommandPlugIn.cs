@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
-    using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
@@ -31,22 +30,22 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         {
             var guildId = this.GetGuildIdByName(gameMaster, arguments.GuildName!);
 
-            var guildPlayers = gameMaster.GameContext.PlayerList
-                .Where(p => p.GuildStatus?.GuildId == guildId)
-                .ToList();
+            if (gameMaster.GameContext is not IGameServerContext gameServerContext)
+            {
+                return;
+            }
 
             var exitGate = this.GetExitGate(gameMaster, arguments.MapIdOrName!, arguments.Coordinates);
-
-            foreach (var targetPlayer in guildPlayers)
+            gameServerContext.ForEachGuildPlayer(guildId, guildPlayer =>
             {
-                targetPlayer.WarpTo(exitGate);
+                guildPlayer.WarpTo(exitGate);
 
-                if (!targetPlayer.Name.Equals(gameMaster.Name))
+                if (!guildPlayer.Name.Equals(gameMaster.Name))
                 {
-                    this.ShowMessageTo(targetPlayer, "You have been moved by the game master.");
-                    this.ShowMessageTo(gameMaster, $"[{this.Key}] {targetPlayer.Name} has been moved to {exitGate!.Map!.Name} at {targetPlayer.Position.X}, {targetPlayer.Position.Y}");
+                    this.ShowMessageTo(guildPlayer, "You have been moved by the game master.");
+                    this.ShowMessageTo(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been moved to {exitGate!.Map!.Name} at {guildPlayer.Position.X}, {guildPlayer.Position.Y}");
                 }
-            }
+            });
         }
     }
 }

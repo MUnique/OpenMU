@@ -58,7 +58,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
 
             var targetGuildId = serverContext.GuildServer.GetGuildIdByName(targetGuildName);
 
-            if (serverContext.PlayerList.FirstOrDefault(p => p.GuildStatus?.GuildId == targetGuildId) is not { } targetGuildMaster)
+            Player? targetGuildMaster = null;
+            serverContext.ForEachGuildPlayer(targetGuildId, p => targetGuildMaster = p.GuildStatus?.Position == GuildPosition.GuildMaster ? p : targetGuildMaster);
+            if (targetGuildMaster is null)
             {
                 player.ViewPlugIns.GetPlugIn<IShowShowGuildWarRequestResultPlugIn>()?.ShowResult(GuildWarRequestResult.GuildMasterOffline);
                 return;

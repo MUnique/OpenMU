@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
@@ -47,7 +48,7 @@ namespace MUnique.OpenMU.GameServer
         public ServerState State => this.gameServer.ServerState;
 
         /// <inheritdoc/>
-        public int OnlinePlayerCount => this.gameServer.Context.PlayerList.Count;
+        public int OnlinePlayerCount => this.gameServer.Context.PlayerCount;
 
         /// <inheritdoc/>
         public int MaximumPlayers => this.configuration.MaximumPlayers;
@@ -96,6 +97,7 @@ namespace MUnique.OpenMU.GameServer
                 {
                     this.gameMapInfos.Remove(map);
                     map.PropertyChanged -= this.OnMapPropertyChanged;
+                    (map as IDisposable)?.Dispose();
                     mapsChanged = true;
                 });
 
@@ -109,7 +111,7 @@ namespace MUnique.OpenMU.GameServer
 
         private GameMapInfoAdapter CreateMapAdapter(GameMap gameMap)
         {
-            var mapAdapter = new GameMapInfoAdapter(gameMap, this.gameServer.Context.PlayerList.Where(p => p.CurrentMap == gameMap));
+            var mapAdapter = new GameMapInfoAdapter(gameMap, this.gameServer.Context);
             mapAdapter.PropertyChanged += this.OnMapPropertyChanged;
             return mapAdapter;
         }

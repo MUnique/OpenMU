@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameServer
 {
+    using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
@@ -15,23 +17,30 @@ namespace MUnique.OpenMU.GameServer
     /// Adapter which takes an <see cref="GameMap"/> and adapts it to a <see cref="IGameMapInfo"/>.
     /// </summary>
     /// <seealso cref="MUnique.OpenMU.Interfaces.IGameMapInfo" />
-    internal class GameMapInfoAdapter : IGameMapInfo
+    internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
     {
         private readonly GameMap map;
-
-        private readonly IEnumerable<Player> players;
+        private readonly ConcurrentDictionary<Player, IPlayerInfo> players = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameMapInfoAdapter"/> class.
         /// </summary>
         /// <param name="map">The map.</param>
-        /// <param name="players">The players.</param>
-        public GameMapInfoAdapter(GameMap map, IEnumerable<Player> players)
+        /// <param name="gameContext">The game context.</param>
+        public GameMapInfoAdapter(GameMap map, IGameContext gameContext)
         {
             this.map = map;
-            this.players = players;
-            this.map.ObjectAdded += this.OnMapObjectAddedOrRemoved;
-            this.map.ObjectRemoved += this.OnMapObjectAddedOrRemoved;
+            gameContext.ForEachPlayer(p =>
+            {
+                if (p.CurrentMap == this.map)
+                {
+                    this.players.TryAdd(p, new PlayerInfo(p));
+                }
+            });
+
+            this.map.ObjectAdded += this.OnMapObjectAdded;
+            this.map.ObjectRemoved += this.OnMapObjectRemoved;
+
         }
 
         /// <inheritdoc/>
@@ -47,15 +56,35 @@ namespace MUnique.OpenMU.GameServer
         public byte[]? TerrainData => this.map.Definition.TerrainData;
 
         /// <inheritdoc/>
-        public IList<IPlayerInfo> Players => this.players.Select(p => new PlayerInfo(p) as IPlayerInfo).ToList();
+        public IList<IPlayerInfo> Players => this.players.Values.ToList();
 
         /// <inheritdoc/>
         public int PlayerCount => this.players.Count();
 
-        private void OnMapObjectAddedOrRemoved(object? sender, (GameMap Map, ILocateable Object) args)
+        /// <inheritdoc />
+        public void Dispose()
         {
-            if (args.Object is Player)
+            this.map.ObjectAdded -= this.OnMapObjectAdded;
+            this.map.ObjectRemoved -= this.OnMapObjectRemoved;
+            this.PropertyChanged = null;
+            this.players.Clear();
+        }
+
+        private void OnMapObjectAdded(object? sender, (GameMap Map, ILocateable Object) args)
+        {
+            if (args.Object is Player player)
             {
+                this.players.TryAdd(player, new PlayerInfo(player));
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Players)));
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.PlayerCount)));
+            }
+        }
+
+        private void OnMapObjectRemoved(object? sender, (GameMap Map, ILocateable Object) args)
+        {
+            if (args.Object is Player player)
+            {
+                this.players.TryRemove(player, out _);
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Players)));
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.PlayerCount)));
             }

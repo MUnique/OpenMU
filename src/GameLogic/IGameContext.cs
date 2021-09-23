@@ -58,14 +58,25 @@ namespace MUnique.OpenMU.GameLogic
         FeaturePlugInContainer FeaturePlugIns { get; }
 
         /// <summary>
-        /// Gets the players of the game in a list.
+        /// Gets the players count of the game.
         /// </summary>
-        IList<Player> PlayerList { get; }
+        int PlayerCount { get; }
 
         /// <summary>
         /// Gets the logger factory.
         /// </summary>
         ILoggerFactory LoggerFactory { get; }
+
+        /// <summary>
+        /// Gets the initialized maps which are hosted on this context.
+        /// </summary>
+        IEnumerable<GameMap> Maps { get; }
+
+        /// <summary>
+        /// Adds the player to the game.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        void AddPlayer(Player player);
 
         /// <summary>
         /// Gets the maps which is meant to be hosted by the game.
@@ -96,5 +107,14 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="message">The message.</param>
         void SendGlobalNotification(string message);
+
+        /// <summary>
+        /// Executes an action for each player.
+        /// </summary>
+        /// <param name="action">The action which is executed.</param>
+        /// <remarks>
+        /// Please avoid doing actions which may lead to the connected-state of the players.
+        /// </remarks>
+        void ForEachPlayer(Action<Player> action);
     }
 }

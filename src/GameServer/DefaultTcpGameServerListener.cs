@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.GameServer
         private readonly GameServerEndpoint endPoint;
         private readonly IGameServerInfo gameServerInfo;
 
-        private readonly GameServerContext gameContext;
+        private readonly IGameServerContext gameContext;
 
         private readonly IGameServerStateObserver stateObserver;
         private readonly IIpAddressResolver addressResolver;
@@ -45,7 +45,7 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="stateObserver">The connect server.</param>
         /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
         /// <param name="loggerFactory">The logger factory.</param>
-        public DefaultTcpGameServerListener(GameServerEndpoint endPoint, IGameServerInfo gameServerInfo, GameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver, ILoggerFactory loggerFactory)
+        public DefaultTcpGameServerListener(GameServerEndpoint endPoint, IGameServerInfo gameServerInfo, IGameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver, ILoggerFactory loggerFactory)
         {
             this.endPoint = endPoint;
             this.gameServerInfo = gameServerInfo;
@@ -147,7 +147,7 @@ namespace MUnique.OpenMU.GameServer
 
             var remoteEndPoint = socket.RemoteEndPoint;
             this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));
-            if (this.gameContext.PlayerList.Count >= this.gameContext.ServerConfiguration.MaximumPlayers)
+            if (this.gameContext.PlayerCount >= this.gameContext.ServerConfiguration.MaximumPlayers)
             {
                 this.Log(l => l.LogDebug($"The server is full... disconnecting the game client {remoteEndPoint}"));
 

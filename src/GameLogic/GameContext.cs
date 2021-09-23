@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// The game context which holds all data of the game together.
     /// </summary>
-    public class GameContext : OpenMU.GameLogic.IGameContext, IDisposable
+    public class GameContext : IGameContext, IDisposable
     {
         private readonly IDictionary<ushort, GameMap> mapList;
 
@@ -29,6 +29,13 @@ namespace MUnique.OpenMU.GameLogic
         private readonly IMapInitializer mapInitializer;
 
         private readonly Timer tasksTimer;
+
+        private readonly SemaphoreSlim playerListLock = new SemaphoreSlim(1);
+
+        /// <summary>
+        /// Keeps the list of all players.
+        /// </summary>
+        private readonly List<Player> playerList = new List<Player>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameContext" /> class.
@@ -99,17 +106,15 @@ namespace MUnique.OpenMU.GameLogic
         public IPersistenceContextProvider PersistenceContextProvider { get; }
 
         /// <summary>
-        /// Gets the player list.
-        /// </summary>
-        public IList<Player> PlayerList { get; } = new List<Player>();
-
-        /// <summary>
         /// Gets the players by character name dictionary.
         /// </summary>
         public IDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>();
 
         /// <inheritdoc />
         public ILoggerFactory LoggerFactory { get; }
+
+        /// <inheritdoc />
+        public int PlayerCount => this.playerList.Count;
 
         /// <inheritdoc/>
         public GameMap? GetMap(ushort mapId, bool createIfNotExists = true)
@@ -159,7 +164,16 @@ namespace MUnique.OpenMU.GameLogic
             player.PlayerLeftWorld += this.PlayerLeftWorld;
             player.PlayerEnteredWorld += this.PlayerEnteredWorld;
             player.PlayerDisconnected += this.PlayerDisconnected;
-            this.PlayerList.Add(player);
+
+            this.playerListLock.Wait();
+            try
+            {
+                this.playerList.Add(player);
+            }
+            finally
+            {
+                this.playerListLock.Release();
+            }
         }
 
         /// <summary>
@@ -168,11 +182,6 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="player">The player.</param>
         public virtual void RemovePlayer(Player player)
         {
-            if (player is null)
-            {
-                return;
-            }
-
             if (player.SelectedCharacter != null)
             {
                 this.PlayersByCharacterName.Remove(player.SelectedCharacter.Name);
@@ -180,7 +189,15 @@ namespace MUnique.OpenMU.GameLogic
 
             player.CurrentMap?.Remove(player);
 
-            this.PlayerList.Remove(player);
+            this.playerListLock.Wait();
+            try
+            {
+                this.playerList.Remove(player);
+            }
+            finally
+            {
+                this.playerListLock.Release();
+            }
 
             player.PlayerDisconnected -= this.PlayerDisconnected;
             player.PlayerEnteredWorld -= this.PlayerEnteredWorld;
@@ -198,14 +215,33 @@ namespace MUnique.OpenMU.GameLogic
             return player;
         }
 
+        /// <inheritdoc />
+        public void ForEachPlayer(Action<Player> action)
+        {
+            if (this.playerList.Count == 0)
+            {
+                return;
+            }
+
+            this.playerListLock.Wait();
+            try
+            {
+                for (int i = this.playerList.Count - 1; i >= 0; --i)
+                {
+                    var player = this.playerList[i];
+                    action(player);
+                }
+            }
+            finally
+            {
+                this.playerListLock.Release();
+            }
+        }
+
         /// <inheritdoc/>
         public void SendGlobalMessage(string message, MessageType messageType)
         {
-            for (int i = this.PlayerList.Count - 1; i >= 0; i--)
-            {
-                var player = this.PlayerList[i];
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, messageType);
-            }
+            this.ForEachPlayer(player => player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, messageType));
         }
 
         /// <inheritdoc/>
@@ -244,19 +280,13 @@ namespace MUnique.OpenMU.GameLogic
 
         private void RecoverTimerElapsed(object? state)
         {
-            for (int i = this.PlayerList.Count - 1; i >= 0; --i)
+            this.ForEachPlayer(player =>
             {
-                if (i < 0)
-                {
-                    break;
-                }
-
-                var player = this.PlayerList[i];
                 if (player.SelectedCharacter != null && player.PlayerState.CurrentState == PlayerState.EnteredWorld)
                 {
                     player.Regenerate();
                 }
-            }
+            });
         }
 
         private void PlayerDisconnected(object? sender, EventArgs e)

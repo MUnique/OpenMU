@@ -45,18 +45,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
                     this.weatherStates[map] = (weather, variation);
                 }
 
-                for (var i = gameContext.PlayerList.Count - 1; i >= 0; i = Math.Min(i - 1, gameContext.PlayerList.Count - 1))
-                {
-                    try
-                    {
-                        var player = gameContext.PlayerList[i];
-                        this.TrySendPlayerUpdate(player);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.Fail(ex.Message, ex.StackTrace);
-                    }
-                }
+                gameContext.ForEachPlayer(this.TrySendPlayerUpdate);
             }
             catch (Exception ex)
             {

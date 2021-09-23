@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
-    using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
@@ -29,14 +28,22 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         /// <inheritdoc/>
         protected override void DoHandleCommand(Player gameMasterPlayer, EmptyChatCommandArgs arguments)
         {
-            var charactersOnline = gameMasterPlayer.GameContext.PlayerList
-                .Where(x => x.SelectedCharacter != null)
-                .Select(c => c.SelectedCharacter)
-                .ToList();
+            var totalCharactersCount = 0;
+            var totalGameMastersCount = 0;
+            gameMasterPlayer.GameContext.ForEachPlayer(player =>
+            {
+                switch (player.SelectedCharacter?.CharacterStatus)
+                {
+                    case CharacterStatus.Normal:
+                        totalCharactersCount++;
+                        break;
+                    case CharacterStatus.GameMaster:
+                        totalGameMastersCount++;
+                        break;
+                }
+            });
 
-            var totalCharactersOnline = charactersOnline.Where(x => x!.CharacterStatus == CharacterStatus.Normal).Count();
-            var totalGMOnline = charactersOnline.Where(x => x!.CharacterStatus == CharacterStatus.GameMaster).Count();
-            this.ShowMessageTo(gameMasterPlayer, $"[{this.Key}] {totalGMOnline} GM(s) and {totalCharactersOnline} player(s) online");
+            this.ShowMessageTo(gameMasterPlayer, $"[{this.Key}] {totalGameMastersCount} GM(s) and {totalCharactersCount} player(s) online");
         }
     }
 }
