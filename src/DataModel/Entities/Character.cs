@@ -250,6 +250,7 @@ namespace MUnique.OpenMU.DataModel.Entities
         /// <summary>
         /// Gets or sets the quest states.
         /// </summary>
+        [MemberOfAggregate]
         public virtual ICollection<CharacterQuestState> QuestStates { get; protected set; } = null!;
 
         /// <inheritdoc />

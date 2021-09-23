@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Runtime.InteropServices;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.GameLogic.Views.World;
@@ -44,23 +45,22 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
                     this.weatherStates[map] = (weather, variation);
                 }
 
-                foreach (var player in gameContext.PlayerList)
+                for (var i = gameContext.PlayerList.Count - 1; i >= 0; i = Math.Min(i - 1, gameContext.PlayerList.Count - 1))
                 {
-                    if (player.CurrentMap is { } map
-                        && player.PlayerState.CurrentState != PlayerState.Disconnected
-                        && player.PlayerState.CurrentState != PlayerState.Finished
-                        && this.weatherStates.TryGetValue(map, out var weather))
+                    try
                     {
-                        try
-                        {
-                            player.ViewPlugIns.GetPlugIn<IWeatherStatusUpdatePlugIn>()?.ShowWeather(weather.Item1, weather.Item2);
-                        }
-                        catch (Exception ex)
-                        {
-                            player.Logger.LogDebug(ex, "Unexpected error sending weather update.");
-                        }
+                        var player = gameContext.PlayerList[i];
+                        this.TrySendPlayerUpdate(player);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Fail(ex.Message, ex.StackTrace);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.Fail(ex.Message, ex.StackTrace);
             }
             finally
             {
@@ -72,10 +72,27 @@ namespace MUnique.OpenMU.GameLogic.PlugIns
         /// <inheritdoc />
         public void ObjectAddedToMap(GameMap map, ILocateable addedObject)
         {
-            if (addedObject is Player player
+            if (addedObject is Player player)
+            {
+                this.TrySendPlayerUpdate(player);
+            }
+        }
+
+        private void TrySendPlayerUpdate(Player player)
+        {
+            if (player.CurrentMap is { } map
+                && player.PlayerState.CurrentState != PlayerState.Disconnected
+                && player.PlayerState.CurrentState != PlayerState.Finished
                 && this.weatherStates.TryGetValue(map, out var weather))
             {
-                player.ViewPlugIns.GetPlugIn<IWeatherStatusUpdatePlugIn>()?.ShowWeather(weather.Item1, weather.Item2);
+                try
+                {
+                    player.ViewPlugIns.GetPlugIn<IWeatherStatusUpdatePlugIn>()?.ShowWeather(weather.Item1, weather.Item2);
+                }
+                catch (Exception ex)
+                {
+                    player.Logger.LogDebug(ex, "Unexpected error sending weather update.");
+                }
             }
         }
     }
