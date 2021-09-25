@@ -38,7 +38,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
                 yield return typeof(Version075.Maps.Arena);
                 yield return typeof(Atlans);
                 yield return typeof(Version095d.Maps.Tarkan);
-                yield return typeof(Version095d.Maps.DevilSquare1To4);
+                yield return typeof(Version095d.Maps.DevilSquare1);
+                yield return typeof(Version095d.Maps.DevilSquare2);
+                yield return typeof(Version095d.Maps.DevilSquare3);
+                yield return typeof(Version095d.Maps.DevilSquare4);
                 yield return typeof(Icarus);
                 yield return typeof(Elvenland);
                 yield return typeof(Karutan1);
@@ -88,7 +91,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
                 yield return typeof(IllusionTemple4);
                 yield return typeof(IllusionTemple5);
                 yield return typeof(IllusionTemple6);
-                yield return typeof(DevilSquare5To7);
+                yield return typeof(DevilSquare5);
+                yield return typeof(DevilSquare6);
+                yield return typeof(DevilSquare7);
                 yield return typeof(Doppelgaenger1);
                 yield return typeof(Doppelgaenger2);
                 yield return typeof(Doppelgaenger3);

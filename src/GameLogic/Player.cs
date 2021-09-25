@@ -16,6 +16,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.GuildWar;
+    using MUnique.OpenMU.GameLogic.MiniGames;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.PlugIns;
@@ -384,6 +385,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public Bucket<ILocateable>? OldBucket { get; set; }
 
+        /// <summary>
+        /// Gets or sets the mini game, which the player has currently entered.
+        /// </summary>
+        public MiniGameContext? CurrentMiniGame { get; set; }
+
         /// <inheritdoc/>
         public void AttackBy(IAttacker attacker, SkillEntry? skill)
         {
@@ -659,6 +665,11 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
+        /// Moves the player to the safe zone.
+        /// </summary>
+        public void WarpToSafezone() => this.WarpTo(this.GetSpawnGateOfCurrentMap());
+
+        /// <summary>
         /// Respawns the player to the specified gate.
         /// </summary>
         /// <param name="gate">The gate at which the player should be respawned.</param>
@@ -706,7 +717,15 @@ namespace MUnique.OpenMU.GameLogic
             this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
             this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
 
-            this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned());
+            if (this.CurrentMiniGame is { } currentMiniGame)
+            {
+                this.CurrentMap = currentMiniGame.Map;
+            }
+            else
+            {
+                this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned());
+            }
+
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
             this.IsAlive = true;
             this.CurrentMap!.Add(this);

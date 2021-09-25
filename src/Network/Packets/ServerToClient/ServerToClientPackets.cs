@@ -20551,6 +20551,543 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(OpenNpcDialog packet) => packet.data; 
     }
+
+
+    /// <summary>
+    /// Is sent by the server when: The player requested to enter the devil square mini game through the Charon NPC.
+    /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+    /// </summary>
+    public readonly ref struct DevilSquareEnterResult
+    {
+        /// <summary>
+        /// Defines the result of the enter request.
+        /// </summary>
+        public enum EnterResult
+        {
+            /// <summary>
+            /// The event has been entered.
+            /// </summary>
+            Success = 0,
+
+            /// <summary>
+            /// Entering the event failed, e.g. by missing event ticket or level range.
+            /// </summary>
+            Failed = 1,
+
+            /// <summary>
+            /// Entering the event failed, because it's not opened.
+            /// </summary>
+            NotOpen = 2,
+
+            /// <summary>
+            /// Entering the event failed, because the character level is too high for the requested event level.
+            /// </summary>
+            CharacterLevelTooHigh = 3,
+
+            /// <summary>
+            /// Entering the event failed, because the character level is too low for the requested event level.
+            /// </summary>
+            CharacterLevelTooLow = 4,
+
+            /// <summary>
+            /// Entering the event failed, because it's full.
+            /// </summary>
+            Full = 5,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DevilSquareEnterResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public DevilSquareEnterResult(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DevilSquareEnterResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private DevilSquareEnterResult(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x90;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 3;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public DevilSquareEnterResult.EnterResult Result
+        {
+            get => (EnterResult)this.data[3];
+            set => this.data[3] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the ticket item inventory index.
+        /// </summary>
+        public byte TicketItemInventoryIndex
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="DevilSquareEnterResult"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator DevilSquareEnterResult(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="DevilSquareEnterResult"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(DevilSquareEnterResult packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
+    /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
+    /// </summary>
+    public readonly ref struct MiniGameOpeningState
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiniGameOpeningState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MiniGameOpeningState(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiniGameOpeningState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MiniGameOpeningState(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x91;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the game type.
+        /// </summary>
+        public MiniGameType GameType
+        {
+            get => (MiniGameType)this.data[3];
+            set => this.data[3] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the remaining entering time minutes.
+        /// </summary>
+        public byte RemainingEnteringTimeMinutes
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the user count.
+        /// </summary>
+        public byte UserCount
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the remaining entering time minutes 2.
+        /// </summary>
+        public byte RemainingEnteringTimeMinutes2
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MiniGameOpeningState"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MiniGameOpeningState(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MiniGameOpeningState"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MiniGameOpeningState packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The state of a mini game event changed.
+    /// Causes reaction on client side: The state of the mini game changes on the client side.
+    /// </summary>
+    public readonly ref struct UpdateMiniGameState
+    {
+        /// <summary>
+        /// The state of the mini games.
+        /// </summary>
+        public enum MiniGameTypeState
+        {
+            /// <summary>
+            /// The devil square game is closed.
+            /// </summary>
+            DevilSquareClosed = 0,
+
+            /// <summary>
+            /// The devil square game is opened for entrance.
+            /// </summary>
+            DevilSquareOpened = 1,
+
+            /// <summary>
+            /// The devil square game is running.
+            /// </summary>
+            DevilSquareRunning = 2,
+
+            /// <summary>
+            /// The blood castle game is closed.
+            /// </summary>
+            BloodCastleClosed = 3,
+
+            /// <summary>
+            /// The blood castle game is opened for entrance.
+            /// </summary>
+            BloodCastleOpened = 4,
+
+            /// <summary>
+            /// The blood castle game is ending.
+            /// </summary>
+            BloodCastleEnding = 5,
+
+            /// <summary>
+            /// The blood castle game is finished.
+            /// </summary>
+            BloodCastleFinished = 6,
+
+            /// <summary>
+            /// The chaos castle game is closed.
+            /// </summary>
+            ChaosCastleClosed = 10,
+
+            /// <summary>
+            /// The chaos castle game is opened for entrance.
+            /// </summary>
+            ChaosCastleOpened = 11,
+
+            /// <summary>
+            /// The chaos castle game is ending.
+            /// </summary>
+            ChaosCastleEnding = 12,
+
+            /// <summary>
+            /// The chaos castle game is finished.
+            /// </summary>
+            ChaosCastleFinished = 13,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateMiniGameState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public UpdateMiniGameState(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateMiniGameState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private UpdateMiniGameState(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x92;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the state.
+        /// </summary>
+        public UpdateMiniGameState.MiniGameTypeState State
+        {
+            get => (MiniGameTypeState)this.data[3];
+            set => this.data[3] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="UpdateMiniGameState"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator UpdateMiniGameState(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="UpdateMiniGameState"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(UpdateMiniGameState packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: When the event has ended.
+    /// Causes reaction on client side: The client shows the score.
+    /// </summary>
+    public readonly ref struct EventRankingInfo
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventRankingInfo"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public EventRankingInfo(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventRankingInfo"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private EventRankingInfo(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xBD;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x01;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 28;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the account id.
+        /// </summary>
+        public string AccountId
+        {
+            get => this.data.ExtractString(3, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the game id.
+        /// </summary>
+        public string GameId
+        {
+            get => this.data.ExtractString(13, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(13, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the server code.
+        /// </summary>
+        public uint ServerCode
+        {
+            get => ReadUInt32LittleEndian(this.data[24..]);
+            set => WriteUInt32LittleEndian(this.data[24..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the score.
+        /// </summary>
+        public uint Score
+        {
+            get => ReadUInt32LittleEndian(this.data[28..]);
+            set => WriteUInt32LittleEndian(this.data[28..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the class.
+        /// </summary>
+        public uint Class
+        {
+            get => ReadUInt32LittleEndian(this.data[32..]);
+            set => WriteUInt32LittleEndian(this.data[32..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the square number.
+        /// </summary>
+        public uint SquareNumber
+        {
+            get => ReadUInt32LittleEndian(this.data[36..]);
+            set => WriteUInt32LittleEndian(this.data[36..], value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="EventRankingInfo"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator EventRankingInfo(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="EventRankingInfo"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(EventRankingInfo packet) => packet.data; 
+    }
+        /// <summary>
+        /// Defines the type of the mini game.
+        /// </summary>
+        public enum MiniGameType
+        {
+            /// <summary>
+            /// Undefined mini game type.
+            /// </summary>
+            Undefined = 0,
+
+            /// <summary>
+            /// The devil square mini game.
+            /// </summary>
+            DevilSquare = 1,
+
+            /// <summary>
+            /// The blood castle mini game.
+            /// </summary>
+            BloodCastle = 2,
+
+            /// <summary>
+            /// The chaos castle mini game.
+            /// </summary>
+            ChaosCastle = 4,
+
+            /// <summary>
+            /// The illusion temple mini game.
+            /// </summary>
+            IllusionTemple = 5,
+
+            /// <summary>
+            /// The doppelgänger mini game.
+            /// </summary>
+            Doppelganger = 6,
+        }
+
         /// <summary>
         /// Defines the role of a guild member.
         /// </summary>

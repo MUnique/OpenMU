@@ -1,4 +1,4 @@
-﻿// <copyright file="DevilSquare1To4.cs" company="MUnique">
+﻿// <copyright file="DevilSquare4.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,14 +15,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps
     /// <summary>
     /// Initialization for the devil square map which hosts devil square 1 to 4.
     /// </summary>
-    internal class DevilSquare1To4 : BaseMapInitializer
+    internal class DevilSquare4 : BaseMapInitializer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DevilSquare1To4"/> class.
+        /// Initializes a new instance of the <see cref="DevilSquare4"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="gameConfiguration">The game configuration.</param>
-        public DevilSquare1To4(IContext context, GameConfiguration gameConfiguration)
+        public DevilSquare4(IContext context, GameConfiguration gameConfiguration)
             : base(context, gameConfiguration)
         {
         }
@@ -31,17 +31,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps
         protected override byte MapNumber => 9;
 
         /// <inheritdoc/>
-        protected override string MapName => "Devil Square (1-4)";
+        protected override string MapName => "Devil Square 4";
+
+        /// <inheritdoc/>
+        protected override int Discriminator => 4;
 
         /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
         {
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[17], 119, 150, 80, 115, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[15], 119, 150, 80, 115, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[10], 121, 151, 152, 184, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[39], 121, 151, 152, 184, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[41], 49, 79, 138, 173, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[37], 49, 79, 138, 173, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[64], 53, 83, 74, 109, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[65], 53, 83, 74, 109, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
         }

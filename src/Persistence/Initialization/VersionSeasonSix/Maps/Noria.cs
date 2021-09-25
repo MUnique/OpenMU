@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
     /// <summary>
     /// The initialization for the Noria map.
     /// </summary>
-    internal class Noria : Version075.Maps.Noria
+    internal class Noria : Version095d.Maps.Noria
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Noria"/> class.
@@ -33,7 +33,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
                 yield return npc;
             }
 
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[237], 171, 105, Direction.SouthEast);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[544], 187, 125, Direction.SouthWest);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[257], 167, 118, Direction.SouthWest);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[450], 179, 126, Direction.SouthWest);

@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
     /// <summary>
     /// The initialization for the Devias map.
     /// </summary>
-    internal class Devias : Version075.Maps.Devias
+    internal class Devias : Version095d.Maps.Devias
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Devias"/> class.
@@ -45,7 +45,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
             yield return this.CreateMonsterSpawn(this.NpcDictionary[229], 183, 30, Direction.SouthEast);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[233], 217, 29, Direction.SouthEast);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[233], 217, 20, Direction.SouthEast);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[235], 183, 32, Direction.SouthEast);
         }
     }
 }

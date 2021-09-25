@@ -13,6 +13,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
     using MUnique.OpenMU.Persistence.Initialization.Items;
+    using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
     using MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
     using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
@@ -83,6 +84,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
             new SkillsInitializer(this.Context, this.GameConfiguration).Initialize();
             new Orbs(this.Context, this.GameConfiguration).Initialize();
             new Scrolls(this.Context, this.GameConfiguration).Initialize();
+            new EventTicketItems(this.Context, this.GameConfiguration).Initialize();
             new Jewels(this.Context, this.GameConfiguration).Initialize();
             new ExcellentOptions(this.Context, this.GameConfiguration).Initialize();
             new Armors(this.Context, this.GameConfiguration).Initialize();
@@ -91,13 +93,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
             new Weapons(this.Context, this.GameConfiguration).Initialize();
             new Version075.Items.Potions(this.Context, this.GameConfiguration).Initialize();
             new Jewelery(this.Context, this.GameConfiguration).Initialize();
-
-            new Version075.NpcInitialization(this.Context, this.GameConfiguration).Initialize();
+            new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
 
             new GameMapsInitializer(this.Context, this.GameConfiguration).Initialize();
             this.AssignCharacterClassHomeMaps();
             new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
             new Gates(this.Context, this.GameConfiguration).Initialize();
+            new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
             //// TODO: ItemSetGroups for set bonus
         }
 

@@ -677,7 +677,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Number = table.Column<short>(type: "smallint", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     TerrainData = table.Column<byte[]>(type: "bytea", nullable: true),
-                    ExpMultiplier = table.Column<double>(type: "double precision", nullable: false)
+                    ExpMultiplier = table.Column<double>(type: "double precision", nullable: false),
+                    Discriminator = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2043,6 +2044,57 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MiniGameDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    EntranceId = table.Column<Guid>(type: "uuid", nullable: true),
+                    TicketItemId = table.Column<Guid>(type: "uuid", nullable: true),
+                    GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    GameLevel = table.Column<byte>(type: "smallint", nullable: false),
+                    MapCreationPolicy = table.Column<int>(type: "integer", nullable: false),
+                    EnterDuration = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    GameDuration = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    ExitDuration = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    MaximumPlayerCount = table.Column<int>(type: "integer", nullable: false),
+                    RequiresMasterClass = table.Column<bool>(type: "boolean", nullable: false),
+                    MinimumCharacterLevel = table.Column<int>(type: "integer", nullable: false),
+                    MaximumCharacterLevel = table.Column<int>(type: "integer", nullable: false),
+                    MinimumSpecialCharacterLevel = table.Column<int>(type: "integer", nullable: false),
+                    MaximumSpecialCharacterLevel = table.Column<int>(type: "integer", nullable: false),
+                    TicketItemLevel = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MiniGameDefinition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MiniGameDefinition_ExitGate_EntranceId",
+                        column: x => x.EntranceId,
+                        principalSchema: "config",
+                        principalTable: "ExitGate",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MiniGameDefinition_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MiniGameDefinition_ItemDefinition_TicketItemId",
+                        column: x => x.TicketItemId,
+                        principalSchema: "config",
+                        principalTable: "ItemDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DropItemGroup",
                 schema: "config",
                 columns: table => new
@@ -3199,6 +3251,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "GameConfigurationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MiniGameDefinition_EntranceId",
+                schema: "config",
+                table: "MiniGameDefinition",
+                column: "EntranceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MiniGameDefinition_GameConfigurationId",
+                schema: "config",
+                table: "MiniGameDefinition",
+                column: "GameConfigurationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MiniGameDefinition_TicketItemId",
+                schema: "config",
+                table: "MiniGameDefinition",
+                column: "TicketItemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MonsterAttribute_AttributeDefinitionId",
                 schema: "config",
                 table: "MonsterAttribute",
@@ -3675,6 +3745,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "MasterSkillDefinitionSkill",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "MiniGameDefinition",
                 schema: "config");
 
             migrationBuilder.DropTable(

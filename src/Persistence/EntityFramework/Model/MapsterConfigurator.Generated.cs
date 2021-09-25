@@ -135,6 +135,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot, MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot>()
                 .Include<MasterSkillRoot, BasicModel.MasterSkillRoot>();
 
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition, MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition>()
+                .Include<MiniGameDefinition, BasicModel.MiniGameDefinition>();
+
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, MUnique.OpenMU.DataModel.Configuration.MonsterAttribute>()
                 .Include<MonsterAttribute, BasicModel.MonsterAttribute>();
 

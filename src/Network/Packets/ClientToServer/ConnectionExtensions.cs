@@ -1223,6 +1223,32 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="DevilSquareEnterRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
+        /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.
+        /// </remarks>
+        public static DevilSquareEnterRequestThreadSafeWriter StartWriteDevilSquareEnterRequest(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="RequestEventRemainingTime" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
+        /// Causes reaction on server side: The remaining time is sent back to the client.
+        /// </remarks>
+        public static RequestEventRemainingTimeThreadSafeWriter StartWriteRequestEventRemainingTime(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Sends a <see cref="Ping" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -3053,6 +3079,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static void SendNpcBuffRequest(this IConnection connection)
         {
             using var writer = connection.StartWriteNpcBuffRequest();
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="DevilSquareEnterRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="squareLevel">The square level.</param>
+        /// <param name="ticketItemInventoryIndex">The ticket item inventory index.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
+        /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.
+        /// </remarks>
+        public static void SendDevilSquareEnterRequest(this IConnection connection, byte @squareLevel, byte @ticketItemInventoryIndex)
+        {
+            using var writer = connection.StartWriteDevilSquareEnterRequest();
+            var packet = writer.Packet;
+            packet.SquareLevel = @squareLevel;
+            packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="RequestEventRemainingTime" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="eventType">The event type.</param>
+        /// <param name="eventLevel">The event level.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
+        /// Causes reaction on server side: The remaining time is sent back to the client.
+        /// </remarks>
+        public static void SendRequestEventRemainingTime(this IConnection connection, byte @eventType, byte @eventLevel)
+        {
+            using var writer = connection.StartWriteRequestEventRemainingTime();
+            var packet = writer.Packet;
+            packet.EventType = @eventType;
+            packet.EventLevel = @eventLevel;
             writer.Commit();
         }    }
     /// <summary>
@@ -7919,6 +7983,112 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.Advance(NpcBuffRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="DevilSquareEnterRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct DevilSquareEnterRequestThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DevilSquareEnterRequestThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public DevilSquareEnterRequestThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new DevilSquareEnterRequest(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(DevilSquareEnterRequest.Length)[..DevilSquareEnterRequest.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public DevilSquareEnterRequest Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="DevilSquareEnterRequest" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(DevilSquareEnterRequest.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="RequestEventRemainingTime"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct RequestEventRemainingTimeThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestEventRemainingTimeThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public RequestEventRemainingTimeThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new RequestEventRemainingTime(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(RequestEventRemainingTime.Length)[..RequestEventRemainingTime.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public RequestEventRemainingTime Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="RequestEventRemainingTime" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(RequestEventRemainingTime.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

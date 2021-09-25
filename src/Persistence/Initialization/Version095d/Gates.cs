@@ -29,7 +29,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
         /// </summary>
         public override void Initialize()
         {
-            var maps = this.GameConfiguration.Maps.ToDictionary(map => map.Number, map => map);
+            var maps = this.GameConfiguration.Maps.ToDictionary(map => new MapIdentity(map.Number, map.Discriminator), map => map);
             var targetGates = this.CreateTargetGates(maps);
             this.CreateEnterGates(maps, targetGates);
             this.CreateWarpEntries(targetGates);
@@ -71,6 +71,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
 
         private ExitGate CreateExitGate(GameMapDefinition map, byte x1, byte y1, byte x2, byte y2, byte direction, bool isSpawnGate = false)
         {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
             if (x1 > x2)
             {
                 throw new ArgumentException("x1 > x2");
@@ -106,7 +111,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
         /// Regex #2: (?m)^(\d+)\s+?(2)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+)\s+?(\d+).*?$
         /// Rplace by #2: targetGates.Add($1, this.CreateExitGate(maps[$3], $4, $5, $6, $7, $9, false));.
         /// </remarks>
-        private IDictionary<short, ExitGate> CreateTargetGates(IDictionary<short, GameMapDefinition> maps)
+        private IDictionary<short, ExitGate> CreateTargetGates(IDictionary<MapIdentity, GameMapDefinition> maps)
         {
             var targetGates = new Dictionary<short, ExitGate>();
 
@@ -118,6 +123,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
             targetGates.Add(50, this.CreateExitGate(maps[6], 101, 115, 103, 117, 0, true));
             targetGates.Add(51, this.CreateExitGate(maps[6], 107, 115, 107, 115, 0, true));
             targetGates.Add(52, this.CreateExitGate(maps[6], 107, 114, 107, 114, 0, true));
+
+            // Devil Square:
+            targetGates.Add(58, this.CreateExitGate(maps[new (9, 1)], 133, 91, 141, 99, 0, true));
+            targetGates.Add(59, this.CreateExitGate(maps[new (9, 2)], 135, 162, 142, 170, 0, true));
+            targetGates.Add(60, this.CreateExitGate(maps[new (9, 3)], 62, 150, 70, 158, 0, true));
+            targetGates.Add(61, this.CreateExitGate(maps[new (9, 4)], 66, 84, 74, 92, 0, true));
 
             targetGates.Add(2, this.CreateExitGate(maps[1], 107, 247, 110, 247, 1));
             targetGates.Add(4, this.CreateExitGate(maps[0], 121, 231, 123, 231, 1));
@@ -169,7 +180,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
         /// </remarks>
         /// <param name="maps">The maps.</param>
         /// <param name="targetGates">The target gates by number.</param>
-        private void CreateEnterGates(IDictionary<short, GameMapDefinition> maps, IDictionary<short, ExitGate> targetGates)
+        private void CreateEnterGates(IDictionary<MapIdentity, GameMapDefinition> maps, IDictionary<short, ExitGate> targetGates)
         {
             maps[0].EnterGates.Add(this.CreateEnterGate(1, targetGates[2], 121, 232, 123, 233, 20));
             maps[1].EnterGates.Add(this.CreateEnterGate(3, targetGates[4], 108, 248, 109, 248, 0));

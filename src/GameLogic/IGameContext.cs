@@ -8,6 +8,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.MiniGames;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.PlugIns;
@@ -68,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic
         ILoggerFactory LoggerFactory { get; }
 
         /// <summary>
-        /// Gets the maps which is meant to be hosted by the game.
+        /// Gets the map which is meant to be hosted by the game.
         /// </summary>
         /// <param name="mapId">The map identifier.</param>
         /// <param name="createIfNotExists">If set to <c>true</c>, the map is created if it doesn't exist yet.</param>
@@ -76,6 +77,22 @@ namespace MUnique.OpenMU.GameLogic
         /// The hosted GameMap instance.
         /// </returns>
         GameMap? GetMap(ushort mapId, bool createIfNotExists = true);
+
+        /// <summary>
+        /// Gets the mini game map which is meant to be hosted by the game.
+        /// </summary>
+        /// <param name="miniGameDefinition">The mini game definition.</param>
+        /// <param name="requester">The requesting player.</param>
+        /// <returns>
+        /// The state of the mini game which contains the hosted GameMap instance.
+        /// </returns>
+        MiniGameContext GetMiniGame(MiniGameDefinition miniGameDefinition, Player requester);
+
+        /// <summary>
+        /// Removes the mini game instance from the context.
+        /// </summary>
+        /// <param name="miniGameContext">The context of the mini game.</param>
+        void RemoveMiniGame(MiniGameContext miniGameContext);
 
         /// <summary>
         /// Gets the player object by character name.

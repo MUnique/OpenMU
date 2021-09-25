@@ -7295,8 +7295,260 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>90</Code>
+      <Name>DevilSquareEnterResult</Name>
+      <Length>3</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to enter the devil square mini game through the Charon NPC.</SentWhen>
+      <CausedReaction>In case it failed, it shows the corresponding error message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>EnterResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TicketItemInventoryIndex</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EnterResult</Name>
+          <Description>Defines the result of the enter request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The event has been entered.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>Entering the event failed, e.g. by missing event ticket or level range.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotOpen</Name>
+              <Description>Entering the event failed, because it's not opened.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooHigh</Name>
+              <Description>Entering the event failed, because the character level is too high for the requested event level.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooLow</Name>
+              <Description>Entering the event failed, because the character level is too low for the requested event level.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Full</Name>
+              <Description>Entering the event failed, because it's full.</Description>
+              <Value>5</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>91</Code>
+      <Name>MiniGameOpeningState</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requests to get the current opening state of a mini game event, by clicking on an ticket item.</SentWhen>
+      <CausedReaction>The opening state of the event (remaining entering time, etc.) is shown at the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>MiniGameType</TypeName>
+          <Name>GameType</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>RemainingEnteringTimeMinutes</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>UserCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>RemainingEnteringTimeMinutes2</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>92</Code>
+      <Name>UpdateMiniGameState</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of a mini game event changed.</SentWhen>
+      <CausedReaction>The state of the mini game changes on the client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>MiniGameTypeState</TypeName>
+          <Name>State</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>MiniGameTypeState</Name>
+          <Description>The state of the mini games.</Description>
+          <Values>
+            <EnumValue>
+              <Name>DevilSquareClosed</Name>
+              <Description>The devil square game is closed.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DevilSquareOpened</Name>
+              <Description>The devil square game is opened for entrance.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DevilSquareRunning</Name>
+              <Description>The devil square game is running.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>BloodCastleClosed</Name>
+              <Description>The blood castle game is closed.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>BloodCastleOpened</Name>
+              <Description>The blood castle game is opened for entrance.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>BloodCastleEnding</Name>
+              <Description>The blood castle game is ending.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>BloodCastleFinished</Name>
+              <Description>The blood castle game is finished.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCastleClosed</Name>
+              <Description>The chaos castle game is closed.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCastleOpened</Name>
+              <Description>The chaos castle game is opened for entrance.</Description>
+              <Value>11</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCastleEnding</Name>
+              <Description>The chaos castle game is ending.</Description>
+              <Value>12</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCastleFinished</Name>
+              <Description>The chaos castle game is finished.</Description>
+              <Value>13</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BD</Code>
+      <SubCode>01</SubCode>
+      <Name>EventRankingInfo</Name>
+      <Length>28</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the event has ended.</SentWhen>
+      <CausedReaction>The client shows the score.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>AccountId</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>String</Type>
+          <Name>GameId</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ServerCode</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Score</Name>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Class</Name>
+        </Field>
+        <Field>
+          <Index>36</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>SquareNumber</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
+    <Enum>
+      <Name>MiniGameType</Name>
+      <Description>Defines the type of the mini game.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Undefined</Name>
+          <Description>Undefined mini game type.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DevilSquare</Name>
+          <Description>The devil square mini game.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BloodCastle</Name>
+          <Description>The blood castle mini game.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ChaosCastle</Name>
+          <Description>The chaos castle mini game.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>IllusionTemple</Name>
+          <Description>The illusion temple mini game.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Doppelganger</Name>
+          <Description>The doppelgänger mini game.</Description>
+          <Value>6</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
     <Enum>
       <Name>GuildMemberRole</Name>
       <Description>Defines the role of a guild member.</Description>

@@ -1548,6 +1548,58 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="DevilSquareEnterResult" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requested to enter the devil square mini game through the Charon NPC.
+        /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+        /// </remarks>
+        public static DevilSquareEnterResultThreadSafeWriter StartWriteDevilSquareEnterResult(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="MiniGameOpeningState" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
+        /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
+        /// </remarks>
+        public static MiniGameOpeningStateThreadSafeWriter StartWriteMiniGameOpeningState(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="UpdateMiniGameState" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The state of a mini game event changed.
+        /// Causes reaction on client side: The state of the mini game changes on the client side.
+        /// </remarks>
+        public static UpdateMiniGameStateThreadSafeWriter StartWriteUpdateMiniGameState(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="EventRankingInfo" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: When the event has ended.
+        /// Causes reaction on client side: The client shows the score.
+        /// </remarks>
+        public static EventRankingInfoThreadSafeWriter StartWriteEventRankingInfo(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Sends a <see cref="GameServerEntered" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -4262,6 +4314,92 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             var packet = writer.Packet;
             packet.NpcNumber = @npcNumber;
             packet.GensContributionPoints = @gensContributionPoints;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="DevilSquareEnterResult" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="result">The result.</param>
+        /// <param name="ticketItemInventoryIndex">The ticket item inventory index.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requested to enter the devil square mini game through the Charon NPC.
+        /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+        /// </remarks>
+        public static void SendDevilSquareEnterResult(this IConnection connection, DevilSquareEnterResult.EnterResult @result, byte @ticketItemInventoryIndex)
+        {
+            using var writer = connection.StartWriteDevilSquareEnterResult();
+            var packet = writer.Packet;
+            packet.Result = @result;
+            packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="MiniGameOpeningState" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="gameType">The game type.</param>
+        /// <param name="remainingEnteringTimeMinutes">The remaining entering time minutes.</param>
+        /// <param name="userCount">The user count.</param>
+        /// <param name="remainingEnteringTimeMinutes2">The remaining entering time minutes 2.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
+        /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
+        /// </remarks>
+        public static void SendMiniGameOpeningState(this IConnection connection, MiniGameType @gameType, byte @remainingEnteringTimeMinutes, byte @userCount, byte @remainingEnteringTimeMinutes2)
+        {
+            using var writer = connection.StartWriteMiniGameOpeningState();
+            var packet = writer.Packet;
+            packet.GameType = @gameType;
+            packet.RemainingEnteringTimeMinutes = @remainingEnteringTimeMinutes;
+            packet.UserCount = @userCount;
+            packet.RemainingEnteringTimeMinutes2 = @remainingEnteringTimeMinutes2;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="UpdateMiniGameState" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="state">The state.</param>
+        /// <remarks>
+        /// Is sent by the server when: The state of a mini game event changed.
+        /// Causes reaction on client side: The state of the mini game changes on the client side.
+        /// </remarks>
+        public static void SendUpdateMiniGameState(this IConnection connection, UpdateMiniGameState.MiniGameTypeState @state)
+        {
+            using var writer = connection.StartWriteUpdateMiniGameState();
+            var packet = writer.Packet;
+            packet.State = @state;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="EventRankingInfo" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="accountId">The account id.</param>
+        /// <param name="gameId">The game id.</param>
+        /// <param name="serverCode">The server code.</param>
+        /// <param name="score">The score.</param>
+        /// <param name="class">The class.</param>
+        /// <param name="squareNumber">The square number.</param>
+        /// <remarks>
+        /// Is sent by the server when: When the event has ended.
+        /// Causes reaction on client side: The client shows the score.
+        /// </remarks>
+        public static void SendEventRankingInfo(this IConnection connection, string @accountId, string @gameId, uint @serverCode, uint @score, uint @class, uint @squareNumber)
+        {
+            using var writer = connection.StartWriteEventRankingInfo();
+            var packet = writer.Packet;
+            packet.AccountId = @accountId;
+            packet.GameId = @gameId;
+            packet.ServerCode = @serverCode;
+            packet.Score = @score;
+            packet.Class = @class;
+            packet.SquareNumber = @squareNumber;
             writer.Commit();
         }    }
     /// <summary>
@@ -10453,6 +10591,218 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(OpenNpcDialog.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="DevilSquareEnterResult"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct DevilSquareEnterResultThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DevilSquareEnterResultThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public DevilSquareEnterResultThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new DevilSquareEnterResult(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(DevilSquareEnterResult.Length)[..DevilSquareEnterResult.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public DevilSquareEnterResult Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="DevilSquareEnterResult" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(DevilSquareEnterResult.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="MiniGameOpeningState"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct MiniGameOpeningStateThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiniGameOpeningStateThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public MiniGameOpeningStateThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new MiniGameOpeningState(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(MiniGameOpeningState.Length)[..MiniGameOpeningState.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public MiniGameOpeningState Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="MiniGameOpeningState" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(MiniGameOpeningState.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="UpdateMiniGameState"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct UpdateMiniGameStateThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateMiniGameStateThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public UpdateMiniGameStateThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new UpdateMiniGameState(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(UpdateMiniGameState.Length)[..UpdateMiniGameState.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public UpdateMiniGameState Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="UpdateMiniGameState" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(UpdateMiniGameState.Length);
+            this.connection.Output.FlushAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="EventRankingInfo"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct EventRankingInfoThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventRankingInfoThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public EventRankingInfoThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new EventRankingInfo(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(EventRankingInfo.Length)[..EventRankingInfo.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public EventRankingInfo Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="EventRankingInfo" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.Advance(EventRankingInfo.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

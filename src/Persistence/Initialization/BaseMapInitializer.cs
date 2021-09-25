@@ -79,6 +79,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// </summary>
         protected virtual string TerrainVersionPrefix => string.Empty;
 
+        /// <summary>
+        /// Gets the discriminator of the map definition.
+        /// </summary>
+        protected virtual int Discriminator { get; }
+
         /// <inheritdoc />
         public void Initialize()
         {
@@ -86,8 +91,9 @@ namespace MUnique.OpenMU.Persistence.Initialization
             this.mapDefinition = this.Context.CreateNew<GameMapDefinition>();
             this.mapDefinition.Number = this.MapNumber;
             this.mapDefinition.Name = this.MapName;
+            this.mapDefinition.Discriminator = this.Discriminator;
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = $"{assembly.GetName().Name}.Resources.{this.TerrainVersionPrefix}Terrain{this.MapNumber + 1}.att";
+            var resourceName = $"{assembly.GetName().Name}.Resources.{this.TerrainVersionPrefix}Terrain{this.MapNumber + 1}{(this.Discriminator > 0 ? ("_" + this.Discriminator) : string.Empty)}.att";
             using (var stream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (stream != null)

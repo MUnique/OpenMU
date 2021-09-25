@@ -113,6 +113,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
             new Gates(this.Context, this.GameConfiguration).Initialize();
             new Quest(this.Context, this.GameConfiguration).Initialize();
             new Quests(this.Context, this.GameConfiguration).Initialize();
+            new Version095d.Events.DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
             //// TODO: ItemSetGroups
         }
 

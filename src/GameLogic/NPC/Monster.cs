@@ -29,6 +29,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         private readonly INpcIntelligence intelligence;
         private readonly PlugInManager plugInManager;
         private readonly Walker walker;
+        private readonly IEventStateProvider? eventStateProvider;
 
         private Timer? respawnTimer;
         private int health;
@@ -44,7 +45,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <param name="dropGenerator">The drop generator.</param>
         /// <param name="npcIntelligence">The monster intelligence.</param>
         /// <param name="plugInManager">The plug in manager.</param>
-        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager)
+        /// <param name="eventStateProvider">The event state provider.</param>
+        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager, IEventStateProvider? eventStateProvider = null)
             : base(spawnInfo, stats, map)
         {
             this.dropGenerator = dropGenerator;
@@ -53,6 +55,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.walker = new Walker(this, () => this.StepDelay);
             this.intelligence = npcIntelligence;
             this.plugInManager = plugInManager;
+            this.eventStateProvider = eventStateProvider;
             this.intelligence.Npc = this;
             this.intelligence.Start();
         }
@@ -362,10 +365,13 @@ namespace MUnique.OpenMU.GameLogic.NPC
             }
         }
 
+        private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
+                                      || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringEvent && (this.eventStateProvider?.IsEventRunning ?? false));
+
         private void OnDeath(IAttacker attacker)
         {
             this.walker.Stop();
-            if (this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic)
+            if (this.ShouldRespawn)
             {
                 this.respawnTimer = new Timer(o => this.Respawn(), null, (int)this.Definition.RespawnDelay.TotalMilliseconds, System.Threading.Timeout.Infinite);
             }
@@ -404,12 +410,17 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
             if (this.SpawnArea.SpawnTrigger == SpawnTrigger.OnceAtEventStart)
             {
-                this.CurrentMap.Remove(this);
-                this.Dispose();
-                if (this.intelligence is SummonedMonsterIntelligence summonedMonsterIntelligence)
-                {
-                    summonedMonsterIntelligence.Owner.SummonDied();
-                }
+                this.RemoveFromMapAndDispose();
+            }
+        }
+
+        private void RemoveFromMapAndDispose()
+        {
+            this.CurrentMap.Remove(this);
+            this.Dispose();
+            if (this.intelligence is SummonedMonsterIntelligence summonedMonsterIntelligence)
+            {
+                summonedMonsterIntelligence.Owner.SummonDied();
             }
         }
 
@@ -420,6 +431,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         {
             try
             {
+                if (!this.ShouldRespawn)
+                {
+                    this.RemoveFromMapAndDispose();
+                    return;
+                }
+
                 this.Initialize();
                 this.CurrentMap.Respawn(this);
             }

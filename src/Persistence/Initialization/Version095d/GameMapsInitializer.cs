@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
     using System;
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
     using MUnique.OpenMU.Persistence.Initialization.Version095d.Maps;
 
     /// <summary>
@@ -31,15 +30,18 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
             get
             {
                 yield return typeof(Lorencia);
-                yield return typeof(Dungeon);
+                yield return typeof(Version075.Maps.Dungeon);
                 yield return typeof(Devias);
                 yield return typeof(Noria);
-                yield return typeof(LostTower);
-                yield return typeof(Exile);
-                yield return typeof(Arena);
-                yield return typeof(Atlans);
+                yield return typeof(Version075.Maps.LostTower);
+                yield return typeof(Version075.Maps.Exile);
+                yield return typeof(Version075.Maps.Arena);
+                yield return typeof(Version075.Maps.Atlans);
                 yield return typeof(Tarkan);
-                yield return typeof(DevilSquare1To4);
+                yield return typeof(DevilSquare1);
+                yield return typeof(DevilSquare2);
+                yield return typeof(DevilSquare3);
+                yield return typeof(DevilSquare4);
                 yield return typeof(Icarus);
             }
         }
