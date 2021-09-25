@@ -106,13 +106,6 @@ namespace MUnique.OpenMU.Interfaces
         bool IsPlayerOnline(string playerName);
 
         /// <summary>
-        /// Determines whether the account with the specified name is online.
-        /// </summary>
-        /// <param name="accountName">Name of the account.</param>
-        /// <returns>True, if online; False, otherwise.</returns>
-        bool IsAccountOnline(string accountName);
-
-        /// <summary>
         /// Sends a global message to all connected players with the specified message type.
         /// </summary>
         /// <param name="message">The message.</param>

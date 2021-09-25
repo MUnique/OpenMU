@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
@@ -30,7 +29,7 @@ namespace MUnique.OpenMU.GameServer
     {
         private readonly ILogger<GameServer> logger;
 
-        private readonly GameServerContext gameContext;
+        private readonly IGameServerContext gameContext;
 
         private readonly ICollection<IGameServerListener> listeners = new List<IGameServerListener>();
 
@@ -93,7 +92,7 @@ namespace MUnique.OpenMU.GameServer
         /// <summary>
         /// Gets the server context.
         /// </summary>
-        public GameServerContext Context => this.gameContext;
+        public IGameServerContext Context => this.gameContext;
 
         /// <inheritdoc/>
         public ServerState ServerState
@@ -186,10 +185,11 @@ namespace MUnique.OpenMU.GameServer
             }
 
             this.logger.LogInformation("Saving all open sessions...");
-            for (int i = this.gameContext.PlayerList.Count - 1; i >= 0; i--)
-            {
-                this.gameContext.PlayerList[i].Disconnect();
-            }
+
+            // Because disconnecting might directly change the internal player list, we first collect all players.
+            var playerList = new List<Player>();
+            this.gameContext.ForEachPlayer(player => playerList.Add(player));
+            playerList.ForEach(player => player.Disconnect());
 
             this.ServerState = ServerState.Stopped;
             this.logger.LogInformation("Server shutted down.");
@@ -198,10 +198,6 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void GuildChatMessage(uint guildId, string sender, string message)
         {
-            var guildPlayers = from player in this.gameContext.PlayerList
-                where player.GuildStatus?.GuildId == guildId
-                select player;
-
             string messageSend = message;
 
             if (!messageSend.StartsWith("@", StringComparison.InvariantCulture))
@@ -209,19 +205,12 @@ namespace MUnique.OpenMU.GameServer
                 messageSend = "@" + message;
             }
 
-            foreach (var player in guildPlayers)
-            {
-                player.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(messageSend, sender, 0);
-            }
+            this.gameContext.ForEachGuildPlayer(guildId, player => player.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(messageSend, sender, ChatMessageType.Guild));
         }
 
         /// <inheritdoc/>
         public void AllianceChatMessage(uint guildId, string sender, string message)
         {
-            var guildPlayers = from player in this.gameContext.PlayerList
-                where player.GuildStatus?.GuildId == guildId
-                select player;
-
             string messageSend = message;
 
             if (!messageSend.StartsWith("@@", StringComparison.InvariantCulture))
@@ -229,11 +218,7 @@ namespace MUnique.OpenMU.GameServer
                 messageSend = "@@" + message;
             }
 
-            // TODO: determine alliance
-            foreach (var player in guildPlayers)
-            {
-                player.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(messageSend, sender, ChatMessageType.Alliance);
-            }
+            this.gameContext.ForEachAlliancePlayer(guildId, player => player.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(messageSend, sender, ChatMessageType.Alliance));
         }
 
         /// <inheritdoc/>
@@ -258,12 +243,6 @@ namespace MUnique.OpenMU.GameServer
         public bool IsPlayerOnline(string playerName)
         {
             return this.gameContext.GetPlayerByCharacterName(playerName) != null;
-        }
-
-        /// <inheritdoc/>
-        public bool IsAccountOnline(string accountName)
-        {
-            return this.gameContext.PlayerList.Any(player => player.Account?.LoginName == accountName);
         }
 
         /// <inheritdoc />
@@ -325,10 +304,9 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public void GuildDeleted(uint guildId)
         {
-            this.gameContext.PlayerList
-                .Where(player => player.GuildStatus?.GuildId == guildId)
-                .ForEach(RemovePlayerFromGuild);
-            this.gameContext.RaiseGuildDeleted(guildId);
+            this.gameContext.RemoveGuild(guildId);
+            this.gameContext.ForEachGuildPlayer(guildId, p => this.RemovePlayerFromGuild(p, false));
+
             //// todo: alliance things?
         }
 
@@ -341,7 +319,7 @@ namespace MUnique.OpenMU.GameServer
                 return;
             }
 
-            RemovePlayerFromGuild(player);
+            this.RemovePlayerFromGuild(player);
         }
 
         /// <inheritdoc/>
@@ -385,11 +363,16 @@ namespace MUnique.OpenMU.GameServer
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "gameContext", Justification = "Null-conditional confuses the code analysis.")]
         public void Dispose()
         {
-            this.gameContext?.Dispose();
+            (this.gameContext as IDisposable)?.Dispose();
         }
 
-        private static void RemovePlayerFromGuild(Player player)
+        private void RemovePlayerFromGuild(Player player, bool unregisterFromContext = true)
         {
+            if (unregisterFromContext && player.GuildStatus?.GuildId is { } guildId)
+            {
+                this.gameContext.UnregisterGuildMember(player);
+            }
+
             player.ForEachObservingPlayer(observer => observer.ViewPlugIns.GetPlugIn<IPlayerLeftGuildPlugIn>()?.PlayerLeftGuild(player), true);
             player.GuildStatus = null;
             player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.KickSucceeded);

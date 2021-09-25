@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
 {
-    using System.Linq;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
@@ -30,20 +29,20 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands
         protected override void DoHandleCommand(Player gameMaster, GuildDisconnectChatCommandArgs arguments)
         {
             var guildId = this.GetGuildIdByName(gameMaster, arguments.GuildName!);
-
-            var guildPlayers = gameMaster.GameContext.PlayerList
-                .Where(p => p.GuildStatus?.GuildId == guildId)
-                .ToList();
-
-            foreach (var targetPlayer in guildPlayers)
+            if (gameMaster.GameContext is not IGameServerContext gameServerContext)
             {
-                targetPlayer.Disconnect();
-
-                if (!targetPlayer.Name.Equals(gameMaster.Name))
-                {
-                    this.ShowMessageTo(gameMaster, $"[{this.Key}] {targetPlayer.Name} has been disconnected.");
-                }
+                return;
             }
+
+            gameServerContext.ForEachGuildPlayer(guildId, guildPlayer =>
+            {
+                guildPlayer.Disconnect();
+
+                if (!guildPlayer.Name.Equals(gameMaster.Name))
+                {
+                    this.ShowMessageTo(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been disconnected.");
+                }
+            });
         }
     }
 }
