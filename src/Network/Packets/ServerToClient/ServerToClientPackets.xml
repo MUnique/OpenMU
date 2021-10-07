@@ -7299,7 +7299,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>90</Code>
       <Name>DevilSquareEnterResult</Name>
-      <Length>3</Length>
+      <Length>4</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The player requested to enter the devil square mini game through the Charon NPC.</SentWhen>
       <CausedReaction>In case it failed, it shows the corresponding error message.</CausedReaction>
@@ -7309,11 +7309,6 @@
           <Type>Enum</Type>
           <TypeName>EnterResult</TypeName>
           <Name>Result</Name>
-        </Field>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>TicketItemInventoryIndex</Name>
         </Field>
       </Fields>
       <Enums>

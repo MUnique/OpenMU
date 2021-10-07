@@ -9368,7 +9368,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public C1Header Header => new (this.data);
 
         /// <summary>
-        /// Gets or sets the square level.
+        /// Gets or sets the level of the devil square, minus 1.
         /// </summary>
         public byte SquareLevel
         {
@@ -9377,7 +9377,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Gets or sets the ticket item inventory index.
+        /// Gets or sets the index of the ticket item in the inventory. Be aware, that the value is 12 higher than the actual index.
         /// </summary>
         public byte TicketItemInventoryIndex
         {

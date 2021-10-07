@@ -17,8 +17,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
         /// Shows the result of an enter request.
         /// </summary>
         /// <param name="miniGameType">The type of the mini game.</param>
-        /// <param name="gameTicketInventoryIndex">The index of the game ticket.</param>
         /// <param name="enterResult">The result.</param>
-        void ShowResult(MiniGameType miniGameType, byte gameTicketInventoryIndex, EnterResult enterResult);
+        void ShowResult(MiniGameType miniGameType, EnterResult enterResult);
     }
 }

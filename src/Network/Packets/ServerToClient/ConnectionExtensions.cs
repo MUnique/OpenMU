@@ -4322,17 +4322,15 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="result">The result.</param>
-        /// <param name="ticketItemInventoryIndex">The ticket item inventory index.</param>
         /// <remarks>
         /// Is sent by the server when: The player requested to enter the devil square mini game through the Charon NPC.
         /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
         /// </remarks>
-        public static void SendDevilSquareEnterResult(this IConnection connection, DevilSquareEnterResult.EnterResult @result, byte @ticketItemInventoryIndex)
+        public static void SendDevilSquareEnterResult(this IConnection connection, DevilSquareEnterResult.EnterResult @result)
         {
             using var writer = connection.StartWriteDevilSquareEnterResult();
             var packet = writer.Packet;
             packet.Result = @result;
-            packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
             writer.Commit();
         }
 

@@ -40,7 +40,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.MiniGames
             }
 
             DevilSquareEnterRequest request = packet;
-            this.enterAction.TryEnterMiniGame(player, MiniGameType.DevilSquare, request.SquareLevel, request.TicketItemInventoryIndex);
+            var actualLevel = request.SquareLevel + 1;
+            var ticketIndex = request.TicketItemInventoryIndex - InventoryConstants.EquippableSlotsCount;
+            this.enterAction.TryEnterMiniGame(player, MiniGameType.DevilSquare, actualLevel, (byte)ticketIndex);
         }
     }
 }

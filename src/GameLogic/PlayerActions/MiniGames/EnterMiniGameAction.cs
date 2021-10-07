@@ -36,7 +36,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames
                 .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel);
             if (miniGameDefinition is null || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass))
             {
-                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, gameTicketInventoryIndex, EnterResult.Failed);
+                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, EnterResult.Failed);
                 return;
             }
 
@@ -44,19 +44,19 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames
             var characterLevel = player.Attributes![Stats.Level];
             if (characterLevel < miniGameDefinition.MinimumCharacterLevel)
             {
-                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, gameTicketInventoryIndex, EnterResult.CharacterLevelTooLow);
+                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, EnterResult.CharacterLevelTooLow);
                 return;
             }
 
             if (characterLevel > miniGameDefinition.MaximumCharacterLevel)
             {
-                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, gameTicketInventoryIndex, EnterResult.CharacterLevelTooHigh);
+                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, EnterResult.CharacterLevelTooHigh);
                 return;
             }
 
             if (!this.CheckTicketItem(miniGameDefinition, player, gameTicketInventoryIndex, out var ticketItem))
             {
-                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, gameTicketInventoryIndex, EnterResult.Failed);
+                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, EnterResult.Failed);
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames
             }
             else
             {
-                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, gameTicketInventoryIndex, result);
+                player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, result);
             }
         }
 

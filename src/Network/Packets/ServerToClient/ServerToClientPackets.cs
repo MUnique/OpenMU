@@ -20636,7 +20636,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
         /// </summary>
-        public static int Length => 3;
+        public static int Length => 4;
 
         /// <summary>
         /// Gets the header of this packet.
@@ -20650,15 +20650,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         {
             get => (EnterResult)this.data[3];
             set => this.data[3] = (byte)value;
-        }
-
-        /// <summary>
-        /// Gets or sets the ticket item inventory index.
-        /// </summary>
-        public byte TicketItemInventoryIndex
-        {
-            get => this.data[4];
-            set => this.data[4] = value;
         }
 
         /// <summary>

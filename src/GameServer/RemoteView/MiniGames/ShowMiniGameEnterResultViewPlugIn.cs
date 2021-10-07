@@ -28,12 +28,12 @@ namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames
         public ShowMiniGameEnterResultViewPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc />
-        public void ShowResult(MiniGameType miniGameType, byte gameTicketInventoryIndex, EnterResult enterResult)
+        public void ShowResult(MiniGameType miniGameType, EnterResult enterResult)
         {
             switch (miniGameType)
             {
                 case MiniGameType.DevilSquare:
-                    this.player.Connection?.SendDevilSquareEnterResult(enterResult.ToDevilSquareEnterResult(), gameTicketInventoryIndex);
+                    this.player.Connection?.SendDevilSquareEnterResult(enterResult.ToDevilSquareEnterResult());
                     break;
                 case MiniGameType.BloodCastle:
                 case MiniGameType.ChaosCastle:

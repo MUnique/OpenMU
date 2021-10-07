@@ -3086,8 +3086,8 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Sends a <see cref="DevilSquareEnterRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        /// <param name="squareLevel">The square level.</param>
-        /// <param name="ticketItemInventoryIndex">The ticket item inventory index.</param>
+        /// <param name="squareLevel">The level of the devil square, minus 1.</param>
+        /// <param name="ticketItemInventoryIndex">The index of the ticket item in the inventory. Be aware, that the value is 12 higher than the actual index.</param>
         /// <remarks>
         /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
         /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.

@@ -2477,11 +2477,13 @@
           <Index>3</Index>
           <Type>Byte</Type>
           <Name>SquareLevel</Name>
+          <Description>The level of the devil square, minus 1.</Description>
         </Field>
         <Field>
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>TicketItemInventoryIndex</Name>
+          <Description>The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</Description>
         </Field>
       </Fields>
     </Packet>
