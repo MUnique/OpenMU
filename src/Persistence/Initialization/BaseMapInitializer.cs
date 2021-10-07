@@ -35,7 +35,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         {
             this.Context = context;
             this.GameConfiguration = gameConfiguration;
-            this.mapDefinition = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == this.MapNumber);
+            this.mapDefinition = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == this.MapNumber && map.Discriminator == this.Discriminator);
         }
 
         /// <summary>
