@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.MiniGames;
+    using MUnique.OpenMU.GameLogic.Views.Inventory;
 
     /// <summary>
     /// Player action which implements entering a mini game.
@@ -86,8 +87,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames
 
             if (ticketItem.Durability == 0)
             {
+                var slot = ticketItem.ItemSlot;
                 player.Inventory?.RemoveItem(ticketItem);
                 player.PersistenceContext.Delete(ticketItem);
+                player.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(slot);
+            }
+            else
+            {
+                player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(ticketItem, false);
             }
         }
 
