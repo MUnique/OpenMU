@@ -27,12 +27,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
         public override void Initialize()
         {
             // Devil Square:
-            this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", 2, 36, 47, 60);
-            this.CreateEventItem(18, 14, 1, 1, "Devil's Key", 2, 36, 47, 60);
-            this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation");
+            this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", 4,  2, 36, 47, 60);
+            this.CreateEventItem(18, 14, 1, 1, "Devil's Key", 4,  2, 36, 47, 60);
+            this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation", 4);
         }
 
-        private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, string name, params byte[] dropLevels)
+        private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, string name, byte maxItemLevel, params byte[] dropLevels)
         {
             var item = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(item);
@@ -42,6 +42,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             item.Width = width;
             item.Height = height;
             item.Durability = 1;
+            item.MaximumItemLevel = maxItemLevel;
             if (dropLevels.Length == 1)
             {
                 item.DropLevel = dropLevels.First();
