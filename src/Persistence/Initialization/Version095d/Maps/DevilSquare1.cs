@@ -32,6 +32,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps
         protected override int Discriminator => 1;
 
         /// <inheritdoc/>
+        protected override byte SafezoneMapNumber => Noria.Number;
+
+        /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
         {
             yield return this.CreateMonsterSpawn(this.NpcDictionary[17], 119, 150, 80, 115, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);

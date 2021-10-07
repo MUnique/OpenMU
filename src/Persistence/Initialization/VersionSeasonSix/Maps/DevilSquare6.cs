@@ -32,6 +32,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
         protected override int Discriminator => 6;
 
         /// <inheritdoc/>
+        protected override byte SafezoneMapNumber => Noria.Number;
+
+        /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
         {
             yield return this.CreateMonsterSpawn(this.NpcDictionary[449], 122, 151, 152, 184, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Blaze Napin

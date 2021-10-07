@@ -84,6 +84,11 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// </summary>
         protected virtual int Discriminator { get; }
 
+        /// <summary>
+        /// Gets the map number of the safezone map where a player respawns after death.
+        /// </summary>
+        protected virtual byte SafezoneMapNumber => (byte)(this.mapDefinition?.ExitGates.Any(g => g.IsSpawnGate) ?? false ? this.mapDefinition.Number : Lorencia.Number);
+
         /// <inheritdoc />
         public void Initialize()
         {
@@ -117,22 +122,15 @@ namespace MUnique.OpenMU.Persistence.Initialization
         }
 
         /// <inheritdoc/>
-        public virtual void SetSafezoneMap()
+        public void SetSafezoneMap()
         {
             if (this.mapDefinition is null)
             {
                 throw new InvalidOperationException("Map is not initialized yet.");
             }
 
-            if (this.mapDefinition.ExitGates.Any(g => g.IsSpawnGate))
-            {
-                this.mapDefinition.SafezoneMap = this.mapDefinition;
-            }
-            else
-            {
-                var lorencia = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == Lorencia.Number);
-                this.mapDefinition.SafezoneMap = lorencia;
-            }
+            var safezoneMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == this.SafezoneMapNumber);
+            this.mapDefinition.SafezoneMap = safezoneMap;
         }
 
         /// <summary>
