@@ -75,6 +75,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Events
             devilSquare.EnterDuration = TimeSpan.FromMinutes(1);
             devilSquare.GameDuration = TimeSpan.FromMinutes(20);
             devilSquare.ExitDuration = TimeSpan.FromMinutes(3);
+            devilSquare.MaximumPlayerCount = 5;
             var mapNumber = level < 5 ? DevilSquare1To4Number : DevilSquare5To7Number;
             devilSquare.Entrance = this.GameConfiguration.Maps.First(m => m.Number == mapNumber && m.Discriminator == level).ExitGates.Single();
             devilSquare.Type = MiniGameType.DevilSquare;
