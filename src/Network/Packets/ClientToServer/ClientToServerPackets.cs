@@ -9377,7 +9377,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
-        /// Gets or sets the index of the ticket item in the inventory. Be aware, that the value is 12 higher than the actual index.
+        /// Gets or sets the index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...
         /// </summary>
         public byte TicketItemInventoryIndex
         {

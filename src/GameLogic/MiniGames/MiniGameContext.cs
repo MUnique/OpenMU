@@ -13,6 +13,9 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.Views;
+    using MUnique.OpenMU.Interfaces;
+    using Nito.AsyncEx.Synchronous;
 
     /// <summary>
     /// The context of a mini game.
@@ -21,7 +24,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
     {
         private readonly IGameContext gameContext;
         private readonly IMapInitializer mapInitializer;
-        private readonly object enterLock = new ();
+        private readonly SemaphoreSlim enterLock = new (1);
 
         private readonly HashSet<Player> enteredPlayers = new ();
 
@@ -79,7 +82,8 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
         /// <returns>A value indicating whether entering had success.</returns>
         public bool TryEnter(Player player, out EnterResult enterResult)
         {
-            lock (this.enterLock)
+            this.enterLock.Wait();
+            try
             {
                 if (this.State != MiniGameState.Open)
                 {
@@ -95,6 +99,10 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 
                 this.enteredPlayers.Add(player);
             }
+            finally
+            {
+                this.enterLock.Release();
+            }
 
             player.CurrentMiniGame = this;
             enterResult = EnterResult.Success;
@@ -106,14 +114,17 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
         {
             base.Dispose(disposing);
 
-            lock (this.enterLock)
+            this.enterLock.Wait();
+            try
             {
                 this.State = MiniGameState.Disposed;
-                if (this.enteredPlayers.Any())
-                {
-                    this.MovePlayersToSafezone();
-                }
             }
+            finally
+            {
+                this.enterLock.Release();
+            }
+
+            this.MovePlayersToSafezoneAsync().AsTask().WaitAndUnwrapException();
 
             this.Map.ObjectAdded -= this.OnObjectAddedToMap;
             this.Map.ObjectRemoved -= this.OnObjectRemovedFromMap;
@@ -122,18 +133,30 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             this.gameEndedCts.Dispose();
         }
 
-        private async Task RunGameAsync()
+        private async ValueTask RunGameAsync()
         {
+            var countdownMessageDuration = TimeSpan.FromSeconds(30);
             try
             {
-                await Task.Delay(this.Definition.EnterDuration, this.gameEndedCts.Token).ConfigureAwait(false);
+                await Task.Delay(this.Definition.EnterDuration.Subtract(countdownMessageDuration), this.gameEndedCts.Token).ConfigureAwait(false);
                 if (this.enteredPlayers.Any())
                 {
-                    this.Start();
-                    await Task.Delay(this.Definition.GameDuration, this.gameEndedCts.Token).ConfigureAwait(false);
-                    this.Stop();
-                    await Task.Delay(this.Definition.ExitDuration, this.gameEndedCts.Token).ConfigureAwait(false);
-                    this.FinishGame();
+                    await this.ShowCountdownMessageAsync().ConfigureAwait(false);
+                    await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+
+                    await this.StartAsync().ConfigureAwait(false);
+
+                    await Task.Delay(this.Definition.GameDuration.Subtract(countdownMessageDuration), this.gameEndedCts.Token).ConfigureAwait(false);
+                    await this.ShowCountdownMessageAsync().ConfigureAwait(false);
+                    await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+
+                    await this.StopAsync().ConfigureAwait(false);
+
+                    await Task.Delay(this.Definition.ExitDuration.Subtract(countdownMessageDuration), this.gameEndedCts.Token).ConfigureAwait(false);
+                    await this.ShowCountdownMessageAsync().ConfigureAwait(false);
+                    await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+
+                    await this.ShutdownGameAsync().ConfigureAwait(false);
                 }
                 else
                 {
@@ -150,31 +173,62 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             }
         }
 
-        private void Start()
+        private async ValueTask StartAsync()
         {
-            lock (this.enterLock)
+            await this.enterLock.WaitAsync();
+            try
             {
                 this.State = MiniGameState.Playing;
-                this.UpdateMiniGameState();
             }
+            finally
+            {
+                this.enterLock.Release();
+            }
+
+            await this.ShowMessageAsync("Game started"); // todo: more specific message?
 
             this.mapInitializer.InitializeNpcsOnEventStart(this.Map, this);
-            // todo send timer?
         }
 
-        private void UpdateMiniGameState()
+        private async ValueTask ShowCountdownMessageAsync()
         {
-            this.enteredPlayers.ForEach(p => p.ViewPlugIns.GetPlugIn<IUpdateMiniGameStatePlugIn>()?.UpdateState(this.Definition.Type, this.State));
+            await this.enterLock.WaitAsync();
+            try
+            {
+                this.enteredPlayers.ForEach(p => p.ViewPlugIns.GetPlugIn<IUpdateMiniGameStatePlugIn>()?.UpdateState(this.Definition.Type, this.State));
+            }
+            finally
+            {
+                this.enterLock.Release();
+            }
         }
 
-        private void Stop()
+        private async ValueTask ShowMessageAsync(string message)
         {
-            lock (this.enterLock)
+            await this.enterLock.WaitAsync();
+            try
+            {
+                this.enteredPlayers.ForEach(p => p.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.GoldenCenter));
+            }
+            finally
+            {
+                this.enterLock.Release();
+            }
+        }
+
+        private async ValueTask StopAsync()
+        {
+            await this.enterLock.WaitAsync();
+            try
             {
                 this.State = MiniGameState.Ended;
-                this.UpdateMiniGameState();
+            }
+            finally
+            {
+                this.enterLock.Release();
             }
 
+            await this.ShowMessageAsync("Game ended"); // todo: more specific message?
             this.Map.ClearEventSpawnedNpcs();
 
             // todo: show result, give rewards
@@ -209,11 +263,16 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             }
 
             player.CurrentMiniGame = null;
-            var canGameProceed = false;
-            lock (this.enterLock)
+            bool canGameProceed;
+            this.enterLock.Wait();
+            try
             {
                 this.enteredPlayers.Remove(player);
                 canGameProceed = this.enteredPlayers.Count == 0 && this.State != MiniGameState.Open;
+            }
+            finally
+            {
+                this.enterLock.Release();
             }
 
             if (canGameProceed)
@@ -224,20 +283,25 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             // todo: send results?
         }
 
-        private void FinishGame()
+        private async ValueTask ShutdownGameAsync()
         {
-            this.MovePlayersToSafezone();
+            await this.MovePlayersToSafezoneAsync();
 
             this.Dispose();
         }
 
-        private void MovePlayersToSafezone()
+        private async ValueTask MovePlayersToSafezoneAsync()
         {
             List<Player> players;
-            lock (this.enterLock)
+            await this.enterLock.WaitAsync();
+            try
             {
                 players = this.enteredPlayers.ToList();
                 this.enteredPlayers.Clear();
+            }
+            finally
+            {
+                this.enterLock.Release();
             }
 
             foreach (var player in players)

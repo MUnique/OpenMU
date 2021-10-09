@@ -20775,8 +20775,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: The state of a mini game event changed.
-    /// Causes reaction on client side: The state of the mini game changes on the client side.
+    /// Is sent by the server when: The state of a mini game event is about to change in 30 seconds.
+    /// Causes reaction on client side: The client side shows a message about the changing state.
     /// </summary>
     public readonly ref struct UpdateMiniGameState
     {
@@ -20786,57 +20786,62 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public enum MiniGameTypeState
         {
             /// <summary>
-            /// The devil square game is closed.
+            /// Is sent when the devil square is currently closed and will be opened. "You will enter Devil Square (x seconds from now)".
             /// </summary>
             DevilSquareClosed = 0,
 
             /// <summary>
-            /// The devil square game is opened for entrance.
+            /// Is sent when the devil square game is currently opened for entrance and closing for entrance. "The gate of Devil Square will close down in x seconds".
             /// </summary>
             DevilSquareOpened = 1,
 
             /// <summary>
-            /// The devil square game is running.
+            /// Is sent when the devil square game is currently running and is about to end. "The gate of Devil Square is closing down (x seconds remaining)".
             /// </summary>
             DevilSquareRunning = 2,
 
             /// <summary>
-            /// The blood castle game is closed.
+            /// The blood castle game is closed. "Blood Castle Closing (in x seconds)".
             /// </summary>
             BloodCastleClosed = 3,
 
             /// <summary>
-            /// The blood castle game is opened for entrance.
+            /// The blood castle game is opened for entrance. "Blood Castle Infiltration (in x seconds)".
             /// </summary>
             BloodCastleOpened = 4,
 
             /// <summary>
-            /// The blood castle game is ending.
+            /// The blood castle game is ending. "Blood Castle ends (in x seconds)".
             /// </summary>
             BloodCastleEnding = 5,
 
             /// <summary>
-            /// The blood castle game is finished.
+            /// The blood castle game is finished. "Blood Castle Event shuts down (in x seconds)".
             /// </summary>
             BloodCastleFinished = 6,
 
             /// <summary>
-            /// The chaos castle game is closed.
+            /// The blood castle game was finished successfully. "Congratulations".
+            /// </summary>
+            BloodCastleCongratulations = 7,
+
+            /// <summary>
+            /// The chaos castle game is closed. "Chaos Castle Closing (in x seconds)".
             /// </summary>
             ChaosCastleClosed = 10,
 
             /// <summary>
-            /// The chaos castle game is opened for entrance.
+            /// The chaos castle game is opened for entrance. "Chaos Castle Penetration (in x seconds)".
             /// </summary>
             ChaosCastleOpened = 11,
 
             /// <summary>
-            /// The chaos castle game is ending.
+            /// The chaos castle game is ending. "Chaos Castle Event ends (in x seconds)".
             /// </summary>
             ChaosCastleEnding = 12,
 
             /// <summary>
-            /// The chaos castle game is finished.
+            /// The chaos castle game is finished. Chaos Castle Event shuts down (in x seconds)".
             /// </summary>
             ChaosCastleFinished = 13,
         }

@@ -7388,8 +7388,8 @@
       <Name>UpdateMiniGameState</Name>
       <Length>4</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>The state of a mini game event changed.</SentWhen>
-      <CausedReaction>The state of the mini game changes on the client side.</CausedReaction>
+      <SentWhen>The state of a mini game event is about to change in 30 seconds.</SentWhen>
+      <CausedReaction>The client side shows a message about the changing state.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
@@ -7405,57 +7405,62 @@
           <Values>
             <EnumValue>
               <Name>DevilSquareClosed</Name>
-              <Description>The devil square game is closed.</Description>
+              <Description>Is sent when the devil square is currently closed and will be opened. "You will enter Devil Square (x seconds from now)".</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
               <Name>DevilSquareOpened</Name>
-              <Description>The devil square game is opened for entrance.</Description>
+              <Description>Is sent when the devil square game is currently opened for entrance and closing for entrance. "The gate of Devil Square will close down in x seconds".</Description>
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
               <Name>DevilSquareRunning</Name>
-              <Description>The devil square game is running.</Description>
+              <Description>Is sent when the devil square game is currently running and is about to end. "The gate of Devil Square is closing down (x seconds remaining)".</Description>
               <Value>2</Value>
             </EnumValue>
             <EnumValue>
               <Name>BloodCastleClosed</Name>
-              <Description>The blood castle game is closed.</Description>
+              <Description>The blood castle game is closed. "Blood Castle Closing (in x seconds)".</Description>
               <Value>3</Value>
             </EnumValue>
             <EnumValue>
               <Name>BloodCastleOpened</Name>
-              <Description>The blood castle game is opened for entrance.</Description>
+              <Description>The blood castle game is opened for entrance. "Blood Castle Infiltration (in x seconds)".</Description>
               <Value>4</Value>
             </EnumValue>
             <EnumValue>
               <Name>BloodCastleEnding</Name>
-              <Description>The blood castle game is ending.</Description>
+              <Description>The blood castle game is ending. "Blood Castle ends (in x seconds)".</Description>
               <Value>5</Value>
             </EnumValue>
             <EnumValue>
               <Name>BloodCastleFinished</Name>
-              <Description>The blood castle game is finished.</Description>
+              <Description>The blood castle game is finished. "Blood Castle Event shuts down (in x seconds)".</Description>
               <Value>6</Value>
             </EnumValue>
             <EnumValue>
+              <Name>BloodCastleCongratulations</Name>
+              <Description>The blood castle game was finished successfully. "Congratulations".</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
               <Name>ChaosCastleClosed</Name>
-              <Description>The chaos castle game is closed.</Description>
+              <Description>The chaos castle game is closed. "Chaos Castle Closing (in x seconds)".</Description>
               <Value>10</Value>
             </EnumValue>
             <EnumValue>
               <Name>ChaosCastleOpened</Name>
-              <Description>The chaos castle game is opened for entrance.</Description>
+              <Description>The chaos castle game is opened for entrance. "Chaos Castle Penetration (in x seconds)".</Description>
               <Value>11</Value>
             </EnumValue>
             <EnumValue>
               <Name>ChaosCastleEnding</Name>
-              <Description>The chaos castle game is ending.</Description>
+              <Description>The chaos castle game is ending. "Chaos Castle Event ends (in x seconds)".</Description>
               <Value>12</Value>
             </EnumValue>
             <EnumValue>
               <Name>ChaosCastleFinished</Name>
-              <Description>The chaos castle game is finished.</Description>
+              <Description>The chaos castle game is finished. Chaos Castle Event shuts down (in x seconds)".</Description>
               <Value>13</Value>
             </EnumValue>
           </Values>

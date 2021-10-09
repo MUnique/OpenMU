@@ -1578,8 +1578,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <remarks>
-        /// Is sent by the server when: The state of a mini game event changed.
-        /// Causes reaction on client side: The state of the mini game changes on the client side.
+        /// Is sent by the server when: The state of a mini game event is about to change in 30 seconds.
+        /// Causes reaction on client side: The client side shows a message about the changing state.
         /// </remarks>
         public static UpdateMiniGameStateThreadSafeWriter StartWriteUpdateMiniGameState(this IConnection connection)
         {
@@ -4363,8 +4363,8 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="connection">The connection.</param>
         /// <param name="state">The state.</param>
         /// <remarks>
-        /// Is sent by the server when: The state of a mini game event changed.
-        /// Causes reaction on client side: The state of the mini game changes on the client side.
+        /// Is sent by the server when: The state of a mini game event is about to change in 30 seconds.
+        /// Causes reaction on client side: The client side shows a message about the changing state.
         /// </remarks>
         public static void SendUpdateMiniGameState(this IConnection connection, UpdateMiniGameState.MiniGameTypeState @state)
         {
