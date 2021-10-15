@@ -8,6 +8,8 @@ Here are my notes about how to (re-)generate entity framework core migrations.
 
 * Select default project *MUnique.OpenMU.Persistence.EntityFramework*
 
+* Set the startup project to *MUnique.OpenMU.Persistence.EntityFramework*
+
 * Run this command (replace *[Name]* by the name of the migration):
   > Add-Migration *[Name]* -context EntityDataContext
 
@@ -24,11 +26,4 @@ is released. After that, just new migrations should be added.
 
 * Delete *00000000000000_Initial* and *EntityDataContextModelSnapshot*
 
-* Set *Build Action* of all other migrations to *None*
-
 * Do the same steps like adding a new migration, with "Initial" as *[Name]*
-
-* Clean up code style issues of *00000000000000_Initial* and designer file, so
-  that there are not more issues than before
-
-* Set *Build Action* of all other migrations to *Compile* again

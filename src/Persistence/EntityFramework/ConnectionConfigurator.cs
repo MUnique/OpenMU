@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     using System.Xml;
     using System.Xml.Serialization;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Migrations;
 
     /// <summary>
     /// The database roles.
@@ -96,6 +97,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
                 {
                     case DatabaseEngine.Npgsql:
                         optionsBuilder.UseNpgsql(setting.ConnectionString!);
+                        optionsBuilder.ReplaceService<IMigrationsSqlGenerator, MyNpgsqlMigrationsSqlGenerator>();
                         return;
                     default:
                         throw new NotImplementedException("At the moment only Npgsql engine (PostgreSQL) is implemented.");
