@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition"/>.
     /// </summary>
-    [Table(nameof(StatAttributeDefinition), Schema = "config")]
+    [Table(nameof(StatAttributeDefinition), Schema = SchemaNames.Configuration)]
     internal partial class StatAttributeDefinition : MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition, IIdentifiable
     {
         /// <inheritdoc />

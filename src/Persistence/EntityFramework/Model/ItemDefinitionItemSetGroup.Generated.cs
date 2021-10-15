@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(ItemDefinitionItemSetGroup), Schema = "config")]
+    [Table(nameof(ItemDefinitionItemSetGroup), Schema = SchemaNames.Configuration)]
     internal partial class ItemDefinitionItemSetGroup
     {
         public Guid ItemDefinitionId { get; set; }

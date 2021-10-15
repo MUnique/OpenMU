@@ -10,7 +10,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
     /// <summary>
     /// Context for the guild server which just uses <see cref="Guild"/>, <see cref="GuildMember"/> and <see cref="Character"/>.
     /// </summary>
-    /// <seealso cref="Microsoft.EntityFrameworkCore.DbContext" />
     public class GuildContext : DbContext
     {
         /// <summary>
@@ -22,14 +21,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<GuildMember>(member =>
             {
                 member.Property(m => m.Id).ValueGeneratedNever();
-                member.ToTable(nameof(GuildMember), "guild");
+                member.ToTable(nameof(GuildMember), SchemaNames.Guild);
             });
 
             modelBuilder.Entity<Guild>(e =>
             {
                 e.Property(guild => guild.Name).HasMaxLength(8).IsRequired();
                 e.HasIndex(guild => guild.Name).IsUnique();
-                e.ToTable(nameof(Guild), "guild");
+                e.ToTable(nameof(Guild), SchemaNames.Guild);
             });
         }
 

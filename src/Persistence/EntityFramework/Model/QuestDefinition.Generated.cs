@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition"/>.
     /// </summary>
-    [Table(nameof(QuestDefinition), Schema = "config")]
+    [Table(nameof(QuestDefinition), Schema = SchemaNames.Configuration)]
     internal partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, IIdentifiable
     {
         

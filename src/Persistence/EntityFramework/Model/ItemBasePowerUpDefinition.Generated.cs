@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition"/>.
     /// </summary>
-    [Table(nameof(ItemBasePowerUpDefinition), Schema = "config")]
+    [Table(nameof(ItemBasePowerUpDefinition), Schema = SchemaNames.Configuration)]
     internal partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition, IIdentifiable
     {
         

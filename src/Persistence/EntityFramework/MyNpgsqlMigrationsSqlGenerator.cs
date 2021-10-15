@@ -49,10 +49,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         private static readonly IDictionary<string, DatabaseRole> DatabaseRoles = new Dictionary<string, DatabaseRole>
         {
-            { "data", DatabaseRole.Account },
-            { "config", DatabaseRole.Configuration },
-            { "guild", DatabaseRole.Guild },
-            { "friend", DatabaseRole.Friend },
+            { SchemaNames.AccountData, DatabaseRole.Account },
+            { SchemaNames.Configuration, DatabaseRole.Configuration },
+            { SchemaNames.Guild, DatabaseRole.Guild },
+            { SchemaNames.Friend, DatabaseRole.Friend },
         };
 
         /// <summary>

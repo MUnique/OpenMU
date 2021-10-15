@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(GameServerConfigurationGameMapDefinition), Schema = "config")]
+    [Table(nameof(GameServerConfigurationGameMapDefinition), Schema = SchemaNames.Configuration)]
     internal partial class GameServerConfigurationGameMapDefinition
     {
         public Guid GameServerConfigurationId { get; set; }

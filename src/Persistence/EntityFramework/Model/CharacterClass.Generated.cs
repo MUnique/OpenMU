@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.CharacterClass"/>.
     /// </summary>
-    [Table(nameof(CharacterClass), Schema = "config")]
+    [Table(nameof(CharacterClass), Schema = SchemaNames.Configuration)]
     internal partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.CharacterClass, IIdentifiable
     {
         

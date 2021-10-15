@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState"/>.
     /// </summary>
-    [Table(nameof(QuestMonsterKillRequirementState), Schema = "data")]
+    [Table(nameof(QuestMonsterKillRequirementState), Schema = SchemaNames.AccountData)]
     internal partial class QuestMonsterKillRequirementState : MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, IIdentifiable
     {
         

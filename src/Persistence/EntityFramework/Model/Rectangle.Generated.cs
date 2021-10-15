@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Rectangle"/>.
     /// </summary>
-    [Table(nameof(Rectangle), Schema = "config")]
+    [Table(nameof(Rectangle), Schema = SchemaNames.Configuration)]
     internal partial class Rectangle : MUnique.OpenMU.DataModel.Configuration.Rectangle, IIdentifiable
     {
         

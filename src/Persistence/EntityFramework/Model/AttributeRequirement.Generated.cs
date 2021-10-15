@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement"/>.
     /// </summary>
-    [Table(nameof(AttributeRequirement), Schema = "config")]
+    [Table(nameof(AttributeRequirement), Schema = SchemaNames.Configuration)]
     internal partial class AttributeRequirement : MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, IIdentifiable
     {
         

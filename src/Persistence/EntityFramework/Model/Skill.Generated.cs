@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Skill"/>.
     /// </summary>
-    [Table(nameof(Skill), Schema = "config")]
+    [Table(nameof(Skill), Schema = SchemaNames.Configuration)]
     internal partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIdentifiable
     {
         /// <inheritdoc />

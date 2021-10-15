@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition"/>.
     /// </summary>
-    [Table(nameof(ChatServerDefinition), Schema = "config")]
+    [Table(nameof(ChatServerDefinition), Schema = SchemaNames.Configuration)]
     internal partial class ChatServerDefinition : MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition, IIdentifiable
     {
         

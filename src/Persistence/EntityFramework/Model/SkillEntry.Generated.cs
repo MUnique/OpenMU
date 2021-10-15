@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.SkillEntry"/>.
     /// </summary>
-    [Table(nameof(SkillEntry), Schema = "data")]
+    [Table(nameof(SkillEntry), Schema = SchemaNames.AccountData)]
     internal partial class SkillEntry : MUnique.OpenMU.DataModel.Entities.SkillEntry, IIdentifiable
     {
         

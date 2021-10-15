@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.ItemOptionLink"/>.
     /// </summary>
-    [Table(nameof(ItemOptionLink), Schema = "data")]
+    [Table(nameof(ItemOptionLink), Schema = SchemaNames.AccountData)]
     internal partial class ItemOptionLink : MUnique.OpenMU.DataModel.Entities.ItemOptionLink, IIdentifiable
     {
         

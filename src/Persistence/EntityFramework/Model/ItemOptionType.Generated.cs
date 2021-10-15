@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType"/>.
     /// </summary>
-    [Table(nameof(ItemOptionType), Schema = "config")]
+    [Table(nameof(ItemOptionType), Schema = SchemaNames.Configuration)]
     internal partial class ItemOptionType : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, IIdentifiable
     {
         

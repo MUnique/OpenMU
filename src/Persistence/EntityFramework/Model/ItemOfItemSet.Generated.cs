@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet"/>.
     /// </summary>
-    [Table(nameof(ItemOfItemSet), Schema = "config")]
+    [Table(nameof(ItemOfItemSet), Schema = SchemaNames.Configuration)]
     internal partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, IIdentifiable
     {
         

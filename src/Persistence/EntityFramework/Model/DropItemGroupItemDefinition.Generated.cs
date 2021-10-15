@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(DropItemGroupItemDefinition), Schema = "config")]
+    [Table(nameof(DropItemGroupItemDefinition), Schema = SchemaNames.Configuration)]
     internal partial class DropItemGroupItemDefinition
     {
         public Guid DropItemGroupId { get; set; }

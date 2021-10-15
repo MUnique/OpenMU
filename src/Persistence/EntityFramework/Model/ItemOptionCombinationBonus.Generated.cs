@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus"/>.
     /// </summary>
-    [Table(nameof(ItemOptionCombinationBonus), Schema = "config")]
+    [Table(nameof(ItemOptionCombinationBonus), Schema = SchemaNames.Configuration)]
     internal partial class ItemOptionCombinationBonus : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus, IIdentifiable
     {
         

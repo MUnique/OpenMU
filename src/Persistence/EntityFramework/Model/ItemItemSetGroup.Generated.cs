@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(ItemItemSetGroup), Schema = "data")]
+    [Table(nameof(ItemItemSetGroup), Schema = SchemaNames.AccountData)]
     internal partial class ItemItemSetGroup
     {
         public Guid ItemId { get; set; }

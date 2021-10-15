@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.EnterGate"/>.
     /// </summary>
-    [Table(nameof(EnterGate), Schema = "config")]
+    [Table(nameof(EnterGate), Schema = SchemaNames.Configuration)]
     internal partial class EnterGate : MUnique.OpenMU.DataModel.Configuration.EnterGate, IIdentifiable
     {
         

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(ItemCraftingRequiredItemItemDefinition), Schema = "config")]
+    [Table(nameof(ItemCraftingRequiredItemItemDefinition), Schema = SchemaNames.Configuration)]
     internal partial class ItemCraftingRequiredItemItemDefinition
     {
         public Guid ItemCraftingRequiredItemId { get; set; }

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(ItemAppearanceItemOptionType), Schema = "data")]
+    [Table(nameof(ItemAppearanceItemOptionType), Schema = SchemaNames.AccountData)]
     internal partial class ItemAppearanceItemOptionType
     {
         public Guid ItemAppearanceId { get; set; }
