@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.PlugIns.PlugInConfiguration"/>.
     /// </summary>
-    [Table(nameof(PlugInConfiguration), Schema = "config")]
+    [Table(nameof(PlugInConfiguration), Schema = SchemaNames.Configuration)]
     internal partial class PlugInConfiguration : MUnique.OpenMU.PlugIns.PlugInConfiguration, IIdentifiable
     {
         

@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MonsterAttribute"/>.
     /// </summary>
-    [Table(nameof(MonsterAttribute), Schema = "config")]
+    [Table(nameof(MonsterAttribute), Schema = SchemaNames.Configuration)]
     internal partial class MonsterAttribute : MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, IIdentifiable
     {
         

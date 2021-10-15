@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel"/>.
     /// </summary>
-    [Table(nameof(ItemOptionOfLevel), Schema = "config")]
+    [Table(nameof(ItemOptionOfLevel), Schema = SchemaNames.Configuration)]
     internal partial class ItemOptionOfLevel : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel, IIdentifiable
     {
         

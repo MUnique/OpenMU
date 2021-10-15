@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(GameMapDefinitionDropItemGroup), Schema = "config")]
+    [Table(nameof(GameMapDefinitionDropItemGroup), Schema = SchemaNames.Configuration)]
     internal partial class GameMapDefinitionDropItemGroup
     {
         public Guid GameMapDefinitionId { get; set; }

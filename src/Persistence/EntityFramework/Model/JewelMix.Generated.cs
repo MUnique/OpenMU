@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.JewelMix"/>.
     /// </summary>
-    [Table(nameof(JewelMix), Schema = "config")]
+    [Table(nameof(JewelMix), Schema = SchemaNames.Configuration)]
     internal partial class JewelMix : MUnique.OpenMU.DataModel.Configuration.JewelMix, IIdentifiable
     {
         

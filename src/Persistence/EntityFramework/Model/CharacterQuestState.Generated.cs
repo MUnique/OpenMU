@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.CharacterQuestState"/>.
     /// </summary>
-    [Table(nameof(CharacterQuestState), Schema = "data")]
+    [Table(nameof(CharacterQuestState), Schema = SchemaNames.AccountData)]
     internal partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.CharacterQuestState, IIdentifiable
     {
         

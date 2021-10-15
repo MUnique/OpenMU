@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Gate"/>.
     /// </summary>
-    [Table(nameof(Gate), Schema = "config")]
+    [Table(nameof(Gate), Schema = SchemaNames.Configuration)]
     internal partial class Gate : MUnique.OpenMU.DataModel.Configuration.Gate, IIdentifiable
     {
         

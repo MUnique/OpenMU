@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ExitGate"/>.
     /// </summary>
-    [Table(nameof(ExitGate), Schema = "config")]
+    [Table(nameof(ExitGate), Schema = SchemaNames.Configuration)]
     internal partial class ExitGate : MUnique.OpenMU.DataModel.Configuration.ExitGate, IIdentifiable
     {
         

@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.DropItemGroup"/>.
     /// </summary>
-    [Table(nameof(DropItemGroup), Schema = "config")]
+    [Table(nameof(DropItemGroup), Schema = SchemaNames.Configuration)]
     internal partial class DropItemGroup : MUnique.OpenMU.DataModel.Configuration.DropItemGroup, IIdentifiable
     {
         /// <inheritdoc />

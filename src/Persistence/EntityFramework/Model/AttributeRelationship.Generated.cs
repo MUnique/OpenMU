@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.AttributeSystem.AttributeRelationship"/>.
     /// </summary>
-    [Table(nameof(AttributeRelationship), Schema = "config")]
+    [Table(nameof(AttributeRelationship), Schema = SchemaNames.Configuration)]
     internal partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.AttributeRelationship, IIdentifiable
     {
         /// <inheritdoc />

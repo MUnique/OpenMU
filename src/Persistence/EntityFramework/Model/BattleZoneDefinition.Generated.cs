@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition"/>.
     /// </summary>
-    [Table(nameof(BattleZoneDefinition), Schema = "config")]
+    [Table(nameof(BattleZoneDefinition), Schema = SchemaNames.Configuration)]
     internal partial class BattleZoneDefinition : MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition, IIdentifiable
     {
         

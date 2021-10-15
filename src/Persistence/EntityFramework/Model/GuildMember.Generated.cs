@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.GuildMember"/>.
     /// </summary>
-    [Table(nameof(GuildMember), Schema = "data")]
+    [Table(nameof(GuildMember), Schema = SchemaNames.AccountData)]
     internal partial class GuildMember : MUnique.OpenMU.DataModel.Entities.GuildMember, IIdentifiable
     {
         /// <inheritdoc />

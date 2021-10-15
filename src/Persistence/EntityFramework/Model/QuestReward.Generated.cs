@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward"/>.
     /// </summary>
-    [Table(nameof(QuestReward), Schema = "config")]
+    [Table(nameof(QuestReward), Schema = SchemaNames.Configuration)]
     internal partial class QuestReward : MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward, IIdentifiable
     {
         

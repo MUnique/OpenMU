@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting"/>.
     /// </summary>
-    [Table(nameof(ItemCrafting), Schema = "config")]
+    [Table(nameof(ItemCrafting), Schema = SchemaNames.Configuration)]
     internal partial class ItemCrafting : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting, IIdentifiable
     {
         

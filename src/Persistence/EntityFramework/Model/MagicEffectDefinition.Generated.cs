@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition"/>.
     /// </summary>
-    [Table(nameof(MagicEffectDefinition), Schema = "config")]
+    [Table(nameof(MagicEffectDefinition), Schema = SchemaNames.Configuration)]
     internal partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition, IIdentifiable
     {
         

@@ -67,7 +67,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref=""{type.FullName}""/>.
     /// </summary>
-    [Table(nameof({type.Name}), Schema = ""{(IsConfigurationType(type) ? "config" : "data")}"")]
+    [Table(nameof({type.Name}), Schema = {(IsConfigurationType(type) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
     internal partial class {className} : {fullName}, IIdentifiable
     {{
         {this.CreateConstructors(type, standaloneCollectionProperties.Any())}
@@ -138,7 +138,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof({joinTypeName}), Schema = ""{(IsConfigurationType(propertyInfo.DeclaringType) ? "config" : "data")}"")]
+    [Table(nameof({joinTypeName}), Schema = {(IsConfigurationType(propertyInfo.DeclaringType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
     internal partial class {joinTypeName}
     {{
         public Guid {propertyInfo.DeclaringType.Name}Id {{ get; set; }}
