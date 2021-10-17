@@ -12,6 +12,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Resets;
+    using MUnique.OpenMU.GameServer.MessageHandler;
     using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
@@ -128,6 +129,14 @@ namespace MUnique.OpenMU.Persistence.Initialization
                 {
                     plugInConfiguration.IsActive = false;
                     plugInConfiguration.SetConfiguration(new ResetConfiguration());
+                }
+
+                // We don't move the player anymore by his request. This was usually requested after a player performed a skill.
+                // However, it adds way for cheaters to move through the map.
+                // The plugin is therefore deactivated by default.
+                if (plugInType.IsAssignableTo(typeof(CharacterMoveBaseHandlerPlugIn)))
+                {
+                    plugInConfiguration.IsActive = false;
                 }
             });
 
