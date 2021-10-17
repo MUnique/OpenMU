@@ -16,12 +16,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     [PlugIn("Character walk handler", "Packet handler for walk packets.")]
     [Guid("19056DEB-4321-4D25-8615-EE49A453DF03")]
     [MinimumClient(0, 97, ClientLanguage.Invariant)]
-    internal class CharacterWalkHandlerPlugIn : CharacterMoveBaseHandlerPlugIn
+    internal class CharacterWalkHandlerPlugIn : CharacterWalkBaseHandlerPlugIn
     {
         /// <inheritdoc/>
         public override byte Key => WalkRequest.Code;
-
-        /// <inheritdoc/>
-        public override MoveType MoveType => MoveType.Walk;
     }
 }
