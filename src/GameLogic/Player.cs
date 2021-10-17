@@ -796,13 +796,25 @@ namespace MUnique.OpenMU.GameLogic
         public void WalkTo(Point target, Span<WalkingStep> steps)
         {
             var currentMap = this.CurrentMap;
-            if (currentMap != null)
+            if (currentMap == null)
             {
-                this.walker.Stop();
+                return;
+            }
+
+            this.walker.Stop();
+            if (currentMap.Terrain.WalkMap[target.X, target.Y])
+            {
                 this.Logger.LogDebug("WalkTo: Player is walking to {0}", target);
                 this.walker.WalkTo(target, steps);
                 currentMap.Move(this, target, this.moveLock, MoveType.Walk);
                 this.Logger.LogDebug("WalkTo: Observer Count: {0}", this.Observers.Count);
+            }
+            else
+            {
+                this.Logger.LogWarning("WalkTo: Player requested to walk to {0}, but it's not an allowed target", target);
+
+                // We'll send the current coordinates back to the client, so it doesn't appear in the invalid coordinates.
+                this.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()?.ObjectMoved(this, MoveType.Instant);
             }
         }
 
