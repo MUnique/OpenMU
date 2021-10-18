@@ -103,7 +103,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
             catch (Exception exception)
             {
-                this.logger.LogError("Error while connecting to the server. Disconnecting the client.", exception);
+                this.logger.LogError(exception, "Error while connecting to the server. Disconnecting the client.");
                 clientConnection.Disconnect();
             }
         }
