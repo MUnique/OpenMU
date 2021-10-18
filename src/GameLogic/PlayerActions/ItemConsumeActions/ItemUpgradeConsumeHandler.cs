@@ -145,7 +145,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
                 }
 
                 var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
-                optionLink.ItemOption = possibleOptions.SelectRandom();
+                optionLink.ItemOption = possibleOptions.SelectRandom()!;
                 optionLink.Level = optionLink.ItemOption.LevelDependentOptions.Any()
                     ? optionLink.ItemOption.LevelDependentOptions.Min(l => l.Level)
                     : 1;

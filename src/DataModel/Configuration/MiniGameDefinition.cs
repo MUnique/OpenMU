@@ -5,6 +5,9 @@
 namespace MUnique.OpenMU.DataModel.Configuration
 {
     using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using MUnique.OpenMU.DataModel.Composition;
     using MUnique.OpenMU.DataModel.Configuration.Items;
 
     /// <summary>
@@ -61,6 +64,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         public int MaximumPlayerCount { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to save the score as <see cref="MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry"/>.
+        /// </summary>
+        public bool SaveRankingStatistics { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether only characters with <see cref="CharacterClass.IsMasterClass"/> = <see langword="true"/> can enter.
         /// </summary>
         public bool RequiresMasterClass { get; set; }
@@ -93,11 +101,19 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// <summary>
         /// Gets or sets the entrance gate to the mini game map.
         /// </summary>
+        [Required]
         public virtual ExitGate? Entrance { get; set; }
 
         /// <summary>
         /// Gets or sets the ticket item which is required to enter the mini game.
         /// </summary>
         public virtual ItemDefinition? TicketItem { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rewards which are given to the player when the game has been finished successfully.
+        /// Multiple awards per players are possible.
+        /// </summary>
+        [MemberOfAggregate]
+        public virtual ICollection<MiniGameReward> Rewards { get; protected set; } = null!;
     }
 }

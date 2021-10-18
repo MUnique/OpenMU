@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using MUnique.OpenMU.DataModel;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic;
@@ -60,10 +61,12 @@ namespace MUnique.OpenMU.GameServer
             this.logger = loggerFactory.CreateLogger<GameServer>();
             try
             {
-                var mapInitializer = new GameServerMapInitializer(gameServerDefinition, loggerFactory.CreateLogger<GameServerMapInitializer>());
-                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager);
-                this.gameContext.GameMapCreated += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
-                this.gameContext.GameMapRemoved += (sender, e) => this.OnPropertyChanged(nameof(this.Context));
+                var gameConfiguration = gameServerDefinition.GameConfiguration ?? throw Error.NotInitializedProperty(gameServerDefinition, nameof(gameServerDefinition.GameConfiguration));
+                var dropGenerator = new DefaultDropGenerator(gameConfiguration, Rand.GetRandomizer());
+                var mapInitializer = new GameServerMapInitializer(gameServerDefinition, loggerFactory.CreateLogger<GameServerMapInitializer>(), dropGenerator);
+                this.gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager, dropGenerator);
+                this.gameContext.GameMapCreated += (_, _) => this.OnPropertyChanged(nameof(this.Context));
+                this.gameContext.GameMapRemoved += (_, _) => this.OnPropertyChanged(nameof(this.Context));
                 mapInitializer.PlugInManager = this.gameContext.PlugInManager;
             }
             catch (Exception ex)

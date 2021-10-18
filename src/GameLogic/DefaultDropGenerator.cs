@@ -89,26 +89,48 @@ namespace MUnique.OpenMU.GameLogic
             return droppedItems ?? Enumerable.Empty<Item>();
         }
 
-        /// <summary>
-        /// Gets a random item.
-        /// </summary>
-        /// <param name="monsterLvl">The monster level.</param>
-        /// <param name="socketItems">if set to <c>true</c> [socket items].</param>
-        /// <returns>A random item.</returns>
-        protected Item? GenerateRandomItem(int monsterLvl, bool socketItems)
+        /// <inheritdoc/>
+        public Item? GenerateItemDrop(DropItemGroup selectedGroup)
         {
-            var possible = this.GetPossibleList(monsterLvl);
-            if (possible is null || !possible.Any())
+            var item = this.GenerateRandomItem(selectedGroup.PossibleItems);
+            if (item is null)
             {
                 return null;
             }
 
-            var itemDef = possible.ElementAt(this.randomizer.NextInt(0, possible.Count));
-            var item = new TemporaryItem();
-            item.Definition = itemDef;
-            item.Level = Math.Min((byte)((monsterLvl - itemDef.DropLevel) / 3), item.Definition.MaximumItemLevel);
+            if (selectedGroup.ItemLevel is byte itemLevel)
+            {
+                item.Level = itemLevel;
+            }
 
-            this.ApplyRandomOptions(item);
+            if (selectedGroup.ItemType == SpecialItemType.Ancient)
+            {
+                this.ApplyRandomAncientOption(item);
+            }
+            else if (selectedGroup.ItemType == SpecialItemType.Excellent)
+            {
+                this.AddRandomExcOptions(item);
+            }
+
+            return item;
+        }
+
+        /// <summary>
+        /// Gets a random item.
+        /// </summary>
+        /// <param name="monsterLvl">The monster level.</param>
+        /// <param name="socketItems">If set to <c>true</c>, it selects only items with sockets.</param>
+        /// <returns>A random item.</returns>
+        protected Item? GenerateRandomItem(int monsterLvl, bool socketItems)
+        {
+            var possible = this.GetPossibleList(monsterLvl, socketItems);
+            var item = this.GenerateRandomItem(possible);
+            if (item is null)
+            {
+                return null;
+            }
+
+            item.Level = GetItemLevelByMonsterLevel(item.Definition!, monsterLvl);
             return item;
         }
 
@@ -139,6 +161,11 @@ namespace MUnique.OpenMU.GameLogic
             {
                 item.SocketCount = this.randomizer.NextInt(1, item.Definition.MaximumSockets + 1);
             }
+
+            if (item.CanHaveSkill())
+            {
+                item.HasSkill = this.randomizer.NextRandomBool(50);
+            }
         }
 
         /// <summary>
@@ -154,19 +181,13 @@ namespace MUnique.OpenMU.GameLogic
             }
 
             var possible = this.GetPossibleList(monsterLvl - 25);
-            if (possible is null || !possible.Any())
+            var item = this.GenerateRandomItem(possible);
+            if (item is null)
             {
                 return null;
             }
 
-            var itemDef = possible.SelectRandom(this.randomizer);
-            var item = new TemporaryItem();
-            item.Definition = itemDef;
-            this.ApplyRandomOptions(item);
-            if (itemDef.Skill != null && item.Definition.QualifiedCharacters.Any())
-            {
-                item.HasSkill = true; // every excellent item got skill
-            }
+            item.HasSkill = item.CanHaveSkill(); // every excellent item got skill
 
             this.AddRandomExcOptions(item);
             return item;
@@ -176,26 +197,23 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets a random ancient item.
         /// </summary>
         /// <returns>A random ancient item.</returns>
-        protected Item GenerateRandomAncient()
+        protected Item? GenerateRandomAncient()
         {
-            Item item = new TemporaryItem();
-            item.Definition = this.ancientItems.SelectRandom(this.randomizer);
-            this.ApplyRandomOptions(item);
-            var itemDef = item.Definition;
-            if (itemDef.Skill != null && item.Definition.QualifiedCharacters.Any())
+            var item = this.GenerateRandomItem(this.ancientItems);
+            if (item is null)
             {
-                item.HasSkill = true;
+                return null;
             }
 
-            var ancientSet = item.ItemSetGroups.Where(g => g.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).SelectRandom(this.randomizer);
-            item.ItemSetGroups.Add(ancientSet);
-            var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
-            var bonusOption = itemOfSet.BonusOption ?? throw Error.NotInitializedProperty(itemOfSet, nameof(itemOfSet.BonusOption)); // for example: +5str or +10str
-            var bonusOptionLink = new ItemOptionLink();
-            bonusOptionLink.ItemOption = bonusOption;
-            bonusOptionLink.Level = bonusOption.LevelDependentOptions.Select(o => o.Level).SelectRandom();
-            item.ItemOptions.Add(bonusOptionLink);
+            item.HasSkill = item.CanHaveSkill(); // every ancient item got skill
+
+            this.ApplyRandomAncientOption(item);
             return item;
+        }
+
+        private static byte GetItemLevelByMonsterLevel(ItemDefinition itemDefinition, int monsterLevel)
+        {
+            return Math.Min((byte)((monsterLevel - itemDefinition.DropLevel) / 3), itemDefinition.MaximumItemLevel);
         }
 
         private static IEnumerable<DropItemGroup> CombineDropGroups(
@@ -253,6 +271,40 @@ namespace MUnique.OpenMU.GameLogic
             return true;
         }
 
+        private Item? GenerateRandomItem(ICollection<ItemDefinition>? possibleItems)
+        {
+            if (possibleItems is null || !possibleItems.Any())
+            {
+                return null;
+            }
+
+            var item = new TemporaryItem
+            {
+                Definition = possibleItems.ElementAt(this.randomizer.NextInt(0, possibleItems.Count)),
+            };
+
+            this.ApplyRandomOptions(item);
+
+            return item;
+        }
+
+        private void ApplyRandomAncientOption(Item item)
+        {
+            var ancientSet = item.ItemSetGroups.Where(g => g.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).SelectRandom(this.randomizer);
+            if (ancientSet is null)
+            {
+                return;
+            }
+
+            item.ItemSetGroups.Add(ancientSet);
+            var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
+            var bonusOption = itemOfSet.BonusOption ?? throw Error.NotInitializedProperty(itemOfSet, nameof(itemOfSet.BonusOption)); // for example: +5str or +10str
+            var bonusOptionLink = new ItemOptionLink();
+            bonusOptionLink.ItemOption = bonusOption;
+            bonusOptionLink.Level = bonusOption.LevelDependentOptions.Select(o => o.Level).SelectRandom();
+            item.ItemOptions.Add(bonusOptionLink);
+        }
+
         private void AddRandomExcOptions(Item item)
         {
             var possibleItemOptions = item.Definition!.PossibleItemOptions;
@@ -292,15 +344,7 @@ namespace MUnique.OpenMU.GameLogic
             droppedMoney = null;
             if (selectedGroup.PossibleItems?.Count > 0)
             {
-                var item = new TemporaryItem();
-                item.Definition = selectedGroup.PossibleItems.SelectRandom(this.randomizer);
-                if (selectedGroup.ItemLevel is byte itemLevel)
-                {
-                    item.Level = itemLevel;
-                }
-
-                this.ApplyRandomOptions(item);
-                return item;
+                return this.GenerateItemDrop(selectedGroup);
             }
 
             switch (selectedGroup.ItemType)
@@ -320,8 +364,6 @@ namespace MUnique.OpenMU.GameLogic
                     // none
                     return null;
             }
-
-            return null;
         }
 
         private DropItemGroup? SelectRandomGroup(IEnumerable<DropItemGroup> dropGroups)
@@ -342,7 +384,7 @@ namespace MUnique.OpenMU.GameLogic
             return null;
         }
 
-        private IList<ItemDefinition>? GetPossibleList(int monsterLevel)
+        private IList<ItemDefinition>? GetPossibleList(int monsterLevel, bool socketItems = false)
         {
             if (monsterLevel < byte.MinValue || monsterLevel > byte.MaxValue)
             {
@@ -352,6 +394,7 @@ namespace MUnique.OpenMU.GameLogic
             return this.droppableItemsPerMonsterLevel[monsterLevel] ??= (from it in this.droppableItems
                 where (it.DropLevel <= monsterLevel)
                       && (it.DropLevel > monsterLevel - 12)
+                      && (!socketItems || it.MaximumSockets > 0)
                 select it).ToList();
         }
     }

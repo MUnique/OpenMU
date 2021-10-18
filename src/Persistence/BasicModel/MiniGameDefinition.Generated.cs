@@ -28,6 +28,29 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         public Guid Id { get; set; }
         
         /// <summary>
+        /// Gets the raw collection of <see cref="Rewards" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("rewards")]
+        [System.Text.Json.Serialization.JsonPropertyName("rewards")]
+        public ICollection<MiniGameReward> RawRewards { get; } = new List<MiniGameReward>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameReward> Rewards
+        {
+            get => base.Rewards ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameReward, MiniGameReward>(this.RawRewards);
+            protected set
+            {
+                this.Rewards.Clear();
+                foreach (var item in value)
+                {
+                    this.Rewards.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the raw object of <see cref="Entrance" />.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("entrance")]

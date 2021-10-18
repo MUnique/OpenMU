@@ -87,12 +87,28 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
             attributes.ForEach(character.Attributes.Add);
             character.CurrentMap = charclass.HomeMap;
             var randomSpawnGate = character.CurrentMap!.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
-            character.PositionX = (byte)Rand.NextInt(randomSpawnGate.X1, randomSpawnGate.X2);
-            character.PositionY = (byte)Rand.NextInt(randomSpawnGate.Y1, randomSpawnGate.Y2);
+            if (randomSpawnGate is not null)
+            {
+                character.PositionX = (byte)Rand.NextInt(randomSpawnGate.X1, randomSpawnGate.X2);
+                character.PositionY = (byte)Rand.NextInt(randomSpawnGate.Y1, randomSpawnGate.Y2);
+            }
+
             character.Inventory = player.PersistenceContext.CreateNew<ItemStorage>();
             account.Characters.Add(character);
             player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(player, character);
-            player.PersistenceContext.SaveChanges();
+            try
+            {
+                // todo: test if character name exists, before doing all this
+                player.PersistenceContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                account.Characters.Remove(character);
+                player.PersistenceContext.Detach(character);
+                player.Logger.LogError(ex, "Error when trying to create character '{0}'", name);
+                return null;
+            }
+            
             player.Logger.LogDebug("Creating Character Complete.");
             return character;
         }

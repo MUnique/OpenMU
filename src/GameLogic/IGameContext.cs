@@ -69,6 +69,11 @@ namespace MUnique.OpenMU.GameLogic
         ILoggerFactory LoggerFactory { get; }
 
         /// <summary>
+        /// Gets the drop generator.
+        /// </summary>
+        IDropGenerator DropGenerator { get; }
+
+        /// <summary>
         /// Gets the initialized maps which are hosted on this context.
         /// </summary>
         IEnumerable<GameMap> Maps { get; }

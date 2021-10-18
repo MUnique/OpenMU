@@ -9,7 +9,7 @@ namespace MUnique.OpenMU.GameLogic
     using System.Linq;
 
     /// <summary>
-    /// Extensions for enumerables.
+    /// Extensions for <see cref="IEnumerable{T}"/>.
     /// </summary>
     public static class EnumerableExtensions
     {
@@ -40,7 +40,7 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="enumerable">The enumerable.</param>
         /// <param name="randomizer">The randomizer.</param>
         /// <returns>The randomly selected element.</returns>
-        public static T SelectRandom<T>(this IEnumerable<T> enumerable, IRandomizer randomizer)
+        public static T? SelectRandom<T>(this IEnumerable<T> enumerable, IRandomizer randomizer)
         {
             var list = enumerable as IList<T> ?? enumerable.ToList();
             if (list.Count > 0)
@@ -49,7 +49,7 @@ namespace MUnique.OpenMU.GameLogic
                 return list[index];
             }
 
-            return default!;
+            return default;
         }
 
         /// <summary>
@@ -58,6 +58,6 @@ namespace MUnique.OpenMU.GameLogic
         /// <typeparam name="T">The generic type of the enumerable.</typeparam>
         /// <param name="enumerable">The enumerable.</param>
         /// <returns>The randomly selected element.</returns>
-        public static T SelectRandom<T>(this IEnumerable<T> enumerable) => SelectRandom(enumerable, Rand.GetRandomizer());
+        public static T? SelectRandom<T>(this IEnumerable<T> enumerable) => SelectRandom(enumerable, Rand.GetRandomizer());
     }
 }

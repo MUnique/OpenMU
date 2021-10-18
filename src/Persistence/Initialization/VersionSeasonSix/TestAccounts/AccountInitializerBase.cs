@@ -179,8 +179,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.TestAccount
 
             character.CurrentMap = character.CharacterClass.HomeMap;
             var spawnGate = character.CurrentMap!.ExitGates.Where(m => m.IsSpawnGate).SelectRandom();
-            character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
-            character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
+            if (spawnGate is not null)
+            {
+                character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
+                character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
+            }
+            else
+            {
+                throw new InvalidOperationException($"{character.CurrentMap.Name} has no spawn gate.");
+            }
+
             character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
             character.Experience = GameConfigurationInitializer.CalculateNeededExperience(level);
             character.LevelUpPoints = (int)((character.Attributes.First(a => a.Definition == Stats.Level).Value - 1)

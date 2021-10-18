@@ -130,7 +130,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild
                         player.ViewPlugIns.GetPlugIn<IShowGuildWarResultPlugIn>()?.ShowResult(context.EnemyTeamName, isWinner ? GuildWarResult.Won : GuildWarResult.Lost);
                         if (soccerMap is not null)
                         {
-                            player.WarpTo(soccerMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom());
+                            var spawnGates = soccerMap.Definition.ExitGates.Where(g => g.IsSpawnGate);
+                            if (spawnGates.Any())
+                            {
+                                player.WarpTo(spawnGates.SelectRandom()!);
+                            }
                         }
 
                         player.GuildWarContext = null;

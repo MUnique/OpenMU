@@ -34,5 +34,11 @@ namespace MUnique.OpenMU.GameLogic
             droppedMoney = null;
             return Enumerable.Empty<Item>();
         }
+
+        /// <inheritdoc />
+        public Item? GenerateItemDrop(DropItemGroup group)
+        {
+            return null;
+        }
     }
 }

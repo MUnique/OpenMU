@@ -2061,6 +2061,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     GameDuration = table.Column<TimeSpan>(type: "interval", nullable: false),
                     ExitDuration = table.Column<TimeSpan>(type: "interval", nullable: false),
                     MaximumPlayerCount = table.Column<int>(type: "integer", nullable: false),
+                    SaveRankingStatistics = table.Column<bool>(type: "boolean", nullable: false),
                     RequiresMasterClass = table.Column<bool>(type: "boolean", nullable: false),
                     MinimumCharacterLevel = table.Column<int>(type: "integer", nullable: false),
                     MaximumCharacterLevel = table.Column<int>(type: "integer", nullable: false),
@@ -2327,6 +2328,38 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MiniGameRankingEntry",
+                schema: "data",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CharacterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MiniGameId = table.Column<Guid>(type: "uuid", nullable: true),
+                    GameInstanceId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Score = table.Column<int>(type: "integer", nullable: false),
+                    Rank = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MiniGameRankingEntry", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MiniGameRankingEntry_Character_CharacterId",
+                        column: x => x.CharacterId,
+                        principalSchema: "data",
+                        principalTable: "Character",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MiniGameRankingEntry_MiniGameDefinition_MiniGameId",
+                        column: x => x.MiniGameId,
+                        principalSchema: "config",
+                        principalTable: "MiniGameDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CharacterDropItemGroup",
                 schema: "data",
                 columns: table => new
@@ -2405,6 +2438,37 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "GameMapDefinition",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MiniGameReward",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemRewardId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MiniGameDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Rank = table.Column<int>(type: "integer", nullable: true),
+                    RewardType = table.Column<int>(type: "integer", nullable: false),
+                    RewardAmount = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MiniGameReward", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MiniGameReward_DropItemGroup_ItemRewardId",
+                        column: x => x.ItemRewardId,
+                        principalSchema: "config",
+                        principalTable: "DropItemGroup",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MiniGameReward_MiniGameDefinition_MiniGameDefinitionId",
+                        column: x => x.MiniGameDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "MiniGameDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -3269,6 +3333,30 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "TicketItemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MiniGameRankingEntry_CharacterId",
+                schema: "data",
+                table: "MiniGameRankingEntry",
+                column: "CharacterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MiniGameRankingEntry_MiniGameId",
+                schema: "data",
+                table: "MiniGameRankingEntry",
+                column: "MiniGameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MiniGameReward_ItemRewardId",
+                schema: "config",
+                table: "MiniGameReward",
+                column: "ItemRewardId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MiniGameReward_MiniGameDefinitionId",
+                schema: "config",
+                table: "MiniGameReward",
+                column: "MiniGameDefinitionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MonsterAttribute_AttributeDefinitionId",
                 schema: "config",
                 table: "MonsterAttribute",
@@ -3748,7 +3836,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "MiniGameDefinition",
+                name: "MiniGameRankingEntry",
+                schema: "data");
+
+            migrationBuilder.DropTable(
+                name: "MiniGameReward",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -3840,6 +3932,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
+                name: "MiniGameDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
                 name: "DropItemGroup",
                 schema: "config");
 
@@ -3854,10 +3950,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             migrationBuilder.DropTable(
                 name: "Item",
                 schema: "data");
-
-            migrationBuilder.DropTable(
-                name: "ExitGate",
-                schema: "config");
 
             migrationBuilder.DropTable(
                 name: "GameServerConfiguration",
@@ -3885,6 +3977,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "PowerUpDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ExitGate",
                 schema: "config");
 
             migrationBuilder.DropTable(

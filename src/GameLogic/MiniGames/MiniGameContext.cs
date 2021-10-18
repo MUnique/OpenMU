@@ -6,21 +6,26 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.DataModel.Statistics;
+    using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
     using MUnique.OpenMU.GameLogic.PlugIns;
+    using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Persistence;
     using Nito.AsyncEx.Synchronous;
 
     /// <summary>
     /// The context of a mini game.
     /// </summary>
-    public sealed class MiniGameContext : Disposable, IEventStateProvider
+    public class MiniGameContext : Disposable, IEventStateProvider
     {
         private readonly IGameContext gameContext;
         private readonly IMapInitializer mapInitializer;
@@ -43,6 +48,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             this.mapInitializer = mapInitializer;
             this.Key = key;
             this.Definition = definition;
+            this.Logger = this.gameContext.LoggerFactory.CreateLogger(this.GetType());
 
             this.Map = this.CreateMap();
 
@@ -73,6 +79,11 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 
         /// <inheritdoc />
         public bool IsEventRunning => this.State == MiniGameState.Playing;
+
+        /// <summary>
+        /// Gets the logger for this instance.
+        /// </summary>
+        protected ILogger Logger { get; }
 
         /// <summary>
         /// Tries to enter the mini game. It will fail, if it's full, of if it's not in an open state.
@@ -124,13 +135,150 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
                 this.enterLock.Release();
             }
 
-            this.MovePlayersToSafezoneAsync().AsTask().WaitAndUnwrapException();
+            try
+            {
+                this.MovePlayersToSafezoneAsync().AsTask().WaitAndUnwrapException();
 
-            this.Map.ObjectAdded -= this.OnObjectAddedToMap;
-            this.Map.ObjectRemoved -= this.OnObjectRemovedFromMap;
+                this.Map.ObjectAdded -= this.OnObjectAddedToMap;
+                this.Map.ObjectRemoved -= this.OnObjectRemovedFromMap;
 
-            this.gameContext.RemoveMiniGame(this);
-            this.gameEndedCts.Dispose();
+                this.gameContext.RemoveMiniGame(this);
+                this.gameEndedCts.Dispose();
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Unexpected error during dispose: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Executes the action for each player of this game.
+        /// </summary>
+        /// <param name="playerAction">The action which should be executed for each player of the game.</param>
+        protected async ValueTask ForEachPlayerAsync(Action<Player> playerAction)
+        {
+            await this.enterLock.WaitAsync();
+            try
+            {
+                this.enteredPlayers.ForEach(playerAction);
+            }
+            finally
+            {
+                this.enterLock.Release();
+            }
+        }
+
+        protected virtual void OnGameStart(ICollection<Player> players)
+        {
+            // can be overwritten
+        }
+
+        protected virtual void OnMonsterDied(object? sender, DeathInformation e)
+        {
+            // can be overwritten
+        }
+
+        protected virtual void ShowScore(Player player)
+        {
+            // can be overwritten
+        }
+
+        protected virtual void GameEnded(ICollection<Player> finishers)
+        {
+            foreach (var player in finishers)
+            {
+                this.ShowScore(player);
+            }
+        }
+
+        /// <summary>
+        /// Gives the rewards to the player.
+        /// </summary>
+        /// <param name="player">The player who should receive the rewards.</param>
+        /// <param name="rank">The rank of the player in the current game.</param>
+        protected void GiveRewards(Player player, int rank)
+        {
+            var rewards = this.Definition.Rewards.Where(r => r.Rank is null || r.Rank == rank);
+            foreach (var reward in rewards)
+            {
+                this.GiveReward(player, reward);
+            }
+        }
+
+        /// <summary>
+        /// Saves the ranking of this game.
+        /// </summary>
+        /// <param name="scoreEntries">The entries of the ranking.</param>
+        protected void SaveRanking(IEnumerable<(int Rank, Character Character, int Score)> scoreEntries)
+        {
+            if (!this.Definition.SaveRankingStatistics)
+            {
+                return;
+            }
+
+            using var context = this.gameContext.PersistenceContextProvider.CreateNewContext(this.gameContext.Configuration);
+            var instanceId = Guid.NewGuid();
+            var timestamp = DateTime.UtcNow;
+            foreach (var score in scoreEntries)
+            {
+                var entry = context.CreateNew<MiniGameRankingEntry>();
+                entry.GameInstanceId = instanceId;
+                entry.Rank = score.Rank;
+                entry.Score = score.Score;
+                entry.Character = score.Character;
+                entry.MiniGame = this.Definition;
+                entry.Timestamp = timestamp;
+            }
+
+            context.SaveChanges();
+        }
+
+        private void GiveReward(Player player, MiniGameReward reward)
+        {
+            switch (reward.RewardType)
+            {
+                case MiniGameRewardType.Experience:
+                    player.AddExperience(reward.RewardAmount, null);
+                    break;
+                case MiniGameRewardType.Money:
+                    if (!player.TryAddMoney(reward.RewardAmount))
+                    {
+                        player.ShowMessage("Couldn't add reward money, inventory is full.");
+                    }
+
+                    break;
+                case MiniGameRewardType.Item:
+                    this.GiveItemReward(player, reward);
+                    break;
+                case MiniGameRewardType.Undefined:
+                    this.Logger.LogWarning($"Undefined reward type in {reward.GetId()}");
+                    break;
+                default:
+                    this.Logger.LogError($"Reward type {reward.RewardType} in {reward.GetId()} is not implemented!");
+                    throw new NotImplementedException($"Reward type {reward.RewardType} is not implemented");
+            }
+        }
+
+        private void GiveItemReward(Player player, MiniGameReward reward)
+        {
+            if (reward.ItemReward is null)
+            {
+                this.Logger.LogWarning($"Item reward is not set in {reward.GetId()}");
+                return;
+            }
+
+            var item = this.gameContext.DropGenerator.GenerateItemDrop(reward.ItemReward);
+            if (item is null)
+            {
+                this.Logger.LogInformation($"No item has been generated by reward {reward.GetId()} for player {player}.");
+                return;
+            }
+
+            if (!player.Inventory?.AddItem(item) ?? false)
+            {
+                this.Logger.LogInformation($"Reward {item} for {player} has been dropped by players coordinates {player.Position}.");
+                this.Map.Add(new DroppedItem(item, player.Position, this.Map, player, player.GetAsEnumerable()));
+            }
         }
 
         private async ValueTask RunGameAsync()
@@ -138,55 +286,61 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             var countdownMessageDuration = TimeSpan.FromSeconds(30);
             try
             {
-                await Task.Delay(this.Definition.EnterDuration.Subtract(countdownMessageDuration), this.gameEndedCts.Token).ConfigureAwait(false);
-                if (this.enteredPlayers.Any())
+                var enterDuration = this.Definition.EnterDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
+                var gameDuration = this.Definition.GameDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
+                var exitDuration = this.Definition.ExitDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
+
+                await Task.Delay(enterDuration, this.gameEndedCts.Token).ConfigureAwait(false);
+                if (this.enteredPlayers.Count == 0)
                 {
-                    await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-                    await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
-
-                    await this.StartAsync().ConfigureAwait(false);
-
-                    await Task.Delay(this.Definition.GameDuration.Subtract(countdownMessageDuration), this.gameEndedCts.Token).ConfigureAwait(false);
-                    await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-                    await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
-
-                    await this.StopAsync().ConfigureAwait(false);
-
-                    await Task.Delay(this.Definition.ExitDuration.Subtract(countdownMessageDuration), this.gameEndedCts.Token).ConfigureAwait(false);
-                    await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-                    await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
-
-                    await this.ShutdownGameAsync().ConfigureAwait(false);
+                    return;
                 }
-                else
-                {
-                    this.Dispose();
-                }
+
+                await this.ShowCountdownMessageAsync().ConfigureAwait(false);
+                await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+
+                await this.StartAsync().ConfigureAwait(false);
+
+                await Task.Delay(gameDuration, this.gameEndedCts.Token).ConfigureAwait(false);
+                await this.ShowCountdownMessageAsync().ConfigureAwait(false);
+                await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+
+                await this.StopAsync().ConfigureAwait(false);
+
+                await Task.Delay(exitDuration, this.gameEndedCts.Token).ConfigureAwait(false);
+                await this.ShowCountdownMessageAsync().ConfigureAwait(false);
+                await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+
+                await this.ShutdownGameAsync().ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
-                this.Dispose();
             }
             catch (Exception ex)
             {
-                Debug.Fail(ex.Message, ex.StackTrace);
+                this.Logger.LogError(ex, "Unexpected error during mini game event: {0}", ex.Message);
+            }
+            finally
+            {
+                this.Dispose();
             }
         }
 
         private async ValueTask StartAsync()
         {
+            ICollection<Player> players;
             await this.enterLock.WaitAsync();
             try
             {
                 this.State = MiniGameState.Playing;
+                players = this.enteredPlayers.ToList();
             }
             finally
             {
                 this.enterLock.Release();
             }
 
-            await this.ShowMessageAsync("Game started"); // todo: more specific message?
-
+            this.OnGameStart(players);
             this.mapInitializer.InitializeNpcsOnEventStart(this.Map, this);
         }
 
@@ -195,7 +349,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             await this.enterLock.WaitAsync();
             try
             {
-                this.enteredPlayers.ForEach(p => p.ViewPlugIns.GetPlugIn<IUpdateMiniGameStatePlugIn>()?.UpdateState(this.Definition.Type, this.State));
+                this.enteredPlayers.ForEach(p => p.ViewPlugIns.GetPlugIn<IUpdateMiniGameStateViewPlugIn>()?.UpdateState(this.Definition.Type, this.State));
             }
             finally
             {
@@ -203,17 +357,9 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             }
         }
 
-        private async ValueTask ShowMessageAsync(string message)
+        private ValueTask ShowMessageAsync(string message)
         {
-            await this.enterLock.WaitAsync();
-            try
-            {
-                this.enteredPlayers.ForEach(p => p.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.GoldenCenter));
-            }
-            finally
-            {
-                this.enterLock.Release();
-            }
+            return this.ForEachPlayerAsync(player => player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.GoldenCenter));
         }
 
         private async ValueTask StopAsync()
@@ -228,10 +374,20 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
                 this.enterLock.Release();
             }
 
-            await this.ShowMessageAsync("Game ended"); // todo: more specific message?
             this.Map.ClearEventSpawnedNpcs();
 
-            // todo: show result, give rewards
+            List<Player> players;
+            await this.enterLock.WaitAsync();
+            try
+            {
+                players = this.enteredPlayers.ToList();
+            }
+            finally
+            {
+                this.enterLock.Release();
+            }
+
+            this.GameEnded(players);
         }
 
         private GameMap CreateMap()
@@ -252,6 +408,10 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
         private void OnObjectAddedToMap(object? sender, (GameMap Map, ILocateable Object) args)
         {
             this.gameContext.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>()?.ObjectAddedToMap(args.Map, args.Object);
+            if (args.Object is Monster monster)
+            {
+                monster.Died += this.OnMonsterDied;
+            }
         }
 
         private void OnObjectRemovedFromMap(object? sender, (GameMap Map, ILocateable Object) args)
@@ -263,24 +423,24 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             }
 
             player.CurrentMiniGame = null;
-            bool canGameProceed;
+            bool cantGameProceed;
             this.enterLock.Wait();
             try
             {
                 this.enteredPlayers.Remove(player);
-                canGameProceed = this.enteredPlayers.Count == 0 && this.State != MiniGameState.Open;
+                cantGameProceed = this.enteredPlayers.Count == 0 && this.State != MiniGameState.Open;
             }
             finally
             {
                 this.enterLock.Release();
             }
 
-            if (canGameProceed)
+            if (cantGameProceed)
             {
                 this.gameEndedCts.Cancel();
             }
 
-            // todo: send results?
+            this.ShowScore(player);
         }
 
         private async ValueTask ShutdownGameAsync()

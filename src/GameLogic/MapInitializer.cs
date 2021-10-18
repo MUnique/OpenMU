@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameLogic
     /// <seealso cref="MUnique.OpenMU.GameLogic.IMapInitializer" />
     public class MapInitializer : IMapInitializer
     {
-        private readonly IDropGenerator defaultDropGenerator;
+        private readonly IDropGenerator dropGenerator;
         private readonly GameConfiguration configuration;
         private readonly ILogger<MapInitializer> logger;
 
@@ -26,9 +26,10 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="logger">The logger.</param>
-        public MapInitializer(GameConfiguration configuration, ILogger<MapInitializer> logger)
+        /// <param name="dropGenerator">The drop generator.</param>
+        public MapInitializer(GameConfiguration configuration, ILogger<MapInitializer> logger, IDropGenerator dropGenerator)
         {
-            this.defaultDropGenerator = new DefaultDropGenerator(configuration, Rand.GetRandomizer());
+            this.dropGenerator = dropGenerator;
             this.configuration = configuration;
             this.logger = logger;
             this.ItemDropDuration = 60;
@@ -164,7 +165,7 @@ namespace MUnique.OpenMU.GameLogic
             if (monsterDef.ObjectKind == NpcObjectKind.Monster)
             {
                 this.logger.LogDebug("Creating monster {spawn}", spawnArea);
-                npc = new Monster(spawnArea, monsterDef, createdMap, this.defaultDropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager!);
+                npc = new Monster(spawnArea, monsterDef, createdMap, this.dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager!);
             }
             else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
             {

@@ -1587,19 +1587,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
-        /// Starts a safe write of a <see cref="EventRankingInfo" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the server when: When the event has ended.
-        /// Causes reaction on client side: The client shows the score.
-        /// </remarks>
-        public static EventRankingInfoThreadSafeWriter StartWriteEventRankingInfo(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
         /// Sends a <see cref="GameServerEntered" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -4371,33 +4358,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             using var writer = connection.StartWriteUpdateMiniGameState();
             var packet = writer.Packet;
             packet.State = @state;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="EventRankingInfo" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="accountId">The account id.</param>
-        /// <param name="gameId">The game id.</param>
-        /// <param name="serverCode">The server code.</param>
-        /// <param name="score">The score.</param>
-        /// <param name="class">The class.</param>
-        /// <param name="squareNumber">The square number.</param>
-        /// <remarks>
-        /// Is sent by the server when: When the event has ended.
-        /// Causes reaction on client side: The client shows the score.
-        /// </remarks>
-        public static void SendEventRankingInfo(this IConnection connection, string @accountId, string @gameId, uint @serverCode, uint @score, uint @class, uint @squareNumber)
-        {
-            using var writer = connection.StartWriteEventRankingInfo();
-            var packet = writer.Packet;
-            packet.AccountId = @accountId;
-            packet.GameId = @gameId;
-            packet.ServerCode = @serverCode;
-            packet.Score = @score;
-            packet.Class = @class;
-            packet.SquareNumber = @squareNumber;
             writer.Commit();
         }    }
     /// <summary>
@@ -10748,59 +10708,6 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.Advance(UpdateMiniGameState.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="EventRankingInfo"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct EventRankingInfoThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventRankingInfoThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public EventRankingInfoThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new EventRankingInfo(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(EventRankingInfo.Length)[..EventRankingInfo.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public EventRankingInfo Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="EventRankingInfo" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.Advance(EventRankingInfo.Length);
             this.connection.Output.FlushAsync().ConfigureAwait(false);
         }
 

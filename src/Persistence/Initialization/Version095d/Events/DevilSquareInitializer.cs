@@ -83,6 +83,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Events
             devilSquare.TicketItemLevel = level;
             devilSquare.GameLevel = level;
             devilSquare.MapCreationPolicy = MiniGameMapCreationPolicy.OnePerParty;
+            devilSquare.SaveRankingStatistics = true;
             return devilSquare;
         }
     }

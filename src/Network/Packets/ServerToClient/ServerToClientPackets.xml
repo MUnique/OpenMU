@@ -7468,48 +7468,60 @@
       </Enums>
     </Packet>
     <Packet>
-      <HeaderType>C1HeaderWithSubCode</HeaderType>
-      <Code>BD</Code>
-      <SubCode>01</SubCode>
-      <Name>EventRankingInfo</Name>
-      <Length>28</Length>
+      <HeaderType>C1Header</HeaderType>
+      <Code>93</Code>
+      <Name>MiniGameScoreTable</Name>
       <Direction>ServerToClient</Direction>
-      <SentWhen>When the event has ended.</SentWhen>
-      <CausedReaction>The client shows the score.</CausedReaction>
+      <SentWhen>A mini game ended and the score table is sent to the player.</SentWhen>
+      <CausedReaction>The score table is shown at the client.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>String</Type>
-          <Name>AccountId</Name>
-          <Length>10</Length>
+          <Type>Byte</Type>
+          <Name>PlayerRank</Name>
         </Field>
         <Field>
-          <Index>13</Index>
-          <Type>String</Type>
-          <Name>GameId</Name>
-          <Length>10</Length>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ResultCount</Name>
         </Field>
         <Field>
-          <Index>24</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>ServerCode</Name>
-        </Field>
-        <Field>
-          <Index>28</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>Score</Name>
-        </Field>
-        <Field>
-          <Index>32</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>Class</Name>
-        </Field>
-        <Field>
-          <Index>36</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>SquareNumber</Name>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ResultItem</TypeName>
+          <Name>Results</Name>
+          <ItemCountField>ResultCount</ItemCountField>
         </Field>
       </Fields>
+      <Structures>
+        <Structure>
+          <Name>ResultItem</Name>
+          <Description>The result of one player.</Description>
+          <Length>24</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>String</Type>
+              <Name>PlayerName</Name>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>TotalScore</Name>
+            </Field>
+            <Field>
+              <Index>16</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>BonusExperience</Name>
+            </Field>
+            <Field>
+              <Index>20</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>BonusMoney</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
   </Packets>
   <Enums>

@@ -1,4 +1,4 @@
-﻿// <copyright file="IUpdateMiniGameStatePlugIn.cs" company="MUnique">
+﻿// <copyright file="IUpdateMiniGameStateViewPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
     /// <summary>
     /// Interface for view plugins which show the state of an mini game event.
     /// </summary>
-    public interface IUpdateMiniGameStatePlugIn : IViewPlugIn
+    public interface IUpdateMiniGameStateViewPlugIn : IViewPlugIn
     {
         /// <summary>
         /// Updates the state of the mini game.

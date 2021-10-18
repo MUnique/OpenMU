@@ -1986,6 +1986,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("RequiresMasterClass")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("SaveRankingStatistics")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("TicketItemId")
                         .HasColumnType("uuid");
 
@@ -2004,6 +2007,69 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("TicketItemId");
 
                     b.ToTable("MiniGameDefinition", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameRankingEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CharacterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("GameInstanceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("MiniGameId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CharacterId");
+
+                    b.HasIndex("MiniGameId");
+
+                    b.ToTable("MiniGameRankingEntry", "data");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameReward", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ItemRewardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("MiniGameDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("Rank")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RewardAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RewardType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemRewardId");
+
+                    b.HasIndex("MiniGameDefinitionId");
+
+                    b.ToTable("MiniGameReward", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterAttribute", b =>
@@ -3574,6 +3640,34 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawTicketItem");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameRankingEntry", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "RawCharacter")
+                        .WithMany()
+                        .HasForeignKey("CharacterId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", "RawMiniGame")
+                        .WithMany()
+                        .HasForeignKey("MiniGameId");
+
+                    b.Navigation("RawCharacter");
+
+                    b.Navigation("RawMiniGame");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameReward", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup", "RawItemReward")
+                        .WithMany()
+                        .HasForeignKey("ItemRewardId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", null)
+                        .WithMany("RawRewards")
+                        .HasForeignKey("MiniGameDefinitionId");
+
+                    b.Navigation("RawItemReward");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterAttribute", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttributeDefinition")
@@ -4049,6 +4143,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
                 {
                     b.Navigation("JoinedRequiredMasterSkills");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", b =>
+                {
+                    b.Navigation("RawRewards");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", b =>

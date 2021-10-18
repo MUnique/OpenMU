@@ -20920,28 +20920,28 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
-    /// Is sent by the server when: When the event has ended.
-    /// Causes reaction on client side: The client shows the score.
+    /// Is sent by the server when: A mini game ended and the score table is sent to the player.
+    /// Causes reaction on client side: The score table is shown at the client.
     /// </summary>
-    public readonly ref struct EventRankingInfo
+    public readonly ref struct MiniGameScoreTable
     {
         private readonly Span<byte> data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EventRankingInfo"/> struct.
+        /// Initializes a new instance of the <see cref="MiniGameScoreTable"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
-        public EventRankingInfo(Span<byte> data)
+        public MiniGameScoreTable(Span<byte> data)
             : this(data, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EventRankingInfo"/> struct.
+        /// Initializes a new instance of the <see cref="MiniGameScoreTable"/> struct.
         /// </summary>
         /// <param name="data">The underlying data.</param>
         /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private EventRankingInfo(Span<byte> data, bool initialize)
+        private MiniGameScoreTable(Span<byte> data, bool initialize)
         {
             this.data = data;
             if (initialize)
@@ -20949,8 +20949,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
                 var header = this.Header;
                 header.Type = HeaderType;
                 header.Code = Code;
-                header.Length = (byte)Math.Min(data.Length, Length);
-                header.SubCode = SubCode;
+                header.Length = (byte)data.Length;
             }
         }
 
@@ -20962,91 +20961,120 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <summary>
         /// Gets the operation code of this data packet.
         /// </summary>
-        public static byte Code => 0xBD;
-
-        /// <summary>
-        /// Gets the operation sub-code of this data packet.
-        /// The <see cref="Code" /> is used as a grouping key.
-        /// </summary>
-        public static byte SubCode => 0x01;
-
-        /// <summary>
-        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-        /// </summary>
-        public static int Length => 28;
+        public static byte Code => 0x93;
 
         /// <summary>
         /// Gets the header of this packet.
         /// </summary>
-        public C1HeaderWithSubCode Header => new (this.data);
+        public C1Header Header => new (this.data);
 
         /// <summary>
-        /// Gets or sets the account id.
+        /// Gets or sets the player rank.
         /// </summary>
-        public string AccountId
+        public byte PlayerRank
         {
-            get => this.data.ExtractString(3, 10, System.Text.Encoding.UTF8);
-            set => this.data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+            get => this.data[3];
+            set => this.data[3] = value;
         }
 
         /// <summary>
-        /// Gets or sets the game id.
+        /// Gets or sets the result count.
         /// </summary>
-        public string GameId
+        public byte ResultCount
         {
-            get => this.data.ExtractString(13, 10, System.Text.Encoding.UTF8);
-            set => this.data.Slice(13, 10).WriteString(value, System.Text.Encoding.UTF8);
+            get => this.data[4];
+            set => this.data[4] = value;
         }
 
         /// <summary>
-        /// Gets or sets the server code.
+        /// Gets the <see cref="ResultItem"/> of the specified index.
         /// </summary>
-        public uint ServerCode
-        {
-            get => ReadUInt32LittleEndian(this.data[24..]);
-            set => WriteUInt32LittleEndian(this.data[24..], value);
-        }
+        public ResultItem this[int index] => new (this.data[(5 + index * ResultItem.Length)..]);
 
         /// <summary>
-        /// Gets or sets the score.
-        /// </summary>
-        public uint Score
-        {
-            get => ReadUInt32LittleEndian(this.data[28..]);
-            set => WriteUInt32LittleEndian(this.data[28..], value);
-        }
-
-        /// <summary>
-        /// Gets or sets the class.
-        /// </summary>
-        public uint Class
-        {
-            get => ReadUInt32LittleEndian(this.data[32..]);
-            set => WriteUInt32LittleEndian(this.data[32..], value);
-        }
-
-        /// <summary>
-        /// Gets or sets the square number.
-        /// </summary>
-        public uint SquareNumber
-        {
-            get => ReadUInt32LittleEndian(this.data[36..]);
-            set => WriteUInt32LittleEndian(this.data[36..], value);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="EventRankingInfo"/>.
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MiniGameScoreTable"/>.
         /// </summary>
         /// <param name="packet">The packet as span.</param>
         /// <returns>The packet as struct.</returns>
-        public static implicit operator EventRankingInfo(Span<byte> packet) => new (packet, false);
+        public static implicit operator MiniGameScoreTable(Span<byte> packet) => new (packet, false);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="EventRankingInfo"/> to a Span of bytes.
+        /// Performs an implicit conversion from <see cref="MiniGameScoreTable"/> to a Span of bytes.
         /// </summary>
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(EventRankingInfo packet) => packet.data; 
+        public static implicit operator Span<byte>(MiniGameScoreTable packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="ResultItem"/>.
+        /// </summary>
+        /// <param name="resultsCount">The count of <see cref="ResultItem"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int resultsCount) => resultsCount * ResultItem.Length + 5;
+
+
+    /// <summary>
+    /// The result of one player..
+    /// </summary>
+    public readonly ref struct ResultItem
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResultItem"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ResultItem(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 24;
+
+        /// <summary>
+        /// Gets or sets the player name.
+        /// </summary>
+        public string PlayerName
+        {
+            get => this.data.ExtractString(0, this.data.Length - 0, System.Text.Encoding.UTF8);
+            set => this.data.Slice(0).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the total score.
+        /// </summary>
+        public uint TotalScore
+        {
+            get => ReadUInt32LittleEndian(this.data[12..]);
+            set => WriteUInt32LittleEndian(this.data[12..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the bonus experience.
+        /// </summary>
+        public uint BonusExperience
+        {
+            get => ReadUInt32LittleEndian(this.data[16..]);
+            set => WriteUInt32LittleEndian(this.data[16..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the bonus money.
+        /// </summary>
+        public uint BonusMoney
+        {
+            get => ReadUInt32LittleEndian(this.data[20..]);
+            set => WriteUInt32LittleEndian(this.data[20..], value);
+        }
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'PlayerName' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 0;
+    }
     }
         /// <summary>
         /// Defines the type of the mini game.

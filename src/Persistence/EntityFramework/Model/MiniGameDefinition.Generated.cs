@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition"/>.
     /// </summary>
-    [Table(nameof(MiniGameDefinition), Schema = "config")]
+    [Table(nameof(MiniGameDefinition), Schema = SchemaNames.Configuration)]
     internal partial class MiniGameDefinition : MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition, IIdentifiable
     {
         
@@ -30,6 +30,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
         /// </summary>
         public Guid Id { get; set; }
         
+        /// <summary>
+        /// Gets the raw collection of <see cref="Rewards" />.
+        /// </summary>
+        public ICollection<MiniGameReward> RawRewards { get; } = new EntityFramework.List<MiniGameReward>();
+        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameReward> Rewards => base.Rewards ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameReward, MiniGameReward>(this.RawRewards);
+
         /// <summary>
         /// Gets or sets the identifier of <see cref="Entrance"/>.
         /// </summary>

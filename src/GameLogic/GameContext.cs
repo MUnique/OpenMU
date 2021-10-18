@@ -34,12 +34,12 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly Timer tasksTimer;
 
-        private readonly SemaphoreSlim playerListLock = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim playerListLock = new (1);
 
         /// <summary>
         /// Keeps the list of all players.
         /// </summary>
-        private readonly List<Player> playerList = new List<Player>();
+        private readonly List<Player> playerList = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameContext" /> class.
@@ -49,7 +49,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="mapInitializer">The map initializer.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="plugInManager">The plug in manager.</param>
-        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer, ILoggerFactory loggerFactory, PlugInManager plugInManager)
+        /// <param name="dropGenerator">The drop generator.</param>
+        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer, ILoggerFactory loggerFactory, PlugInManager plugInManager, IDropGenerator dropGenerator)
         {
             try
             {
@@ -58,9 +59,9 @@ namespace MUnique.OpenMU.GameLogic
                 this.PlugInManager = plugInManager;
                 this.mapInitializer = mapInitializer;
                 this.LoggerFactory = loggerFactory;
+                this.DropGenerator = dropGenerator;
                 this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>());
                 this.recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
-
                 this.tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
                 this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
             }
@@ -98,6 +99,9 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <inheritdoc/>
         public PlugInManager PlugInManager { get; }
+
+        /// <inheritdoc/>
+        public IDropGenerator DropGenerator { get; }
 
         /// <inheritdoc />
         public FeaturePlugInContainer FeaturePlugIns { get; }
@@ -180,7 +184,16 @@ namespace MUnique.OpenMU.GameLogic
                     return miniGameContext;
                 }
 
-                miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this, this.mapInitializer);
+                switch (miniGameDefinition.Type)
+                {
+                    case MiniGameType.DevilSquare:
+                        miniGameContext = new DevilSquareContext(miniGameKey, miniGameDefinition, this, this.mapInitializer);
+                        break;
+                    default:
+                        miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this, this.mapInitializer);
+                        break;
+                }
+
                 this.miniGames.Add(miniGameKey, miniGameContext);
             }
 

@@ -60,6 +60,11 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.intelligence.Start();
         }
 
+        /// <summary>
+        /// Occurs when this instance died.
+        /// </summary>
+        public event EventHandler<DeathInformation>? Died;
+
         /// <inheritdoc/>
         public MagicEffectsList MagicEffectList { get; }
 
@@ -123,6 +128,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         /// <inheritdoc/>
         public TimeSpan StepDelay => this.Definition.MoveDelay;
+
+        private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
+                                      || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringEvent && (this.eventStateProvider?.IsEventRunning ?? false));
 
         /// <inheritdoc/>
         public override void Initialize()
@@ -311,7 +319,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private void HandleMoneyDrop(uint amount, Player killer)
         {
-            if (!killer.GameContext.Configuration.ShouldDropMoney)
+            // We don't drop money in Devil Square, etc.
+            var shouldDropMoney = killer.GameContext.Configuration.ShouldDropMoney && killer.CurrentMiniGame is null;
+            if (!shouldDropMoney)
             {
                 var party = killer.Party;
                 if (party is null)
@@ -320,9 +330,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 }
                 else
                 {
-                    var players = party.PartyList.OfType<Player>().Where(p => p.CurrentMap == killer.CurrentMap && !p.IsAtSafezone() && p.Attributes is { }).ToList();
-                    var moneyPart = amount / players.Count;
-                    players.ForEach(p => p.TryAddMoney((int)(moneyPart * p.Attributes![Stats.MoneyAmountRate])));
+                    party.DistributeMoneyAfterKill(this, killer, amount);
                 }
 
                 return;
@@ -338,11 +346,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
             if (droppedMoney > 0)
             {
                 this.HandleMoneyDrop(droppedMoney.Value, killer);
-            }
-
-            if (generatedItems is null)
-            {
-                return;
             }
 
             var firstItem = !droppedMoney.HasValue;
@@ -364,9 +367,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 this.CurrentMap.Add(droppedItem);
             }
         }
-
-        private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
-                                      || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringEvent && (this.eventStateProvider?.IsEventRunning ?? false));
 
         private void OnDeath(IAttacker attacker)
         {
@@ -466,6 +466,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             {
                 this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
                 this.OnDeath(attacker);
+                this.Died?.Invoke(this, this.LastDeath);
             }
         }
 

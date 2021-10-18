@@ -36,6 +36,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
             Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
             Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith("Raw"));
 
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry, MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry>()
+                .Include<MiniGameRankingEntry, BasicModel.MiniGameRankingEntry>();
+
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.Account, MUnique.OpenMU.DataModel.Entities.Account>()
                 .Include<Account, BasicModel.Account>();
 
@@ -137,6 +140,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition, MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition>()
                 .Include<MiniGameDefinition, BasicModel.MiniGameDefinition>();
+
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MiniGameReward, MUnique.OpenMU.DataModel.Configuration.MiniGameReward>()
+                .Include<MiniGameReward, BasicModel.MiniGameReward>();
 
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, MUnique.OpenMU.DataModel.Configuration.MonsterAttribute>()
                 .Include<MonsterAttribute, BasicModel.MonsterAttribute>();

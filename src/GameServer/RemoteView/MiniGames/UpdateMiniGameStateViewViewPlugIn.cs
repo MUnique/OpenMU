@@ -1,4 +1,4 @@
-﻿// <copyright file="UpdateMiniGameStateViewPlugIn.cs" company="MUnique">
+﻿// <copyright file="UpdateMiniGameStateViewViewPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,19 +11,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames
     using MiniGameType = MUnique.OpenMU.DataModel.Configuration.MiniGameType;
 
     /// <summary>
-    /// The default implementation of the <see cref="IUpdateMiniGameStatePlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// The default implementation of the <see cref="IUpdateMiniGameStateViewPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    [PlugIn(nameof(UpdateMiniGameStateViewPlugIn), "The default implementation of the IUpdateMiniGameStatePlugIn which is forwarding everything to the game client with specific data packets.")]
+    [PlugIn(nameof(UpdateMiniGameStateViewViewPlugIn), "The default implementation of the IUpdateMiniGameStateViewPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("FB4622A0-65CE-4D86-9A02-848A874F0AC1")]
-    public class UpdateMiniGameStateViewPlugIn : IUpdateMiniGameStatePlugIn
+    public class UpdateMiniGameStateViewViewPlugIn : IUpdateMiniGameStateViewPlugIn
     {
         private readonly RemotePlayer player;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateMiniGameStateViewPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="UpdateMiniGameStateViewViewPlugIn"/> class.
         /// </summary>
         /// <param name="player">The player.</param>
-        public UpdateMiniGameStateViewPlugIn(RemotePlayer player) => this.player = player;
+        public UpdateMiniGameStateViewViewPlugIn(RemotePlayer player) => this.player = player;
 
         /// <inheritdoc />
         public void UpdateState(MiniGameType type, MiniGameState state)
