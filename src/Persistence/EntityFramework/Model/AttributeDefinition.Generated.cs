@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.AttributeSystem.AttributeDefinition"/>.
     /// </summary>
-    [Table(nameof(AttributeDefinition), Schema = "config")]
+    [Table(nameof(AttributeDefinition), Schema = SchemaNames.Configuration)]
     internal partial class AttributeDefinition : MUnique.OpenMU.AttributeSystem.AttributeDefinition, IIdentifiable
     {
         /// <inheritdoc />

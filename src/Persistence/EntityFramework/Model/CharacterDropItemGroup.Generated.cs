@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(CharacterDropItemGroup), Schema = "data")]
+    [Table(nameof(CharacterDropItemGroup), Schema = SchemaNames.AccountData)]
     internal partial class CharacterDropItemGroup
     {
         public Guid CharacterId { get; set; }

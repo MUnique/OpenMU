@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.WarpInfo"/>.
     /// </summary>
-    [Table(nameof(WarpInfo), Schema = "config")]
+    [Table(nameof(WarpInfo), Schema = SchemaNames.Configuration)]
     internal partial class WarpInfo : MUnique.OpenMU.DataModel.Configuration.WarpInfo, IIdentifiable
     {
         

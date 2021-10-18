@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType"/>.
     /// </summary>
-    [Table(nameof(ItemSlotType), Schema = "config")]
+    [Table(nameof(ItemSlotType), Schema = SchemaNames.Configuration)]
     internal partial class ItemSlotType : MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType, IIdentifiable
     {
         

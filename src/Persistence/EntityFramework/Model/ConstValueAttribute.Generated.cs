@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.AttributeSystem.ConstValueAttribute"/>.
     /// </summary>
-    [Table(nameof(ConstValueAttribute), Schema = "config")]
+    [Table(nameof(ConstValueAttribute), Schema = SchemaNames.Configuration)]
     internal partial class ConstValueAttribute : MUnique.OpenMU.AttributeSystem.ConstValueAttribute, IIdentifiable
     {
         

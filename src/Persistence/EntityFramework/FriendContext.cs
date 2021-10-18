@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="modelBuilder">The model builder.</param>
         internal static void ConfigureModel(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Friend>().ToTable("Friend", "friend");
+            modelBuilder.Entity<Friend>().ToTable("Friend", SchemaNames.Friend);
             modelBuilder.Entity<Friend>(e =>
             {
                 e.HasAlternateKey(f => new { f.CharacterId, f.FriendId });

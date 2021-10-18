@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.GameServerDefinition"/>.
     /// </summary>
-    [Table(nameof(GameServerDefinition), Schema = "config")]
+    [Table(nameof(GameServerDefinition), Schema = SchemaNames.Configuration)]
     internal partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configuration.GameServerDefinition, IIdentifiable
     {
         

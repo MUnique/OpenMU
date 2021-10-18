@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.AppearanceData"/>.
     /// </summary>
-    [Table(nameof(AppearanceData), Schema = "data")]
+    [Table(nameof(AppearanceData), Schema = SchemaNames.AccountData)]
     internal partial class AppearanceData : MUnique.OpenMU.DataModel.Entities.AppearanceData, IIdentifiable
     {
         

@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(AccountCharacterClass), Schema = "data")]
+    [Table(nameof(AccountCharacterClass), Schema = SchemaNames.AccountData)]
     internal partial class AccountCharacterClass
     {
         public Guid AccountId { get; set; }

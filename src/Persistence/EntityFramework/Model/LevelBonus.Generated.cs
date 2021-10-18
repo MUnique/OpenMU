@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus"/>.
     /// </summary>
-    [Table(nameof(LevelBonus), Schema = "config")]
+    [Table(nameof(LevelBonus), Schema = SchemaNames.Configuration)]
     internal partial class LevelBonus : MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus, IIdentifiable
     {
         /// <inheritdoc />

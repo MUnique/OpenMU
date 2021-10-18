@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(SkillCharacterClass), Schema = "config")]
+    [Table(nameof(SkillCharacterClass), Schema = SchemaNames.Configuration)]
     internal partial class SkillCharacterClass
     {
         public Guid SkillId { get; set; }

@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.AttributeSystem.StatAttribute"/>.
     /// </summary>
-    [Table(nameof(StatAttribute), Schema = "data")]
+    [Table(nameof(StatAttribute), Schema = SchemaNames.AccountData)]
     internal partial class StatAttribute : MUnique.OpenMU.AttributeSystem.StatAttribute, IIdentifiable
     {
         /// <inheritdoc />

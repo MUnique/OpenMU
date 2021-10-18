@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition"/>.
     /// </summary>
-    [Table(nameof(ConnectServerDefinition), Schema = "config")]
+    [Table(nameof(ConnectServerDefinition), Schema = SchemaNames.Configuration)]
     internal partial class ConnectServerDefinition : MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition, IIdentifiable
     {
         

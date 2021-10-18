@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.LetterBody"/>.
     /// </summary>
-    [Table(nameof(LetterBody), Schema = "data")]
+    [Table(nameof(LetterBody), Schema = SchemaNames.AccountData)]
     internal partial class LetterBody : MUnique.OpenMU.DataModel.Entities.LetterBody, IIdentifiable
     {
         

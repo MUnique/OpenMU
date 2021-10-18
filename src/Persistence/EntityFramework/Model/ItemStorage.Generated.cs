@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.ItemStorage"/>.
     /// </summary>
-    [Table(nameof(ItemStorage), Schema = "data")]
+    [Table(nameof(ItemStorage), Schema = SchemaNames.AccountData)]
     internal partial class ItemStorage : MUnique.OpenMU.DataModel.Entities.ItemStorage, IIdentifiable
     {
         

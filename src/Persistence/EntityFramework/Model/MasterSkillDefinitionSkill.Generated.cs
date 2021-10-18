@@ -18,7 +18,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     using MUnique.OpenMU.Persistence;
     using MUnique.OpenMU.Persistence.EntityFramework;
 
-    [Table(nameof(MasterSkillDefinitionSkill), Schema = "config")]
+    [Table(nameof(MasterSkillDefinitionSkill), Schema = SchemaNames.Configuration)]
     internal partial class MasterSkillDefinitionSkill
     {
         public Guid MasterSkillDefinitionId { get; set; }

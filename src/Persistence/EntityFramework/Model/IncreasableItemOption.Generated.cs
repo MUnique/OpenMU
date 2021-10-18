@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption"/>.
     /// </summary>
-    [Table(nameof(IncreasableItemOption), Schema = "config")]
+    [Table(nameof(IncreasableItemOption), Schema = SchemaNames.Configuration)]
     internal partial class IncreasableItemOption : MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IIdentifiable
     {
         

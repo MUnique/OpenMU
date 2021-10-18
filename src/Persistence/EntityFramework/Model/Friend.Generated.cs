@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.Interfaces.Friend"/>.
     /// </summary>
-    [Table(nameof(Friend), Schema = "data")]
+    [Table(nameof(Friend), Schema = SchemaNames.AccountData)]
     internal partial class Friend : MUnique.OpenMU.Interfaces.Friend, IIdentifiable
     {
         

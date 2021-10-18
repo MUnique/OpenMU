@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.Item"/>.
     /// </summary>
-    [Table(nameof(Item), Schema = "data")]
+    [Table(nameof(Item), Schema = SchemaNames.AccountData)]
     internal partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiable
     {
         /// <inheritdoc />

@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
     /// <summary>
     /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition"/>.
     /// </summary>
-    [Table(nameof(MasterSkillDefinition), Schema = "config")]
+    [Table(nameof(MasterSkillDefinition), Schema = SchemaNames.Configuration)]
     internal partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition, IIdentifiable
     {
         /// <inheritdoc />
