@@ -21,8 +21,8 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// </returns>
         public static bool IsPreferedTo(this IPacketHandlerPlugInBase packetHandler, IPacketHandlerPlugInBase otherPacketHandlerPlugIn)
         {
-            var currentPlugInClient = packetHandler.GetType().GetCustomAttribute<MinimumClientAttribute>()?.Client ?? default;
-            var activatedPluginClient = otherPacketHandlerPlugIn.GetType().GetCustomAttribute<MinimumClientAttribute>()?.Client ?? default;
+            var currentPlugInClient = packetHandler.GetType().GetCustomAttribute<MinimumClientAttribute>(inherit: false)?.Client ?? default;
+            var activatedPluginClient = otherPacketHandlerPlugIn.GetType().GetCustomAttribute<MinimumClientAttribute>(inherit: false)?.Client ?? default;
             return currentPlugInClient.CompareTo(activatedPluginClient) > 0;
         }
     }
