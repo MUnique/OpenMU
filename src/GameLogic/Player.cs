@@ -657,7 +657,10 @@ namespace MUnique.OpenMU.GameLogic
             this.PlaceAtGate(gate);
             this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
 
-            this.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChange();
+            if (this.PlayerState.CurrentState != GameLogic.PlayerState.Disconnected)
+            {
+                this.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChange();
+            }
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
             // the map and is ready to receive the new meet player/monster etc.
@@ -1117,9 +1120,20 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         protected virtual void InternalDisconnect()
         {
+            var moveToNextSafezone = false;
             if (this.respawnAfterDeathToken.CanBeCanceled && !this.respawnAfterDeathToken.IsCancellationRequested)
             {
                 this.respawnAfterDeathToken.ThrowIfCancellationRequested();
+                moveToNextSafezone = true;
+            }
+
+            if (this.CurrentMiniGame is { })
+            {
+                moveToNextSafezone = true;
+            }
+
+            if (moveToNextSafezone)
+            {
                 this.WarpTo(this.GetSpawnGateOfCurrentMap());
             }
 

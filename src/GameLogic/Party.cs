@@ -200,7 +200,7 @@ namespace MUnique.OpenMU.GameLogic
                 observable.ObserverLock.EnterReadLock();
                 try
                 {
-                    this.distributionList.AddRange(this.PartyList.OfType<Player>().Where(p => killer.Observers.Contains(p)));
+                    this.distributionList.AddRange(this.PartyList.OfType<Player>().Where(p => observable.Observers.Contains(p)));
                 }
                 finally
                 {
@@ -300,7 +300,7 @@ namespace MUnique.OpenMU.GameLogic
                 }
                 catch (Exception ex)
                 {
-                    this.logger.LogDebug("Error sending party list update", ex);
+                    this.logger.LogDebug(ex, "Error sending party list update");
                 }
             }
         }

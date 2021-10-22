@@ -439,8 +439,6 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             {
                 this.gameEndedCts.Cancel();
             }
-
-            this.ShowScore(player);
         }
 
         private async ValueTask ShutdownGameAsync()
