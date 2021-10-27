@@ -92,8 +92,7 @@ namespace MUnique.OpenMU.Network.Packets</xsl:text>
         /// &lt;/summary&gt;
         public void Commit()
         {
-            this.connection.Output.Advance(%NAME%.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(%NAME%.Length).ConfigureAwait(false);
         }
 
         /// &lt;summary&gt;
