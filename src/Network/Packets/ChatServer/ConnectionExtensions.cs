@@ -209,8 +209,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(Authenticate.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(Authenticate.Length).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -262,8 +261,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(ChatRoomClientJoined.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(ChatRoomClientJoined.Length).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -315,8 +313,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(ChatRoomClientLeft.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(ChatRoomClientLeft.Length).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -368,8 +365,7 @@ namespace MUnique.OpenMU.Network.Packets.ChatServer
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(KeepAlive.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(KeepAlive.Length).ConfigureAwait(false);
         }
 
         /// <summary>
