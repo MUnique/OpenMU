@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// A helper struct to write safely to a <see cref="IConnection.Output" />.
@@ -59,8 +60,23 @@ namespace MUnique.OpenMU.Network
         /// <param name="packetSize">Size of the packet.</param>
         public void Commit(int packetSize)
         {
-            this.connection.Output.Advance(packetSize);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(packetSize).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Commits the data of the <see cref="Span"/> with the expected packet size.
+        /// </summary>
+        /// <returns><see langword="true"/>, if it was successful; Otherwise, <see langword="false"/>.</returns>
+        public ValueTask<bool> CommitAsync() => this.CommitAsync(this.expectedPacketSize);
+
+        /// <summary>
+        /// Commits the data of the <see cref="Span"/> with specified packet size.
+        /// </summary>
+        /// <param name="packetSize">Size of the packet.</param>
+        /// <returns><see langword="true"/>, if it was successful; Otherwise, <see langword="false"/>.</returns>
+        public ValueTask<bool> CommitAsync(int packetSize)
+        {
+            return this.connection.Output.TryAdvanceAndFlushAsync(packetSize);
         }
 
         /// <summary>
