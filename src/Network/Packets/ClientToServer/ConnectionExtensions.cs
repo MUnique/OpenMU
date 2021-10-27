@@ -5603,8 +5603,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(TargetedSkill095.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(TargetedSkill095.Length).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -5864,8 +5863,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(AreaSkill095.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(AreaSkill095.Length).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -7945,8 +7943,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(DevilSquareEnterRequest.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(DevilSquareEnterRequest.Length).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -7998,8 +7995,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.Advance(RequestEventRemainingTime.Length);
-            this.connection.Output.FlushAsync().ConfigureAwait(false);
+            this.connection.Output.TryAdvanceAndFlushAsync(RequestEventRemainingTime.Length).ConfigureAwait(false);
         }
 
         /// <summary>
