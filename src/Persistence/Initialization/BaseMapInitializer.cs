@@ -206,7 +206,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// </summary>
         /// <remarks>
         /// Can be extracted from Monsters.txt by Regex: (?m)^(\d+)\t1\t"(.*?)"\t*?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+)\t?(\d+).*?$.
-        /// <![CDATA[Replace by:            {\r\n                var monster = this.Context.CreateNew<MonsterDefinition>();\r\n                this.GameConfiguration.Monsters.Add(monster);\r\n                monster.Number = $1;\r\n                monster.Designation = "$2";\r\n                monster.MoveRange = $12;\r\n                monster.AttackRange = $14;\r\n                monster.ViewRange = $15;\r\n                monster.MoveDelay = new TimeSpan\($16 * TimeSpan.TicksPerMillisecond\);\r\n                monster.AttackDelay = new TimeSpan\($17 * TimeSpan.TicksPerMillisecond\);\r\n                monster.RespawnDelay = new TimeSpan\($18 * TimeSpan.TicksPerSecond\);\r\n                monster.Attribute = $19;\r\n                monster.NumberOfMaximumItemDrops = 1;\r\n                var attributes = new Dictionary<AttributeDefinition, float>\r\n                {\r\n                    { Stats.Level, $3 },\r\n                    { Stats.MaximumHealth, $4 },\r\n                    { Stats.MinimumPhysBaseDmg, $6 },\r\n                    { Stats.MaximumPhysBaseDmg, $7 },\r\n                    { Stats.DefenseBase, $8 },\r\n                    { Stats.AttackRatePvm, $10 },\r\n                    { Stats.DefenseRatePvm, $11 },\r\n                    { Stats.WindResistance, $23 },\r\n                    { Stats.PoisonResistance, $24 },\r\n                    { Stats.IceResistance, $25 },\r\n                    { Stats.WaterResistance, $26 },\r\n                    { Stats.FireResistance, $27 },\r\n                };\r\n                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);\r\n            }\r\n]]>
+        /// <![CDATA[Replace by:            {\r\n                var monster = this.Context.CreateNew<MonsterDefinition>();\r\n                this.GameConfiguration.Monsters.Add(monster);\r\n                monster.Number = $1;\r\n                monster.Designation = "$2";\r\n                monster.MoveRange = $12;\r\n                monster.AttackRange = $14;\r\n                monster.ViewRange = $15;\r\n                monster.MoveDelay = new TimeSpan\($16 * TimeSpan.TicksPerMillisecond\);\r\n                monster.AttackDelay = new TimeSpan\($17 * TimeSpan.TicksPerMillisecond\);\r\n                monster.RespawnDelay = new TimeSpan\($18 * TimeSpan.TicksPerSecond\);\r\n                monster.Attribute = $19;\r\n                monster.NumberOfMaximumItemDrops = 1;\r\n                var attributes = new Dictionary<AttributeDefinition, float>\r\n                {\r\n                    { Stats.Level, $3 },\r\n                    { Stats.MaximumHealth, $4 },\r\n                    { Stats.MinimumPhysBaseDmg, $6 },\r\n                    { Stats.MaximumPhysBaseDmg, $7 },\r\n                    { Stats.DefenseBase, $8 },\r\n                    { Stats.AttackRatePvm, $10 },\r\n                    { Stats.DefenseRatePvm, $11 },\r\n                    { Stats.WindResistance, $23f / 255 },\r\n                    { Stats.PoisonResistance, $24f / 255 },\r\n                    { Stats.IceResistance, $25f / 255 },\r\n                    { Stats.WaterResistance, $26f / 255 },\r\n                    { Stats.FireResistance, $27f / 255 },\r\n                };\r\n                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);\r\n            }\r\n]]>
         /// </remarks>
         protected virtual void CreateMonsters()
         {
@@ -225,7 +225,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
         /// <param name="direction">The direction.</param>
         /// <param name="spawnTrigger">The spawn trigger.</param>
         /// <returns>The created monster spawn area.</returns>
-        protected MonsterSpawnArea CreateMonsterSpawn(MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2, short quantity = 1, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic)
+        protected MonsterSpawnArea CreateMonsterSpawn(MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2, short quantity = 1, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic, byte waveNumber = 0)
         {
             var area = this.Context.CreateNew<MonsterSpawnArea>();
             area.GameMap = this.mapDefinition;
@@ -237,6 +237,7 @@ namespace MUnique.OpenMU.Persistence.Initialization
             area.X2 = x2;
             area.Y1 = y1;
             area.Y2 = y2;
+            area.WaveNumber = waveNumber;
             return area;
         }
 
