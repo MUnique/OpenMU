@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
     /// <summary>
     /// Initialization for the devil square map which hosts devil square 5.
@@ -37,8 +38,22 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
         /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
         {
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[449], 122, 151, 152, 184, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Blaze Napin
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[575], 122, 151, 152, 184, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Condra
+            const byte x1 = 122;
+            const byte x2 = 151;
+            const byte y1 = 152;
+            const byte y2 = 184;
+            const byte quantity = 35;
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[290], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Lizard Warrior
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[57], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Iron Wheel
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[70], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Queen Rainer
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[293], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Poison Golem
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[74], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Alpha Crust
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[292], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Queen Bee
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[197], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Shadow of Kundun
         }
     }
 }

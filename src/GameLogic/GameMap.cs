@@ -212,7 +212,7 @@ namespace MUnique.OpenMU.GameLogic
         {
             var eventMonsters = this.objectsInMap.Values
                 .OfType<NonPlayerCharacter>()
-                .Where(n => n.SpawnArea.SpawnTrigger is SpawnTrigger.OnceAtEventStart or SpawnTrigger.AutomaticDuringEvent)
+                .Where(n => n.SpawnArea.SpawnTrigger is not SpawnTrigger.Automatic)
                 .ToList();
             eventMonsters.ForEach(m =>
             {

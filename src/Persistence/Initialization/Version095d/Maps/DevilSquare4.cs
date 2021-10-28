@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.Persistence.Initialization.Skills;
+    using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 
     /// <summary>
     /// Initialization for the devil square map which hosts devil square 1 to 4.
@@ -42,8 +43,30 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps
         /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
         {
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[64], 53, 83, 74, 109, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[65], 53, 83, 74, 109, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
+            const byte x1 = 53;
+            const byte x2 = 83;
+            const byte y1 = 74;
+            const byte y2 = 109;
+            const byte quantity = 35;
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[64], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Orc Archer
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[65], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Elite Orc
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[60], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Bloody Wolf
+            if (this.NpcDictionary.TryGetValue(294, out var axeWarrior))
+            {
+                yield return this.CreateMonsterSpawn(this.NpcDictionary[294], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Axe Warrior
+            }
+            else
+            {
+                // In lower versions without Land of Trials, there is no Axe Warrior, but a the Alquamos, which is of comparable strength
+                yield return this.CreateMonsterSpawn(this.NpcDictionary[69], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Alquamos
+            }
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[57], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Iron Wheel
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[70], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Queen Rainer
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[66], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Cursed King
         }
 
         /// <inheritdoc/>
@@ -52,61 +75,30 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps
             {
                 var monster = this.Context.CreateNew<MonsterDefinition>();
                 this.GameConfiguration.Monsters.Add(monster);
-                monster.Number = 64;
-                monster.Designation = "Orc Archer";
+                monster.Number = 66;
+                monster.Designation = "Cursed King";
                 monster.MoveRange = 3;
                 monster.AttackRange = 4;
                 monster.ViewRange = 7;
                 monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-                monster.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
-                monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
-                monster.Attribute = 2;
-                monster.NumberOfMaximumItemDrops = 1;
-                var attributes = new Dictionary<AttributeDefinition, float>
-                {
-                    { Stats.Level, 70 },
-                    { Stats.MaximumHealth, 10000 },
-                    { Stats.MinimumPhysBaseDmg, 220 },
-                    { Stats.MaximumPhysBaseDmg, 250 },
-                    { Stats.DefenseBase, 170 },
-                    { Stats.AttackRatePvm, 350 },
-                    { Stats.DefenseRatePvm, 115 },
-                    { Stats.PoisonResistance, 7f / 255 },
-                    { Stats.IceResistance, 7f / 255 },
-                    { Stats.WaterResistance, 7f / 255 },
-                    { Stats.FireResistance, 7f / 255 },
-                };
-
-                monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
-            }
-
-            {
-                var monster = this.Context.CreateNew<MonsterDefinition>();
-                this.GameConfiguration.Monsters.Add(monster);
-                monster.Number = 65;
-                monster.Designation = "Elite Orc";
-                monster.MoveRange = 3;
-                monster.AttackRange = 1;
-                monster.ViewRange = 7;
-                monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-                monster.AttackDelay = new TimeSpan(2000 * TimeSpan.TicksPerMillisecond);
-                monster.RespawnDelay = new TimeSpan(100 * TimeSpan.TicksPerSecond);
+                monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
+                monster.RespawnDelay = new TimeSpan(70 * TimeSpan.TicksPerSecond);
                 monster.Attribute = 2;
                 monster.NumberOfMaximumItemDrops = 1;
                 monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
                 var attributes = new Dictionary<AttributeDefinition, float>
                 {
-                    { Stats.Level, 74 },
-                    { Stats.MaximumHealth, 14000 },
-                    { Stats.MinimumPhysBaseDmg, 260 },
-                    { Stats.MaximumPhysBaseDmg, 290 },
-                    { Stats.DefenseBase, 190 },
-                    { Stats.AttackRatePvm, 400 },
-                    { Stats.DefenseRatePvm, 125 },
-                    { Stats.PoisonResistance, 8f / 255 },
-                    { Stats.IceResistance, 8f / 255 },
-                    { Stats.WaterResistance, 8f / 255 },
-                    { Stats.FireResistance, 8f / 255 },
+                    { Stats.Level, 86 },
+                    { Stats.MaximumHealth, 38000 },
+                    { Stats.MinimumPhysBaseDmg, 500 },
+                    { Stats.MaximumPhysBaseDmg, 570 },
+                    { Stats.DefenseBase, 350 },
+                    { Stats.AttackRatePvm, 525 },
+                    { Stats.DefenseRatePvm, 200 },
+                    { Stats.PoisonResistance, 17f / 255 },
+                    { Stats.IceResistance, 17f / 255 },
+                    { Stats.WaterResistance, 17f / 255 },
+                    { Stats.FireResistance, 17f / 255 },
                 };
 
                 monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

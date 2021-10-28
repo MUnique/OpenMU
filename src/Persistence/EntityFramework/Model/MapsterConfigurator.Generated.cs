@@ -144,6 +144,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MiniGameReward, MUnique.OpenMU.DataModel.Configuration.MiniGameReward>()
                 .Include<MiniGameReward, BasicModel.MiniGameReward>();
 
+            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave, MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave>()
+                .Include<MiniGameSpawnWave, BasicModel.MiniGameSpawnWave>();
+
             Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, MUnique.OpenMU.DataModel.Configuration.MonsterAttribute>()
                 .Include<MonsterAttribute, BasicModel.MonsterAttribute>();
 

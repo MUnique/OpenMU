@@ -38,5 +38,13 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="createdMap">The created map.</param>
         /// <param name="eventStateProvider">The event state provider.</param>
         void InitializeNpcsOnEventStart(GameMap createdMap, IEventStateProvider eventStateProvider);
+
+        /// <summary>
+        /// Initializes the event NPCs of the previously created game map after the spawn waves started.
+        /// </summary>
+        /// <param name="createdMap">The created map.</param>
+        /// <param name="eventStateProvider">The event state provider.</param>
+        /// <param name="waveNumber">The number of the started spawn wave.</param>
+        void InitializeNpcsOnWaveStart(GameMap createdMap, IEventStateProvider eventStateProvider, byte waveNumber);
     }
 }

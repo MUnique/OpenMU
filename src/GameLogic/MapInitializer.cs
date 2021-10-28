@@ -123,7 +123,32 @@ namespace MUnique.OpenMU.GameLogic
             {
                 for (int i = 0; i < spawnArea.Quantity; i++)
                 {
-                    this.InitializeNpc(createdMap, spawnArea);
+                    this.InitializeNpc(createdMap, spawnArea, eventStateProvider);
+                }
+            }
+
+            this.logger.LogDebug("Finished creating event monster instances for map {createdMap}", createdMap);
+        }
+
+        /// <inheritdoc />
+        public void InitializeNpcsOnWaveStart(GameMap createdMap, IEventStateProvider eventStateProvider, byte waveNumber)
+        {
+            if (this.PlugInManager is null)
+            {
+                throw new InvalidOperationException("PlugInManager must be set first");
+            }
+
+            this.logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap);
+            var waveSpawns = createdMap.Definition.MonsterSpawns
+                .Where(m => m.MonsterDefinition is not null)
+                .Where(m => m.SpawnTrigger is SpawnTrigger.AutomaticDuringWave or SpawnTrigger.OnceAtWaveStart)
+                .Where(m => m.WaveNumber == waveNumber);
+
+            foreach (var spawnArea in waveSpawns)
+            {
+                for (int i = 0; i < spawnArea.Quantity; i++)
+                {
+                    this.InitializeNpc(createdMap, spawnArea, eventStateProvider);
                 }
             }
 
@@ -155,7 +180,7 @@ namespace MUnique.OpenMU.GameLogic
                 : new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
         }
 
-        private void InitializeNpc(GameMap createdMap, MonsterSpawnArea spawnArea)
+        private void InitializeNpc(GameMap createdMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null)
         {
             var monsterDef = spawnArea.MonsterDefinition!;
             NonPlayerCharacter npc;
@@ -165,7 +190,7 @@ namespace MUnique.OpenMU.GameLogic
             if (monsterDef.ObjectKind == NpcObjectKind.Monster)
             {
                 this.logger.LogDebug("Creating monster {spawn}", spawnArea);
-                npc = new Monster(spawnArea, monsterDef, createdMap, this.dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager!);
+                npc = new Monster(spawnArea, monsterDef, createdMap, this.dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager!, eventStateProvider);
             }
             else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
             {

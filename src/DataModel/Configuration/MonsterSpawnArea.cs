@@ -26,6 +26,22 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// For example blood castle gates, statues. Also golden monsters.
         /// </remarks>
         OnceAtEventStart,
+
+        /// <summary>
+        /// The monster spawns automatically during a wave of an event.
+        /// </summary>
+        /// <remarks>
+        /// For example, at devil square different monsters spawn in different waves.
+        /// </remarks>
+        AutomaticDuringWave,
+
+        /// <summary>
+        /// The monster spawns once at the start of a wave of an event.
+        /// </summary>
+        /// <remarks>
+        /// For example, at devil square there is a wave of bosses, which spawn only once.
+        /// </remarks>
+        OnceAtWaveStart,
     }
 
     /// <summary>
@@ -78,17 +94,25 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// </summary>
         public SpawnTrigger SpawnTrigger { get; set; }
 
+        /// <summary>
+        /// Gets or sets the wave to which this spawn area belongs to.
+        /// </summary>
+        public byte WaveNumber { get; set; }
+
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (this.X1 != this.X2 || this.Y1 != this.Y2)
+            var isPoint = this.X1 == this.X2 && this.Y1 == this.Y2;
+            var result = isPoint
+                ? $"{this.MonsterDefinition?.Designation} - Quantity: {this.Quantity} - At: {this.X1}/{this.Y1}"
+                : $"{this.MonsterDefinition?.Designation} - Quantity: {this.Quantity} - Area: {this.X1}/{this.Y1} to {this.X2}/{this.Y2}";
+
+            if (this.SpawnTrigger == SpawnTrigger.AutomaticDuringWave || this.SpawnTrigger == SpawnTrigger.OnceAtWaveStart)
             {
-                return $"{this.MonsterDefinition?.Designation} - Quantity: {this.Quantity} - Area: {this.X1}/{this.Y1} - {this.X2}/{this.Y2}";
+                result += $" - Wave: {this.WaveNumber}";
             }
-            else
-            {
-                return $"{this.MonsterDefinition?.Designation} - Quantity: {this.Quantity} - At: {this.X1}/{this.Y1}";
-            }
+
+            return result;
         }
     }
 }

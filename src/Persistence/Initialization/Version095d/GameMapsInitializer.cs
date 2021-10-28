@@ -38,11 +38,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
                 yield return typeof(Version075.Maps.Arena);
                 yield return typeof(Version075.Maps.Atlans);
                 yield return typeof(Tarkan);
+                yield return typeof(Icarus);
                 yield return typeof(DevilSquare1);
                 yield return typeof(DevilSquare2);
                 yield return typeof(DevilSquare3);
                 yield return typeof(DevilSquare4);
-                yield return typeof(Icarus);
             }
         }
     }

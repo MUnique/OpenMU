@@ -115,5 +115,12 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// </summary>
         [MemberOfAggregate]
         public virtual ICollection<MiniGameReward> Rewards { get; protected set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the spawn waves of the mini game.
+        /// Overlapping waves are possible.
+        /// </summary>
+        [MemberOfAggregate]
+        public virtual ICollection<MiniGameSpawnWave> SpawnWaves { get; protected set; } = null!;
     }
 }

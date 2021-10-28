@@ -40,6 +40,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
         public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameReward> Rewards => base.Rewards ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameReward, MiniGameReward>(this.RawRewards);
 
         /// <summary>
+        /// Gets the raw collection of <see cref="SpawnWaves" />.
+        /// </summary>
+        public ICollection<MiniGameSpawnWave> RawSpawnWaves { get; } = new EntityFramework.List<MiniGameSpawnWave>();
+        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave> SpawnWaves => base.SpawnWaves ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave, MiniGameSpawnWave>(this.RawSpawnWaves);
+
+        /// <summary>
         /// Gets or sets the identifier of <see cref="Entrance"/>.
         /// </summary>
         public Guid? EntranceId { get; set; }

@@ -51,6 +51,29 @@ namespace MUnique.OpenMU.Persistence.BasicModel
         }
 
         /// <summary>
+        /// Gets the raw collection of <see cref="SpawnWaves" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("spawnWaves")]
+        [System.Text.Json.Serialization.JsonPropertyName("spawnWaves")]
+        public ICollection<MiniGameSpawnWave> RawSpawnWaves { get; } = new List<MiniGameSpawnWave>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave> SpawnWaves
+        {
+            get => base.SpawnWaves ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave, MiniGameSpawnWave>(this.RawSpawnWaves);
+            protected set
+            {
+                this.SpawnWaves.Clear();
+                foreach (var item in value)
+                {
+                    this.SpawnWaves.Add(item);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the raw object of <see cref="Entrance" />.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("entrance")]

@@ -35,6 +35,8 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 
         private readonly CancellationTokenSource gameEndedCts = new ();
 
+        private readonly HashSet<byte> currentSpawnWaves = new ();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MiniGameContext"/> class.
         /// </summary>
@@ -121,6 +123,12 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
         }
 
         /// <inheritdoc />
+        public bool IsSpawnWaveActive(byte waveNumber)
+        {
+            return this.currentSpawnWaves.Contains(waveNumber);
+        }
+
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -143,6 +151,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
                 this.Map.ObjectRemoved -= this.OnObjectRemovedFromMap;
 
                 this.gameContext.RemoveMiniGame(this);
+                this.gameEndedCts.Cancel();
                 this.gameEndedCts.Dispose();
             }
             catch (Exception ex)
@@ -168,21 +177,38 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             }
         }
 
+        /// <summary>
+        /// Will be called when the game has been started.
+        /// </summary>
+        /// <param name="players">The player which started with the game.</param>
         protected virtual void OnGameStart(ICollection<Player> players)
         {
             // can be overwritten
         }
 
+        /// <summary>
+        /// Will be called when a monster of the game has been killed.
+        /// </summary>
+        /// <param name="sender">The sender (monster) of the event.</param>
+        /// <param name="e">The event parameters.</param>
         protected virtual void OnMonsterDied(object? sender, DeathInformation e)
         {
             // can be overwritten
         }
 
+        /// <summary>
+        /// Shows the achieved score to the player.
+        /// </summary>
+        /// <param name="player">The player to which it should be shown.</param>
         protected virtual void ShowScore(Player player)
         {
             // can be overwritten
         }
 
+        /// <summary>
+        /// Will be called when the game has been ended.
+        /// </summary>
+        /// <param name="finishers">The players which finished the game to the end.</param>
         protected virtual void GameEnded(ICollection<Player> finishers)
         {
             foreach (var player in finishers)
@@ -216,21 +242,29 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
                 return;
             }
 
-            using var context = this.gameContext.PersistenceContextProvider.CreateNewContext(this.gameContext.Configuration);
-            var instanceId = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-            foreach (var score in scoreEntries)
+            try
             {
-                var entry = context.CreateNew<MiniGameRankingEntry>();
-                entry.GameInstanceId = instanceId;
-                entry.Rank = score.Rank;
-                entry.Score = score.Score;
-                entry.Character = score.Character;
-                entry.MiniGame = this.Definition;
-                entry.Timestamp = timestamp;
-            }
+                using var context = this.gameContext.PersistenceContextProvider.CreateNewTypedContext<MiniGameRankingEntry>();
+                context.Attach(this.Definition);
+                var instanceId = Guid.NewGuid();
+                var timestamp = DateTime.UtcNow;
+                foreach (var score in scoreEntries)
+                {
+                    var entry = context.CreateNew<MiniGameRankingEntry>();
+                    entry.GameInstanceId = instanceId;
+                    entry.Rank = score.Rank;
+                    entry.Score = score.Score;
+                    entry.Character = score.Character;
+                    entry.MiniGame = this.Definition;
+                    entry.Timestamp = timestamp;
+                }
 
-            context.SaveChanges();
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Error while saving mini game ranking");
+            }
         }
 
         private void GiveReward(Player player, MiniGameReward reward)
@@ -278,6 +312,47 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             {
                 this.Logger.LogInformation($"Reward {item} for {player} has been dropped by players coordinates {player.Position}.");
                 this.Map.Add(new DroppedItem(item, player.Position, this.Map, player, player.GetAsEnumerable()));
+            }
+        }
+
+        private void RunSpawnWaves()
+        {
+            foreach (var spawnWave in this.Definition.SpawnWaves)
+            {
+                this.RunSpawnWaveAsync(spawnWave).ConfigureAwait(false);
+            }
+        }
+
+        private async ValueTask RunSpawnWaveAsync(MiniGameSpawnWave spawnWave)
+        {
+            try
+            {
+                if (spawnWave.StartTime > TimeSpan.Zero)
+                {
+                    await Task.Delay(spawnWave.StartTime, this.gameEndedCts.Token);
+                }
+
+                this.Logger.LogInformation("Starting next wave: {0}", spawnWave.Description);
+                if (spawnWave.Message is { } message)
+                {
+                    await this.ShowMessageAsync(message);
+                }
+
+                this.currentSpawnWaves.Add(spawnWave.WaveNumber);
+                this.mapInitializer.InitializeNpcsOnWaveStart(this.Map, this, spawnWave.WaveNumber);
+                await Task.Delay(spawnWave.EndTime - spawnWave.StartTime, this.gameEndedCts.Token);
+                this.Logger.LogInformation("Wave ended: {0}", spawnWave.Description);
+            }
+            catch (TaskCanceledException)
+            {
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Unexpected error during spawn wave {0}: {1}", spawnWave.WaveNumber, ex.Message);
+            }
+            finally
+            {
+                this.currentSpawnWaves.Remove(spawnWave.WaveNumber);
             }
         }
 
@@ -341,6 +416,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             }
 
             this.OnGameStart(players);
+            this.RunSpawnWaves();
             this.mapInitializer.InitializeNpcsOnEventStart(this.Map, this);
         }
 
@@ -374,6 +450,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
                 this.enterLock.Release();
             }
 
+            this.currentSpawnWaves.Clear();
             this.Map.ClearEventSpawnedNpcs();
 
             List<Player> players;

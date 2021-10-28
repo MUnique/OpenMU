@@ -2203,7 +2203,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Y2 = table.Column<byte>(type: "smallint", nullable: false),
                     Direction = table.Column<int>(type: "integer", nullable: false),
                     Quantity = table.Column<short>(type: "smallint", nullable: false),
-                    SpawnTrigger = table.Column<int>(type: "integer", nullable: false)
+                    SpawnTrigger = table.Column<int>(type: "integer", nullable: false),
+                    WaveNumber = table.Column<byte>(type: "smallint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2353,6 +2354,31 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     table.ForeignKey(
                         name: "FK_MiniGameRankingEntry_MiniGameDefinition_MiniGameId",
                         column: x => x.MiniGameId,
+                        principalSchema: "config",
+                        principalTable: "MiniGameDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MiniGameSpawnWave",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MiniGameDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    WaveNumber = table.Column<byte>(type: "smallint", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    StartTime = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "interval", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MiniGameSpawnWave", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MiniGameSpawnWave_MiniGameDefinition_MiniGameDefinitionId",
+                        column: x => x.MiniGameDefinitionId,
                         principalSchema: "config",
                         principalTable: "MiniGameDefinition",
                         principalColumn: "Id",
@@ -3357,6 +3383,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "MiniGameDefinitionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MiniGameSpawnWave_MiniGameDefinitionId",
+                schema: "config",
+                table: "MiniGameSpawnWave",
+                column: "MiniGameDefinitionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MonsterAttribute_AttributeDefinitionId",
                 schema: "config",
                 table: "MonsterAttribute",
@@ -3841,6 +3873,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "MiniGameReward",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "MiniGameSpawnWave",
                 schema: "config");
 
             migrationBuilder.DropTable(

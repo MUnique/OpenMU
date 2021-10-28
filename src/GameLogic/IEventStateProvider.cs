@@ -18,5 +18,12 @@ namespace MUnique.OpenMU.GameLogic
         /// Gets a value indicating whether the event is currently running.
         /// </summary>
         bool IsEventRunning { get; }
+
+        /// <summary>
+        /// Determines, if a spawn wave is currently active.
+        /// </summary>
+        /// <param name="waveNumber">The number of the wave.</param>
+        /// <returns><see langword="true"/>, when the spawn wave is active; Otherwise, <see langword="false"/>.</returns>
+        bool IsSpawnWaveActive(byte waveNumber);
     }
 }

@@ -130,7 +130,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
         public TimeSpan StepDelay => this.Definition.MoveDelay;
 
         private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
-                                      || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringEvent && (this.eventStateProvider?.IsEventRunning ?? false));
+                                      || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringEvent && (this.eventStateProvider?.IsEventRunning ?? false))
+                                      || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this.eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
 
         /// <inheritdoc/>
         public override void Initialize()
@@ -373,7 +374,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.walker.Stop();
             if (this.ShouldRespawn)
             {
-                this.respawnTimer = new Timer(o => this.Respawn(), null, (int)this.Definition.RespawnDelay.TotalMilliseconds, System.Threading.Timeout.Infinite);
+                this.respawnTimer = new Timer(_ => this.Respawn(), null, (int)this.Definition.RespawnDelay.TotalMilliseconds, System.Threading.Timeout.Infinite);
             }
 
             this.ObserverLock.EnterWriteLock();
@@ -408,7 +409,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 }
             }
 
-            if (this.SpawnArea.SpawnTrigger == SpawnTrigger.OnceAtEventStart)
+            if (!this.ShouldRespawn)
             {
                 this.RemoveFromMapAndDispose();
             }

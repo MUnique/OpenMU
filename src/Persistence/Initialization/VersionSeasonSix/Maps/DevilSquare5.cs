@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
 {
     using System.Collections.Generic;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
     /// <summary>
     /// Initialization for the devil square map which hosts devil square 5.
@@ -37,8 +38,22 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
         /// <inheritdoc/>
         protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
         {
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[573], 120, 150, 80, 115, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Crypta
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[574], 120, 150, 80, 115, 35, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Crypos
+            const byte x1 = 120;
+            const byte x2 = 150;
+            const byte y1 = 80;
+            const byte y2 = 115;
+            const byte quantity = 35;
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[294], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Axe Warrior
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[60], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Bloody Wolf
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[71], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Mega Crust
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[190], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Death Angel
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[61], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Beam Knight
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[73], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Drakan
+
+            yield return this.CreateMonsterSpawn(this.NpcDictionary[291], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Fire Golem
         }
     }
 }

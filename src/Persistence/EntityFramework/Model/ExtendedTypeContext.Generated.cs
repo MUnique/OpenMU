@@ -61,6 +61,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameReward>();
+            modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterDefinition>();
             modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea>();

@@ -2074,6 +2074,37 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("MiniGameReward", "config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameSpawnWave", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("MiniGameDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<byte>("WaveNumber")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MiniGameDefinitionId");
+
+                    b.ToTable("MiniGameSpawnWave", "config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterAttribute", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2199,6 +2230,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("SpawnTrigger")
                         .HasColumnType("integer");
+
+                    b.Property<byte>("WaveNumber")
+                        .HasColumnType("smallint");
 
                     b.Property<byte>("X1")
                         .HasColumnType("smallint");
@@ -3670,6 +3704,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawItemReward");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameSpawnWave", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", null)
+                        .WithMany("RawSpawnWaves")
+                        .HasForeignKey("MiniGameDefinitionId");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterAttribute", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawAttributeDefinition")
@@ -4150,6 +4191,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", b =>
                 {
                     b.Navigation("RawRewards");
+
+                    b.Navigation("RawSpawnWaves");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", b =>
