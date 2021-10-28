@@ -41,7 +41,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
         /// <param name="gates">The gates.</param>
         private void CreateWarpEntries(IDictionary<short, ExitGate> gates)
         {
-            // todo: find out, if Version 0.75 does even support warping by a menu
+            // todo: update for 0.95d
             this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(1, "Arena", 2000, 50, gates[50]));
             this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(2, "Lorencia", 2000, 10, gates[17]));
             this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(3, "Noria", 2000, 10, gates[27]));
