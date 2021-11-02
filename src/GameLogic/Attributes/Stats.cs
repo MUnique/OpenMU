@@ -219,6 +219,11 @@ namespace MUnique.OpenMU.GameLogic.Attributes
         public static AttributeDefinition MaximumCurseBaseDmg { get; } = new (new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "Maximum Curse Base Damage", string.Empty);
 
         /// <summary>
+        /// Gets the attribute definition for the base damage of the fenrir pet.
+        /// </summary>
+        public static AttributeDefinition FenrirBaseDmg { get; } = new (new Guid("96F47E70-5C85-4A92-B224-944A9359240E"), "Fenrir Base Damage", string.Empty);
+
+        /// <summary>
         /// Gets the base damage bonus attribute definition.
         /// </summary>
         public static AttributeDefinition BaseDamageBonus { get; } = new (new Guid("BB6F0151-EAB2-4A9D-BFE3-51E145F36C52"), "Base Damage Bonus", "A bonus value which gets added to all min/max damage values during the damage calculation");
