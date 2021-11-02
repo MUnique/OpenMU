@@ -19,6 +19,9 @@ services:
       SERVICE_NAME: munique
       SERVICE_TAGS: dev
       DB_HOST: database
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERTIFICATE_PASSWORD}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
     working_dir: /app/
     links:
       - database
