@@ -69,11 +69,7 @@ namespace MUnique.OpenMU.PublicApi
             return builder
                 .ConfigureServices(s =>
                 {
-                    if (loggerFactory != null)
-                    {
-                        s.AddSingleton(loggerFactory);
-                    }
-
+                    s.AddSingleton(loggerFactory);
                     s.AddSingleton(gameServers);
                     s.AddSingleton(connectServers);
                 })
@@ -100,17 +96,29 @@ namespace MUnique.OpenMU.PublicApi
         /// <inheritdoc />
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            this.host = BuildHost(this.gameServers, this.connectServers, this.loggerFactory, null);
-            this.logger.LogInformation("Starting API...");
-            await this.host.StartAsync(cancellationToken);
-            this.logger.LogInformation("Started API");
+            try
+            {
+                this.host = BuildHost(this.gameServers, this.connectServers, this.loggerFactory, null);
+                this.logger.LogInformation("Starting API...");
+                await this.host.StartAsync(cancellationToken);
+                this.logger.LogInformation("Started API");
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Couldn't start ApiHost.");
+            }
         }
 
         /// <inheritdoc />
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.logger.LogInformation("Stopping API...");
-            return this.host?.StopAsync(cancellationToken) ?? Task.CompletedTask;
+            if (this.host is { } host)
+            {
+                this.logger.LogInformation("Stopping API...");
+                return host.StopAsync(cancellationToken);
+            }
+
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
