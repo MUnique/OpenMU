@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames
 
             const int maxScores = 10;
             using var writer = this.player.Connection.StartSafeWrite(0xC1, MiniGameScoreTable.GetRequiredSize(Math.Min(maxScores, scores.Count)));
-            MiniGameScoreTable message = writer.Span;
+            var message = new MiniGameScoreTable(writer.Span);
             message.PlayerRank = playerRank;
             message.ResultCount = (byte)scores.Count;
             var i = 0;
