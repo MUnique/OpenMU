@@ -59,6 +59,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
             yield return this.CreateMonsterSpawn(this.NpcDictionary[440], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Dark Elf Boss
         }
 
+        /// <inheritdoc />
         protected override void CreateMonsters()
         {
             {
