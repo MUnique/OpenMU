@@ -246,7 +246,6 @@ namespace MUnique.OpenMU.Startup
                         c.AddHostedService<ApiHost>();
                     }
                 })
-                // .UseConsoleLifetime()
                 .Build();
             Log.Info("Host created");
             if (host.Services.GetService<ILoggerFactory>() is { } loggerFactory)
