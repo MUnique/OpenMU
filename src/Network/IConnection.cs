@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Network
     using System;
     using System.Buffers;
     using System.IO.Pipelines;
+    using System.Net;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -49,6 +50,11 @@ namespace MUnique.OpenMU.Network
         ///   <c>true</c> if connected; otherwise, <c>false</c>.
         /// </value>
         bool Connected { get; }
+
+        /// <summary>
+        /// Gets the remote endpoint of the connection.
+        /// </summary>
+        EndPoint? EndPoint { get; }
 
         /// <summary>
         /// Gets the pipe writer to send data.

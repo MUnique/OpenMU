@@ -51,6 +51,9 @@ namespace MUnique.OpenMU.Network
         public bool Connected => this.SocketConnection != null ? this.SocketConnection.ShutdownKind == PipeShutdownKind.None && !this.disconnected : !this.disconnected;
 
         /// <inheritdoc />
+        public EndPoint? EndPoint => this.remoteEndPoint;
+
+        /// <inheritdoc />
         public PipeWriter Output => this.outputWriter ??= this.encryptionPipe?.Writer ?? this.duplexPipe!.Output;
 
         /// <summary>

@@ -5,9 +5,8 @@
 namespace MUnique.OpenMU.GameServer
 {
     using System;
+    using System.IO.Pipelines;
     using System.Net;
-    using System.Net.Sockets;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.GameLogic;
@@ -15,7 +14,6 @@ namespace MUnique.OpenMU.GameServer
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.PlugIns;
-    using Pipelines.Sockets.Unofficial;
 
     /// <summary>
     /// A game server listener that listens on a TCP port.
@@ -34,7 +32,7 @@ namespace MUnique.OpenMU.GameServer
         private readonly IGameServerStateObserver stateObserver;
         private readonly IIpAddressResolver addressResolver;
         private readonly ILoggerFactory loggerFactory;
-        private TcpListener? listener;
+        private Listener? listener;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTcpGameServerListener" /> class.
@@ -59,19 +57,31 @@ namespace MUnique.OpenMU.GameServer
         /// <inheritdoc/>
         public event EventHandler<PlayerConnectedEventArgs>? PlayerConnected;
 
+        private INetworkEncryptionFactoryPlugIn? EncryptionFactoryPlugIn { get; set; }
+
+        private ClientVersion ClientVersion => new (this.endPoint.Client!.Season, this.endPoint.Client.Episode, this.endPoint.Client.Language);
+
         /// <inheritdoc/>
         public void Start()
         {
-            if (this.listener != null && this.listener.Server.IsBound)
+            if (this.listener is { IsBound: true })
             {
                 this.logger.LogDebug("listener is already running.");
                 return;
             }
 
+            this.EncryptionFactoryPlugIn = this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(this.ClientVersion)
+                                           ?? this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
+            if (this.EncryptionFactoryPlugIn is null)
+            {
+                this.Log(l => l.LogWarning("No network encryption plugin for version {clientVersion} available. It falls back to default encryption.", this.ClientVersion));
+            }
+
             var port = this.endPoint.NetworkPort;
             this.logger.LogInformation("Starting Server Listener, port {port}", port);
-            this.listener = new TcpListener(IPAddress.Any, port);
-            this.listener.Start();
+            this.listener = new Listener(port, this.CreateDecryptor, this.CreateEncryptor, this.loggerFactory);
+            this.listener.ClientAccepted += this.OnClientAccepted;
+            this.listener.ClientAccepting += this.OnClientAccepting;
             if (this.endPoint.AlternativePublishedPort > 0)
             {
                 port = this.endPoint.AlternativePublishedPort;
@@ -79,7 +89,7 @@ namespace MUnique.OpenMU.GameServer
             }
 
             this.stateObserver.RegisterGameServer(this.gameServerInfo, new IPEndPoint(this.addressResolver.ResolveIPv4(), port));
-            Task.Run(this.BeginAccept);
+            this.listener.Start();
             this.logger.LogInformation("Server listener started.");
         }
 
@@ -89,7 +99,7 @@ namespace MUnique.OpenMU.GameServer
             var port = this.endPoint.NetworkPort;
             this.stateObserver.UnregisterGameServer(this.gameServerInfo);
             this.logger.LogInformation($"Stopping listener on port {port}.");
-            if (this.listener is null || !this.listener.Server.IsBound)
+            if (this.listener is null || !this.listener.IsBound)
             {
                 this.logger.LogDebug("listener not running, nothing to shut down.");
                 return;
@@ -98,87 +108,45 @@ namespace MUnique.OpenMU.GameServer
             this.listener.Stop();
 
             this.logger.LogInformation($"Stopped listener on port {port}.");
+            this.EncryptionFactoryPlugIn = null;
         }
 
-        private async Task BeginAccept()
+        private IPipelinedEncryptor? CreateEncryptor(PipeWriter arg)
         {
-            this.Log(l => l.LogDebug("Begin accepting new clients."));
-            Socket newClient;
-            try
-            {
-                if (this.listener is null)
-                {
-                    return;
-                }
-
-                newClient = await this.listener.AcceptSocketAsync().ConfigureAwait(false);
-            }
-            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.OperationAborted)
-            {
-                this.Log(l => l.LogDebug(ex, "listener has been closed"));
-                return;
-            }
-            catch (ObjectDisposedException ex)
-            {
-                this.Log(l => l.LogDebug(ex, "listener has been disposed"));
-                return;
-            }
-            catch (Exception ex)
-            {
-                this.Log(l => l.LogError(ex, "An unexpected error occured when awaiting the next client socket."));
-                return;
-            }
-
-            this.HandleNewSocket(newClient);
-
-            // Accept the next Client:
-            if (this.listener?.Server.IsBound ?? false)
-            {
-                await this.BeginAccept().ConfigureAwait(false);
-            }
+            return this.EncryptionFactoryPlugIn is { } plugin
+                ? plugin.CreateEncryptor(arg, DataDirection.ServerToClient)
+                : new PipelinedEncryptor(arg);
         }
 
-        private void HandleNewSocket(Socket socket)
+        private IPipelinedDecryptor? CreateDecryptor(PipeReader arg)
         {
-            if (socket is null)
-            {
-                return;
-            }
+            return this.EncryptionFactoryPlugIn is { } plugin
+                ? plugin.CreateDecryptor(arg, DataDirection.ClientToServer)
+                : new PipelinedDecryptor(arg);
+        }
 
-            var remoteEndPoint = socket.RemoteEndPoint;
-            this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));
+        private void OnClientAccepting(object? sender, ClientAcceptingEventArgs e)
+        {
             if (this.gameContext.PlayerCount >= this.gameContext.ServerConfiguration.MaximumPlayers)
             {
-                this.Log(l => l.LogDebug($"The server is full... disconnecting the game client {remoteEndPoint}"));
+                this.Log(l => l.LogDebug($"The server is full... disconnecting the game client {e.AcceptingSocket.RemoteEndPoint}"));
 
-                // MAYBE TODO: wait until another player disconnects?
-                socket.Dispose();
+                e.Cancel = true;
             }
-            else
-            {
-                socket.NoDelay = true;
-                var socketConnection = SocketConnection.Create(socket);
-                var clientVersion = new ClientVersion(this.endPoint.Client!.Season, this.endPoint.Client.Episode, this.endPoint.Client.Language);
-                var encryptionFactoryPlugIn = this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(clientVersion)
-                                                ?? this.gameContext.PlugInManager.GetStrategy<ClientVersion, INetworkEncryptionFactoryPlugIn>(default);
-                IConnection connection;
-                if (encryptionFactoryPlugIn is null)
-                {
-                    this.Log(l => l.LogWarning("No network encryption plugin for version {clientVersion} available. It falls back to default encryption.", clientVersion));
-                    connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output), this.loggerFactory.CreateLogger<Connection>());
-                }
-                else
-                {
-                    connection = new Connection(socketConnection, encryptionFactoryPlugIn.CreateDecryptor(socketConnection.Input, DataDirection.ClientToServer), encryptionFactoryPlugIn.CreateEncryptor(socketConnection.Output, DataDirection.ServerToClient), this.loggerFactory.CreateLogger<Connection>());
-                }
+        }
 
-                var remotePlayer = new RemotePlayer(this.gameContext, connection, clientVersion);
-                this.OnPlayerConnected(remotePlayer);
-                connection.Disconnected += (sender, e) => remotePlayer.Disconnect();
+        private void OnClientAccepted(object? sender, ClientAcceptedEventArgs e)
+        {
+            var connection = e.AcceptedConnection;
+            var remoteEndPoint = connection.EndPoint as IPEndPoint;
+            this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));
 
-                // we don't want to await the call.
-                connection.BeginReceive();
-            }
+            var remotePlayer = new RemotePlayer(this.gameContext, connection, this.ClientVersion);
+            connection.Disconnected += (_, _) => remotePlayer.Disconnect();
+            this.OnPlayerConnected(remotePlayer);
+
+            // we don't want to await the call.
+            connection.BeginReceive();
         }
 
         private void OnPlayerConnected(Player player)

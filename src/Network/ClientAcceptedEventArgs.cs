@@ -1,4 +1,4 @@
-﻿// <copyright file="ClientAcceptEventArgs.cs" company="MUnique">
+﻿// <copyright file="ClientAcceptedEventArgs.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,13 +9,13 @@ namespace MUnique.OpenMU.Network
     /// <summary>
     /// Event args for <see cref="Listener.ClientAccepted"/> which contains the connection of the client.
     /// </summary>
-    public class ClientAcceptEventArgs : EventArgs
+    public class ClientAcceptedEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientAcceptEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="ClientAcceptedEventArgs"/> class.
         /// </summary>
         /// <param name="acceptedConnection">The accepted connection.</param>
-        public ClientAcceptEventArgs(IConnection acceptedConnection)
+        public ClientAcceptedEventArgs(IConnection acceptedConnection)
         {
             this.AcceptedConnection = acceptedConnection;
         }

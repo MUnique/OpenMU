@@ -85,7 +85,7 @@ namespace MUnique.OpenMU.Network.Analyzer
 
         private IPipelinedDecryptor? GetDecryptor(PipeReader pipeReader, DataDirection direction) => this.NetworkEncryptionPlugIn?.CreateDecryptor(pipeReader, direction);
 
-        private void OnClientAccepted(object? sender, ClientAcceptEventArgs e)
+        private void OnClientAccepted(object? sender, ClientAcceptedEventArgs e)
         {
             var clientConnection = e.AcceptedConnection;
             try
