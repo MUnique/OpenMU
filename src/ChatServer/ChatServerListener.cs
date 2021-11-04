@@ -38,7 +38,7 @@ namespace MUnique.OpenMU.ChatServer
         /// <summary>
         /// Occurs when a new client was accepted.
         /// </summary>
-        public event EventHandler<ClientAcceptEventArgs>? ClientAccepted;
+        public event EventHandler<ClientAcceptedEventArgs>? ClientAccepted;
 
         /// <summary>
         /// Occurs when a client has been accepted by the tcp listener, but before a <see cref="Connection"/> is created.
@@ -50,7 +50,7 @@ namespace MUnique.OpenMU.ChatServer
         /// </summary>
         public void Start()
         {
-            this.chatClientListener = new Listener(this.endpoint.NetworkPort, this.CreateDecryptor, writer => null, this.loggerFactory);
+            this.chatClientListener = new Listener(this.endpoint.NetworkPort, this.CreateDecryptor, _ => null, this.loggerFactory);
             this.chatClientListener.ClientAccepted += (sender, args) => this.ClientAccepted?.Invoke(sender, args);
             this.chatClientListener.ClientAccepting += (sender, args) => this.ClientAccepting?.Invoke(sender, args);
             this.chatClientListener.Start();

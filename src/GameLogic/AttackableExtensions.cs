@@ -415,6 +415,22 @@ namespace MUnique.OpenMU.GameLogic
                     minimumBaseDamage += (int)attackerStats[Stats.MinimumPhysBaseDmg];
                     maximumBaseDamage += (int)attackerStats[Stats.MaximumPhysBaseDmg];
                     break;
+                case DamageType.All:
+                    minimumBaseDamage += Math.Max(
+                        Math.Max(
+                            (int)(attackerStats[Stats.MinimumWizBaseDmg] * attackerStats[Stats.WizardryAttackDamageIncrease]),
+                            (int)(attackerStats[Stats.MinimumCurseBaseDmg] * attackerStats[Stats.CurseAttackDamageIncrease])),
+                        (int)attackerStats[Stats.MinimumPhysBaseDmg]);
+                    maximumBaseDamage += Math.Max(
+                        Math.Max(
+                            (int)(attackerStats[Stats.MaximumWizBaseDmg] * attackerStats[Stats.WizardryAttackDamageIncrease]),
+                            (int)(attackerStats[Stats.MaximumCurseBaseDmg] * attackerStats[Stats.CurseAttackDamageIncrease])),
+                        (int)attackerStats[Stats.MaximumPhysBaseDmg]);
+                    break;
+                case DamageType.Fenrir:
+                    minimumBaseDamage += (int)attackerStats[Stats.FenrirBaseDmg];
+                    maximumBaseDamage += (int)attackerStats[Stats.FenrirBaseDmg];
+                    break;
                 default:
                     // the skill has some other damage type defined which is not applicable to this calculation
                     break;

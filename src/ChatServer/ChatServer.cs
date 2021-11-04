@@ -43,6 +43,8 @@ namespace MUnique.OpenMU.ChatServer
 
         private string? publicIp;
 
+        private bool isDisposed;
+
         private ServerState serverState;
 
         /// <summary>
@@ -179,7 +181,7 @@ namespace MUnique.OpenMU.ChatServer
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Error while starting", ex);
+                this.logger.LogError(ex, "Error while starting");
                 this.ServerState = oldState;
             }
 
@@ -217,14 +219,15 @@ namespace MUnique.OpenMU.ChatServer
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "randomNumberGenerator", Justification = "Null-conditional confuses the code analysis.")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "clientCleanupTimer", Justification = "Null-conditional confuses the code analysis.")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "roomCleanupTimer", Justification = "Null-conditional confuses the code analysis.")]
         public void Dispose()
         {
-            this.randomNumberGenerator?.Dispose();
-            this.clientCleanupTimer?.Dispose();
-            this.roomCleanupTimer?.Dispose();
+            if (!this.isDisposed)
+            {
+                this.isDisposed = true;
+                this.randomNumberGenerator.Dispose();
+                this.clientCleanupTimer.Dispose();
+                this.roomCleanupTimer.Dispose();
+            }
         }
 
         /// <summary>
@@ -253,7 +256,7 @@ namespace MUnique.OpenMU.ChatServer
             e.Cancel = this.CurrentConnections >= this.settings.MaximumConnections;
         }
 
-        private void ChatClientAccepted(object? sender, ClientAcceptEventArgs e)
+        private void ChatClientAccepted(object? sender, ClientAcceptedEventArgs e)
         {
             var chatClient = new ChatClient(e.AcceptedConnection, this.manager, this.loggerFactory.CreateLogger<ChatClient>());
             this.connectedClients.Add(chatClient);

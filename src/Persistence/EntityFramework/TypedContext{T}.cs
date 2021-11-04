@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             var types = modelBuilder.Model.GetEntityTypes().ToList();
 
-            var editTypes = this.DetermineEditTypes(types);
+            var editTypes = this.DetermineEditTypes(types).ToList();
 
             foreach (var type in editTypes)
             {

@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Network
 {
     using System;
-    using System.ComponentModel;
     using System.IO.Pipelines;
     using System.Net;
     using System.Net.Sockets;
@@ -44,20 +43,26 @@ namespace MUnique.OpenMU.Network
         /// <summary>
         /// Occurs when a client has been accepted by the tcp listener.
         /// </summary>
-        public event EventHandler<ClientAcceptEventArgs>? ClientAccepted;
+        public event EventHandler<ClientAcceptedEventArgs>? ClientAccepted;
 
         /// <summary>
         /// Occurs when a client has been accepted by the tcp listener, but before a <see cref="Connection"/> is created.
         /// </summary>
-        public event CancelEventHandler? ClientAccepting;
+        public event EventHandler<ClientAcceptingEventArgs>? ClientAccepting;
+
+        /// <summary>
+        /// Gets a value indicating whether this listener is bound to a specific local port.
+        /// </summary>
+        public bool IsBound => this.clientListener?.Server.IsBound ?? false;
 
         /// <summary>
         /// Starts the tcp listener and begins to accept connections.
         /// </summary>
-        public void Start()
+        /// <param name="backlog">The maximum length of the pending connections queue.</param>
+        public void Start(int backlog = (int)SocketOptionName.MaxConnections)
         {
             this.clientListener = new TcpListener(IPAddress.Any, this.port);
-            this.clientListener.Start();
+            this.clientListener.Start(backlog);
             this.clientListener.BeginAcceptSocket(this.OnAccept, null);
         }
 
@@ -112,6 +117,11 @@ namespace MUnique.OpenMU.Network
                 // this exception is expected when the clientListener got disposed. In this case we don't want to spam the log.
                 return;
             }
+            catch (SocketException ex) when (ex.ErrorCode == (int)SocketError.OperationAborted)
+            {
+                this.logger.LogDebug(ex, "The listener was stopped.");
+                return;
+            }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error accepting the client socket");
@@ -124,12 +134,17 @@ namespace MUnique.OpenMU.Network
                 this.clientListener.BeginAcceptSocket(this.OnAccept, null);
             }
 
-            var cancel = new CancelEventArgs();
-            this.ClientAccepting?.Invoke(this, cancel);
-            if (!cancel.Cancel)
+            ClientAcceptingEventArgs? cancel = null;
+            this.ClientAccepting?.Invoke(this, cancel = new ClientAcceptingEventArgs(socket));
+            if (cancel is null || !cancel.Cancel)
             {
+                socket.NoDelay = true; // todo: option?
                 var connection = this.CreateConnection(socket);
-                this.ClientAccepted?.Invoke(this, new ClientAcceptEventArgs(connection));
+                this.ClientAccepted?.Invoke(this, new ClientAcceptedEventArgs(connection));
+            }
+            else
+            {
+                socket.Dispose();
             }
         }
     }

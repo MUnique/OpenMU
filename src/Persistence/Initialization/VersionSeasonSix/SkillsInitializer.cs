@@ -150,7 +150,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
             this.CreateSkill(SkillNumber.AbolishMagic, "Abolish Magic", CharacterClasses.AllLords, abilityConsumption: 70, manaConsumption: 90, cooldownMinutes: 8);
             this.CreateSkill(SkillNumber.ManaRays, "Mana Rays", CharacterClasses.AllMGs, DamageType.Wizardry, 85, 6, 7, 130);
             this.CreateSkill(SkillNumber.FireBlast, "Fire Blast", CharacterClasses.AllLords, DamageType.Physical, 150, 6, 10, 30);
-            this.CreateSkill(SkillNumber.PlasmaStorm, "Plasma Storm", CharacterClasses.AllMastersAndSecondClass, damage: 60, distance: 6, abilityConsumption: 20, manaConsumption: 50, levelRequirement: 110, skillType: SkillType.AreaSkillAutomaticHits);
+            this.CreateSkill(SkillNumber.PlasmaStorm, "Plasma Storm", CharacterClasses.AllMastersAndSecondClass, DamageType.Fenrir, damage: 60, distance: 6, abilityConsumption: 20, manaConsumption: 50, levelRequirement: 110, skillType: SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.InfinityArrow, "Infinity Arrow", CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 220, skillType: SkillType.Buff);
             this.CreateSkill(SkillNumber.FireScream, "Fire Scream", CharacterClasses.AllLords, DamageType.Physical, 130, 6, 10, 45, energyRequirement: 70, leadershipRequirement: 150, skillType: SkillType.AreaSkillAutomaticHits);
             this.CreateSkill(SkillNumber.Explosion79, "Explosion", CharacterClasses.AllLords, DamageType.Physical, distance: 2);
@@ -511,8 +511,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
                 skill.MagicEffectDef = effect;
             }
         }
-
-
 
         /// <summary>
         /// Initializes the master skill data.

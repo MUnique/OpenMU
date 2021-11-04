@@ -40,9 +40,14 @@ namespace MUnique.OpenMU.DataModel.Configuration
         SummonedMonster = 3,
 
         /// <summary>
+        /// The damage of the fenrir pet.
+        /// </summary>
+        Fenrir = 4,
+
+        /// <summary>
         /// All damage types.
         /// </summary>
-        All = 4,
+        All = 5,
     }
 
     /// <summary>

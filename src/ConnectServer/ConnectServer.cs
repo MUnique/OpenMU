@@ -178,7 +178,7 @@ namespace MUnique.OpenMU.ConnectServer
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Error during registration process", ex);
+                this.logger.LogError(ex, "Error during registration process");
                 throw;
             }
 

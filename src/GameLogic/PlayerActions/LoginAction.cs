@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions
             }
             catch (Exception ex)
             {
-                player.Logger.LogError("Login Failed.", ex);
+                player.Logger.LogError(ex, "Login Failed.");
                 player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.ConnectionError);
                 return;
             }

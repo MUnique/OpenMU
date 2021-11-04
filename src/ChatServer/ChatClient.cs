@@ -53,11 +53,11 @@ namespace MUnique.OpenMU.ChatServer
             this.manager = manager;
             this.logger = logger;
             this.connection = connection;
-            this.connection!.PacketReceived += this.ReadPacket;
+            this.connection.PacketReceived += this.ReadPacket;
             this.connection.Disconnected += (sender, e) => this.LogOff();
 
             this.LastActivity = DateTime.Now;
-            this.connection!.BeginReceive();
+            this.connection.BeginReceive();
         }
 
         /// <summary>
