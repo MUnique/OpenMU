@@ -71,7 +71,6 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                     builder2.OpenComponent(5, typeof(MapEditor));
                     builder2.AddAttribute(6, nameof(MapEditor.Map), this.model);
                     builder2.AddAttribute(7, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
-                    builder2.AddAttribute(8, nameof(MapEditor.AreaFactory), (Func<MonsterSpawnArea>)(() => this.CreateNewSpawnArea()));
                     builder2.CloseComponent();
                 }));
 
@@ -89,29 +88,6 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             this.model = null;
             Task.Run(() => this.LoadData(cts.Token), cts.Token);
             return base.OnParametersSetAsync();
-        }
-
-        private MonsterSpawnArea CreateNewSpawnArea()
-        {
-            if (this.persistenceContext is null)
-            {
-                throw new InvalidOperationException("PersistenceContext not initialized.");
-            }
-
-            if (this.model is null)
-            {
-                throw new InvalidOperationException("Model not initialized.");
-            }
-
-            var area = this.persistenceContext.CreateNew<MonsterSpawnArea>();
-            area.GameMap = this.model;
-            this.model.MonsterSpawns.Add(area);
-            area.X1 = 100;
-            area.Y1 = 100;
-            area.X2 = 200;
-            area.Y2 = 200;
-            area.Quantity = 1;
-            return area;
         }
 
         private async Task LoadData(CancellationToken cancellationToken)
@@ -149,6 +125,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                 // For the moment, we swallow the exception
             }
         }
+
         private Task SaveChangesAsync()
         {
             string text;
