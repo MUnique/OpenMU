@@ -88,7 +88,7 @@
       <Code>F1</Code>
       <SubCode>01</SubCode>
       <Name>LoginLongPassword</Name>
-      <Length>43</Length>
+      <Length>60</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player tries to log into the game.</SentWhen>
       <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
@@ -118,6 +118,12 @@
           <Name>ClientVersion</Name>
           <Length>5</Length>
         </Field>
+        <Field>
+          <Index>43</Index>
+          <Type>Binary</Type>
+          <Name>ClientSerial</Name>
+          <Length>16</Length>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -125,7 +131,7 @@
       <Code>F1</Code>
       <SubCode>01</SubCode>
       <Name>LoginShortPassword</Name>
-      <Length>33</Length>
+      <Length>50</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player tries to log into the game.</SentWhen>
       <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
@@ -155,6 +161,12 @@
           <Name>ClientVersion</Name>
           <Length>5</Length>
         </Field>
+        <Field>
+          <Index>33</Index>
+          <Type>Binary</Type>
+          <Name>ClientSerial</Name>
+          <Length>16</Length>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -162,7 +174,7 @@
       <Code>F1</Code>
       <SubCode>01</SubCode>
       <Name>Login075</Name>
-      <Length>31</Length>
+      <Length>48</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player tries to log into the game.</SentWhen>
       <CausedReaction>The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.</CausedReaction>
@@ -191,6 +203,12 @@
           <Type>Binary</Type>
           <Name>ClientVersion</Name>
           <Length>3</Length>
+        </Field>
+        <Field>
+          <Index>31</Index>
+          <Type>Binary</Type>
+          <Name>ClientSerial</Name>
+          <Length>16</Length>
         </Field>
       </Fields>
     </Packet>
@@ -1277,9 +1295,31 @@
       </Fields>
     </Packet>
     <Packet>
-      <HeaderType>C3Header</HeaderType>
+      <HeaderType>C1Header</HeaderType>
       <Code>19</Code>
       <Name>TargetedSkill075</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
+      <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the skill list.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>19</Code>
+      <Name>TargetedSkill095</Name>
       <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
@@ -1463,6 +1503,96 @@
         </Field>
         <Field>
           <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>TargetData</TypeName>
+          <Name>Targets</Name>
+          <ItemCountField>TargetCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>TargetData</Name>
+          <Description>Contains the data of the target</Description>
+          <Length>2</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>TargetId</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>1E</Code>
+      <Name>AreaSkill095</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player is performing an skill which affects an area of the map.</SentWhen>
+      <CausedReaction>It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the skill list.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>1D</Code>
+      <Name>AreaSkillHit095</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>An area skill was performed and the client decided to hit one or more targets.</SentWhen>
+      <CausedReaction>The server is calculating the damage and applying it to the targets. The attacker gets a response back with the caused damage.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the skill list.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TargetX</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TargetY</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Counter</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>TargetCount</Name>
+          <Description>The number of targets which are hit.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
           <Type>Structure[]</Type>
           <TypeName>TargetData</TypeName>
           <Name>Targets</Name>
@@ -2333,6 +2463,50 @@
       <SentWhen>The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).</SentWhen>
       <CausedReaction>The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.</CausedReaction>
       <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>90</Code>
+      <Name>DevilSquareEnterRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player requests to enter the devil square through the Charon NPC.</SentWhen>
+      <CausedReaction>The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>SquareLevel</Name>
+          <Description>The level of the devil square, minus 1.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TicketItemInventoryIndex</Name>
+          <Description>The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>91</Code>
+      <Name>RequestEventRemainingTime</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player requests to get the remaining time of the currently entered event.</SentWhen>
+      <CausedReaction>The remaining time is sent back to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>EventType</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>EventLevel</Name>
+        </Field>
+      </Fields>
     </Packet>
   </Packets>
   <Enums>

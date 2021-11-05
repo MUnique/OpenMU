@@ -11,6 +11,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.GameLogic.Views.World;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
+    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
@@ -22,6 +23,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </remarks>
     [PlugIn("AreaSkillHitHandlerPlugIn", "Handler for area skill hit packets.")]
     [Guid("2f5848fd-a1bd-488b-84b3-fd88bdef5ac8")]
+    [MinimumClient(1, 0, ClientLanguage.Invariant)]
     internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
     {
         private readonly AreaSkillHitAction skillHitAction = new ();

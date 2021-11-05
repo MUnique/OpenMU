@@ -204,5 +204,21 @@ namespace MUnique.OpenMU.GameLogic
             this.areaOfInterestManager.RemoveObject(locateable);
             this.areaOfInterestManager.AddObject(locateable);
         }
+
+        /// <summary>
+        /// Clears event NPCs.
+        /// </summary>
+        public void ClearEventSpawnedNpcs()
+        {
+            var eventMonsters = this.objectsInMap.Values
+                .OfType<NonPlayerCharacter>()
+                .Where(n => n.SpawnArea.SpawnTrigger is not SpawnTrigger.Automatic)
+                .ToList();
+            eventMonsters.ForEach(m =>
+            {
+                m.CurrentMap.Remove(m);
+                m.Dispose();
+            });
+        }
     }
 }

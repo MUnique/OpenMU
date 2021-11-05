@@ -183,6 +183,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Model
         [NotMapped]
         public override ICollection<MUnique.OpenMU.PlugIns.PlugInConfiguration> PlugInConfigurations => base.PlugInConfigurations ??= new CollectionAdapter<MUnique.OpenMU.PlugIns.PlugInConfiguration, PlugInConfiguration>(this.RawPlugInConfigurations);
 
+        /// <summary>
+        /// Gets the raw collection of <see cref="MiniGameDefinitions" />.
+        /// </summary>
+        public ICollection<MiniGameDefinition> RawMiniGameDefinitions { get; } = new EntityFramework.List<MiniGameDefinition>();
+        
+        /// <inheritdoc/>
+        [NotMapped]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition> MiniGameDefinitions => base.MiniGameDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition, MiniGameDefinition>(this.RawMiniGameDefinitions);
+
 
         /// <inheritdoc/>
         public override bool Equals(object obj)

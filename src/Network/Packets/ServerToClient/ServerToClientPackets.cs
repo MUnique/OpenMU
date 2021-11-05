@@ -1025,6 +1025,230 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: One or more character got into the observed scope of the player.
+    /// Causes reaction on client side: The client adds the character to the shown map.
+    /// </summary>
+    public readonly ref struct AddCharactersToScope095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddCharactersToScope095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AddCharactersToScope095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddCharactersToScope095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AddCharactersToScope095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x12;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the character count.
+        /// </summary>
+        public byte CharacterCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="CharacterData"/> of the specified index.
+        /// </summary>
+        public CharacterData this[int index] => new (this.data[(5 + index * CharacterData.Length)..]);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AddCharactersToScope095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AddCharactersToScope095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AddCharactersToScope095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AddCharactersToScope095 packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="CharacterData"/>.
+        /// </summary>
+        /// <param name="charactersCount">The count of <see cref="CharacterData"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int charactersCount) => charactersCount * CharacterData.Length + 5;
+
+
+    /// <summary>
+    /// Contains the data of an NPC..
+    /// </summary>
+    public readonly ref struct CharacterData
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterData"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public CharacterData(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 31;
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public ushort Id
+        {
+            get => ReadUInt16BigEndian(this.data);
+            set => WriteUInt16BigEndian(this.data, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current position x.
+        /// </summary>
+        public byte CurrentPositionX
+        {
+            get => this.data[2];
+            set => this.data[2] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the current position y.
+        /// </summary>
+        public byte CurrentPositionY
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the appearance.
+        /// </summary>
+        public Span<byte> Appearance
+        {
+            get => this.data.Slice(4, 13);
+        }
+
+        /// <summary>
+        /// Gets or sets the is poisoned.
+        /// </summary>
+        public bool IsPoisoned
+        {
+            get => this.data[17..].GetBoolean(0);
+            set => this.data[17..].SetBoolean(value, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the is iced.
+        /// </summary>
+        public bool IsIced
+        {
+            get => this.data[17..].GetBoolean(1);
+            set => this.data[17..].SetBoolean(value, 1);
+        }
+
+        /// <summary>
+        /// Gets or sets the is damage buffed.
+        /// </summary>
+        public bool IsDamageBuffed
+        {
+            get => this.data[17..].GetBoolean(2);
+            set => this.data[17..].SetBoolean(value, 2);
+        }
+
+        /// <summary>
+        /// Gets or sets the is defense buffed.
+        /// </summary>
+        public bool IsDefenseBuffed
+        {
+            get => this.data[17..].GetBoolean(3);
+            set => this.data[17..].SetBoolean(value, 3);
+        }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => this.data.ExtractString(18, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(18, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the target position x.
+        /// </summary>
+        public byte TargetPositionX
+        {
+            get => this.data[28];
+            set => this.data[28] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target position y.
+        /// </summary>
+        public byte TargetPositionY
+        {
+            get => this.data[29];
+            set => this.data[29] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data[30..].GetByteValue(4, 4);
+            set => this.data[30..].SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets the hero state.
+        /// </summary>
+        public CharacterHeroState HeroState
+        {
+            get => (CharacterHeroState)this.data[30..].GetByteValue(4, 0);
+            set => this.data[30..].SetByteValue((byte)value, 4, 0);
+        }
+    }
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: One or more NPCs got into the observed scope of the player.
     /// Causes reaction on client side: The client adds the NPCs to the shown map.
     /// </summary>
@@ -1406,6 +1630,213 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         {
             get => this.data[8..].GetByteValue(4, 4);
             set => this.data[8..].SetByteValue(value, 4, 4);
+        }
+    }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: One or more NPCs got into the observed scope of the player.
+    /// Causes reaction on client side: The client adds the NPCs to the shown map.
+    /// </summary>
+    public readonly ref struct AddNpcsToScope095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddNpcsToScope095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AddNpcsToScope095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddNpcsToScope095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AddNpcsToScope095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x13;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the npc count.
+        /// </summary>
+        public byte NpcCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="NpcData"/> of the specified index.
+        /// </summary>
+        public NpcData this[int index] => new (this.data[(5 + index * NpcData.Length)..]);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AddNpcsToScope095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AddNpcsToScope095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AddNpcsToScope095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AddNpcsToScope095 packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="NpcData"/>.
+        /// </summary>
+        /// <param name="nPCsCount">The count of <see cref="NpcData"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int nPCsCount) => nPCsCount * NpcData.Length + 5;
+
+
+    /// <summary>
+    /// Contains the data of an NPC..
+    /// </summary>
+    public readonly ref struct NpcData
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NpcData"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public NpcData(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 12;
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public ushort Id
+        {
+            get => ReadUInt16BigEndian(this.data);
+            set => WriteUInt16BigEndian(this.data, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the type number.
+        /// </summary>
+        public byte TypeNumber
+        {
+            get => this.data[2];
+            set => this.data[2] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the is poisoned.
+        /// </summary>
+        public bool IsPoisoned
+        {
+            get => this.data[4..].GetBoolean(0);
+            set => this.data[4..].SetBoolean(value, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the is iced.
+        /// </summary>
+        public bool IsIced
+        {
+            get => this.data[4..].GetBoolean(1);
+            set => this.data[4..].SetBoolean(value, 1);
+        }
+
+        /// <summary>
+        /// Gets or sets the is damage buffed.
+        /// </summary>
+        public bool IsDamageBuffed
+        {
+            get => this.data[4..].GetBoolean(2);
+            set => this.data[4..].SetBoolean(value, 2);
+        }
+
+        /// <summary>
+        /// Gets or sets the is defense buffed.
+        /// </summary>
+        public bool IsDefenseBuffed
+        {
+            get => this.data[4..].GetBoolean(3);
+            set => this.data[4..].SetBoolean(value, 3);
+        }
+
+        /// <summary>
+        /// Gets or sets the current position x.
+        /// </summary>
+        public byte CurrentPositionX
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the current position y.
+        /// </summary>
+        public byte CurrentPositionY
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target position x.
+        /// </summary>
+        public byte TargetPositionX
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target position y.
+        /// </summary>
+        public byte TargetPositionY
+        {
+            get => this.data[9];
+            set => this.data[9] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data[10..].GetByteValue(4, 4);
+            set => this.data[10..].SetByteValue(value, 4, 4);
         }
     }
     }
@@ -1845,6 +2276,222 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         {
             get => this.data.ExtractString(9, 10, System.Text.Encoding.UTF8);
             set => this.data.Slice(9, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+    }
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: One or more summoned monsters got into the observed scope of the player.
+    /// Causes reaction on client side: The client adds the monsters to the shown map.
+    /// </summary>
+    public readonly ref struct AddSummonedMonstersToScope095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddSummonedMonstersToScope095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AddSummonedMonstersToScope095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddSummonedMonstersToScope095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AddSummonedMonstersToScope095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (ushort)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC2;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1F;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C2Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the monster count.
+        /// </summary>
+        public byte MonsterCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="SummonedMonsterData"/> of the specified index.
+        /// </summary>
+        public SummonedMonsterData this[int index] => new (this.data[(5 + index * SummonedMonsterData.Length)..]);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AddSummonedMonstersToScope095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AddSummonedMonstersToScope095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AddSummonedMonstersToScope095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AddSummonedMonstersToScope095 packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="SummonedMonsterData"/>.
+        /// </summary>
+        /// <param name="summonedMonstersCount">The count of <see cref="SummonedMonsterData"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int summonedMonstersCount) => summonedMonstersCount * SummonedMonsterData.Length + 5;
+
+
+    /// <summary>
+    /// Contains the data of an NPC..
+    /// </summary>
+    public readonly ref struct SummonedMonsterData
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SummonedMonsterData"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SummonedMonsterData(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 20;
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public ushort Id
+        {
+            get => ReadUInt16BigEndian(this.data);
+            set => WriteUInt16BigEndian(this.data, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the type number.
+        /// </summary>
+        public byte TypeNumber
+        {
+            get => this.data[2];
+            set => this.data[2] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the is poisoned.
+        /// </summary>
+        public bool IsPoisoned
+        {
+            get => this.data[4..].GetBoolean(0);
+            set => this.data[4..].SetBoolean(value, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the is iced.
+        /// </summary>
+        public bool IsIced
+        {
+            get => this.data[4..].GetBoolean(1);
+            set => this.data[4..].SetBoolean(value, 1);
+        }
+
+        /// <summary>
+        /// Gets or sets the is damage buffed.
+        /// </summary>
+        public bool IsDamageBuffed
+        {
+            get => this.data[4..].GetBoolean(2);
+            set => this.data[4..].SetBoolean(value, 2);
+        }
+
+        /// <summary>
+        /// Gets or sets the is defense buffed.
+        /// </summary>
+        public bool IsDefenseBuffed
+        {
+            get => this.data[4..].GetBoolean(3);
+            set => this.data[4..].SetBoolean(value, 3);
+        }
+
+        /// <summary>
+        /// Gets or sets the current position x.
+        /// </summary>
+        public byte CurrentPositionX
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the current position y.
+        /// </summary>
+        public byte CurrentPositionY
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target position x.
+        /// </summary>
+        public byte TargetPositionX
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the target position y.
+        /// </summary>
+        public byte TargetPositionY
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data[9..].GetByteValue(4, 4);
+            set => this.data[9..].SetByteValue(value, 4, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets the owner character name.
+        /// </summary>
+        public string OwnerCharacterName
+        {
+            get => this.data.ExtractString(10, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(10, 10).WriteString(value, System.Text.Encoding.UTF8);
         }
     }
     }
@@ -2498,6 +3145,121 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: An object performs a skill which has effect on an area.
+    /// Causes reaction on client side: The animation is shown on the user interface.
+    /// </summary>
+    public readonly ref struct AreaSkillAnimation095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkillAnimation095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public AreaSkillAnimation095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkillAnimation095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private AreaSkillAnimation095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x1E;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 9;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the skill id.
+        /// </summary>
+        public byte SkillId
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => ReadUInt16BigEndian(this.data[4..]);
+            set => WriteUInt16BigEndian(this.data[4..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the point x.
+        /// </summary>
+        public byte PointX
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the point y.
+        /// </summary>
+        public byte PointY
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the rotation.
+        /// </summary>
+        public byte Rotation
+        {
+            get => this.data[8];
+            set => this.data[8] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkillAnimation095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator AreaSkillAnimation095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="AreaSkillAnimation095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(AreaSkillAnimation095 packet) => packet.data; 
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
     /// Causes reaction on client side: The animation is shown on the user interface.
     /// </summary>
@@ -2600,6 +3362,112 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(SkillAnimation075 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
+    /// Causes reaction on client side: The animation is shown on the user interface.
+    /// </summary>
+    public readonly ref struct SkillAnimation095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAnimation095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SkillAnimation095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAnimation095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private SkillAnimation095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x19;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the skill id.
+        /// </summary>
+        public byte SkillId
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the player id.
+        /// </summary>
+        public ushort PlayerId
+        {
+            get => ReadUInt16BigEndian(this.data[4..]);
+            set => WriteUInt16BigEndian(this.data[4..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the target id.
+        /// </summary>
+        public ushort TargetId
+        {
+            get => ReadUInt16BigEndian(this.data[6..]);
+            set => WriteUInt16BigEndian(this.data[6..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the effect applied.
+        /// </summary>
+        public bool EffectApplied
+        {
+            get => this.data[6..].GetBoolean(7);
+            set => this.data[6..].SetBoolean(value, 7);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SkillAnimation095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator SkillAnimation095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SkillAnimation095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(SkillAnimation095 packet) => packet.data; 
     }
 
 
@@ -9855,6 +10723,174 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
 
 
     /// <summary>
+    /// Is sent by the server when: After the game client requested it, usually after a successful login.
+    /// Causes reaction on client side: The game client shows the available characters of the account.
+    /// </summary>
+    public readonly ref struct CharacterList095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterList095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public CharacterList095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterList095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private CharacterList095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x00;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the character count.
+        /// </summary>
+        public byte CharacterCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="CharacterData"/> of the specified index.
+        /// </summary>
+        public CharacterData this[int index] => new (this.data[(5 + index * CharacterData.Length)..]);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterList095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator CharacterList095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="CharacterList095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(CharacterList095 packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="CharacterData"/>.
+        /// </summary>
+        /// <param name="charactersCount">The count of <see cref="CharacterData"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int charactersCount) => charactersCount * CharacterData.Length + 5;
+
+
+    /// <summary>
+    /// Data of one character in the list..
+    /// </summary>
+    public readonly ref struct CharacterData
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterData"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public CharacterData(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 26;
+
+        /// <summary>
+        /// Gets or sets the slot index.
+        /// </summary>
+        public byte SlotIndex
+        {
+            get => this.data[0];
+            set => this.data[0] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => this.data.ExtractString(1, 10, System.Text.Encoding.UTF8);
+            set => this.data.Slice(1, 10).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the level.
+        /// </summary>
+        public ushort Level
+        {
+            get => ReadUInt16LittleEndian(this.data[12..]);
+            set => WriteUInt16LittleEndian(this.data[12..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        public CharacterStatus Status
+        {
+            get => (CharacterStatus)this.data[14..].GetByteValue(4, 0);
+            set => this.data[14..].SetByteValue((byte)value, 4, 0);
+        }
+
+        /// <summary>
+        /// Gets or sets the is item block active.
+        /// </summary>
+        public bool IsItemBlockActive
+        {
+            get => this.data[14..].GetBoolean(4);
+            set => this.data[14..].SetBoolean(value, 4);
+        }
+
+        /// <summary>
+        /// Gets or sets the appearance.
+        /// </summary>
+        public Span<byte> Appearance
+        {
+            get => this.data.Slice(15, 11);
+        }
+    }
+    }
+
+
+    /// <summary>
     /// Is sent by the server when: After the server successfully processed a character creation request.
     /// Causes reaction on client side: The new character is shown in the character list
     /// </summary>
@@ -10223,6 +11259,164 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(RespawnAfterDeath075 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The character respawned after death.
+    /// Causes reaction on client side: The character respawns with the specified attributes at the specified map.
+    /// </summary>
+    public readonly ref struct RespawnAfterDeath095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RespawnAfterDeath095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public RespawnAfterDeath095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RespawnAfterDeath095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private RespawnAfterDeath095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x04;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 22;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the position x.
+        /// </summary>
+        public byte PositionX
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position y.
+        /// </summary>
+        public byte PositionY
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the map number.
+        /// </summary>
+        public byte MapNumber
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the direction.
+        /// </summary>
+        public byte Direction
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the current health.
+        /// </summary>
+        public ushort CurrentHealth
+        {
+            get => ReadUInt16LittleEndian(this.data[8..]);
+            set => WriteUInt16LittleEndian(this.data[8..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current mana.
+        /// </summary>
+        public ushort CurrentMana
+        {
+            get => ReadUInt16LittleEndian(this.data[10..]);
+            set => WriteUInt16LittleEndian(this.data[10..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current ability.
+        /// </summary>
+        public ushort CurrentAbility
+        {
+            get => ReadUInt16LittleEndian(this.data[12..]);
+            set => WriteUInt16LittleEndian(this.data[12..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the experience.
+        /// </summary>
+        public uint Experience
+        {
+            get => ReadUInt32LittleEndian(this.data[14..]);
+            set => WriteUInt32LittleEndian(this.data[14..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the money.
+        /// </summary>
+        public uint Money
+        {
+            get => ReadUInt32LittleEndian(this.data[18..]);
+            set => WriteUInt32LittleEndian(this.data[18..], value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="RespawnAfterDeath095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator RespawnAfterDeath095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="RespawnAfterDeath095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(RespawnAfterDeath095 packet) => packet.data; 
     }
 
 
@@ -10984,6 +12178,216 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(SkillRemoved075 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a skill got added to the skill list, e.g. by equipping an item or learning a skill.
+    /// Causes reaction on client side: The skill is added to the skill list on client side.
+    /// </summary>
+    public readonly ref struct SkillAdded095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAdded095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SkillAdded095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAdded095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private SkillAdded095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+                this.Flag = 0xFE;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x11;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 8;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the flag.
+        /// </summary>
+        public byte Flag
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the skill index.
+        /// </summary>
+        public byte SkillIndex
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the skill number and level.
+        /// </summary>
+        public ushort SkillNumberAndLevel
+        {
+            get => ReadUInt16BigEndian(this.data[6..]);
+            set => WriteUInt16BigEndian(this.data[6..], value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SkillAdded095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator SkillAdded095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SkillAdded095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(SkillAdded095 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After a skill got removed from the skill list, e.g. by removing an equipped item.
+    /// Causes reaction on client side: The skill is added to the skill list on client side.
+    /// </summary>
+    public readonly ref struct SkillRemoved095
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillRemoved095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public SkillRemoved095(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillRemoved095"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private SkillRemoved095(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+                this.Flag = 0xFF;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x11;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 10;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1HeaderWithSubCode Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the flag.
+        /// </summary>
+        public byte Flag
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the skill index.
+        /// </summary>
+        public byte SkillIndex
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the skill number and level.
+        /// </summary>
+        public ushort SkillNumberAndLevel
+        {
+            get => ReadUInt16BigEndian(this.data[6..]);
+            set => WriteUInt16BigEndian(this.data[6..], value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="SkillRemoved095"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator SkillRemoved095(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SkillRemoved095"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(SkillRemoved095 packet) => packet.data; 
     }
 
 
@@ -12149,6 +13553,290 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <param name="packet">The packet as struct.</param>
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(CharacterInformation075 packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: After the character was selected by the player and entered the game.
+    /// Causes reaction on client side: The characters enters the game world.
+    /// </summary>
+    public readonly ref struct CharacterInformation097
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterInformation097"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public CharacterInformation097(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterInformation097"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private CharacterInformation097(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+                header.SubCode = SubCode;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC3;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0xF3;
+
+        /// <summary>
+        /// Gets the operation sub-code of this data packet.
+        /// The <see cref="Code" /> is used as a grouping key.
+        /// </summary>
+        public static byte SubCode => 0x03;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 52;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C3HeaderWithSubCode Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the x.
+        /// </summary>
+        public byte X
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the y.
+        /// </summary>
+        public byte Y
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the map id.
+        /// </summary>
+        public byte MapId
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the direction.
+        /// </summary>
+        public byte Direction
+        {
+            get => this.data[7];
+            set => this.data[7] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the current experience.
+        /// </summary>
+        public uint CurrentExperience
+        {
+            get => ReadUInt32LittleEndian(this.data[8..]);
+            set => WriteUInt32LittleEndian(this.data[8..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the experience for next level.
+        /// </summary>
+        public uint ExperienceForNextLevel
+        {
+            get => ReadUInt32LittleEndian(this.data[12..]);
+            set => WriteUInt32LittleEndian(this.data[12..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the level up points.
+        /// </summary>
+        public ushort LevelUpPoints
+        {
+            get => ReadUInt16LittleEndian(this.data[16..]);
+            set => WriteUInt16LittleEndian(this.data[16..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the strength.
+        /// </summary>
+        public ushort Strength
+        {
+            get => ReadUInt16LittleEndian(this.data[18..]);
+            set => WriteUInt16LittleEndian(this.data[18..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the agility.
+        /// </summary>
+        public ushort Agility
+        {
+            get => ReadUInt16LittleEndian(this.data[20..]);
+            set => WriteUInt16LittleEndian(this.data[20..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the vitality.
+        /// </summary>
+        public ushort Vitality
+        {
+            get => ReadUInt16LittleEndian(this.data[22..]);
+            set => WriteUInt16LittleEndian(this.data[22..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the energy.
+        /// </summary>
+        public ushort Energy
+        {
+            get => ReadUInt16LittleEndian(this.data[24..]);
+            set => WriteUInt16LittleEndian(this.data[24..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current health.
+        /// </summary>
+        public ushort CurrentHealth
+        {
+            get => ReadUInt16LittleEndian(this.data[26..]);
+            set => WriteUInt16LittleEndian(this.data[26..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum health.
+        /// </summary>
+        public ushort MaximumHealth
+        {
+            get => ReadUInt16LittleEndian(this.data[28..]);
+            set => WriteUInt16LittleEndian(this.data[28..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current mana.
+        /// </summary>
+        public ushort CurrentMana
+        {
+            get => ReadUInt16LittleEndian(this.data[30..]);
+            set => WriteUInt16LittleEndian(this.data[30..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum mana.
+        /// </summary>
+        public ushort MaximumMana
+        {
+            get => ReadUInt16LittleEndian(this.data[32..]);
+            set => WriteUInt16LittleEndian(this.data[32..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the current ability.
+        /// </summary>
+        public ushort CurrentAbility
+        {
+            get => ReadUInt16LittleEndian(this.data[34..]);
+            set => WriteUInt16LittleEndian(this.data[34..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum ability.
+        /// </summary>
+        public ushort MaximumAbility
+        {
+            get => ReadUInt16LittleEndian(this.data[36..]);
+            set => WriteUInt16LittleEndian(this.data[36..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the money.
+        /// </summary>
+        public uint Money
+        {
+            get => ReadUInt32LittleEndian(this.data[40..]);
+            set => WriteUInt32LittleEndian(this.data[40..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the hero state.
+        /// </summary>
+        public CharacterHeroState HeroState
+        {
+            get => (CharacterHeroState)this.data[44];
+            set => this.data[44] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        public CharacterStatus Status
+        {
+            get => (CharacterStatus)this.data[45];
+            set => this.data[45] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the used fruit points.
+        /// </summary>
+        public ushort UsedFruitPoints
+        {
+            get => ReadUInt16LittleEndian(this.data[46..]);
+            set => WriteUInt16LittleEndian(this.data[46..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the max fruit points.
+        /// </summary>
+        public ushort MaxFruitPoints
+        {
+            get => ReadUInt16LittleEndian(this.data[48..]);
+            set => WriteUInt16LittleEndian(this.data[48..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the leadership.
+        /// </summary>
+        public ushort Leadership
+        {
+            get => ReadUInt16LittleEndian(this.data[50..]);
+            set => WriteUInt16LittleEndian(this.data[50..], value);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterInformation097"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator CharacterInformation097(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="CharacterInformation097"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(CharacterInformation097 packet) => packet.data; 
     }
 
 
@@ -18863,6 +20551,567 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// <returns>The packet as byte span.</returns>
         public static implicit operator Span<byte>(OpenNpcDialog packet) => packet.data; 
     }
+
+
+    /// <summary>
+    /// Is sent by the server when: The player requested to enter the devil square mini game through the Charon NPC.
+    /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+    /// </summary>
+    public readonly ref struct DevilSquareEnterResult
+    {
+        /// <summary>
+        /// Defines the result of the enter request.
+        /// </summary>
+        public enum EnterResult
+        {
+            /// <summary>
+            /// The event has been entered.
+            /// </summary>
+            Success = 0,
+
+            /// <summary>
+            /// Entering the event failed, e.g. by missing event ticket or level range.
+            /// </summary>
+            Failed = 1,
+
+            /// <summary>
+            /// Entering the event failed, because it's not opened.
+            /// </summary>
+            NotOpen = 2,
+
+            /// <summary>
+            /// Entering the event failed, because the character level is too high for the requested event level.
+            /// </summary>
+            CharacterLevelTooHigh = 3,
+
+            /// <summary>
+            /// Entering the event failed, because the character level is too low for the requested event level.
+            /// </summary>
+            CharacterLevelTooLow = 4,
+
+            /// <summary>
+            /// Entering the event failed, because it's full.
+            /// </summary>
+            Full = 5,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DevilSquareEnterResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public DevilSquareEnterResult(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DevilSquareEnterResult"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private DevilSquareEnterResult(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x90;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        public DevilSquareEnterResult.EnterResult Result
+        {
+            get => (EnterResult)this.data[3];
+            set => this.data[3] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="DevilSquareEnterResult"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator DevilSquareEnterResult(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="DevilSquareEnterResult"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(DevilSquareEnterResult packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
+    /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
+    /// </summary>
+    public readonly ref struct MiniGameOpeningState
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiniGameOpeningState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MiniGameOpeningState(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiniGameOpeningState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MiniGameOpeningState(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x91;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 7;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the game type.
+        /// </summary>
+        public MiniGameType GameType
+        {
+            get => (MiniGameType)this.data[3];
+            set => this.data[3] = (byte)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the remaining entering time minutes.
+        /// </summary>
+        public byte RemainingEnteringTimeMinutes
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the user count.
+        /// </summary>
+        public byte UserCount
+        {
+            get => this.data[5];
+            set => this.data[5] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the remaining entering time minutes 2.
+        /// </summary>
+        public byte RemainingEnteringTimeMinutes2
+        {
+            get => this.data[6];
+            set => this.data[6] = value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MiniGameOpeningState"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MiniGameOpeningState(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MiniGameOpeningState"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MiniGameOpeningState packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: The state of a mini game event is about to change in 30 seconds.
+    /// Causes reaction on client side: The client side shows a message about the changing state.
+    /// </summary>
+    public readonly ref struct UpdateMiniGameState
+    {
+        /// <summary>
+        /// The state of the mini games.
+        /// </summary>
+        public enum MiniGameTypeState
+        {
+            /// <summary>
+            /// Is sent when the devil square is currently closed and will be opened. "You will enter Devil Square (x seconds from now)".
+            /// </summary>
+            DevilSquareClosed = 0,
+
+            /// <summary>
+            /// Is sent when the devil square game is currently opened for entrance and closing for entrance. "The gate of Devil Square will close down in x seconds".
+            /// </summary>
+            DevilSquareOpened = 1,
+
+            /// <summary>
+            /// Is sent when the devil square game is currently running and is about to end. "The gate of Devil Square is closing down (x seconds remaining)".
+            /// </summary>
+            DevilSquareRunning = 2,
+
+            /// <summary>
+            /// The blood castle game is closed. "Blood Castle Closing (in x seconds)".
+            /// </summary>
+            BloodCastleClosed = 3,
+
+            /// <summary>
+            /// The blood castle game is opened for entrance. "Blood Castle Infiltration (in x seconds)".
+            /// </summary>
+            BloodCastleOpened = 4,
+
+            /// <summary>
+            /// The blood castle game is ending. "Blood Castle ends (in x seconds)".
+            /// </summary>
+            BloodCastleEnding = 5,
+
+            /// <summary>
+            /// The blood castle game is finished. "Blood Castle Event shuts down (in x seconds)".
+            /// </summary>
+            BloodCastleFinished = 6,
+
+            /// <summary>
+            /// The blood castle game was finished successfully. "Congratulations".
+            /// </summary>
+            BloodCastleCongratulations = 7,
+
+            /// <summary>
+            /// The chaos castle game is closed. "Chaos Castle Closing (in x seconds)".
+            /// </summary>
+            ChaosCastleClosed = 10,
+
+            /// <summary>
+            /// The chaos castle game is opened for entrance. "Chaos Castle Penetration (in x seconds)".
+            /// </summary>
+            ChaosCastleOpened = 11,
+
+            /// <summary>
+            /// The chaos castle game is ending. "Chaos Castle Event ends (in x seconds)".
+            /// </summary>
+            ChaosCastleEnding = 12,
+
+            /// <summary>
+            /// The chaos castle game is finished. Chaos Castle Event shuts down (in x seconds)".
+            /// </summary>
+            ChaosCastleFinished = 13,
+        }
+
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateMiniGameState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public UpdateMiniGameState(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateMiniGameState"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private UpdateMiniGameState(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)Math.Min(data.Length, Length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x92;
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 4;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the state.
+        /// </summary>
+        public UpdateMiniGameState.MiniGameTypeState State
+        {
+            get => (MiniGameTypeState)this.data[3];
+            set => this.data[3] = (byte)value;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="UpdateMiniGameState"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator UpdateMiniGameState(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="UpdateMiniGameState"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(UpdateMiniGameState packet) => packet.data; 
+    }
+
+
+    /// <summary>
+    /// Is sent by the server when: A mini game ended and the score table is sent to the player.
+    /// Causes reaction on client side: The score table is shown at the client.
+    /// </summary>
+    public readonly ref struct MiniGameScoreTable
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiniGameScoreTable"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public MiniGameScoreTable(Span<byte> data)
+            : this(data, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiniGameScoreTable"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+        private MiniGameScoreTable(Span<byte> data, bool initialize)
+        {
+            this.data = data;
+            if (initialize)
+            {
+                var header = this.Header;
+                header.Type = HeaderType;
+                header.Code = Code;
+                header.Length = (byte)data.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the header type of this data packet.
+        /// </summary>
+        public static byte HeaderType => 0xC1;
+
+        /// <summary>
+        /// Gets the operation code of this data packet.
+        /// </summary>
+        public static byte Code => 0x93;
+
+        /// <summary>
+        /// Gets the header of this packet.
+        /// </summary>
+        public C1Header Header => new (this.data);
+
+        /// <summary>
+        /// Gets or sets the player rank.
+        /// </summary>
+        public byte PlayerRank
+        {
+            get => this.data[3];
+            set => this.data[3] = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the result count.
+        /// </summary>
+        public byte ResultCount
+        {
+            get => this.data[4];
+            set => this.data[4] = value;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="ResultItem"/> of the specified index.
+        /// </summary>
+        public ResultItem this[int index] => new (this.data[(5 + index * ResultItem.Length)..]);
+
+        /// <summary>
+        /// Performs an implicit conversion from a Span of bytes to a <see cref="MiniGameScoreTable"/>.
+        /// </summary>
+        /// <param name="packet">The packet as span.</param>
+        /// <returns>The packet as struct.</returns>
+        public static implicit operator MiniGameScoreTable(Span<byte> packet) => new (packet, false);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="MiniGameScoreTable"/> to a Span of bytes.
+        /// </summary>
+        /// <param name="packet">The packet as struct.</param>
+        /// <returns>The packet as byte span.</returns>
+        public static implicit operator Span<byte>(MiniGameScoreTable packet) => packet.data; 
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified count of <see cref="ResultItem"/>.
+        /// </summary>
+        /// <param name="resultsCount">The count of <see cref="ResultItem"/> from which the size will be calculated.</param>
+        public static int GetRequiredSize(int resultsCount) => resultsCount * ResultItem.Length + 5;
+
+
+    /// <summary>
+    /// The result of one player..
+    /// </summary>
+    public readonly ref struct ResultItem
+    {
+        private readonly Span<byte> data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResultItem"/> struct.
+        /// </summary>
+        /// <param name="data">The underlying data.</param>
+        public ResultItem(Span<byte> data)
+        {
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+        /// </summary>
+        public static int Length => 24;
+
+        /// <summary>
+        /// Gets or sets the player name.
+        /// </summary>
+        public string PlayerName
+        {
+            get => this.data.ExtractString(0, this.data.Length - 0, System.Text.Encoding.UTF8);
+            set => this.data.Slice(0).WriteString(value, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets or sets the total score.
+        /// </summary>
+        public uint TotalScore
+        {
+            get => ReadUInt32LittleEndian(this.data[12..]);
+            set => WriteUInt32LittleEndian(this.data[12..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the bonus experience.
+        /// </summary>
+        public uint BonusExperience
+        {
+            get => ReadUInt32LittleEndian(this.data[16..]);
+            set => WriteUInt32LittleEndian(this.data[16..], value);
+        }
+
+        /// <summary>
+        /// Gets or sets the bonus money.
+        /// </summary>
+        public uint BonusMoney
+        {
+            get => ReadUInt32LittleEndian(this.data[20..]);
+            set => WriteUInt32LittleEndian(this.data[20..], value);
+        }
+
+        /// <summary>
+        /// Calculates the size of the packet for the specified field content.
+        /// </summary>
+        /// <param name="content">The content of the variable 'PlayerName' field from which the size will be calculated.</param>
+        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 0;
+    }
+    }
+        /// <summary>
+        /// Defines the type of the mini game.
+        /// </summary>
+        public enum MiniGameType
+        {
+            /// <summary>
+            /// Undefined mini game type.
+            /// </summary>
+            Undefined = 0,
+
+            /// <summary>
+            /// The devil square mini game.
+            /// </summary>
+            DevilSquare = 1,
+
+            /// <summary>
+            /// The blood castle mini game.
+            /// </summary>
+            BloodCastle = 2,
+
+            /// <summary>
+            /// The chaos castle mini game.
+            /// </summary>
+            ChaosCastle = 4,
+
+            /// <summary>
+            /// The illusion temple mini game.
+            /// </summary>
+            IllusionTemple = 5,
+
+            /// <summary>
+            /// The doppelgänger mini game.
+            /// </summary>
+            Doppelganger = 6,
+        }
+
         /// <summary>
         /// Defines the role of a guild member.
         /// </summary>
@@ -18996,6 +21245,157 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             /// The reward is added gens contribution points.
             /// </summary>
             GensContribution = 16,
+        }
+
+        /// <summary>
+        /// Defines the possible socket options.
+        /// </summary>
+        public enum SocketOption
+        {
+            /// <summary>
+            /// Fire((Level type)Attack/Wizardry increase +20)
+            /// </summary>
+            FireAttackWizByLevelIncrease = 0,
+
+            /// <summary>
+            /// Fire(Attack speed increase +7)
+            /// </summary>
+            FireAttackSpeedIncrease = 1,
+
+            /// <summary>
+            /// Fire(Maximum attack/Wizardry increase +30)
+            /// </summary>
+            FireMaxDmgIncrease = 2,
+
+            /// <summary>
+            /// Fire(Minimum attack/Wizardry increase +20)
+            /// </summary>
+            FireMinDmgIncrease = 3,
+
+            /// <summary>
+            /// Fire(Attack/Wizardry increase +20)
+            /// </summary>
+            FireAttackWizIncrease = 4,
+
+            /// <summary>
+            /// Fire(AG cost decrease +40)
+            /// </summary>
+            FireAgCostDecrease = 5,
+
+            /// <summary>
+            /// Water(Block rating increase +10)
+            /// </summary>
+            WaterBlockRateIncrease = 10,
+
+            /// <summary>
+            /// Water(Defense increase +30)
+            /// </summary>
+            WaterDefenseIncrease = 11,
+
+            /// <summary>
+            /// Water(Shield protection increase +7)
+            /// </summary>
+            WaterShieldProtectionIncrease = 12,
+
+            /// <summary>
+            /// Water(Damage reduction +4)
+            /// </summary>
+            WaterDamageReduction4 = 13,
+
+            /// <summary>
+            /// Water(Damage reduction +5)
+            /// </summary>
+            WaterDamageReduction5 = 14,
+
+            /// <summary>
+            /// Ice(Monster destruction for the Life increase +8)
+            /// </summary>
+            IceLifeIncrease = 16,
+
+            /// <summary>
+            /// Ice(Monster destruction for the Mana increase +8)
+            /// </summary>
+            IceManaIncrease = 17,
+
+            /// <summary>
+            /// Ice(Skill attack increase +37)
+            /// </summary>
+            IceSkillAttackIncrease = 18,
+
+            /// <summary>
+            /// Ice(Attack rating increase +25)
+            /// </summary>
+            IceAttackRateIncrease = 19,
+
+            /// <summary>
+            /// Ice(Item durability increase +30)
+            /// </summary>
+            IceDurabilityIncrease = 20,
+
+            /// <summary>
+            /// Wind(Automatic Life recovery increase +8)
+            /// </summary>
+            WindAutoLifeRecoveryIncrease = 21,
+
+            /// <summary>
+            /// Wind(Maximum Life increase +4)
+            /// </summary>
+            WindMaxHealthIncrease = 22,
+
+            /// <summary>
+            /// Wind(Maximum Mana increase +4)
+            /// </summary>
+            WindMaxManaIncrease = 23,
+
+            /// <summary>
+            /// Wind(Automatic Mana recovery increase +7)
+            /// </summary>
+            WindAutoManaRecoverIncrease = 24,
+
+            /// <summary>
+            /// Wind(Maximum AG increase +25)
+            /// </summary>
+            WindMaxAgIncrease = 25,
+
+            /// <summary>
+            /// Wind(AG value increase +26)
+            /// </summary>
+            WindAutoAgRecoverIncrease = 26,
+
+            /// <summary>
+            /// Lightning(Excellent damage increase +15)
+            /// </summary>
+            LightningExcDmgIncrease = 29,
+
+            /// <summary>
+            /// Lightning(Excellent damage rate increase +10)
+            /// </summary>
+            LightningExcDmgRateIncrease = 30,
+
+            /// <summary>
+            /// Lightning(Critical damage increase +30)
+            /// </summary>
+            LightningCritDmgIncrease = 31,
+
+            /// <summary>
+            /// Lightning(Critical damage rate increase +8)
+            /// </summary>
+            LightningCritDmgRateIncrease = 32,
+
+            /// <summary>
+            /// Earth(Health increase +30)
+            /// </summary>
+            EarthHealhIncrease = 36,
+
+            /// <summary>
+            /// Empty Socket
+            /// </summary>
+            EmptySocket = 254,
+
+            /// <summary>
+            /// No Socket
+            /// </summary>
+            NoSocket = 255,
         }
 
 }

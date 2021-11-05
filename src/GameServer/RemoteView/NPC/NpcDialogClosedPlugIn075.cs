@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC
     /// </summary>
     [PlugIn(nameof(NpcDialogClosedPlugIn075), "The default implementation of the INpcDialogClosedPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("BAC39AFE-F277-48FD-BB21-A3F905EE0E73")]
-    [MaximumClient(0, 89, ClientLanguage.Invariant)]
+    [MaximumClient(0, 255, ClientLanguage.Invariant)]
     public class NpcDialogClosedPlugIn075 : INpcDialogClosedPlugIn
     {
         private readonly RemotePlayer player;

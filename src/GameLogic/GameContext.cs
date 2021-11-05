@@ -7,10 +7,12 @@ namespace MUnique.OpenMU.GameLogic
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Text.RegularExpressions;
     using System.Threading;
     using Microsoft.Extensions.Logging;
     using MUnique.OpenMU.DataModel.Configuration;
+    using MUnique.OpenMU.GameLogic.MiniGames;
     using MUnique.OpenMU.GameLogic.PlugIns;
     using MUnique.OpenMU.GameLogic.Views;
     using MUnique.OpenMU.Interfaces;
@@ -20,9 +22,11 @@ namespace MUnique.OpenMU.GameLogic
     /// <summary>
     /// The game context which holds all data of the game together.
     /// </summary>
-    public class GameContext : IGameContext, IDisposable
+    public class GameContext : Disposable, IGameContext
     {
-        private readonly IDictionary<ushort, GameMap> mapList;
+        private readonly Dictionary<ushort, GameMap> mapList = new ();
+
+        private readonly Dictionary<MiniGameMapKey, MiniGameContext> miniGames = new ();
 
         private readonly Timer recoverTimer;
 
@@ -30,12 +34,12 @@ namespace MUnique.OpenMU.GameLogic
 
         private readonly Timer tasksTimer;
 
-        private readonly SemaphoreSlim playerListLock = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim playerListLock = new (1);
 
         /// <summary>
         /// Keeps the list of all players.
         /// </summary>
-        private readonly List<Player> playerList = new List<Player>();
+        private readonly List<Player> playerList = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameContext" /> class.
@@ -45,7 +49,8 @@ namespace MUnique.OpenMU.GameLogic
         /// <param name="mapInitializer">The map initializer.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="plugInManager">The plug in manager.</param>
-        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer, ILoggerFactory loggerFactory, PlugInManager plugInManager)
+        /// <param name="dropGenerator">The drop generator.</param>
+        public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer, ILoggerFactory loggerFactory, PlugInManager plugInManager, IDropGenerator dropGenerator)
         {
             try
             {
@@ -54,10 +59,9 @@ namespace MUnique.OpenMU.GameLogic
                 this.PlugInManager = plugInManager;
                 this.mapInitializer = mapInitializer;
                 this.LoggerFactory = loggerFactory;
+                this.DropGenerator = dropGenerator;
                 this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>());
-                this.mapList = new Dictionary<ushort, GameMap>();
                 this.recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
-
                 this.tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
                 this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
             }
@@ -95,6 +99,9 @@ namespace MUnique.OpenMU.GameLogic
 
         /// <inheritdoc/>
         public PlugInManager PlugInManager { get; }
+
+        /// <inheritdoc/>
+        public IDropGenerator DropGenerator { get; }
 
         /// <inheritdoc />
         public FeaturePlugInContainer FeaturePlugIns { get; }
@@ -153,6 +160,56 @@ namespace MUnique.OpenMU.GameLogic
             this.GameMapCreated?.Invoke(this, createdMap);
 
             return createdMap;
+        }
+
+        /// <summary>
+        /// Gets the mini game map which is meant to be hosted by the game.
+        /// </summary>
+        /// <param name="miniGameDefinition">The mini game definition.</param>
+        /// <param name="requester">The requesting player.</param>
+        /// <returns>The hosted mini game instance.</returns>
+        public MiniGameContext GetMiniGame(MiniGameDefinition miniGameDefinition, Player requester)
+        {
+            var miniGameKey = MiniGameMapKey.Create(miniGameDefinition, requester);
+
+            if (this.miniGames.TryGetValue(miniGameKey, out var miniGameContext))
+            {
+                return miniGameContext;
+            }
+
+            lock (this.mapInitializer)
+            {
+                if (this.miniGames.TryGetValue(miniGameKey, out miniGameContext))
+                {
+                    return miniGameContext;
+                }
+
+                switch (miniGameDefinition.Type)
+                {
+                    case MiniGameType.DevilSquare:
+                        miniGameContext = new DevilSquareContext(miniGameKey, miniGameDefinition, this, this.mapInitializer);
+                        break;
+                    default:
+                        miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this, this.mapInitializer);
+                        break;
+                }
+
+                this.miniGames.Add(miniGameKey, miniGameContext);
+            }
+
+            var createdMap = miniGameContext.Map;
+
+            // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
+            this.mapInitializer.InitializeState(createdMap);
+            this.GameMapCreated?.Invoke(this, createdMap);
+            return miniGameContext;
+        }
+
+        /// <inheritdoc />
+        public void RemoveMiniGame(MiniGameContext miniGameContext)
+        {
+            miniGameContext.Dispose();
+            this.miniGames.Remove(miniGameContext.Key);
         }
 
         /// <summary>
@@ -253,29 +310,23 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="managed"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "recoverTimer", Justification = "Null-conditional confuses the code analysis.")]
-        protected virtual void Dispose(bool managed)
-        {
-            if (managed)
-            {
-                this.recoverTimer.Dispose();
-                this.tasksTimer.Dispose();
-            }
+            base.Dispose(disposing);
+            this.recoverTimer.Dispose();
+            this.tasksTimer.Dispose();
         }
 
         private void ExecutePeriodicTasks(object? state)
         {
-            this.PlugInManager.GetPlugInPoint<IPeriodicTaskPlugIn>()?.ExecuteTask(this);
+            try
+            {
+                this.PlugInManager.GetPlugInPoint<IPeriodicTaskPlugIn>()?.ExecuteTask(this);
+            }
+            catch (Exception ex)
+            {
+                Debug.Fail(ex.Message, ex.StackTrace);
+            }
         }
 
         private void RecoverTimerElapsed(object? state)

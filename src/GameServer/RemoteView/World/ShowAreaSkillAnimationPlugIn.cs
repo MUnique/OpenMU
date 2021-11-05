@@ -20,7 +20,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// </summary>
     [PlugIn(nameof(ShowAreaSkillAnimationPlugIn), "The default implementation of the IShowAreaSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("4cc09cdd-55a3-4191-94fc-b8e684b87cac")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
+    [MinimumClient(3, 0, ClientLanguage.Invariant)]
     public class ShowAreaSkillAnimationPlugIn : IShowAreaSkillAnimationPlugIn
     {
         private readonly RemotePlayer player;

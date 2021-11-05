@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.DataModel.Configuration
     ///     1) Balgass is undeafeated - monsters are not dropping special items
     ///     2) Balgass is defeated - monsters are dropping special items
     ///     3) Crywolf event is ongoing - The normal monsters are not there(?), but event monsters.
-    /// For each of this status, there exist different terrain maps (safezones are different, etc.).
+    /// For each of this status (<see cref="Discriminator"/>), there exist different terrain maps (safezones are different, etc.).
     /// To reflect this requirement on this data model, for each status there must be one game map definition.
     /// The switch between this status and its corresponding game map definitions should be done in game logic.
     /// </remarks>
@@ -63,6 +63,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// The exp multiplier.
         /// </value>
         public double ExpMultiplier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the discriminator which allows to identify different map definitions with the same <see cref="Number"/>.
+        /// </summary>
+        public int Discriminator { get; set; }
 
         /// <summary>
         /// Gets or sets the game map to which the player will be brought when it died.

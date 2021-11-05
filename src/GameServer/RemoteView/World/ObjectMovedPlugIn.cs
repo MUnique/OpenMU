@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// </summary>
     [PlugIn(nameof(ObjectMovedPlugIn), "The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("29ee689f-636c-47e7-a930-b60ce8e8993c")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
+    [MinimumClient(1, 0, ClientLanguage.Invariant)]
     public class ObjectMovedPlugIn : IObjectMovedPlugIn
     {
         private const short TeleportTargetNumber = 0x0F;
@@ -166,7 +166,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
         private byte GetInstantMoveCode()
         {
-            if (this.player.ClientVersion.Season == 0 && this.player.ClientVersion.Episode <= 80)
+            if (this.player.ClientVersion.Season == 0)
             {
                 return 0x11;
             }
@@ -188,7 +188,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
         private byte GetWalkCode()
         {
-            if (this.player.ClientVersion.Season == 0 && this.player.ClientVersion.Episode <= 80)
+            if (this.player.ClientVersion.Season == 0)
             {
                 return 0x10;
             }

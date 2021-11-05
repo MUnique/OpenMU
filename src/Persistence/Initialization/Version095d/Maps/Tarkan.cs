@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
+namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps
 {
     using System;
     using System.Collections.Generic;

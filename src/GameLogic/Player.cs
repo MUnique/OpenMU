@@ -16,6 +16,7 @@ namespace MUnique.OpenMU.GameLogic
     using MUnique.OpenMU.DataModel.Entities;
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.GameLogic.GuildWar;
+    using MUnique.OpenMU.GameLogic.MiniGames;
     using MUnique.OpenMU.GameLogic.NPC;
     using MUnique.OpenMU.GameLogic.PlayerActions;
     using MUnique.OpenMU.GameLogic.PlugIns;
@@ -384,6 +385,11 @@ namespace MUnique.OpenMU.GameLogic
         /// <inheritdoc/>
         public Bucket<ILocateable>? OldBucket { get; set; }
 
+        /// <summary>
+        /// Gets or sets the mini game, which the player has currently entered.
+        /// </summary>
+        public MiniGameContext? CurrentMiniGame { get; set; }
+
         /// <inheritdoc/>
         public void AttackBy(IAttacker attacker, SkillEntry? skill)
         {
@@ -651,12 +657,20 @@ namespace MUnique.OpenMU.GameLogic
             this.PlaceAtGate(gate);
             this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
 
-            this.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChange();
+            if (this.PlayerState.CurrentState != GameLogic.PlayerState.Disconnected)
+            {
+                this.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChange();
+            }
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
             // the map and is ready to receive the new meet player/monster etc.
             // Then ClientReadyAfterMapChange is called.
         }
+
+        /// <summary>
+        /// Moves the player to the safe zone.
+        /// </summary>
+        public void WarpToSafezone() => this.WarpTo(this.GetSpawnGateOfCurrentMap());
 
         /// <summary>
         /// Respawns the player to the specified gate.
@@ -706,7 +720,15 @@ namespace MUnique.OpenMU.GameLogic
             this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
             this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
 
-            this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned());
+            if (this.CurrentMiniGame is { } currentMiniGame)
+            {
+                this.CurrentMap = currentMiniGame.Map;
+            }
+            else
+            {
+                this.CurrentMap = this.GameContext.GetMap(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned());
+            }
+
             this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
             this.IsAlive = true;
             this.CurrentMap!.Add(this);
@@ -1098,9 +1120,20 @@ namespace MUnique.OpenMU.GameLogic
         /// </summary>
         protected virtual void InternalDisconnect()
         {
+            var moveToNextSafezone = false;
             if (this.respawnAfterDeathToken.CanBeCanceled && !this.respawnAfterDeathToken.IsCancellationRequested)
             {
                 this.respawnAfterDeathToken.ThrowIfCancellationRequested();
+                moveToNextSafezone = true;
+            }
+
+            if (this.CurrentMiniGame is { })
+            {
+                moveToNextSafezone = true;
+            }
+
+            if (moveToNextSafezone)
+            {
                 this.WarpTo(this.GetSpawnGateOfCurrentMap());
             }
 

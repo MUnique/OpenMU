@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
     /// </summary>
     [PlugIn(nameof(GuildCreateHandlerPlugIn), "Handler for guild create packets.")]
     [Guid("0aae71c1-72df-47d6-af88-cddc5d5c7311")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
+    [MinimumClient(1, 0, ClientLanguage.Invariant)]
     internal class GuildCreateHandlerPlugIn : IPacketHandlerPlugIn
     {
         private readonly GuildCreateAction createAction = new ();

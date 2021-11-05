@@ -204,5 +204,11 @@ namespace MUnique.OpenMU.DataModel.Configuration
         /// </summary>
         [MemberOfAggregate]
         public virtual ICollection<PlugInConfiguration> PlugInConfigurations { get; protected set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the event definitions.
+        /// </summary>
+        [MemberOfAggregate]
+        public virtual ICollection<MiniGameDefinition> MiniGameDefinitions { get; protected set; } = null!;
     }
 }

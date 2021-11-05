@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     [PlugIn(nameof(WarpGateHandlerPlugIn), "Handler for warp gate packets.")]
     [Guid("d8f56da4-774b-42af-96ac-12a10ea0187b")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
+    [MinimumClient(1, 0, ClientLanguage.Invariant)]
     internal class WarpGateHandlerPlugIn : IPacketHandlerPlugIn
     {
         private readonly WarpGateAction warpAction = new ();

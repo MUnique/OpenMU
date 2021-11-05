@@ -131,6 +131,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="AreaSkillAnimation095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object performs a skill which has effect on an area.
+        /// Causes reaction on client side: The animation is shown on the user interface.
+        /// </remarks>
+        public static AreaSkillAnimation095ThreadSafeWriter StartWriteAreaSkillAnimation095(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="SkillAnimation075" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -139,6 +152,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Causes reaction on client side: The animation is shown on the user interface.
         /// </remarks>
         public static SkillAnimation075ThreadSafeWriter StartWriteSkillAnimation075(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="SkillAnimation095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
+        /// Causes reaction on client side: The animation is shown on the user interface.
+        /// </remarks>
+        public static SkillAnimation095ThreadSafeWriter StartWriteSkillAnimation095(this IConnection connection)
         {
           return new (connection);
         }
@@ -716,6 +742,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="RespawnAfterDeath095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The character respawned after death.
+        /// Causes reaction on client side: The character respawns with the specified attributes at the specified map.
+        /// </remarks>
+        public static RespawnAfterDeath095ThreadSafeWriter StartWriteRespawnAfterDeath095(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="PoisonDamage" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -794,6 +833,32 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="SkillAdded095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a skill got added to the skill list, e.g. by equipping an item or learning a skill.
+        /// Causes reaction on client side: The skill is added to the skill list on client side.
+        /// </remarks>
+        public static SkillAdded095ThreadSafeWriter StartWriteSkillAdded095(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="SkillRemoved095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a skill got removed from the skill list, e.g. by removing an equipped item.
+        /// Causes reaction on client side: The skill is added to the skill list on client side.
+        /// </remarks>
+        public static SkillRemoved095ThreadSafeWriter StartWriteSkillRemoved095(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="CharacterFocused" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -867,6 +932,19 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// Causes reaction on client side: The characters enters the game world.
         /// </remarks>
         public static CharacterInformation075ThreadSafeWriter StartWriteCharacterInformation075(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="CharacterInformation097" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the character was selected by the player and entered the game.
+        /// Causes reaction on client side: The characters enters the game world.
+        /// </remarks>
+        public static CharacterInformation097ThreadSafeWriter StartWriteCharacterInformation097(this IConnection connection)
         {
           return new (connection);
         }
@@ -1470,6 +1548,45 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="DevilSquareEnterResult" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requested to enter the devil square mini game through the Charon NPC.
+        /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+        /// </remarks>
+        public static DevilSquareEnterResultThreadSafeWriter StartWriteDevilSquareEnterResult(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="MiniGameOpeningState" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
+        /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
+        /// </remarks>
+        public static MiniGameOpeningStateThreadSafeWriter StartWriteMiniGameOpeningState(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="UpdateMiniGameState" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the server when: The state of a mini game event is about to change in 30 seconds.
+        /// Causes reaction on client side: The client side shows a message about the changing state.
+        /// </remarks>
+        public static UpdateMiniGameStateThreadSafeWriter StartWriteUpdateMiniGameState(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Sends a <see cref="GameServerEntered" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1648,6 +1765,31 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Sends a <see cref="AreaSkillAnimation095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillId">The skill id.</param>
+        /// <param name="playerId">The player id.</param>
+        /// <param name="pointX">The point x.</param>
+        /// <param name="pointY">The point y.</param>
+        /// <param name="rotation">The rotation.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object performs a skill which has effect on an area.
+        /// Causes reaction on client side: The animation is shown on the user interface.
+        /// </remarks>
+        public static void SendAreaSkillAnimation095(this IConnection connection, byte @skillId, ushort @playerId, byte @pointX, byte @pointY, byte @rotation)
+        {
+            using var writer = connection.StartWriteAreaSkillAnimation095();
+            var packet = writer.Packet;
+            packet.SkillId = @skillId;
+            packet.PlayerId = @playerId;
+            packet.PointX = @pointX;
+            packet.PointY = @pointY;
+            packet.Rotation = @rotation;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="SkillAnimation075" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1662,6 +1804,29 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static void SendSkillAnimation075(this IConnection connection, byte @skillId, ushort @playerId, ushort @targetId, bool @effectApplied)
         {
             using var writer = connection.StartWriteSkillAnimation075();
+            var packet = writer.Packet;
+            packet.SkillId = @skillId;
+            packet.PlayerId = @playerId;
+            packet.TargetId = @targetId;
+            packet.EffectApplied = @effectApplied;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="SkillAnimation095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillId">The skill id.</param>
+        /// <param name="playerId">The player id.</param>
+        /// <param name="targetId">The target id.</param>
+        /// <param name="effectApplied">The effect applied.</param>
+        /// <remarks>
+        /// Is sent by the server when: An object performs a skill which is directly targeted to another object.
+        /// Causes reaction on client side: The animation is shown on the user interface.
+        /// </remarks>
+        public static void SendSkillAnimation095(this IConnection connection, byte @skillId, ushort @playerId, ushort @targetId, bool @effectApplied)
+        {
+            using var writer = connection.StartWriteSkillAnimation095();
             var packet = writer.Packet;
             packet.SkillId = @skillId;
             packet.PlayerId = @playerId;
@@ -2750,6 +2915,39 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         }
 
         /// <summary>
+        /// Sends a <see cref="RespawnAfterDeath095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="positionX">The position x.</param>
+        /// <param name="positionY">The position y.</param>
+        /// <param name="mapNumber">The map number.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="currentHealth">The current health.</param>
+        /// <param name="currentMana">The current mana.</param>
+        /// <param name="currentAbility">The current ability.</param>
+        /// <param name="experience">The experience.</param>
+        /// <param name="money">The money.</param>
+        /// <remarks>
+        /// Is sent by the server when: The character respawned after death.
+        /// Causes reaction on client side: The character respawns with the specified attributes at the specified map.
+        /// </remarks>
+        public static void SendRespawnAfterDeath095(this IConnection connection, byte @positionX, byte @positionY, byte @mapNumber, byte @direction, ushort @currentHealth, ushort @currentMana, ushort @currentAbility, uint @experience, uint @money)
+        {
+            using var writer = connection.StartWriteRespawnAfterDeath095();
+            var packet = writer.Packet;
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.MapNumber = @mapNumber;
+            packet.Direction = @direction;
+            packet.CurrentHealth = @currentHealth;
+            packet.CurrentMana = @currentMana;
+            packet.CurrentAbility = @currentAbility;
+            packet.Experience = @experience;
+            packet.Money = @money;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="PoisonDamage" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2866,6 +3064,48 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public static void SendSkillRemoved075(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 0)
         {
             using var writer = connection.StartWriteSkillRemoved075();
+            var packet = writer.Packet;
+            packet.Flag = @flag;
+            packet.SkillIndex = @skillIndex;
+            packet.SkillNumberAndLevel = @skillNumberAndLevel;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="SkillAdded095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillIndex">The skill index.</param>
+        /// <param name="skillNumberAndLevel">The skill number and level.</param>
+        /// <param name="flag">The flag.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a skill got added to the skill list, e.g. by equipping an item or learning a skill.
+        /// Causes reaction on client side: The skill is added to the skill list on client side.
+        /// </remarks>
+        public static void SendSkillAdded095(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 0xFE)
+        {
+            using var writer = connection.StartWriteSkillAdded095();
+            var packet = writer.Packet;
+            packet.Flag = @flag;
+            packet.SkillIndex = @skillIndex;
+            packet.SkillNumberAndLevel = @skillNumberAndLevel;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="SkillRemoved095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillIndex">The skill index.</param>
+        /// <param name="skillNumberAndLevel">The skill number and level.</param>
+        /// <param name="flag">The flag.</param>
+        /// <remarks>
+        /// Is sent by the server when: After a skill got removed from the skill list, e.g. by removing an equipped item.
+        /// Causes reaction on client side: The skill is added to the skill list on client side.
+        /// </remarks>
+        public static void SendSkillRemoved095(this IConnection connection, byte @skillIndex, ushort @skillNumberAndLevel, byte @flag = 0xFF)
+        {
+            using var writer = connection.StartWriteSkillRemoved095();
             var packet = writer.Packet;
             packet.Flag = @flag;
             packet.SkillIndex = @skillIndex;
@@ -3082,6 +3322,67 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             packet.Money = @money;
             packet.HeroState = @heroState;
             packet.Status = @status;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="CharacterInformation097" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="mapId">The map id.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="currentExperience">The current experience.</param>
+        /// <param name="experienceForNextLevel">The experience for next level.</param>
+        /// <param name="levelUpPoints">The level up points.</param>
+        /// <param name="strength">The strength.</param>
+        /// <param name="agility">The agility.</param>
+        /// <param name="vitality">The vitality.</param>
+        /// <param name="energy">The energy.</param>
+        /// <param name="currentHealth">The current health.</param>
+        /// <param name="maximumHealth">The maximum health.</param>
+        /// <param name="currentMana">The current mana.</param>
+        /// <param name="maximumMana">The maximum mana.</param>
+        /// <param name="currentAbility">The current ability.</param>
+        /// <param name="maximumAbility">The maximum ability.</param>
+        /// <param name="money">The money.</param>
+        /// <param name="heroState">The hero state.</param>
+        /// <param name="status">The status.</param>
+        /// <param name="usedFruitPoints">The used fruit points.</param>
+        /// <param name="maxFruitPoints">The max fruit points.</param>
+        /// <param name="leadership">The leadership.</param>
+        /// <remarks>
+        /// Is sent by the server when: After the character was selected by the player and entered the game.
+        /// Causes reaction on client side: The characters enters the game world.
+        /// </remarks>
+        public static void SendCharacterInformation097(this IConnection connection, byte @x, byte @y, byte @mapId, byte @direction, uint @currentExperience, uint @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership)
+        {
+            using var writer = connection.StartWriteCharacterInformation097();
+            var packet = writer.Packet;
+            packet.X = @x;
+            packet.Y = @y;
+            packet.MapId = @mapId;
+            packet.Direction = @direction;
+            packet.CurrentExperience = @currentExperience;
+            packet.ExperienceForNextLevel = @experienceForNextLevel;
+            packet.LevelUpPoints = @levelUpPoints;
+            packet.Strength = @strength;
+            packet.Agility = @agility;
+            packet.Vitality = @vitality;
+            packet.Energy = @energy;
+            packet.CurrentHealth = @currentHealth;
+            packet.MaximumHealth = @maximumHealth;
+            packet.CurrentMana = @currentMana;
+            packet.MaximumMana = @maximumMana;
+            packet.CurrentAbility = @currentAbility;
+            packet.MaximumAbility = @maximumAbility;
+            packet.Money = @money;
+            packet.HeroState = @heroState;
+            packet.Status = @status;
+            packet.UsedFruitPoints = @usedFruitPoints;
+            packet.MaxFruitPoints = @maxFruitPoints;
+            packet.Leadership = @leadership;
             writer.Commit();
         }
 
@@ -4001,6 +4302,63 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
             packet.NpcNumber = @npcNumber;
             packet.GensContributionPoints = @gensContributionPoints;
             writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="DevilSquareEnterResult" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="result">The result.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requested to enter the devil square mini game through the Charon NPC.
+        /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+        /// </remarks>
+        public static void SendDevilSquareEnterResult(this IConnection connection, DevilSquareEnterResult.EnterResult @result)
+        {
+            using var writer = connection.StartWriteDevilSquareEnterResult();
+            var packet = writer.Packet;
+            packet.Result = @result;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="MiniGameOpeningState" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="gameType">The game type.</param>
+        /// <param name="remainingEnteringTimeMinutes">The remaining entering time minutes.</param>
+        /// <param name="userCount">The user count.</param>
+        /// <param name="remainingEnteringTimeMinutes2">The remaining entering time minutes 2.</param>
+        /// <remarks>
+        /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
+        /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
+        /// </remarks>
+        public static void SendMiniGameOpeningState(this IConnection connection, MiniGameType @gameType, byte @remainingEnteringTimeMinutes, byte @userCount, byte @remainingEnteringTimeMinutes2)
+        {
+            using var writer = connection.StartWriteMiniGameOpeningState();
+            var packet = writer.Packet;
+            packet.GameType = @gameType;
+            packet.RemainingEnteringTimeMinutes = @remainingEnteringTimeMinutes;
+            packet.UserCount = @userCount;
+            packet.RemainingEnteringTimeMinutes2 = @remainingEnteringTimeMinutes2;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="UpdateMiniGameState" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="state">The state.</param>
+        /// <remarks>
+        /// Is sent by the server when: The state of a mini game event is about to change in 30 seconds.
+        /// Causes reaction on client side: The client side shows a message about the changing state.
+        /// </remarks>
+        public static void SendUpdateMiniGameState(this IConnection connection, UpdateMiniGameState.MiniGameTypeState @state)
+        {
+            using var writer = connection.StartWriteUpdateMiniGameState();
+            var packet = writer.Packet;
+            packet.State = @state;
+            writer.Commit();
         }    }
     /// <summary>
     /// A helper struct to write a <see cref="GameServerEntered"/> safely to a <see cref="IConnection.Output" />.
@@ -4419,6 +4777,58 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="AreaSkillAnimation095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct AreaSkillAnimation095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkillAnimation095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public AreaSkillAnimation095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new AreaSkillAnimation095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkillAnimation095.Length)[..AreaSkillAnimation095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public AreaSkillAnimation095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="AreaSkillAnimation095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(AreaSkillAnimation095.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="SkillAnimation075"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct SkillAnimation075ThreadSafeWriter
@@ -4459,6 +4869,58 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.AdvanceAndFlushSafely(SkillAnimation075.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="SkillAnimation095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct SkillAnimation095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAnimation095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public SkillAnimation095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new SkillAnimation095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillAnimation095.Length)[..SkillAnimation095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public SkillAnimation095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="SkillAnimation095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(SkillAnimation095.Length);
         }
 
         /// <summary>
@@ -6759,6 +7221,58 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="RespawnAfterDeath095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct RespawnAfterDeath095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RespawnAfterDeath095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public RespawnAfterDeath095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new RespawnAfterDeath095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(RespawnAfterDeath095.Length)[..RespawnAfterDeath095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public RespawnAfterDeath095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="RespawnAfterDeath095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(RespawnAfterDeath095.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="PoisonDamage"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct PoisonDamageThreadSafeWriter
@@ -7071,6 +7585,110 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="SkillAdded095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct SkillAdded095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillAdded095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public SkillAdded095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new SkillAdded095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillAdded095.Length)[..SkillAdded095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public SkillAdded095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="SkillAdded095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(SkillAdded095.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="SkillRemoved095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct SkillRemoved095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillRemoved095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public SkillRemoved095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new SkillRemoved095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(SkillRemoved095.Length)[..SkillRemoved095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public SkillRemoved095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="SkillRemoved095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(SkillRemoved095.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="CharacterFocused"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct CharacterFocusedThreadSafeWriter
@@ -7371,6 +7989,58 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.AdvanceAndFlushSafely(CharacterInformation075.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="CharacterInformation097"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct CharacterInformation097ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterInformation097ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public CharacterInformation097ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new CharacterInformation097(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(CharacterInformation097.Length)[..CharacterInformation097.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public CharacterInformation097 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="CharacterInformation097" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(CharacterInformation097.Length);
         }
 
         /// <summary>
@@ -9763,6 +10433,162 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         public void Commit()
         {
             this.connection.Output.AdvanceAndFlushSafely(OpenNpcDialog.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="DevilSquareEnterResult"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct DevilSquareEnterResultThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DevilSquareEnterResultThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public DevilSquareEnterResultThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new DevilSquareEnterResult(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(DevilSquareEnterResult.Length)[..DevilSquareEnterResult.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public DevilSquareEnterResult Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="DevilSquareEnterResult" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(DevilSquareEnterResult.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="MiniGameOpeningState"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct MiniGameOpeningStateThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiniGameOpeningStateThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public MiniGameOpeningStateThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new MiniGameOpeningState(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(MiniGameOpeningState.Length)[..MiniGameOpeningState.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public MiniGameOpeningState Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="MiniGameOpeningState" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(MiniGameOpeningState.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="UpdateMiniGameState"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct UpdateMiniGameStateThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateMiniGameStateThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public UpdateMiniGameStateThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new UpdateMiniGameState(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(UpdateMiniGameState.Length)[..UpdateMiniGameState.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public UpdateMiniGameState Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="UpdateMiniGameState" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(UpdateMiniGameState.Length);
         }
 
         /// <summary>

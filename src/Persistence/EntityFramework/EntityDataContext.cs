@@ -99,6 +99,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             modelBuilder.Entity<LetterBody>().HasOne(body => body.RawHeader);
             modelBuilder.Entity<LetterHeader>().Ignore(header => header.ReceiverName);
             modelBuilder.Entity<MonsterDefinition>().HasMany<QuestDefinition>().WithOne(q => q.RawQuestGiver);
+            modelBuilder.Entity<MiniGameRankingEntry>();
 
             // TODO:
             modelBuilder.Entity<GameConfiguration>().Ignore(c => c.ExperienceTable)

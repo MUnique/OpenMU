@@ -11,7 +11,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
     /// <summary>
     /// The initialization of all NPCs, which are no monsters.
     /// </summary>
-    internal partial class NpcInitialization : Version075.NpcInitialization
+    internal partial class NpcInitialization : Version095d.NpcInitialization
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NpcInitialization" /> class.
@@ -86,32 +86,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
                 var def = this.Context.CreateNew<MonsterDefinition>();
                 def.Number = 233;
                 def.Designation = "Messenger of Arch.";
-                def.ObjectKind = NpcObjectKind.PassiveNpc;
-                this.GameConfiguration.Monsters.Add(def);
-            }
-
-            {
-                var def = this.Context.CreateNew<MonsterDefinition>();
-                def.Number = 235;
-                def.Designation = "Sevina the Priestess";
-                def.NpcWindow = NpcWindow.LegacyQuest;
-                def.ObjectKind = NpcObjectKind.PassiveNpc;
-                this.GameConfiguration.Monsters.Add(def);
-            }
-
-            {
-                var def = this.Context.CreateNew<MonsterDefinition>();
-                def.Number = 236;
-                def.Designation = "Golden Archer";
-                def.ObjectKind = NpcObjectKind.PassiveNpc;
-                this.GameConfiguration.Monsters.Add(def);
-            }
-
-            {
-                var def = this.Context.CreateNew<MonsterDefinition>();
-                def.Number = 237;
-                def.Designation = "Charon";
-                def.NpcWindow = NpcWindow.DevilSquare;
                 def.ObjectKind = NpcObjectKind.PassiveNpc;
                 this.GameConfiguration.Monsters.Add(def);
             }

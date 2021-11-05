@@ -69,8 +69,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
 
         private byte DetermineOperation()
         {
-            if (this.player.ClientVersion.Season == 0
-                && this.player.ClientVersion.Episode < 80)
+            if (this.player.ClientVersion.Season < 1)
             {
                 return 0x15;
             }

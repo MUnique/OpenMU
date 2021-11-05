@@ -418,6 +418,29 @@ namespace MUnique.OpenMU.Persistence.BasicModel
             }
         }
 
+        /// <summary>
+        /// Gets the raw collection of <see cref="MiniGameDefinitions" />.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("miniGameDefinitions")]
+        [System.Text.Json.Serialization.JsonPropertyName("miniGameDefinitions")]
+        public ICollection<MiniGameDefinition> RawMiniGameDefinitions { get; } = new List<MiniGameDefinition>();
+        
+        /// <inheritdoc/>
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition> MiniGameDefinitions
+        {
+            get => base.MiniGameDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition, MiniGameDefinition>(this.RawMiniGameDefinitions);
+            protected set
+            {
+                this.MiniGameDefinitions.Clear();
+                foreach (var item in value)
+                {
+                    this.MiniGameDefinitions.Add(item);
+                }
+            }
+        }
+
 
         /// <inheritdoc/>
         public override bool Equals(object obj)

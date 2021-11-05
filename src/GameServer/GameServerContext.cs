@@ -35,6 +35,7 @@ namespace MUnique.OpenMU.GameServer
         /// <param name="mapInitializer">The map initializer.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="plugInManager">The plug in manager.</param>
+        /// <param name="dropGenerator">The drop generator.</param>
         public GameServerContext(
             GameServerDefinition gameServerDefinition,
             IGuildServer guildServer,
@@ -43,8 +44,15 @@ namespace MUnique.OpenMU.GameServer
             IPersistenceContextProvider persistenceContextProvider,
             IMapInitializer mapInitializer,
             ILoggerFactory loggerFactory,
-            PlugInManager plugInManager)
-            : base(gameServerDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"), persistenceContextProvider, mapInitializer, loggerFactory, plugInManager)
+            PlugInManager plugInManager,
+            IDropGenerator dropGenerator)
+            : base(
+                gameServerDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"),
+                persistenceContextProvider,
+                mapInitializer,
+                loggerFactory,
+                plugInManager,
+                dropGenerator)
         {
             this.gameServerDefinition = gameServerDefinition;
             this.Id = gameServerDefinition.ServerID;

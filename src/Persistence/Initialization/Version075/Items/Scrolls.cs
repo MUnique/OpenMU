@@ -45,7 +45,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items
             this.CreateScroll(11, 12, "Scroll of Aqua Beam", 74, 0, 345, 100000);
         }
 
-        private void CreateScroll(byte number, int skillNumber, string name, byte dropLevel, int levelRequirement, int energyRequirement, int money)
+        /// <summary>
+        /// Creates the scroll.
+        /// </summary>
+        /// <param name="number">The number.</param>
+        /// <param name="skillNumber">The skill number.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="dropLevel">The drop level.</param>
+        /// <param name="levelRequirement">The level requirement.</param>
+        /// <param name="energyRequirement">The energy requirement.</param>
+        /// <param name="money">The money.</param>
+        protected void CreateScroll(byte number, int skillNumber, string name, byte dropLevel, int levelRequirement, int energyRequirement, int money)
         {
             var scroll = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(scroll);

@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items
     /// </summary>
     [PlugIn(nameof(ConsumeItemHandlerPlugIn), "Handler for item consume packets.")]
     [Guid("53992288-0d11-49df-98a3-2912b7616558")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
+    [MinimumClient(6, 0, ClientLanguage.Invariant)]
     internal class ConsumeItemHandlerPlugIn : IPacketHandlerPlugIn
     {
         private readonly ItemConsumeAction consumeAction = new ();

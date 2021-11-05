@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
     /// <summary>
     /// The initialization for the Lorencia map.
     /// </summary>
-    internal class Lorencia : Version075.Maps.Lorencia
+    internal class Lorencia : Version095d.Maps.Lorencia
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Lorencia"/> class.
@@ -35,7 +35,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
 
             yield return this.CreateMonsterSpawn(this.NpcDictionary[230], 62, 130, Direction.SouthEast);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[226], 122, 110, Direction.SouthEast);
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[236], 175, 120, Direction.SouthEast);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[257], 96, 129, Direction.SouthWest);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[257], 174, 129, Direction.SouthWest);
             yield return this.CreateMonsterSpawn(this.NpcDictionary[257], 130, 128, Direction.SouthEast);

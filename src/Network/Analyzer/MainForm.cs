@@ -32,6 +32,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             { new ClientVersion(6, 3, ClientLanguage.English), "S6E3 (1.04d)" },
             { new ClientVersion(1, 0, ClientLanguage.Invariant), "Season 1 - 6" },
             { new ClientVersion(0, 97, ClientLanguage.Invariant), "0.97" },
+            { new ClientVersion(0, 95, ClientLanguage.English), "0.95d" },
             { new ClientVersion(0, 75, ClientLanguage.Invariant), "0.75" },
         };
 

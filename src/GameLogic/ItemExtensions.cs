@@ -90,6 +90,15 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <summary>
+        /// Determines whether this item can have a skill.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified item can have a skill; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool CanHaveSkill(this Item item) => item.IsWearable() && item.Definition?.Skill != null && item.Definition.QualifiedCharacters.Any();
+
+        /// <summary>
         /// Determines whether this item is wearable.
         /// </summary>
         /// <param name="item">The item.</param>

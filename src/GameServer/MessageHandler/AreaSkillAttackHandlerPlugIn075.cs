@@ -7,10 +7,9 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using System;
     using System.Runtime.InteropServices;
     using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.PlayerActions;
+    using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
-    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.Pathfinding;
     using MUnique.OpenMU.PlugIns;
 
@@ -19,7 +18,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     /// </summary>
     [PlugIn(nameof(AreaSkillAttackHandlerPlugIn075), "Handler for area skill attack packets for version 0.75")]
     [Guid("A03821B8-2A8E-4A1D-A45D-C92C7621DC8A")]
-    [MaximumClient(0, 89, ClientLanguage.Invariant)]
     internal class AreaSkillAttackHandlerPlugIn075 : IPacketHandlerPlugIn
     {
         private readonly AreaSkillAttackAction attackAction = new ();

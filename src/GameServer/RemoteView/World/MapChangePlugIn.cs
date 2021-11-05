@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World
     /// </summary>
     [PlugIn("MapChangePlugIn", "The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.")]
     [Guid("234b477d-6fe9-4caa-a03f-78cb25518b39")]
-    [MinimumClient(0, 90, ClientLanguage.Invariant)]
+    [MinimumClient(1, 0, ClientLanguage.Invariant)]
     public class MapChangePlugIn : IMapChangePlugIn
     {
         private readonly RemotePlayer player;

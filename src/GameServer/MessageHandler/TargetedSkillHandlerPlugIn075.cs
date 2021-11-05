@@ -9,16 +9,13 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
     using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network.Packets.ClientToServer;
-    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
-    /// Handler for targeted skill packets until season 2.
-    /// In these versions, the skill identifiers were only 1 byte big. After that, the master skill tree required more skills to be added than fit into it.
+    /// Handler for targeted skill packets of version 0.75.
     /// </summary>
-    [PlugIn("TargetedSkillHandlerPlugIn until Season 2", "Handler for targeted skill packets for version 0.75 until season 2.")]
+    [PlugIn(nameof(TargetedSkillHandlerPlugIn075), "Handler for targeted skill packets for version 0.75")]
     [Guid("83D2ABC0-6491-409A-8525-941794C54660")]
-    [MaximumClient(2, 255, ClientLanguage.Invariant)]
     internal class TargetedSkillHandlerPlugIn075 : TargetedSkillHandlerPlugIn
     {
         /// <inheritdoc />
@@ -27,7 +24,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         /// <inheritdoc/>
         /// <remarks>
         /// In early versions, the index of the skill is used as identifier. Later it was the skill id.
-        /// This may have changed earlier than season 2!.
         /// </remarks>
         public override void HandlePacket(Player player, Span<byte> packet)
         {

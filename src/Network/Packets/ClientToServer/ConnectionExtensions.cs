@@ -638,6 +638,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="TargetedSkill095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+        /// </remarks>
+        public static TargetedSkill095ThreadSafeWriter StartWriteTargetedSkill095(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Starts a safe write of a <see cref="MagicEffectCancelRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -685,6 +698,19 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
         /// </remarks>
         public static AreaSkill075ThreadSafeWriter StartWriteAreaSkill075(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="AreaSkill095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+        /// </remarks>
+        public static AreaSkill095ThreadSafeWriter StartWriteAreaSkill095(this IConnection connection)
         {
           return new (connection);
         }
@@ -1197,6 +1223,32 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Starts a safe write of a <see cref="DevilSquareEnterRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
+        /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.
+        /// </remarks>
+        public static DevilSquareEnterRequestThreadSafeWriter StartWriteDevilSquareEnterRequest(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
+        /// Starts a safe write of a <see cref="RequestEventRemainingTime" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
+        /// Causes reaction on server side: The remaining time is sent back to the client.
+        /// </remarks>
+        public static RequestEventRemainingTimeThreadSafeWriter StartWriteRequestEventRemainingTime(this IConnection connection)
+        {
+          return new (connection);
+        }
+
+        /// <summary>
         /// Sends a <see cref="Ping" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -1267,11 +1319,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="password">The password, "encrypted" with Xor3.</param>
         /// <param name="tickCount">The tick count.</param>
         /// <param name="clientVersion">The client version.</param>
+        /// <param name="clientSerial">The client serial.</param>
         /// <remarks>
         /// Is sent by the client when: The player tries to log into the game.
         /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
         /// </remarks>
-        public static void SendLoginLongPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion)
+        public static void SendLoginLongPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
         {
             using var writer = connection.StartWriteLoginLongPassword();
             var packet = writer.Packet;
@@ -1279,6 +1332,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             @password.CopyTo(packet.Password);
             packet.TickCount = @tickCount;
             @clientVersion.CopyTo(packet.ClientVersion);
+            @clientSerial.CopyTo(packet.ClientSerial);
             writer.Commit();
         }
 
@@ -1290,11 +1344,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="password">The password, "encrypted" with Xor3.</param>
         /// <param name="tickCount">The tick count.</param>
         /// <param name="clientVersion">The client version.</param>
+        /// <param name="clientSerial">The client serial.</param>
         /// <remarks>
         /// Is sent by the client when: The player tries to log into the game.
         /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
         /// </remarks>
-        public static void SendLoginShortPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion)
+        public static void SendLoginShortPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
         {
             using var writer = connection.StartWriteLoginShortPassword();
             var packet = writer.Packet;
@@ -1302,6 +1357,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             @password.CopyTo(packet.Password);
             packet.TickCount = @tickCount;
             @clientVersion.CopyTo(packet.ClientVersion);
+            @clientSerial.CopyTo(packet.ClientSerial);
             writer.Commit();
         }
 
@@ -1313,11 +1369,12 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         /// <param name="password">The password, "encrypted" with Xor3.</param>
         /// <param name="tickCount">The tick count.</param>
         /// <param name="clientVersion">The client version.</param>
+        /// <param name="clientSerial">The client serial.</param>
         /// <remarks>
         /// Is sent by the client when: The player tries to log into the game.
         /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
         /// </remarks>
-        public static void SendLogin075(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion)
+        public static void SendLogin075(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
         {
             using var writer = connection.StartWriteLogin075();
             var packet = writer.Packet;
@@ -1325,6 +1382,7 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
             @password.CopyTo(packet.Password);
             packet.TickCount = @tickCount;
             @clientVersion.CopyTo(packet.ClientVersion);
+            @clientSerial.CopyTo(packet.ClientSerial);
             writer.Commit();
         }
 
@@ -2169,6 +2227,25 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         }
 
         /// <summary>
+        /// Sends a <see cref="TargetedSkill095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillIndex">The index of the skill in the skill list.</param>
+        /// <param name="targetId">The target id.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+        /// </remarks>
+        public static void SendTargetedSkill095(this IConnection connection, byte @skillIndex, ushort @targetId)
+        {
+            using var writer = connection.StartWriteTargetedSkill095();
+            var packet = writer.Packet;
+            packet.SkillIndex = @skillIndex;
+            packet.TargetId = @targetId;
+            writer.Commit();
+        }
+
+        /// <summary>
         /// Sends a <see cref="MagicEffectCancelRequest" /> to this connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -2254,6 +2331,29 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static void SendAreaSkill075(this IConnection connection, byte @skillIndex, byte @targetX, byte @targetY, byte @rotation)
         {
             using var writer = connection.StartWriteAreaSkill075();
+            var packet = writer.Packet;
+            packet.SkillIndex = @skillIndex;
+            packet.TargetX = @targetX;
+            packet.TargetY = @targetY;
+            packet.Rotation = @rotation;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="AreaSkill095" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="skillIndex">The index of the skill in the skill list.</param>
+        /// <param name="targetX">The target x.</param>
+        /// <param name="targetY">The target y.</param>
+        /// <param name="rotation">The rotation.</param>
+        /// <remarks>
+        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+        /// </remarks>
+        public static void SendAreaSkill095(this IConnection connection, byte @skillIndex, byte @targetX, byte @targetY, byte @rotation)
+        {
+            using var writer = connection.StartWriteAreaSkill095();
             var packet = writer.Packet;
             packet.SkillIndex = @skillIndex;
             packet.TargetX = @targetX;
@@ -2979,6 +3079,44 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public static void SendNpcBuffRequest(this IConnection connection)
         {
             using var writer = connection.StartWriteNpcBuffRequest();
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="DevilSquareEnterRequest" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="squareLevel">The level of the devil square, minus 1.</param>
+        /// <param name="ticketItemInventoryIndex">The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</param>
+        /// <remarks>
+        /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
+        /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.
+        /// </remarks>
+        public static void SendDevilSquareEnterRequest(this IConnection connection, byte @squareLevel, byte @ticketItemInventoryIndex)
+        {
+            using var writer = connection.StartWriteDevilSquareEnterRequest();
+            var packet = writer.Packet;
+            packet.SquareLevel = @squareLevel;
+            packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
+            writer.Commit();
+        }
+
+        /// <summary>
+        /// Sends a <see cref="RequestEventRemainingTime" /> to this connection.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="eventType">The event type.</param>
+        /// <param name="eventLevel">The event level.</param>
+        /// <remarks>
+        /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
+        /// Causes reaction on server side: The remaining time is sent back to the client.
+        /// </remarks>
+        public static void SendRequestEventRemainingTime(this IConnection connection, byte @eventType, byte @eventLevel)
+        {
+            using var writer = connection.StartWriteRequestEventRemainingTime();
+            var packet = writer.Packet;
+            packet.EventType = @eventType;
+            packet.EventLevel = @eventLevel;
             writer.Commit();
         }    }
     /// <summary>
@@ -5426,6 +5564,58 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
     }
       
     /// <summary>
+    /// A helper struct to write a <see cref="TargetedSkill095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct TargetedSkill095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TargetedSkill095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public TargetedSkill095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new TargetedSkill095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(TargetedSkill095.Length)[..TargetedSkill095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public TargetedSkill095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="TargetedSkill095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(TargetedSkill095.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
     /// A helper struct to write a <see cref="MagicEffectCancelRequest"/> safely to a <see cref="IConnection.Output" />.
     /// </summary>
     public readonly ref struct MagicEffectCancelRequestThreadSafeWriter
@@ -5622,6 +5812,58 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.AdvanceAndFlushSafely(AreaSkill075.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="AreaSkill095"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct AreaSkill095ThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AreaSkill095ThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public AreaSkill095ThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new AreaSkill095(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkill095.Length)[..AreaSkill095.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public AreaSkill095 Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="AreaSkill095" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(AreaSkill095.Length);
         }
 
         /// <summary>
@@ -7650,6 +7892,110 @@ namespace MUnique.OpenMU.Network.Packets.ClientToServer
         public void Commit()
         {
             this.connection.Output.AdvanceAndFlushSafely(NpcBuffRequest.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="DevilSquareEnterRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct DevilSquareEnterRequestThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DevilSquareEnterRequestThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public DevilSquareEnterRequestThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new DevilSquareEnterRequest(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(DevilSquareEnterRequest.Length)[..DevilSquareEnterRequest.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public DevilSquareEnterRequest Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="DevilSquareEnterRequest" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(DevilSquareEnterRequest.Length);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Monitor.Exit(this.connection);
+        }
+    }
+      
+    /// <summary>
+    /// A helper struct to write a <see cref="RequestEventRemainingTime"/> safely to a <see cref="IConnection.Output" />.
+    /// </summary>
+    public readonly ref struct RequestEventRemainingTimeThreadSafeWriter
+    {
+        private readonly IConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestEventRemainingTimeThreadSafeWriter" /> struct.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public RequestEventRemainingTimeThreadSafeWriter(IConnection connection)
+        {
+            this.connection = connection;
+            Monitor.Enter(this.connection);
+            try
+            {
+                // Initialize header and default values
+                var span = this.Span;
+                span.Clear();
+                _ = new RequestEventRemainingTime(span);
+            }
+            catch (InvalidOperationException)
+            {
+                Monitor.Exit(this.connection);
+                throw;
+            }
+        }
+
+        /// <summary>Gets the span to write at.</summary>
+        private Span<byte> Span => this.connection.Output.GetSpan(RequestEventRemainingTime.Length)[..RequestEventRemainingTime.Length];
+
+        /// <summary>Gets the packet to write at.</summary>
+        public RequestEventRemainingTime Packet => this.Span;
+
+        /// <summary>
+        /// Commits the data of the <see cref="RequestEventRemainingTime" />.
+        /// </summary>
+        public void Commit()
+        {
+            this.connection.Output.AdvanceAndFlushSafely(RequestEventRemainingTime.Length);
         }
 
         /// <summary>

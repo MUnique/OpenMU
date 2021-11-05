@@ -14,7 +14,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
     /// <summary>
     /// Initializer for jewelery (rings and pendants).
     /// </summary>
-    internal class Jewelery : Version075.Items.Jewelery
+    internal class Jewelery : Version095d.Items.Jewelery
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Jewelery"/> class.
@@ -29,15 +29,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
         /// <inheritdoc/>
         protected override void CreateItems()
         {
-            this.CreateRing(8, "Ring of Ice", 20, 50, Stats.HealthRecoveryMultiplier, Stats.IceResistance);
-            this.CreateRing(9, "Ring of Poison", 17, 50, Stats.HealthRecoveryMultiplier, Stats.PoisonResistance);
+            base.CreateItems();
+
             this.CreateRing(21, "Ring of Fire", 30, 50, Stats.HealthRecoveryMultiplier, Stats.FireResistance);
             this.CreateRing(22, "Ring of Earth", 38, 50, Stats.HealthRecoveryMultiplier, Stats.EarthResistance);
             this.CreateRing(23, "Ring of Wind", 44, 50, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
             this.CreateRing(24, "Ring of Magic", 47, 50, Stats.MaximumMana, null);
 
-            this.CreatePendant(12, "Pendant of Lighting", 21, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.LightningResistance);
-            this.CreatePendant(13, "Pendant of Fire", 13, 50, DamageType.Physical, Stats.HealthRecoveryMultiplier, Stats.FireResistance);
             this.CreatePendant(25, "Pendant of Ice", 34, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.IceResistance);
             this.CreatePendant(26, "Pendant of Wind", 42, 50, DamageType.Physical, Stats.HealthRecoveryMultiplier, Stats.WindResistance);
             this.CreatePendant(27, "Pendant of Water", 46, 50, DamageType.Wizardry, Stats.HealthRecoveryMultiplier, Stats.WaterResistance);
@@ -64,18 +62,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
             this.CreateJewelery(114, 9, false, "Emerald Necklace", 0, 0, null, null, null);
             this.CreateJewelery(115, 9, false, "Sapphire Necklace", 0, 0, null, null, null);
             */
-
-            this.CreateTransformationRing(
-                10,
-                "Transformation Ring",
-                0,
-                200,
-                CharacterTransformationSkin.BudgeDragon,
-                CharacterTransformationSkin.Giant,
-                CharacterTransformationSkin.SkeletonWarrior,
-                CharacterTransformationSkin.PoisonBullFighter,
-                CharacterTransformationSkin.ThunderLich,
-                CharacterTransformationSkin.DeathCow);
 
             var eliteSkeletonRing = this.CreateTransformationRing(39, "Elite Transfer Skeleton Ring", 10, 255, CharacterTransformationSkin.EliteSkillSoldier);
             eliteSkeletonRing.PossibleItemOptions.Add(
@@ -202,12 +188,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
 
         private ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, string name, byte level, byte durability, ItemOptionDefinition? excellentOptionDefinition, AttributeDefinition? optionTargetAttribute, AttributeDefinition? resistanceAttribute)
         {
-            var item = this.CreateJewelery(number, slot, dropsFromMonsters, name, level, durability, resistanceAttribute, optionTargetAttribute == Stats.HealthRecoveryMultiplier);
-
-            if (excellentOptionDefinition != null)
-            {
-                item.PossibleItemOptions.Add(excellentOptionDefinition);
-            }
+            var item = this.CreateJewelery(number, slot, dropsFromMonsters, name, level, durability, excellentOptionDefinition, resistanceAttribute, optionTargetAttribute == Stats.HealthRecoveryMultiplier);
 
             if (optionTargetAttribute != Stats.HealthRecoveryMultiplier && optionTargetAttribute is not null)
             {

@@ -29,6 +29,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
         private readonly INpcIntelligence intelligence;
         private readonly PlugInManager plugInManager;
         private readonly Walker walker;
+        private readonly IEventStateProvider? eventStateProvider;
 
         private Timer? respawnTimer;
         private int health;
@@ -44,7 +45,8 @@ namespace MUnique.OpenMU.GameLogic.NPC
         /// <param name="dropGenerator">The drop generator.</param>
         /// <param name="npcIntelligence">The monster intelligence.</param>
         /// <param name="plugInManager">The plug in manager.</param>
-        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager)
+        /// <param name="eventStateProvider">The event state provider.</param>
+        public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager, IEventStateProvider? eventStateProvider = null)
             : base(spawnInfo, stats, map)
         {
             this.dropGenerator = dropGenerator;
@@ -53,9 +55,15 @@ namespace MUnique.OpenMU.GameLogic.NPC
             this.walker = new Walker(this, () => this.StepDelay);
             this.intelligence = npcIntelligence;
             this.plugInManager = plugInManager;
+            this.eventStateProvider = eventStateProvider;
             this.intelligence.Npc = this;
             this.intelligence.Start();
         }
+
+        /// <summary>
+        /// Occurs when this instance died.
+        /// </summary>
+        public event EventHandler<DeathInformation>? Died;
 
         /// <inheritdoc/>
         public MagicEffectsList MagicEffectList { get; }
@@ -120,6 +128,10 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         /// <inheritdoc/>
         public TimeSpan StepDelay => this.Definition.MoveDelay;
+
+        private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
+                                      || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringEvent && (this.eventStateProvider?.IsEventRunning ?? false))
+                                      || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this.eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
 
         /// <inheritdoc/>
         public override void Initialize()
@@ -308,7 +320,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
 
         private void HandleMoneyDrop(uint amount, Player killer)
         {
-            if (!killer.GameContext.Configuration.ShouldDropMoney)
+            // We don't drop money in Devil Square, etc.
+            var shouldDropMoney = killer.GameContext.Configuration.ShouldDropMoney && killer.CurrentMiniGame is null;
+            if (!shouldDropMoney)
             {
                 var party = killer.Party;
                 if (party is null)
@@ -317,9 +331,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 }
                 else
                 {
-                    var players = party.PartyList.OfType<Player>().Where(p => p.CurrentMap == killer.CurrentMap && !p.IsAtSafezone() && p.Attributes is { }).ToList();
-                    var moneyPart = amount / players.Count;
-                    players.ForEach(p => p.TryAddMoney((int)(moneyPart * p.Attributes![Stats.MoneyAmountRate])));
+                    party.DistributeMoneyAfterKill(this, killer, amount);
                 }
 
                 return;
@@ -335,11 +347,6 @@ namespace MUnique.OpenMU.GameLogic.NPC
             if (droppedMoney > 0)
             {
                 this.HandleMoneyDrop(droppedMoney.Value, killer);
-            }
-
-            if (generatedItems is null)
-            {
-                return;
             }
 
             var firstItem = !droppedMoney.HasValue;
@@ -365,9 +372,9 @@ namespace MUnique.OpenMU.GameLogic.NPC
         private void OnDeath(IAttacker attacker)
         {
             this.walker.Stop();
-            if (this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic)
+            if (this.ShouldRespawn)
             {
-                this.respawnTimer = new Timer(o => this.Respawn(), null, (int)this.Definition.RespawnDelay.TotalMilliseconds, System.Threading.Timeout.Infinite);
+                this.respawnTimer = new Timer(_ => this.Respawn(), null, (int)this.Definition.RespawnDelay.TotalMilliseconds, System.Threading.Timeout.Infinite);
             }
 
             this.ObserverLock.EnterWriteLock();
@@ -402,14 +409,19 @@ namespace MUnique.OpenMU.GameLogic.NPC
                 }
             }
 
-            if (this.SpawnArea.SpawnTrigger == SpawnTrigger.OnceAtEventStart)
+            if (!this.ShouldRespawn)
             {
-                this.CurrentMap.Remove(this);
-                this.Dispose();
-                if (this.intelligence is SummonedMonsterIntelligence summonedMonsterIntelligence)
-                {
-                    summonedMonsterIntelligence.Owner.SummonDied();
-                }
+                this.RemoveFromMapAndDispose();
+            }
+        }
+
+        private void RemoveFromMapAndDispose()
+        {
+            this.CurrentMap.Remove(this);
+            this.Dispose();
+            if (this.intelligence is SummonedMonsterIntelligence summonedMonsterIntelligence)
+            {
+                summonedMonsterIntelligence.Owner.SummonDied();
             }
         }
 
@@ -420,6 +432,12 @@ namespace MUnique.OpenMU.GameLogic.NPC
         {
             try
             {
+                if (!this.ShouldRespawn)
+                {
+                    this.RemoveFromMapAndDispose();
+                    return;
+                }
+
                 this.Initialize();
                 this.CurrentMap.Respawn(this);
             }
@@ -449,6 +467,7 @@ namespace MUnique.OpenMU.GameLogic.NPC
             {
                 this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
                 this.OnDeath(attacker);
+                this.Died?.Invoke(this, this.LastDeath);
             }
         }
 

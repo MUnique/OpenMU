@@ -13,6 +13,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
     using MUnique.OpenMU.GameLogic.Attributes;
     using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
     using MUnique.OpenMU.Persistence.Initialization.Items;
+    using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
     using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
     using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
@@ -113,6 +114,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix
             new Gates(this.Context, this.GameConfiguration).Initialize();
             new Quest(this.Context, this.GameConfiguration).Initialize();
             new Quests(this.Context, this.GameConfiguration).Initialize();
+            new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
             //// TODO: ItemSetGroups
         }
 

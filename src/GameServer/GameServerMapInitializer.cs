@@ -22,8 +22,9 @@ namespace MUnique.OpenMU.GameServer
         /// </summary>
         /// <param name="serverDefinition">The server definition.</param>
         /// <param name="logger">The logger.</param>
-        public GameServerMapInitializer(GameServerDefinition serverDefinition, ILogger<GameServerMapInitializer> logger)
-            : base(serverDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"), logger)
+        /// <param name="dropGenerator">The drop generator.</param>
+        public GameServerMapInitializer(GameServerDefinition serverDefinition, ILogger<GameServerMapInitializer> logger, IDropGenerator dropGenerator)
+            : base(serverDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"), logger, dropGenerator)
         {
             this.serverDefinition = serverDefinition;
         }

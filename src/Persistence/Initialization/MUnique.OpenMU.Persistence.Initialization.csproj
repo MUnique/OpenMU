@@ -24,7 +24,10 @@
     <None Remove="Resources\075_Terrain5.att" />
     <None Remove="Resources\075_Terrain8.att" />
     <None Remove="Resources\Terrain1.att" />
-    <None Remove="Resources\Terrain10.att" />
+    <None Remove="Resources\Terrain10_1.att" />
+    <None Remove="Resources\Terrain10_2.att" />
+    <None Remove="Resources\Terrain10_3.att" />
+    <None Remove="Resources\Terrain10_4.att" />
     <None Remove="Resources\Terrain11.att" />
     <None Remove="Resources\Terrain12.att" />
     <None Remove="Resources\Terrain19.att" />
@@ -33,7 +36,9 @@
     <None Remove="Resources\Terrain3.att" />
     <None Remove="Resources\Terrain31.att" />
     <None Remove="Resources\Terrain32.att" />
-    <None Remove="Resources\Terrain33.att" />
+    <None Remove="Resources\Terrain33_5.att" />
+    <None Remove="Resources\Terrain33_6.att" />
+    <None Remove="Resources\Terrain33_7.att" />
     <None Remove="Resources\Terrain34.att" />
     <None Remove="Resources\Terrain34_Close.att" />
     <None Remove="Resources\Terrain35.att" />
@@ -106,7 +111,10 @@
     <EmbeddedResource Include="Resources\075_Terrain5.att" />
     <EmbeddedResource Include="Resources\075_Terrain8.att" />
     <EmbeddedResource Include="Resources\Terrain1.att" />
-    <EmbeddedResource Include="Resources\Terrain10.att" />
+    <EmbeddedResource Include="Resources\Terrain10_4.att" />
+    <EmbeddedResource Include="Resources\Terrain10_3.att" />
+    <EmbeddedResource Include="Resources\Terrain10_2.att" />
+    <EmbeddedResource Include="Resources\Terrain10_1.att" />
     <EmbeddedResource Include="Resources\Terrain11.att" />
     <EmbeddedResource Include="Resources\Terrain12.att" />
     <EmbeddedResource Include="Resources\Terrain19.att" />
@@ -115,7 +123,9 @@
     <EmbeddedResource Include="Resources\Terrain3.att" />
     <EmbeddedResource Include="Resources\Terrain31.att" />
     <EmbeddedResource Include="Resources\Terrain32.att" />
-    <EmbeddedResource Include="Resources\Terrain33.att" />
+    <EmbeddedResource Include="Resources\Terrain33_7.att" />
+    <EmbeddedResource Include="Resources\Terrain33_6.att" />
+    <EmbeddedResource Include="Resources\Terrain33_5.att" />
     <EmbeddedResource Include="Resources\Terrain34.att" />
     <EmbeddedResource Include="Resources\Terrain34_Close.att" />
     <EmbeddedResource Include="Resources\Terrain35.att" />

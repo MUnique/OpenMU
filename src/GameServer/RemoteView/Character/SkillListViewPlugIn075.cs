@@ -9,18 +9,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
     using MUnique.OpenMU.GameLogic.Views.Character;
     using MUnique.OpenMU.Network;
     using MUnique.OpenMU.Network.Packets.ServerToClient;
-    using MUnique.OpenMU.Network.PlugIns;
     using MUnique.OpenMU.PlugIns;
 
     /// <summary>
     /// The default implementation of the <see cref="ISkillListViewPlugIn"/> which is forwarding everything to the game client with specific data packets.
     /// </summary>
-    /// <remarks>
-    /// Version 0.97d seems to be compatible to this implementation. This may be true until the end of season 2, but we're not sure.
-    /// </remarks>
-    [PlugIn("SkillListViewPlugIn 0.75", "The implementation of the ISkillListViewPlugIn for version 0.75 which is forwarding everything to the game client with specific data packets.")]
+    [PlugIn(nameof(SkillListViewPlugIn075), "The implementation of the ISkillListViewPlugIn for version 0.75 which is forwarding everything to the game client with specific data packets.")]
     [Guid("D83A0CD8-AFEB-4782-8523-AF6D093D14CB")]
-    [MaximumClient(2, 255, ClientLanguage.Invariant)]
     public class SkillListViewPlugIn075 : SkillListViewPlugIn
     {
         /// <summary>
@@ -74,14 +69,19 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character
             writer.Commit();
         }
 
-        private ushort GetSkillNumberAndLevel(Skill? skill)
+        /// <summary>
+        /// Gets the value for the skill number and level.
+        /// </summary>
+        /// <param name="skill">The skill.</param>
+        /// <returns>The value for the skill number and level.</returns>
+        protected ushort GetSkillNumberAndLevel(Skill? skill)
         {
             if (skill is null)
             {
                 return 0;
             }
 
-            ushort result = (ushort)((skill.Number & 0xFF) << 8);
+            var result = (ushort)((skill.Number & 0xFF) << 8);
 
             // The next lines seems strange but is correct. The same part of the skill number is already set in the first byte.
             // Unfortunately it's unclear to us which skill got a level greater than 0 in these early versions.

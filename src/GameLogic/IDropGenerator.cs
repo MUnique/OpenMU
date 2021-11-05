@@ -24,5 +24,12 @@ namespace MUnique.OpenMU.GameLogic
         /// The item drops which are generated when a monster got killed by a player.
         /// </returns>
         IEnumerable<Item> GenerateItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney);
+
+        /// <summary>
+        /// Generates an item based on a <see cref="DropItemGroup"/>.
+        /// </summary>
+        /// <param name="group">The <see cref="DropItemGroup"/> which defines which item should be generated.</param>
+        /// <returns>The generated item or <see langword="null"/>.</returns>
+        Item? GenerateItemDrop(DropItemGroup group);
     }
 }

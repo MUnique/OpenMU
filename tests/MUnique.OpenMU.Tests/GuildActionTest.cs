@@ -138,7 +138,7 @@ namespace MUnique.OpenMU.Tests
         {
             var gameConfiguration = new GameConfiguration();
             gameConfiguration.Maps.Add(new GameMapDefinition());
-            var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>());
+            var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance);
             var gameServer = new GameServerContext(
                 new GameServerDefinition { GameConfiguration = gameConfiguration, ServerConfiguration = new DataModel.Configuration.GameServerConfiguration() },
                 this.GuildServer,
@@ -147,7 +147,8 @@ namespace MUnique.OpenMU.Tests
                 new InMemoryPersistenceContextProvider(),
                 mapInitializer,
                 new NullLoggerFactory(),
-                new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLoggerFactory(), null));
+                new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLoggerFactory(), null),
+                NullDropGenerator.Instance);
             mapInitializer.PlugInManager = gameServer.PlugInManager;
             return gameServer;
         }
