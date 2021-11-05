@@ -166,7 +166,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
         /// <param name="playerAction">The action which should be executed for each player of the game.</param>
         protected async ValueTask ForEachPlayerAsync(Action<Player> playerAction)
         {
-            await this.enterLock.WaitAsync();
+            await this.enterLock.WaitAsync().ConfigureAwait(false);
             try
             {
                 this.enteredPlayers.ForEach(playerAction);
@@ -329,7 +329,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             {
                 if (spawnWave.StartTime > TimeSpan.Zero)
                 {
-                    await Task.Delay(spawnWave.StartTime, this.gameEndedCts.Token);
+                    await Task.Delay(spawnWave.StartTime, this.gameEndedCts.Token).ConfigureAwait(false);
                 }
 
                 this.Logger.LogInformation("Starting next wave: {0}", spawnWave.Description);
@@ -340,7 +340,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 
                 this.currentSpawnWaves.Add(spawnWave.WaveNumber);
                 this.mapInitializer.InitializeNpcsOnWaveStart(this.Map, this, spawnWave.WaveNumber);
-                await Task.Delay(spawnWave.EndTime - spawnWave.StartTime, this.gameEndedCts.Token);
+                await Task.Delay(spawnWave.EndTime - spawnWave.StartTime, this.gameEndedCts.Token).ConfigureAwait(false);
                 this.Logger.LogInformation("Wave ended: {0}", spawnWave.Description);
             }
             catch (TaskCanceledException)

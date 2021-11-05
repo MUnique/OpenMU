@@ -112,7 +112,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items
             this.CreateWeapon(0, 14, 0, 22, 1, 3, true, "Lighting Sword", 59, 59, 67, 30, 50, 0, 0, 90, 50, 0, 0, 0, 1, 1);
             this.CreateWeapon(0, 15, 0, 23, 2, 3, true, "Giant Sword", 52, 60, 85, 20, 60, 0, 0, 140, 0, 0, 0, 0, 1, 0);
             this.CreateWeapon(0, 16, 0, 22, 1, 4, true, "Sword of Destruction", 82, 82, 90, 35, 84, 0, 0, 160, 60, 0, 0, 0, 1, 0, 1);
-            this.CreateWeapon(0, 17, 0, 23, 2, 4, true, "Dark Breaker", 104, 128, 153, 40, 89, 0, 0, 180, 50, 0, 0, 0, 2, 0, 0);
+            this.CreateWeapon(0, 17, 0, 23, 2, 4, true, "Dark Breaker", 104, 128, 153, 40, 89, 0, 0, 180, 50, 0, 0, 0, 2, 0);
             this.CreateWeapon(0, 18, 0, 23, 2, 3, true, "Thunder Blade", 105, 140, 168, 40, 86, 0, 0, 180, 50, 0, 0, 0, 0, 0, 1);
 
             this.CreateWeapon(1, 0, 0, 0, 1, 3, true, "Small Axe", 1, 1, 6, 20, 18, 0, 0, 50, 0, 0, 0, 1, 1, 1);

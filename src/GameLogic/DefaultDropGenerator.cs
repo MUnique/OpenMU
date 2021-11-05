@@ -111,6 +111,10 @@ namespace MUnique.OpenMU.GameLogic
             {
                 this.AddRandomExcOptions(item);
             }
+            else
+            {
+                // nothing to add, others make no sense here.
+            }
 
             return item;
         }

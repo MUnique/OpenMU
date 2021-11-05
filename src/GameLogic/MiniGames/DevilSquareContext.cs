@@ -10,7 +10,6 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
     using System.Linq;
     using System.Threading;
     using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Entities;
     using Nito.Disposables.Internals;
 
     /// <summary>
@@ -82,7 +81,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 
             this.highScoreTable = scoreList.AsReadOnly();
 
-            this.SaveRanking(sortedFinishers.Select(state => (Rank: state.Rank, state.Player.SelectedCharacter!, state.Score)));
+            this.SaveRanking(sortedFinishers.Select(state => (state.Rank, state.Player.SelectedCharacter!, state.Score)));
             base.GameEnded(finishers);
         }
 
@@ -98,9 +97,6 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 
         private sealed class PlayerGameState
         {
-            private readonly Character character;
-            private readonly long experienceAtStart;
-            private readonly int moneyAtStart;
             private int score;
 
             public PlayerGameState(Player player)
@@ -111,18 +107,11 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
                 }
 
                 this.Player = player;
-                this.character = player.SelectedCharacter;
-                this.experienceAtStart = this.character.CharacterClass.IsMasterClass ? this.character.MasterExperience : this.character.Experience;
-                this.moneyAtStart = player.Money;
             }
 
             public Player Player { get; }
 
             public int Score => this.score;
-
-            public int GainedExperience => (int)(this.character.Experience - this.experienceAtStart);
-
-            public int GainedMoney => this.Player.Money - this.moneyAtStart;
 
             public int Rank { get; set; }
 

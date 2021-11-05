@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames
 {
     using System;
-    using System.IO;
     using System.Linq;
     using MUnique.OpenMU.DataModel.Configuration;
     using MUnique.OpenMU.DataModel.Entities;
@@ -60,7 +59,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames
                 return;
             }
 
-            var entrance = miniGameDefinition.Entrance ?? throw new InvalidDataException("mini game entrance not defined");
+            var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
             var miniGame = player.GameContext.GetMiniGame(miniGameDefinition, player);
             if (miniGame.TryEnter(player, out var result))
             {

@@ -310,9 +310,9 @@ namespace MUnique.OpenMU.GameLogic
         }
 
         /// <inheritdoc/>
-        protected override void Dispose(bool dispose)
+        protected override void Dispose(bool disposing)
         {
-            base.Dispose(dispose);
+            base.Dispose(disposing);
             this.recoverTimer.Dispose();
             this.tasksTimer.Dispose();
         }

@@ -240,10 +240,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d
             satanWings.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 2);
             craftingSettings.ResultItems.Add(satanWings);
 
-            //var miseryWings = this.Context.CreateNew<ItemCraftingResultItem>();
-            //miseryWings.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 41);
-            //craftingSettings.ResultItems.Add(miseryWings);
-
             return crafting;
         }
 
