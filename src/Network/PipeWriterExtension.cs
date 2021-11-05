@@ -19,14 +19,26 @@ namespace MUnique.OpenMU.Network
         /// </summary>
         /// <param name="pipeWriter">The <see cref="PipeWriter"/>.</param>
         /// <param name="bytes">The number of data items written to the <see cref="T:System.Span`1" /> or <see cref="T:System.Memory`1" />.</param>
-        /// <returns><see langword="true"/>, if it was successful; Otherwise, <see langword="false"/>.</returns>
-        public static async ValueTask<bool> TryAdvanceAndFlushAsync(this PipeWriter pipeWriter, int bytes)
+        public static void AdvanceAndFlushSafely(this PipeWriter pipeWriter, int bytes)
         {
             try
             {
                 pipeWriter.Advance(bytes);
-                await pipeWriter.FlushAsync().ConfigureAwait(false);
-                return true;
+
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        await pipeWriter.FlushAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (Debugger.IsLogging())
+                        {
+                            Debug.Fail(ex.ToString());
+                        }
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -34,8 +46,6 @@ namespace MUnique.OpenMU.Network
                 {
                     Debug.Fail(ex.ToString());
                 }
-
-                return false;
             }
         }
     }

@@ -212,6 +212,14 @@ namespace MUnique.OpenMU.Startup
                 })
                 .ConfigureServices(c =>
                 {
+                    if (this.IsAdminPanelEnabled(args))
+                    {
+                        c.AddSingleton<IServerConfigurationChangeListener, ServerConfigurationChangeListener>()
+                            .AddSingleton<IPlugInConfigurationChangeListener, PlugInConfigurationChangeListener>()
+                            .AddHostedService<AdminPanel>()
+                            .AddSingleton(new AdminPanelSettings(this.DetermineAdminPort(args)));
+                    }
+
                     c.AddSingleton(this.servers)
                         .AddSingleton(s => s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<ChatServerDefinition>().First() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
                         .AddSingleton(s => s.GetService<ChatServerDefinition>()?.ConvertToSettings() ?? throw new Exception($"{nameof(ChatServerSettings)} not registered."))
@@ -232,13 +240,6 @@ namespace MUnique.OpenMU.Startup
                         .AddHostedService(provider => provider.GetService<IChatServer>())
                         .AddHostedService(provider => provider.GetService<ConnectServerContainer>())
                         .AddHostedService(provider => provider.GetService<GameServerContainer>());
-                    if (this.IsAdminPanelEnabled(args))
-                    {
-                        c.AddSingleton<IServerConfigurationChangeListener, ServerConfigurationChangeListener>()
-                            .AddSingleton<IPlugInConfigurationChangeListener, PlugInConfigurationChangeListener>()
-                            .AddHostedService<AdminPanel>()
-                            .AddSingleton(new AdminPanelSettings(this.DetermineAdminPort(args)));
-                    }
 
                     if (this.IsApiEnabled(args))
                     {
