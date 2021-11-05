@@ -27,38 +27,38 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
         public override void Initialize()
         {
             // Blood Castle:
-            this.CreateEventItem(16, 13, 1, 2, "Scroll of Archangel", 8, 2, 32, 45, 57, 68, 76, 84, 95);
-            this.CreateEventItem(17, 13, 1, 2, "Blood Bone", 8, 2, 32, 45, 57, 68, 76, 84, 95);
-            this.CreateEventItem(18, 13, 2, 2, "Invisibility Cloak", 8);
-            this.CreateEventItem(19, 13, 1, 2, "Weapon of Archangel");
+            this.CreateEventItem(16, 13, 1, 2, "Scroll of Archangel", true, 8, 2, 32, 45, 57, 68, 76, 84, 95);
+            this.CreateEventItem(17, 13, 1, 2, "Blood Bone", true, 8, 2, 32, 45, 57, 68, 76, 84, 95);
+            this.CreateEventItem(18, 13, 2, 2, "Invisibility Cloak", false, 8);
+            this.CreateEventItem(19, 13, 1, 2, "Weapon of Archangel", false);
 
             // Chaos Castle:
-            this.CreateEventItem(29, 13, 2, 2, "Armor of Guardsman");
+            this.CreateEventItem(29, 13, 2, 2, "Armor of Guardsman", false);
 
             // Illusion Temple:
-            this.CreateEventItem(49, 13, 1, 1, "Old Scroll", 6, 66, 72, 78, 84, 90, 96);
-            this.CreateEventItem(50, 13, 1, 2, "Illusion Sorcerer Covenant", 6, 70, 76, 82, 88, 94, 100);
-            this.CreateEventItem(51, 13, 2, 2, "Scroll of Blood", 6);
+            this.CreateEventItem(49, 13, 1, 1, "Old Scroll", true, 6, 66, 72, 78, 84, 90, 96);
+            this.CreateEventItem(50, 13, 1, 2, "Illusion Sorcerer Covenant", true, 6, 70, 76, 82, 88, 94, 100);
+            this.CreateEventItem(51, 13, 2, 2, "Scroll of Blood", false, 6);
 
             // Devil Square:
-            this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", 7, 2, 36, 47, 60, 70, 80, 90);
-            this.CreateEventItem(18, 14, 1, 1, "Devil's Key", 7, 2, 36, 47, 60, 70, 80, 90);
-            this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation", 7);
+            this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", true, 7, 2, 36, 47, 60, 70, 80, 90);
+            this.CreateEventItem(18, 14, 1, 1, "Devil's Key", true, 7, 2, 36, 47, 60, 70, 80, 90);
+            this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation", true, 7);
 
             // Imperial Guardian
-            var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, "Suspicious Scrap of Paper", 0, 32);
+            var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, "Suspicious Scrap of Paper", true, 0, 32);
             scrapOfPaper.Durability = 5;
-            this.CreateEventItem(102, 14, 1, 1, "Gaion's Order");
-            this.CreateEventItem(103, 14, 1, 1, "First Secromicon Fragment");
-            this.CreateEventItem(104, 14, 1, 1, "Second Secromicon Fragment");
-            this.CreateEventItem(105, 14, 1, 1, "Third Secromicon Fragment");
-            this.CreateEventItem(106, 14, 1, 1, "Fourth Secromicon Fragment");
-            this.CreateEventItem(107, 14, 1, 1, "Fifth Secromicon Fragment");
-            this.CreateEventItem(108, 14, 1, 1, "Sixth Secromicon Fragment");
-            this.CreateEventItem(109, 14, 1, 1, "Complete Secromicon");
+            this.CreateEventItem(102, 14, 1, 1, "Gaion's Order", false);
+            this.CreateEventItem(103, 14, 1, 1, "First Secromicon Fragment", false);
+            this.CreateEventItem(104, 14, 1, 1, "Second Secromicon Fragment", false);
+            this.CreateEventItem(105, 14, 1, 1, "Third Secromicon Fragment", false);
+            this.CreateEventItem(106, 14, 1, 1, "Fourth Secromicon Fragment", false);
+            this.CreateEventItem(107, 14, 1, 1, "Fifth Secromicon Fragment", false);
+            this.CreateEventItem(108, 14, 1, 1, "Sixth Secromicon Fragment", false);
+            this.CreateEventItem(109, 14, 1, 1, "Complete Secromicon", false);
         }
 
-        private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, string name, byte maxItemLevel = 0, params byte[] dropLevels)
+        private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, string name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)
         {
             var item = this.Context.CreateNew<ItemDefinition>();
             this.GameConfiguration.Items.Add(item);
@@ -68,6 +68,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items
             item.Width = width;
             item.Height = height;
             item.Durability = 1;
+            item.DropsFromMonsters = dropsFromMonsters;
             item.MaximumItemLevel = maxItemLevel;
             if (dropLevels.Length == 1)
             {
