@@ -284,13 +284,11 @@ namespace MUnique.OpenMU.ChatServer.Tests
 
             var bobsAuthPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
             await bobsPipe.ReceivePipe.Writer.WriteAsync(bobsAuthPacket);
-            await bobsPipe.ReceivePipe.Writer.FlushAsync();
 
             var alicePipe = new DuplexPipe();
             var aliceClient = new ChatClient(new Connection(alicePipe, null, null, new NullLogger<Connection>()), manager, new NullLogger<ChatClient>());
             var aliceAuthPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
             await alicePipe.ReceivePipe.Writer.WriteAsync(aliceAuthPacket);
-            await alicePipe.ReceivePipe.Writer.FlushAsync();
             bobsClient.LogOff();
 
             var expectedPacket = new byte[]
