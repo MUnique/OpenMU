@@ -422,7 +422,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 
         private async ValueTask ShowCountdownMessageAsync()
         {
-            await this.enterLock.WaitAsync();
+            await this.enterLock.WaitAsync().ConfigureAwait(false);
             try
             {
                 this.enteredPlayers.ForEach(p => p.ViewPlugIns.GetPlugIn<IUpdateMiniGameStateViewPlugIn>()?.UpdateState(this.Definition.Type, this.State));
@@ -440,7 +440,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 
         private async ValueTask StopAsync()
         {
-            await this.enterLock.WaitAsync();
+            await this.enterLock.WaitAsync().ConfigureAwait(false);
             try
             {
                 this.State = MiniGameState.Ended;
@@ -454,7 +454,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
             this.Map.ClearEventSpawnedNpcs();
 
             List<Player> players;
-            await this.enterLock.WaitAsync();
+            await this.enterLock.WaitAsync().ConfigureAwait(false);
             try
             {
                 players = this.enteredPlayers.ToList();
@@ -520,7 +520,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
 
         private async ValueTask ShutdownGameAsync()
         {
-            await this.MovePlayersToSafezoneAsync();
+            await this.MovePlayersToSafezoneAsync().ConfigureAwait(false);
 
             this.Dispose();
         }
@@ -528,7 +528,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
         private async ValueTask MovePlayersToSafezoneAsync()
         {
             List<Player> players;
-            await this.enterLock.WaitAsync();
+            await this.enterLock.WaitAsync().ConfigureAwait(false);
             try
             {
                 players = this.enteredPlayers.ToList();
