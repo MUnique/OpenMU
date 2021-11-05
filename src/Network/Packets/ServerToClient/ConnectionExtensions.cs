@@ -4042,7 +4042,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GameServerEntered.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GameServerEntered.Length);
         }
 
         /// <summary>
@@ -4094,7 +4094,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MagicEffectStatus.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MagicEffectStatus.Length);
         }
 
         /// <summary>
@@ -4146,7 +4146,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(WeatherStatusUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(WeatherStatusUpdate.Length);
         }
 
         /// <summary>
@@ -4198,7 +4198,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ObjectGotKilled.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ObjectGotKilled.Length);
         }
 
         /// <summary>
@@ -4250,7 +4250,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ObjectAnimation.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ObjectAnimation.Length);
         }
 
         /// <summary>
@@ -4302,7 +4302,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(AreaSkillAnimation.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(AreaSkillAnimation.Length);
         }
 
         /// <summary>
@@ -4354,7 +4354,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(SkillAnimation.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(SkillAnimation.Length);
         }
 
         /// <summary>
@@ -4406,7 +4406,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(AreaSkillAnimation075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(AreaSkillAnimation075.Length);
         }
 
         /// <summary>
@@ -4458,7 +4458,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(SkillAnimation075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(SkillAnimation075.Length);
         }
 
         /// <summary>
@@ -4510,7 +4510,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MagicEffectCancelled.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MagicEffectCancelled.Length);
         }
 
         /// <summary>
@@ -4562,7 +4562,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MagicEffectCancelled075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MagicEffectCancelled075.Length);
         }
 
         /// <summary>
@@ -4614,7 +4614,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(PartyRequest.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(PartyRequest.Length);
         }
 
         /// <summary>
@@ -4666,7 +4666,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(RemovePartyMember.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(RemovePartyMember.Length);
         }
 
         /// <summary>
@@ -4718,7 +4718,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(PlayerShopOpenSuccessful.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(PlayerShopOpenSuccessful.Length);
         }
 
         /// <summary>
@@ -4770,7 +4770,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(TradeButtonStateChanged.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(TradeButtonStateChanged.Length);
         }
 
         /// <summary>
@@ -4822,7 +4822,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(TradeMoneySetResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(TradeMoneySetResponse.Length);
         }
 
         /// <summary>
@@ -4874,7 +4874,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(TradeMoneyUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(TradeMoneyUpdate.Length);
         }
 
         /// <summary>
@@ -4926,7 +4926,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(TradeRequestAnswer.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(TradeRequestAnswer.Length);
         }
 
         /// <summary>
@@ -4978,7 +4978,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(TradeRequest.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(TradeRequest.Length);
         }
 
         /// <summary>
@@ -5030,7 +5030,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(TradeFinished.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(TradeFinished.Length);
         }
 
         /// <summary>
@@ -5082,7 +5082,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(TradeItemRemoved.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(TradeItemRemoved.Length);
         }
 
         /// <summary>
@@ -5134,7 +5134,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(LoginResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(LoginResponse.Length);
         }
 
         /// <summary>
@@ -5186,7 +5186,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(LogoutResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(LogoutResponse.Length);
         }
 
         /// <summary>
@@ -5238,7 +5238,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ObjectHit.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ObjectHit.Length);
         }
 
         /// <summary>
@@ -5290,7 +5290,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ObjectMoved.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ObjectMoved.Length);
         }
 
         /// <summary>
@@ -5342,7 +5342,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ObjectWalked075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ObjectWalked075.Length);
         }
 
         /// <summary>
@@ -5394,7 +5394,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ExperienceGained.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ExperienceGained.Length);
         }
 
         /// <summary>
@@ -5446,7 +5446,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MapChanged.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MapChanged.Length);
         }
 
         /// <summary>
@@ -5498,7 +5498,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MapChanged075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MapChanged075.Length);
         }
 
         /// <summary>
@@ -5550,7 +5550,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MoneyDropped.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MoneyDropped.Length);
         }
 
         /// <summary>
@@ -5602,7 +5602,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MoneyDropped075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MoneyDropped075.Length);
         }
 
         /// <summary>
@@ -5654,7 +5654,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ItemDropResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ItemDropResponse.Length);
         }
 
         /// <summary>
@@ -5706,7 +5706,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ItemPickUpRequestFailed.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ItemPickUpRequestFailed.Length);
         }
 
         /// <summary>
@@ -5758,7 +5758,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(InventoryMoneyUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(InventoryMoneyUpdate.Length);
         }
 
         /// <summary>
@@ -5810,7 +5810,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CurrentHealthAndShield.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CurrentHealthAndShield.Length);
         }
 
         /// <summary>
@@ -5862,7 +5862,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MaximumHealthAndShield.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MaximumHealthAndShield.Length);
         }
 
         /// <summary>
@@ -5914,7 +5914,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ItemConsumptionFailed.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ItemConsumptionFailed.Length);
         }
 
         /// <summary>
@@ -5966,7 +5966,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CurrentManaAndAbility.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CurrentManaAndAbility.Length);
         }
 
         /// <summary>
@@ -6018,7 +6018,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MaximumManaAndAbility.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MaximumManaAndAbility.Length);
         }
 
         /// <summary>
@@ -6070,7 +6070,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ItemRemoved.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ItemRemoved.Length);
         }
 
         /// <summary>
@@ -6122,7 +6122,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ConsumeItemWithEffect.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ConsumeItemWithEffect.Length);
         }
 
         /// <summary>
@@ -6174,7 +6174,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ItemDurabilityChanged.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ItemDurabilityChanged.Length);
         }
 
         /// <summary>
@@ -6226,7 +6226,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(FruitConsumptionResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(FruitConsumptionResponse.Length);
         }
 
         /// <summary>
@@ -6278,7 +6278,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(NpcWindowResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(NpcWindowResponse.Length);
         }
 
         /// <summary>
@@ -6330,7 +6330,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(NpcItemBuyFailed.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(NpcItemBuyFailed.Length);
         }
 
         /// <summary>
@@ -6382,7 +6382,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(NpcItemSellResult.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(NpcItemSellResult.Length);
         }
 
         /// <summary>
@@ -6434,7 +6434,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(PlayerShopSetItemPriceResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(PlayerShopSetItemPriceResponse.Length);
         }
 
         /// <summary>
@@ -6486,7 +6486,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(PlayerShopClosed.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(PlayerShopClosed.Length);
         }
 
         /// <summary>
@@ -6538,7 +6538,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(PlayerShopItemSoldToPlayer.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(PlayerShopItemSoldToPlayer.Length);
         }
 
         /// <summary>
@@ -6590,7 +6590,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ClosePlayerShopDialog.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ClosePlayerShopDialog.Length);
         }
 
         /// <summary>
@@ -6642,7 +6642,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CharacterCreationSuccessful.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CharacterCreationSuccessful.Length);
         }
 
         /// <summary>
@@ -6694,7 +6694,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CharacterCreationFailed.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CharacterCreationFailed.Length);
         }
 
         /// <summary>
@@ -6746,7 +6746,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(RespawnAfterDeath075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(RespawnAfterDeath075.Length);
         }
 
         /// <summary>
@@ -6798,7 +6798,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(PoisonDamage.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(PoisonDamage.Length);
         }
 
         /// <summary>
@@ -6850,7 +6850,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(HeroStateChanged.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(HeroStateChanged.Length);
         }
 
         /// <summary>
@@ -6902,7 +6902,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(SkillAdded.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(SkillAdded.Length);
         }
 
         /// <summary>
@@ -6954,7 +6954,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(SkillRemoved.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(SkillRemoved.Length);
         }
 
         /// <summary>
@@ -7006,7 +7006,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(SkillAdded075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(SkillAdded075.Length);
         }
 
         /// <summary>
@@ -7058,7 +7058,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(SkillRemoved075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(SkillRemoved075.Length);
         }
 
         /// <summary>
@@ -7110,7 +7110,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CharacterFocused.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CharacterFocused.Length);
         }
 
         /// <summary>
@@ -7162,7 +7162,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CharacterStatIncreaseResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CharacterStatIncreaseResponse.Length);
         }
 
         /// <summary>
@@ -7214,7 +7214,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CharacterDeleteResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CharacterDeleteResponse.Length);
         }
 
         /// <summary>
@@ -7266,7 +7266,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CharacterLevelUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CharacterLevelUpdate.Length);
         }
 
         /// <summary>
@@ -7318,7 +7318,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CharacterInformation.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CharacterInformation.Length);
         }
 
         /// <summary>
@@ -7370,7 +7370,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CharacterInformation075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CharacterInformation075.Length);
         }
 
         /// <summary>
@@ -7422,7 +7422,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(SummonHealthUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(SummonHealthUpdate.Length);
         }
 
         /// <summary>
@@ -7474,7 +7474,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildSoccerTimeUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildSoccerTimeUpdate.Length);
         }
 
         /// <summary>
@@ -7526,7 +7526,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildSoccerScoreUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildSoccerScoreUpdate.Length);
         }
 
         /// <summary>
@@ -7578,7 +7578,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MasterStatsUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MasterStatsUpdate.Length);
         }
 
         /// <summary>
@@ -7630,7 +7630,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(MasterSkillLevelUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(MasterSkillLevelUpdate.Length);
         }
 
         /// <summary>
@@ -7682,7 +7682,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildJoinRequest.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildJoinRequest.Length);
         }
 
         /// <summary>
@@ -7734,7 +7734,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildJoinResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildJoinResponse.Length);
         }
 
         /// <summary>
@@ -7786,7 +7786,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildKickResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildKickResponse.Length);
         }
 
         /// <summary>
@@ -7838,7 +7838,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ShowGuildMasterDialog.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ShowGuildMasterDialog.Length);
         }
 
         /// <summary>
@@ -7890,7 +7890,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ShowGuildCreationDialog.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ShowGuildCreationDialog.Length);
         }
 
         /// <summary>
@@ -7942,7 +7942,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildCreationResult.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildCreationResult.Length);
         }
 
         /// <summary>
@@ -7994,7 +7994,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildMemberLeftGuild.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildMemberLeftGuild.Length);
         }
 
         /// <summary>
@@ -8046,7 +8046,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildWarRequestResult.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildWarRequestResult.Length);
         }
 
         /// <summary>
@@ -8098,7 +8098,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildWarRequest.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildWarRequest.Length);
         }
 
         /// <summary>
@@ -8150,7 +8150,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildWarDeclared.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildWarDeclared.Length);
         }
 
         /// <summary>
@@ -8202,7 +8202,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildWarEnded.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildWarEnded.Length);
         }
 
         /// <summary>
@@ -8254,7 +8254,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildWarScoreUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildWarScoreUpdate.Length);
         }
 
         /// <summary>
@@ -8306,7 +8306,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(GuildInformation.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(GuildInformation.Length);
         }
 
         /// <summary>
@@ -8358,7 +8358,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(SingleGuildInformation075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(SingleGuildInformation075.Length);
         }
 
         /// <summary>
@@ -8410,7 +8410,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(VaultMoneyUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(VaultMoneyUpdate.Length);
         }
 
         /// <summary>
@@ -8462,7 +8462,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(VaultClosed.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(VaultClosed.Length);
         }
 
         /// <summary>
@@ -8514,7 +8514,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(VaultProtectionInformation.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(VaultProtectionInformation.Length);
         }
 
         /// <summary>
@@ -8566,7 +8566,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(CraftingDialogClosed075.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(CraftingDialogClosed075.Length);
         }
 
         /// <summary>
@@ -8618,7 +8618,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(LegacyQuestStateDialog.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(LegacyQuestStateDialog.Length);
         }
 
         /// <summary>
@@ -8670,7 +8670,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(LegacySetQuestStateResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(LegacySetQuestStateResponse.Length);
         }
 
         /// <summary>
@@ -8722,7 +8722,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(LegacyQuestReward.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(LegacyQuestReward.Length);
         }
 
         /// <summary>
@@ -8774,7 +8774,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(LegacyQuestMonsterKillInfo.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(LegacyQuestMonsterKillInfo.Length);
         }
 
         /// <summary>
@@ -8826,7 +8826,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(PetMode.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(PetMode.Length);
         }
 
         /// <summary>
@@ -8878,7 +8878,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(PetAttack.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(PetAttack.Length);
         }
 
         /// <summary>
@@ -8930,7 +8930,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(PetInfoResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(PetInfoResponse.Length);
         }
 
         /// <summary>
@@ -8982,7 +8982,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(FriendAdded.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(FriendAdded.Length);
         }
 
         /// <summary>
@@ -9034,7 +9034,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(FriendRequest.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(FriendRequest.Length);
         }
 
         /// <summary>
@@ -9086,7 +9086,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(FriendDeleted.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(FriendDeleted.Length);
         }
 
         /// <summary>
@@ -9138,7 +9138,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(FriendOnlineStateUpdate.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(FriendOnlineStateUpdate.Length);
         }
 
         /// <summary>
@@ -9190,7 +9190,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(LetterSendResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(LetterSendResponse.Length);
         }
 
         /// <summary>
@@ -9242,7 +9242,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(AddLetter.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(AddLetter.Length);
         }
 
         /// <summary>
@@ -9294,7 +9294,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(RemoveLetter.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(RemoveLetter.Length);
         }
 
         /// <summary>
@@ -9346,7 +9346,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(ChatRoomConnectionInfo.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(ChatRoomConnectionInfo.Length);
         }
 
         /// <summary>
@@ -9398,7 +9398,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(FriendInvitationResult.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(FriendInvitationResult.Length);
         }
 
         /// <summary>
@@ -9450,7 +9450,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(QuestEventResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(QuestEventResponse.Length);
         }
 
         /// <summary>
@@ -9502,7 +9502,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(QuestStepInfo.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(QuestStepInfo.Length);
         }
 
         /// <summary>
@@ -9554,7 +9554,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(QuestProgress.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(QuestProgress.Length);
         }
 
         /// <summary>
@@ -9606,7 +9606,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(QuestCompletionResponse.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(QuestCompletionResponse.Length);
         }
 
         /// <summary>
@@ -9658,7 +9658,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(QuestCancelled.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(QuestCancelled.Length);
         }
 
         /// <summary>
@@ -9710,7 +9710,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(QuestState.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(QuestState.Length);
         }
 
         /// <summary>
@@ -9762,7 +9762,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient
         /// </summary>
         public void Commit()
         {
-            this.connection.Output.TryAdvanceAndFlushAsync(OpenNpcDialog.Length).ConfigureAwait(false);
+            this.connection.Output.AdvanceAndFlushSafely(OpenNpcDialog.Length);
         }
 
         /// <summary>

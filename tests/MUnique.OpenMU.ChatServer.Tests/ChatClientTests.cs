@@ -277,35 +277,33 @@ namespace MUnique.OpenMU.ChatServer.Tests
             var manager = new ChatRoomManager(new NullLoggerFactory());
             var roomId = manager.CreateChatRoom();
             var room = manager.GetChatRoom(roomId);
-            var duplexPipe1 = new DuplexPipe();
-            var connection1 = new Connection(duplexPipe1, null, null, new NullLogger<Connection>());
-            var client1 = new ChatClient(connection1, manager, new NullLogger<ChatClient>());
+            var bobsPipe = new DuplexPipe();
+            var bobsClient = new ChatClient(new Connection(bobsPipe, null, null, new NullLogger<Connection>()), manager, new NullLogger<ChatClient>());
             room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
             room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
 
-            var authenticationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-            await duplexPipe1.ReceivePipe.Writer.WriteAsync(authenticationPacket1);
-            await duplexPipe1.ReceivePipe.Writer.FlushAsync();
+            var bobsAuthPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
+            await bobsPipe.ReceivePipe.Writer.WriteAsync(bobsAuthPacket);
+            await bobsPipe.ReceivePipe.Writer.FlushAsync();
 
-            var duplexPipe2 = new DuplexPipe();
-            var connection2 = new Connection(duplexPipe2, null, null, new NullLogger<Connection>());
-            var client2 = new ChatClient(connection2, manager, new NullLogger<ChatClient>());
-            var authenticationPacket2 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
-            await duplexPipe2.ReceivePipe.Writer.WriteAsync(authenticationPacket2);
-            await duplexPipe2.ReceivePipe.Writer.FlushAsync();
-            client1.LogOff();
+            var alicePipe = new DuplexPipe();
+            var aliceClient = new ChatClient(new Connection(alicePipe, null, null, new NullLogger<Connection>()), manager, new NullLogger<ChatClient>());
+            var aliceAuthPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
+            await alicePipe.ReceivePipe.Writer.WriteAsync(aliceAuthPacket);
+            await alicePipe.ReceivePipe.Writer.FlushAsync();
+            bobsClient.LogOff();
 
             var expectedPacket = new byte[]
             {
                 0xC1, 0x0F, 0x01, 0x01, 0x00, 0x42, 0x6F, 0x62, 0, 0, 0, 0, 0, 0, 0,
-            };
+            }.AsString();
 
-            var readResult = await duplexPipe2.SendPipe.Reader.ReadAsync();
-            var packet = readResult.Buffer.ToArray().TakeLast(expectedPacket.Length).ToArray();
+            var readResult = await alicePipe.SendPipe.Reader.ReadAsync();
 
-            Assert.That(packet, Is.EquivalentTo(expectedPacket));
+            var packets = readResult.Buffer.ToArray().AsString();
+            Assert.That(packets, Contains.Substring(expectedPacket));
             Assert.That(room.ConnectedClients, Has.Count.EqualTo(1));
-            Assert.That(room.ConnectedClients, Contains.Item(client2));
+            Assert.That(room.ConnectedClients, Contains.Item(aliceClient));
         }
     }
 }
