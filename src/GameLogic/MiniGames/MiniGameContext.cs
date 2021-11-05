@@ -404,7 +404,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames
         private async ValueTask StartAsync()
         {
             ICollection<Player> players;
-            await this.enterLock.WaitAsync();
+            await this.enterLock.WaitAsync().ConfigureAwait(false);
             try
             {
                 this.State = MiniGameState.Playing;
