@@ -14,6 +14,31 @@
 
 <h3>@this.Map.Name</h3>
 
+<div class="btn-toolbar mb-2" role="toolbar" aria-label="Toolbar">
+    <div class="btn-group mr-2" role="group" aria-label="Creation Group">
+        <button type="button" class="btn btn-secondary" @onclick="@this.CreateNewSpawnArea" disabled="@this.createMode">
+            <span class="oi oi-plus"></span> Spawn Area
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="@this.CreateNewEnterGate" disabled="@this.createMode">
+            <span class="oi oi-plus"></span> Enter Gate
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="@this.CreateNewExitGate" disabled="@this.createMode">
+            <span class="oi oi-plus"></span> Exit Gate
+        </button>
+    </div>
+    <div class="btn-group" role="group" aria-label="Control Group">
+        @if (this.createMode)
+        {
+            <button id="applyCreate" type="button" class="btn btn-primary" @onclick="@(_ => this.createMode = false)"><span class="oi oi-circle-check"></span></button>
+            <button id="cancelCreate" type="button" class="btn btn-secondary" @onclick="@this.CancelCreation"><span class="oi oi-circle-x"></span></button>
+        }
+        else if (this.focusedObject is not null)
+        {
+            <button id="removeFocused" type="button" class="btn btn-secondary" @onclick="@this.RemoveFocusedObject"><span class="oi oi-x"></span> Remove</button>
+        }
+    </div>
+</div>
+
 <div class="map-host" width="@(scale * 255)" height="@(scale * 255)">
     <img src="@(this.terrainImage.ToBase64String(PngFormat.Instance))"
          width="@(scale * 255)"
@@ -23,7 +48,7 @@
         <div class="gate-enter"
              title="@enterGate.ToString()"
              style="@this.GetSizeAndPositionStyle(enterGate)"
-             @onclick="@(_ => this.focusedObject = enterGate)">
+             @onclick="@(_ => { if (!this.createMode) { this.focusedObject = enterGate; } })">
             @if (this.focusedObject == enterGate)
             {
                 <Resizers CoordinatesGetter="@this.OnGetObjectCoordinates" Resizing="@this.OnGateResizing" />
@@ -36,7 +61,7 @@
         <div class="gate-exit"
              title="@exitGate.ToString()"
              style="@this.GetSizeAndPositionStyle(exitGate)"
-             @onclick="@(_ => this.focusedObject = exitGate)">
+             @onclick="@(_ => { if (!this.createMode) { this.focusedObject = exitGate; } })">
             @if (this.focusedObject == exitGate)
             {
                 <Resizers CoordinatesGetter="@this.OnGetObjectCoordinates" Resizing="@this.OnGateResizing" />
@@ -49,7 +74,7 @@
         <div class="@this.GetSpawnClass(spawn)"
              title="@spawn.ToString()"
              style="@this.GetSizeAndPositionStyle(spawn)"
-             @onclick="@(_ => this.focusedObject = spawn)">
+             @onclick="@(_ => { if (!this.createMode) { this.focusedObject = spawn; } })">
             @if (this.focusedObject == spawn)
             {
                 if (spawn.X1 != spawn.X2 || spawn.Y1 != spawn.Y2)
@@ -69,24 +94,27 @@
     }
 </div>
 
-<div class="map-object-select">
-    <label for="objectSelect">Selected Object:</label>
-    <select title="Object" @onchange=this.OnObjectSelected id="objectSelect" autocomplete="off">
-        <option value="@Guid.Empty" selected=@(this.focusedObject is null)></option>
-        @foreach (var enterGate in this.Map.EnterGates)
-        {
-            <option value="@enterGate.GetId()" selected=@(object.Equals(this.focusedObject, enterGate))>EnterGate: @enterGate.ToString()</option>
-        }
-        @foreach (var exitGate in this.Map.ExitGates)
-        {
-            <option value="@exitGate.GetId()" selected=@(object.Equals(this.focusedObject, exitGate))>ExitGate: @exitGate.ToString()</option>
-        }
-        @foreach (var spawn in this.Map.MonsterSpawns)
-        {
-            <option value="@spawn.GetId()" selected=@(object.Equals(this.focusedObject, spawn))>Spawn: @spawn.ToString()</option>
-        }
-    </select>
-</div>
+@if (!this.createMode)
+{
+    <div class="map-object-select">
+        <label for="objectSelect">Selected Object:</label>
+        <select title="Object" @onchange=this.OnObjectSelected id="objectSelect" autocomplete="off" disabled="@this.createMode">
+            <option value="@Guid.Empty" selected=@(this.focusedObject is null)></option>
+            @foreach (var enterGate in this.Map.EnterGates)
+            {
+                <option value="@enterGate.GetId()" selected=@(object.Equals(this.focusedObject, enterGate))>EnterGate: @enterGate.ToString()</option>
+            }
+            @foreach (var exitGate in this.Map.ExitGates)
+            {
+                <option value="@exitGate.GetId()" selected=@(object.Equals(this.focusedObject, exitGate))>ExitGate: @exitGate.ToString()</option>
+            }
+            @foreach (var spawn in this.Map.MonsterSpawns)
+            {
+                <option value="@spawn.GetId()" selected=@(object.Equals(this.focusedObject, spawn))>Spawn: @spawn.ToString()</option>
+            }
+        </select>
+    </div>
+}
 
 @if (this.focusedObject != null)
 {
@@ -113,6 +141,7 @@
     private float scale = 3;
 
     private object? focusedObject;
+    private bool createMode;
 
     /// <summary>
     /// Gets or sets the map which is edited in this component.
@@ -125,6 +154,12 @@
     /// </summary>
     [Parameter]
     public EventCallback OnValidSubmit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the persistence context.
+    /// </summary>
+    [CascadingParameter]
+    public IContext PersistenceContext { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the javascript runtime.
@@ -169,6 +204,12 @@
         {
             this.StateHasChanged();
         }
+    }
+
+    private Task? OnCancel()
+    {
+        this.focusedObject = null;
+        return null;
     }
 
     private string GetSpawnClass(MonsterSpawnArea spawn)
@@ -216,7 +257,8 @@
         var left = this.scale * spawn.Y1 - xyOffset;
         result.Append($"width: {width.ToString(CultureInfo.InvariantCulture)}px;")
             .Append($"height: {height.ToString(CultureInfo.InvariantCulture)}px;")
-            .Append($"top: {top.ToString(CultureInfo.InvariantCulture)}px; left: {left.ToString(CultureInfo.InvariantCulture)}px;");
+            .Append($"top: {top.ToString(CultureInfo.InvariantCulture)}px;")
+            .Append($"left: {left.ToString(CultureInfo.InvariantCulture)}px;");
 
         return result.ToString();
     }
@@ -308,5 +350,81 @@
         }
 
         return null;
+    }
+
+    private void CreateNewSpawnArea()
+    {
+        this.createMode = true;
+
+        var area = this.PersistenceContext.CreateNew<MonsterSpawnArea>();
+        area.GameMap = this.Map;
+        this.Map.MonsterSpawns.Add(area);
+        area.X1 = 100;
+        area.Y1 = 100;
+        area.X2 = 200;
+        area.Y2 = 200;
+        area.Quantity = 1;
+
+        this.focusedObject = area;
+    }
+
+    private void CreateNewEnterGate()
+    {
+        this.createMode = true;
+
+        var enterGate = this.PersistenceContext.CreateNew<EnterGate>();
+        this.Map.EnterGates.Add(enterGate);
+        enterGate.X1 = 120;
+        enterGate.Y1 = 120;
+        enterGate.X2 = 140;
+        enterGate.Y2 = 140;
+
+        this.focusedObject = enterGate;
+    }
+
+    private void CreateNewExitGate()
+    {
+        this.createMode = true;
+
+        var exitGate = this.PersistenceContext.CreateNew<ExitGate>();
+        this.Map.ExitGates.Add(exitGate);
+        exitGate.X1 = 120;
+        exitGate.Y1 = 120;
+        exitGate.X2 = 140;
+        exitGate.Y2 = 140;
+
+        this.focusedObject = exitGate;
+    }
+
+    private void CancelCreation()
+    {
+        if (!this.createMode)
+        {
+            return;
+        }
+
+        this.createMode = false;
+        this.RemoveFocusedObject();
+    }
+
+    private void RemoveFocusedObject()
+    {
+        switch (this.focusedObject)
+        {
+            case MonsterSpawnArea spawnArea:
+                this.Map.MonsterSpawns.Remove(spawnArea);
+                break;
+            case EnterGate enterGate:
+                this.Map.EnterGates.Remove(enterGate);
+                break;
+            case ExitGate exitGate:
+                this.Map.ExitGates.Remove(exitGate);
+                break;
+            default:
+                return;
+        }
+
+        this.PersistenceContext.Delete(this.focusedObject);
+        this.focusedObject = null;
     }
 }

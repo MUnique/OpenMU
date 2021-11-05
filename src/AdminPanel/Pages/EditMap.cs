@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
     public sealed class EditMap : ComponentBase, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
-        private object? model;
+        private GameMapDefinition? model;
         private IContext? persistenceContext;
         private CancellationTokenSource? disposeCts;
 
@@ -70,7 +70,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
                 {
                     builder2.OpenComponent(5, typeof(MapEditor));
                     builder2.AddAttribute(6, nameof(MapEditor.Map), this.model);
-                    builder2.AddAttribute(7, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChanges));
+                    builder2.AddAttribute(7, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
                     builder2.CloseComponent();
                 }));
 
@@ -126,7 +126,7 @@ namespace MUnique.OpenMU.AdminPanel.Pages
             }
         }
 
-        private Task SaveChanges()
+        private Task SaveChangesAsync()
         {
             string text;
             try
