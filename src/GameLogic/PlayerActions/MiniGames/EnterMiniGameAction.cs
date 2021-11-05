@@ -107,7 +107,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames
             }
 
             ticketItem = player.Inventory?.GetItem(gameTicketInventoryIndex);
-            return ticketItemDefinition == ticketItem?.Definition && ticketItem.Durability > 0;
+            return ticketItemDefinition == ticketItem?.Definition && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel;
         }
     }
 }
