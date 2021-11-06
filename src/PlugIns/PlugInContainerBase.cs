@@ -139,6 +139,15 @@ namespace MUnique.OpenMU.PlugIns
         }
 
         /// <summary>
+        /// Is called after the specified plug in has been deactivated.
+        /// </summary>
+        /// <param name="deactivatedPlugIn">The deactivated plug in.</param>
+        protected virtual void AfterDeactivatePlugInType(TPlugIn deactivatedPlugIn)
+        {
+            // can be overwritten to do additional stuff after deactivating the plugin.
+        }
+
+        /// <summary>
         /// Finds the known plugin.
         /// </summary>
         /// <param name="plugInType">Type of the plug in.</param>
@@ -193,6 +202,8 @@ namespace MUnique.OpenMU.PlugIns
             {
                 this.LockSlim.ExitWriteLock();
             }
+
+            this.AfterDeactivatePlugInType(plugIn);
         }
 
         private void OnPlugInActivated(object? sender, PlugInEventArgs e)

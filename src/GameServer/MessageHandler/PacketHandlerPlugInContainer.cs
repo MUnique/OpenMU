@@ -164,24 +164,21 @@ namespace MUnique.OpenMU.GameServer.MessageHandler
         }
 
         /// <inheritdoc />
-        protected override void DeactivatePlugIn(THandler plugIn)
+        protected override void AfterDeactivatePlugInType(THandler deactivatedPlugIn)
         {
-            var isEffectivePlugIn = this.TryGetPlugIn(plugIn.Key, out var currentlyActivePlugIn) && currentlyActivePlugIn == plugIn;
-            base.DeactivatePlugIn(plugIn);
+            base.AfterDeactivatePlugInType(deactivatedPlugIn);
 
-            if (!isEffectivePlugIn)
+            if (!this.TryGetPlugIn(deactivatedPlugIn.Key, out _))
             {
-                return;
-            }
-
-            // find available replacement if the plugin was effective before
-            var replacement = this.ActivePlugIns
-                .Where(p => p.Key == plugIn.Key)
-                .OrderByDescending(p => p.GetType().GetCustomAttribute(typeof(MinimumClientAttribute), inherit: false))
-                .FirstOrDefault();
-            if (replacement != null)
-            {
-                this.SetEffectivePlugin(replacement);
+                // the plugin was effective before, so we need to set a replacement active.
+                var replacement = this.KnownPlugIns
+                    .Where(p => p.Key == deactivatedPlugIn.Key && p != deactivatedPlugIn)
+                    .OrderByDescending(p => p.GetType().GetCustomAttribute(typeof(MinimumClientAttribute), inherit: false))
+                    .FirstOrDefault();
+                if (replacement != null)
+                {
+                    this.SetEffectivePlugin(replacement);
+                }
             }
         }
 

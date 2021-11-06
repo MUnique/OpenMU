@@ -108,7 +108,9 @@ namespace MUnique.OpenMU.Tests
             var containerForSeason6 = new MainPacketHandlerPlugInContainer(clientVersionProvider.Object, manager, new NullLoggerFactory());
             containerForSeason6.Initialize();
             manager.DeactivatePlugIn(typeof(PacketHandlerSeason6));
+
             var handler = containerForSeason6[HandlerKey];
+            Assert.That(handler, Is.Not.Null);
             Assert.That(handler!.GetType(), Is.EqualTo(typeof(PacketHandlerSeason1)));
         }
 
