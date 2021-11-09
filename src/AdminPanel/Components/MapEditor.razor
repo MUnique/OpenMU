@@ -51,7 +51,7 @@
     </div>
 </div>
 
-<div class="map-host" width="@(scale * 255)" height="@(scale * 255)">
+<div class="map-host" width="@(scale * 255)" height="@(scale * 255)" @onmousemove="@this.OnMouseMove" @onmouseup="() => resizerPosition = null">
     <img src="@(this.terrainImage.ToBase64String(PngFormat.Instance))"
          width="@(scale * 255)"
          height="@(scale * 255)" />
@@ -63,7 +63,7 @@
              @onclick="@(_ => { if (!this.createMode) { this.focusedObject = enterGate; } })">
             @if (this.focusedObject == enterGate)
             {
-                <Resizers CoordinatesGetter="@this.OnGetObjectCoordinates" Resizing="@this.OnGateResizing" />
+                <Resizers Resizing="@this.OnStartResizing" />
             }
         </div>
     }
@@ -76,7 +76,7 @@
              @onclick="@(_ => { if (!this.createMode) { this.focusedObject = exitGate; } })">
             @if (this.focusedObject == exitGate)
             {
-                <Resizers CoordinatesGetter="@this.OnGetObjectCoordinates" Resizing="@this.OnGateResizing" />
+                <Resizers Resizing="@this.OnStartResizing" />
             }
         </div>
     }
@@ -91,7 +91,7 @@
             {
                 if (spawn.X1 != spawn.X2 || spawn.Y1 != spawn.Y2)
                 {
-                    <Resizers CoordinatesGetter="@this.OnGetObjectCoordinates" Resizing="@this.OnSpawnResizing" />
+                    <Resizers Resizing="@this.OnStartResizing" />
                 }
                 else if (spawn.Direction != Direction.Undefined)
                 {
@@ -153,6 +153,7 @@
     private float scale = 3;
 
     private object? focusedObject;
+    private Resizers.ResizerPosition? resizerPosition;
     private bool createMode;
 
     /// <summary>
@@ -298,37 +299,53 @@
         return null;
     }
 
-    private void OnSpawnResizing((byte X, byte Y, Resizers.ResizerPosition resizerPosition) args)
+    private void OnStartResizing(Resizers.ResizerPosition? position)
     {
-        if (this.focusedObject is MonsterSpawnArea focusedSpawnArea)
+        this.resizerPosition = position;
+    }
+
+    private async Task OnMouseMove(MouseEventArgs args)
+    {
+        if (await this.OnGetObjectCoordinates(args) is { } coordinates)
         {
-            switch (args.resizerPosition)
+            var (X, Y) = coordinates;
+
+            if (this.focusedObject is MonsterSpawnArea focusedSpawnArea)
             {
-                case Resizers.ResizerPosition.TopLeft:
-                    focusedSpawnArea.X1 = args.X;
-                    focusedSpawnArea.Y1 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.TopRight:
-                    focusedSpawnArea.X1 = args.X;
-                    focusedSpawnArea.Y2 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.BottomRight:
-                    focusedSpawnArea.X2 = args.X;
-                    focusedSpawnArea.Y2 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.BottomLeft:
-                    focusedSpawnArea.X2 = args.X;
-                    focusedSpawnArea.Y1 = args.Y;
-                    break;
+                switch (resizerPosition)
+                {
+                    case Resizers.ResizerPosition.TopLeft:
+                        focusedSpawnArea.X1 = X;
+                        focusedSpawnArea.Y1 = Y;
+                        break;
+                    case Resizers.ResizerPosition.TopRight:
+                        focusedSpawnArea.X1 = X;
+                        focusedSpawnArea.Y2 = Y;
+                        break;
+                    case Resizers.ResizerPosition.BottomRight:
+                        focusedSpawnArea.X2 = X;
+                        focusedSpawnArea.Y2 = Y;
+                        break;
+                    case Resizers.ResizerPosition.BottomLeft:
+                        focusedSpawnArea.X2 = X;
+                        focusedSpawnArea.Y1 = Y;
+                        break;
+                }
+
+                this.NotificationService.NotifyChange(focusedSpawnArea, null);
             }
 
-            this.NotificationService.NotifyChange(focusedSpawnArea, null);
+            if (this.focusedObject is EnterGate focusedGate)
+            {
+                // this.OnGateResizing((X, Y, resizerPosition));
+            }
         }
     }
 
+
     private void OnGateResizing((byte X, byte Y, Resizers.ResizerPosition resizerPosition) args)
     {
-        if (this.focusedObject is MonsterSpawnArea focusedGate)
+        if (this.focusedObject is EnterGate focusedGate)
         {
             switch (args.resizerPosition)
             {
