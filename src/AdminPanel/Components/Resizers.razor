@@ -1,55 +1,36 @@
 ﻿<div class='resizers'>
-    <div class='resizer top-left' @onmousemove=this.OnTopLeftResizerMouseMove></div>
-    <div class='resizer top-right'@onmousemove=this.OnTopRightResizerMouseMove></div>
-    <div class='resizer bottom-left'@onmousemove=this.OnBottomLeftResizerMouseMove></div>
-    <div class='resizer bottom-right'@onmousemove=this.OnBottomRightResizerMouseMove></div>
+    <div class='resizer top-left' @onmousedown=this.OnTopLeftStartResize></div>
+    <div class='resizer top-right' @onmousedown=this.OnTopRightStartResize></div>
+    <div class='resizer bottom-left' @onmousedown=this.OnBottomLeftStartResize></div>
+    <div class='resizer bottom-right' @onmousedown=this.OnBottomRightStartResize></div>
 </div>
 
 @code {
 
     /// <summary>
-    /// Gets or sets a function which translates the incoming coordinates of the <see cref="MouseEventArgs"/>
-    /// into relative coordinates of the object on its parent.
+    /// Gets or sets an <see cref="EventCallback"/> which gets called to inform the <see cref="ResizerPosition"/> when a resizing operation takes place.
     /// </summary>
     [Parameter]
-    public Func<MouseEventArgs, Task<(byte X, byte Y)?>> CoordinatesGetter { get; set; } = null!;
+    public EventCallback<ResizerPosition?> Resizing { get; set; }
 
-    /// <summary>
-    /// Gets or sets an <see cref="EventCallback"/> which gets called when a resizing operation takes place.
-    /// </summary>
-    [Parameter]
-    public EventCallback<(byte X, byte Y, ResizerPosition Resizer)> Resizing { get; set; }
-
-    private async Task OnTopLeftResizerMouseMove(MouseEventArgs args)
+    private async Task OnTopLeftStartResize(MouseEventArgs args)
     {
-        if (await this.CoordinatesGetter(args) is { } coordinates)
-        {
-            await this.Resizing.InvokeAsync((coordinates.X, coordinates.Y, ResizerPosition.TopLeft));
-        }
+        await this.Resizing.InvokeAsync(ResizerPosition.TopLeft);
     }
 
-    private async Task OnTopRightResizerMouseMove(MouseEventArgs args)
+    private async Task OnTopRightStartResize(MouseEventArgs args)
     {
-        if (await this.CoordinatesGetter(args) is { } coordinates)
-        {
-            await this.Resizing.InvokeAsync((coordinates.X, coordinates.Y, ResizerPosition.TopRight));
-        }
+        await this.Resizing.InvokeAsync(ResizerPosition.TopRight);
     }
 
-    private async Task OnBottomLeftResizerMouseMove(MouseEventArgs args)
+    private async Task OnBottomLeftStartResize(MouseEventArgs args)
     {
-        if (await this.CoordinatesGetter(args) is { } coordinates)
-        {
-            await this.Resizing.InvokeAsync((coordinates.X, coordinates.Y, ResizerPosition.BottomLeft));
-        }
+        await this.Resizing.InvokeAsync(ResizerPosition.BottomLeft);
     }
 
-    private async Task OnBottomRightResizerMouseMove(MouseEventArgs args)
+    private async Task OnBottomRightStartResize(MouseEventArgs args)
     {
-        if (await this.CoordinatesGetter(args) is { } coordinates)
-        {
-            await this.Resizing.InvokeAsync((coordinates.X, coordinates.Y, ResizerPosition.BottomRight));
-        }
+        await this.Resizing.InvokeAsync(ResizerPosition.BottomRight);
     }
 
     public enum ResizerPosition

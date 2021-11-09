@@ -11,10 +11,22 @@
 @using System.ComponentModel
 
 @implements IDisposable
+@inject NavigationManager NavigationManager
+@inject GameConfiguration GameConfiguration
 
 <h3>@this.Map.Name</h3>
 
-<div class="btn-toolbar mb-2" role="toolbar" aria-label="Toolbar">
+<div class="map-select">
+    <label for="mapSelect">Selected Map:</label>
+    <select title="Map" @onchange=this.OnMapSelected id="mapSelect" autocomplete="off">
+        @foreach (var map in this.GameConfiguration.Maps.OrderBy(c => c.Number))
+        {
+            <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>Map: @map.ToString()</option>
+        }
+    </select>
+</div>
+
+<div class="btn-toolbar my-2" role="toolbar" aria-label="Toolbar">
     <div class="btn-group mr-2" role="group" aria-label="Creation Group">
         <button type="button" class="btn btn-secondary" @onclick="@this.CreateNewSpawnArea" disabled="@this.createMode">
             <span class="oi oi-plus"></span> Spawn Area
@@ -39,7 +51,7 @@
     </div>
 </div>
 
-<div class="map-host" width="@(scale * 255)" height="@(scale * 255)">
+<div class="map-host" width="@(scale * 255)" height="@(scale * 255)" @onmousemove="@this.OnMouseMove" @onmouseup="() => resizerPosition = null">
     <img src="@(this.terrainImage.ToBase64String(PngFormat.Instance))"
          width="@(scale * 255)"
          height="@(scale * 255)" />
@@ -51,7 +63,7 @@
              @onclick="@(_ => { if (!this.createMode) { this.focusedObject = enterGate; } })">
             @if (this.focusedObject == enterGate)
             {
-                <Resizers CoordinatesGetter="@this.OnGetObjectCoordinates" Resizing="@this.OnGateResizing" />
+                <Resizers Resizing="@this.OnStartResizing" />
             }
         </div>
     }
@@ -64,7 +76,7 @@
              @onclick="@(_ => { if (!this.createMode) { this.focusedObject = exitGate; } })">
             @if (this.focusedObject == exitGate)
             {
-                <Resizers CoordinatesGetter="@this.OnGetObjectCoordinates" Resizing="@this.OnGateResizing" />
+                <Resizers Resizing="@this.OnStartResizing" />
             }
         </div>
     }
@@ -79,7 +91,7 @@
             {
                 if (spawn.X1 != spawn.X2 || spawn.Y1 != spawn.Y2)
                 {
-                    <Resizers CoordinatesGetter="@this.OnGetObjectCoordinates" Resizing="@this.OnSpawnResizing" />
+                    <Resizers Resizing="@this.OnStartResizing" />
                 }
                 else if (spawn.Direction != Direction.Undefined)
                 {
@@ -141,6 +153,7 @@
     private float scale = 3;
 
     private object? focusedObject;
+    private Resizers.ResizerPosition? resizerPosition;
     private bool createMode;
 
     /// <summary>
@@ -286,59 +299,79 @@
         return null;
     }
 
-    private void OnSpawnResizing((byte X, byte Y, Resizers.ResizerPosition resizerPosition) args)
+    private void OnStartResizing(Resizers.ResizerPosition? position)
     {
-        if (this.focusedObject is MonsterSpawnArea focusedSpawnArea)
+        this.resizerPosition = position;
+    }
+
+    private async Task OnMouseMove(MouseEventArgs args)
+    {
+        if (this.resizerPosition is null)
         {
-            switch (args.resizerPosition)
+            return;
+        }
+
+        if (await this.OnGetObjectCoordinates(args) is { } coordinates)
+        {
+            var (x, y) = coordinates;
+
+            switch (this.focusedObject)
             {
-                case Resizers.ResizerPosition.TopLeft:
-                    focusedSpawnArea.X1 = args.X;
-                    focusedSpawnArea.Y1 = args.Y;
+                case MonsterSpawnArea spawnArea:
+                    this.OnSpawnAreaResizing(spawnArea, x, y);
                     break;
-                case Resizers.ResizerPosition.TopRight:
-                    focusedSpawnArea.X1 = args.X;
-                    focusedSpawnArea.Y2 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.BottomRight:
-                    focusedSpawnArea.X2 = args.X;
-                    focusedSpawnArea.Y2 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.BottomLeft:
-                    focusedSpawnArea.X2 = args.X;
-                    focusedSpawnArea.Y1 = args.Y;
+                case Gate gate:
+                    this.OnGateResizing(gate, x, y);
                     break;
             }
 
-            this.NotificationService.NotifyChange(focusedSpawnArea, null);
+            this.NotificationService.NotifyChange(this.focusedObject, null);
         }
     }
 
-    private void OnGateResizing((byte X, byte Y, Resizers.ResizerPosition resizerPosition) args)
+    private void OnSpawnAreaResizing(MonsterSpawnArea spawnArea, byte x, byte y)
     {
-        if (this.focusedObject is MonsterSpawnArea focusedGate)
+        switch (this.resizerPosition)
         {
-            switch (args.resizerPosition)
-            {
-                case Resizers.ResizerPosition.TopLeft:
-                    focusedGate.X1 = args.X;
-                    focusedGate.Y1 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.TopRight:
-                    focusedGate.X1 = args.X;
-                    focusedGate.Y2 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.BottomRight:
-                    focusedGate.X2 = args.X;
-                    focusedGate.Y2 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.BottomLeft:
-                    focusedGate.X2 = args.X;
-                    focusedGate.Y1 = args.Y;
-                    break;
-            }
+            case Resizers.ResizerPosition.TopLeft:
+                spawnArea.X1 = x;
+                spawnArea.Y1 = y;
+                break;
+            case Resizers.ResizerPosition.TopRight:
+                spawnArea.X1 = x;
+                spawnArea.Y2 = y;
+                break;
+            case Resizers.ResizerPosition.BottomRight:
+                spawnArea.X2 = x;
+                spawnArea.Y2 = y;
+                break;
+            case Resizers.ResizerPosition.BottomLeft:
+                spawnArea.X2 = x;
+                spawnArea.Y1 = y;
+                break;
+        }
+    }
 
-            this.NotificationService.NotifyChange(focusedGate, null);
+    private void OnGateResizing(Gate gate, byte x, byte y)
+    {
+        switch (this.resizerPosition)
+        {
+            case Resizers.ResizerPosition.TopLeft:
+                gate.X1 = x;
+                gate.Y1 = y;
+                break;
+            case Resizers.ResizerPosition.TopRight:
+                gate.X1 = x;
+                gate.Y2 = y;
+                break;
+            case Resizers.ResizerPosition.BottomRight:
+                gate.X2 = x;
+                gate.Y2 = y;
+                break;
+            case Resizers.ResizerPosition.BottomLeft:
+                gate.X2 = x;
+                gate.Y1 = y;
+                break;
         }
     }
 
@@ -426,5 +459,10 @@
 
         this.PersistenceContext.Delete(this.focusedObject);
         this.focusedObject = null;
+    }
+
+    private void OnMapSelected (ChangeEventArgs args)
+    {
+        NavigationManager.NavigateTo($"/map-editor/{args.Value}");
     }
 }
