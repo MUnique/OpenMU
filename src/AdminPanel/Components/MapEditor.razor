@@ -306,68 +306,72 @@
 
     private async Task OnMouseMove(MouseEventArgs args)
     {
+        if (this.resizerPosition is null)
+        {
+            return;
+        }
+
         if (await this.OnGetObjectCoordinates(args) is { } coordinates)
         {
-            var (X, Y) = coordinates;
+            var (x, y) = coordinates;
 
-            if (this.focusedObject is MonsterSpawnArea focusedSpawnArea)
+            switch (this.focusedObject)
             {
-                switch (resizerPosition)
-                {
-                    case Resizers.ResizerPosition.TopLeft:
-                        focusedSpawnArea.X1 = X;
-                        focusedSpawnArea.Y1 = Y;
-                        break;
-                    case Resizers.ResizerPosition.TopRight:
-                        focusedSpawnArea.X1 = X;
-                        focusedSpawnArea.Y2 = Y;
-                        break;
-                    case Resizers.ResizerPosition.BottomRight:
-                        focusedSpawnArea.X2 = X;
-                        focusedSpawnArea.Y2 = Y;
-                        break;
-                    case Resizers.ResizerPosition.BottomLeft:
-                        focusedSpawnArea.X2 = X;
-                        focusedSpawnArea.Y1 = Y;
-                        break;
-                }
-
-                this.NotificationService.NotifyChange(focusedSpawnArea, null);
+                case MonsterSpawnArea spawnArea:
+                    this.OnSpawnAreaResizing(spawnArea, x, y);
+                    break;
+                case Gate gate:
+                    this.OnGateResizing(gate, x, y);
+                    break;
             }
 
-            if (this.focusedObject is EnterGate focusedGate)
-            {
-                // this.OnGateResizing((X, Y, resizerPosition));
-            }
+            this.NotificationService.NotifyChange(this.focusedObject, null);
         }
     }
 
-
-    private void OnGateResizing((byte X, byte Y, Resizers.ResizerPosition resizerPosition) args)
+    private void OnSpawnAreaResizing(MonsterSpawnArea spawnArea, byte x, byte y)
     {
-        if (this.focusedObject is EnterGate focusedGate)
+        switch (this.resizerPosition)
         {
-            switch (args.resizerPosition)
-            {
-                case Resizers.ResizerPosition.TopLeft:
-                    focusedGate.X1 = args.X;
-                    focusedGate.Y1 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.TopRight:
-                    focusedGate.X1 = args.X;
-                    focusedGate.Y2 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.BottomRight:
-                    focusedGate.X2 = args.X;
-                    focusedGate.Y2 = args.Y;
-                    break;
-                case Resizers.ResizerPosition.BottomLeft:
-                    focusedGate.X2 = args.X;
-                    focusedGate.Y1 = args.Y;
-                    break;
-            }
+            case Resizers.ResizerPosition.TopLeft:
+                spawnArea.X1 = x;
+                spawnArea.Y1 = y;
+                break;
+            case Resizers.ResizerPosition.TopRight:
+                spawnArea.X1 = x;
+                spawnArea.Y2 = y;
+                break;
+            case Resizers.ResizerPosition.BottomRight:
+                spawnArea.X2 = x;
+                spawnArea.Y2 = y;
+                break;
+            case Resizers.ResizerPosition.BottomLeft:
+                spawnArea.X2 = x;
+                spawnArea.Y1 = y;
+                break;
+        }
+    }
 
-            this.NotificationService.NotifyChange(focusedGate, null);
+    private void OnGateResizing(Gate gate, byte x, byte y)
+    {
+        switch (this.resizerPosition)
+        {
+            case Resizers.ResizerPosition.TopLeft:
+                gate.X1 = x;
+                gate.Y1 = y;
+                break;
+            case Resizers.ResizerPosition.TopRight:
+                gate.X1 = x;
+                gate.Y2 = y;
+                break;
+            case Resizers.ResizerPosition.BottomRight:
+                gate.X2 = x;
+                gate.Y2 = y;
+                break;
+            case Resizers.ResizerPosition.BottomLeft:
+                gate.X2 = x;
+                gate.Y1 = y;
+                break;
         }
     }
 
