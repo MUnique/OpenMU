@@ -54,7 +54,7 @@ namespace MUnique.OpenMU.GameLogic
             this.damageTimer.Dispose();
         }
 
-        private void OnDamageTimerElapsed(object sender, ElapsedEventArgs e)
+        private void OnDamageTimerElapsed(object? sender, ElapsedEventArgs e)
         {
             try
             {

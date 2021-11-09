@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
         ///  - The target folder path for the generated code.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        public static void Main(params string[] args)
+        public static int Main(params string[] args)
         {
             Console.WriteLine("Started generator with these parameters:");
             foreach (var arg in args)
@@ -30,7 +30,7 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
             if (args.Length < 2)
             {
                 Console.WriteLine("Can't generate code. Please add the project name and the target folder path as starting parameter.");
-                return;
+                return 1;
             }
 
             IUnboundSourceGenerator generator = args[0] switch
@@ -43,7 +43,7 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
             if (generator is null)
             {
                 Console.WriteLine($"No generator found for target assembly '{args[0]}'.");
-                return;
+                return 2;
             }
 
             var targetFolder = args[1];
@@ -59,6 +59,8 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
                 Console.WriteLine($"Writing {filePath}");
                 File.WriteAllText(filePath, source);
             }
+
+            return 0;
         }
     }
 }
