@@ -11,10 +11,22 @@
 @using System.ComponentModel
 
 @implements IDisposable
+@inject NavigationManager NavigationManager
+@inject GameConfiguration GameConfiguration
 
 <h3>@this.Map.Name</h3>
 
-<div class="btn-toolbar mb-2" role="toolbar" aria-label="Toolbar">
+<div class="map-select">
+    <label for="mapSelect">Selected Map:</label>
+    <select title="Map" @onchange=this.OnMapSelected id="mapSelect" autocomplete="off">
+        @foreach (var map in this.GameConfiguration.Maps.OrderBy(c => c.Number))
+        {
+            <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>Map: @map.ToString()</option>
+        }
+    </select>
+</div>
+
+<div class="btn-toolbar my-2" role="toolbar" aria-label="Toolbar">
     <div class="btn-group mr-2" role="group" aria-label="Creation Group">
         <button type="button" class="btn btn-secondary" @onclick="@this.CreateNewSpawnArea" disabled="@this.createMode">
             <span class="oi oi-plus"></span> Spawn Area
@@ -426,5 +438,10 @@
 
         this.PersistenceContext.Delete(this.focusedObject);
         this.focusedObject = null;
+    }
+
+    private void OnMapSelected (ChangeEventArgs args)
+    {
+        NavigationManager.NavigateTo($"/map-editor/{args.Value}");
     }
 }
