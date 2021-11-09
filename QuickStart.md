@@ -106,10 +106,10 @@ Requirements:
 
   * PostgreSQL installed
 
-  * Visual Studio 2019 (16.8) installed
+  * Visual Studio 2022 (17.0) installed
 
-  * [.NET Core SDK SDK 5.0.100](https://dotnet.microsoft.com/download/dotnet/5.0)
-    (it should be included in Visual Studio 16.8)
+  * [.NET Core SDK SDK 6.0.100](https://dotnet.microsoft.com/download/dotnet/6.0)
+    (it should be included in Visual Studio 17.0)
 
   * This repository cloned
 
