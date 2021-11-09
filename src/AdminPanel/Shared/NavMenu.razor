@@ -38,6 +38,11 @@
                     <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
                 </NavLink>
             </li>
+            <li>
+                <NavLink href="@("map-editor/" + this.GameConfiguration.Maps.OrderBy(c => c.Number).First().GetId())">
+                    <span class="oi oi-globe" aria-hidden="true"></span> Map Editor
+                </NavLink>
+            </li>
             }
             <li>
                 <NavLink href="plugins">
