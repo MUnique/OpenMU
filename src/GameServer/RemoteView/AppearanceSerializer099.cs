@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
     /// <summary>
     /// Serializer for the appearance of a player, compatible with the client of version 0.95.
     /// </summary>
-    [Guid("D20EEBFA-12C1-4A86-B202-63121EB2A95B")]
+    [Guid("99616318-38BC-4C0A-A818-29D821B78DE2")]
     [PlugIn(nameof(AppearanceSerializer095), "Serializer for the appearance of a player, compatible with the client of version 0.95")]
     [MinimumClient(0, 95, ClientLanguage.Invariant)]
     public class AppearanceSerializer095 : IAppearanceSerializer
@@ -26,6 +26,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView
         /// A cache which holds the results of the serializer.
         /// </summary>
         private static readonly ConcurrentDictionary<IAppearanceData, byte[]> Cache = new ();
+
         private enum Pets
         {
             Angel = 0,
