@@ -38,7 +38,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DG.AdvancedDataGridView" Version="1.2.25807.2" />
+    <PackageReference Include="DG.AdvancedDataGridView" Version="1.2.25902.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Persistence
     using System;
 
     /// <summary>
-    /// Desctiption of RepositoryNotFoundException.
+    /// Description of RepositoryNotFoundException.
     /// </summary>
     [Serializable]
     public class RepositoryNotFoundException : Exception

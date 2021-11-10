@@ -79,7 +79,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="operation"> The operation. </param>
         /// <param name="model"> The target model which may be <see langword="null" /> if the operations exist without a model. </param>
         /// <param name="builder"> The command builder to use to build the commands. </param>
-        protected override void Generate(EnsureSchemaOperation operation, IModel model, MigrationCommandListBuilder builder)
+        protected override void Generate(EnsureSchemaOperation operation, IModel? model, MigrationCommandListBuilder builder)
         {
             base.Generate(operation, model, builder);
             var schemaName = operation.Name;
@@ -108,7 +108,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="operation"> The operation. </param>
         /// <param name="model"> The target model which may be <see langword="null" /> if the operations exist without a model. </param>
         /// <param name="builder"> The command builder to use to build the commands. </param>
-        protected override void Generate(DropSchemaOperation operation, IModel model, MigrationCommandListBuilder builder)
+        protected override void Generate(DropSchemaOperation operation, IModel? model, MigrationCommandListBuilder builder)
         {
             base.Generate(operation, model, builder);
             var schemaName = operation.Name;
@@ -130,7 +130,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="model"> The target model which may be <see langword="null" /> if the operations exist without a model. </param>
         /// <param name="builder"> The command builder to use to build the commands. </param>
         /// <param name="terminate"> Indicates whether or not to terminate the command after generating SQL for the operation. </param>
-        protected override void Generate(CreateTableOperation operation, IModel model, MigrationCommandListBuilder builder, bool terminate = true)
+        protected override void Generate(CreateTableOperation operation, IModel? model, MigrationCommandListBuilder builder, bool terminate = true)
         {
             base.Generate(operation, model, builder, terminate);
             if (operation.Schema != "data")
