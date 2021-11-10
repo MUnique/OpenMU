@@ -229,7 +229,7 @@ namespace MUnique.OpenMU.Network.Analyzer
             }
         }
 
-        private void OnUnfilteredListChanged(object sender, ListChangedEventArgs e)
+        private void OnUnfilteredListChanged(object? sender, ListChangedEventArgs e)
         {
             if (e.ListChangedType != ListChangedType.ItemAdded
                 || this.filterMethod is not { } filter

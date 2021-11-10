@@ -66,7 +66,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             {
                 entity.Property(character => character.Name).HasMaxLength(10).IsRequired();
                 entity.HasIndex(character => character.Name).IsUnique();
-                entity.Metadata.FindNavigation(nameof(Character.RawCharacterClass)).ForeignKey.IsRequired = true;
+                entity.Metadata.FindNavigation(nameof(Character.RawCharacterClass))!.ForeignKey.IsRequired = true;
                 entity.Property(character => character.CharacterSlot).IsRequired();
                 entity.Property(character => character.CreateDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 var accountKey = entity.Metadata.GetForeignKeys().First(key => key.PrincipalEntityType == modelBuilder.Entity<Account>().Metadata);

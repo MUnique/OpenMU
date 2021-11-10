@@ -60,7 +60,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             {
                 yield return navigation.TargetEntityType;
 
-                if (navigation.IsMemberOfAggregate() || navigation.PropertyInfo.Name.StartsWith("Joined"))
+                if (navigation.IsMemberOfAggregate() || (navigation.PropertyInfo?.Name.StartsWith("Joined") ?? false))
                 {
                     foreach (var navEditType in this.DetermineNavigationTypes(navigation.TargetEntityType))
                     {

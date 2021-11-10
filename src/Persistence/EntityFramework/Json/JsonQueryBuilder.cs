@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
@@ -138,8 +139,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             {
                 stringBuilder.Append("select row_to_json(").Append(navigationAlias).Append(") from (");
                 this.AddTypeToQuery(targetType, stringBuilder, navigationAlias);
-                var primaryKey = targetType.FindPrimaryKey().Properties[0];
-                stringBuilder.Append(") ").Append(navigationAlias).Append(" where ").Append(navigationAlias).Append(".\"").Append(primaryKey.GetColumnName()).Append("\" = ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).AppendLine("\"");
+                stringBuilder.Append(") ").Append(navigationAlias).Append(" where ").Append(navigationAlias).Append(".\"").Append(targetType.GetPrimaryKeyColumnName()).Append("\" = ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).AppendLine("\"");
             }
 
             stringBuilder.Append(") as \"").Append(navigation.Name).AppendLine("\"");
@@ -149,9 +149,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         {
             var keyProperty = navigation.ForeignKey.Properties[0];
             var navigationType = keyProperty.DeclaringEntityType;
-
 #pragma warning disable EF1001 // Internal EF Core API usage.
-            if (navigationType.FindDeclaredPrimaryKey().Properties.Count > 1)
+            if (navigationType.FindDeclaredPrimaryKey() is not { } primaryKey)
+            {
+                return;
+            }
+#pragma warning restore EF1001 // Internal EF Core API usage.
+
+            if (primaryKey.Properties.Count > 1)
             {
                 this.AddManyToManyCollection(navigationType, entityType, stringBuilder, parentAlias, keyProperty);
             }
@@ -159,17 +164,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             {
                 this.AddOneToManyCollection(navigation, navigationType, stringBuilder, parentAlias, keyProperty);
             }
-#pragma warning restore EF1001 // Internal EF Core API usage.
 
             stringBuilder.Append(") as \"").Append(navigation.Name.Replace("Joined", string.Empty)).AppendLine("\"");
         }
 
         private void AddOneToManyCollection(INavigation navigation, IEntityType navigationType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty)
         {
+            var primaryKeyName = navigationType.GetDeclaredPrimaryKeyColumnName();
+
             var navigationAlias = this.GetNextAlias(parentAlias);
-#pragma warning disable EF1001 // Internal EF Core API usage.
-            var primaryKeyName = navigationType.FindDeclaredPrimaryKey().Properties[0].GetColumnName();
-#pragma warning restore EF1001 // Internal EF Core API usage.
+
             stringBuilder.AppendLine(", (")
                 .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
 
@@ -181,8 +185,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             }
             else
             {
-                var primaryKeyProperty = navigationType.FindPrimaryKey().Properties[0]; // It's always one property, usually called "Id"
-                stringBuilder.Append("select \"").Append(primaryKeyProperty.GetColumnName()).AppendLine("\" as \"$ref\"");
+                var primaryKeyColumnName = navigationType.GetPrimaryKeyColumnName(); // It's always one property, usually called "Id"
+                stringBuilder.Append("select \"").Append(primaryKeyColumnName).AppendLine("\" as \"$ref\"");
                 stringBuilder.Append("from ").Append(navigationType.GetSchema()).Append(".\"").Append(navigationType.GetTableName()).AppendLine("\" ")
                     .Append("where \"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(primaryKeyName).AppendLine("\"")
                     .Append(") as ").AppendLine(navigationAlias);
@@ -205,10 +209,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
         private void AddManyToManyCollection(IEntityType navigationType, IEntityType entityType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty)
         {
             var navigationAlias = this.GetNextAlias(parentAlias);
-            var entityTypePrimaryKeyName = entityType.FindPrimaryKey().Properties[0].GetColumnName(); // usually "Id"
+            var entityTypePrimaryKeyName = entityType.GetPrimaryKeyColumnName(); // usually "Id"
             var otherEntityTypeForeignKey = navigationType.GetForeignKeys().FirstOrDefault(fk => fk.PrincipalEntityType != entityType);
             var otherEntityTypeKey = navigationType.GetKeys().FirstOrDefault(fk => fk.DeclaringEntityType != entityType);
-            var referenceColumnToOtherEntity = otherEntityTypeForeignKey?.Properties[0].GetColumnName() ?? otherEntityTypeKey?.Properties[0].GetColumnName();
+            var referenceColumnToOtherEntity = otherEntityTypeForeignKey?.GetColumnName() ?? otherEntityTypeKey?.GetColumnName()
+                ?? throw new InvalidOperationException("No reference column available.");
 
             stringBuilder.AppendLine(", (")
                 .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");

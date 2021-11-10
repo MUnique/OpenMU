@@ -41,7 +41,7 @@ This project is released under the MIT license (see LICENSE file).
 
 ## Used technologies
 
-The project is mainly written in C# and targets .NET 5.0.
+The project is mainly written in C# and targets .NET 6.0.
 
 The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel)
 and implemented as Blazor Server App.
@@ -57,7 +57,7 @@ Contributions are welcome if they meet the following criteria:
 * Language is english.
 
 * Code should be StyleCop compliant - this project uses the [StyleCop.Analyzers](https://www.nuget.org/packages/StyleCop.Analyzers/)
-  for VS2019 so you should see issues directly as warnings.
+  for VS2022 so you should see issues directly as warnings.
 
 * Coding style (naming, etc.) and quality should fit to the current state.
 

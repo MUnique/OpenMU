@@ -44,7 +44,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             where T : class, IIdentifiable
         {
             var result = new List<T>();
-            var type = context.Model.FindEntityType(typeof(T));
+            var type = context.Model.FindEntityType(typeof(T)) ?? throw new ArgumentException($"{typeof(T)} is not included in the model of the context.");
             var queryString = this.queryBuilder.BuildJsonQueryForEntity(type);
             using var command = context.Database.GetDbConnection().CreateCommand();
             command.CommandText = queryString;
@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json
             IEntityType type;
             using (var completeContext = new EntityDataContext())
             {
-                type = completeContext.Model.FindEntityType(typeof(T));
+                type = completeContext.Model.FindEntityType(typeof(T)) ?? throw new ArgumentException($"{typeof(T)} is not included in the model of the context.");
             }
 
             var queryString = this.queryBuilder.BuildJsonQueryForEntity(type);

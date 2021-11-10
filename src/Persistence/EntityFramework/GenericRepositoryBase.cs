@@ -34,7 +34,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             this.logger = logger;
             this.RepositoryManager = repositoryManager;
             using var completeContext = new EntityDataContext();
-            this.FullEntityType = completeContext.Model.FindEntityType(typeof(T));
+            this.FullEntityType = completeContext.Model.FindEntityType(typeof(T)) ?? throw new InvalidOperationException($"{typeof(T)} is not included in the model");
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         }
 
         /// <inheritdoc/>
-        public IEnumerable LoadByProperty(IConventionProperty property, object propertyValue)
+        public IEnumerable LoadByProperty(IProperty property, object propertyValue)
         {
             using var context = this.GetContext();
             var result = this.LoadByPropertyInternal(property, propertyValue, context.Context).OfType<T>().ToList();
@@ -127,11 +127,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         {
             var entityEntry = currentContext.Entry(obj);
 
-            foreach (var navigation in this.GetNavigations(entityEntry).OfType<IConventionNavigation>())
+            foreach (var navigation in this.GetNavigations(entityEntry).OfType<INavigation>())
             {
                 if (!navigation.IsCollection)
                 {
-                    if (this.FullEntityType.FindPrimaryKey().Properties[0] == navigation.ForeignKey.Properties[0])
+                    if (this.FullEntityType.FindPrimaryKey()?.Properties[0] == navigation.ForeignKey.Properties[0])
                     {
                         // The entity type is a many-to-many join entity and the property of the navigation is the "owner" of it.
                         // Therefore, we don't need to load it. It would be nice to set the object reference somehow, though.
@@ -145,7 +145,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
             foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded))
             {
-                if (collection.Metadata is IConventionNavigation metadata)
+                if (collection.Metadata is INavigation metadata)
                 {
                     this.LoadCollection(entityEntry, metadata, currentContext);
                     collection.IsLoaded = true;
@@ -172,17 +172,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <param name="entityEntry">The entity entry.</param>
         /// <param name="navigation">The navigation.</param>
         /// <param name="context">The context.</param>
-        protected virtual void LoadCollection(EntityEntry entityEntry, IConventionNavigation navigation, DbContext context)
+        protected virtual void LoadCollection(EntityEntry entityEntry, INavigation navigation, DbContext context)
         {
             var foreignKeyProperty = navigation.ForeignKey.Properties[0];
-            var loadStatusAware = navigation.GetGetter().GetClrValue(entityEntry.Entity) as ILoadingStatusAwareList;
+            var loadStatusAware = navigation.GetClrValue<ILoadingStatusAwareList>(entityEntry.Entity);
             if (loadStatusAware?.LoadingStatus == LoadingStatus.Loaded || loadStatusAware?.LoadingStatus == LoadingStatus.Loading)
             {
                 // already loaded or loading
                 return;
             }
 
-            if (loadStatusAware is null && navigation.GetGetter().GetClrValue(entityEntry.Entity) != null)
+            if (loadStatusAware is null && navigation.GetClrValue(entityEntry.Entity) != null)
             {
                 // already loaded or loading
                 return;
@@ -198,12 +198,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             if (this.RepositoryManager.GetRepository(foreignKeyProperty.DeclaringEntityType.ClrType) is ILoadByProperty repository)
             {
                 var foreignKeyValue = entityEntry.Property(navigation.ForeignKey.PrincipalKey.Properties[0].Name).CurrentValue;
-                var items = repository.LoadByProperty(foreignKeyProperty, foreignKeyValue);
-                foreach (var obj in items)
+                if (foreignKeyValue is { })
                 {
-                    if (!loadStatusAware.Contains(obj))
+                    var items = repository.LoadByProperty(foreignKeyProperty, foreignKeyValue);
+                    foreach (var obj in items)
                     {
-                        loadStatusAware.Add(obj);
+                        if (!loadStatusAware.Contains(obj))
+                        {
+                            loadStatusAware.Add(obj);
+                        }
                     }
                 }
 
@@ -221,7 +224,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// </summary>
         /// <param name="entityEntry">The entity entry from the context.</param>
         /// <param name="navigation">The navigation property.</param>
-        protected virtual void LoadNavigationProperty(EntityEntry entityEntry, IConventionNavigation navigation)
+        protected virtual void LoadNavigationProperty(EntityEntry entityEntry, IReadOnlyNavigation navigation)
         {
             if (navigation.ForeignKey.DeclaringEntityType != navigation.DeclaringEntityType)
             {
@@ -235,8 +238,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             Guid id = (idValue as Guid?) ?? Guid.Empty;
             if (id != Guid.Empty)
             {
-                var getter = navigation.GetGetter();
-                var currentValue = getter.GetClrValue(entityEntry.Entity);
+                var currentValue = navigation.GetClrValue(entityEntry.Entity);
                 if (currentValue is IIdentifiable identifiable && identifiable.Id == id)
                 {
                     // loaded already
@@ -255,16 +257,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
 
                 if (repository != null)
                 {
-#pragma warning disable EF1001 // Internal EF Core API usage.
-                    if (navigation is Navigation { Setter: { } } concreteNavigation)
-                    {
-                        concreteNavigation.Setter.SetClrValue(entityEntry.Entity, repository.GetById(id));
-                    }
-                    else
+                    if (!navigation.TrySetClrValue(entityEntry.Entity, repository.GetById(id)))
                     {
                         this.logger.LogError($"Could not find setter for navigation {navigation}");
                     }
-#pragma warning restore EF1001 // Internal EF Core API usage.
                 }
                 else
                 {
@@ -279,7 +275,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>The context.</returns>
         protected abstract EntityFrameworkContextBase GetContext();
 
-        private IEnumerable LoadByPropertyInternal(IConventionProperty property, object propertyValue, DbContext context)
+        private IEnumerable LoadByPropertyInternal(IProperty property, object propertyValue, DbContext context)
         {
             if (property.ClrType == typeof(Guid))
             {
