@@ -43,7 +43,20 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
         /// <returns>The value of the navigation property.</returns>
         internal static object? GetClrValue(this IReadOnlyNavigation navigation, object entity)
         {
-            return navigation.PropertyInfo?.GetMethod?.Invoke(entity, Array.Empty<object>());
+            return navigation.GetClrValue<object>(entity);
+        }
+
+        /// <summary>
+        /// Gets the value of a navigation property of an entity.
+        /// </summary>
+        /// <param name="navigation">The navigation.</param>
+        /// <param name="entity">The entity.</param>
+        /// <returns>The value of the navigation property.</returns>
+        /// <typeparam name="T">The expected type of the result.</typeparam>
+        internal static T? GetClrValue<T>(this IReadOnlyNavigation navigation, object entity)
+            where T : class
+        {
+            return navigation.PropertyInfo?.GetMethod?.Invoke(entity, Array.Empty<object>()) as T;
         }
 
         /// <summary>
@@ -64,27 +77,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework
             return false;
         }
 
-        /// <summary>
-        /// Gets the value of a navigation property of an entity.
-        /// </summary>
-        /// <param name="navigation">The navigation.</param>
-        /// <param name="entity">The entity.</param>
-        /// <returns>The value of the navigation property.</returns>
-        /// <typeparam name="T">The expected type of the result.</typeparam>
-        internal static T? GetClrValue<T>(this IReadOnlyNavigation navigation, object entity)
-            where T : class
-        {
-            return navigation.PropertyInfo?.GetMethod?.Invoke(entity, Array.Empty<object>()) as T;
-        }
-
-        /// <summary>
-        /// Gets the column name of the declared primary key.
-        /// When you have a 1:n-relationship, it's the primary key of the '1', where <paramref name="entityType"/> is the 'n'.
-        /// Only works for single-column primary keys.
-        /// </summary>
-        /// <param name="entityType">The entity type of 'n' in a 1:n-relationship.</param>
-        /// <returns>The column name of the declared primary key.</returns>
-        internal static string GetDeclaredPrimaryKeyColumnName(this IEntityType entityType)
+    /// <summary>
+    /// Gets the column name of the declared primary key.
+    /// When you have a 1:n-relationship, it's the primary key of the '1', where <paramref name="entityType"/> is the 'n'.
+    /// Only works for single-column primary keys.
+    /// </summary>
+    /// <param name="entityType">The entity type of 'n' in a 1:n-relationship.</param>
+    /// <returns>The column name of the declared primary key.</returns>
+    internal static string GetDeclaredPrimaryKeyColumnName(this IEntityType entityType)
         {
 #pragma warning disable EF1001 // Internal EF Core API usage.
             if (entityType.FindDeclaredPrimaryKey() is not { } primaryKey)
