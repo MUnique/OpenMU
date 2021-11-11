@@ -5,7 +5,7 @@
 <LoadingIndicator />
 @code
 {
-    private CancellationTokenRegistration tokenRegistration;
+    private CancellationTokenRegistration _tokenRegistration;
 
     /// <summary>
     /// The reference to the opened modal.
@@ -30,7 +30,7 @@
             return;
         }
 
-        this.tokenRegistration = this.CancellationToken.Register(() =>
+        this._tokenRegistration = this.CancellationToken.Register(() =>
         {
             this.InvokeAsync(this.Modal.CloseAsync);
             this.InvokeAsync(this.StateHasChanged).WaitWithoutException();
@@ -40,7 +40,7 @@
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        this.tokenRegistration.Unregister();
-        await this.tokenRegistration.DisposeAsync();
+        this._tokenRegistration.Unregister();
+        await this._tokenRegistration.DisposeAsync();
     }
 }

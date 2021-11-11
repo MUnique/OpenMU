@@ -2,469 +2,457 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.SourceGenerator
+namespace MUnique.OpenMU.Persistence.SourceGenerator;
+
+using System.Reflection;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+
+/// <summary>
+/// Source Generator which creates classes of the our entities specifically for the entity framework core.
+/// </summary>
+[Generator]
+public class EfCoreModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.Text;
+    /// <summary>
+    /// Holds the Assembly-Name which is the target of this generator.
+    /// </summary>
+    internal const string TargetAssemblyName = "MUnique.OpenMU.Persistence.EntityFramework";
+
+    private const string GameConfigurationFullName = "MUnique.OpenMU.DataModel.Configuration.GameConfiguration";
 
     /// <summary>
-    /// Source Generator which creates classes of the our entities specifically for the entity framework core.
+    /// The standalone types which should not contain additional foreign key, because they were used somewhere in collections (except at GameConfiguration).
+    /// For these types, join entity classes will be created and ManyToManyCollectionAdapter{T,TJoin} are used adapt between these types and the join entities.
     /// </summary>
-    [Generator]
-    public class EfCoreModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
+    private static readonly string[] StandaloneTypes = new[]
     {
-        /// <summary>
-        /// Holds the Assembly-Name which is the target of this generator.
-        /// </summary>
-        internal const string TargetAssemblyName = "MUnique.OpenMU.Persistence.EntityFramework";
-
-        private const string GameConfigurationFullName = "MUnique.OpenMU.DataModel.Configuration.GameConfiguration";
-
-        /// <summary>
-        /// The standalone types which should not contain additional foreign key, because they were used somewhere in collections (except at GameConfiguration).
-        /// For these types, join entity classes will be created and ManyToManyCollectionAdapter{T,TJoin} are used adapt between these types and the join entities.
-        /// </summary>
-        private static readonly string[] StandaloneTypes = new[]
-        {
-            "MUnique.OpenMU.DataModel.Configuration.CharacterClass",
-            "MUnique.OpenMU.DataModel.Configuration.DropItemGroup",
-            "MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition",
-            "MUnique.OpenMU.DataModel.Configuration.Items.ItemOption",
-            "MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType",
-            "MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition",
-            "MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup",
-            "MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition",
-            "MUnique.OpenMU.DataModel.Configuration.Skill",
-            "MUnique.OpenMU.DataModel.Configuration.GameMapDefinition",
-        };
-
-        /// <summary>
-        /// Generates the source files.
-        /// </summary>
-        /// <returns>The created source files.</returns>
-        public IEnumerable<(string Name, string Source)> GenerateSources()
-        {
-            foreach (var type in this.CustomTypes)
-            {
-                var className = type.Name;
-                var fullName = type.FullName;
-                var standaloneCollectionProperties = this.GetStandaloneCollectionProperties(type).ToList();
-
-                var classSource = $@"{string.Format(FileHeaderTemplate, className)}
-
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
-{{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    
-    /// <summary>
-    /// The Entity Framework Core implementation of <see cref=""{type.FullName}""/>.
-    /// </summary>
-    [Table(nameof({type.Name}), Schema = {(IsConfigurationType(type) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
-    internal partial class {className} : {fullName}, IIdentifiable
-    {{
-        {this.CreateConstructors(type, standaloneCollectionProperties.Any())}
-        {this.CreateIdPropertyIfRequired(type)}
-        {this.CreateNavigationProperties(type)}
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {{
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {{
-                return baseObject.Id == this.Id;
-            }}
-
-            return base.Equals(obj);
-        }}
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {{
-            return this.Id.GetHashCode();
-        }}
-
-        {this.CreateInitJoinCollections(type, standaloneCollectionProperties)}
-    }}
-}}";
-                yield return (className, classSource);
-            }
-
-            yield return ("ExtendedTypeContext", this.GenerateDbContext());
-            yield return ("MapsterConfigurator", this.GenerateMapsterConfigurator());
-            foreach (var (name, source) in this.GenerateJoinEntities())
-            {
-                yield return (name, source);
-            }
-        }
-
-        /// <inheritdoc />
-        protected override void InnerExecute(in GeneratorExecutionContext context)
-        {
-            if (context.Compilation.AssemblyName != TargetAssemblyName)
-            {
-                return;
-            }
-
-            foreach (var (name, source) in this.GenerateSources())
-            {
-                context.AddSource(name, SourceText.From(source, Encoding.UTF8));
-            }
-        }
-
-        private IEnumerable<(string Name, string Source)> GenerateJoinEntities()
-        {
-            var standaloneCollectionProperties = this.CustomTypes.SelectMany(this.GetStandaloneCollectionProperties).ToList();
-            foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
-            {
-                var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
-                var joinTypeName = propertyInfo.DeclaringType!.Name + elementType.Name;
-
-                var source = $@"{string.Format(FileHeaderTemplate, joinTypeName)}
-
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
-{{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
-
-    [Table(nameof({joinTypeName}), Schema = {(IsConfigurationType(propertyInfo.DeclaringType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
-    internal partial class {joinTypeName}
-    {{
-        public Guid {propertyInfo.DeclaringType.Name}Id {{ get; set; }}
-        public {propertyInfo.DeclaringType.Name} {propertyInfo.DeclaringType.Name} {{ get; set; }}
-
-        public Guid {elementType.Name}Id {{ get; set; }}
-        public {elementType.Name} {elementType.Name} {{ get; set; }}
-    }}
-
-    internal partial class {propertyInfo.DeclaringType.Name}
-    {{
-        public ICollection<{joinTypeName}> Joined{propertyInfo.Name} {{ get; }} = new EntityFramework.List<{joinTypeName}>();
-    }}
-}}";
-                yield return (joinTypeName, source);
-            }
-        }
-
-        private string GenerateMapsterConfigurator()
-        {
-            var configs = new StringBuilder();
-            foreach (var type in this.CustomTypes)
-            {
-                configs
-                    .AppendLine($"            Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<{type.FullName}, {type.FullName}>()")
-                    .AppendLine($"                .Include<{type.Name}, BasicModel.{type.Name}>();")
-                    .AppendLine();
-            }
-
-            var source = $@"{string.Format(FileHeaderTemplate, "MapsterConfigurator")}
-
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
-{{
-    using System;
-    using MUnique.OpenMU.Persistence;
-    using Mapster;
+        "MUnique.OpenMU.DataModel.Configuration.CharacterClass",
+        "MUnique.OpenMU.DataModel.Configuration.DropItemGroup",
+        "MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition",
+        "MUnique.OpenMU.DataModel.Configuration.Items.ItemOption",
+        "MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType",
+        "MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition",
+        "MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup",
+        "MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition",
+        "MUnique.OpenMU.DataModel.Configuration.Skill",
+        "MUnique.OpenMU.DataModel.Configuration.GameMapDefinition",
+    };
 
     /// <summary>
-    /// Configures Mapster to properly map these classes to the Persistence.BasicModel.
+    /// Generates the source files.
     /// </summary>
-    public static class MapsterConfigurator
+    /// <returns>The created source files.</returns>
+    public IEnumerable<(string Name, string Source)> GenerateSources()
+    {
+        foreach (var type in this.CustomTypes)
+        {
+            var className = type.Name;
+            var fullName = type.FullName;
+            var standaloneCollectionProperties = this.GetStandaloneCollectionProperties(type).ToList();
+
+            var classSource = $@"{string.Format(FileHeaderTemplate, className)}
+
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref=""{type.FullName}""/>.
+/// </summary>
+[Table(nameof({type.Name}), Schema = {(IsConfigurationType(type) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
+internal partial class {className} : {fullName}, IIdentifiable
+{{
+    {this.CreateConstructors(type, standaloneCollectionProperties.Any())}
+    {this.CreateIdPropertyIfRequired(type)}
+    {this.CreateNavigationProperties(type)}
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
     {{
-        private static bool isConfigured;
-
-        /// <summary>
-        /// Ensures that Mapster is configured to properly map these EF-Core persistence classes to the Persistence.BasicModel.
-        /// </summary>
-        public static void EnsureConfigured()
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
         {{
-            if (isConfigured)
-            {{
-                return;
-            }}
+            return baseObject.Id == this.Id;
+        }}
 
-            Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
-            Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith(""Raw""));
+        return base.Equals(obj);
+    }}
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {{
+        return this.Id.GetHashCode();
+    }}
+
+    {this.CreateInitJoinCollections(type, standaloneCollectionProperties)}
+}}
+";
+            yield return (className, classSource);
+        }
+
+        yield return ("ExtendedTypeContext", this.GenerateDbContext());
+        yield return ("MapsterConfigurator", this.GenerateMapsterConfigurator());
+        foreach (var (name, source) in this.GenerateJoinEntities())
+        {
+            yield return (name, source);
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void InnerExecute(in GeneratorExecutionContext context)
+    {
+        if (context.Compilation.AssemblyName != TargetAssemblyName)
+        {
+            return;
+        }
+
+        foreach (var (name, source) in this.GenerateSources())
+        {
+            context.AddSource(name, SourceText.From(source, Encoding.UTF8));
+        }
+    }
+
+    private IEnumerable<(string Name, string Source)> GenerateJoinEntities()
+    {
+        var standaloneCollectionProperties = this.CustomTypes.SelectMany(this.GetStandaloneCollectionProperties).ToList();
+        foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
+        {
+            var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
+            var joinTypeName = propertyInfo.DeclaringType!.Name + elementType.Name;
+
+            var source = $@"{string.Format(FileHeaderTemplate, joinTypeName)}
+
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof({joinTypeName}), Schema = {(IsConfigurationType(propertyInfo.DeclaringType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
+internal partial class {joinTypeName}
+{{
+    public Guid {propertyInfo.DeclaringType.Name}Id {{ get; set; }}
+    public {propertyInfo.DeclaringType.Name} {propertyInfo.DeclaringType.Name} {{ get; set; }}
+
+    public Guid {elementType.Name}Id {{ get; set; }}
+    public {elementType.Name} {elementType.Name} {{ get; set; }}
+}}
+
+internal partial class {propertyInfo.DeclaringType.Name}
+{{
+    public ICollection<{joinTypeName}> Joined{propertyInfo.Name} {{ get; }} = new EntityFramework.List<{joinTypeName}>();
+}}
+";
+            yield return (joinTypeName, source);
+        }
+    }
+
+    private string GenerateMapsterConfigurator()
+    {
+        var configs = new StringBuilder();
+        foreach (var type in this.CustomTypes)
+        {
+            configs
+                .AppendLine($"        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<{type.FullName}, {type.FullName}>()")
+                .AppendLine($"            .Include<{type.Name}, BasicModel.{type.Name}>();")
+                .AppendLine();
+        }
+
+        var source = $@"{string.Format(FileHeaderTemplate, "MapsterConfigurator")}
+
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using MUnique.OpenMU.Persistence;
+using Mapster;
+
+/// <summary>
+/// Configures Mapster to properly map these classes to the Persistence.BasicModel.
+/// </summary>
+public static class MapsterConfigurator
+{{
+    private static bool isConfigured;
+
+    /// <summary>
+    /// Ensures that Mapster is configured to properly map these EF-Core persistence classes to the Persistence.BasicModel.
+    /// </summary>
+    public static void EnsureConfigured()
+    {{
+        if (isConfigured)
+        {{
+            return;
+        }}
+
+        Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
+        Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith(""Raw""));
 
 {configs}
-            isConfigured = true;
-        }}
+        isConfigured = true;
     }}
-}}";
-            return source;
+}}
+";
+        return source;
+    }
+
+    private string GenerateDbContext()
+    {
+        var ignores = new StringBuilder();
+        foreach (var type in this.CustomTypes)
+        {
+            ignores.AppendLine($"        modelBuilder.Ignore<{type.FullName}>();");
         }
 
-        private string GenerateDbContext()
+        var joinDefinitions = new StringBuilder();
+        var allStandaloneCollectionProperties = this.CustomTypes
+            .Where(t => t.FullName != GameConfigurationFullName)
+            .SelectMany(t => t.GetProperties().Where(p =>
+                p.PropertyType.IsGenericType &&
+                p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) &&
+                StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName))).ToList();
+
+        foreach (PropertyInfo propertyInfo in allStandaloneCollectionProperties)
         {
-            var ignores = new StringBuilder();
-            foreach (var type in this.CustomTypes)
-            {
-                ignores.AppendLine($"            modelBuilder.Ignore<{type.FullName}>();");
-            }
+            var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
+            var joinTypeName = propertyInfo.DeclaringType!.Name + elementType.Name;
+            joinDefinitions
+                .AppendLine($"        modelBuilder.Entity<{propertyInfo.DeclaringType.Name}>().HasMany(entity => entity.Joined{propertyInfo.Name}).WithOne(join => join.{propertyInfo.DeclaringType.Name});")
+                .AppendLine($"        modelBuilder.Entity<{joinTypeName}>().HasKey(join => new {{ join.{propertyInfo.DeclaringType.Name}Id, join.{elementType.Name}Id }});");
+        }
 
-            var joinDefinitions = new StringBuilder();
-            var allStandaloneCollectionProperties = this.CustomTypes
-                .Where(t => t.FullName != GameConfigurationFullName)
-                .SelectMany(t => t.GetProperties().Where(p =>
-                    p.PropertyType.IsGenericType &&
-                    p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) &&
-                    StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName))).ToList();
+        var source = $@"{string.Format(FileHeaderTemplate, "ExtendedTypeContext")}
 
-            foreach (PropertyInfo propertyInfo in allStandaloneCollectionProperties)
-            {
-                var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
-                var joinTypeName = propertyInfo.DeclaringType!.Name + elementType.Name;
-                joinDefinitions
-                    .AppendLine($"            modelBuilder.Entity<{propertyInfo.DeclaringType.Name}>().HasMany(entity => entity.Joined{propertyInfo.Name}).WithOne(join => join.{propertyInfo.DeclaringType.Name});")
-                    .AppendLine($"            modelBuilder.Entity<{joinTypeName}>().HasKey(join => new {{ join.{propertyInfo.DeclaringType.Name}Id, join.{elementType.Name}Id }});");
-            }
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
-            var source = $@"{string.Format(FileHeaderTemplate, "ExtendedTypeContext")}
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+/// <summary>
+/// DbContext which sets all extended base types to ignore.
+/// </summary>
+public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
 {{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    /// <inheritdoc/>
+    protected override void OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
+    {{
+{ignores}
+    }}
 
     /// <summary>
-    /// DbContext which sets all extended base types to ignore.
+    /// Adds the generated join definitions.
     /// </summary>
-    public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
+    /// <param name=""modelBuilder"">The model builder.</param>
+    protected void AddJoinDefinitions(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
     {{
-        /// <inheritdoc/>
-        protected override void OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
-        {{
-{ignores}
-        }}
-
-        /// <summary>
-        /// Adds the generated join definitions.
-        /// </summary>
-        /// <param name=""modelBuilder"">The model builder.</param>
-        protected void AddJoinDefinitions(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
-        {{
 {joinDefinitions}
-        }}
     }}
-}}";
-            return source;
+}}
+";
+        return source;
+    }
+
+    private string CreateInitJoinCollections(Type type, ICollection<PropertyInfo> standaloneCollectionProperties)
+    {
+        if (!standaloneCollectionProperties.Any())
+        {
+            return null;
         }
 
-        private string CreateInitJoinCollections(Type type, ICollection<PropertyInfo> standaloneCollectionProperties)
+        var result = new StringBuilder().AppendLine(@"protected void InitJoinCollections()
+    {");
+
+        foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
         {
-            if (!standaloneCollectionProperties.Any())
-            {
-                return null;
-            }
-
-            var result = new StringBuilder().AppendLine(@"protected void InitJoinCollections()
-        {");
-
-            foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
-            {
-                var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
-                var joinTypeName = propertyInfo.DeclaringType!.Name + elementType.Name;
-                result.AppendLine($@"            this.{propertyInfo.Name} = new ManyToManyCollectionAdapter<{elementType.FullName}, {joinTypeName}>(this.Joined{propertyInfo.Name}, joinEntity => joinEntity.{elementType.Name}, entity => new {joinTypeName} {{ {type.Name} = this, {type.Name}Id = this.Id, {elementType.Name} = ({elementType.Name})entity, {elementType.Name}Id = (({elementType.Name})entity).Id}});");
-            }
-
-            result.Append("        }");
-
-            return result.ToString();
+            var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
+            var joinTypeName = propertyInfo.DeclaringType!.Name + elementType.Name;
+            result.AppendLine($@"        this.{propertyInfo.Name} = new ManyToManyCollectionAdapter<{elementType.FullName}, {joinTypeName}>(this.Joined{propertyInfo.Name}, joinEntity => joinEntity.{elementType.Name}, entity => new {joinTypeName} {{ {type.Name} = this, {type.Name}Id = this.Id, {elementType.Name} = ({elementType.Name})entity, {elementType.Name}Id = (({elementType.Name})entity).Id}});");
         }
 
-        private string CreateNavigationProperties(Type type)
+        result.Append("    }");
+
+        return result.ToString();
+    }
+
+    private string CreateNavigationProperties(Type type)
+    {
+        var result = new StringBuilder();
+        var virtualNavigationProperties = type
+            .GetProperties()
+            .Where(p => p.GetGetMethod() is { IsVirtual: true, IsFinal: false }
+                        && !p.PropertyType.IsValueType
+                        && !p.PropertyType.IsArray)
+            .Where(p => !(p.PropertyType.IsGenericType
+                          && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
+                          && StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)) || type.FullName == GameConfigurationFullName)
+            .ToList();
+
+        var collectionProperties = virtualNavigationProperties
+            .Where(p => p.PropertyType.IsGenericType
+                        && (p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
+                            || p.PropertyType.GetGenericTypeDefinition() == typeof(IList<>)))
+            .ToList();
+        var primitiveCollectionProperties = collectionProperties.Where(p => p.PropertyType.GenericTypeArguments[0].IsPrimitive);
+        var nonPrimitiveCollectionProperties = collectionProperties.Where(p => !p.PropertyType.GenericTypeArguments[0].IsPrimitive);
+
+        foreach (var property in nonPrimitiveCollectionProperties)
         {
-            var result = new StringBuilder();
-            var virtualNavigationProperties = type
-                .GetProperties()
-                .Where(p => p.GetGetMethod() is { IsVirtual: true, IsFinal: false }
-                            && !p.PropertyType.IsValueType
-                            && !p.PropertyType.IsArray)
-                .Where(p => !(p.PropertyType.IsGenericType
-                              && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
-                              && StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)) || type.FullName == GameConfigurationFullName)
-                .ToList();
-
-            var collectionProperties = virtualNavigationProperties
-                .Where(p => p.PropertyType.IsGenericType
-                            && (p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
-                                || p.PropertyType.GetGenericTypeDefinition() == typeof(IList<>)))
-                .ToList();
-            var primitiveCollectionProperties = collectionProperties.Where(p => p.PropertyType.GenericTypeArguments[0].IsPrimitive);
-            var nonPrimitiveCollectionProperties = collectionProperties.Where(p => !p.PropertyType.GenericTypeArguments[0].IsPrimitive);
-
-            foreach (var property in nonPrimitiveCollectionProperties)
-            {
-                result.AppendLine(this.BuildCollectionCode(property));
-            }
-
-            foreach (var property in primitiveCollectionProperties)
-            {
-                result.AppendLine(this.BuildPrimitiveCollectionCode(property));
-            }
-
-            var navigationProperties = virtualNavigationProperties.Where(p => !p.PropertyType.IsGenericType);
-            foreach (var property in navigationProperties)
-            {
-                result.AppendLine(this.BuildNavigationCode(property));
-            }
-
-            return result.ToString();
+            result.AppendLine(this.BuildCollectionCode(property));
         }
 
-        private string BuildNavigationCode(PropertyInfo property)
+        foreach (var property in primitiveCollectionProperties)
         {
-            var propertyTypeName = property.PropertyType.Name.Split('.').Last();
-            var propertyType = property.PropertyType;
+            result.AppendLine(this.BuildPrimitiveCollectionCode(property));
+        }
 
-            return $@"
-        /// <summary>
-        /// Gets or sets the identifier of <see cref=""{property.Name}""/>.
-        /// </summary>
-        public Guid? {property.Name}Id {{ get; set; }}
+        var navigationProperties = virtualNavigationProperties.Where(p => !p.PropertyType.IsGenericType);
+        foreach (var property in navigationProperties)
+        {
+            result.AppendLine(this.BuildNavigationCode(property));
+        }
 
-        /// <summary>
-        /// Gets the raw object of <see cref=""{property.Name}"" />.
-        /// </summary>
-        [ForeignKey(nameof({property.Name}Id))]
-        public {propertyTypeName} Raw{property.Name}
+        return result.ToString();
+    }
+
+    private string BuildNavigationCode(PropertyInfo property)
+    {
+        var propertyTypeName = property.PropertyType.Name.Split('.').Last();
+        var propertyType = property.PropertyType;
+
+        return $@"
+    /// <summary>
+    /// Gets or sets the identifier of <see cref=""{property.Name}""/>.
+    /// </summary>
+    public Guid? {property.Name}Id {{ get; set; }}
+
+    /// <summary>
+    /// Gets the raw object of <see cref=""{property.Name}"" />.
+    /// </summary>
+    [ForeignKey(nameof({property.Name}Id))]
+    public {propertyTypeName} Raw{property.Name}
+    {{
+        get => base.{property.Name} as {propertyTypeName};
+        {(property.GetSetMethod(true) is { } ? $"set => base.{property.Name} = value;" : null)}
+    }}
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override {propertyType.FullName} {property.Name}
+    {{
+        get => base.{property.Name};{
+            (property.GetSetMethod(true) is { } ? $@"{(property.GetSetMethod() is null ? "protected " : null)}set
         {{
-            get => base.{property.Name} as {propertyTypeName};
-            {(property.GetSetMethod(true) is { } ? $"set => base.{property.Name} = value;" : null)}
-        }}
+            base.{property.Name} = value;
+            this.{property.Name}Id = this.Raw{property.Name}?.Id;
+        }}" : null)}
+    }}";
+    }
 
-        /// <inheritdoc/>
-        [NotMapped]
-        public override {propertyType.FullName} {property.Name}
+    private string BuildCollectionCode(PropertyInfo property)
+    {
+        var propertyType = property.PropertyType;
+        var persistentClassName = propertyType.GetGenericArguments()[0].Name;
+        var originalClassName = propertyType.GetGenericArguments()[0].FullName;
+
+        var originalPropertyTypeName = propertyType.Name.Split('`')[0] + "<" + originalClassName + ">";
+        var propertyTypeName = propertyType.Name.Split('`')[0] + "<" + persistentClassName + ">";
+
+        var adapterClass = propertyType.GetGenericTypeDefinition() == typeof(IList<>) ? "ListAdapter" : "CollectionAdapter";
+
+        return $@"
+    /// <summary>
+    /// Gets the raw collection of <see cref=""{property.Name}"" />.
+    /// </summary>
+    public {propertyTypeName} Raw{property.Name} {{ get; }} = new EntityFramework.List<{persistentClassName}>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override {originalPropertyTypeName} {property.Name} => base.{property.Name} ??= new {adapterClass}<{originalClassName}, {persistentClassName}>(this.Raw{property.Name});";
+    }
+
+    private string BuildPrimitiveCollectionCode(PropertyInfo property)
+    {
+        var propertyType = property.PropertyType;
+        var itemTypeName = propertyType.GetGenericArguments()[0].FullName;
+
+        var originalPropertyTypeName = propertyType.Name.Split('`')[0] + "<" + itemTypeName + ">";
+
+        return $@"
+    /// <summary>
+    /// Gets the raw string of <see cref=""{property.Name}"" />.
+    /// </summary>
+    [Column(nameof({property.Name}))]
+    [Newtonsoft.Json.JsonProperty(nameof({property.Name}))]
+    [System.Text.Json.Serialization.JsonPropertyName(""{property.Name.ToCamelCase()}"")]
+    public string Raw{property.Name} {{ get; set; }}
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [NotMapped]
+    public override {originalPropertyTypeName} {property.Name}
+    {{
+        get => base.{property.Name} ??= new CollectionToStringAdapter<{itemTypeName}>(this.Raw{property.Name}, newString => this.Raw{property.Name} = newString);
+        protected set
         {{
-            get => base.{property.Name};{
-                (property.GetSetMethod(true) is { } ? $@"{(property.GetSetMethod() is null ? "protected " : null)}set
+            this.{property.Name}.Clear();
+            foreach (var item in value)
             {{
-                base.{property.Name} = value;
-                this.{property.Name}Id = this.Raw{property.Name}?.Id;
-            }}" : null)}
-        }}";
-        }
-
-        private string BuildCollectionCode(PropertyInfo property)
-        {
-            var propertyType = property.PropertyType;
-            var persistentClassName = propertyType.GetGenericArguments()[0].Name;
-            var originalClassName = propertyType.GetGenericArguments()[0].FullName;
-
-            var originalPropertyTypeName = propertyType.Name.Split('`')[0] + "<" + originalClassName + ">";
-            var propertyTypeName = propertyType.Name.Split('`')[0] + "<" + persistentClassName + ">";
-
-            var adapterClass = propertyType.GetGenericTypeDefinition() == typeof(IList<>) ? "ListAdapter" : "CollectionAdapter";
-
-            return $@"
-        /// <summary>
-        /// Gets the raw collection of <see cref=""{property.Name}"" />.
-        /// </summary>
-        public {propertyTypeName} Raw{property.Name} {{ get; }} = new EntityFramework.List<{persistentClassName}>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override {originalPropertyTypeName} {property.Name} => base.{property.Name} ??= new {adapterClass}<{originalClassName}, {persistentClassName}>(this.Raw{property.Name});";
-        }
-
-        private string BuildPrimitiveCollectionCode(PropertyInfo property)
-        {
-            var propertyType = property.PropertyType;
-            var itemTypeName = propertyType.GetGenericArguments()[0].FullName;
-
-            var originalPropertyTypeName = propertyType.Name.Split('`')[0] + "<" + itemTypeName + ">";
-
-            return $@"
-        /// <summary>
-        /// Gets the raw string of <see cref=""{property.Name}"" />.
-        /// </summary>
-        [Column(nameof({property.Name}))]
-        [Newtonsoft.Json.JsonProperty(nameof({property.Name}))]
-        [System.Text.Json.Serialization.JsonPropertyName(""{property.Name.ToCamelCase()}"")]
-        public string Raw{property.Name} {{ get; set; }}
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        [NotMapped]
-        public override {originalPropertyTypeName} {property.Name}
-        {{
-            get => base.{property.Name} ??= new CollectionToStringAdapter<{itemTypeName}>(this.Raw{property.Name}, newString => this.Raw{property.Name} = newString);
-            protected set
-            {{
-                this.{property.Name}.Clear();
-                foreach (var item in value)
-                {{
-                    this.{property.Name}.Add(item);
-                }}
+                this.{property.Name}.Add(item);
             }}
-        }}";
-        }
-
-        private string CreateIdPropertyIfRequired(Type type)
-        {
-            if (type.GetProperty("Id") is null)
-            {
-                return @"
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }";
-            }
-
-            return string.Empty;
-        }
-
-        private IEnumerable<PropertyInfo> GetStandaloneCollectionProperties(Type type)
-        {
-            return type.FullName != GameConfigurationFullName ?
-                type.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)).ToList() :
-                Enumerable.Empty<PropertyInfo>();
-        }
-
-        private string CreateConstructors(Type type, bool requiresJoinCollections)
-        {
-            var stringBuilder = new StringBuilder();
-            var className = type.Name;
-            if (requiresJoinCollections
-                || (type.GetConstructors().Any(c => c.IsPublic && c.GetParameters().Length > 0)
-                     && type.GetConstructors().Any(c => c.GetParameters().Length == 0)))
-            {
-                stringBuilder.AppendLine(@$"/// <inheritdoc />
-        public {className}()
-        {{
-{(requiresJoinCollections ? "            this.InitJoinCollections();" : null)}
-        }}");
-            }
-
-            foreach (var constructor in type.GetConstructors()
-                .Where(c => c.IsPublic && c.GetParameters().Length > 0))
-            {
-                var parameters = constructor.GetParameters();
-                stringBuilder.Append(@$"
-        /// <inheritdoc />
-        public {className}({GetParameterDefinitions(parameters)})
-            : base({GetParameters(parameters)})
-        {{
-{(requiresJoinCollections ? "            this.InitJoinCollections();" : null)}
         }}
-");
-            }
+    }}";
+    }
 
-            return stringBuilder.ToString();
+    private string CreateIdPropertyIfRequired(Type type)
+    {
+        if (type.GetProperty("Id") is null)
+        {
+            return @"
+    /// <summary>
+    /// Gets or sets the identifier of this instance.
+    /// </summary>
+    public Guid Id { get; set; }";
         }
+
+        return string.Empty;
+    }
+
+    private IEnumerable<PropertyInfo> GetStandaloneCollectionProperties(Type type)
+    {
+        return type.FullName != GameConfigurationFullName ?
+            type.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)).ToList() :
+            Enumerable.Empty<PropertyInfo>();
+    }
+
+    private string CreateConstructors(Type type, bool requiresJoinCollections)
+    {
+        var stringBuilder = new StringBuilder();
+        var className = type.Name;
+        if (requiresJoinCollections
+            || (type.GetConstructors().Any(c => c.IsPublic && c.GetParameters().Length > 0)
+                && type.GetConstructors().Any(c => c.GetParameters().Length == 0)))
+        {
+            stringBuilder.AppendLine(@$"/// <inheritdoc />
+    public {className}()
+    {{
+{(requiresJoinCollections ? "        this.InitJoinCollections();" : null)}
+    }}");
+        }
+
+        foreach (var constructor in type.GetConstructors()
+                     .Where(c => c.IsPublic && c.GetParameters().Length > 0))
+        {
+            var parameters = constructor.GetParameters();
+            stringBuilder.Append(@$"
+    /// <inheritdoc />
+    public {className}({GetParameterDefinitions(parameters)})
+        : base({GetParameters(parameters)})
+    {{
+{(requiresJoinCollections ? "        this.InitJoinCollections();" : null)}
+    }}
+");
+        }
+
+        return stringBuilder.ToString();
     }
 }

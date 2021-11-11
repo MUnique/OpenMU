@@ -10,163 +10,160 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.Character"/>.
+/// </summary>
+[Table(nameof(Character), Schema = SchemaNames.AccountData)]
+internal partial class Character : MUnique.OpenMU.DataModel.Entities.Character, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    /// <inheritdoc />
+    public Character()
+    {
+        this.InitJoinCollections();
+    }
+
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.Character"/>.
+    /// Gets the raw collection of <see cref="Attributes" />.
     /// </summary>
-    [Table(nameof(Character), Schema = SchemaNames.AccountData)]
-    internal partial class Character : MUnique.OpenMU.DataModel.Entities.Character, IIdentifiable
+    public ICollection<StatAttribute> RawAttributes { get; } = new EntityFramework.List<StatAttribute>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.StatAttribute> Attributes => base.Attributes ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.StatAttribute, StatAttribute>(this.RawAttributes);
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="Letters" />.
+    /// </summary>
+    public IList<LetterHeader> RawLetters { get; } = new EntityFramework.List<LetterHeader>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override IList<MUnique.OpenMU.Interfaces.LetterHeader> Letters => base.Letters ??= new ListAdapter<MUnique.OpenMU.Interfaces.LetterHeader, LetterHeader>(this.RawLetters);
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="LearnedSkills" />.
+    /// </summary>
+    public ICollection<SkillEntry> RawLearnedSkills { get; } = new EntityFramework.List<SkillEntry>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.SkillEntry> LearnedSkills => base.LearnedSkills ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.SkillEntry, SkillEntry>(this.RawLearnedSkills);
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="QuestStates" />.
+    /// </summary>
+    public ICollection<CharacterQuestState> RawQuestStates { get; } = new EntityFramework.List<CharacterQuestState>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.CharacterQuestState> QuestStates => base.QuestStates ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CharacterQuestState, CharacterQuestState>(this.RawQuestStates);
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="CharacterClass"/>.
+    /// </summary>
+    public Guid? CharacterClassId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CharacterClass" />.
+    /// </summary>
+    [ForeignKey(nameof(CharacterClassId))]
+    public CharacterClass RawCharacterClass
     {
-        /// <inheritdoc />
-        public Character()
+        get => base.CharacterClass as CharacterClass;
+        set => base.CharacterClass = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
+    {
+        get => base.CharacterClass;set
         {
-            this.InitJoinCollections();
+            base.CharacterClass = value;
+            this.CharacterClassId = this.RawCharacterClass?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="CurrentMap"/>.
+    /// </summary>
+    public Guid? CurrentMapId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CurrentMap" />.
+    /// </summary>
+    [ForeignKey(nameof(CurrentMapId))]
+    public GameMapDefinition RawCurrentMap
+    {
+        get => base.CurrentMap as GameMapDefinition;
+        set => base.CurrentMap = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition CurrentMap
+    {
+        get => base.CurrentMap;set
+        {
+            base.CurrentMap = value;
+            this.CurrentMapId = this.RawCurrentMap?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="Inventory"/>.
+    /// </summary>
+    public Guid? InventoryId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Inventory" />.
+    /// </summary>
+    [ForeignKey(nameof(InventoryId))]
+    public ItemStorage RawInventory
+    {
+        get => base.Inventory as ItemStorage;
+        set => base.Inventory = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage Inventory
+    {
+        get => base.Inventory;set
+        {
+            base.Inventory = value;
+            this.InventoryId = this.RawInventory?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
         }
 
-        
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="Attributes" />.
-        /// </summary>
-        public ICollection<StatAttribute> RawAttributes { get; } = new EntityFramework.List<StatAttribute>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.AttributeSystem.StatAttribute> Attributes => base.Attributes ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.StatAttribute, StatAttribute>(this.RawAttributes);
+        return base.Equals(obj);
+    }
 
-        /// <summary>
-        /// Gets the raw collection of <see cref="Letters" />.
-        /// </summary>
-        public IList<LetterHeader> RawLetters { get; } = new EntityFramework.List<LetterHeader>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override IList<MUnique.OpenMU.Interfaces.LetterHeader> Letters => base.Letters ??= new ListAdapter<MUnique.OpenMU.Interfaces.LetterHeader, LetterHeader>(this.RawLetters);
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
 
-        /// <summary>
-        /// Gets the raw collection of <see cref="LearnedSkills" />.
-        /// </summary>
-        public ICollection<SkillEntry> RawLearnedSkills { get; } = new EntityFramework.List<SkillEntry>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.SkillEntry> LearnedSkills => base.LearnedSkills ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.SkillEntry, SkillEntry>(this.RawLearnedSkills);
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="QuestStates" />.
-        /// </summary>
-        public ICollection<CharacterQuestState> RawQuestStates { get; } = new EntityFramework.List<CharacterQuestState>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.CharacterQuestState> QuestStates => base.QuestStates ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CharacterQuestState, CharacterQuestState>(this.RawQuestStates);
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="CharacterClass"/>.
-        /// </summary>
-        public Guid? CharacterClassId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="CharacterClass" />.
-        /// </summary>
-        [ForeignKey(nameof(CharacterClassId))]
-        public CharacterClass RawCharacterClass
-        {
-            get => base.CharacterClass as CharacterClass;
-            set => base.CharacterClass = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
-        {
-            get => base.CharacterClass;set
-            {
-                base.CharacterClass = value;
-                this.CharacterClassId = this.RawCharacterClass?.Id;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="CurrentMap"/>.
-        /// </summary>
-        public Guid? CurrentMapId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="CurrentMap" />.
-        /// </summary>
-        [ForeignKey(nameof(CurrentMapId))]
-        public GameMapDefinition RawCurrentMap
-        {
-            get => base.CurrentMap as GameMapDefinition;
-            set => base.CurrentMap = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition CurrentMap
-        {
-            get => base.CurrentMap;set
-            {
-                base.CurrentMap = value;
-                this.CurrentMapId = this.RawCurrentMap?.Id;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="Inventory"/>.
-        /// </summary>
-        public Guid? InventoryId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Inventory" />.
-        /// </summary>
-        [ForeignKey(nameof(InventoryId))]
-        public ItemStorage RawInventory
-        {
-            get => base.Inventory as ItemStorage;
-            set => base.Inventory = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Entities.ItemStorage Inventory
-        {
-            get => base.Inventory;set
-            {
-                base.Inventory = value;
-                this.InventoryId = this.RawInventory?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        protected void InitJoinCollections()
-        {
-            this.DropItemGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, CharacterDropItemGroup>(this.JoinedDropItemGroups, joinEntity => joinEntity.DropItemGroup, entity => new CharacterDropItemGroup { Character = this, CharacterId = this.Id, DropItemGroup = (DropItemGroup)entity, DropItemGroupId = ((DropItemGroup)entity).Id});
-        }
+    protected void InitJoinCollections()
+    {
+        this.DropItemGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, CharacterDropItemGroup>(this.JoinedDropItemGroups, joinEntity => joinEntity.DropItemGroup, entity => new CharacterDropItemGroup { Character = this, CharacterId = this.Id, DropItemGroup = (DropItemGroup)entity, DropItemGroupId = ((DropItemGroup)entity).Id});
     }
 }

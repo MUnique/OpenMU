@@ -10,63 +10,60 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup"/>.
+/// </summary>
+[Table(nameof(ItemSetGroup), Schema = SchemaNames.Configuration)]
+internal partial class ItemSetGroup : MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(ItemSetGroup), Schema = SchemaNames.Configuration)]
-    internal partial class ItemSetGroup : MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="Options" />.
+    /// </summary>
+    public ICollection<IncreasableItemOption> RawOptions { get; } = new EntityFramework.List<IncreasableItemOption>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> Options => base.Options ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IncreasableItemOption>(this.RawOptions);
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="Items" />.
+    /// </summary>
+    public ICollection<ItemOfItemSet> RawItems { get; } = new EntityFramework.List<ItemOfItemSet>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet> Items => base.Items ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, ItemOfItemSet>(this.RawItems);
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="Options" />.
-        /// </summary>
-        public ICollection<IncreasableItemOption> RawOptions { get; } = new EntityFramework.List<IncreasableItemOption>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> Options => base.Options ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IncreasableItemOption>(this.RawOptions);
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="Items" />.
-        /// </summary>
-        public ICollection<ItemOfItemSet> RawItems { get; } = new EntityFramework.List<ItemOfItemSet>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet> Items => base.Items ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, ItemOfItemSet>(this.RawItems);
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
         {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
+            return baseObject.Id == this.Id;
         }
 
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        return base.Equals(obj);
     }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

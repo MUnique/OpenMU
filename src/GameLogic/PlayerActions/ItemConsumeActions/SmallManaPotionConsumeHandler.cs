@@ -4,17 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+
+/// <summary>
+/// Consume handler for small health potions.
+/// </summary>
+public class SmallManaPotionConsumeHandler : ManaPotionConsumehandler
 {
-    /// <summary>
-    /// Consume handler for small health potions.
-    /// </summary>
-    public class SmallManaPotionConsumeHandler : ManaPotionConsumehandler
+    /// <inheritdoc/>
+    protected override int Multiplier
     {
-        /// <inheritdoc/>
-        protected override int Multiplier
-        {
-            get { return 1; }
-        }
+        get { return 1; }
     }
 }

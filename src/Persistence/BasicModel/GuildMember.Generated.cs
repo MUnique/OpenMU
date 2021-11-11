@@ -10,50 +10,47 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="GuildMember"/>.
+/// </summary>
+public partial class GuildMember : MUnique.OpenMU.DataModel.Entities.GuildMember, IIdentifiable, IConvertibleTo<GuildMember>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
-    
-    /// <summary>
-    /// A plain implementation of <see cref="GuildMember"/>.
-    /// </summary>
-    public partial class GuildMember : MUnique.OpenMU.DataModel.Entities.GuildMember, IIdentifiable, IConvertibleTo<GuildMember>
+    /// <inheritdoc />
+    public GuildMember()
     {
-        /// <inheritdoc />
-        public GuildMember()
-        {
-        }
-
-        /// <inheritdoc />
-        public GuildMember(System.Guid id)
-            : base(id)
-        {
-        }
-
-        
-        
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public GuildMember Convert() => this;
     }
+
+    /// <inheritdoc />
+    public GuildMember(System.Guid id)
+        : base(id)
+    {
+    }
+
+    
+    
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public GuildMember Convert() => this;
 }

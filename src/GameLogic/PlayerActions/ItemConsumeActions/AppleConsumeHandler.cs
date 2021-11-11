@@ -4,17 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+
+/// <summary>
+/// Consume handler for apples.
+/// </summary>
+public class AppleConsumeHandler : HealthPotionConsumeHandler
 {
-    /// <summary>
-    /// Consume handler for apples.
-    /// </summary>
-    public class AppleConsumeHandler : HealthPotionConsumeHandler
+    /// <inheritdoc/>
+    protected override int Multiplier
     {
-        /// <inheritdoc/>
-        protected override int Multiplier
-        {
-            get { return 0; }
-        }
+        get { return 0; }
     }
 }

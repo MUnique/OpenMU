@@ -2,48 +2,47 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AdminPanel.Map
+namespace MUnique.OpenMU.AdminPanel.Map;
+
+using MUnique.OpenMU.GameLogic;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+
+/// <summary>
+/// Extensions for the <see cref="GameMapTerrain"/>.
+/// </summary>
+public static class GameMapTerrainExtensions
 {
-    using MUnique.OpenMU.GameLogic;
-    using SixLabors.ImageSharp;
-    using SixLabors.ImageSharp.PixelFormats;
-
     /// <summary>
-    /// Extensions for the <see cref="GameMapTerrain"/>.
+    /// Renders the terrain into an image.
     /// </summary>
-    public static class GameMapTerrainExtensions
+    /// <param name="terrain">The terrain.</param>
+    /// <returns>The rendered image.</returns>
+    public static Image<Rgba32> ToImage(this GameMapTerrain terrain)
     {
-        /// <summary>
-        /// Renders the terrain into an image.
-        /// </summary>
-        /// <param name="terrain">The terrain.</param>
-        /// <returns>The rendered image.</returns>
-        public static Image<Rgba32> ToImage(this GameMapTerrain terrain)
+        var bitmap = new Image<Rgba32>(0x100, 0x100);
+        for (int y = 0; y < 0x100; y++)
         {
-            var bitmap = new Image<Rgba32>(0x100, 0x100);
-            for (int y = 0; y < 0x100; y++)
+            for (int x = 0; x < 0x100; x++)
             {
-                for (int x = 0; x < 0x100; x++)
+                var color = Rgba32.Black;
+                if (terrain.SafezoneMap[y, x])
                 {
-                    var color = Rgba32.Black;
-                    if (terrain.SafezoneMap[y, x])
-                    {
-                        color = Rgba32.Gray;
-                    }
-                    else if (terrain.WalkMap[y, x])
-                    {
-                        color = Rgba32.SpringGreen;
-                    }
-                    else
-                    {
-                        // we use the default color.
-                    }
-
-                    bitmap[x, y] = color;
+                    color = Rgba32.Gray;
                 }
-            }
+                else if (terrain.WalkMap[y, x])
+                {
+                    color = Rgba32.SpringGreen;
+                }
+                else
+                {
+                    // we use the default color.
+                }
 
-            return bitmap;
+                bitmap[x, y] = color;
+            }
         }
+
+        return bitmap;
     }
 }

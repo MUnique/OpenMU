@@ -2,29 +2,28 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Network
+namespace MUnique.OpenMU.Network;
+
+using System.IO;
+
+/// <summary>
+/// Extensions for streams.
+/// </summary>
+public static class StreamExtensions
 {
-    using System.IO;
-
     /// <summary>
-    /// Extensions for streams.
+    /// Reads an integer from the current position of a stream.
     /// </summary>
-    public static class StreamExtensions
+    /// <param name="stream">The stream.</param>
+    /// <returns>The integer from the stream.</returns>
+    /// <exception cref="EndOfStreamException">Length: {stream.Length}; Position: {stream.Position}.</exception>
+    public static uint ReadInteger(this Stream stream)
     {
-        /// <summary>
-        /// Reads an integer from the current position of a stream.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        /// <returns>The integer from the stream.</returns>
-        /// <exception cref="EndOfStreamException">Length: {stream.Length}; Position: {stream.Position}.</exception>
-        public static uint ReadInteger(this Stream stream)
+        if (stream.Length < stream.Position + sizeof(uint))
         {
-            if (stream.Length < stream.Position + sizeof(uint))
-            {
-                throw new EndOfStreamException($"Length: {stream.Length}; Position: {stream.Position}");
-            }
-
-            return NumberConversionExtensions.MakeDword((byte)stream.ReadByte(), (byte)stream.ReadByte(), (byte)stream.ReadByte(), (byte)stream.ReadByte());
+            throw new EndOfStreamException($"Length: {stream.Length}; Position: {stream.Position}");
         }
+
+        return NumberConversionExtensions.MakeDword((byte)stream.ReadByte(), (byte)stream.ReadByte(), (byte)stream.ReadByte(), (byte)stream.ReadByte());
     }
 }

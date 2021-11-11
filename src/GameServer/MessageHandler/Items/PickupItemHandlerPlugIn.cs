@@ -2,37 +2,35 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.MessageHandler.Items
+namespace MUnique.OpenMU.GameServer.MessageHandler.Items;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.Network.Packets.ClientToServer;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Handler for item pickup packets.
+/// </summary>
+[PlugIn("PickupItemHandlerPlugIn", "Handler for item pickup packets.")]
+[Guid("8bcb9d85-95ae-4611-ae64-e9cc801ec647")]
+[MinimumClient(0, 97, ClientLanguage.Invariant)]
+internal class PickupItemHandlerPlugIn : IPacketHandlerPlugIn
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Items;
-    using MUnique.OpenMU.Network.Packets.ClientToServer;
-    using MUnique.OpenMU.Network.PlugIns;
-    using MUnique.OpenMU.PlugIns;
+    private readonly PickupItemAction _pickupAction = new ();
 
-    /// <summary>
-    /// Handler for item pickup packets.
-    /// </summary>
-    [PlugIn("PickupItemHandlerPlugIn", "Handler for item pickup packets.")]
-    [Guid("8bcb9d85-95ae-4611-ae64-e9cc801ec647")]
-    [MinimumClient(0, 97, ClientLanguage.Invariant)]
-    internal class PickupItemHandlerPlugIn : IPacketHandlerPlugIn
+    /// <inheritdoc />
+    public bool IsEncryptionExpected => true;
+
+    /// <inheritdoc/>
+    public byte Key => PickupItemRequest.Code;
+
+    /// <inheritdoc/>
+    public void HandlePacket(Player player, Span<byte> packet)
     {
-        private readonly PickupItemAction pickupAction = new ();
-
-        /// <inheritdoc />
-        public bool IsEncryptionExpected => true;
-
-        /// <inheritdoc/>
-        public byte Key => PickupItemRequest.Code;
-
-        /// <inheritdoc/>
-        public void HandlePacket(Player player, Span<byte> packet)
-        {
-            PickupItemRequest message = packet;
-            this.pickupAction.PickupItem(player, message.ItemId);
-        }
+        PickupItemRequest message = packet;
+        this._pickupAction.PickupItem(player, message.ItemId);
     }
 }

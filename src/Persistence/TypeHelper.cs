@@ -2,103 +2,99 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence
+namespace MUnique.OpenMU.Persistence;
+
+using System.Collections.Concurrent;
+using System.Reflection;
+
+/// <summary>
+/// Helper class which offers functions related to the extended data model types.
+/// </summary>
+public static class TypeHelper
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
+    private static readonly string ConfigurationNamespace = "MUnique.OpenMU.DataModel.Configuration";
 
     /// <summary>
-    /// Helper class which offers functions related to the extended data model types.
+    /// A cache which holds extended types (Value) for their corresponding base type (Key).
     /// </summary>
-    public static class TypeHelper
+    private static readonly IDictionary<Type, Type> BaseToPersistentTypes = new ConcurrentDictionary<Type, Type>();
+
+    /// <summary>
+    /// Gets the ef core type of <typeparamref name="TBase"/>.
+    /// </summary>
+    /// <typeparam name="TBase">Base type of the data model.</typeparam>
+    /// <param name="origin">The originating assembly of the persistent type of <typeparamref name="TBase"/>.</param>
+    /// <returns>Extended ef core type of <typeparamref name="TBase"/>.</returns>
+    public static Type GetPersistentTypeOf<TBase>(this Assembly origin)
     {
-        private static readonly string ConfigurationNamespace = "MUnique.OpenMU.DataModel.Configuration";
-
-        /// <summary>
-        /// A cache which holds extended types (Value) for their corresponding base type (Key).
-        /// </summary>
-        private static readonly IDictionary<Type, Type> BaseToPersistentTypes = new ConcurrentDictionary<Type, Type>();
-
-        /// <summary>
-        /// Gets the ef core type of <typeparamref name="TBase"/>.
-        /// </summary>
-        /// <typeparam name="TBase">Base type of the data model.</typeparam>
-        /// <param name="origin">The originating assembly of the persistent type of <typeparamref name="TBase"/>.</param>
-        /// <returns>Extended ef core type of <typeparamref name="TBase"/>.</returns>
-        public static Type GetPersistentTypeOf<TBase>(this Assembly origin)
+        var baseType = typeof(TBase);
+        if (baseType.Assembly == origin)
         {
-            var baseType = typeof(TBase);
-            if (baseType.Assembly == origin)
-            {
-                // TBase is already the persistent type
-                return baseType;
-            }
-
-            if (!BaseToPersistentTypes.TryGetValue(baseType, out var persistentType))
-            {
-                persistentType = origin.GetTypes().First(t => t.BaseType == baseType);
-                BaseToPersistentTypes.Add(baseType, persistentType);
-            }
-
-            return persistentType;
+            // TBase is already the persistent type
+            return baseType;
         }
 
-        /// <summary>
-        /// Creates a new object of the extended ef core type of the <typeparamref name="TBase" />.
-        /// </summary>
-        /// <typeparam name="TBase">The base type of the data model.</typeparam>
-        /// <param name="origin">The originating assembly of the persistent type of <typeparamref name="TBase"/>.</param>
-        /// <param name="args">The arguments.</param>
-        /// <returns>
-        /// A new object of the extended ef core type of the <typeparamref name="TBase" />.
-        /// </returns>
-        public static TBase CreateNew<TBase>(this Assembly origin, params object?[] args)
-            where TBase : class
+        if (!BaseToPersistentTypes.TryGetValue(baseType, out var persistentType))
         {
-            var persistentType = origin.GetPersistentTypeOf<TBase>();
-            if (args.Length == 0)
-            {
-                return (TBase)Activator.CreateInstance(persistentType)!;
-            }
-
-            return (TBase)Activator.CreateInstance(persistentType, args)!;
+            persistentType = origin.GetTypes().First(t => t.BaseType == baseType);
+            BaseToPersistentTypes.Add(baseType, persistentType);
         }
 
-        /// <summary>
-        /// Determines whether the given type is a is configuration type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>
-        ///   <c>true</c> if the given type is a configuration type; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsConfigurationType(this Type type)
+        return persistentType;
+    }
+
+    /// <summary>
+    /// Creates a new object of the extended ef core type of the <typeparamref name="TBase" />.
+    /// </summary>
+    /// <typeparam name="TBase">The base type of the data model.</typeparam>
+    /// <param name="origin">The originating assembly of the persistent type of <typeparamref name="TBase"/>.</param>
+    /// <param name="args">The arguments.</param>
+    /// <returns>
+    /// A new object of the extended ef core type of the <typeparamref name="TBase" />.
+    /// </returns>
+    public static TBase CreateNew<TBase>(this Assembly origin, params object?[] args)
+        where TBase : class
+    {
+        var persistentType = origin.GetPersistentTypeOf<TBase>();
+        if (args.Length == 0)
         {
-            if (type.Namespace != null
-                && type.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
-            {
-                return true;
-            }
-
-            if (type.BaseType is { Namespace: { } }
-                && type.BaseType.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
-            {
-                return true;
-            }
-
-            if (type.Name.Contains("Definition", StringComparison.InvariantCulture))
-            {
-                return true;
-            }
-
-            if (type.Name is "AttributeRelationship" or "PlugInConfiguration" or "ConstValueAttribute")
-            {
-                return true;
-            }
-
-            return false;
+            return (TBase)Activator.CreateInstance(persistentType)!;
         }
+
+        return (TBase)Activator.CreateInstance(persistentType, args)!;
+    }
+
+    /// <summary>
+    /// Determines whether the given type is a is configuration type.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <returns>
+    ///   <c>true</c> if the given type is a configuration type; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsConfigurationType(this Type type)
+    {
+        if (type.Namespace != null
+            && type.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
+        {
+            return true;
+        }
+
+        if (type.BaseType is { Namespace: { } }
+            && type.BaseType.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
+        {
+            return true;
+        }
+
+        if (type.Name.Contains("Definition", StringComparison.InvariantCulture))
+        {
+            return true;
+        }
+
+        if (type.Name is "AttributeRelationship" or "PlugInConfiguration" or "ConstValueAttribute")
+        {
+            return true;
+        }
+
+        return false;
     }
 }

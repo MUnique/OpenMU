@@ -2,63 +2,60 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Json
+namespace MUnique.OpenMU.Persistence.Json;
+
+using Newtonsoft.Json.Serialization;
+
+/// <summary>
+/// A reference resolver, which resolves based on $id references which are values of <see cref="IIdentifiable.Id" />.
+/// </summary>
+public class IdReferenceResolver : IReferenceResolver
 {
-    using System;
-    using System.Collections.Generic;
-    using Newtonsoft.Json.Serialization;
+    private readonly IDictionary<Guid, IIdentifiable> _objects = new Dictionary<Guid, IIdentifiable>();
 
-    /// <summary>
-    /// A reference resolver, which resolves based on $id references which are values of <see cref="IIdentifiable.Id" />.
-    /// </summary>
-    public class IdReferenceResolver : IReferenceResolver
+    /// <inheritdoc />
+    public object ResolveReference(object context, string reference)
     {
-        private readonly IDictionary<Guid, IIdentifiable> objects = new Dictionary<Guid, IIdentifiable>();
-
-        /// <inheritdoc />
-        public object ResolveReference(object context, string reference)
+        var identity = new Guid(reference);
+        if (identity == Guid.Empty)
         {
-            var identity = new Guid(reference);
-            if (identity == Guid.Empty)
-            {
-                return null!;
-            }
-
-            var success = this.objects.TryGetValue(identity, out var obj);
-            if (!success)
-            {
-                return null!; // we're handling null returns
-            }
-
-            return obj!;
+            return null!;
         }
 
-        /// <inheritdoc/>
-        public string GetReference(object context, object value)
+        var success = this._objects.TryGetValue(identity, out var obj);
+        if (!success)
         {
-            if (value is IIdentifiable identifiable)
-            {
-                this.objects[identifiable.Id] = identifiable;
-                return identifiable.Id.ToString();
-            }
-
             return null!; // we're handling null returns
         }
 
-        /// <inheritdoc/>
-        public bool IsReferenced(object context, object value)
+        return obj!;
+    }
+
+    /// <inheritdoc/>
+    public string GetReference(object context, object value)
+    {
+        if (value is IIdentifiable identifiable)
         {
-            return value is IIdentifiable identifiable && this.objects.ContainsKey(identifiable.Id);
+            this._objects[identifiable.Id] = identifiable;
+            return identifiable.Id.ToString();
         }
 
-        /// <inheritdoc/>
-        public void AddReference(object context, string reference, object value)
+        return null!; // we're handling null returns
+    }
+
+    /// <inheritdoc/>
+    public bool IsReferenced(object context, object value)
+    {
+        return value is IIdentifiable identifiable && this._objects.ContainsKey(identifiable.Id);
+    }
+
+    /// <inheritdoc/>
+    public void AddReference(object context, string reference, object value)
+    {
+        if (value is IIdentifiable identifiable)
         {
-            if (value is IIdentifiable identifiable)
-            {
-                var identity = new Guid(reference);
-                this.objects[identity] = identifiable;
-            }
+            var identity = new Guid(reference);
+            this._objects[identity] = identifiable;
         }
     }
 }

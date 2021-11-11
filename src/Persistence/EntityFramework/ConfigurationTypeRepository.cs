@@ -2,132 +2,128 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework
-{
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
+namespace MUnique.OpenMU.Persistence.EntityFramework;
 
-    using MUnique.OpenMU.Persistence.EntityFramework.Json;
-    using MUnique.OpenMU.Persistence.EntityFramework.Model;
+using System.Collections.Concurrent;
+using System.IO;
+
+using MUnique.OpenMU.Persistence.EntityFramework.Json;
+using MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+/// <summary>
+/// A repository which gets its data from the <see cref="EntityDataContext.CurrentGameConfiguration"/>, without additionally touching the database.
+/// </summary>
+/// <typeparam name="T">The data object type.</typeparam>
+internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTypeRepository
+    where T : class
+{
+    private readonly RepositoryManager _repositoryManager;
+
+    private readonly Func<GameConfiguration, ICollection<T>> _collectionSelector;
 
     /// <summary>
-    /// A repository which gets its data from the <see cref="EntityDataContext.CurrentGameConfiguration"/>, without additionally touching the database.
+    /// A cache which holds each <typeparamref name="T"/> in a dictionary to be able to access it by faster by id.
+    /// There is one cache for each <see cref="GameConfiguration"/>, because it could be possible that more than one
+    /// <see cref="GameConfiguration"/> could be hosted by one server.
     /// </summary>
-    /// <typeparam name="T">The data object type.</typeparam>
-    internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTypeRepository
-        where T : class
+    private readonly IDictionary<GameConfiguration, IDictionary<Guid, T>> _cache = new ConcurrentDictionary<GameConfiguration, IDictionary<Guid, T>>();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConfigurationTypeRepository{T}" /> class.
+    /// </summary>
+    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="collectionSelector">The collection selector which returns the collection of <typeparamref name="T" /> of a <see cref="GameConfiguration" />.</param>
+    public ConfigurationTypeRepository(RepositoryManager repositoryManager, Func<GameConfiguration, ICollection<T>> collectionSelector)
     {
-        private readonly RepositoryManager repositoryManager;
+        this._repositoryManager = repositoryManager;
+        this._collectionSelector = collectionSelector;
+    }
 
-        private readonly Func<GameConfiguration, ICollection<T>> collectionSelector;
+    /// <summary>
+    /// Gets all objects by using the <see cref="_collectionSelector"/> to the current <see cref="GameConfiguration"/>.
+    /// </summary>
+    /// <returns>All objects of the repository.</returns>
+    public IEnumerable<T> GetAll()
+    {
+        return this._collectionSelector(this.GetCurrentGameConfiguration());
+    }
 
-        /// <summary>
-        /// A cache which holds each <typeparamref name="T"/> in a dictionary to be able to access it by faster by id.
-        /// There is one cache for each <see cref="GameConfiguration"/>, because it could be possible that more than one
-        /// <see cref="GameConfiguration"/> could be hosted by one server.
-        /// </summary>
-        private readonly IDictionary<GameConfiguration, IDictionary<Guid, T>> cache = new ConcurrentDictionary<GameConfiguration, IDictionary<Guid, T>>();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationTypeRepository{T}" /> class.
-        /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        /// <param name="collectionSelector">The collection selector which returns the collection of <typeparamref name="T" /> of a <see cref="GameConfiguration" />.</param>
-        public ConfigurationTypeRepository(RepositoryManager repositoryManager, Func<GameConfiguration, ICollection<T>> collectionSelector)
+    /// <inheritdoc />
+    public T GetById(Guid id)
+    {
+        this.EnsureCacheForCurrentConfiguration();
+        var dictionary = this._cache[this.GetCurrentGameConfiguration()];
+        if (dictionary.TryGetValue(id, out var result))
         {
-            this.repositoryManager = repositoryManager;
-            this.collectionSelector = collectionSelector;
+            return result;
         }
 
-        /// <summary>
-        /// Gets all objects by using the <see cref="collectionSelector"/> to the current <see cref="GameConfiguration"/>.
-        /// </summary>
-        /// <returns>All objects of the repository.</returns>
-        public IEnumerable<T> GetAll()
+        throw new InvalidDataException($"The object of {nameof(T)} with the specified id {id} could not be found in the game configuration");
+    }
+
+    /// <inheritdoc />
+    public bool Delete(object obj)
+    {
+        if (obj is T item)
         {
-            return this.collectionSelector(this.GetCurrentGameConfiguration());
+            var gameConfiguration = this.GetCurrentGameConfiguration();
+            var collection = this._collectionSelector(gameConfiguration);
+            return collection.Remove(item);
         }
 
-        /// <inheritdoc />
-        public T GetById(Guid id)
-        {
-            this.EnsureCacheForCurrentConfiguration();
-            var dictionary = this.cache[this.GetCurrentGameConfiguration()];
-            if (dictionary.TryGetValue(id, out var result))
-            {
-                return result;
-            }
+        return false;
+    }
 
-            throw new InvalidDataException($"The object of {nameof(T)} with the specified id {id} could not be found in the game configuration");
+    /// <inheritdoc />
+    public bool Delete(Guid id)
+    {
+        return this.Delete(this.GetById(id));
+    }
+
+    /// <inheritdoc />
+    object IRepository.GetById(Guid id)
+    {
+        return this.GetById(id);
+    }
+
+    /// <summary>
+    /// Ensures the cache for the current configuration.
+    /// </summary>
+    public void EnsureCacheForCurrentConfiguration()
+    {
+        var configuration = this.GetCurrentGameConfiguration();
+
+        if (this._cache.ContainsKey(configuration))
+        {
+            return;
         }
 
-        /// <inheritdoc />
-        public bool Delete(object obj)
+        lock (this._cache)
         {
-            if (obj is T item)
-            {
-                var gameConfiguration = this.GetCurrentGameConfiguration();
-                var collection = this.collectionSelector(gameConfiguration);
-                return collection.Remove(item);
-            }
-
-            return false;
-        }
-
-        /// <inheritdoc />
-        public bool Delete(Guid id)
-        {
-            return this.Delete(this.GetById(id));
-        }
-
-        /// <inheritdoc />
-        object IRepository.GetById(Guid id)
-        {
-            return this.GetById(id);
-        }
-
-        /// <summary>
-        /// Ensures the cache for the current configuration.
-        /// </summary>
-        public void EnsureCacheForCurrentConfiguration()
-        {
-            var configuration = this.GetCurrentGameConfiguration();
-
-            if (this.cache.ContainsKey(configuration))
+            if (this._cache.ContainsKey(configuration))
             {
                 return;
             }
 
-            lock (this.cache)
+            var dictionary = this._collectionSelector(configuration)
+                .Where(item => item is IIdentifiable)
+                .ToDictionary(item => ((IIdentifiable)item).Id, item => item);
+            this._cache.Add(configuration, dictionary);
+            foreach (var item in dictionary.Values)
             {
-                if (this.cache.ContainsKey(configuration))
-                {
-                    return;
-                }
-
-                var dictionary = this.collectionSelector(configuration)
-                    .Where(item => item is IIdentifiable)
-                    .ToDictionary(item => ((IIdentifiable)item).Id, item => item);
-                this.cache.Add(configuration, dictionary);
-                foreach (var item in dictionary.Values)
-                {
-                    ConfigurationIdReferenceResolver.Instance.AddReference((IIdentifiable)item);
-                }
+                ConfigurationIdReferenceResolver.Instance.AddReference((IIdentifiable)item);
             }
         }
+    }
 
-        private GameConfiguration GetCurrentGameConfiguration()
+    private GameConfiguration GetCurrentGameConfiguration()
+    {
+        var context = (this._repositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext)?.Context as EntityDataContext;
+        if (context is null)
         {
-            var context = (this.repositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext)?.Context as EntityDataContext;
-            if (context is null)
-            {
-                throw new InvalidOperationException("This repository can only be used within an account context.");
-            }
-
-            return context.CurrentGameConfiguration ?? throw new InvalidOperationException("There is no current configuration.");
+            throw new InvalidOperationException("This repository can only be used within an account context.");
         }
+
+        return context.CurrentGameConfiguration ?? throw new InvalidOperationException("There is no current configuration.");
     }
 }

@@ -2,43 +2,41 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AdminPanel.Services
+namespace MUnique.OpenMU.AdminPanel.Services;
+
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Implementation of <see cref="IPlugInConfigurationChangeListener"/> which notifies the <see cref="PlugInManager"/>.
+/// </summary>
+public class PlugInConfigurationChangeListener : IPlugInConfigurationChangeListener
 {
-    using System;
-    using MUnique.OpenMU.PlugIns;
+    private readonly PlugInManager _plugInManager;
 
     /// <summary>
-    /// Implementation of <see cref="IPlugInConfigurationChangeListener"/> which notifies the <see cref="PlugInManager"/>.
+    /// Initializes a new instance of the <see cref="PlugInConfigurationChangeListener"/> class.
     /// </summary>
-    public class PlugInConfigurationChangeListener : IPlugInConfigurationChangeListener
+    /// <param name="plugInManager">The plug in manager.</param>
+    public PlugInConfigurationChangeListener(PlugInManager plugInManager)
     {
-        private readonly PlugInManager plugInManager;
+        this._plugInManager = plugInManager;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlugInConfigurationChangeListener"/> class.
-        /// </summary>
-        /// <param name="plugInManager">The plug in manager.</param>
-        public PlugInConfigurationChangeListener(PlugInManager plugInManager)
-        {
-            this.plugInManager = plugInManager;
-        }
+    /// <inheritdoc />
+    public void PlugInActivated(Guid plugInId)
+    {
+        this._plugInManager.ActivatePlugIn(plugInId);
+    }
 
-        /// <inheritdoc />
-        public void PlugInActivated(Guid plugInId)
-        {
-            this.plugInManager.ActivatePlugIn(plugInId);
-        }
+    /// <inheritdoc />
+    public void PlugInDeactivated(Guid plugInId)
+    {
+        this._plugInManager.DeactivatePlugIn(plugInId);
+    }
 
-        /// <inheritdoc />
-        public void PlugInDeactivated(Guid plugInId)
-        {
-            this.plugInManager.DeactivatePlugIn(plugInId);
-        }
-
-        /// <inheritdoc />
-        public void PlugInConfigured(Guid plugInId, PlugInConfiguration updatedConfiguration)
-        {
-            this.plugInManager.ConfigurePlugIn(plugInId, updatedConfiguration);
-        }
+    /// <inheritdoc />
+    public void PlugInConfigured(Guid plugInId, PlugInConfiguration updatedConfiguration)
+    {
+        this._plugInManager.ConfigurePlugIn(plugInId, updatedConfiguration);
     }
 }

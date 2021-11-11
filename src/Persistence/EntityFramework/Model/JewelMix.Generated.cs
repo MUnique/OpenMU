@@ -10,97 +10,94 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.JewelMix"/>.
+/// </summary>
+[Table(nameof(JewelMix), Schema = SchemaNames.Configuration)]
+internal partial class JewelMix : MUnique.OpenMU.DataModel.Configuration.JewelMix, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.JewelMix"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(JewelMix), Schema = SchemaNames.Configuration)]
-    internal partial class JewelMix : MUnique.OpenMU.DataModel.Configuration.JewelMix, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="SingleJewel"/>.
+    /// </summary>
+    public Guid? SingleJewelId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="SingleJewel" />.
+    /// </summary>
+    [ForeignKey(nameof(SingleJewelId))]
+    public ItemDefinition RawSingleJewel
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="SingleJewel"/>.
-        /// </summary>
-        public Guid? SingleJewelId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="SingleJewel" />.
-        /// </summary>
-        [ForeignKey(nameof(SingleJewelId))]
-        public ItemDefinition RawSingleJewel
-        {
-            get => base.SingleJewel as ItemDefinition;
-            set => base.SingleJewel = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition SingleJewel
-        {
-            get => base.SingleJewel;set
-            {
-                base.SingleJewel = value;
-                this.SingleJewelId = this.RawSingleJewel?.Id;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="MixedJewel"/>.
-        /// </summary>
-        public Guid? MixedJewelId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="MixedJewel" />.
-        /// </summary>
-        [ForeignKey(nameof(MixedJewelId))]
-        public ItemDefinition RawMixedJewel
-        {
-            get => base.MixedJewel as ItemDefinition;
-            set => base.MixedJewel = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition MixedJewel
-        {
-            get => base.MixedJewel;set
-            {
-                base.MixedJewel = value;
-                this.MixedJewelId = this.RawMixedJewel?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.SingleJewel as ItemDefinition;
+        set => base.SingleJewel = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition SingleJewel
+    {
+        get => base.SingleJewel;set
+        {
+            base.SingleJewel = value;
+            this.SingleJewelId = this.RawSingleJewel?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="MixedJewel"/>.
+    /// </summary>
+    public Guid? MixedJewelId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="MixedJewel" />.
+    /// </summary>
+    [ForeignKey(nameof(MixedJewelId))]
+    public ItemDefinition RawMixedJewel
+    {
+        get => base.MixedJewel as ItemDefinition;
+        set => base.MixedJewel = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition MixedJewel
+    {
+        get => base.MixedJewel;set
+        {
+            base.MixedJewel = value;
+            this.MixedJewelId = this.RawMixedJewel?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

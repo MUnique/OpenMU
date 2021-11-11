@@ -10,63 +10,60 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings"/>.
+/// </summary>
+[Table(nameof(SimpleCraftingSettings), Schema = SchemaNames.Configuration)]
+internal partial class SimpleCraftingSettings : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(SimpleCraftingSettings), Schema = SchemaNames.Configuration)]
-    internal partial class SimpleCraftingSettings : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="RequiredItems" />.
+    /// </summary>
+    public ICollection<ItemCraftingRequiredItem> RawRequiredItems { get; } = new EntityFramework.List<ItemCraftingRequiredItem>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem> RequiredItems => base.RequiredItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem, ItemCraftingRequiredItem>(this.RawRequiredItems);
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="ResultItems" />.
+    /// </summary>
+    public ICollection<ItemCraftingResultItem> RawResultItems { get; } = new EntityFramework.List<ItemCraftingResultItem>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem> ResultItems => base.ResultItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem, ItemCraftingResultItem>(this.RawResultItems);
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="RequiredItems" />.
-        /// </summary>
-        public ICollection<ItemCraftingRequiredItem> RawRequiredItems { get; } = new EntityFramework.List<ItemCraftingRequiredItem>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem> RequiredItems => base.RequiredItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem, ItemCraftingRequiredItem>(this.RawRequiredItems);
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="ResultItems" />.
-        /// </summary>
-        public ICollection<ItemCraftingResultItem> RawResultItems { get; } = new EntityFramework.List<ItemCraftingResultItem>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem> ResultItems => base.ResultItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem, ItemCraftingResultItem>(this.RawResultItems);
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
         {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
+            return baseObject.Id == this.Id;
         }
 
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        return base.Equals(obj);
     }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

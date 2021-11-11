@@ -2,62 +2,60 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView.Quest
+namespace MUnique.OpenMU.GameServer.RemoteView.Quest;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
+using MUnique.OpenMU.GameLogic.Views.Quest;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="IShowAvailableQuestsPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn("Quest - Show available quests", "The default implementation of the IShowAvailableQuestsPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Guid("63C7B3E2-EF66-49BB-A9F8-EFBD2389588F")]
+public class ShowAvailableQuestsPlugIn : IShowAvailableQuestsPlugIn
 {
-    using System.Linq;
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
-    using MUnique.OpenMU.GameLogic.Views.Quest;
-    using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets.ServerToClient;
-    using MUnique.OpenMU.PlugIns;
+    private readonly RemotePlayer _player;
 
     /// <summary>
-    /// The default implementation of the <see cref="IShowAvailableQuestsPlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// Initializes a new instance of the <see cref="ShowAvailableQuestsPlugIn"/> class.
     /// </summary>
-    [PlugIn("Quest - Show available quests", "The default implementation of the IShowAvailableQuestsPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("63C7B3E2-EF66-49BB-A9F8-EFBD2389588F")]
-    public class ShowAvailableQuestsPlugIn : IShowAvailableQuestsPlugIn
+    /// <param name="player">The player.</param>
+    public ShowAvailableQuestsPlugIn(RemotePlayer player)
     {
-        private readonly RemotePlayer player;
+        this._player = player;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ShowAvailableQuestsPlugIn"/> class.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        public ShowAvailableQuestsPlugIn(RemotePlayer player)
+    /// <inheritdoc />
+    public void ShowAvailableQuests()
+    {
+        var connection = this._player.Connection;
+        if (connection is null || this._player.OpenedNpc is null)
         {
-            this.player = player;
+            return;
         }
 
-        /// <inheritdoc />
-        public void ShowAvailableQuests()
+        var totalQuests = this._player.GetAvailableQuestsOfOpenedNpc().ToList();
+        var questCount = totalQuests.Count;
+
+        using var writer = connection.StartSafeWrite(AvailableQuests.HeaderType, AvailableQuests.GetRequiredSize(questCount));
+        var message = new AvailableQuests(writer.Span)
         {
-            var connection = this.player.Connection;
-            if (connection is null || this.player.OpenedNpc is null)
-            {
-                return;
-            }
+            QuestCount = (ushort)questCount,
+            QuestNpcNumber = (ushort)this._player.OpenedNpc.Definition.Number,
+        };
 
-            var totalQuests = this.player.GetAvailableQuestsOfOpenedNpc().ToList();
-            var questCount = totalQuests.Count;
-
-            using var writer = connection.StartSafeWrite(AvailableQuests.HeaderType, AvailableQuests.GetRequiredSize(questCount));
-            var message = new AvailableQuests(writer.Span)
-            {
-                QuestCount = (ushort)questCount,
-                QuestNpcNumber = (ushort)this.player.OpenedNpc.Definition.Number,
-            };
-
-            for (int i = 0; i < questCount; i++)
-            {
-                var block = message[i];
-                var quest = totalQuests[i];
-                block.Number = (ushort)quest.StartingNumber;
-                block.Group = (ushort)quest.Group;
-            }
-
-            writer.Commit();
+        for (int i = 0; i < questCount; i++)
+        {
+            var block = message[i];
+            var quest = totalQuests[i];
+            block.Number = (ushort)quest.StartingNumber;
+            block.Group = (ushort)quest.Group;
         }
+
+        writer.Commit();
     }
 }

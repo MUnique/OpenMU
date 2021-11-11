@@ -2,29 +2,28 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps
+namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
+
+using MUnique.OpenMU.DataModel.Configuration;
+
+/// <summary>
+/// Map initialization for the Doppelgaenger 4 (a.k.a. "Double Gear", "Double Goer", etc.) event map.
+/// </summary>
+internal class Doppelgaenger4 : BaseMapInitializer
 {
-    using MUnique.OpenMU.DataModel.Configuration;
-
     /// <summary>
-    /// Map initialization for the Doppelgaenger 4 (a.k.a. "Double Gear", "Double Goer", etc.) event map.
+    /// Initializes a new instance of the <see cref="Doppelgaenger4"/> class.
     /// </summary>
-    internal class Doppelgaenger4 : BaseMapInitializer
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    public Doppelgaenger4(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Doppelgaenger4"/> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
-        public Doppelgaenger4(IContext context, GameConfiguration gameConfiguration)
-            : base(context, gameConfiguration)
-        {
-        }
-
-        /// <inheritdoc />
-        protected override byte MapNumber => 68;
-
-        /// <inheritdoc />
-        protected override string MapName => "Doppelgaenger 4";
     }
+
+    /// <inheritdoc />
+    protected override byte MapNumber => 68;
+
+    /// <inheritdoc />
+    protected override string MapName => "Doppelgaenger 4";
 }

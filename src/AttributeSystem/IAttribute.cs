@@ -2,16 +2,15 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AttributeSystem
+namespace MUnique.OpenMU.AttributeSystem;
+
+/// <summary>
+/// The interface of an attribute.
+/// </summary>
+public interface IAttribute : IElement
 {
     /// <summary>
-    /// The interface of an attribute.
+    /// Gets the attribute definition.
     /// </summary>
-    public interface IAttribute : IElement
-    {
-        /// <summary>
-        /// Gets the attribute definition.
-        /// </summary>
-        AttributeDefinition Definition { get; }
-    }
+    AttributeDefinition Definition { get; }
 }

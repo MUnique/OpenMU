@@ -2,26 +2,25 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AttributeSystem
+namespace MUnique.OpenMU.AttributeSystem;
+
+/// <summary>
+/// The attribute aggregate type.
+/// </summary>
+public enum AggregateType
 {
     /// <summary>
-    /// The attribute aggregate type.
+    /// Adds the value to the raw base value.
     /// </summary>
-    public enum AggregateType
-    {
-        /// <summary>
-        /// Adds the value to the raw base value.
-        /// </summary>
-        AddRaw,
+    AddRaw,
 
-        /// <summary>
-        /// Multiplicates the value.
-        /// </summary>
-        Multiplicate,
+    /// <summary>
+    /// Multiplicates the value.
+    /// </summary>
+    Multiplicate,
 
-        /// <summary>
-        /// Adds the value to the final value.
-        /// </summary>
-        AddFinal,
-    }
+    /// <summary>
+    /// Adds the value to the final value.
+    /// </summary>
+    AddFinal,
 }

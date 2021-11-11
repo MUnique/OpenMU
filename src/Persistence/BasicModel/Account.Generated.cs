@@ -10,109 +10,106 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="Account"/>.
+/// </summary>
+public partial class Account : MUnique.OpenMU.DataModel.Entities.Account, IIdentifiable, IConvertibleTo<Account>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="Account"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class Account : MUnique.OpenMU.DataModel.Entities.Account, IIdentifiable, IConvertibleTo<Account>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="UnlockedCharacterClasses" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("unlockedCharacterClasses")]
+    [System.Text.Json.Serialization.JsonPropertyName("unlockedCharacterClasses")]
+    public ICollection<CharacterClass> RawUnlockedCharacterClasses { get; } = new List<CharacterClass>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.CharacterClass> UnlockedCharacterClasses
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="UnlockedCharacterClasses" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("unlockedCharacterClasses")]
-        [System.Text.Json.Serialization.JsonPropertyName("unlockedCharacterClasses")]
-        public ICollection<CharacterClass> RawUnlockedCharacterClasses { get; } = new List<CharacterClass>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.CharacterClass> UnlockedCharacterClasses
+        get => base.UnlockedCharacterClasses ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, CharacterClass>(this.RawUnlockedCharacterClasses);
+        protected set
         {
-            get => base.UnlockedCharacterClasses ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CharacterClass, CharacterClass>(this.RawUnlockedCharacterClasses);
-            protected set
+            this.UnlockedCharacterClasses.Clear();
+            foreach (var item in value)
             {
-                this.UnlockedCharacterClasses.Clear();
-                foreach (var item in value)
-                {
-                    this.UnlockedCharacterClasses.Add(item);
-                }
+                this.UnlockedCharacterClasses.Add(item);
             }
         }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="Characters" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("characters")]
-        [System.Text.Json.Serialization.JsonPropertyName("characters")]
-        public ICollection<Character> RawCharacters { get; } = new List<Character>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.Character> Characters
-        {
-            get => base.Characters ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.Character, Character>(this.RawCharacters);
-            protected set
-            {
-                this.Characters.Clear();
-                foreach (var item in value)
-                {
-                    this.Characters.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Vault" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("vault")]
-        [System.Text.Json.Serialization.JsonPropertyName("vault")]
-        public ItemStorage RawVault
-        {
-            get => base.Vault as ItemStorage;
-            set => base.Vault = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Entities.ItemStorage Vault
-        {
-            get => base.Vault;
-            set => base.Vault = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public Account Convert() => this;
     }
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="Characters" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("characters")]
+    [System.Text.Json.Serialization.JsonPropertyName("characters")]
+    public ICollection<Character> RawCharacters { get; } = new List<Character>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.Character> Characters
+    {
+        get => base.Characters ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.Character, Character>(this.RawCharacters);
+        protected set
+        {
+            this.Characters.Clear();
+            foreach (var item in value)
+            {
+                this.Characters.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Vault" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("vault")]
+    [System.Text.Json.Serialization.JsonPropertyName("vault")]
+    public ItemStorage RawVault
+    {
+        get => base.Vault as ItemStorage;
+        set => base.Vault = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage Vault
+    {
+        get => base.Vault;
+        set => base.Vault = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public Account Convert() => this;
 }

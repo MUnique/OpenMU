@@ -2,36 +2,33 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer
+namespace MUnique.OpenMU.GameServer;
+
+/// <summary>
+/// Extensions for an <see cref="Encoding"/>.
+/// </summary>
+public static class EncodingExtensions
 {
-    using System.Text;
-
     /// <summary>
-    /// Extensions for an <see cref="Encoding"/>.
+    /// Gets the maximum character count of the given text which fits in the specified maximum byte count.
     /// </summary>
-    public static class EncodingExtensions
+    /// <param name="encoding">The encoding.</param>
+    /// <param name="text">The text.</param>
+    /// <param name="maximum">The maximum.</param>
+    /// <returns>The maximum character count of the given text which fits in the specified maximum byte count.</returns>
+    public static int GetCharacterCountOfMaxByteCount(this Encoding encoding, string text, int maximum)
     {
-        /// <summary>
-        /// Gets the maximum character count of the given text which fits in the specified maximum byte count.
-        /// </summary>
-        /// <param name="encoding">The encoding.</param>
-        /// <param name="text">The text.</param>
-        /// <param name="maximum">The maximum.</param>
-        /// <returns>The maximum character count of the given text which fits in the specified maximum byte count.</returns>
-        public static int GetCharacterCountOfMaxByteCount(this Encoding encoding, string text, int maximum)
+        if (encoding.GetByteCount(text) <= maximum)
         {
-            if (encoding.GetByteCount(text) <= maximum)
-            {
-                return text.Length;
-            }
-
-            var current = maximum;
-            while (encoding.GetByteCount(text, 0, current) > maximum)
-            {
-                --current;
-            }
-
-            return current;
+            return text.Length;
         }
+
+        var current = maximum;
+        while (encoding.GetByteCount(text, 0, current) > maximum)
+        {
+            --current;
+        }
+
+        return current;
     }
 }

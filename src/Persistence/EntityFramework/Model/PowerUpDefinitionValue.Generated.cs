@@ -10,54 +10,51 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue"/>.
+/// </summary>
+[Table(nameof(PowerUpDefinitionValue), Schema = SchemaNames.Configuration)]
+internal partial class PowerUpDefinitionValue : MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(PowerUpDefinitionValue), Schema = SchemaNames.Configuration)]
-    internal partial class PowerUpDefinitionValue : MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="RelatedValues" />.
+    /// </summary>
+    public ICollection<AttributeRelationship> RawRelatedValues { get; } = new EntityFramework.List<AttributeRelationship>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> RelatedValues => base.RelatedValues ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.AttributeRelationship, AttributeRelationship>(this.RawRelatedValues);
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="RelatedValues" />.
-        /// </summary>
-        public ICollection<AttributeRelationship> RawRelatedValues { get; } = new EntityFramework.List<AttributeRelationship>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> RelatedValues => base.RelatedValues ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.AttributeRelationship, AttributeRelationship>(this.RawRelatedValues);
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
         {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
+            return baseObject.Id == this.Id;
         }
 
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        return base.Equals(obj);
     }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

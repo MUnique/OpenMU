@@ -10,63 +10,60 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="ItemOptionLink"/>.
+/// </summary>
+public partial class ItemOptionLink : MUnique.OpenMU.DataModel.Entities.ItemOptionLink, IIdentifiable, IConvertibleTo<ItemOptionLink>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="ItemOptionLink"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class ItemOptionLink : MUnique.OpenMU.DataModel.Entities.ItemOptionLink, IIdentifiable, IConvertibleTo<ItemOptionLink>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="ItemOption" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("itemOption")]
+    [System.Text.Json.Serialization.JsonPropertyName("itemOption")]
+    public IncreasableItemOption RawItemOption
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="ItemOption" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("itemOption")]
-        [System.Text.Json.Serialization.JsonPropertyName("itemOption")]
-        public IncreasableItemOption RawItemOption
-        {
-            get => base.ItemOption as IncreasableItemOption;
-            set => base.ItemOption = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption ItemOption
-        {
-            get => base.ItemOption;
-            set => base.ItemOption = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public ItemOptionLink Convert() => this;
+        get => base.ItemOption as IncreasableItemOption;
+        set => base.ItemOption = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption ItemOption
+    {
+        get => base.ItemOption;
+        set => base.ItemOption = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public ItemOptionLink Convert() => this;
 }

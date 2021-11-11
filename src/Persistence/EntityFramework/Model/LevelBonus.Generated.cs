@@ -10,57 +10,54 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus"/>.
+/// </summary>
+[Table(nameof(LevelBonus), Schema = SchemaNames.Configuration)]
+internal partial class LevelBonus : MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    /// <inheritdoc />
+    public LevelBonus()
+    {
+
+    }
+
+    /// <inheritdoc />
+    public LevelBonus(System.Int32 level, System.Single constantValue)
+        : base(level, constantValue)
+    {
+
+    }
+
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(LevelBonus), Schema = SchemaNames.Configuration)]
-    internal partial class LevelBonus : MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus, IIdentifiable
+    public Guid Id { get; set; }
+    
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
     {
-        /// <inheritdoc />
-        public LevelBonus()
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
         {
-
+            return baseObject.Id == this.Id;
         }
 
-        /// <inheritdoc />
-        public LevelBonus(System.Int32 level, System.Single constantValue)
-            : base(level, constantValue)
-        {
-
-        }
-
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        return base.Equals(obj);
     }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

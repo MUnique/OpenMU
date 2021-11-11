@@ -2,24 +2,20 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.SourceGenerator
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
-    using Microsoft.CodeAnalysis;
+namespace MUnique.OpenMU.Persistence.SourceGenerator;
 
+using System.Reflection;
+using Microsoft.CodeAnalysis;
+
+/// <summary>
+/// Base class for the model class generator.
+/// </summary>
+public abstract class ModelGeneratorBase : ISourceGenerator
+{
     /// <summary>
-    /// Base class for the model class generator.
+    /// A header template for a generated file.
     /// </summary>
-    public abstract class ModelGeneratorBase : ISourceGenerator
-    {
-        /// <summary>
-        /// A header template for a generated file.
-        /// </summary>
-        protected const string FileHeaderTemplate = @"// <copyright file=""{0}.Generated.cs"" company=""MUnique"">
+    protected const string FileHeaderTemplate = @"// <copyright file=""{0}.Generated.cs"" company=""MUnique"">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -31,150 +27,149 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator
 
 // ReSharper disable All";
 
-        /// <summary>
-        /// The namespace of the configuration classes.
-        /// </summary>
-        private const string ConfigurationNamespace = "MUnique.OpenMU.DataModel.Configuration";
+    /// <summary>
+    /// The namespace of the configuration classes.
+    /// </summary>
+    private const string ConfigurationNamespace = "MUnique.OpenMU.DataModel.Configuration";
 
-        private IList<Type> customTypes;
+    private IList<Type> customTypes;
 
-        /// <summary>
-        /// Gets the types which need to be customized for persistence.
-        /// </summary>
-        protected IEnumerable<Type> CustomTypes => this.customTypes ??= this.GetCustomTypes();
+    /// <summary>
+    /// Gets the types which need to be customized for persistence.
+    /// </summary>
+    protected IEnumerable<Type> CustomTypes => this.customTypes ??= this.GetCustomTypes();
 
-        /// <inheritdoc />
-        public void Initialize(GeneratorInitializationContext context)
+    /// <inheritdoc />
+    public void Initialize(GeneratorInitializationContext context)
+    {
+        // Override in deriving classes, if required.
+    }
+
+    /// <inheritdoc />
+    public void Execute(GeneratorExecutionContext context)
+    {
+        try
         {
-            // Override in deriving classes, if required.
+            this.InnerExecute(context);
+        }
+        catch (Exception e)
+        {
+            context.ReportDiagnostic(
+                Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        "foo",
+                        $"{e.GetType()}: {e}",
+                        "error",
+                        "error",
+                        DiagnosticSeverity.Error,
+                        true),
+                    Location.None,
+                    DiagnosticSeverity.Error));
+            Console.WriteLine($"{e.GetType()}: {e}");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the given type is a is configuration type.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <returns><c>true</c> if the given type is a configuration type; otherwise, <c>false</c>.</returns>
+    protected static bool IsConfigurationType(Type type)
+    {
+        if (type.Namespace != null
+            && type.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
+        {
+            return true;
         }
 
-        /// <inheritdoc />
-        public void Execute(GeneratorExecutionContext context)
+        if (type.BaseType is { Namespace: { } }
+            && type.BaseType.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
         {
-            try
+            return true;
+        }
+
+        if (type.Name.Contains("Definition", StringComparison.InvariantCulture))
+        {
+            return true;
+        }
+
+        if (type.Name is "AttributeRelationship" or "PlugInConfiguration" or "ConstValueAttribute")
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the parameter definitions for a method or constructor.
+    /// </summary>
+    /// <param name="parameters">The parameters.</param>
+    /// <returns>The string of the parameter definitions.</returns>
+    protected static string GetParameterDefinitions(ICollection<ParameterInfo> parameters)
+    {
+        var result = new StringBuilder();
+        foreach (var p in parameters)
+        {
+            result.Append(p.ParameterType.GetCSharpFullName())
+                .Append(" ")
+                .Append(p.Name);
+            if (parameters.Count > p.Position + 1)
             {
-                this.InnerExecute(context);
-            }
-            catch (Exception e)
-            {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        new DiagnosticDescriptor(
-                            "foo",
-                            $"{e.GetType()}: {e}",
-                            "error",
-                            "error",
-                            DiagnosticSeverity.Error,
-                            true),
-                        Location.None,
-                        DiagnosticSeverity.Error));
-                Console.WriteLine($"{e.GetType()}: {e}");
-                throw;
+                result.Append(", ");
             }
         }
 
-        /// <summary>
-        /// Determines whether the given type is a is configuration type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns><c>true</c> if the given type is a configuration type; otherwise, <c>false</c>.</returns>
-        protected static bool IsConfigurationType(Type type)
+        return result.ToString();
+    }
+
+    /// <summary>
+    /// Gets the parameters used to call a method.
+    /// </summary>
+    /// <param name="parameters">The parameter infos.</param>
+    /// <returns>The parameters used to call a method.</returns>
+    protected static string GetParameters(ICollection<ParameterInfo> parameters)
+    {
+        var result = new StringBuilder();
+        foreach (var p in parameters)
         {
-            if (type.Namespace != null
-                && type.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
+            result.Append(p.Name);
+            if (parameters.Count > p.Position + 1)
             {
-                return true;
+                result.Append(", ");
             }
-
-            if (type.BaseType is { Namespace: { } }
-                && type.BaseType.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
-            {
-                return true;
-            }
-
-            if (type.Name.Contains("Definition", StringComparison.InvariantCulture))
-            {
-                return true;
-            }
-
-            if (type.Name is "AttributeRelationship" or "PlugInConfiguration" or "ConstValueAttribute")
-            {
-                return true;
-            }
-
-            return false;
         }
 
-        /// <summary>
-        /// Gets the parameter definitions for a method or constructor.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>The string of the parameter definitions.</returns>
-        protected static string GetParameterDefinitions(ICollection<ParameterInfo> parameters)
-        {
-            var result = new StringBuilder();
-            foreach (var p in parameters)
-            {
-                result.Append(p.ParameterType.GetCSharpFullName())
-                    .Append(" ")
-                    .Append(p.Name);
-                if (parameters.Count > p.Position + 1)
-                {
-                    result.Append(", ");
-                }
-            }
+        return result.ToString();
+    }
 
-            return result.ToString();
-        }
+    /// <summary>
+    /// Implementation for the generator logic.
+    /// </summary>
+    /// <param name="context">The generator execution context.</param>
+    protected abstract void InnerExecute(in GeneratorExecutionContext context);
 
-        /// <summary>
-        /// Gets the parameters used to call a method.
-        /// </summary>
-        /// <param name="parameters">The parameter infos.</param>
-        /// <returns>The parameters used to call a method.</returns>
-        protected static string GetParameters(ICollection<ParameterInfo> parameters)
-        {
-            var result = new StringBuilder();
-            foreach (var p in parameters)
-            {
-                result.Append(p.Name);
-                if (parameters.Count > p.Position + 1)
-                {
-                    result.Append(", ");
-                }
-            }
+    /// <summary>
+    /// Determines the types which require customization.
+    /// </summary>
+    /// <returns>The types which require customization.</returns>
+    private List<Type> GetCustomTypes()
+    {
+        var result = new List<Type>();
 
-            return result.ToString();
-        }
+        var loadedTypes = typeof(DataModel.Attributes.PowerUpDefinition).Assembly.GetTypes()
+            .Where(type => type.IsClass && type.IsPublic)
+            .Where(type => !type.IsSealed && !type.IsAbstract && type.GetConstructor(Array.Empty<Type>()) != null).ToList();
+        result.AddRange(loadedTypes);
+        result.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeDefinition));
+        result.Add(typeof(MUnique.OpenMU.AttributeSystem.StatAttribute));
+        result.Add(typeof(MUnique.OpenMU.AttributeSystem.ConstValueAttribute));
+        result.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationship));
+        result.Add(typeof(MUnique.OpenMU.Interfaces.LetterHeader));
+        result.Add(typeof(MUnique.OpenMU.Interfaces.Friend));
+        result.Add(typeof(MUnique.OpenMU.PlugIns.PlugInConfiguration));
 
-        /// <summary>
-        /// Implementation for the generator logic.
-        /// </summary>
-        /// <param name="context">The generator execution context.</param>
-        protected abstract void InnerExecute(in GeneratorExecutionContext context);
-
-        /// <summary>
-        /// Determines the types which require customization.
-        /// </summary>
-        /// <returns>The types which require customization.</returns>
-        private List<Type> GetCustomTypes()
-        {
-            var result = new List<Type>();
-
-            var loadedTypes = typeof(DataModel.Attributes.PowerUpDefinition).Assembly.GetTypes()
-                .Where(type => type.IsClass && type.IsPublic)
-                .Where(type => !type.IsSealed && !type.IsAbstract && type.GetConstructor(Array.Empty<Type>()) != null).ToList();
-            result.AddRange(loadedTypes);
-            result.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeDefinition));
-            result.Add(typeof(MUnique.OpenMU.AttributeSystem.StatAttribute));
-            result.Add(typeof(MUnique.OpenMU.AttributeSystem.ConstValueAttribute));
-            result.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeRelationship));
-            result.Add(typeof(MUnique.OpenMU.Interfaces.LetterHeader));
-            result.Add(typeof(MUnique.OpenMU.Interfaces.Friend));
-            result.Add(typeof(MUnique.OpenMU.PlugIns.PlugInConfiguration));
-
-            return result;
-        }
+        return result;
     }
 }

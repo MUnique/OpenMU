@@ -2,178 +2,176 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView
+namespace MUnique.OpenMU.GameServer.RemoteView;
+
+using System.Buffers;
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameServer.MessageHandler;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// A player which is playing through a remote connection.
+/// </summary>
+public class RemotePlayer : Player, IClientVersionProvider
 {
-    using System;
-    using System.Buffers;
-    using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.GameServer.MessageHandler;
-    using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.PlugIns;
-    using MUnique.OpenMU.PlugIns;
+    private readonly byte[] _packetBuffer = new byte[0xFF];
+
+    private ClientVersion _clientVersion;
 
     /// <summary>
-    /// A player which is playing through a remote connection.
+    /// Initializes a new instance of the <see cref="RemotePlayer"/> class.
     /// </summary>
-    public class RemotePlayer : Player, IClientVersionProvider
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="connection">The remote connection.</param>
+    /// <param name="clientVersion">The expected client version of the connected player.</param>
+    public RemotePlayer(IGameServerContext gameContext, IConnection connection, ClientVersion clientVersion)
+        : base(gameContext)
     {
-        private readonly byte[] packetBuffer = new byte[0xFF];
+        this.Connection = connection;
+        this._clientVersion = clientVersion;
+        this.MainPacketHandler = new MainPacketHandlerPlugInContainer(this, gameContext.PlugInManager, gameContext.LoggerFactory);
+        this.MainPacketHandler.Initialize();
+        this.Connection!.PacketReceived += (_, packet) => this.PacketReceived(packet);
+        this.Connection!.Disconnected += (_, _) => this.Disconnect();
+    }
 
-        private ClientVersion clientVersion;
+    /// <inheritdoc />
+    public event EventHandler? ClientVersionChanged;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RemotePlayer"/> class.
-        /// </summary>
-        /// <param name="gameContext">The game context.</param>
-        /// <param name="connection">The remote connection.</param>
-        /// <param name="clientVersion">The expected client version of the connected player.</param>
-        public RemotePlayer(IGameServerContext gameContext, IConnection connection, ClientVersion clientVersion)
-            : base(gameContext)
+    /// <summary>
+    /// Gets the game server context.
+    /// </summary>
+    public IGameServerContext GameServerContext => (IGameServerContext)this.GameContext;
+
+    /// <inheritdoc />
+    public ClientVersion ClientVersion
+    {
+        get => this._clientVersion;
+
+        set
         {
-            this.Connection = connection;
-            this.clientVersion = clientVersion;
-            this.MainPacketHandler = new MainPacketHandlerPlugInContainer(this, gameContext.PlugInManager, gameContext.LoggerFactory);
-            this.MainPacketHandler.Initialize();
-            this.Connection!.PacketReceived += (_, packet) => this.PacketReceived(packet);
-            this.Connection!.Disconnected += (_, _) => this.Disconnect();
-        }
-
-        /// <inheritdoc />
-        public event EventHandler? ClientVersionChanged;
-
-        /// <summary>
-        /// Gets the game server context.
-        /// </summary>
-        public IGameServerContext GameServerContext => (IGameServerContext)this.GameContext;
-
-        /// <inheritdoc />
-        public ClientVersion ClientVersion
-        {
-            get => this.clientVersion;
-
-            set
+            if (value == this.ClientVersion)
             {
-                if (value == this.ClientVersion)
-                {
-                    return;
-                }
-
-                this.clientVersion = value;
-                this.ClientVersionChanged?.Invoke(this, EventArgs.Empty);
+                return;
             }
+
+            this._clientVersion = value;
+            this.ClientVersionChanged?.Invoke(this, EventArgs.Empty);
         }
+    }
 
-        /// <summary>
-        /// Gets the connection.
-        /// </summary>
-        internal IConnection? Connection { get; private set; }
+    /// <summary>
+    /// Gets the connection.
+    /// </summary>
+    internal IConnection? Connection { get; private set; }
 
-        /// <summary>
-        /// Gets the currently effective appearance serializer.
-        /// </summary>
-        internal IAppearanceSerializer AppearanceSerializer => this.ViewPlugIns.GetPlugIn<IAppearanceSerializer>() ?? throw new Exception("No appearance serializer available.");
+    /// <summary>
+    /// Gets the currently effective appearance serializer.
+    /// </summary>
+    internal IAppearanceSerializer AppearanceSerializer => this.ViewPlugIns.GetPlugIn<IAppearanceSerializer>() ?? throw new Exception("No appearance serializer available.");
 
-        /// <summary>
-        /// Gets the currently effective item serializer.
-        /// </summary>
-        internal IItemSerializer ItemSerializer => this.ViewPlugIns.GetPlugIn<IItemSerializer>() ?? throw new Exception("No item serializer available.");
+    /// <summary>
+    /// Gets the currently effective item serializer.
+    /// </summary>
+    internal IItemSerializer ItemSerializer => this.ViewPlugIns.GetPlugIn<IItemSerializer>() ?? throw new Exception("No item serializer available.");
 
-        /// <summary>
-        /// Gets the main packet handler.
-        /// </summary>
-        /// <value>
-        /// The main packet handler.
-        /// </value>
-        internal MainPacketHandlerPlugInContainer MainPacketHandler { get; }
+    /// <summary>
+    /// Gets the main packet handler.
+    /// </summary>
+    /// <value>
+    /// The main packet handler.
+    /// </value>
+    internal MainPacketHandlerPlugInContainer MainPacketHandler { get; }
 
-        /// <inheritdoc />
-        protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
+    /// <inheritdoc />
+    protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
+    {
+        return new ViewPlugInContainer(this, this.ClientVersion, this.GameContext.PlugInManager);
+    }
+
+    /// <inheritdoc/>
+    protected override void InternalDisconnect()
+    {
+        base.InternalDisconnect();
+        if (this.Connection is { Connected: true })
         {
-            return new ViewPlugInContainer(this, this.ClientVersion, this.GameContext.PlugInManager);
+            this.Connection.Disconnect();
+            this.Connection.Dispose();
+            this.Connection = null;
         }
+    }
 
-        /// <inheritdoc/>
-        protected override void InternalDisconnect()
+    /// <summary>
+    /// Is getting called when a packet got received from the connection of the player.
+    /// </summary>
+    /// <param name="sequence">The packet.</param>
+    private void PacketReceived(ReadOnlySequence<byte> sequence)
+    {
+        using var loggingScope = this.Logger.BeginScope(
+            ("GameServer", this.GameServerContext.Id),
+            ("Connection", this.Connection!),
+            ("Account", this.GetAccountName()),
+            ("Character", this.GetSelectedCharacterName()));
+
+        try
         {
-            base.InternalDisconnect();
-            if (this.Connection is { Connected: true })
+            Span<byte> buffer;
+            IMemoryOwner<byte>? owner = null;
+            if (sequence.Length <= this._packetBuffer.Length)
             {
-                this.Connection.Disconnect();
-                this.Connection.Dispose();
-                this.Connection = null;
+                sequence.CopyTo(this._packetBuffer);
+                buffer = this._packetBuffer.AsSpan(0, this._packetBuffer.GetPacketSize());
             }
-        }
-
-        /// <summary>
-        /// Is getting called when a packet got received from the connection of the player.
-        /// </summary>
-        /// <param name="sequence">The packet.</param>
-        private void PacketReceived(ReadOnlySequence<byte> sequence)
-        {
-            using var loggingScope = this.Logger.BeginScope(
-                ("GameServer", this.GameServerContext.Id),
-                ("Connection", this.Connection!),
-                ("Account", this.GetAccountName()),
-                ("Character", this.GetSelectedCharacterName()));
+            else
+            {
+                owner = MemoryPool<byte>.Shared.Rent((int)sequence.Length);
+                buffer = owner.Memory[..(int)sequence.Length].Span;
+                sequence.CopyTo(buffer);
+            }
 
             try
             {
-                Span<byte> buffer;
-                IMemoryOwner<byte>? owner = null;
-                if (sequence.Length <= this.packetBuffer.Length)
+                if (this.Logger.IsEnabled(LogLevel.Debug))
                 {
-                    sequence.CopyTo(this.packetBuffer);
-                    buffer = this.packetBuffer.AsSpan(0, this.packetBuffer.GetPacketSize());
-                }
-                else
-                {
-                    owner = MemoryPool<byte>.Shared.Rent((int)sequence.Length);
-                    buffer = owner.Memory[..(int)sequence.Length].Span;
-                    sequence.CopyTo(buffer);
+                    this.Logger.LogDebug("[C->S] {0}", buffer.ToArray().AsString());
                 }
 
-                try
-                {
-                    if (this.Logger.IsEnabled(LogLevel.Debug))
-                    {
-                        this.Logger.LogDebug("[C->S] {0}", buffer.ToArray().AsString());
-                    }
-
-                    this.MainPacketHandler.HandlePacket(this, buffer);
-                }
-                finally
-                {
-                    owner?.Dispose();
-                }
+                this.MainPacketHandler.HandlePacket(this, buffer);
             }
-            catch (Exception ex)
+            finally
             {
-                this.Logger.LogError(ex, "Error while processing a message");
+                owner?.Dispose();
             }
         }
-
-        private string GetAccountName()
+        catch (Exception ex)
         {
-            var account = this.Account;
-            if (account != null)
-            {
-                return account.LoginName;
-            }
-
-            return string.Empty;
+            this.Logger.LogError(ex, "Error while processing a message");
         }
+    }
 
-        private string GetSelectedCharacterName()
+    private string GetAccountName()
+    {
+        var account = this.Account;
+        if (account != null)
         {
-            var character = this.SelectedCharacter;
-            if (character != null)
-            {
-                return character.Name;
-            }
-
-            return string.Empty;
+            return account.LoginName;
         }
+
+        return string.Empty;
+    }
+
+    private string GetSelectedCharacterName()
+    {
+        var character = this.SelectedCharacter;
+        if (character != null)
+        {
+            return character.Name;
+        }
+
+        return string.Empty;
     }
 }

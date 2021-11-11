@@ -10,80 +10,77 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="LetterBody"/>.
+/// </summary>
+public partial class LetterBody : MUnique.OpenMU.DataModel.Entities.LetterBody, IIdentifiable, IConvertibleTo<LetterBody>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
+    
+    
     
     /// <summary>
-    /// A plain implementation of <see cref="LetterBody"/>.
+    /// Gets the raw object of <see cref="Header" />.
     /// </summary>
-    public partial class LetterBody : MUnique.OpenMU.DataModel.Entities.LetterBody, IIdentifiable, IConvertibleTo<LetterBody>
+    [Newtonsoft.Json.JsonProperty("header")]
+    [System.Text.Json.Serialization.JsonPropertyName("header")]
+    public LetterHeader RawHeader
     {
-        
-        
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="Header" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("header")]
-        [System.Text.Json.Serialization.JsonPropertyName("header")]
-        public LetterHeader RawHeader
-        {
-            get => base.Header as LetterHeader;
-            set => base.Header = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.Interfaces.LetterHeader Header
-        {
-            get => base.Header;
-            set => base.Header = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="SenderAppearance" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("senderAppearance")]
-        [System.Text.Json.Serialization.JsonPropertyName("senderAppearance")]
-        public AppearanceData RawSenderAppearance
-        {
-            get => base.SenderAppearance as AppearanceData;
-            set => base.SenderAppearance = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Entities.AppearanceData SenderAppearance
-        {
-            get => base.SenderAppearance;
-            set => base.SenderAppearance = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public LetterBody Convert() => this;
+        get => base.Header as LetterHeader;
+        set => base.Header = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.Interfaces.LetterHeader Header
+    {
+        get => base.Header;
+        set => base.Header = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="SenderAppearance" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("senderAppearance")]
+    [System.Text.Json.Serialization.JsonPropertyName("senderAppearance")]
+    public AppearanceData RawSenderAppearance
+    {
+        get => base.SenderAppearance as AppearanceData;
+        set => base.SenderAppearance = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Entities.AppearanceData SenderAppearance
+    {
+        get => base.SenderAppearance;
+        set => base.SenderAppearance = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public LetterBody Convert() => this;
 }

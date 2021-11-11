@@ -2,37 +2,33 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
+
+using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+
+/// <summary>
+/// Crafting which removes the <see cref="ItemOptionTypes.HarmonyOption"/> from an item.
+/// </summary>
+public class RestoreItemCrafting : SimpleItemCraftingHandler
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Items;
-
     /// <summary>
-    /// Crafting which removes the <see cref="ItemOptionTypes.HarmonyOption"/> from an item.
+    /// Initializes a new instance of the <see cref="RestoreItemCrafting"/> class.
     /// </summary>
-    public class RestoreItemCrafting : SimpleItemCraftingHandler
+    /// <param name="settings">The settings.</param>
+    public RestoreItemCrafting(SimpleCraftingSettings settings)
+        : base(settings)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RestoreItemCrafting"/> class.
-        /// </summary>
-        /// <param name="settings">The settings.</param>
-        public RestoreItemCrafting(SimpleCraftingSettings settings)
-            : base(settings)
-        {
-        }
+    }
 
-        /// <inheritdoc />
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
-        {
-            var item = requiredItems.First().Items.First();
-            var johOptionLink = item.ItemOptions.First(link => link.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption);
-            item.ItemOptions.Remove(johOptionLink);
-            player.PersistenceContext.Delete(johOptionLink);
-            yield return item;
-        }
+    /// <inheritdoc />
+    protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    {
+        var item = requiredItems.First().Items.First();
+        var johOptionLink = item.ItemOptions.First(link => link.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption);
+        item.ItemOptions.Remove(johOptionLink);
+        player.PersistenceContext.Delete(johOptionLink);
+        yield return item;
     }
 }

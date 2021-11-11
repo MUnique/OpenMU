@@ -15,9 +15,9 @@
         {
             if (disposing)
             {
-                if (this.connection is not null)
+                if (this._connection is not null)
                 {
-                    this.connection.PropertyChanged -= this.ConnectionOnPropertyChanged;
+                    this._connection.PropertyChanged -= this.ConnectionOnPropertyChanged;
                 }
 
                 this.components?.Dispose();

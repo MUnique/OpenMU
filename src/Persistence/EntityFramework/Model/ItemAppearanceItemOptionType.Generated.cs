@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(ItemAppearanceItemOptionType), Schema = SchemaNames.AccountData)]
+internal partial class ItemAppearanceItemOptionType
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid ItemAppearanceId { get; set; }
+    public ItemAppearance ItemAppearance { get; set; }
 
-    [Table(nameof(ItemAppearanceItemOptionType), Schema = SchemaNames.AccountData)]
-    internal partial class ItemAppearanceItemOptionType
-    {
-        public Guid ItemAppearanceId { get; set; }
-        public ItemAppearance ItemAppearance { get; set; }
+    public Guid ItemOptionTypeId { get; set; }
+    public ItemOptionType ItemOptionType { get; set; }
+}
 
-        public Guid ItemOptionTypeId { get; set; }
-        public ItemOptionType ItemOptionType { get; set; }
-    }
-
-    internal partial class ItemAppearance
-    {
-        public ICollection<ItemAppearanceItemOptionType> JoinedVisibleOptions { get; } = new EntityFramework.List<ItemAppearanceItemOptionType>();
-    }
+internal partial class ItemAppearance
+{
+    public ICollection<ItemAppearanceItemOptionType> JoinedVisibleOptions { get; } = new EntityFramework.List<ItemAppearanceItemOptionType>();
 }

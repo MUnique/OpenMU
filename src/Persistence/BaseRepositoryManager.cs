@@ -2,94 +2,90 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence
+namespace MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The base repository manager.
+/// </summary>
+public class BaseRepositoryManager
 {
-    using System;
-    using System.Collections.Generic;
+    /// <summary>
+    /// Gets the repositories for each entity type.
+    /// </summary>
+    protected IDictionary<Type, object> Repositories { get; } = new Dictionary<Type, object>();
 
     /// <summary>
-    /// The base repository manager.
+    /// Gets the repository of the specified generic type.
     /// </summary>
-    public class BaseRepositoryManager
+    /// <typeparam name="T">The generic type.</typeparam>
+    /// <returns>The repository of the specified generic type.</returns>
+    public virtual IRepository<T> GetRepository<T>()
+        where T : class
     {
-        /// <summary>
-        /// Gets the repositories for each entity type.
-        /// </summary>
-        protected IDictionary<Type, object> Repositories { get; } = new Dictionary<Type, object>();
+        return (IRepository<T>)this.GetRepository(typeof(T));
+    }
 
-        /// <summary>
-        /// Gets the repository of the specified generic type.
-        /// </summary>
-        /// <typeparam name="T">The generic type.</typeparam>
-        /// <returns>The repository of the specified generic type.</returns>
-        public virtual IRepository<T> GetRepository<T>()
-            where T : class
+    /// <summary>
+    /// Gets the repository of the specified type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>The repository of the specified type.</returns>
+    public virtual IRepository GetRepository(Type objectType)
+    {
+        var repository = this.InternalGetRepository(objectType);
+        if (repository is null)
         {
-            return (IRepository<T>)this.GetRepository(typeof(T));
+            throw new RepositoryNotFoundException(objectType);
         }
 
-        /// <summary>
-        /// Gets the repository of the specified type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>The repository of the specified type.</returns>
-        public virtual IRepository GetRepository(Type objectType)
+        return repository;
+    }
+
+    /// <summary>
+    /// Gets the repository of the specified type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>The repository of the specified type.</returns>
+    protected IRepository? InternalGetRepository(Type objectType)
+    {
+        Type? currentSearchType = objectType;
+        do
         {
-            var repository = this.InternalGetRepository(objectType);
-            if (repository is null)
+            if (currentSearchType is null)
             {
-                throw new RepositoryNotFoundException(objectType);
+                break;
             }
 
-            return repository;
-        }
-
-        /// <summary>
-        /// Gets the repository of the specified type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>The repository of the specified type.</returns>
-        protected IRepository? InternalGetRepository(Type objectType)
-        {
-            Type? currentSearchType = objectType;
-            do
+            if (this.Repositories.TryGetValue(currentSearchType, out var repository))
             {
-                if (currentSearchType is null)
-                {
-                    break;
-                }
-
-                if (this.Repositories.TryGetValue(currentSearchType, out var repository))
-                {
-                    return repository as IRepository;
-                }
-
-                currentSearchType = currentSearchType.BaseType;
+                return repository as IRepository;
             }
-            while (currentSearchType != typeof(object));
 
-            return null;
+            currentSearchType = currentSearchType.BaseType;
         }
+        while (currentSearchType != typeof(object));
 
-        /// <summary>
-        /// Registers the repository.
-        /// </summary>
-        /// <typeparam name="T">The generic type which the repository handles.</typeparam>
-        /// <param name="repository">The repository.</param>
-        protected void RegisterRepository<T>(IRepository<T> repository)
-            where T : class
-        {
-            this.RegisterRepository(typeof(T), repository);
-        }
+        return null;
+    }
 
-        /// <summary>
-        /// Registers the repository.
-        /// </summary>
-        /// <param name="type">The generic type which the repository handles.</param>
-        /// <param name="repository">The repository.</param>
-        protected virtual void RegisterRepository(Type type, IRepository repository)
-        {
-            this.Repositories.Add(type, repository);
-        }
+    /// <summary>
+    /// Registers the repository.
+    /// </summary>
+    /// <typeparam name="T">The generic type which the repository handles.</typeparam>
+    /// <param name="repository">The repository.</param>
+    protected void RegisterRepository<T>(IRepository<T> repository)
+        where T : class
+    {
+        this.RegisterRepository(typeof(T), repository);
+    }
+
+    /// <summary>
+    /// Registers the repository.
+    /// </summary>
+    /// <param name="type">The generic type which the repository handles.</param>
+    /// <param name="repository">The repository.</param>
+    protected virtual void RegisterRepository(Type type, IRepository repository)
+    {
+        this.Repositories.Add(type, repository);
     }
 }

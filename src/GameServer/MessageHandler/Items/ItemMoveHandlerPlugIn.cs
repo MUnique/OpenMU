@@ -2,49 +2,47 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.MessageHandler.Items
+namespace MUnique.OpenMU.GameServer.MessageHandler.Items;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameServer.RemoteView;
+using MUnique.OpenMU.GameServer.RemoteView.Inventory;
+using MUnique.OpenMU.Network.Packets;
+using MUnique.OpenMU.Network.Packets.ClientToServer;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Handler for item move packets.
+/// </summary>
+[PlugIn("ItemMoveHandlerPlugIn", "Handler for item move packets.")]
+[Guid("c499c596-7711-4971-bc83-7abd9e6b5553")]
+internal class ItemMoveHandlerPlugIn : IPacketHandlerPlugIn
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Items;
-    using MUnique.OpenMU.GameServer.RemoteView;
-    using MUnique.OpenMU.GameServer.RemoteView.Inventory;
-    using MUnique.OpenMU.Network.Packets;
-    using MUnique.OpenMU.Network.Packets.ClientToServer;
-    using MUnique.OpenMU.PlugIns;
+    private readonly MoveItemAction _moveAction = new ();
 
-    /// <summary>
-    /// Handler for item move packets.
-    /// </summary>
-    [PlugIn("ItemMoveHandlerPlugIn", "Handler for item move packets.")]
-    [Guid("c499c596-7711-4971-bc83-7abd9e6b5553")]
-    internal class ItemMoveHandlerPlugIn : IPacketHandlerPlugIn
+    /// <inheritdoc/>
+    public bool IsEncryptionExpected => false;
+
+    /// <inheritdoc/>
+    public byte Key => ItemMoveRequest.Code;
+
+    /// <inheritdoc/>
+    public void HandlePacket(Player player, Span<byte> packet)
     {
-        private readonly MoveItemAction moveAction = new ();
+        ItemMoveRequest message = packet;
 
-        /// <inheritdoc/>
-        public bool IsEncryptionExpected => false;
-
-        /// <inheritdoc/>
-        public byte Key => ItemMoveRequest.Code;
-
-        /// <inheritdoc/>
-        public void HandlePacket(Player player, Span<byte> packet)
+        // to make it compatible with multiple versions, we just handle the data which is coming after that manually
+        var itemSize = 12;
+        if (player is RemotePlayer remotePlayer)
         {
-            ItemMoveRequest message = packet;
-
-            // to make it compatible with multiple versions, we just handle the data which is coming after that manually
-            var itemSize = 12;
-            if (player is RemotePlayer remotePlayer)
-            {
-                itemSize = remotePlayer.ItemSerializer.NeededSpace;
-            }
-
-            var toStorage = (ItemStorageKind)packet[5 + itemSize];
-            byte toSlot = packet[6 + itemSize];
-
-            this.moveAction.MoveItem(player, message.FromSlot, message.FromStorage.Convert(), toSlot, toStorage.Convert());
+            itemSize = remotePlayer.ItemSerializer.NeededSpace;
         }
+
+        var toStorage = (ItemStorageKind)packet[5 + itemSize];
+        byte toSlot = packet[6 + itemSize];
+
+        this._moveAction.MoveItem(player, message.FromSlot, message.FromStorage.Convert(), toSlot, toStorage.Convert());
     }
 }

@@ -2,27 +2,26 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Interfaces
+namespace MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// The position of a character in a guild.
+/// Some of them have special skills in the castle siege event.
+/// </summary>
+public enum GuildPosition : byte
 {
     /// <summary>
-    /// The position of a character in a guild.
-    /// Some of them have special skills in the castle siege event.
+    /// A normal guild member.
     /// </summary>
-    public enum GuildPosition : byte
-    {
-        /// <summary>
-        /// A normal guild member.
-        /// </summary>
-        NormalMember,
+    NormalMember,
 
-        /// <summary>
-        /// The guild master.
-        /// </summary>
-        GuildMaster,
+    /// <summary>
+    /// The guild master.
+    /// </summary>
+    GuildMaster,
 
-        /// <summary>
-        /// The battle master.
-        /// </summary>
-        BattleMaster,
-    }
+    /// <summary>
+    /// The battle master.
+    /// </summary>
+    BattleMaster,
 }

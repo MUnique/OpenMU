@@ -2,21 +2,18 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Pathfinding
-{
-    using System.Collections.Generic;
+namespace MUnique.OpenMU.Pathfinding;
 
+/// <summary>
+/// Interface for a path finder.
+/// </summary>
+internal interface IPathFinder
+{
     /// <summary>
-    /// Interface for a path finder.
+    /// Finds the path between two points.
     /// </summary>
-    internal interface IPathFinder
-    {
-        /// <summary>
-        /// Finds the path between two points.
-        /// </summary>
-        /// <param name="start">The start point.</param>
-        /// <param name="end">The end point.</param>
-        /// <returns>The path between start and end, including <paramref name="end"/>, but excluding <paramref name="start"/>.</returns>
-        IList<PathResultNode>? FindPath(Point start, Point end);
-    }
+    /// <param name="start">The start point.</param>
+    /// <param name="end">The end point.</param>
+    /// <returns>The path between start and end, including <paramref name="end"/>, but excluding <paramref name="start"/>.</returns>
+    IList<PathResultNode>? FindPath(Point start, Point end);
 }

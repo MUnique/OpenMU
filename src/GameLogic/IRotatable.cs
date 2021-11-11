@@ -2,18 +2,15 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
-{
-    using MUnique.OpenMU.DataModel.Configuration;
+namespace MUnique.OpenMU.GameLogic;
 
+/// <summary>
+/// Interface for a rotatable class. An instance implementing this interface can be rotated on its game map.
+/// </summary>
+public interface IRotatable
+{
     /// <summary>
-    /// Interface for a rotatable class. An instance implementing this interface can be rotated on its game map.
+    /// Gets or sets the rotation.
     /// </summary>
-    public interface IRotatable
-    {
-        /// <summary>
-        /// Gets or sets the rotation.
-        /// </summary>
-        Direction Rotation { get; set; }
-    }
+    Direction Rotation { get; set; }
 }

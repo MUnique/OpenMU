@@ -2,40 +2,39 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions;
+
+using MUnique.OpenMU.GameLogic.Views.Login;
+
+/// <summary>
+/// Action to log the player out of the game.
+/// </summary>
+public class LogoutAction
 {
-    using MUnique.OpenMU.GameLogic.Views.Login;
-
     /// <summary>
-    /// Action to log the player out of the game.
+    /// Logs out the specified player.
     /// </summary>
-    public class LogoutAction
+    /// <param name="player">The player.</param>
+    /// <param name="logoutType">Type of the logout.</param>
+    public void Logout(Player player, LogoutType logoutType)
     {
-        /// <summary>
-        /// Logs out the specified player.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="logoutType">Type of the logout.</param>
-        public void Logout(Player player, LogoutType logoutType)
+        player.CurrentMap?.Remove(player);
+        player.Party?.KickMySelf(player);
+        player.SelectedCharacter = null;
+        player.MagicEffectList.ClearAllEffects();
+        player.PersistenceContext.SaveChanges();
+        if (logoutType == LogoutType.CloseGame)
         {
-            player.CurrentMap?.Remove(player);
-            player.Party?.KickMySelf(player);
-            player.SelectedCharacter = null;
-            player.MagicEffectList.ClearAllEffects();
-            player.PersistenceContext.SaveChanges();
-            if (logoutType == LogoutType.CloseGame)
+            player.Disconnect();
+        }
+        else
+        {
+            if (logoutType == LogoutType.BackToCharacterSelection)
             {
-                player.Disconnect();
+                player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
             }
-            else
-            {
-                if (logoutType == LogoutType.BackToCharacterSelection)
-                {
-                    player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
-                }
 
-                player.ViewPlugIns.GetPlugIn<ILogoutPlugIn>()?.Logout(logoutType);
-            }
+            player.ViewPlugIns.GetPlugIn<ILogoutPlugIn>()?.Logout(logoutType);
         }
     }
 }

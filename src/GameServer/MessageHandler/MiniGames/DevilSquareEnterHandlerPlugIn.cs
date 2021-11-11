@@ -2,47 +2,45 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.MessageHandler.MiniGames
+namespace MUnique.OpenMU.GameServer.MessageHandler.MiniGames;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
+using MUnique.OpenMU.Network.Packets.ClientToServer;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Handler for animation packets.
+/// </summary>
+[PlugIn(nameof(DevilSquareEnterHandlerPlugIn), "Handler for devil square enter packets.")]
+[Guid("550FFF1B-E31C-44BA-8CC9-100D5649CC87")]
+internal class DevilSquareEnterHandlerPlugIn : IPacketHandlerPlugIn
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
-    using MUnique.OpenMU.Network.Packets.ClientToServer;
-    using MUnique.OpenMU.PlugIns;
-
     /// <summary>
-    /// Handler for animation packets.
+    /// The game action which contains the logic to enter the mini game.
     /// </summary>
-    [PlugIn(nameof(DevilSquareEnterHandlerPlugIn), "Handler for devil square enter packets.")]
-    [Guid("550FFF1B-E31C-44BA-8CC9-100D5649CC87")]
-    internal class DevilSquareEnterHandlerPlugIn : IPacketHandlerPlugIn
+    private readonly EnterMiniGameAction _enterAction = new ();
+
+    /// <inheritdoc/>
+    public bool IsEncryptionExpected => false;
+
+    /// <inheritdoc/>
+    public byte Key => DevilSquareEnterRequest.Code;
+
+    /// <inheritdoc/>
+    public void HandlePacket(Player player, Span<byte> packet)
     {
-        /// <summary>
-        /// The game action which contains the logic to enter the mini game.
-        /// </summary>
-        private readonly EnterMiniGameAction enterAction = new ();
-
-        /// <inheritdoc/>
-        public bool IsEncryptionExpected => false;
-
-        /// <inheritdoc/>
-        public byte Key => DevilSquareEnterRequest.Code;
-
-        /// <inheritdoc/>
-        public void HandlePacket(Player player, Span<byte> packet)
+        if (packet.Length < DevilSquareEnterRequest.Length
+            || player.SelectedCharacter?.CharacterClass is null)
         {
-            if (packet.Length < DevilSquareEnterRequest.Length
-                || player.SelectedCharacter?.CharacterClass is null)
-            {
-                return;
-            }
-
-            DevilSquareEnterRequest request = packet;
-            var actualLevel = request.SquareLevel + 1;
-            var ticketIndex = request.TicketItemInventoryIndex - InventoryConstants.EquippableSlotsCount;
-            this.enterAction.TryEnterMiniGame(player, MiniGameType.DevilSquare, actualLevel, (byte)ticketIndex);
+            return;
         }
+
+        DevilSquareEnterRequest request = packet;
+        var actualLevel = request.SquareLevel + 1;
+        var ticketIndex = request.TicketItemInventoryIndex - InventoryConstants.EquippableSlotsCount;
+        this._enterAction.TryEnterMiniGame(player, MiniGameType.DevilSquare, actualLevel, (byte)ticketIndex);
     }
 }

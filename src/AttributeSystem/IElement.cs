@@ -2,28 +2,25 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AttributeSystem
+namespace MUnique.OpenMU.AttributeSystem;
+
+/// <summary>
+/// The interface of an element.
+/// </summary>
+public interface IElement
 {
-    using System;
+    /// <summary>
+    /// Occurs when the value has been changed.
+    /// </summary>
+    event EventHandler? ValueChanged;
 
     /// <summary>
-    /// The interface of an element.
+    /// Gets the value.
     /// </summary>
-    public interface IElement
-    {
-        /// <summary>
-        /// Occurs when the value has been changed.
-        /// </summary>
-        event EventHandler? ValueChanged;
+    float Value { get; }
 
-        /// <summary>
-        /// Gets the value.
-        /// </summary>
-        float Value { get; }
-
-        /// <summary>
-        /// Gets the type of the aggregate.
-        /// </summary>
-        AggregateType AggregateType { get; }
-    }
+    /// <summary>
+    /// Gets the type of the aggregate.
+    /// </summary>
+    AggregateType AggregateType { get; }
 }

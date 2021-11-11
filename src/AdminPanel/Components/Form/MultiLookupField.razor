@@ -5,12 +5,12 @@
 
 @typeparam TObject 
 @inherits NotifyableInputBase<IList<TObject>>
-@inject ILookupController lookupController;
+@inject ILookupController _lookupController;
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
     <BlazoredTypeahead TItem="TObject" TValue="TObject"
-                       SearchMethod="@(text => this.lookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
+                       SearchMethod="@(text => this._lookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
                        ValuesExpression="@this.ValueExpression"
                        Values="@this.Value"
                        EnableDropDown="true"

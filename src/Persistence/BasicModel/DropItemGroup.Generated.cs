@@ -10,86 +10,83 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="DropItemGroup"/>.
+/// </summary>
+public partial class DropItemGroup : MUnique.OpenMU.DataModel.Configuration.DropItemGroup, IIdentifiable, IConvertibleTo<DropItemGroup>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="DropItemGroup"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class DropItemGroup : MUnique.OpenMU.DataModel.Configuration.DropItemGroup, IIdentifiable, IConvertibleTo<DropItemGroup>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="PossibleItems" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("possibleItems")]
+    [System.Text.Json.Serialization.JsonPropertyName("possibleItems")]
+    public ICollection<ItemDefinition> RawPossibleItems { get; } = new List<ItemDefinition>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition> PossibleItems
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="PossibleItems" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("possibleItems")]
-        [System.Text.Json.Serialization.JsonPropertyName("possibleItems")]
-        public ICollection<ItemDefinition> RawPossibleItems { get; } = new List<ItemDefinition>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition> PossibleItems
+        get => base.PossibleItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition, ItemDefinition>(this.RawPossibleItems);
+        protected set
         {
-            get => base.PossibleItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition, ItemDefinition>(this.RawPossibleItems);
-            protected set
+            this.PossibleItems.Clear();
+            foreach (var item in value)
             {
-                this.PossibleItems.Clear();
-                foreach (var item in value)
-                {
-                    this.PossibleItems.Add(item);
-                }
+                this.PossibleItems.Add(item);
             }
         }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Monster" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("monster")]
-        [System.Text.Json.Serialization.JsonPropertyName("monster")]
-        public MonsterDefinition RawMonster
-        {
-            get => base.Monster as MonsterDefinition;
-            set => base.Monster = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
-        {
-            get => base.Monster;
-            set => base.Monster = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public DropItemGroup Convert() => this;
     }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Monster" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("monster")]
+    [System.Text.Json.Serialization.JsonPropertyName("monster")]
+    public MonsterDefinition RawMonster
+    {
+        get => base.Monster as MonsterDefinition;
+        set => base.Monster = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
+    {
+        get => base.Monster;
+        set => base.Monster = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public DropItemGroup Convert() => this;
 }

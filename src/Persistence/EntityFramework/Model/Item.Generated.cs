@@ -10,88 +10,85 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.Item"/>.
+/// </summary>
+[Table(nameof(Item), Schema = SchemaNames.AccountData)]
+internal partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    /// <inheritdoc />
+    public Item()
+    {
+        this.InitJoinCollections();
+    }
+
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.Item"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(Item), Schema = SchemaNames.AccountData)]
-    internal partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="ItemOptions" />.
+    /// </summary>
+    public ICollection<ItemOptionLink> RawItemOptions { get; } = new EntityFramework.List<ItemOptionLink>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.ItemOptionLink> ItemOptions => base.ItemOptions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.ItemOptionLink, ItemOptionLink>(this.RawItemOptions);
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="Definition"/>.
+    /// </summary>
+    public Guid? DefinitionId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Definition" />.
+    /// </summary>
+    [ForeignKey(nameof(DefinitionId))]
+    public ItemDefinition RawDefinition
     {
-        /// <inheritdoc />
-        public Item()
+        get => base.Definition as ItemDefinition;
+        set => base.Definition = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Definition
+    {
+        get => base.Definition;set
         {
-            this.InitJoinCollections();
+            base.Definition = value;
+            this.DefinitionId = this.RawDefinition?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
         }
 
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="ItemOptions" />.
-        /// </summary>
-        public ICollection<ItemOptionLink> RawItemOptions { get; } = new EntityFramework.List<ItemOptionLink>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.ItemOptionLink> ItemOptions => base.ItemOptions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.ItemOptionLink, ItemOptionLink>(this.RawItemOptions);
+        return base.Equals(obj);
+    }
 
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="Definition"/>.
-        /// </summary>
-        public Guid? DefinitionId { get; set; }
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
 
-        /// <summary>
-        /// Gets the raw object of <see cref="Definition" />.
-        /// </summary>
-        [ForeignKey(nameof(DefinitionId))]
-        public ItemDefinition RawDefinition
-        {
-            get => base.Definition as ItemDefinition;
-            set => base.Definition = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Definition
-        {
-            get => base.Definition;set
-            {
-                base.Definition = value;
-                this.DefinitionId = this.RawDefinition?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        protected void InitJoinCollections()
-        {
-            this.ItemSetGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, ItemItemSetGroup>(this.JoinedItemSetGroups, joinEntity => joinEntity.ItemSetGroup, entity => new ItemItemSetGroup { Item = this, ItemId = this.Id, ItemSetGroup = (ItemSetGroup)entity, ItemSetGroupId = ((ItemSetGroup)entity).Id});
-        }
+    protected void InitJoinCollections()
+    {
+        this.ItemSetGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, ItemItemSetGroup>(this.JoinedItemSetGroups, joinEntity => joinEntity.ItemSetGroup, entity => new ItemItemSetGroup { Item = this, ItemId = this.Id, ItemSetGroup = (ItemSetGroup)entity, ItemSetGroupId = ((ItemSetGroup)entity).Id});
     }
 }

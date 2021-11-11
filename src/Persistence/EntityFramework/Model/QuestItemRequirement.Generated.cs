@@ -10,97 +10,94 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement"/>.
+/// </summary>
+[Table(nameof(QuestItemRequirement), Schema = SchemaNames.Configuration)]
+internal partial class QuestItemRequirement : MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(QuestItemRequirement), Schema = SchemaNames.Configuration)]
-    internal partial class QuestItemRequirement : MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="Item"/>.
+    /// </summary>
+    public Guid? ItemId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Item" />.
+    /// </summary>
+    [ForeignKey(nameof(ItemId))]
+    public ItemDefinition RawItem
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="Item"/>.
-        /// </summary>
-        public Guid? ItemId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Item" />.
-        /// </summary>
-        [ForeignKey(nameof(ItemId))]
-        public ItemDefinition RawItem
-        {
-            get => base.Item as ItemDefinition;
-            set => base.Item = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Item
-        {
-            get => base.Item;set
-            {
-                base.Item = value;
-                this.ItemId = this.RawItem?.Id;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="DropItemGroup"/>.
-        /// </summary>
-        public Guid? DropItemGroupId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="DropItemGroup" />.
-        /// </summary>
-        [ForeignKey(nameof(DropItemGroupId))]
-        public DropItemGroup RawDropItemGroup
-        {
-            get => base.DropItemGroup as DropItemGroup;
-            set => base.DropItemGroup = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.DropItemGroup DropItemGroup
-        {
-            get => base.DropItemGroup;set
-            {
-                base.DropItemGroup = value;
-                this.DropItemGroupId = this.RawDropItemGroup?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.Item as ItemDefinition;
+        set => base.Item = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Item
+    {
+        get => base.Item;set
+        {
+            base.Item = value;
+            this.ItemId = this.RawItem?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="DropItemGroup"/>.
+    /// </summary>
+    public Guid? DropItemGroupId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="DropItemGroup" />.
+    /// </summary>
+    [ForeignKey(nameof(DropItemGroupId))]
+    public DropItemGroup RawDropItemGroup
+    {
+        get => base.DropItemGroup as DropItemGroup;
+        set => base.DropItemGroup = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.DropItemGroup DropItemGroup
+    {
+        get => base.DropItemGroup;set
+        {
+            base.DropItemGroup = value;
+            this.DropItemGroupId = this.RawDropItemGroup?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

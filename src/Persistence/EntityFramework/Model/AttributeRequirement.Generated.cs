@@ -10,71 +10,68 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement"/>.
+/// </summary>
+[Table(nameof(AttributeRequirement), Schema = SchemaNames.Configuration)]
+internal partial class AttributeRequirement : MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(AttributeRequirement), Schema = SchemaNames.Configuration)]
-    internal partial class AttributeRequirement : MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="Attribute"/>.
+    /// </summary>
+    public Guid? AttributeId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Attribute" />.
+    /// </summary>
+    [ForeignKey(nameof(AttributeId))]
+    public AttributeDefinition RawAttribute
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="Attribute"/>.
-        /// </summary>
-        public Guid? AttributeId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Attribute" />.
-        /// </summary>
-        [ForeignKey(nameof(AttributeId))]
-        public AttributeDefinition RawAttribute
-        {
-            get => base.Attribute as AttributeDefinition;
-            set => base.Attribute = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Attribute
-        {
-            get => base.Attribute;set
-            {
-                base.Attribute = value;
-                this.AttributeId = this.RawAttribute?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.Attribute as AttributeDefinition;
+        set => base.Attribute = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Attribute
+    {
+        get => base.Attribute;set
+        {
+            base.Attribute = value;
+            this.AttributeId = this.RawAttribute?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

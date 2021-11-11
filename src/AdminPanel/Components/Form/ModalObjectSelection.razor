@@ -1,6 +1,6 @@
 ﻿@typeparam TItem
 
-@inject IModalService ModalService;
+@inject IModalService _modalService;
 
 <EditForm Model="@this">
     <LookupField TObject="TItem" @bind-Value="@Item" Label="@typeof(TItem).Name"/>

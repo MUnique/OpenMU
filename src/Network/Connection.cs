@@ -2,139 +2,136 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Network
+namespace MUnique.OpenMU.Network;
+
+using System.Buffers;
+using System.IO.Pipelines;
+using System.Net;
+using Microsoft.Extensions.Logging;
+using Pipelines.Sockets.Unofficial;
+
+/// <summary>
+/// A connection which works on <see cref="IDuplexPipe"/>.
+/// </summary>
+/// <seealso cref="MUnique.OpenMU.Network.PacketPipeReaderBase" />
+public sealed class Connection : PacketPipeReaderBase, IConnection
 {
-    using System;
-    using System.Buffers;
-    using System.IO.Pipelines;
-    using System.Net;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using Pipelines.Sockets.Unofficial;
+    private readonly IPipelinedEncryptor? _encryptionPipe;
+    private readonly ILogger<Connection> _logger;
+    private readonly EndPoint? _remoteEndPoint;
+    private IDuplexPipe? _duplexPipe;
+    private bool _disconnected;
+    private PipeWriter? _outputWriter;
 
     /// <summary>
-    /// A connection which works on <see cref="IDuplexPipe"/>.
+    /// Initializes a new instance of the <see cref="Connection" /> class.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.Network.PacketPipeReaderBase" />
-    public sealed class Connection : PacketPipeReaderBase, IConnection
+    /// <param name="duplexPipe">The duplex pipe of the (socket) connection.</param>
+    /// <param name="decryptionPipe">The decryption pipe.</param>
+    /// <param name="encryptionPipe">The encryption pipe.</param>
+    /// <param name="logger">The logger.</param>
+    public Connection(IDuplexPipe duplexPipe, IPipelinedDecryptor? decryptionPipe, IPipelinedEncryptor? encryptionPipe, ILogger<Connection> logger)
     {
-        private readonly IPipelinedEncryptor? encryptionPipe;
-        private readonly ILogger<Connection> logger;
-        private readonly EndPoint? remoteEndPoint;
-        private IDuplexPipe? duplexPipe;
-        private bool disconnected;
-        private PipeWriter? outputWriter;
+        this._duplexPipe = duplexPipe;
+        this._encryptionPipe = encryptionPipe;
+        this._logger = logger;
+        this.Source = decryptionPipe?.Reader ?? this._duplexPipe!.Input;
+        this._remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Connection" /> class.
-        /// </summary>
-        /// <param name="duplexPipe">The duplex pipe of the (socket) connection.</param>
-        /// <param name="decryptionPipe">The decryption pipe.</param>
-        /// <param name="encryptionPipe">The encryption pipe.</param>
-        /// <param name="logger">The logger.</param>
-        public Connection(IDuplexPipe duplexPipe, IPipelinedDecryptor? decryptionPipe, IPipelinedEncryptor? encryptionPipe, ILogger<Connection> logger)
+    /// <inheritdoc />
+    public event PipedPacketReceivedHandler? PacketReceived;
+
+    /// <inheritdoc />
+    public event DisconnectedHandler? Disconnected;
+
+    /// <inheritdoc />
+    public bool Connected => this.SocketConnection != null ? this.SocketConnection.ShutdownKind == PipeShutdownKind.None && !this._disconnected : !this._disconnected;
+
+    /// <inheritdoc />
+    public EndPoint? EndPoint => this._remoteEndPoint;
+
+    /// <inheritdoc />
+    public PipeWriter Output => this._outputWriter ??= this._encryptionPipe?.Writer ?? this._duplexPipe!.Output;
+
+    /// <summary>
+    /// Gets the socket connection, if the <see cref="_duplexPipe"/> is an instance of <see cref="SocketConnection"/>. Otherwise, it returns null.
+    /// </summary>
+    private SocketConnection? SocketConnection => this._duplexPipe as SocketConnection;
+
+    /// <inheritdoc/>
+    public override string ToString() => this._remoteEndPoint?.ToString() ?? $"{base.ToString()} {this.GetHashCode()}";
+
+    /// <inheritdoc/>
+    public async Task BeginReceive()
+    {
+        try
         {
-            this.duplexPipe = duplexPipe;
-            this.encryptionPipe = encryptionPipe;
-            this.logger = logger;
-            this.Source = decryptionPipe?.Reader ?? this.duplexPipe!.Input;
-            this.remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
+            await this.ReadSource().ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            this.OnComplete(e);
+            return;
         }
 
-        /// <inheritdoc />
-        public event PipedPacketReceivedHandler? PacketReceived;
+        this.OnComplete(null);
+    }
 
-        /// <inheritdoc />
-        public event DisconnectedHandler? Disconnected;
-
-        /// <inheritdoc />
-        public bool Connected => this.SocketConnection != null ? this.SocketConnection.ShutdownKind == PipeShutdownKind.None && !this.disconnected : !this.disconnected;
-
-        /// <inheritdoc />
-        public EndPoint? EndPoint => this.remoteEndPoint;
-
-        /// <inheritdoc />
-        public PipeWriter Output => this.outputWriter ??= this.encryptionPipe?.Writer ?? this.duplexPipe!.Output;
-
-        /// <summary>
-        /// Gets the socket connection, if the <see cref="duplexPipe"/> is an instance of <see cref="SocketConnection"/>. Otherwise, it returns null.
-        /// </summary>
-        private SocketConnection? SocketConnection => this.duplexPipe as SocketConnection;
-
-        /// <inheritdoc/>
-        public override string ToString() => this.remoteEndPoint?.ToString() ?? $"{base.ToString()} {this.GetHashCode()}";
-
-        /// <inheritdoc/>
-        public async Task BeginReceive()
+    /// <inheritdoc />
+    public void Disconnect()
+    {
+        using var scope = this._logger.BeginScope(this._remoteEndPoint);
+        if (this._disconnected)
         {
-            try
-            {
-                await this.ReadSource().ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                this.OnComplete(e);
-                return;
-            }
-
-            this.OnComplete(null);
+            this._logger.LogDebug("Connection already disconnected.");
+            return;
         }
 
-        /// <inheritdoc />
-        public void Disconnect()
+        this._logger.LogDebug("Disconnecting...");
+        if (this._duplexPipe is not null)
         {
-            using var scope = this.logger.BeginScope(this.remoteEndPoint);
-            if (this.disconnected)
-            {
-                this.logger.LogDebug("Connection already disconnected.");
-                return;
-            }
-
-            this.logger.LogDebug("Disconnecting...");
-            if (this.duplexPipe is not null)
-            {
-                this.Source.Complete();
-                this.Output.Complete();
-                (this.duplexPipe as IDisposable)?.Dispose();
-                this.duplexPipe = null;
-            }
-
-            this.logger.LogDebug("Disconnected");
-            this.disconnected = true;
-
-            this.Disconnected?.Invoke(this, EventArgs.Empty);
+            this.Source.Complete();
+            this.Output.Complete();
+            (this._duplexPipe as IDisposable)?.Dispose();
+            this._duplexPipe = null;
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
+        this._logger.LogDebug("Disconnected");
+        this._disconnected = true;
+
+        this.Disconnected?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        this.Disconnect();
+        this.PacketReceived = null;
+        this.Disconnected = null;
+    }
+
+    /// <inheritdoc />
+    protected override void OnComplete(Exception? exception)
+    {
+        using var scope = this._logger.BeginScope(this._remoteEndPoint);
+        if (exception != null)
         {
-            this.Disconnect();
-            this.PacketReceived = null;
-            this.Disconnected = null;
+            this._logger.LogError(exception, "Connection will be disconnected, because of an exception");
         }
 
-        /// <inheritdoc />
-        protected override void OnComplete(Exception? exception)
-        {
-            using var scope = this.logger.BeginScope(this.remoteEndPoint);
-            if (exception != null)
-            {
-                this.logger.LogError(exception, "Connection will be disconnected, because of an exception");
-            }
+        this.Output.Complete(exception);
+        this.Disconnect();
+    }
 
-            this.Output.Complete(exception);
-            this.Disconnect();
-        }
-
-        /// <summary>
-        /// Reads the mu online packet by raising <see cref="PacketReceived" />.
-        /// </summary>
-        /// <param name="packet">The mu online packet.</param>
-        /// <returns>The async task.</returns>
-        protected override Task ReadPacket(ReadOnlySequence<byte> packet)
-        {
-            this.PacketReceived?.Invoke(this, packet);
-            return Task.CompletedTask;
-        }
+    /// <summary>
+    /// Reads the mu online packet by raising <see cref="PacketReceived" />.
+    /// </summary>
+    /// <param name="packet">The mu online packet.</param>
+    /// <returns>The async task.</returns>
+    protected override Task ReadPacket(ReadOnlySequence<byte> packet)
+    {
+        this.PacketReceived?.Invoke(this, packet);
+        return Task.CompletedTask;
     }
 }

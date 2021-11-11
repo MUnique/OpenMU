@@ -14,7996 +14,7996 @@
 // ReSharper disable AssignmentIsFullyDiscarded
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UseObjectOrCollectionInitializer
-namespace MUnique.OpenMU.Network.Packets.ClientToServer
+namespace MUnique.OpenMU.Network.Packets.ClientToServer;
+
+using System;
+using System.Threading;
+using MUnique.OpenMU.Network;
+
+/// <summary>
+/// Extension methods to start writing messages of this namespace on a <see cref="IConnection"/>.
+/// </summary>
+public static class ConnectionExtensions
 {
-    using System;
-    using System.Threading;
-    using MUnique.OpenMU.Network;
 
     /// <summary>
-    /// Extension methods to start writing messages of this namespace on a <see cref="IConnection"/>.
-    /// </summary>
-    public static class ConnectionExtensions
-    {
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="Ping" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
-        /// Causes reaction on server side: By the original server this is used to detect speed hacks.
-        /// </remarks>
-        public static PingThreadSafeWriter StartWritePing(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="LoginLongPassword" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player tries to log into the game.
-        /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
-        /// </remarks>
-        public static LoginLongPasswordThreadSafeWriter StartWriteLoginLongPassword(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="LoginShortPassword" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player tries to log into the game.
-        /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
-        /// </remarks>
-        public static LoginShortPasswordThreadSafeWriter StartWriteLoginShortPassword(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="Login075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player tries to log into the game.
-        /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
-        /// </remarks>
-        public static Login075ThreadSafeWriter StartWriteLogin075(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="LogOut" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: When the client wants to leave the game in various ways.
-        /// Causes reaction on server side: Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.
-        /// </remarks>
-        public static LogOutThreadSafeWriter StartWriteLogOut(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PlayerShopSetItemPrice" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop.
-        /// Causes reaction on server side: The price is set for the specified item. Works only if the shop is currently closed.
-        /// </remarks>
-        public static PlayerShopSetItemPriceThreadSafeWriter StartWritePlayerShopSetItemPrice(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PlayerShopOpen" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to open his personal item shop.
-        /// Causes reaction on server side: The personal item shop is opened and the surrounding players are informed about it, including the own player.
-        /// </remarks>
-        public static PlayerShopOpenThreadSafeWriter StartWritePlayerShopOpen(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PlayerShopClose" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to close his personal item shop.
-        /// Causes reaction on server side: The personal item shop is closed and the surrounding players are informed about it, including the own player.
-        /// </remarks>
-        public static PlayerShopCloseThreadSafeWriter StartWritePlayerShopClose(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PlayerShopItemListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player opens a shop of another player.
-        /// Causes reaction on server side: The list of items is sent back, if the shop of the player is currently open.
-        /// </remarks>
-        public static PlayerShopItemListRequestThreadSafeWriter StartWritePlayerShopItemListRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PlayerShopItemBuyRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to buy the item of another players shop.
-        /// Causes reaction on server side: If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.
-        /// </remarks>
-        public static PlayerShopItemBuyRequestThreadSafeWriter StartWritePlayerShopItemBuyRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PickupItemRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
-        /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
-        /// </remarks>
-        public static PickupItemRequestThreadSafeWriter StartWritePickupItemRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PickupItemRequest075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
-        /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
-        /// </remarks>
-        public static PickupItemRequest075ThreadSafeWriter StartWritePickupItemRequest075(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="DropItemRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to drop on item of his inventory on the ground.
-        /// Causes reaction on server side: When the specified coordinates are valid, and the item is allowed to be dropped, it will be dropped on the ground and the surrounding players are notified.
-        /// </remarks>
-        public static DropItemRequestThreadSafeWriter StartWriteDropItemRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="ItemMoveRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.
-        /// Causes reaction on server side: 
-        /// </remarks>
-        public static ItemMoveRequestThreadSafeWriter StartWriteItemMoveRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="ConsumeItemRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
-        /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
-        /// </remarks>
-        public static ConsumeItemRequestThreadSafeWriter StartWriteConsumeItemRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="ConsumeItemRequest075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
-        /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
-        /// </remarks>
-        public static ConsumeItemRequest075ThreadSafeWriter StartWriteConsumeItemRequest075(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="TalkToNpcRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to talk to an NPC.
-        /// Causes reaction on server side: Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.
-        /// </remarks>
-        public static TalkToNpcRequestThreadSafeWriter StartWriteTalkToNpcRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="CloseNpcRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player closes the dialog which was opened by an interaction with a NPC.
-        /// Causes reaction on server side: The server updates the state of the player accordingly.
-        /// </remarks>
-        public static CloseNpcRequestThreadSafeWriter StartWriteCloseNpcRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="BuyItemFromNpcRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to buy an item from an opened NPC merchant.
-        /// Causes reaction on server side: If the player has enough money, the item is added to the inventory and money is removed. Corresponding messages are sent back to the game client.
-        /// </remarks>
-        public static BuyItemFromNpcRequestThreadSafeWriter StartWriteBuyItemFromNpcRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="SellItemToNpcRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to sell an item of his inventory to the opened NPC merchant.
-        /// Causes reaction on server side: The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.
-        /// </remarks>
-        public static SellItemToNpcRequestThreadSafeWriter StartWriteSellItemToNpcRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="RepairItemRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to repair an item of his inventory.
-        /// Causes reaction on server side: The item is repaired if the player has enough money in its inventory. A corresponding response is sent.
-        /// </remarks>
-        public static RepairItemRequestThreadSafeWriter StartWriteRepairItemRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="WarpCommandRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player selected to warp by selecting an entry in the warp list (configured in game client files).
-        /// Causes reaction on server side: If the player has enough money and is allowed to enter the map, it's getting moved to there.
-        /// </remarks>
-        public static WarpCommandRequestThreadSafeWriter StartWriteWarpCommandRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="EnterGateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
-        /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
-        /// </remarks>
-        public static EnterGateRequestThreadSafeWriter StartWriteEnterGateRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="EnterGateRequest075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
-        /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
-        /// </remarks>
-        public static EnterGateRequest075ThreadSafeWriter StartWriteEnterGateRequest075(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="UnlockVault" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
-        /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
-        /// </remarks>
-        public static UnlockVaultThreadSafeWriter StartWriteUnlockVault(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="SetVaultPin" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to set a new pin for the vault when it's in unlocked state.
-        /// Causes reaction on server side: The vault pin is set. VaultProtectionInformation is sent as response.
-        /// </remarks>
-        public static SetVaultPinThreadSafeWriter StartWriteSetVaultPin(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="RemoveVaultPin" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to remove the pin for the vault when it's in unlocked state.
-        /// Causes reaction on server side: The vault pin is removed. VaultProtectionInformation is sent as response.
-        /// </remarks>
-        public static RemoveVaultPinThreadSafeWriter StartWriteRemoveVaultPin(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="VaultClosed" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player closed an opened vault dialog.
-        /// Causes reaction on server side: The state on the server is updated.
-        /// </remarks>
-        public static VaultClosedThreadSafeWriter StartWriteVaultClosed(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="VaultMoveMoneyRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to move money from or to the vault storage.
-        /// Causes reaction on server side: The money is moved, if possible.
-        /// </remarks>
-        public static VaultMoveMoneyRequestThreadSafeWriter StartWriteVaultMoveMoneyRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="LahapJewelMixRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.
-        /// Causes reaction on server side: If successful, the inventory is updated and the game client gets corresponding responses.
-        /// </remarks>
-        public static LahapJewelMixRequestThreadSafeWriter StartWriteLahapJewelMixRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PartyListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: When the player opens the party menu in the game client.
-        /// Causes reaction on server side: If the player is in a party, the server sends back a list with information about all players of the party.
-        /// </remarks>
-        public static PartyListRequestThreadSafeWriter StartWritePartyListRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PartyPlayerKickRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A party master wants to kick another player from his party, or when a player wants to kick himself from his party.
-        /// Causes reaction on server side: If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.
-        /// </remarks>
-        public static PartyPlayerKickRequestThreadSafeWriter StartWritePartyPlayerKickRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PartyInviteRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A party master wants to invite another player to his party.
-        /// Causes reaction on server side: If the requesting player has no party, or is the party master, a request is sent to the target player.
-        /// </remarks>
-        public static PartyInviteRequestThreadSafeWriter StartWritePartyInviteRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PartyInviteResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player was invited by another player to join a party and this player sent the response back.
-        /// Causes reaction on server side: If the sender accepts the request, it's added to the party.
-        /// </remarks>
-        public static PartyInviteResponseThreadSafeWriter StartWritePartyInviteResponse(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="InstantMoveRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: It's sent when the player performs specific skills.
-        /// Causes reaction on server side: Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.
-        /// </remarks>
-        public static InstantMoveRequestThreadSafeWriter StartWriteInstantMoveRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="AnimationRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player does any kind of animation.
-        /// Causes reaction on server side: The animation number and rotation is forwarded to all surrounding players.
-        /// </remarks>
-        public static AnimationRequestThreadSafeWriter StartWriteAnimationRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="RequestCharacterList" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: After a successful login or after the player decided to leave the game world to go back to the character selection screen.
-        /// Causes reaction on server side: The server sends the character list with all available characters.
-        /// </remarks>
-        public static RequestCharacterListThreadSafeWriter StartWriteRequestCharacterList(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="CreateCharacter" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client is at the character selection screen and the player requests to add a new character.
-        /// Causes reaction on server side: The server checks if the player is allowed to create the character and sends a response back.
-        /// </remarks>
-        public static CreateCharacterThreadSafeWriter StartWriteCreateCharacter(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="DeleteCharacter" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client is at the character selection screen and the player requests to delete an existing character.
-        /// Causes reaction on server side: The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.
-        /// </remarks>
-        public static DeleteCharacterThreadSafeWriter StartWriteDeleteCharacter(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="SelectCharacter" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player selects a character to enter the game world on the character selection screen.
-        /// Causes reaction on server side: The player joins the game world with the specified character.
-        /// </remarks>
-        public static SelectCharacterThreadSafeWriter StartWriteSelectCharacter(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="FocusCharacter" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.
-        /// Causes reaction on server side: The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.
-        /// </remarks>
-        public static FocusCharacterThreadSafeWriter StartWriteFocusCharacter(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="IncreaseCharacterStatPoint" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.
-        /// Causes reaction on server side: The server checks if a level-up-point is available. If yes, it adds the point to the specified stat type. It sends a response back to the client.
-        /// </remarks>
-        public static IncreaseCharacterStatPointThreadSafeWriter StartWriteIncreaseCharacterStatPoint(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="ClientReadyAfterMapChange" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: After the server sent a map change message and the client has initialized the game map visualization.
-        /// Causes reaction on server side: The character is added to the internal game map and ready to interact with other entities.
-        /// </remarks>
-        public static ClientReadyAfterMapChangeThreadSafeWriter StartWriteClientReadyAfterMapChange(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="AddMasterSkillPoint" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to add or increase the level of a specific master skill of the master skill tree.
-        /// Causes reaction on server side: Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.
-        /// </remarks>
-        public static AddMasterSkillPointThreadSafeWriter StartWriteAddMasterSkillPoint(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="HitRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player attacks a target without using a skill.
-        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
-        /// </remarks>
-        public static HitRequestThreadSafeWriter StartWriteHitRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="TargetedSkill" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
-        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
-        /// </remarks>
-        public static TargetedSkillThreadSafeWriter StartWriteTargetedSkill(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="TargetedSkill075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
-        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
-        /// </remarks>
-        public static TargetedSkill075ThreadSafeWriter StartWriteTargetedSkill075(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="TargetedSkill095" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
-        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
-        /// </remarks>
-        public static TargetedSkill095ThreadSafeWriter StartWriteTargetedSkill095(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="MagicEffectCancelRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
-        /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
-        /// </remarks>
-        public static MagicEffectCancelRequestThreadSafeWriter StartWriteMagicEffectCancelRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="AreaSkill" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
-        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
-        /// </remarks>
-        public static AreaSkillThreadSafeWriter StartWriteAreaSkill(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="AreaSkillHit" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: An area skill was performed and the client decided to hit a target.
-        /// Causes reaction on server side: The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.
-        /// </remarks>
-        public static AreaSkillHitThreadSafeWriter StartWriteAreaSkillHit(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="AreaSkill075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
-        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
-        /// </remarks>
-        public static AreaSkill075ThreadSafeWriter StartWriteAreaSkill075(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="AreaSkill095" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
-        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
-        /// </remarks>
-        public static AreaSkill095ThreadSafeWriter StartWriteAreaSkill095(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="TradeCancel" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to cancel the trade.
-        /// Causes reaction on server side: The trade is cancelled and the previous inventory state is restored.
-        /// </remarks>
-        public static TradeCancelThreadSafeWriter StartWriteTradeCancel(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="TradeButtonStateChange" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player presses the trade button.
-        /// Causes reaction on server side: The state change is forwarded to the trade partner. If both players press the trade button at the same time, the server will try to complete the trade by exchanging the items and money.
-        /// </remarks>
-        public static TradeButtonStateChangeThreadSafeWriter StartWriteTradeButtonStateChange(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="TradeRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player requests to open a trade with another player.
-        /// Causes reaction on server side: The request is forwarded to the requested player.
-        /// </remarks>
-        public static TradeRequestThreadSafeWriter StartWriteTradeRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="TradeRequestResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A requested player responded to a trade request of another player.
-        /// Causes reaction on server side: When the trade request was accepted, the server tries to open a new trade and sends corresponding responses to both players. 
-        /// </remarks>
-        public static TradeRequestResponseThreadSafeWriter StartWriteTradeRequestResponse(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="SetTradeMoney" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to set an amount of money in the trade.
-        /// Causes reaction on server side: It's taken from the available money of the inventory. If the new money amount is lower than the amount which was set before, it's added back to the inventory. The trade partner is informed about any change.
-        /// </remarks>
-        public static SetTradeMoneyThreadSafeWriter StartWriteSetTradeMoney(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="LetterDeleteRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to delete a letter.
-        /// Causes reaction on server side: The letter is getting deleted.
-        /// </remarks>
-        public static LetterDeleteRequestThreadSafeWriter StartWriteLetterDeleteRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="LetterReadRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to read a specific letter of his letter list.
-        /// Causes reaction on server side: The server sends the requested letter content back to the game client.
-        /// </remarks>
-        public static LetterReadRequestThreadSafeWriter StartWriteLetterReadRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="GuildJoinRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player (non-guild member) requests to join a guild.
-        /// Causes reaction on server side: The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.
-        /// </remarks>
-        public static GuildJoinRequestThreadSafeWriter StartWriteGuildJoinRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="GuildJoinResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A guild master responded to a previously sent request.
-        /// Causes reaction on server side: If the request was accepted by the guild master, the previously requesting player is added to the guild.
-        /// </remarks>
-        public static GuildJoinResponseThreadSafeWriter StartWriteGuildJoinResponse(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="GuildListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A guild player opens its guild menu in the game client.
-        /// Causes reaction on server side: A list of all guild members and their state is sent back as response.
-        /// </remarks>
-        public static GuildListRequestThreadSafeWriter StartWriteGuildListRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="GuildCreateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: When a player wants to create a guild.
-        /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
-        /// </remarks>
-        public static GuildCreateRequestThreadSafeWriter StartWriteGuildCreateRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="GuildCreateRequest075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: When a player wants to create a guild.
-        /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
-        /// </remarks>
-        public static GuildCreateRequest075ThreadSafeWriter StartWriteGuildCreateRequest075(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="GuildMasterAnswer" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player has the dialog of the guild master NPC opened and decided about its next step.
-        /// Causes reaction on server side: It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.
-        /// </remarks>
-        public static GuildMasterAnswerThreadSafeWriter StartWriteGuildMasterAnswer(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="CancelGuildCreation" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player has the dialog of the guild creation dialog opened and decided against creating a guild.
-        /// Causes reaction on server side: It either cancels the guild creation.
-        /// </remarks>
-        public static CancelGuildCreationThreadSafeWriter StartWriteCancelGuildCreation(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="GuildWarResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A guild master requested a guild war against another guild.
-        /// Causes reaction on server side: If the guild master confirms, the war is declared.
-        /// </remarks>
-        public static GuildWarResponseThreadSafeWriter StartWriteGuildWarResponse(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="GuildInfoRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
-        /// Causes reaction on server side: The server sends a response which includes the guild name and emblem.
-        /// </remarks>
-        public static GuildInfoRequestThreadSafeWriter StartWriteGuildInfoRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="ItemRepair" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
-        /// Causes reaction on server side: If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.
-        /// </remarks>
-        public static ItemRepairThreadSafeWriter StartWriteItemRepair(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="ChaosMachineMixRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
-        /// Causes reaction on server side: Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.
-        /// </remarks>
-        public static ChaosMachineMixRequestThreadSafeWriter StartWriteChaosMachineMixRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="CraftingDialogCloseRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
-        /// Causes reaction on server side: The server updates the state of the player accordingly.
-        /// </remarks>
-        public static CraftingDialogCloseRequestThreadSafeWriter StartWriteCraftingDialogCloseRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="FriendAddRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to add another players character into his friend list of the messenger.
-        /// Causes reaction on server side: A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.
-        /// </remarks>
-        public static FriendAddRequestThreadSafeWriter StartWriteFriendAddRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="FriendDelete" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to delete another players character from his friend list of the messenger.
-        /// Causes reaction on server side: The entry in the friend list is removed. The player is shown as offline in the other players friends list.
-        /// </remarks>
-        public static FriendDeleteThreadSafeWriter StartWriteFriendDelete(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="ChatRoomCreateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to open a chat with another player of his friend list.
-        /// Causes reaction on server side: If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.
-        /// </remarks>
-        public static ChatRoomCreateRequestThreadSafeWriter StartWriteChatRoomCreateRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="FriendAddResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player received a friend request from another player and responded to it.
-        /// Causes reaction on server side: If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.
-        /// </remarks>
-        public static FriendAddResponseThreadSafeWriter StartWriteFriendAddResponse(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="SetFriendOnlineState" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to set himself on- or offline.
-        /// Causes reaction on server side: Depending on the state, the player is shown as offline or online in all friend lists of his friends.
-        /// </remarks>
-        public static SetFriendOnlineStateThreadSafeWriter StartWriteSetFriendOnlineState(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="ChatRoomInvitationRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to invite additional players from his friend list to an existing chat room.
-        /// Causes reaction on server side: The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.
-        /// </remarks>
-        public static ChatRoomInvitationRequestThreadSafeWriter StartWriteChatRoomInvitationRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="LegacyQuestStateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: After the player entered the game world with a character.
-        /// Causes reaction on server side: The quest state is sent back as response.
-        /// </remarks>
-        public static LegacyQuestStateRequestThreadSafeWriter StartWriteLegacyQuestStateRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="LegacyQuestStateSetRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to change the state of a quest, e.g. to start or to finish a quest.
-        /// Causes reaction on server side: Depending on the requested new state, a response is sent back.
-        /// </remarks>
-        public static LegacyQuestStateSetRequestThreadSafeWriter StartWriteLegacyQuestStateSetRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PetCommandRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to command its equipped pet (raven).
-        /// Causes reaction on server side: 
-        /// </remarks>
-        public static PetCommandRequestThreadSafeWriter StartWritePetCommandRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="PetInfoRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player hovers over a pet. The client sends this request to retrieve information (level, experience) of the pet (dark raven, horse).
-        /// Causes reaction on server side: The server sends a PetInfoResponse.
-        /// </remarks>
-        public static PetInfoRequestThreadSafeWriter StartWritePetInfoRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="QuestSelectRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The client opened an quest NPC dialog and selected an available quests.
-        /// Causes reaction on server side: If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.
-        /// </remarks>
-        public static QuestSelectRequestThreadSafeWriter StartWriteQuestSelectRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="QuestProceedRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.
-        /// Causes reaction on server side: The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).
-        /// </remarks>
-        public static QuestProceedRequestThreadSafeWriter StartWriteQuestProceedRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="QuestCompletionRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests to complete an active quest.
-        /// Causes reaction on server side: The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.
-        /// </remarks>
-        public static QuestCompletionRequestThreadSafeWriter StartWriteQuestCompletionRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="QuestCancelRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests to cancel an active quest.
-        /// Causes reaction on server side: The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.
-        /// </remarks>
-        public static QuestCancelRequestThreadSafeWriter StartWriteQuestCancelRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="QuestClientActionRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests to complete a client action, e.g. completing a tutorial.
-        /// Causes reaction on server side: The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.
-        /// </remarks>
-        public static QuestClientActionRequestThreadSafeWriter StartWriteQuestClientActionRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="ActiveQuestListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The clients requests the states of all quests, usually after entering the game.
-        /// Causes reaction on server side: The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.
-        /// </remarks>
-        public static ActiveQuestListRequestThreadSafeWriter StartWriteActiveQuestListRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="QuestStateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests the state of a specific active quests.
-        /// Causes reaction on server side: The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.
-        /// </remarks>
-        public static QuestStateRequestThreadSafeWriter StartWriteQuestStateRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="EventQuestStateListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests the list of event quests, usually after entering the game.
-        /// Causes reaction on server side: The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).
-        /// </remarks>
-        public static EventQuestStateListRequestThreadSafeWriter StartWriteEventQuestStateListRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="AvailableQuestsRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The client opened an quest NPC dialog and requests a list of available quests.
-        /// Causes reaction on server side: The list of available quests of this NPC is sent back (F60A).
-        /// </remarks>
-        public static AvailableQuestsRequestThreadSafeWriter StartWriteAvailableQuestsRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="NpcBuffRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).
-        /// Causes reaction on server side: The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.
-        /// </remarks>
-        public static NpcBuffRequestThreadSafeWriter StartWriteNpcBuffRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="DevilSquareEnterRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
-        /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.
-        /// </remarks>
-        public static DevilSquareEnterRequestThreadSafeWriter StartWriteDevilSquareEnterRequest(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Starts a safe write of a <see cref="RequestEventRemainingTime" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
-        /// Causes reaction on server side: The remaining time is sent back to the client.
-        /// </remarks>
-        public static RequestEventRemainingTimeThreadSafeWriter StartWriteRequestEventRemainingTime(this IConnection connection)
-        {
-          return new (connection);
-        }
-
-        /// <summary>
-        /// Sends a <see cref="Ping" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="tickCount">The tick count.</param>
-        /// <param name="speed1">The speed 1.</param>
-        /// <param name="speed2">The speed 2.</param>
-        /// <param name="speed3">The speed 3.</param>
-        /// <param name="speed4">The speed 4.</param>
-        /// <remarks>
-        /// Is sent by the client when: This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
-        /// Causes reaction on server side: By the original server this is used to detect speed hacks.
-        /// </remarks>
-        public static void SendPing(this IConnection connection, uint @tickCount, byte @speed1, byte @speed2, byte @speed3, byte @speed4)
-        {
-            using var writer = connection.StartWritePing();
-            var packet = writer.Packet;
-            packet.TickCount = @tickCount;
-            packet.Speed1 = @speed1;
-            packet.Speed2 = @speed2;
-            packet.Speed3 = @speed3;
-            packet.Speed4 = @speed4;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PublicChatMessage" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="character">The character.</param>
-        /// <param name="message">The message.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player sends a public chat message.
-        /// Causes reaction on server side: The message is forwarded to all surrounding players, including the sender.
-        /// </remarks>
-        public static void SendPublicChatMessage(this IConnection connection, string @character, string @message)
-        {
-            using var writer = connection.StartSafeWrite(PublicChatMessage.HeaderType, PublicChatMessage.GetRequiredSize(message));
-            var packet = new PublicChatMessage(writer.Span);
-            packet.Character = @character;
-            packet.Message = @message;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="WhisperMessage" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="receiverName">The receiver name.</param>
-        /// <param name="message">The message.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player sends a private chat message to a specific target player.
-        /// Causes reaction on server side: The message is forwarded to the target player.
-        /// </remarks>
-        public static void SendWhisperMessage(this IConnection connection, string @receiverName, string @message)
-        {
-            using var writer = connection.StartSafeWrite(WhisperMessage.HeaderType, WhisperMessage.GetRequiredSize(message));
-            var packet = new WhisperMessage(writer.Span);
-            packet.ReceiverName = @receiverName;
-            packet.Message = @message;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="LoginLongPassword" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="username">The user name, "encrypted" with Xor3.</param>
-        /// <param name="password">The password, "encrypted" with Xor3.</param>
-        /// <param name="tickCount">The tick count.</param>
-        /// <param name="clientVersion">The client version.</param>
-        /// <param name="clientSerial">The client serial.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player tries to log into the game.
-        /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
-        /// </remarks>
-        public static void SendLoginLongPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
-        {
-            using var writer = connection.StartWriteLoginLongPassword();
-            var packet = writer.Packet;
-            @username.CopyTo(packet.Username);
-            @password.CopyTo(packet.Password);
-            packet.TickCount = @tickCount;
-            @clientVersion.CopyTo(packet.ClientVersion);
-            @clientSerial.CopyTo(packet.ClientSerial);
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="LoginShortPassword" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="username">The user name, "encrypted" with Xor3.</param>
-        /// <param name="password">The password, "encrypted" with Xor3.</param>
-        /// <param name="tickCount">The tick count.</param>
-        /// <param name="clientVersion">The client version.</param>
-        /// <param name="clientSerial">The client serial.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player tries to log into the game.
-        /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
-        /// </remarks>
-        public static void SendLoginShortPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
-        {
-            using var writer = connection.StartWriteLoginShortPassword();
-            var packet = writer.Packet;
-            @username.CopyTo(packet.Username);
-            @password.CopyTo(packet.Password);
-            packet.TickCount = @tickCount;
-            @clientVersion.CopyTo(packet.ClientVersion);
-            @clientSerial.CopyTo(packet.ClientSerial);
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="Login075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="username">The user name, "encrypted" with Xor3.</param>
-        /// <param name="password">The password, "encrypted" with Xor3.</param>
-        /// <param name="tickCount">The tick count.</param>
-        /// <param name="clientVersion">The client version.</param>
-        /// <param name="clientSerial">The client serial.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player tries to log into the game.
-        /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
-        /// </remarks>
-        public static void SendLogin075(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
-        {
-            using var writer = connection.StartWriteLogin075();
-            var packet = writer.Packet;
-            @username.CopyTo(packet.Username);
-            @password.CopyTo(packet.Password);
-            packet.TickCount = @tickCount;
-            @clientVersion.CopyTo(packet.ClientVersion);
-            @clientSerial.CopyTo(packet.ClientSerial);
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="LogOut" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="type">The type.</param>
-        /// <remarks>
-        /// Is sent by the client when: When the client wants to leave the game in various ways.
-        /// Causes reaction on server side: Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.
-        /// </remarks>
-        public static void SendLogOut(this IConnection connection, LogOutType @type)
-        {
-            using var writer = connection.StartWriteLogOut();
-            var packet = writer.Packet;
-            packet.Type = @type;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PlayerShopSetItemPrice" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="itemSlot">The item slot.</param>
-        /// <param name="price">The price.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop.
-        /// Causes reaction on server side: The price is set for the specified item. Works only if the shop is currently closed.
-        /// </remarks>
-        public static void SendPlayerShopSetItemPrice(this IConnection connection, byte @itemSlot, uint @price)
-        {
-            using var writer = connection.StartWritePlayerShopSetItemPrice();
-            var packet = writer.Packet;
-            packet.ItemSlot = @itemSlot;
-            packet.Price = @price;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PlayerShopOpen" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="storeName">The store name.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to open his personal item shop.
-        /// Causes reaction on server side: The personal item shop is opened and the surrounding players are informed about it, including the own player.
-        /// </remarks>
-        public static void SendPlayerShopOpen(this IConnection connection, string @storeName)
-        {
-            using var writer = connection.StartWritePlayerShopOpen();
-            var packet = writer.Packet;
-            packet.StoreName = @storeName;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PlayerShopClose" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to close his personal item shop.
-        /// Causes reaction on server side: The personal item shop is closed and the surrounding players are informed about it, including the own player.
-        /// </remarks>
-        public static void SendPlayerShopClose(this IConnection connection)
-        {
-            using var writer = connection.StartWritePlayerShopClose();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PlayerShopItemListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="playerId">The player id.</param>
-        /// <param name="playerName">The player name.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player opens a shop of another player.
-        /// Causes reaction on server side: The list of items is sent back, if the shop of the player is currently open.
-        /// </remarks>
-        public static void SendPlayerShopItemListRequest(this IConnection connection, ushort @playerId, string @playerName)
-        {
-            using var writer = connection.StartWritePlayerShopItemListRequest();
-            var packet = writer.Packet;
-            packet.PlayerId = @playerId;
-            packet.PlayerName = @playerName;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PlayerShopItemBuyRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="playerId">The player id.</param>
-        /// <param name="playerName">The player name.</param>
-        /// <param name="itemSlot">The item slot.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to buy the item of another players shop.
-        /// Causes reaction on server side: If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.
-        /// </remarks>
-        public static void SendPlayerShopItemBuyRequest(this IConnection connection, ushort @playerId, string @playerName, byte @itemSlot)
-        {
-            using var writer = connection.StartWritePlayerShopItemBuyRequest();
-            var packet = writer.Packet;
-            packet.PlayerId = @playerId;
-            packet.PlayerName = @playerName;
-            packet.ItemSlot = @itemSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PickupItemRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="itemId">The item id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
-        /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
-        /// </remarks>
-        public static void SendPickupItemRequest(this IConnection connection, ushort @itemId)
-        {
-            using var writer = connection.StartWritePickupItemRequest();
-            var packet = writer.Packet;
-            packet.ItemId = @itemId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PickupItemRequest075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="itemId">The item id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
-        /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
-        /// </remarks>
-        public static void SendPickupItemRequest075(this IConnection connection, ushort @itemId)
-        {
-            using var writer = connection.StartWritePickupItemRequest075();
-            var packet = writer.Packet;
-            packet.ItemId = @itemId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="DropItemRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="targetX">The target x.</param>
-        /// <param name="targetY">The target y.</param>
-        /// <param name="itemSlot">The item slot.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to drop on item of his inventory on the ground.
-        /// Causes reaction on server side: When the specified coordinates are valid, and the item is allowed to be dropped, it will be dropped on the ground and the surrounding players are notified.
-        /// </remarks>
-        public static void SendDropItemRequest(this IConnection connection, byte @targetX, byte @targetY, byte @itemSlot)
-        {
-            using var writer = connection.StartWriteDropItemRequest();
-            var packet = writer.Packet;
-            packet.TargetX = @targetX;
-            packet.TargetY = @targetY;
-            packet.ItemSlot = @itemSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="ItemMoveRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="fromStorage">The from storage.</param>
-        /// <param name="fromSlot">The from slot.</param>
-        /// <param name="itemData">The item data.</param>
-        /// <param name="toStorage">The to storage.</param>
-        /// <param name="toSlot">The to slot.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.
-        /// Causes reaction on server side: 
-        /// </remarks>
-        public static void SendItemMoveRequest(this IConnection connection, ItemStorageKind @fromStorage, byte @fromSlot, Span<byte> @itemData, ItemStorageKind @toStorage, byte @toSlot)
-        {
-            using var writer = connection.StartWriteItemMoveRequest();
-            var packet = writer.Packet;
-            packet.FromStorage = @fromStorage;
-            packet.FromSlot = @fromSlot;
-            @itemData.CopyTo(packet.ItemData);
-            packet.ToStorage = @toStorage;
-            packet.ToSlot = @toSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="ConsumeItemRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="itemSlot">The inventory slot index of the item which should be consumed.</param>
-        /// <param name="targetSlot">If the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.</param>
-        /// <param name="fruitConsumption">Defines how the fruit is used. Only applies, if the the item is a fruit.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
-        /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
-        /// </remarks>
-        public static void SendConsumeItemRequest(this IConnection connection, byte @itemSlot, byte @targetSlot, ConsumeItemRequest.FruitUsage @fruitConsumption)
-        {
-            using var writer = connection.StartWriteConsumeItemRequest();
-            var packet = writer.Packet;
-            packet.ItemSlot = @itemSlot;
-            packet.TargetSlot = @targetSlot;
-            packet.FruitConsumption = @fruitConsumption;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="ConsumeItemRequest075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="itemSlot">The inventory slot index of the item which should be consumed.</param>
-        /// <param name="targetSlot">If the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
-        /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
-        /// </remarks>
-        public static void SendConsumeItemRequest075(this IConnection connection, byte @itemSlot, byte @targetSlot)
-        {
-            using var writer = connection.StartWriteConsumeItemRequest075();
-            var packet = writer.Packet;
-            packet.ItemSlot = @itemSlot;
-            packet.TargetSlot = @targetSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="TalkToNpcRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="npcId">The npc id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to talk to an NPC.
-        /// Causes reaction on server side: Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.
-        /// </remarks>
-        public static void SendTalkToNpcRequest(this IConnection connection, ushort @npcId)
-        {
-            using var writer = connection.StartWriteTalkToNpcRequest();
-            var packet = writer.Packet;
-            packet.NpcId = @npcId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="CloseNpcRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player closes the dialog which was opened by an interaction with a NPC.
-        /// Causes reaction on server side: The server updates the state of the player accordingly.
-        /// </remarks>
-        public static void SendCloseNpcRequest(this IConnection connection)
-        {
-            using var writer = connection.StartWriteCloseNpcRequest();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="BuyItemFromNpcRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="itemSlot">Item Slot (NPC Store)</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to buy an item from an opened NPC merchant.
-        /// Causes reaction on server side: If the player has enough money, the item is added to the inventory and money is removed. Corresponding messages are sent back to the game client.
-        /// </remarks>
-        public static void SendBuyItemFromNpcRequest(this IConnection connection, byte @itemSlot)
-        {
-            using var writer = connection.StartWriteBuyItemFromNpcRequest();
-            var packet = writer.Packet;
-            packet.ItemSlot = @itemSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="SellItemToNpcRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="itemSlot">Item Slot (Inventory)</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to sell an item of his inventory to the opened NPC merchant.
-        /// Causes reaction on server side: The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.
-        /// </remarks>
-        public static void SendSellItemToNpcRequest(this IConnection connection, byte @itemSlot)
-        {
-            using var writer = connection.StartWriteSellItemToNpcRequest();
-            var packet = writer.Packet;
-            packet.ItemSlot = @itemSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="RepairItemRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="itemSlot">Inventory item slot of the target item. If it's 0xFF, the player wants to repair all items - this is only possible with some opened NPC dialogs. Repairing the pet item slot (8) is only possible when the pet trainer npc is opened.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to repair an item of his inventory.
-        /// Causes reaction on server side: The item is repaired if the player has enough money in its inventory. A corresponding response is sent.
-        /// </remarks>
-        public static void SendRepairItemRequest(this IConnection connection, byte @itemSlot)
-        {
-            using var writer = connection.StartWriteRepairItemRequest();
-            var packet = writer.Packet;
-            packet.ItemSlot = @itemSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="WarpCommandRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="warpInfoIndex">The index of the entry in the warp list.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player selected to warp by selecting an entry in the warp list (configured in game client files).
-        /// Causes reaction on server side: If the player has enough money and is allowed to enter the map, it's getting moved to there.
-        /// </remarks>
-        public static void SendWarpCommandRequest(this IConnection connection, ushort @warpInfoIndex)
-        {
-            using var writer = connection.StartWriteWarpCommandRequest();
-            var packet = writer.Packet;
-            packet.WarpInfoIndex = @warpInfoIndex;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="EnterGateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="gateNumber">The gate number.</param>
-        /// <param name="teleportTargetX">The teleport target x.</param>
-        /// <param name="teleportTargetY">The teleport target y.</param>
-        /// <remarks>
-        /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
-        /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
-        /// </remarks>
-        public static void SendEnterGateRequest(this IConnection connection, ushort @gateNumber, byte @teleportTargetX, byte @teleportTargetY)
-        {
-            using var writer = connection.StartWriteEnterGateRequest();
-            var packet = writer.Packet;
-            packet.GateNumber = @gateNumber;
-            packet.TeleportTargetX = @teleportTargetX;
-            packet.TeleportTargetY = @teleportTargetY;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="EnterGateRequest075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="gateNumber">The gate number.</param>
-        /// <param name="teleportTargetX">The teleport target x.</param>
-        /// <param name="teleportTargetY">The teleport target y.</param>
-        /// <remarks>
-        /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
-        /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
-        /// </remarks>
-        public static void SendEnterGateRequest075(this IConnection connection, byte @gateNumber, byte @teleportTargetX, byte @teleportTargetY)
-        {
-            using var writer = connection.StartWriteEnterGateRequest075();
-            var packet = writer.Packet;
-            packet.GateNumber = @gateNumber;
-            packet.TeleportTargetX = @teleportTargetX;
-            packet.TeleportTargetY = @teleportTargetY;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="UnlockVault" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="pin">The pin.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
-        /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
-        /// </remarks>
-        public static void SendUnlockVault(this IConnection connection, ushort @pin)
-        {
-            using var writer = connection.StartWriteUnlockVault();
-            var packet = writer.Packet;
-            packet.Pin = @pin;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="SetVaultPin" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="pin">The pin.</param>
-        /// <param name="password">The password of the account, which is required to set a new vault pin.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to set a new pin for the vault when it's in unlocked state.
-        /// Causes reaction on server side: The vault pin is set. VaultProtectionInformation is sent as response.
-        /// </remarks>
-        public static void SendSetVaultPin(this IConnection connection, ushort @pin, string @password)
-        {
-            using var writer = connection.StartWriteSetVaultPin();
-            var packet = writer.Packet;
-            packet.Pin = @pin;
-            packet.Password = @password;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="RemoveVaultPin" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="password">The password of the account, which is required to remove the vault pin.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to remove the pin for the vault when it's in unlocked state.
-        /// Causes reaction on server side: The vault pin is removed. VaultProtectionInformation is sent as response.
-        /// </remarks>
-        public static void SendRemoveVaultPin(this IConnection connection, string @password)
-        {
-            using var writer = connection.StartWriteRemoveVaultPin();
-            var packet = writer.Packet;
-            packet.Password = @password;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="VaultClosed" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player closed an opened vault dialog.
-        /// Causes reaction on server side: The state on the server is updated.
-        /// </remarks>
-        public static void SendVaultClosed(this IConnection connection)
-        {
-            using var writer = connection.StartWriteVaultClosed();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="VaultMoveMoneyRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="direction">The direction.</param>
-        /// <param name="amount">The amount.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to move money from or to the vault storage.
-        /// Causes reaction on server side: The money is moved, if possible.
-        /// </remarks>
-        public static void SendVaultMoveMoneyRequest(this IConnection connection, VaultMoveMoneyRequest.VaultMoneyMoveDirection @direction, uint @amount)
-        {
-            using var writer = connection.StartWriteVaultMoveMoneyRequest();
-            var packet = writer.Packet;
-            packet.Direction = @direction;
-            packet.Amount = @amount;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="LahapJewelMixRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="operation">The operation.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="mixingStackSize">The mixing stack size.</param>
-        /// <param name="unmixingSourceSlot">The unmixing source slot.</param>
-        /// <remarks>
-        /// Is sent by the client when: When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.
-        /// Causes reaction on server side: If successful, the inventory is updated and the game client gets corresponding responses.
-        /// </remarks>
-        public static void SendLahapJewelMixRequest(this IConnection connection, LahapJewelMixRequest.MixType @operation, LahapJewelMixRequest.ItemType @item, LahapJewelMixRequest.StackSize @mixingStackSize, byte @unmixingSourceSlot)
-        {
-            using var writer = connection.StartWriteLahapJewelMixRequest();
-            var packet = writer.Packet;
-            packet.Operation = @operation;
-            packet.Item = @item;
-            packet.MixingStackSize = @mixingStackSize;
-            packet.UnmixingSourceSlot = @unmixingSourceSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PartyListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: When the player opens the party menu in the game client.
-        /// Causes reaction on server side: If the player is in a party, the server sends back a list with information about all players of the party.
-        /// </remarks>
-        public static void SendPartyListRequest(this IConnection connection)
-        {
-            using var writer = connection.StartWritePartyListRequest();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PartyPlayerKickRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="playerIndex">The player index.</param>
-        /// <remarks>
-        /// Is sent by the client when: A party master wants to kick another player from his party, or when a player wants to kick himself from his party.
-        /// Causes reaction on server side: If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.
-        /// </remarks>
-        public static void SendPartyPlayerKickRequest(this IConnection connection, byte @playerIndex)
-        {
-            using var writer = connection.StartWritePartyPlayerKickRequest();
-            var packet = writer.Packet;
-            packet.PlayerIndex = @playerIndex;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PartyInviteRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="targetPlayerId">The target player id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A party master wants to invite another player to his party.
-        /// Causes reaction on server side: If the requesting player has no party, or is the party master, a request is sent to the target player.
-        /// </remarks>
-        public static void SendPartyInviteRequest(this IConnection connection, ushort @targetPlayerId)
-        {
-            using var writer = connection.StartWritePartyInviteRequest();
-            var packet = writer.Packet;
-            packet.TargetPlayerId = @targetPlayerId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PartyInviteResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="accepted">The accepted.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player was invited by another player to join a party and this player sent the response back.
-        /// Causes reaction on server side: If the sender accepts the request, it's added to the party.
-        /// </remarks>
-        public static void SendPartyInviteResponse(this IConnection connection, bool @accepted)
-        {
-            using var writer = connection.StartWritePartyInviteResponse();
-            var packet = writer.Packet;
-            packet.Accepted = @accepted;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="WalkRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="sourceX">The source x.</param>
-        /// <param name="sourceY">The source y.</param>
-        /// <param name="stepCount">The step count.</param>
-        /// <param name="targetRotation">The target rotation.</param>
-        /// <param name="directions">The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to walk on the game map.
-        /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
-        /// </remarks>
-        public static void SendWalkRequest(this IConnection connection, byte @sourceX, byte @sourceY, byte @stepCount, byte @targetRotation, Span<byte> @directions)
-        {
-            using var writer = connection.StartSafeWrite(WalkRequest.HeaderType, WalkRequest.GetRequiredSize(directions.Length));
-            var packet = new WalkRequest(writer.Span);
-            packet.SourceX = @sourceX;
-            packet.SourceY = @sourceY;
-            packet.StepCount = @stepCount;
-            packet.TargetRotation = @targetRotation;
-            @directions.CopyTo(packet.Directions);
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="WalkRequest075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="sourceX">The source x.</param>
-        /// <param name="sourceY">The source y.</param>
-        /// <param name="stepCount">The step count.</param>
-        /// <param name="targetRotation">The target rotation.</param>
-        /// <param name="directions">The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to walk on the game map.
-        /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
-        /// </remarks>
-        public static void SendWalkRequest075(this IConnection connection, byte @sourceX, byte @sourceY, byte @stepCount, byte @targetRotation, Span<byte> @directions)
-        {
-            using var writer = connection.StartSafeWrite(WalkRequest075.HeaderType, WalkRequest075.GetRequiredSize(directions.Length));
-            var packet = new WalkRequest075(writer.Span);
-            packet.SourceX = @sourceX;
-            packet.SourceY = @sourceY;
-            packet.StepCount = @stepCount;
-            packet.TargetRotation = @targetRotation;
-            @directions.CopyTo(packet.Directions);
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="InstantMoveRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="targetX">The target x.</param>
-        /// <param name="targetY">The target y.</param>
-        /// <remarks>
-        /// Is sent by the client when: It's sent when the player performs specific skills.
-        /// Causes reaction on server side: Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.
-        /// </remarks>
-        public static void SendInstantMoveRequest(this IConnection connection, byte @targetX, byte @targetY)
-        {
-            using var writer = connection.StartWriteInstantMoveRequest();
-            var packet = writer.Packet;
-            packet.TargetX = @targetX;
-            packet.TargetY = @targetY;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="AnimationRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="rotation">The rotation.</param>
-        /// <param name="animationNumber">The animation number.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player does any kind of animation.
-        /// Causes reaction on server side: The animation number and rotation is forwarded to all surrounding players.
-        /// </remarks>
-        public static void SendAnimationRequest(this IConnection connection, byte @rotation, byte @animationNumber)
-        {
-            using var writer = connection.StartWriteAnimationRequest();
-            var packet = writer.Packet;
-            packet.Rotation = @rotation;
-            packet.AnimationNumber = @animationNumber;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="RequestCharacterList" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: After a successful login or after the player decided to leave the game world to go back to the character selection screen.
-        /// Causes reaction on server side: The server sends the character list with all available characters.
-        /// </remarks>
-        public static void SendRequestCharacterList(this IConnection connection)
-        {
-            using var writer = connection.StartWriteRequestCharacterList();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="CreateCharacter" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="name">The name of the character which should be created.</param>
-        /// <param name="class">The character class of the character which should be created.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client is at the character selection screen and the player requests to add a new character.
-        /// Causes reaction on server side: The server checks if the player is allowed to create the character and sends a response back.
-        /// </remarks>
-        public static void SendCreateCharacter(this IConnection connection, string @name, CharacterClassNumber @class)
-        {
-            using var writer = connection.StartWriteCreateCharacter();
-            var packet = writer.Packet;
-            packet.Name = @name;
-            packet.Class = @class;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="DeleteCharacter" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="name">The name of the character which should be deleted.</param>
-        /// <param name="securityCode">A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client is at the character selection screen and the player requests to delete an existing character.
-        /// Causes reaction on server side: The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.
-        /// </remarks>
-        public static void SendDeleteCharacter(this IConnection connection, string @name, string @securityCode)
-        {
-            using var writer = connection.StartWriteDeleteCharacter();
-            var packet = writer.Packet;
-            packet.Name = @name;
-            packet.SecurityCode = @securityCode;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="SelectCharacter" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="name">The name of the character with which the player wants to join the game world</param>
-        /// <remarks>
-        /// Is sent by the client when: The player selects a character to enter the game world on the character selection screen.
-        /// Causes reaction on server side: The player joins the game world with the specified character.
-        /// </remarks>
-        public static void SendSelectCharacter(this IConnection connection, string @name)
-        {
-            using var writer = connection.StartWriteSelectCharacter();
-            var packet = writer.Packet;
-            packet.Name = @name;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="FocusCharacter" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="name">The name.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.
-        /// Causes reaction on server side: The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.
-        /// </remarks>
-        public static void SendFocusCharacter(this IConnection connection, string @name)
-        {
-            using var writer = connection.StartWriteFocusCharacter();
-            var packet = writer.Packet;
-            packet.Name = @name;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="IncreaseCharacterStatPoint" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="statType">The stat type.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.
-        /// Causes reaction on server side: The server checks if a level-up-point is available. If yes, it adds the point to the specified stat type. It sends a response back to the client.
-        /// </remarks>
-        public static void SendIncreaseCharacterStatPoint(this IConnection connection, CharacterStatAttribute @statType)
-        {
-            using var writer = connection.StartWriteIncreaseCharacterStatPoint();
-            var packet = writer.Packet;
-            packet.StatType = @statType;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="ClientReadyAfterMapChange" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: After the server sent a map change message and the client has initialized the game map visualization.
-        /// Causes reaction on server side: The character is added to the internal game map and ready to interact with other entities.
-        /// </remarks>
-        public static void SendClientReadyAfterMapChange(this IConnection connection)
-        {
-            using var writer = connection.StartWriteClientReadyAfterMapChange();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="SaveKeyConfiguration" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="configuration">The binary data of the key configuration</param>
-        /// <remarks>
-        /// Is sent by the client when: When leaving the game world with a character.
-        /// Causes reaction on server side: The server saves this configuration in its database.
-        /// </remarks>
-        public static void SendSaveKeyConfiguration(this IConnection connection, Span<byte> @configuration)
-        {
-            using var writer = connection.StartSafeWrite(SaveKeyConfiguration.HeaderType, SaveKeyConfiguration.GetRequiredSize(configuration.Length));
-            var packet = new SaveKeyConfiguration(writer.Span);
-            @configuration.CopyTo(packet.Configuration);
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="AddMasterSkillPoint" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="skillId">The skill id.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to add or increase the level of a specific master skill of the master skill tree.
-        /// Causes reaction on server side: Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.
-        /// </remarks>
-        public static void SendAddMasterSkillPoint(this IConnection connection, ushort @skillId)
-        {
-            using var writer = connection.StartWriteAddMasterSkillPoint();
-            var packet = writer.Packet;
-            packet.SkillId = @skillId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="HitRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="targetId">The target id.</param>
-        /// <param name="attackAnimation">The attack animation.</param>
-        /// <param name="lookingDirection">The looking direction.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player attacks a target without using a skill.
-        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
-        /// </remarks>
-        public static void SendHitRequest(this IConnection connection, ushort @targetId, byte @attackAnimation, byte @lookingDirection)
-        {
-            using var writer = connection.StartWriteHitRequest();
-            var packet = writer.Packet;
-            packet.TargetId = @targetId;
-            packet.AttackAnimation = @attackAnimation;
-            packet.LookingDirection = @lookingDirection;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="TargetedSkill" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="skillId">The skill id.</param>
-        /// <param name="targetId">The target id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
-        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
-        /// </remarks>
-        public static void SendTargetedSkill(this IConnection connection, ushort @skillId, ushort @targetId)
-        {
-            using var writer = connection.StartWriteTargetedSkill();
-            var packet = writer.Packet;
-            packet.SkillId = @skillId;
-            packet.TargetId = @targetId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="TargetedSkill075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="skillIndex">The index of the skill in the skill list.</param>
-        /// <param name="targetId">The target id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
-        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
-        /// </remarks>
-        public static void SendTargetedSkill075(this IConnection connection, byte @skillIndex, ushort @targetId)
-        {
-            using var writer = connection.StartWriteTargetedSkill075();
-            var packet = writer.Packet;
-            packet.SkillIndex = @skillIndex;
-            packet.TargetId = @targetId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="TargetedSkill095" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="skillIndex">The index of the skill in the skill list.</param>
-        /// <param name="targetId">The target id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
-        /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
-        /// </remarks>
-        public static void SendTargetedSkill095(this IConnection connection, byte @skillIndex, ushort @targetId)
-        {
-            using var writer = connection.StartWriteTargetedSkill095();
-            var packet = writer.Packet;
-            packet.SkillIndex = @skillIndex;
-            packet.TargetId = @targetId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="MagicEffectCancelRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="skillId">The skill id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
-        /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
-        /// </remarks>
-        public static void SendMagicEffectCancelRequest(this IConnection connection, ushort @skillId)
-        {
-            using var writer = connection.StartWriteMagicEffectCancelRequest();
-            var packet = writer.Packet;
-            packet.SkillId = @skillId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="AreaSkill" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="skillId">The skill id.</param>
-        /// <param name="targetX">The target x.</param>
-        /// <param name="targetY">The target y.</param>
-        /// <param name="rotation">The rotation.</param>
-        /// <param name="extraTargetId">The extra target id.</param>
-        /// <param name="animationCounter">Animation counter which acts as a reference to the previously sent Area Skill Animation packet.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
-        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
-        /// </remarks>
-        public static void SendAreaSkill(this IConnection connection, ushort @skillId, byte @targetX, byte @targetY, byte @rotation, ushort @extraTargetId, byte @animationCounter)
-        {
-            using var writer = connection.StartWriteAreaSkill();
-            var packet = writer.Packet;
-            packet.SkillId = @skillId;
-            packet.TargetX = @targetX;
-            packet.TargetY = @targetY;
-            packet.Rotation = @rotation;
-            packet.ExtraTargetId = @extraTargetId;
-            packet.AnimationCounter = @animationCounter;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="AreaSkillHit" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="skillId">The skill id.</param>
-        /// <param name="targetX">The target x.</param>
-        /// <param name="targetY">The target y.</param>
-        /// <param name="hitCounter">A sequential hit counter which should prevent that hits are sent multiple times.</param>
-        /// <param name="targetId">The target id.</param>
-        /// <param name="animationCounter">A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</param>
-        /// <remarks>
-        /// Is sent by the client when: An area skill was performed and the client decided to hit a target.
-        /// Causes reaction on server side: The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.
-        /// </remarks>
-        public static void SendAreaSkillHit(this IConnection connection, ushort @skillId, byte @targetX, byte @targetY, byte @hitCounter, ushort @targetId, byte @animationCounter)
-        {
-            using var writer = connection.StartWriteAreaSkillHit();
-            var packet = writer.Packet;
-            packet.SkillId = @skillId;
-            packet.TargetX = @targetX;
-            packet.TargetY = @targetY;
-            packet.HitCounter = @hitCounter;
-            packet.TargetId = @targetId;
-            packet.AnimationCounter = @animationCounter;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="AreaSkill075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="skillIndex">The index of the skill in the skill list.</param>
-        /// <param name="targetX">The target x.</param>
-        /// <param name="targetY">The target y.</param>
-        /// <param name="rotation">The rotation.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
-        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
-        /// </remarks>
-        public static void SendAreaSkill075(this IConnection connection, byte @skillIndex, byte @targetX, byte @targetY, byte @rotation)
-        {
-            using var writer = connection.StartWriteAreaSkill075();
-            var packet = writer.Packet;
-            packet.SkillIndex = @skillIndex;
-            packet.TargetX = @targetX;
-            packet.TargetY = @targetY;
-            packet.Rotation = @rotation;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="AreaSkill095" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="skillIndex">The index of the skill in the skill list.</param>
-        /// <param name="targetX">The target x.</param>
-        /// <param name="targetY">The target y.</param>
-        /// <param name="rotation">The rotation.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player is performing an skill which affects an area of the map.
-        /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
-        /// </remarks>
-        public static void SendAreaSkill095(this IConnection connection, byte @skillIndex, byte @targetX, byte @targetY, byte @rotation)
-        {
-            using var writer = connection.StartWriteAreaSkill095();
-            var packet = writer.Packet;
-            packet.SkillIndex = @skillIndex;
-            packet.TargetX = @targetX;
-            packet.TargetY = @targetY;
-            packet.Rotation = @rotation;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="TradeCancel" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to cancel the trade.
-        /// Causes reaction on server side: The trade is cancelled and the previous inventory state is restored.
-        /// </remarks>
-        public static void SendTradeCancel(this IConnection connection)
-        {
-            using var writer = connection.StartWriteTradeCancel();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="TradeButtonStateChange" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="newState">The new state.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player presses the trade button.
-        /// Causes reaction on server side: The state change is forwarded to the trade partner. If both players press the trade button at the same time, the server will try to complete the trade by exchanging the items and money.
-        /// </remarks>
-        public static void SendTradeButtonStateChange(this IConnection connection, TradeButtonState @newState)
-        {
-            using var writer = connection.StartWriteTradeButtonStateChange();
-            var packet = writer.Packet;
-            packet.NewState = @newState;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="TradeRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="playerId">The player id.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player requests to open a trade with another player.
-        /// Causes reaction on server side: The request is forwarded to the requested player.
-        /// </remarks>
-        public static void SendTradeRequest(this IConnection connection, ushort @playerId)
-        {
-            using var writer = connection.StartWriteTradeRequest();
-            var packet = writer.Packet;
-            packet.PlayerId = @playerId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="TradeRequestResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="tradeAccepted">The trade accepted.</param>
-        /// <remarks>
-        /// Is sent by the client when: A requested player responded to a trade request of another player.
-        /// Causes reaction on server side: When the trade request was accepted, the server tries to open a new trade and sends corresponding responses to both players. 
-        /// </remarks>
-        public static void SendTradeRequestResponse(this IConnection connection, bool @tradeAccepted)
-        {
-            using var writer = connection.StartWriteTradeRequestResponse();
-            var packet = writer.Packet;
-            packet.TradeAccepted = @tradeAccepted;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="SetTradeMoney" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="amount">The amount.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to set an amount of money in the trade.
-        /// Causes reaction on server side: It's taken from the available money of the inventory. If the new money amount is lower than the amount which was set before, it's added back to the inventory. The trade partner is informed about any change.
-        /// </remarks>
-        public static void SendSetTradeMoney(this IConnection connection, uint @amount)
-        {
-            using var writer = connection.StartWriteSetTradeMoney();
-            var packet = writer.Packet;
-            packet.Amount = @amount;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="LetterDeleteRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="letterIndex">The letter index.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to delete a letter.
-        /// Causes reaction on server side: The letter is getting deleted.
-        /// </remarks>
-        public static void SendLetterDeleteRequest(this IConnection connection, ushort @letterIndex)
-        {
-            using var writer = connection.StartWriteLetterDeleteRequest();
-            var packet = writer.Packet;
-            packet.LetterIndex = @letterIndex;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="LetterSendRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="letterId">The letter id.</param>
-        /// <param name="receiver">The receiver.</param>
-        /// <param name="title">The title.</param>
-        /// <param name="rotation">The rotation.</param>
-        /// <param name="animation">The animation.</param>
-        /// <param name="message">The message.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to send a letter to another players character.
-        /// Causes reaction on server side: The letter is sent to the other character, if it exists and the player has the required money.
-        /// </remarks>
-        public static void SendLetterSendRequest(this IConnection connection, uint @letterId, string @receiver, string @title, byte @rotation, byte @animation, string @message)
-        {
-            using var writer = connection.StartSafeWrite(LetterSendRequest.HeaderType, LetterSendRequest.GetRequiredSize(message));
-            var packet = new LetterSendRequest(writer.Span);
-            packet.LetterId = @letterId;
-            packet.Receiver = @receiver;
-            packet.Title = @title;
-            packet.Rotation = @rotation;
-            packet.Animation = @animation;
-            packet.Message = @message;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="LetterReadRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="letterIndex">The letter index.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player requests to read a specific letter of his letter list.
-        /// Causes reaction on server side: The server sends the requested letter content back to the game client.
-        /// </remarks>
-        public static void SendLetterReadRequest(this IConnection connection, ushort @letterIndex)
-        {
-            using var writer = connection.StartWriteLetterReadRequest();
-            var packet = writer.Packet;
-            packet.LetterIndex = @letterIndex;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="GuildKickPlayerRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="playerName">The player name.</param>
-        /// <param name="securityCode">The security code.</param>
-        /// <remarks>
-        /// Is sent by the client when: A guild member wants to kick himself or a guild master wants to kick another player from its guild.
-        /// Causes reaction on server side: If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.
-        /// </remarks>
-        public static void SendGuildKickPlayerRequest(this IConnection connection, string @playerName, string @securityCode)
-        {
-            using var writer = connection.StartSafeWrite(GuildKickPlayerRequest.HeaderType, GuildKickPlayerRequest.GetRequiredSize(securityCode));
-            var packet = new GuildKickPlayerRequest(writer.Span);
-            packet.PlayerName = @playerName;
-            packet.SecurityCode = @securityCode;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="GuildJoinRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="guildMasterPlayerId">The guild master player id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player (non-guild member) requests to join a guild.
-        /// Causes reaction on server side: The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.
-        /// </remarks>
-        public static void SendGuildJoinRequest(this IConnection connection, ushort @guildMasterPlayerId)
-        {
-            using var writer = connection.StartWriteGuildJoinRequest();
-            var packet = writer.Packet;
-            packet.GuildMasterPlayerId = @guildMasterPlayerId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="GuildJoinResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="accepted">The accepted.</param>
-        /// <remarks>
-        /// Is sent by the client when: A guild master responded to a previously sent request.
-        /// Causes reaction on server side: If the request was accepted by the guild master, the previously requesting player is added to the guild.
-        /// </remarks>
-        public static void SendGuildJoinResponse(this IConnection connection, bool @accepted)
-        {
-            using var writer = connection.StartWriteGuildJoinResponse();
-            var packet = writer.Packet;
-            packet.Accepted = @accepted;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="GuildListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A guild player opens its guild menu in the game client.
-        /// Causes reaction on server side: A list of all guild members and their state is sent back as response.
-        /// </remarks>
-        public static void SendGuildListRequest(this IConnection connection)
-        {
-            using var writer = connection.StartWriteGuildListRequest();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="GuildCreateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="guildName">The guild name.</param>
-        /// <param name="guildEmblem">The guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.</param>
-        /// <remarks>
-        /// Is sent by the client when: When a player wants to create a guild.
-        /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
-        /// </remarks>
-        public static void SendGuildCreateRequest(this IConnection connection, string @guildName, Span<byte> @guildEmblem)
-        {
-            using var writer = connection.StartWriteGuildCreateRequest();
-            var packet = writer.Packet;
-            packet.GuildName = @guildName;
-            @guildEmblem.CopyTo(packet.GuildEmblem);
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="GuildCreateRequest075" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="guildName">The guild name.</param>
-        /// <param name="guildEmblem">The guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.</param>
-        /// <remarks>
-        /// Is sent by the client when: When a player wants to create a guild.
-        /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
-        /// </remarks>
-        public static void SendGuildCreateRequest075(this IConnection connection, string @guildName, Span<byte> @guildEmblem)
-        {
-            using var writer = connection.StartWriteGuildCreateRequest075();
-            var packet = writer.Packet;
-            packet.GuildName = @guildName;
-            @guildEmblem.CopyTo(packet.GuildEmblem);
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="GuildMasterAnswer" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="showCreationDialog">A value whether the guild creation dialog should be shown. Otherwise, the guild creation is cancelled and the dialog was closed.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player has the dialog of the guild master NPC opened and decided about its next step.
-        /// Causes reaction on server side: It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.
-        /// </remarks>
-        public static void SendGuildMasterAnswer(this IConnection connection, bool @showCreationDialog)
-        {
-            using var writer = connection.StartWriteGuildMasterAnswer();
-            var packet = writer.Packet;
-            packet.ShowCreationDialog = @showCreationDialog;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="CancelGuildCreation" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player has the dialog of the guild creation dialog opened and decided against creating a guild.
-        /// Causes reaction on server side: It either cancels the guild creation.
-        /// </remarks>
-        public static void SendCancelGuildCreation(this IConnection connection)
-        {
-            using var writer = connection.StartWriteCancelGuildCreation();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="GuildWarResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="accepted">The accepted.</param>
-        /// <remarks>
-        /// Is sent by the client when: A guild master requested a guild war against another guild.
-        /// Causes reaction on server side: If the guild master confirms, the war is declared.
-        /// </remarks>
-        public static void SendGuildWarResponse(this IConnection connection, bool @accepted)
-        {
-            using var writer = connection.StartWriteGuildWarResponse();
-            var packet = writer.Packet;
-            packet.Accepted = @accepted;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="GuildInfoRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="guildId">The guild id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
-        /// Causes reaction on server side: The server sends a response which includes the guild name and emblem.
-        /// </remarks>
-        public static void SendGuildInfoRequest(this IConnection connection, uint @guildId)
-        {
-            using var writer = connection.StartWriteGuildInfoRequest();
-            var packet = writer.Packet;
-            packet.GuildId = @guildId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="ItemRepair" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="inventoryItemSlot">The inventory slot of the target item. If it's 0xFF, the player requests to repair all items with the help of an NPC. If it's 8 (Pet slot), using the pet trainer NPC is mandatory, too.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
-        /// Causes reaction on server side: If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.
-        /// </remarks>
-        public static void SendItemRepair(this IConnection connection, byte @inventoryItemSlot)
-        {
-            using var writer = connection.StartWriteItemRepair();
-            var packet = writer.Packet;
-            packet.InventoryItemSlot = @inventoryItemSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="ChaosMachineMixRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="mixType">The identifier which tells the server which kind of mix should be executed.</param>
-        /// <param name="socketSlot">The 0-based slot index of the socket at which a seed sphere should be mounted or removed. May only be available for the corresponding mixes, so access with care.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
-        /// Causes reaction on server side: Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.
-        /// </remarks>
-        public static void SendChaosMachineMixRequest(this IConnection connection, ChaosMachineMixRequest.ChaosMachineMixType @mixType, byte @socketSlot)
-        {
-            using var writer = connection.StartWriteChaosMachineMixRequest();
-            var packet = writer.Packet;
-            packet.MixType = @mixType;
-            packet.SocketSlot = @socketSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="CraftingDialogCloseRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
-        /// Causes reaction on server side: The server updates the state of the player accordingly.
-        /// </remarks>
-        public static void SendCraftingDialogCloseRequest(this IConnection connection)
-        {
-            using var writer = connection.StartWriteCraftingDialogCloseRequest();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="FriendAddRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="friendName">The friend name.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to add another players character into his friend list of the messenger.
-        /// Causes reaction on server side: A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.
-        /// </remarks>
-        public static void SendFriendAddRequest(this IConnection connection, string @friendName)
-        {
-            using var writer = connection.StartWriteFriendAddRequest();
-            var packet = writer.Packet;
-            packet.FriendName = @friendName;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="FriendDelete" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="friendName">The friend name.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to delete another players character from his friend list of the messenger.
-        /// Causes reaction on server side: The entry in the friend list is removed. The player is shown as offline in the other players friends list.
-        /// </remarks>
-        public static void SendFriendDelete(this IConnection connection, string @friendName)
-        {
-            using var writer = connection.StartWriteFriendDelete();
-            var packet = writer.Packet;
-            packet.FriendName = @friendName;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="ChatRoomCreateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="friendName">The friend name.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to open a chat with another player of his friend list.
-        /// Causes reaction on server side: If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.
-        /// </remarks>
-        public static void SendChatRoomCreateRequest(this IConnection connection, string @friendName)
-        {
-            using var writer = connection.StartWriteChatRoomCreateRequest();
-            var packet = writer.Packet;
-            packet.FriendName = @friendName;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="FriendAddResponse" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="accepted">The accepted.</param>
-        /// <param name="friendRequesterName">The friend requester name.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player received a friend request from another player and responded to it.
-        /// Causes reaction on server side: If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.
-        /// </remarks>
-        public static void SendFriendAddResponse(this IConnection connection, bool @accepted, string @friendRequesterName)
-        {
-            using var writer = connection.StartWriteFriendAddResponse();
-            var packet = writer.Packet;
-            packet.Accepted = @accepted;
-            packet.FriendRequesterName = @friendRequesterName;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="SetFriendOnlineState" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="onlineState">The online state.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to set himself on- or offline.
-        /// Causes reaction on server side: Depending on the state, the player is shown as offline or online in all friend lists of his friends.
-        /// </remarks>
-        public static void SendSetFriendOnlineState(this IConnection connection, bool @onlineState)
-        {
-            using var writer = connection.StartWriteSetFriendOnlineState();
-            var packet = writer.Packet;
-            packet.OnlineState = @onlineState;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="ChatRoomInvitationRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="friendName">The friend name.</param>
-        /// <param name="roomId">The room id.</param>
-        /// <param name="requestId">The request id.</param>
-        /// <remarks>
-        /// Is sent by the client when: A player wants to invite additional players from his friend list to an existing chat room.
-        /// Causes reaction on server side: The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.
-        /// </remarks>
-        public static void SendChatRoomInvitationRequest(this IConnection connection, string @friendName, ushort @roomId, uint @requestId)
-        {
-            using var writer = connection.StartWriteChatRoomInvitationRequest();
-            var packet = writer.Packet;
-            packet.FriendName = @friendName;
-            packet.RoomId = @roomId;
-            packet.RequestId = @requestId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="LegacyQuestStateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: After the player entered the game world with a character.
-        /// Causes reaction on server side: The quest state is sent back as response.
-        /// </remarks>
-        public static void SendLegacyQuestStateRequest(this IConnection connection)
-        {
-            using var writer = connection.StartWriteLegacyQuestStateRequest();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="LegacyQuestStateSetRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="questNumber">The quest number.</param>
-        /// <param name="newState">The new state.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to change the state of a quest, e.g. to start or to finish a quest.
-        /// Causes reaction on server side: Depending on the requested new state, a response is sent back.
-        /// </remarks>
-        public static void SendLegacyQuestStateSetRequest(this IConnection connection, byte @questNumber, LegacyQuestState @newState)
-        {
-            using var writer = connection.StartWriteLegacyQuestStateSetRequest();
-            var packet = writer.Packet;
-            packet.QuestNumber = @questNumber;
-            packet.NewState = @newState;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PetCommandRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="petType">The pet type.</param>
-        /// <param name="commandMode">The command mode.</param>
-        /// <param name="targetId">The target id.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player wants to command its equipped pet (raven).
-        /// Causes reaction on server side: 
-        /// </remarks>
-        public static void SendPetCommandRequest(this IConnection connection, byte @petType, PetCommandMode @commandMode, ushort @targetId)
-        {
-            using var writer = connection.StartWritePetCommandRequest();
-            var packet = writer.Packet;
-            packet.PetType = @petType;
-            packet.CommandMode = @commandMode;
-            packet.TargetId = @targetId;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="PetInfoRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="pet">The pet.</param>
-        /// <param name="storage">The storage.</param>
-        /// <param name="itemSlot">The item slot.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player hovers over a pet. The client sends this request to retrieve information (level, experience) of the pet (dark raven, horse).
-        /// Causes reaction on server side: The server sends a PetInfoResponse.
-        /// </remarks>
-        public static void SendPetInfoRequest(this IConnection connection, PetType @pet, StorageType @storage, byte @itemSlot)
-        {
-            using var writer = connection.StartWritePetInfoRequest();
-            var packet = writer.Packet;
-            packet.Pet = @pet;
-            packet.Storage = @storage;
-            packet.ItemSlot = @itemSlot;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="QuestSelectRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="questNumber">The quest number.</param>
-        /// <param name="questGroup">The quest group.</param>
-        /// <param name="unknownField">A value between 1 and 3, probably depending on how many quests are already running. Should not be trusted or considered.</param>
-        /// <remarks>
-        /// Is sent by the client when: The client opened an quest NPC dialog and selected an available quests.
-        /// Causes reaction on server side: If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.
-        /// </remarks>
-        public static void SendQuestSelectRequest(this IConnection connection, ushort @questNumber, ushort @questGroup, byte @unknownField)
-        {
-            using var writer = connection.StartWriteQuestSelectRequest();
-            var packet = writer.Packet;
-            packet.QuestNumber = @questNumber;
-            packet.QuestGroup = @questGroup;
-            packet.UnknownField = @unknownField;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="QuestProceedRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="questNumber">The quest number.</param>
-        /// <param name="questGroup">The quest group.</param>
-        /// <param name="proceedAction">The proceed action.</param>
-        /// <remarks>
-        /// Is sent by the client when: After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.
-        /// Causes reaction on server side: The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).
-        /// </remarks>
-        public static void SendQuestProceedRequest(this IConnection connection, ushort @questNumber, ushort @questGroup, QuestProceedRequest.QuestProceedAction @proceedAction)
-        {
-            using var writer = connection.StartWriteQuestProceedRequest();
-            var packet = writer.Packet;
-            packet.QuestNumber = @questNumber;
-            packet.QuestGroup = @questGroup;
-            packet.ProceedAction = @proceedAction;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="QuestCompletionRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="questNumber">The quest number.</param>
-        /// <param name="questGroup">The quest group.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests to complete an active quest.
-        /// Causes reaction on server side: The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.
-        /// </remarks>
-        public static void SendQuestCompletionRequest(this IConnection connection, ushort @questNumber, ushort @questGroup)
-        {
-            using var writer = connection.StartWriteQuestCompletionRequest();
-            var packet = writer.Packet;
-            packet.QuestNumber = @questNumber;
-            packet.QuestGroup = @questGroup;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="QuestCancelRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="questNumber">The quest number.</param>
-        /// <param name="questGroup">The quest group.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests to cancel an active quest.
-        /// Causes reaction on server side: The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.
-        /// </remarks>
-        public static void SendQuestCancelRequest(this IConnection connection, ushort @questNumber, ushort @questGroup)
-        {
-            using var writer = connection.StartWriteQuestCancelRequest();
-            var packet = writer.Packet;
-            packet.QuestNumber = @questNumber;
-            packet.QuestGroup = @questGroup;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="QuestClientActionRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="questNumber">The quest number.</param>
-        /// <param name="questGroup">The quest group.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests to complete a client action, e.g. completing a tutorial.
-        /// Causes reaction on server side: The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.
-        /// </remarks>
-        public static void SendQuestClientActionRequest(this IConnection connection, ushort @questNumber, ushort @questGroup)
-        {
-            using var writer = connection.StartWriteQuestClientActionRequest();
-            var packet = writer.Packet;
-            packet.QuestNumber = @questNumber;
-            packet.QuestGroup = @questGroup;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="ActiveQuestListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The clients requests the states of all quests, usually after entering the game.
-        /// Causes reaction on server side: The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.
-        /// </remarks>
-        public static void SendActiveQuestListRequest(this IConnection connection)
-        {
-            using var writer = connection.StartWriteActiveQuestListRequest();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="QuestStateRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="questNumber">The quest number.</param>
-        /// <param name="questGroup">The quest group.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests the state of a specific active quests.
-        /// Causes reaction on server side: The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.
-        /// </remarks>
-        public static void SendQuestStateRequest(this IConnection connection, ushort @questNumber, ushort @questGroup)
-        {
-            using var writer = connection.StartWriteQuestStateRequest();
-            var packet = writer.Packet;
-            packet.QuestNumber = @questNumber;
-            packet.QuestGroup = @questGroup;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="EventQuestStateListRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests the list of event quests, usually after entering the game.
-        /// Causes reaction on server side: The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).
-        /// </remarks>
-        public static void SendEventQuestStateListRequest(this IConnection connection)
-        {
-            using var writer = connection.StartWriteEventQuestStateListRequest();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="AvailableQuestsRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The client opened an quest NPC dialog and requests a list of available quests.
-        /// Causes reaction on server side: The list of available quests of this NPC is sent back (F60A).
-        /// </remarks>
-        public static void SendAvailableQuestsRequest(this IConnection connection)
-        {
-            using var writer = connection.StartWriteAvailableQuestsRequest();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="NpcBuffRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <remarks>
-        /// Is sent by the client when: The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).
-        /// Causes reaction on server side: The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.
-        /// </remarks>
-        public static void SendNpcBuffRequest(this IConnection connection)
-        {
-            using var writer = connection.StartWriteNpcBuffRequest();
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="DevilSquareEnterRequest" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="squareLevel">The level of the devil square, minus 1.</param>
-        /// <param name="ticketItemInventoryIndex">The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</param>
-        /// <remarks>
-        /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
-        /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.
-        /// </remarks>
-        public static void SendDevilSquareEnterRequest(this IConnection connection, byte @squareLevel, byte @ticketItemInventoryIndex)
-        {
-            using var writer = connection.StartWriteDevilSquareEnterRequest();
-            var packet = writer.Packet;
-            packet.SquareLevel = @squareLevel;
-            packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
-            writer.Commit();
-        }
-
-        /// <summary>
-        /// Sends a <see cref="RequestEventRemainingTime" /> to this connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="eventType">The event type.</param>
-        /// <param name="eventLevel">The event level.</param>
-        /// <remarks>
-        /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
-        /// Causes reaction on server side: The remaining time is sent back to the client.
-        /// </remarks>
-        public static void SendRequestEventRemainingTime(this IConnection connection, byte @eventType, byte @eventLevel)
-        {
-            using var writer = connection.StartWriteRequestEventRemainingTime();
-            var packet = writer.Packet;
-            packet.EventType = @eventType;
-            packet.EventLevel = @eventLevel;
-            writer.Commit();
-        }    }
-    /// <summary>
-    /// A helper struct to write a <see cref="Ping"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PingThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PingThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PingThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new Ping(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(Ping.Length)[..Ping.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public Ping Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="Ping" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(Ping.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="LoginLongPassword"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct LoginLongPasswordThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoginLongPasswordThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public LoginLongPasswordThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new LoginLongPassword(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LoginLongPassword.Length)[..LoginLongPassword.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public LoginLongPassword Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="LoginLongPassword" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(LoginLongPassword.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="LoginShortPassword"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct LoginShortPasswordThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoginShortPasswordThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public LoginShortPasswordThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new LoginShortPassword(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LoginShortPassword.Length)[..LoginShortPassword.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public LoginShortPassword Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="LoginShortPassword" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(LoginShortPassword.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="Login075"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct Login075ThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Login075ThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public Login075ThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new Login075(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(Login075.Length)[..Login075.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public Login075 Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="Login075" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(Login075.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="LogOut"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct LogOutThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LogOutThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public LogOutThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new LogOut(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LogOut.Length)[..LogOut.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public LogOut Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="LogOut" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(LogOut.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PlayerShopSetItemPrice"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PlayerShopSetItemPriceThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerShopSetItemPriceThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PlayerShopSetItemPriceThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PlayerShopSetItemPrice(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopSetItemPrice.Length)[..PlayerShopSetItemPrice.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PlayerShopSetItemPrice Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PlayerShopSetItemPrice" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PlayerShopSetItemPrice.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PlayerShopOpen"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PlayerShopOpenThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerShopOpenThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PlayerShopOpenThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PlayerShopOpen(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopOpen.Length)[..PlayerShopOpen.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PlayerShopOpen Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PlayerShopOpen" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PlayerShopOpen.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PlayerShopClose"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PlayerShopCloseThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerShopCloseThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PlayerShopCloseThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PlayerShopClose(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopClose.Length)[..PlayerShopClose.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PlayerShopClose Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PlayerShopClose" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PlayerShopClose.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PlayerShopItemListRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PlayerShopItemListRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerShopItemListRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PlayerShopItemListRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PlayerShopItemListRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopItemListRequest.Length)[..PlayerShopItemListRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PlayerShopItemListRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PlayerShopItemListRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PlayerShopItemListRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PlayerShopItemBuyRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PlayerShopItemBuyRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerShopItemBuyRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PlayerShopItemBuyRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PlayerShopItemBuyRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopItemBuyRequest.Length)[..PlayerShopItemBuyRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PlayerShopItemBuyRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PlayerShopItemBuyRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PlayerShopItemBuyRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PickupItemRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PickupItemRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PickupItemRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PickupItemRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PickupItemRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PickupItemRequest.Length)[..PickupItemRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PickupItemRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PickupItemRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PickupItemRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PickupItemRequest075"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PickupItemRequest075ThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PickupItemRequest075ThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PickupItemRequest075ThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PickupItemRequest075(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PickupItemRequest075.Length)[..PickupItemRequest075.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PickupItemRequest075 Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PickupItemRequest075" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PickupItemRequest075.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="DropItemRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct DropItemRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DropItemRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public DropItemRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new DropItemRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(DropItemRequest.Length)[..DropItemRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public DropItemRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="DropItemRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(DropItemRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="ItemMoveRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct ItemMoveRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ItemMoveRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public ItemMoveRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new ItemMoveRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ItemMoveRequest.Length)[..ItemMoveRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public ItemMoveRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="ItemMoveRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(ItemMoveRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="ConsumeItemRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct ConsumeItemRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConsumeItemRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public ConsumeItemRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new ConsumeItemRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ConsumeItemRequest.Length)[..ConsumeItemRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public ConsumeItemRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="ConsumeItemRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(ConsumeItemRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="ConsumeItemRequest075"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct ConsumeItemRequest075ThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConsumeItemRequest075ThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public ConsumeItemRequest075ThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new ConsumeItemRequest075(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ConsumeItemRequest075.Length)[..ConsumeItemRequest075.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public ConsumeItemRequest075 Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="ConsumeItemRequest075" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(ConsumeItemRequest075.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="TalkToNpcRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct TalkToNpcRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TalkToNpcRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public TalkToNpcRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new TalkToNpcRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TalkToNpcRequest.Length)[..TalkToNpcRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public TalkToNpcRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="TalkToNpcRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(TalkToNpcRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="CloseNpcRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct CloseNpcRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloseNpcRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public CloseNpcRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new CloseNpcRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CloseNpcRequest.Length)[..CloseNpcRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public CloseNpcRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="CloseNpcRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(CloseNpcRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="BuyItemFromNpcRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct BuyItemFromNpcRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BuyItemFromNpcRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public BuyItemFromNpcRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new BuyItemFromNpcRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(BuyItemFromNpcRequest.Length)[..BuyItemFromNpcRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public BuyItemFromNpcRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="BuyItemFromNpcRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(BuyItemFromNpcRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="SellItemToNpcRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct SellItemToNpcRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SellItemToNpcRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public SellItemToNpcRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new SellItemToNpcRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SellItemToNpcRequest.Length)[..SellItemToNpcRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public SellItemToNpcRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="SellItemToNpcRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(SellItemToNpcRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="RepairItemRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct RepairItemRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RepairItemRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public RepairItemRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new RepairItemRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(RepairItemRequest.Length)[..RepairItemRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public RepairItemRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="RepairItemRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(RepairItemRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="WarpCommandRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct WarpCommandRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WarpCommandRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public WarpCommandRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new WarpCommandRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(WarpCommandRequest.Length)[..WarpCommandRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public WarpCommandRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="WarpCommandRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(WarpCommandRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="EnterGateRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct EnterGateRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EnterGateRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public EnterGateRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new EnterGateRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(EnterGateRequest.Length)[..EnterGateRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public EnterGateRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="EnterGateRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(EnterGateRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="EnterGateRequest075"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct EnterGateRequest075ThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EnterGateRequest075ThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public EnterGateRequest075ThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new EnterGateRequest075(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(EnterGateRequest075.Length)[..EnterGateRequest075.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public EnterGateRequest075 Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="EnterGateRequest075" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(EnterGateRequest075.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="UnlockVault"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct UnlockVaultThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnlockVaultThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public UnlockVaultThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new UnlockVault(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(UnlockVault.Length)[..UnlockVault.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public UnlockVault Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="UnlockVault" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(UnlockVault.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="SetVaultPin"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct SetVaultPinThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SetVaultPinThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public SetVaultPinThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new SetVaultPin(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SetVaultPin.Length)[..SetVaultPin.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public SetVaultPin Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="SetVaultPin" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(SetVaultPin.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="RemoveVaultPin"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct RemoveVaultPinThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RemoveVaultPinThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public RemoveVaultPinThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new RemoveVaultPin(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(RemoveVaultPin.Length)[..RemoveVaultPin.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public RemoveVaultPin Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="RemoveVaultPin" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(RemoveVaultPin.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="VaultClosed"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct VaultClosedThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VaultClosedThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public VaultClosedThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new VaultClosed(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(VaultClosed.Length)[..VaultClosed.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public VaultClosed Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="VaultClosed" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(VaultClosed.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="VaultMoveMoneyRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct VaultMoveMoneyRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VaultMoveMoneyRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public VaultMoveMoneyRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new VaultMoveMoneyRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(VaultMoveMoneyRequest.Length)[..VaultMoveMoneyRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public VaultMoveMoneyRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="VaultMoveMoneyRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(VaultMoveMoneyRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="LahapJewelMixRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct LahapJewelMixRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LahapJewelMixRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public LahapJewelMixRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new LahapJewelMixRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LahapJewelMixRequest.Length)[..LahapJewelMixRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public LahapJewelMixRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="LahapJewelMixRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(LahapJewelMixRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PartyListRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PartyListRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartyListRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PartyListRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PartyListRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PartyListRequest.Length)[..PartyListRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PartyListRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PartyListRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PartyListRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PartyPlayerKickRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PartyPlayerKickRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartyPlayerKickRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PartyPlayerKickRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PartyPlayerKickRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PartyPlayerKickRequest.Length)[..PartyPlayerKickRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PartyPlayerKickRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PartyPlayerKickRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PartyPlayerKickRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PartyInviteRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PartyInviteRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartyInviteRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PartyInviteRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PartyInviteRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PartyInviteRequest.Length)[..PartyInviteRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PartyInviteRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PartyInviteRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PartyInviteRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="PartyInviteResponse"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct PartyInviteResponseThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartyInviteResponseThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PartyInviteResponseThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PartyInviteResponse(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PartyInviteResponse.Length)[..PartyInviteResponse.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public PartyInviteResponse Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="PartyInviteResponse" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PartyInviteResponse.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="InstantMoveRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct InstantMoveRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InstantMoveRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public InstantMoveRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new InstantMoveRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(InstantMoveRequest.Length)[..InstantMoveRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public InstantMoveRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="InstantMoveRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(InstantMoveRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="AnimationRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct AnimationRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AnimationRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public AnimationRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new AnimationRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AnimationRequest.Length)[..AnimationRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public AnimationRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="AnimationRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(AnimationRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="RequestCharacterList"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct RequestCharacterListThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RequestCharacterListThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public RequestCharacterListThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new RequestCharacterList(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(RequestCharacterList.Length)[..RequestCharacterList.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public RequestCharacterList Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="RequestCharacterList" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(RequestCharacterList.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="CreateCharacter"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct CreateCharacterThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CreateCharacterThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public CreateCharacterThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new CreateCharacter(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CreateCharacter.Length)[..CreateCharacter.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public CreateCharacter Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="CreateCharacter" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(CreateCharacter.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="DeleteCharacter"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct DeleteCharacterThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteCharacterThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public DeleteCharacterThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new DeleteCharacter(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(DeleteCharacter.Length)[..DeleteCharacter.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public DeleteCharacter Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="DeleteCharacter" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(DeleteCharacter.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="SelectCharacter"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct SelectCharacterThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SelectCharacterThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public SelectCharacterThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new SelectCharacter(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SelectCharacter.Length)[..SelectCharacter.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public SelectCharacter Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="SelectCharacter" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(SelectCharacter.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="FocusCharacter"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct FocusCharacterThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FocusCharacterThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public FocusCharacterThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new FocusCharacter(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FocusCharacter.Length)[..FocusCharacter.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public FocusCharacter Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="FocusCharacter" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(FocusCharacter.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="IncreaseCharacterStatPoint"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct IncreaseCharacterStatPointThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IncreaseCharacterStatPointThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public IncreaseCharacterStatPointThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new IncreaseCharacterStatPoint(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(IncreaseCharacterStatPoint.Length)[..IncreaseCharacterStatPoint.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public IncreaseCharacterStatPoint Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="IncreaseCharacterStatPoint" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(IncreaseCharacterStatPoint.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="ClientReadyAfterMapChange"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct ClientReadyAfterMapChangeThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClientReadyAfterMapChangeThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public ClientReadyAfterMapChangeThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new ClientReadyAfterMapChange(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ClientReadyAfterMapChange.Length)[..ClientReadyAfterMapChange.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public ClientReadyAfterMapChange Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="ClientReadyAfterMapChange" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(ClientReadyAfterMapChange.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="AddMasterSkillPoint"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct AddMasterSkillPointThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddMasterSkillPointThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public AddMasterSkillPointThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new AddMasterSkillPoint(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AddMasterSkillPoint.Length)[..AddMasterSkillPoint.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public AddMasterSkillPoint Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="AddMasterSkillPoint" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(AddMasterSkillPoint.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="HitRequest"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct HitRequestThreadSafeWriter
-    {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HitRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public HitRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new HitRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(HitRequest.Length)[..HitRequest.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public HitRequest Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="HitRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(HitRequest.Length);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
-    }
-      
-    /// <summary>
-    /// A helper struct to write a <see cref="TargetedSkill"/> safely to a <see cref="IConnection.Output" />.
-    /// </summary>
-    public readonly ref struct TargetedSkillThreadSafeWriter
+    /// Starts a safe write of a <see cref="Ping" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
+    /// Causes reaction on server side: By the original server this is used to detect speed hacks.
+    /// </remarks>
+    public static PingThreadSafeWriter StartWritePing(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="LoginLongPassword" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player tries to log into the game.
+    /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
+    /// </remarks>
+    public static LoginLongPasswordThreadSafeWriter StartWriteLoginLongPassword(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="LoginShortPassword" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player tries to log into the game.
+    /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
+    /// </remarks>
+    public static LoginShortPasswordThreadSafeWriter StartWriteLoginShortPassword(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="Login075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player tries to log into the game.
+    /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
+    /// </remarks>
+    public static Login075ThreadSafeWriter StartWriteLogin075(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="LogOut" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: When the client wants to leave the game in various ways.
+    /// Causes reaction on server side: Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.
+    /// </remarks>
+    public static LogOutThreadSafeWriter StartWriteLogOut(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PlayerShopSetItemPrice" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop.
+    /// Causes reaction on server side: The price is set for the specified item. Works only if the shop is currently closed.
+    /// </remarks>
+    public static PlayerShopSetItemPriceThreadSafeWriter StartWritePlayerShopSetItemPrice(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PlayerShopOpen" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to open his personal item shop.
+    /// Causes reaction on server side: The personal item shop is opened and the surrounding players are informed about it, including the own player.
+    /// </remarks>
+    public static PlayerShopOpenThreadSafeWriter StartWritePlayerShopOpen(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PlayerShopClose" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to close his personal item shop.
+    /// Causes reaction on server side: The personal item shop is closed and the surrounding players are informed about it, including the own player.
+    /// </remarks>
+    public static PlayerShopCloseThreadSafeWriter StartWritePlayerShopClose(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PlayerShopItemListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player opens a shop of another player.
+    /// Causes reaction on server side: The list of items is sent back, if the shop of the player is currently open.
+    /// </remarks>
+    public static PlayerShopItemListRequestThreadSafeWriter StartWritePlayerShopItemListRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PlayerShopItemBuyRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to buy the item of another players shop.
+    /// Causes reaction on server side: If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.
+    /// </remarks>
+    public static PlayerShopItemBuyRequestThreadSafeWriter StartWritePlayerShopItemBuyRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PickupItemRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
+    /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
+    /// </remarks>
+    public static PickupItemRequestThreadSafeWriter StartWritePickupItemRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PickupItemRequest075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
+    /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
+    /// </remarks>
+    public static PickupItemRequest075ThreadSafeWriter StartWritePickupItemRequest075(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="DropItemRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to drop on item of his inventory on the ground.
+    /// Causes reaction on server side: When the specified coordinates are valid, and the item is allowed to be dropped, it will be dropped on the ground and the surrounding players are notified.
+    /// </remarks>
+    public static DropItemRequestThreadSafeWriter StartWriteDropItemRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ItemMoveRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.
+    /// Causes reaction on server side: 
+    /// </remarks>
+    public static ItemMoveRequestThreadSafeWriter StartWriteItemMoveRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ConsumeItemRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
+    /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
+    /// </remarks>
+    public static ConsumeItemRequestThreadSafeWriter StartWriteConsumeItemRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ConsumeItemRequest075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
+    /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
+    /// </remarks>
+    public static ConsumeItemRequest075ThreadSafeWriter StartWriteConsumeItemRequest075(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="TalkToNpcRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to talk to an NPC.
+    /// Causes reaction on server side: Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.
+    /// </remarks>
+    public static TalkToNpcRequestThreadSafeWriter StartWriteTalkToNpcRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="CloseNpcRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player closes the dialog which was opened by an interaction with a NPC.
+    /// Causes reaction on server side: The server updates the state of the player accordingly.
+    /// </remarks>
+    public static CloseNpcRequestThreadSafeWriter StartWriteCloseNpcRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="BuyItemFromNpcRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to buy an item from an opened NPC merchant.
+    /// Causes reaction on server side: If the player has enough money, the item is added to the inventory and money is removed. Corresponding messages are sent back to the game client.
+    /// </remarks>
+    public static BuyItemFromNpcRequestThreadSafeWriter StartWriteBuyItemFromNpcRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="SellItemToNpcRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to sell an item of his inventory to the opened NPC merchant.
+    /// Causes reaction on server side: The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.
+    /// </remarks>
+    public static SellItemToNpcRequestThreadSafeWriter StartWriteSellItemToNpcRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="RepairItemRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to repair an item of his inventory.
+    /// Causes reaction on server side: The item is repaired if the player has enough money in its inventory. A corresponding response is sent.
+    /// </remarks>
+    public static RepairItemRequestThreadSafeWriter StartWriteRepairItemRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="WarpCommandRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player selected to warp by selecting an entry in the warp list (configured in game client files).
+    /// Causes reaction on server side: If the player has enough money and is allowed to enter the map, it's getting moved to there.
+    /// </remarks>
+    public static WarpCommandRequestThreadSafeWriter StartWriteWarpCommandRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="EnterGateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
+    /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
+    /// </remarks>
+    public static EnterGateRequestThreadSafeWriter StartWriteEnterGateRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="EnterGateRequest075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
+    /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
+    /// </remarks>
+    public static EnterGateRequest075ThreadSafeWriter StartWriteEnterGateRequest075(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="UnlockVault" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
+    /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
+    /// </remarks>
+    public static UnlockVaultThreadSafeWriter StartWriteUnlockVault(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="SetVaultPin" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to set a new pin for the vault when it's in unlocked state.
+    /// Causes reaction on server side: The vault pin is set. VaultProtectionInformation is sent as response.
+    /// </remarks>
+    public static SetVaultPinThreadSafeWriter StartWriteSetVaultPin(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="RemoveVaultPin" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to remove the pin for the vault when it's in unlocked state.
+    /// Causes reaction on server side: The vault pin is removed. VaultProtectionInformation is sent as response.
+    /// </remarks>
+    public static RemoveVaultPinThreadSafeWriter StartWriteRemoveVaultPin(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="VaultClosed" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player closed an opened vault dialog.
+    /// Causes reaction on server side: The state on the server is updated.
+    /// </remarks>
+    public static VaultClosedThreadSafeWriter StartWriteVaultClosed(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="VaultMoveMoneyRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to move money from or to the vault storage.
+    /// Causes reaction on server side: The money is moved, if possible.
+    /// </remarks>
+    public static VaultMoveMoneyRequestThreadSafeWriter StartWriteVaultMoveMoneyRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="LahapJewelMixRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.
+    /// Causes reaction on server side: If successful, the inventory is updated and the game client gets corresponding responses.
+    /// </remarks>
+    public static LahapJewelMixRequestThreadSafeWriter StartWriteLahapJewelMixRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PartyListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: When the player opens the party menu in the game client.
+    /// Causes reaction on server side: If the player is in a party, the server sends back a list with information about all players of the party.
+    /// </remarks>
+    public static PartyListRequestThreadSafeWriter StartWritePartyListRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PartyPlayerKickRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A party master wants to kick another player from his party, or when a player wants to kick himself from his party.
+    /// Causes reaction on server side: If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.
+    /// </remarks>
+    public static PartyPlayerKickRequestThreadSafeWriter StartWritePartyPlayerKickRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PartyInviteRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A party master wants to invite another player to his party.
+    /// Causes reaction on server side: If the requesting player has no party, or is the party master, a request is sent to the target player.
+    /// </remarks>
+    public static PartyInviteRequestThreadSafeWriter StartWritePartyInviteRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PartyInviteResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player was invited by another player to join a party and this player sent the response back.
+    /// Causes reaction on server side: If the sender accepts the request, it's added to the party.
+    /// </remarks>
+    public static PartyInviteResponseThreadSafeWriter StartWritePartyInviteResponse(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="InstantMoveRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: It's sent when the player performs specific skills.
+    /// Causes reaction on server side: Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.
+    /// </remarks>
+    public static InstantMoveRequestThreadSafeWriter StartWriteInstantMoveRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="AnimationRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player does any kind of animation.
+    /// Causes reaction on server side: The animation number and rotation is forwarded to all surrounding players.
+    /// </remarks>
+    public static AnimationRequestThreadSafeWriter StartWriteAnimationRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="RequestCharacterList" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: After a successful login or after the player decided to leave the game world to go back to the character selection screen.
+    /// Causes reaction on server side: The server sends the character list with all available characters.
+    /// </remarks>
+    public static RequestCharacterListThreadSafeWriter StartWriteRequestCharacterList(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="CreateCharacter" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client is at the character selection screen and the player requests to add a new character.
+    /// Causes reaction on server side: The server checks if the player is allowed to create the character and sends a response back.
+    /// </remarks>
+    public static CreateCharacterThreadSafeWriter StartWriteCreateCharacter(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="DeleteCharacter" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client is at the character selection screen and the player requests to delete an existing character.
+    /// Causes reaction on server side: The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.
+    /// </remarks>
+    public static DeleteCharacterThreadSafeWriter StartWriteDeleteCharacter(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="SelectCharacter" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player selects a character to enter the game world on the character selection screen.
+    /// Causes reaction on server side: The player joins the game world with the specified character.
+    /// </remarks>
+    public static SelectCharacterThreadSafeWriter StartWriteSelectCharacter(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="FocusCharacter" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.
+    /// Causes reaction on server side: The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.
+    /// </remarks>
+    public static FocusCharacterThreadSafeWriter StartWriteFocusCharacter(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="IncreaseCharacterStatPoint" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.
+    /// Causes reaction on server side: The server checks if a level-up-point is available. If yes, it adds the point to the specified stat type. It sends a response back to the client.
+    /// </remarks>
+    public static IncreaseCharacterStatPointThreadSafeWriter StartWriteIncreaseCharacterStatPoint(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ClientReadyAfterMapChange" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: After the server sent a map change message and the client has initialized the game map visualization.
+    /// Causes reaction on server side: The character is added to the internal game map and ready to interact with other entities.
+    /// </remarks>
+    public static ClientReadyAfterMapChangeThreadSafeWriter StartWriteClientReadyAfterMapChange(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="AddMasterSkillPoint" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to add or increase the level of a specific master skill of the master skill tree.
+    /// Causes reaction on server side: Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.
+    /// </remarks>
+    public static AddMasterSkillPointThreadSafeWriter StartWriteAddMasterSkillPoint(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="HitRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player attacks a target without using a skill.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static HitRequestThreadSafeWriter StartWriteHitRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="TargetedSkill" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static TargetedSkillThreadSafeWriter StartWriteTargetedSkill(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="TargetedSkill075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static TargetedSkill075ThreadSafeWriter StartWriteTargetedSkill075(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="TargetedSkill095" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static TargetedSkill095ThreadSafeWriter StartWriteTargetedSkill095(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="MagicEffectCancelRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
+    /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
+    /// </remarks>
+    public static MagicEffectCancelRequestThreadSafeWriter StartWriteMagicEffectCancelRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="AreaSkill" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+    /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+    /// </remarks>
+    public static AreaSkillThreadSafeWriter StartWriteAreaSkill(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="AreaSkillHit" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: An area skill was performed and the client decided to hit a target.
+    /// Causes reaction on server side: The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.
+    /// </remarks>
+    public static AreaSkillHitThreadSafeWriter StartWriteAreaSkillHit(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="AreaSkill075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+    /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+    /// </remarks>
+    public static AreaSkill075ThreadSafeWriter StartWriteAreaSkill075(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="AreaSkill095" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+    /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+    /// </remarks>
+    public static AreaSkill095ThreadSafeWriter StartWriteAreaSkill095(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="TradeCancel" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to cancel the trade.
+    /// Causes reaction on server side: The trade is cancelled and the previous inventory state is restored.
+    /// </remarks>
+    public static TradeCancelThreadSafeWriter StartWriteTradeCancel(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="TradeButtonStateChange" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player presses the trade button.
+    /// Causes reaction on server side: The state change is forwarded to the trade partner. If both players press the trade button at the same time, the server will try to complete the trade by exchanging the items and money.
+    /// </remarks>
+    public static TradeButtonStateChangeThreadSafeWriter StartWriteTradeButtonStateChange(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="TradeRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to open a trade with another player.
+    /// Causes reaction on server side: The request is forwarded to the requested player.
+    /// </remarks>
+    public static TradeRequestThreadSafeWriter StartWriteTradeRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="TradeRequestResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A requested player responded to a trade request of another player.
+    /// Causes reaction on server side: When the trade request was accepted, the server tries to open a new trade and sends corresponding responses to both players. 
+    /// </remarks>
+    public static TradeRequestResponseThreadSafeWriter StartWriteTradeRequestResponse(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="SetTradeMoney" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to set an amount of money in the trade.
+    /// Causes reaction on server side: It's taken from the available money of the inventory. If the new money amount is lower than the amount which was set before, it's added back to the inventory. The trade partner is informed about any change.
+    /// </remarks>
+    public static SetTradeMoneyThreadSafeWriter StartWriteSetTradeMoney(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="LetterDeleteRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to delete a letter.
+    /// Causes reaction on server side: The letter is getting deleted.
+    /// </remarks>
+    public static LetterDeleteRequestThreadSafeWriter StartWriteLetterDeleteRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="LetterReadRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to read a specific letter of his letter list.
+    /// Causes reaction on server side: The server sends the requested letter content back to the game client.
+    /// </remarks>
+    public static LetterReadRequestThreadSafeWriter StartWriteLetterReadRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="GuildJoinRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player (non-guild member) requests to join a guild.
+    /// Causes reaction on server side: The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.
+    /// </remarks>
+    public static GuildJoinRequestThreadSafeWriter StartWriteGuildJoinRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="GuildJoinResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A guild master responded to a previously sent request.
+    /// Causes reaction on server side: If the request was accepted by the guild master, the previously requesting player is added to the guild.
+    /// </remarks>
+    public static GuildJoinResponseThreadSafeWriter StartWriteGuildJoinResponse(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="GuildListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A guild player opens its guild menu in the game client.
+    /// Causes reaction on server side: A list of all guild members and their state is sent back as response.
+    /// </remarks>
+    public static GuildListRequestThreadSafeWriter StartWriteGuildListRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="GuildCreateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: When a player wants to create a guild.
+    /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
+    /// </remarks>
+    public static GuildCreateRequestThreadSafeWriter StartWriteGuildCreateRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="GuildCreateRequest075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: When a player wants to create a guild.
+    /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
+    /// </remarks>
+    public static GuildCreateRequest075ThreadSafeWriter StartWriteGuildCreateRequest075(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="GuildMasterAnswer" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player has the dialog of the guild master NPC opened and decided about its next step.
+    /// Causes reaction on server side: It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.
+    /// </remarks>
+    public static GuildMasterAnswerThreadSafeWriter StartWriteGuildMasterAnswer(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="CancelGuildCreation" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player has the dialog of the guild creation dialog opened and decided against creating a guild.
+    /// Causes reaction on server side: It either cancels the guild creation.
+    /// </remarks>
+    public static CancelGuildCreationThreadSafeWriter StartWriteCancelGuildCreation(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="GuildWarResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A guild master requested a guild war against another guild.
+    /// Causes reaction on server side: If the guild master confirms, the war is declared.
+    /// </remarks>
+    public static GuildWarResponseThreadSafeWriter StartWriteGuildWarResponse(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="GuildInfoRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
+    /// Causes reaction on server side: The server sends a response which includes the guild name and emblem.
+    /// </remarks>
+    public static GuildInfoRequestThreadSafeWriter StartWriteGuildInfoRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ItemRepair" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
+    /// Causes reaction on server side: If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.
+    /// </remarks>
+    public static ItemRepairThreadSafeWriter StartWriteItemRepair(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ChaosMachineMixRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
+    /// Causes reaction on server side: Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.
+    /// </remarks>
+    public static ChaosMachineMixRequestThreadSafeWriter StartWriteChaosMachineMixRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="CraftingDialogCloseRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
+    /// Causes reaction on server side: The server updates the state of the player accordingly.
+    /// </remarks>
+    public static CraftingDialogCloseRequestThreadSafeWriter StartWriteCraftingDialogCloseRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="FriendAddRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to add another players character into his friend list of the messenger.
+    /// Causes reaction on server side: A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.
+    /// </remarks>
+    public static FriendAddRequestThreadSafeWriter StartWriteFriendAddRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="FriendDelete" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to delete another players character from his friend list of the messenger.
+    /// Causes reaction on server side: The entry in the friend list is removed. The player is shown as offline in the other players friends list.
+    /// </remarks>
+    public static FriendDeleteThreadSafeWriter StartWriteFriendDelete(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ChatRoomCreateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to open a chat with another player of his friend list.
+    /// Causes reaction on server side: If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.
+    /// </remarks>
+    public static ChatRoomCreateRequestThreadSafeWriter StartWriteChatRoomCreateRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="FriendAddResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player received a friend request from another player and responded to it.
+    /// Causes reaction on server side: If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.
+    /// </remarks>
+    public static FriendAddResponseThreadSafeWriter StartWriteFriendAddResponse(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="SetFriendOnlineState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to set himself on- or offline.
+    /// Causes reaction on server side: Depending on the state, the player is shown as offline or online in all friend lists of his friends.
+    /// </remarks>
+    public static SetFriendOnlineStateThreadSafeWriter StartWriteSetFriendOnlineState(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ChatRoomInvitationRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to invite additional players from his friend list to an existing chat room.
+    /// Causes reaction on server side: The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.
+    /// </remarks>
+    public static ChatRoomInvitationRequestThreadSafeWriter StartWriteChatRoomInvitationRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="LegacyQuestStateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: After the player entered the game world with a character.
+    /// Causes reaction on server side: The quest state is sent back as response.
+    /// </remarks>
+    public static LegacyQuestStateRequestThreadSafeWriter StartWriteLegacyQuestStateRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="LegacyQuestStateSetRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to change the state of a quest, e.g. to start or to finish a quest.
+    /// Causes reaction on server side: Depending on the requested new state, a response is sent back.
+    /// </remarks>
+    public static LegacyQuestStateSetRequestThreadSafeWriter StartWriteLegacyQuestStateSetRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PetCommandRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to command its equipped pet (raven).
+    /// Causes reaction on server side: 
+    /// </remarks>
+    public static PetCommandRequestThreadSafeWriter StartWritePetCommandRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PetInfoRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player hovers over a pet. The client sends this request to retrieve information (level, experience) of the pet (dark raven, horse).
+    /// Causes reaction on server side: The server sends a PetInfoResponse.
+    /// </remarks>
+    public static PetInfoRequestThreadSafeWriter StartWritePetInfoRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="QuestSelectRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client opened an quest NPC dialog and selected an available quests.
+    /// Causes reaction on server side: If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.
+    /// </remarks>
+    public static QuestSelectRequestThreadSafeWriter StartWriteQuestSelectRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="QuestProceedRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.
+    /// Causes reaction on server side: The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).
+    /// </remarks>
+    public static QuestProceedRequestThreadSafeWriter StartWriteQuestProceedRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="QuestCompletionRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests to complete an active quest.
+    /// Causes reaction on server side: The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.
+    /// </remarks>
+    public static QuestCompletionRequestThreadSafeWriter StartWriteQuestCompletionRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="QuestCancelRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests to cancel an active quest.
+    /// Causes reaction on server side: The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.
+    /// </remarks>
+    public static QuestCancelRequestThreadSafeWriter StartWriteQuestCancelRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="QuestClientActionRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests to complete a client action, e.g. completing a tutorial.
+    /// Causes reaction on server side: The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.
+    /// </remarks>
+    public static QuestClientActionRequestThreadSafeWriter StartWriteQuestClientActionRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ActiveQuestListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The clients requests the states of all quests, usually after entering the game.
+    /// Causes reaction on server side: The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.
+    /// </remarks>
+    public static ActiveQuestListRequestThreadSafeWriter StartWriteActiveQuestListRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="QuestStateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests the state of a specific active quests.
+    /// Causes reaction on server side: The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.
+    /// </remarks>
+    public static QuestStateRequestThreadSafeWriter StartWriteQuestStateRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="EventQuestStateListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests the list of event quests, usually after entering the game.
+    /// Causes reaction on server side: The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).
+    /// </remarks>
+    public static EventQuestStateListRequestThreadSafeWriter StartWriteEventQuestStateListRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="AvailableQuestsRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client opened an quest NPC dialog and requests a list of available quests.
+    /// Causes reaction on server side: The list of available quests of this NPC is sent back (F60A).
+    /// </remarks>
+    public static AvailableQuestsRequestThreadSafeWriter StartWriteAvailableQuestsRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="NpcBuffRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).
+    /// Causes reaction on server side: The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.
+    /// </remarks>
+    public static NpcBuffRequestThreadSafeWriter StartWriteNpcBuffRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="DevilSquareEnterRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
+    /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.
+    /// </remarks>
+    public static DevilSquareEnterRequestThreadSafeWriter StartWriteDevilSquareEnterRequest(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="RequestEventRemainingTime" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
+    /// Causes reaction on server side: The remaining time is sent back to the client.
+    /// </remarks>
+    public static RequestEventRemainingTimeThreadSafeWriter StartWriteRequestEventRemainingTime(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="Ping" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="tickCount">The tick count.</param>
+    /// <param name="speed1">The speed 1.</param>
+    /// <param name="speed2">The speed 2.</param>
+    /// <param name="speed3">The speed 3.</param>
+    /// <param name="speed4">The speed 4.</param>
+    /// <remarks>
+    /// Is sent by the client when: This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
+    /// Causes reaction on server side: By the original server this is used to detect speed hacks.
+    /// </remarks>
+    public static void SendPing(this IConnection connection, uint @tickCount, byte @speed1, byte @speed2, byte @speed3, byte @speed4)
+    {
+        using var writer = connection.StartWritePing();
+        var packet = writer.Packet;
+        packet.TickCount = @tickCount;
+        packet.Speed1 = @speed1;
+        packet.Speed2 = @speed2;
+        packet.Speed3 = @speed3;
+        packet.Speed4 = @speed4;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PublicChatMessage" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="character">The character.</param>
+    /// <param name="message">The message.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player sends a public chat message.
+    /// Causes reaction on server side: The message is forwarded to all surrounding players, including the sender.
+    /// </remarks>
+    public static void SendPublicChatMessage(this IConnection connection, string @character, string @message)
+    {
+        using var writer = connection.StartSafeWrite(PublicChatMessage.HeaderType, PublicChatMessage.GetRequiredSize(message));
+        var packet = new PublicChatMessage(writer.Span);
+        packet.Character = @character;
+        packet.Message = @message;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="WhisperMessage" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="receiverName">The receiver name.</param>
+    /// <param name="message">The message.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player sends a private chat message to a specific target player.
+    /// Causes reaction on server side: The message is forwarded to the target player.
+    /// </remarks>
+    public static void SendWhisperMessage(this IConnection connection, string @receiverName, string @message)
+    {
+        using var writer = connection.StartSafeWrite(WhisperMessage.HeaderType, WhisperMessage.GetRequiredSize(message));
+        var packet = new WhisperMessage(writer.Span);
+        packet.ReceiverName = @receiverName;
+        packet.Message = @message;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LoginLongPassword" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="username">The user name, "encrypted" with Xor3.</param>
+    /// <param name="password">The password, "encrypted" with Xor3.</param>
+    /// <param name="tickCount">The tick count.</param>
+    /// <param name="clientVersion">The client version.</param>
+    /// <param name="clientSerial">The client serial.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player tries to log into the game.
+    /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
+    /// </remarks>
+    public static void SendLoginLongPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
+    {
+        using var writer = connection.StartWriteLoginLongPassword();
+        var packet = writer.Packet;
+        @username.CopyTo(packet.Username);
+        @password.CopyTo(packet.Password);
+        packet.TickCount = @tickCount;
+        @clientVersion.CopyTo(packet.ClientVersion);
+        @clientSerial.CopyTo(packet.ClientSerial);
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LoginShortPassword" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="username">The user name, "encrypted" with Xor3.</param>
+    /// <param name="password">The password, "encrypted" with Xor3.</param>
+    /// <param name="tickCount">The tick count.</param>
+    /// <param name="clientVersion">The client version.</param>
+    /// <param name="clientSerial">The client serial.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player tries to log into the game.
+    /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
+    /// </remarks>
+    public static void SendLoginShortPassword(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
+    {
+        using var writer = connection.StartWriteLoginShortPassword();
+        var packet = writer.Packet;
+        @username.CopyTo(packet.Username);
+        @password.CopyTo(packet.Password);
+        packet.TickCount = @tickCount;
+        @clientVersion.CopyTo(packet.ClientVersion);
+        @clientSerial.CopyTo(packet.ClientSerial);
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="Login075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="username">The user name, "encrypted" with Xor3.</param>
+    /// <param name="password">The password, "encrypted" with Xor3.</param>
+    /// <param name="tickCount">The tick count.</param>
+    /// <param name="clientVersion">The client version.</param>
+    /// <param name="clientSerial">The client serial.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player tries to log into the game.
+    /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
+    /// </remarks>
+    public static void SendLogin075(this IConnection connection, Span<byte> @username, Span<byte> @password, uint @tickCount, Span<byte> @clientVersion, Span<byte> @clientSerial)
+    {
+        using var writer = connection.StartWriteLogin075();
+        var packet = writer.Packet;
+        @username.CopyTo(packet.Username);
+        @password.CopyTo(packet.Password);
+        packet.TickCount = @tickCount;
+        @clientVersion.CopyTo(packet.ClientVersion);
+        @clientSerial.CopyTo(packet.ClientSerial);
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LogOut" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="type">The type.</param>
+    /// <remarks>
+    /// Is sent by the client when: When the client wants to leave the game in various ways.
+    /// Causes reaction on server side: Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.
+    /// </remarks>
+    public static void SendLogOut(this IConnection connection, LogOutType @type)
+    {
+        using var writer = connection.StartWriteLogOut();
+        var packet = writer.Packet;
+        packet.Type = @type;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayerShopSetItemPrice" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <param name="price">The price.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop.
+    /// Causes reaction on server side: The price is set for the specified item. Works only if the shop is currently closed.
+    /// </remarks>
+    public static void SendPlayerShopSetItemPrice(this IConnection connection, byte @itemSlot, uint @price)
+    {
+        using var writer = connection.StartWritePlayerShopSetItemPrice();
+        var packet = writer.Packet;
+        packet.ItemSlot = @itemSlot;
+        packet.Price = @price;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayerShopOpen" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="storeName">The store name.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to open his personal item shop.
+    /// Causes reaction on server side: The personal item shop is opened and the surrounding players are informed about it, including the own player.
+    /// </remarks>
+    public static void SendPlayerShopOpen(this IConnection connection, string @storeName)
+    {
+        using var writer = connection.StartWritePlayerShopOpen();
+        var packet = writer.Packet;
+        packet.StoreName = @storeName;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayerShopClose" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to close his personal item shop.
+    /// Causes reaction on server side: The personal item shop is closed and the surrounding players are informed about it, including the own player.
+    /// </remarks>
+    public static void SendPlayerShopClose(this IConnection connection)
+    {
+        using var writer = connection.StartWritePlayerShopClose();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayerShopItemListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="playerName">The player name.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player opens a shop of another player.
+    /// Causes reaction on server side: The list of items is sent back, if the shop of the player is currently open.
+    /// </remarks>
+    public static void SendPlayerShopItemListRequest(this IConnection connection, ushort @playerId, string @playerName)
+    {
+        using var writer = connection.StartWritePlayerShopItemListRequest();
+        var packet = writer.Packet;
+        packet.PlayerId = @playerId;
+        packet.PlayerName = @playerName;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayerShopItemBuyRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="playerName">The player name.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to buy the item of another players shop.
+    /// Causes reaction on server side: If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.
+    /// </remarks>
+    public static void SendPlayerShopItemBuyRequest(this IConnection connection, ushort @playerId, string @playerName, byte @itemSlot)
+    {
+        using var writer = connection.StartWritePlayerShopItemBuyRequest();
+        var packet = writer.Packet;
+        packet.PlayerId = @playerId;
+        packet.PlayerName = @playerName;
+        packet.ItemSlot = @itemSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PickupItemRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemId">The item id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
+    /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
+    /// </remarks>
+    public static void SendPickupItemRequest(this IConnection connection, ushort @itemId)
+    {
+        using var writer = connection.StartWritePickupItemRequest();
+        var packet = writer.Packet;
+        packet.ItemId = @itemId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PickupItemRequest075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemId">The item id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
+    /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
+    /// </remarks>
+    public static void SendPickupItemRequest075(this IConnection connection, ushort @itemId)
+    {
+        using var writer = connection.StartWritePickupItemRequest075();
+        var packet = writer.Packet;
+        packet.ItemId = @itemId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DropItemRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetX">The target x.</param>
+    /// <param name="targetY">The target y.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to drop on item of his inventory on the ground.
+    /// Causes reaction on server side: When the specified coordinates are valid, and the item is allowed to be dropped, it will be dropped on the ground and the surrounding players are notified.
+    /// </remarks>
+    public static void SendDropItemRequest(this IConnection connection, byte @targetX, byte @targetY, byte @itemSlot)
+    {
+        using var writer = connection.StartWriteDropItemRequest();
+        var packet = writer.Packet;
+        packet.TargetX = @targetX;
+        packet.TargetY = @targetY;
+        packet.ItemSlot = @itemSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ItemMoveRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="fromStorage">The from storage.</param>
+    /// <param name="fromSlot">The from slot.</param>
+    /// <param name="itemData">The item data.</param>
+    /// <param name="toStorage">The to storage.</param>
+    /// <param name="toSlot">The to slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.
+    /// Causes reaction on server side: 
+    /// </remarks>
+    public static void SendItemMoveRequest(this IConnection connection, ItemStorageKind @fromStorage, byte @fromSlot, Span<byte> @itemData, ItemStorageKind @toStorage, byte @toSlot)
+    {
+        using var writer = connection.StartWriteItemMoveRequest();
+        var packet = writer.Packet;
+        packet.FromStorage = @fromStorage;
+        packet.FromSlot = @fromSlot;
+        @itemData.CopyTo(packet.ItemData);
+        packet.ToStorage = @toStorage;
+        packet.ToSlot = @toSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ConsumeItemRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemSlot">The inventory slot index of the item which should be consumed.</param>
+    /// <param name="targetSlot">If the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.</param>
+    /// <param name="fruitConsumption">Defines how the fruit is used. Only applies, if the the item is a fruit.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
+    /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
+    /// </remarks>
+    public static void SendConsumeItemRequest(this IConnection connection, byte @itemSlot, byte @targetSlot, ConsumeItemRequest.FruitUsage @fruitConsumption)
+    {
+        using var writer = connection.StartWriteConsumeItemRequest();
+        var packet = writer.Packet;
+        packet.ItemSlot = @itemSlot;
+        packet.TargetSlot = @targetSlot;
+        packet.FruitConsumption = @fruitConsumption;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ConsumeItemRequest075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemSlot">The inventory slot index of the item which should be consumed.</param>
+    /// <param name="targetSlot">If the item has an effect on another item, e.g. upgrading it, this field contains the inventory slot index of the target item.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
+    /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
+    /// </remarks>
+    public static void SendConsumeItemRequest075(this IConnection connection, byte @itemSlot, byte @targetSlot)
+    {
+        using var writer = connection.StartWriteConsumeItemRequest075();
+        var packet = writer.Packet;
+        packet.ItemSlot = @itemSlot;
+        packet.TargetSlot = @targetSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="TalkToNpcRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="npcId">The npc id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to talk to an NPC.
+    /// Causes reaction on server side: Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.
+    /// </remarks>
+    public static void SendTalkToNpcRequest(this IConnection connection, ushort @npcId)
+    {
+        using var writer = connection.StartWriteTalkToNpcRequest();
+        var packet = writer.Packet;
+        packet.NpcId = @npcId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CloseNpcRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player closes the dialog which was opened by an interaction with a NPC.
+    /// Causes reaction on server side: The server updates the state of the player accordingly.
+    /// </remarks>
+    public static void SendCloseNpcRequest(this IConnection connection)
+    {
+        using var writer = connection.StartWriteCloseNpcRequest();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="BuyItemFromNpcRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemSlot">Item Slot (NPC Store)</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to buy an item from an opened NPC merchant.
+    /// Causes reaction on server side: If the player has enough money, the item is added to the inventory and money is removed. Corresponding messages are sent back to the game client.
+    /// </remarks>
+    public static void SendBuyItemFromNpcRequest(this IConnection connection, byte @itemSlot)
+    {
+        using var writer = connection.StartWriteBuyItemFromNpcRequest();
+        var packet = writer.Packet;
+        packet.ItemSlot = @itemSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SellItemToNpcRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemSlot">Item Slot (Inventory)</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to sell an item of his inventory to the opened NPC merchant.
+    /// Causes reaction on server side: The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.
+    /// </remarks>
+    public static void SendSellItemToNpcRequest(this IConnection connection, byte @itemSlot)
+    {
+        using var writer = connection.StartWriteSellItemToNpcRequest();
+        var packet = writer.Packet;
+        packet.ItemSlot = @itemSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RepairItemRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemSlot">Inventory item slot of the target item. If it's 0xFF, the player wants to repair all items - this is only possible with some opened NPC dialogs. Repairing the pet item slot (8) is only possible when the pet trainer npc is opened.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to repair an item of his inventory.
+    /// Causes reaction on server side: The item is repaired if the player has enough money in its inventory. A corresponding response is sent.
+    /// </remarks>
+    public static void SendRepairItemRequest(this IConnection connection, byte @itemSlot)
+    {
+        using var writer = connection.StartWriteRepairItemRequest();
+        var packet = writer.Packet;
+        packet.ItemSlot = @itemSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="WarpCommandRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="warpInfoIndex">The index of the entry in the warp list.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player selected to warp by selecting an entry in the warp list (configured in game client files).
+    /// Causes reaction on server side: If the player has enough money and is allowed to enter the map, it's getting moved to there.
+    /// </remarks>
+    public static void SendWarpCommandRequest(this IConnection connection, ushort @warpInfoIndex)
+    {
+        using var writer = connection.StartWriteWarpCommandRequest();
+        var packet = writer.Packet;
+        packet.WarpInfoIndex = @warpInfoIndex;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EnterGateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="gateNumber">The gate number.</param>
+    /// <param name="teleportTargetX">The teleport target x.</param>
+    /// <param name="teleportTargetY">The teleport target y.</param>
+    /// <remarks>
+    /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
+    /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
+    /// </remarks>
+    public static void SendEnterGateRequest(this IConnection connection, ushort @gateNumber, byte @teleportTargetX, byte @teleportTargetY)
+    {
+        using var writer = connection.StartWriteEnterGateRequest();
+        var packet = writer.Packet;
+        packet.GateNumber = @gateNumber;
+        packet.TeleportTargetX = @teleportTargetX;
+        packet.TeleportTargetY = @teleportTargetY;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EnterGateRequest075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="gateNumber">The gate number.</param>
+    /// <param name="teleportTargetX">The teleport target x.</param>
+    /// <param name="teleportTargetY">The teleport target y.</param>
+    /// <remarks>
+    /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
+    /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
+    /// </remarks>
+    public static void SendEnterGateRequest075(this IConnection connection, byte @gateNumber, byte @teleportTargetX, byte @teleportTargetY)
+    {
+        using var writer = connection.StartWriteEnterGateRequest075();
+        var packet = writer.Packet;
+        packet.GateNumber = @gateNumber;
+        packet.TeleportTargetX = @teleportTargetX;
+        packet.TeleportTargetY = @teleportTargetY;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="UnlockVault" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="pin">The pin.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
+    /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
+    /// </remarks>
+    public static void SendUnlockVault(this IConnection connection, ushort @pin)
+    {
+        using var writer = connection.StartWriteUnlockVault();
+        var packet = writer.Packet;
+        packet.Pin = @pin;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SetVaultPin" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="pin">The pin.</param>
+    /// <param name="password">The password of the account, which is required to set a new vault pin.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to set a new pin for the vault when it's in unlocked state.
+    /// Causes reaction on server side: The vault pin is set. VaultProtectionInformation is sent as response.
+    /// </remarks>
+    public static void SendSetVaultPin(this IConnection connection, ushort @pin, string @password)
+    {
+        using var writer = connection.StartWriteSetVaultPin();
+        var packet = writer.Packet;
+        packet.Pin = @pin;
+        packet.Password = @password;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RemoveVaultPin" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="password">The password of the account, which is required to remove the vault pin.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to remove the pin for the vault when it's in unlocked state.
+    /// Causes reaction on server side: The vault pin is removed. VaultProtectionInformation is sent as response.
+    /// </remarks>
+    public static void SendRemoveVaultPin(this IConnection connection, string @password)
+    {
+        using var writer = connection.StartWriteRemoveVaultPin();
+        var packet = writer.Packet;
+        packet.Password = @password;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="VaultClosed" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player closed an opened vault dialog.
+    /// Causes reaction on server side: The state on the server is updated.
+    /// </remarks>
+    public static void SendVaultClosed(this IConnection connection)
+    {
+        using var writer = connection.StartWriteVaultClosed();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="VaultMoveMoneyRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="direction">The direction.</param>
+    /// <param name="amount">The amount.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to move money from or to the vault storage.
+    /// Causes reaction on server side: The money is moved, if possible.
+    /// </remarks>
+    public static void SendVaultMoveMoneyRequest(this IConnection connection, VaultMoveMoneyRequest.VaultMoneyMoveDirection @direction, uint @amount)
+    {
+        using var writer = connection.StartWriteVaultMoveMoneyRequest();
+        var packet = writer.Packet;
+        packet.Direction = @direction;
+        packet.Amount = @amount;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LahapJewelMixRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="operation">The operation.</param>
+    /// <param name="item">The item.</param>
+    /// <param name="mixingStackSize">The mixing stack size.</param>
+    /// <param name="unmixingSourceSlot">The unmixing source slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.
+    /// Causes reaction on server side: If successful, the inventory is updated and the game client gets corresponding responses.
+    /// </remarks>
+    public static void SendLahapJewelMixRequest(this IConnection connection, LahapJewelMixRequest.MixType @operation, LahapJewelMixRequest.ItemType @item, LahapJewelMixRequest.StackSize @mixingStackSize, byte @unmixingSourceSlot)
+    {
+        using var writer = connection.StartWriteLahapJewelMixRequest();
+        var packet = writer.Packet;
+        packet.Operation = @operation;
+        packet.Item = @item;
+        packet.MixingStackSize = @mixingStackSize;
+        packet.UnmixingSourceSlot = @unmixingSourceSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PartyListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: When the player opens the party menu in the game client.
+    /// Causes reaction on server side: If the player is in a party, the server sends back a list with information about all players of the party.
+    /// </remarks>
+    public static void SendPartyListRequest(this IConnection connection)
+    {
+        using var writer = connection.StartWritePartyListRequest();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PartyPlayerKickRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerIndex">The player index.</param>
+    /// <remarks>
+    /// Is sent by the client when: A party master wants to kick another player from his party, or when a player wants to kick himself from his party.
+    /// Causes reaction on server side: If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.
+    /// </remarks>
+    public static void SendPartyPlayerKickRequest(this IConnection connection, byte @playerIndex)
+    {
+        using var writer = connection.StartWritePartyPlayerKickRequest();
+        var packet = writer.Packet;
+        packet.PlayerIndex = @playerIndex;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PartyInviteRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetPlayerId">The target player id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A party master wants to invite another player to his party.
+    /// Causes reaction on server side: If the requesting player has no party, or is the party master, a request is sent to the target player.
+    /// </remarks>
+    public static void SendPartyInviteRequest(this IConnection connection, ushort @targetPlayerId)
+    {
+        using var writer = connection.StartWritePartyInviteRequest();
+        var packet = writer.Packet;
+        packet.TargetPlayerId = @targetPlayerId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PartyInviteResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="accepted">The accepted.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player was invited by another player to join a party and this player sent the response back.
+    /// Causes reaction on server side: If the sender accepts the request, it's added to the party.
+    /// </remarks>
+    public static void SendPartyInviteResponse(this IConnection connection, bool @accepted)
+    {
+        using var writer = connection.StartWritePartyInviteResponse();
+        var packet = writer.Packet;
+        packet.Accepted = @accepted;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="WalkRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="sourceX">The source x.</param>
+    /// <param name="sourceY">The source y.</param>
+    /// <param name="stepCount">The step count.</param>
+    /// <param name="targetRotation">The target rotation.</param>
+    /// <param name="directions">The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to walk on the game map.
+    /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
+    /// </remarks>
+    public static void SendWalkRequest(this IConnection connection, byte @sourceX, byte @sourceY, byte @stepCount, byte @targetRotation, Span<byte> @directions)
+    {
+        using var writer = connection.StartSafeWrite(WalkRequest.HeaderType, WalkRequest.GetRequiredSize(directions.Length));
+        var packet = new WalkRequest(writer.Span);
+        packet.SourceX = @sourceX;
+        packet.SourceY = @sourceY;
+        packet.StepCount = @stepCount;
+        packet.TargetRotation = @targetRotation;
+        @directions.CopyTo(packet.Directions);
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="WalkRequest075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="sourceX">The source x.</param>
+    /// <param name="sourceY">The source y.</param>
+    /// <param name="stepCount">The step count.</param>
+    /// <param name="targetRotation">The target rotation.</param>
+    /// <param name="directions">The directions of the walking path. The target is calculated by taking the source coordinates and applying the directions to it.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to walk on the game map.
+    /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
+    /// </remarks>
+    public static void SendWalkRequest075(this IConnection connection, byte @sourceX, byte @sourceY, byte @stepCount, byte @targetRotation, Span<byte> @directions)
+    {
+        using var writer = connection.StartSafeWrite(WalkRequest075.HeaderType, WalkRequest075.GetRequiredSize(directions.Length));
+        var packet = new WalkRequest075(writer.Span);
+        packet.SourceX = @sourceX;
+        packet.SourceY = @sourceY;
+        packet.StepCount = @stepCount;
+        packet.TargetRotation = @targetRotation;
+        @directions.CopyTo(packet.Directions);
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="InstantMoveRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetX">The target x.</param>
+    /// <param name="targetY">The target y.</param>
+    /// <remarks>
+    /// Is sent by the client when: It's sent when the player performs specific skills.
+    /// Causes reaction on server side: Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.
+    /// </remarks>
+    public static void SendInstantMoveRequest(this IConnection connection, byte @targetX, byte @targetY)
+    {
+        using var writer = connection.StartWriteInstantMoveRequest();
+        var packet = writer.Packet;
+        packet.TargetX = @targetX;
+        packet.TargetY = @targetY;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AnimationRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="animationNumber">The animation number.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player does any kind of animation.
+    /// Causes reaction on server side: The animation number and rotation is forwarded to all surrounding players.
+    /// </remarks>
+    public static void SendAnimationRequest(this IConnection connection, byte @rotation, byte @animationNumber)
+    {
+        using var writer = connection.StartWriteAnimationRequest();
+        var packet = writer.Packet;
+        packet.Rotation = @rotation;
+        packet.AnimationNumber = @animationNumber;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RequestCharacterList" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: After a successful login or after the player decided to leave the game world to go back to the character selection screen.
+    /// Causes reaction on server side: The server sends the character list with all available characters.
+    /// </remarks>
+    public static void SendRequestCharacterList(this IConnection connection)
+    {
+        using var writer = connection.StartWriteRequestCharacterList();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CreateCharacter" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="name">The name of the character which should be created.</param>
+    /// <param name="class">The character class of the character which should be created.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client is at the character selection screen and the player requests to add a new character.
+    /// Causes reaction on server side: The server checks if the player is allowed to create the character and sends a response back.
+    /// </remarks>
+    public static void SendCreateCharacter(this IConnection connection, string @name, CharacterClassNumber @class)
+    {
+        using var writer = connection.StartWriteCreateCharacter();
+        var packet = writer.Packet;
+        packet.Name = @name;
+        packet.Class = @class;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DeleteCharacter" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="name">The name of the character which should be deleted.</param>
+    /// <param name="securityCode">A security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client is at the character selection screen and the player requests to delete an existing character.
+    /// Causes reaction on server side: The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.
+    /// </remarks>
+    public static void SendDeleteCharacter(this IConnection connection, string @name, string @securityCode)
+    {
+        using var writer = connection.StartWriteDeleteCharacter();
+        var packet = writer.Packet;
+        packet.Name = @name;
+        packet.SecurityCode = @securityCode;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SelectCharacter" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="name">The name of the character with which the player wants to join the game world</param>
+    /// <remarks>
+    /// Is sent by the client when: The player selects a character to enter the game world on the character selection screen.
+    /// Causes reaction on server side: The player joins the game world with the specified character.
+    /// </remarks>
+    public static void SendSelectCharacter(this IConnection connection, string @name)
+    {
+        using var writer = connection.StartWriteSelectCharacter();
+        var packet = writer.Packet;
+        packet.Name = @name;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="FocusCharacter" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="name">The name.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.
+    /// Causes reaction on server side: The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.
+    /// </remarks>
+    public static void SendFocusCharacter(this IConnection connection, string @name)
+    {
+        using var writer = connection.StartWriteFocusCharacter();
+        var packet = writer.Packet;
+        packet.Name = @name;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="IncreaseCharacterStatPoint" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="statType">The stat type.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.
+    /// Causes reaction on server side: The server checks if a level-up-point is available. If yes, it adds the point to the specified stat type. It sends a response back to the client.
+    /// </remarks>
+    public static void SendIncreaseCharacterStatPoint(this IConnection connection, CharacterStatAttribute @statType)
+    {
+        using var writer = connection.StartWriteIncreaseCharacterStatPoint();
+        var packet = writer.Packet;
+        packet.StatType = @statType;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ClientReadyAfterMapChange" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: After the server sent a map change message and the client has initialized the game map visualization.
+    /// Causes reaction on server side: The character is added to the internal game map and ready to interact with other entities.
+    /// </remarks>
+    public static void SendClientReadyAfterMapChange(this IConnection connection)
+    {
+        using var writer = connection.StartWriteClientReadyAfterMapChange();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SaveKeyConfiguration" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="configuration">The binary data of the key configuration</param>
+    /// <remarks>
+    /// Is sent by the client when: When leaving the game world with a character.
+    /// Causes reaction on server side: The server saves this configuration in its database.
+    /// </remarks>
+    public static void SendSaveKeyConfiguration(this IConnection connection, Span<byte> @configuration)
+    {
+        using var writer = connection.StartSafeWrite(SaveKeyConfiguration.HeaderType, SaveKeyConfiguration.GetRequiredSize(configuration.Length));
+        var packet = new SaveKeyConfiguration(writer.Span);
+        @configuration.CopyTo(packet.Configuration);
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AddMasterSkillPoint" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to add or increase the level of a specific master skill of the master skill tree.
+    /// Causes reaction on server side: Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.
+    /// </remarks>
+    public static void SendAddMasterSkillPoint(this IConnection connection, ushort @skillId)
+    {
+        using var writer = connection.StartWriteAddMasterSkillPoint();
+        var packet = writer.Packet;
+        packet.SkillId = @skillId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="HitRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <param name="attackAnimation">The attack animation.</param>
+    /// <param name="lookingDirection">The looking direction.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player attacks a target without using a skill.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static void SendHitRequest(this IConnection connection, ushort @targetId, byte @attackAnimation, byte @lookingDirection)
+    {
+        using var writer = connection.StartWriteHitRequest();
+        var packet = writer.Packet;
+        packet.TargetId = @targetId;
+        packet.AttackAnimation = @attackAnimation;
+        packet.LookingDirection = @lookingDirection;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="TargetedSkill" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static void SendTargetedSkill(this IConnection connection, ushort @skillId, ushort @targetId)
+    {
+        using var writer = connection.StartWriteTargetedSkill();
+        var packet = writer.Packet;
+        packet.SkillId = @skillId;
+        packet.TargetId = @targetId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="TargetedSkill075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillIndex">The index of the skill in the skill list.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static void SendTargetedSkill075(this IConnection connection, byte @skillIndex, ushort @targetId)
+    {
+        using var writer = connection.StartWriteTargetedSkill075();
+        var packet = writer.Packet;
+        packet.SkillIndex = @skillIndex;
+        packet.TargetId = @targetId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="TargetedSkill095" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillIndex">The index of the skill in the skill list.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static void SendTargetedSkill095(this IConnection connection, byte @skillIndex, ushort @targetId)
+    {
+        using var writer = connection.StartWriteTargetedSkill095();
+        var packet = writer.Packet;
+        packet.SkillIndex = @skillIndex;
+        packet.TargetId = @targetId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MagicEffectCancelRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
+    /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
+    /// </remarks>
+    public static void SendMagicEffectCancelRequest(this IConnection connection, ushort @skillId)
+    {
+        using var writer = connection.StartWriteMagicEffectCancelRequest();
+        var packet = writer.Packet;
+        packet.SkillId = @skillId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AreaSkill" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <param name="targetX">The target x.</param>
+    /// <param name="targetY">The target y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="extraTargetId">The extra target id.</param>
+    /// <param name="animationCounter">Animation counter which acts as a reference to the previously sent Area Skill Animation packet.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+    /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+    /// </remarks>
+    public static void SendAreaSkill(this IConnection connection, ushort @skillId, byte @targetX, byte @targetY, byte @rotation, ushort @extraTargetId, byte @animationCounter)
+    {
+        using var writer = connection.StartWriteAreaSkill();
+        var packet = writer.Packet;
+        packet.SkillId = @skillId;
+        packet.TargetX = @targetX;
+        packet.TargetY = @targetY;
+        packet.Rotation = @rotation;
+        packet.ExtraTargetId = @extraTargetId;
+        packet.AnimationCounter = @animationCounter;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AreaSkillHit" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <param name="targetX">The target x.</param>
+    /// <param name="targetY">The target y.</param>
+    /// <param name="hitCounter">A sequential hit counter which should prevent that hits are sent multiple times.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <param name="animationCounter">A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</param>
+    /// <remarks>
+    /// Is sent by the client when: An area skill was performed and the client decided to hit a target.
+    /// Causes reaction on server side: The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.
+    /// </remarks>
+    public static void SendAreaSkillHit(this IConnection connection, ushort @skillId, byte @targetX, byte @targetY, byte @hitCounter, ushort @targetId, byte @animationCounter)
+    {
+        using var writer = connection.StartWriteAreaSkillHit();
+        var packet = writer.Packet;
+        packet.SkillId = @skillId;
+        packet.TargetX = @targetX;
+        packet.TargetY = @targetY;
+        packet.HitCounter = @hitCounter;
+        packet.TargetId = @targetId;
+        packet.AnimationCounter = @animationCounter;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AreaSkill075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillIndex">The index of the skill in the skill list.</param>
+    /// <param name="targetX">The target x.</param>
+    /// <param name="targetY">The target y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+    /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+    /// </remarks>
+    public static void SendAreaSkill075(this IConnection connection, byte @skillIndex, byte @targetX, byte @targetY, byte @rotation)
+    {
+        using var writer = connection.StartWriteAreaSkill075();
+        var packet = writer.Packet;
+        packet.SkillIndex = @skillIndex;
+        packet.TargetX = @targetX;
+        packet.TargetY = @targetY;
+        packet.Rotation = @rotation;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AreaSkill095" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillIndex">The index of the skill in the skill list.</param>
+    /// <param name="targetX">The target x.</param>
+    /// <param name="targetY">The target y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player is performing an skill which affects an area of the map.
+    /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
+    /// </remarks>
+    public static void SendAreaSkill095(this IConnection connection, byte @skillIndex, byte @targetX, byte @targetY, byte @rotation)
+    {
+        using var writer = connection.StartWriteAreaSkill095();
+        var packet = writer.Packet;
+        packet.SkillIndex = @skillIndex;
+        packet.TargetX = @targetX;
+        packet.TargetY = @targetY;
+        packet.Rotation = @rotation;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="TradeCancel" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to cancel the trade.
+    /// Causes reaction on server side: The trade is cancelled and the previous inventory state is restored.
+    /// </remarks>
+    public static void SendTradeCancel(this IConnection connection)
+    {
+        using var writer = connection.StartWriteTradeCancel();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="TradeButtonStateChange" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="newState">The new state.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player presses the trade button.
+    /// Causes reaction on server side: The state change is forwarded to the trade partner. If both players press the trade button at the same time, the server will try to complete the trade by exchanging the items and money.
+    /// </remarks>
+    public static void SendTradeButtonStateChange(this IConnection connection, TradeButtonState @newState)
+    {
+        using var writer = connection.StartWriteTradeButtonStateChange();
+        var packet = writer.Packet;
+        packet.NewState = @newState;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="TradeRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to open a trade with another player.
+    /// Causes reaction on server side: The request is forwarded to the requested player.
+    /// </remarks>
+    public static void SendTradeRequest(this IConnection connection, ushort @playerId)
+    {
+        using var writer = connection.StartWriteTradeRequest();
+        var packet = writer.Packet;
+        packet.PlayerId = @playerId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="TradeRequestResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="tradeAccepted">The trade accepted.</param>
+    /// <remarks>
+    /// Is sent by the client when: A requested player responded to a trade request of another player.
+    /// Causes reaction on server side: When the trade request was accepted, the server tries to open a new trade and sends corresponding responses to both players. 
+    /// </remarks>
+    public static void SendTradeRequestResponse(this IConnection connection, bool @tradeAccepted)
+    {
+        using var writer = connection.StartWriteTradeRequestResponse();
+        var packet = writer.Packet;
+        packet.TradeAccepted = @tradeAccepted;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SetTradeMoney" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="amount">The amount.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to set an amount of money in the trade.
+    /// Causes reaction on server side: It's taken from the available money of the inventory. If the new money amount is lower than the amount which was set before, it's added back to the inventory. The trade partner is informed about any change.
+    /// </remarks>
+    public static void SendSetTradeMoney(this IConnection connection, uint @amount)
+    {
+        using var writer = connection.StartWriteSetTradeMoney();
+        var packet = writer.Packet;
+        packet.Amount = @amount;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LetterDeleteRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="letterIndex">The letter index.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to delete a letter.
+    /// Causes reaction on server side: The letter is getting deleted.
+    /// </remarks>
+    public static void SendLetterDeleteRequest(this IConnection connection, ushort @letterIndex)
+    {
+        using var writer = connection.StartWriteLetterDeleteRequest();
+        var packet = writer.Packet;
+        packet.LetterIndex = @letterIndex;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LetterSendRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="letterId">The letter id.</param>
+    /// <param name="receiver">The receiver.</param>
+    /// <param name="title">The title.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="animation">The animation.</param>
+    /// <param name="message">The message.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to send a letter to another players character.
+    /// Causes reaction on server side: The letter is sent to the other character, if it exists and the player has the required money.
+    /// </remarks>
+    public static void SendLetterSendRequest(this IConnection connection, uint @letterId, string @receiver, string @title, byte @rotation, byte @animation, string @message)
+    {
+        using var writer = connection.StartSafeWrite(LetterSendRequest.HeaderType, LetterSendRequest.GetRequiredSize(message));
+        var packet = new LetterSendRequest(writer.Span);
+        packet.LetterId = @letterId;
+        packet.Receiver = @receiver;
+        packet.Title = @title;
+        packet.Rotation = @rotation;
+        packet.Animation = @animation;
+        packet.Message = @message;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LetterReadRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="letterIndex">The letter index.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to read a specific letter of his letter list.
+    /// Causes reaction on server side: The server sends the requested letter content back to the game client.
+    /// </remarks>
+    public static void SendLetterReadRequest(this IConnection connection, ushort @letterIndex)
+    {
+        using var writer = connection.StartWriteLetterReadRequest();
+        var packet = writer.Packet;
+        packet.LetterIndex = @letterIndex;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildKickPlayerRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerName">The player name.</param>
+    /// <param name="securityCode">The security code.</param>
+    /// <remarks>
+    /// Is sent by the client when: A guild member wants to kick himself or a guild master wants to kick another player from its guild.
+    /// Causes reaction on server side: If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.
+    /// </remarks>
+    public static void SendGuildKickPlayerRequest(this IConnection connection, string @playerName, string @securityCode)
+    {
+        using var writer = connection.StartSafeWrite(GuildKickPlayerRequest.HeaderType, GuildKickPlayerRequest.GetRequiredSize(securityCode));
+        var packet = new GuildKickPlayerRequest(writer.Span);
+        packet.PlayerName = @playerName;
+        packet.SecurityCode = @securityCode;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildJoinRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="guildMasterPlayerId">The guild master player id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player (non-guild member) requests to join a guild.
+    /// Causes reaction on server side: The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.
+    /// </remarks>
+    public static void SendGuildJoinRequest(this IConnection connection, ushort @guildMasterPlayerId)
+    {
+        using var writer = connection.StartWriteGuildJoinRequest();
+        var packet = writer.Packet;
+        packet.GuildMasterPlayerId = @guildMasterPlayerId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildJoinResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="accepted">The accepted.</param>
+    /// <remarks>
+    /// Is sent by the client when: A guild master responded to a previously sent request.
+    /// Causes reaction on server side: If the request was accepted by the guild master, the previously requesting player is added to the guild.
+    /// </remarks>
+    public static void SendGuildJoinResponse(this IConnection connection, bool @accepted)
+    {
+        using var writer = connection.StartWriteGuildJoinResponse();
+        var packet = writer.Packet;
+        packet.Accepted = @accepted;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A guild player opens its guild menu in the game client.
+    /// Causes reaction on server side: A list of all guild members and their state is sent back as response.
+    /// </remarks>
+    public static void SendGuildListRequest(this IConnection connection)
+    {
+        using var writer = connection.StartWriteGuildListRequest();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildCreateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="guildName">The guild name.</param>
+    /// <param name="guildEmblem">The guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.</param>
+    /// <remarks>
+    /// Is sent by the client when: When a player wants to create a guild.
+    /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
+    /// </remarks>
+    public static void SendGuildCreateRequest(this IConnection connection, string @guildName, Span<byte> @guildEmblem)
+    {
+        using var writer = connection.StartWriteGuildCreateRequest();
+        var packet = writer.Packet;
+        packet.GuildName = @guildName;
+        @guildEmblem.CopyTo(packet.GuildEmblem);
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildCreateRequest075" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="guildName">The guild name.</param>
+    /// <param name="guildEmblem">The guild emblem in a custom bitmap format. It supports 16 colors (one transparent) per pixel and has a size of 8 * 8 pixel.</param>
+    /// <remarks>
+    /// Is sent by the client when: When a player wants to create a guild.
+    /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
+    /// </remarks>
+    public static void SendGuildCreateRequest075(this IConnection connection, string @guildName, Span<byte> @guildEmblem)
+    {
+        using var writer = connection.StartWriteGuildCreateRequest075();
+        var packet = writer.Packet;
+        packet.GuildName = @guildName;
+        @guildEmblem.CopyTo(packet.GuildEmblem);
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildMasterAnswer" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="showCreationDialog">A value whether the guild creation dialog should be shown. Otherwise, the guild creation is cancelled and the dialog was closed.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player has the dialog of the guild master NPC opened and decided about its next step.
+    /// Causes reaction on server side: It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.
+    /// </remarks>
+    public static void SendGuildMasterAnswer(this IConnection connection, bool @showCreationDialog)
+    {
+        using var writer = connection.StartWriteGuildMasterAnswer();
+        var packet = writer.Packet;
+        packet.ShowCreationDialog = @showCreationDialog;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CancelGuildCreation" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player has the dialog of the guild creation dialog opened and decided against creating a guild.
+    /// Causes reaction on server side: It either cancels the guild creation.
+    /// </remarks>
+    public static void SendCancelGuildCreation(this IConnection connection)
+    {
+        using var writer = connection.StartWriteCancelGuildCreation();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildWarResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="accepted">The accepted.</param>
+    /// <remarks>
+    /// Is sent by the client when: A guild master requested a guild war against another guild.
+    /// Causes reaction on server side: If the guild master confirms, the war is declared.
+    /// </remarks>
+    public static void SendGuildWarResponse(this IConnection connection, bool @accepted)
+    {
+        using var writer = connection.StartWriteGuildWarResponse();
+        var packet = writer.Packet;
+        packet.Accepted = @accepted;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildInfoRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="guildId">The guild id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
+    /// Causes reaction on server side: The server sends a response which includes the guild name and emblem.
+    /// </remarks>
+    public static void SendGuildInfoRequest(this IConnection connection, uint @guildId)
+    {
+        using var writer = connection.StartWriteGuildInfoRequest();
+        var packet = writer.Packet;
+        packet.GuildId = @guildId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ItemRepair" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="inventoryItemSlot">The inventory slot of the target item. If it's 0xFF, the player requests to repair all items with the help of an NPC. If it's 8 (Pet slot), using the pet trainer NPC is mandatory, too.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
+    /// Causes reaction on server side: If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.
+    /// </remarks>
+    public static void SendItemRepair(this IConnection connection, byte @inventoryItemSlot)
+    {
+        using var writer = connection.StartWriteItemRepair();
+        var packet = writer.Packet;
+        packet.InventoryItemSlot = @inventoryItemSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChaosMachineMixRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mixType">The identifier which tells the server which kind of mix should be executed.</param>
+    /// <param name="socketSlot">The 0-based slot index of the socket at which a seed sphere should be mounted or removed. May only be available for the corresponding mixes, so access with care.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
+    /// Causes reaction on server side: Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.
+    /// </remarks>
+    public static void SendChaosMachineMixRequest(this IConnection connection, ChaosMachineMixRequest.ChaosMachineMixType @mixType, byte @socketSlot)
+    {
+        using var writer = connection.StartWriteChaosMachineMixRequest();
+        var packet = writer.Packet;
+        packet.MixType = @mixType;
+        packet.SocketSlot = @socketSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CraftingDialogCloseRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
+    /// Causes reaction on server side: The server updates the state of the player accordingly.
+    /// </remarks>
+    public static void SendCraftingDialogCloseRequest(this IConnection connection)
+    {
+        using var writer = connection.StartWriteCraftingDialogCloseRequest();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="FriendAddRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="friendName">The friend name.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to add another players character into his friend list of the messenger.
+    /// Causes reaction on server side: A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.
+    /// </remarks>
+    public static void SendFriendAddRequest(this IConnection connection, string @friendName)
+    {
+        using var writer = connection.StartWriteFriendAddRequest();
+        var packet = writer.Packet;
+        packet.FriendName = @friendName;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="FriendDelete" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="friendName">The friend name.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to delete another players character from his friend list of the messenger.
+    /// Causes reaction on server side: The entry in the friend list is removed. The player is shown as offline in the other players friends list.
+    /// </remarks>
+    public static void SendFriendDelete(this IConnection connection, string @friendName)
+    {
+        using var writer = connection.StartWriteFriendDelete();
+        var packet = writer.Packet;
+        packet.FriendName = @friendName;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChatRoomCreateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="friendName">The friend name.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to open a chat with another player of his friend list.
+    /// Causes reaction on server side: If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.
+    /// </remarks>
+    public static void SendChatRoomCreateRequest(this IConnection connection, string @friendName)
+    {
+        using var writer = connection.StartWriteChatRoomCreateRequest();
+        var packet = writer.Packet;
+        packet.FriendName = @friendName;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="FriendAddResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="accepted">The accepted.</param>
+    /// <param name="friendRequesterName">The friend requester name.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player received a friend request from another player and responded to it.
+    /// Causes reaction on server side: If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.
+    /// </remarks>
+    public static void SendFriendAddResponse(this IConnection connection, bool @accepted, string @friendRequesterName)
+    {
+        using var writer = connection.StartWriteFriendAddResponse();
+        var packet = writer.Packet;
+        packet.Accepted = @accepted;
+        packet.FriendRequesterName = @friendRequesterName;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SetFriendOnlineState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="onlineState">The online state.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to set himself on- or offline.
+    /// Causes reaction on server side: Depending on the state, the player is shown as offline or online in all friend lists of his friends.
+    /// </remarks>
+    public static void SendSetFriendOnlineState(this IConnection connection, bool @onlineState)
+    {
+        using var writer = connection.StartWriteSetFriendOnlineState();
+        var packet = writer.Packet;
+        packet.OnlineState = @onlineState;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChatRoomInvitationRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="friendName">The friend name.</param>
+    /// <param name="roomId">The room id.</param>
+    /// <param name="requestId">The request id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player wants to invite additional players from his friend list to an existing chat room.
+    /// Causes reaction on server side: The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.
+    /// </remarks>
+    public static void SendChatRoomInvitationRequest(this IConnection connection, string @friendName, ushort @roomId, uint @requestId)
+    {
+        using var writer = connection.StartWriteChatRoomInvitationRequest();
+        var packet = writer.Packet;
+        packet.FriendName = @friendName;
+        packet.RoomId = @roomId;
+        packet.RequestId = @requestId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LegacyQuestStateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: After the player entered the game world with a character.
+    /// Causes reaction on server side: The quest state is sent back as response.
+    /// </remarks>
+    public static void SendLegacyQuestStateRequest(this IConnection connection)
+    {
+        using var writer = connection.StartWriteLegacyQuestStateRequest();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LegacyQuestStateSetRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="questNumber">The quest number.</param>
+    /// <param name="newState">The new state.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to change the state of a quest, e.g. to start or to finish a quest.
+    /// Causes reaction on server side: Depending on the requested new state, a response is sent back.
+    /// </remarks>
+    public static void SendLegacyQuestStateSetRequest(this IConnection connection, byte @questNumber, LegacyQuestState @newState)
+    {
+        using var writer = connection.StartWriteLegacyQuestStateSetRequest();
+        var packet = writer.Packet;
+        packet.QuestNumber = @questNumber;
+        packet.NewState = @newState;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PetCommandRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="petType">The pet type.</param>
+    /// <param name="commandMode">The command mode.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to command its equipped pet (raven).
+    /// Causes reaction on server side: 
+    /// </remarks>
+    public static void SendPetCommandRequest(this IConnection connection, byte @petType, PetCommandMode @commandMode, ushort @targetId)
+    {
+        using var writer = connection.StartWritePetCommandRequest();
+        var packet = writer.Packet;
+        packet.PetType = @petType;
+        packet.CommandMode = @commandMode;
+        packet.TargetId = @targetId;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PetInfoRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="pet">The pet.</param>
+    /// <param name="storage">The storage.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player hovers over a pet. The client sends this request to retrieve information (level, experience) of the pet (dark raven, horse).
+    /// Causes reaction on server side: The server sends a PetInfoResponse.
+    /// </remarks>
+    public static void SendPetInfoRequest(this IConnection connection, PetType @pet, StorageType @storage, byte @itemSlot)
+    {
+        using var writer = connection.StartWritePetInfoRequest();
+        var packet = writer.Packet;
+        packet.Pet = @pet;
+        packet.Storage = @storage;
+        packet.ItemSlot = @itemSlot;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="QuestSelectRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="questNumber">The quest number.</param>
+    /// <param name="questGroup">The quest group.</param>
+    /// <param name="unknownField">A value between 1 and 3, probably depending on how many quests are already running. Should not be trusted or considered.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client opened an quest NPC dialog and selected an available quests.
+    /// Causes reaction on server side: If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.
+    /// </remarks>
+    public static void SendQuestSelectRequest(this IConnection connection, ushort @questNumber, ushort @questGroup, byte @unknownField)
+    {
+        using var writer = connection.StartWriteQuestSelectRequest();
+        var packet = writer.Packet;
+        packet.QuestNumber = @questNumber;
+        packet.QuestGroup = @questGroup;
+        packet.UnknownField = @unknownField;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="QuestProceedRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="questNumber">The quest number.</param>
+    /// <param name="questGroup">The quest group.</param>
+    /// <param name="proceedAction">The proceed action.</param>
+    /// <remarks>
+    /// Is sent by the client when: After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.
+    /// Causes reaction on server side: The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).
+    /// </remarks>
+    public static void SendQuestProceedRequest(this IConnection connection, ushort @questNumber, ushort @questGroup, QuestProceedRequest.QuestProceedAction @proceedAction)
+    {
+        using var writer = connection.StartWriteQuestProceedRequest();
+        var packet = writer.Packet;
+        packet.QuestNumber = @questNumber;
+        packet.QuestGroup = @questGroup;
+        packet.ProceedAction = @proceedAction;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="QuestCompletionRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="questNumber">The quest number.</param>
+    /// <param name="questGroup">The quest group.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests to complete an active quest.
+    /// Causes reaction on server side: The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.
+    /// </remarks>
+    public static void SendQuestCompletionRequest(this IConnection connection, ushort @questNumber, ushort @questGroup)
+    {
+        using var writer = connection.StartWriteQuestCompletionRequest();
+        var packet = writer.Packet;
+        packet.QuestNumber = @questNumber;
+        packet.QuestGroup = @questGroup;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="QuestCancelRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="questNumber">The quest number.</param>
+    /// <param name="questGroup">The quest group.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests to cancel an active quest.
+    /// Causes reaction on server side: The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.
+    /// </remarks>
+    public static void SendQuestCancelRequest(this IConnection connection, ushort @questNumber, ushort @questGroup)
+    {
+        using var writer = connection.StartWriteQuestCancelRequest();
+        var packet = writer.Packet;
+        packet.QuestNumber = @questNumber;
+        packet.QuestGroup = @questGroup;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="QuestClientActionRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="questNumber">The quest number.</param>
+    /// <param name="questGroup">The quest group.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests to complete a client action, e.g. completing a tutorial.
+    /// Causes reaction on server side: The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.
+    /// </remarks>
+    public static void SendQuestClientActionRequest(this IConnection connection, ushort @questNumber, ushort @questGroup)
+    {
+        using var writer = connection.StartWriteQuestClientActionRequest();
+        var packet = writer.Packet;
+        packet.QuestNumber = @questNumber;
+        packet.QuestGroup = @questGroup;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ActiveQuestListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The clients requests the states of all quests, usually after entering the game.
+    /// Causes reaction on server side: The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.
+    /// </remarks>
+    public static void SendActiveQuestListRequest(this IConnection connection)
+    {
+        using var writer = connection.StartWriteActiveQuestListRequest();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="QuestStateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="questNumber">The quest number.</param>
+    /// <param name="questGroup">The quest group.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests the state of a specific active quests.
+    /// Causes reaction on server side: The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.
+    /// </remarks>
+    public static void SendQuestStateRequest(this IConnection connection, ushort @questNumber, ushort @questGroup)
+    {
+        using var writer = connection.StartWriteQuestStateRequest();
+        var packet = writer.Packet;
+        packet.QuestNumber = @questNumber;
+        packet.QuestGroup = @questGroup;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EventQuestStateListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests the list of event quests, usually after entering the game.
+    /// Causes reaction on server side: The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).
+    /// </remarks>
+    public static void SendEventQuestStateListRequest(this IConnection connection)
+    {
+        using var writer = connection.StartWriteEventQuestStateListRequest();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AvailableQuestsRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client opened an quest NPC dialog and requests a list of available quests.
+    /// Causes reaction on server side: The list of available quests of this NPC is sent back (F60A).
+    /// </remarks>
+    public static void SendAvailableQuestsRequest(this IConnection connection)
+    {
+        using var writer = connection.StartWriteAvailableQuestsRequest();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="NpcBuffRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).
+    /// Causes reaction on server side: The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.
+    /// </remarks>
+    public static void SendNpcBuffRequest(this IConnection connection)
+    {
+        using var writer = connection.StartWriteNpcBuffRequest();
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DevilSquareEnterRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="squareLevel">The level of the devil square, minus 1.</param>
+    /// <param name="ticketItemInventoryIndex">The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
+    /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.
+    /// </remarks>
+    public static void SendDevilSquareEnterRequest(this IConnection connection, byte @squareLevel, byte @ticketItemInventoryIndex)
+    {
+        using var writer = connection.StartWriteDevilSquareEnterRequest();
+        var packet = writer.Packet;
+        packet.SquareLevel = @squareLevel;
+        packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RequestEventRemainingTime" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="eventType">The event type.</param>
+    /// <param name="eventLevel">The event level.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
+    /// Causes reaction on server side: The remaining time is sent back to the client.
+    /// </remarks>
+    public static void SendRequestEventRemainingTime(this IConnection connection, byte @eventType, byte @eventLevel)
+    {
+        using var writer = connection.StartWriteRequestEventRemainingTime();
+        var packet = writer.Packet;
+        packet.EventType = @eventType;
+        packet.EventLevel = @eventLevel;
+        writer.Commit();
+    }}
+/// <summary>
+/// A helper struct to write a <see cref="Ping"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PingThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PingThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PingThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new Ping(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(Ping.Length)[..Ping.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public Ping Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="Ping" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(Ping.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="LoginLongPassword"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct LoginLongPasswordThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoginLongPasswordThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public LoginLongPasswordThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new LoginLongPassword(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(LoginLongPassword.Length)[..LoginLongPassword.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public LoginLongPassword Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="LoginLongPassword" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(LoginLongPassword.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="LoginShortPassword"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct LoginShortPasswordThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoginShortPasswordThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public LoginShortPasswordThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new LoginShortPassword(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(LoginShortPassword.Length)[..LoginShortPassword.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public LoginShortPassword Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="LoginShortPassword" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(LoginShortPassword.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="Login075"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct Login075ThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Login075ThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public Login075ThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new Login075(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(Login075.Length)[..Login075.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public Login075 Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="Login075" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(Login075.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="LogOut"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct LogOutThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogOutThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public LogOutThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new LogOut(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(LogOut.Length)[..LogOut.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public LogOut Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="LogOut" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(LogOut.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PlayerShopSetItemPrice"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PlayerShopSetItemPriceThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopSetItemPriceThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PlayerShopSetItemPriceThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PlayerShopSetItemPrice(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopSetItemPrice.Length)[..PlayerShopSetItemPrice.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PlayerShopSetItemPrice Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PlayerShopSetItemPrice" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PlayerShopSetItemPrice.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PlayerShopOpen"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PlayerShopOpenThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopOpenThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PlayerShopOpenThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PlayerShopOpen(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopOpen.Length)[..PlayerShopOpen.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PlayerShopOpen Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PlayerShopOpen" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PlayerShopOpen.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PlayerShopClose"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PlayerShopCloseThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopCloseThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PlayerShopCloseThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PlayerShopClose(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopClose.Length)[..PlayerShopClose.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PlayerShopClose Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PlayerShopClose" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PlayerShopClose.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PlayerShopItemListRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PlayerShopItemListRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopItemListRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PlayerShopItemListRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PlayerShopItemListRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopItemListRequest.Length)[..PlayerShopItemListRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PlayerShopItemListRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PlayerShopItemListRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PlayerShopItemListRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PlayerShopItemBuyRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PlayerShopItemBuyRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopItemBuyRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PlayerShopItemBuyRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PlayerShopItemBuyRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PlayerShopItemBuyRequest.Length)[..PlayerShopItemBuyRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PlayerShopItemBuyRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PlayerShopItemBuyRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PlayerShopItemBuyRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PickupItemRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PickupItemRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PickupItemRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PickupItemRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PickupItemRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PickupItemRequest.Length)[..PickupItemRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PickupItemRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PickupItemRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PickupItemRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PickupItemRequest075"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PickupItemRequest075ThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PickupItemRequest075ThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PickupItemRequest075ThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PickupItemRequest075(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PickupItemRequest075.Length)[..PickupItemRequest075.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PickupItemRequest075 Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PickupItemRequest075" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PickupItemRequest075.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="DropItemRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct DropItemRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DropItemRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public DropItemRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new DropItemRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(DropItemRequest.Length)[..DropItemRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public DropItemRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="DropItemRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(DropItemRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ItemMoveRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ItemMoveRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemMoveRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ItemMoveRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ItemMoveRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ItemMoveRequest.Length)[..ItemMoveRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ItemMoveRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="ItemMoveRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(ItemMoveRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ConsumeItemRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ConsumeItemRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsumeItemRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ConsumeItemRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ConsumeItemRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ConsumeItemRequest.Length)[..ConsumeItemRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ConsumeItemRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="ConsumeItemRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(ConsumeItemRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ConsumeItemRequest075"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ConsumeItemRequest075ThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsumeItemRequest075ThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ConsumeItemRequest075ThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ConsumeItemRequest075(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ConsumeItemRequest075.Length)[..ConsumeItemRequest075.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ConsumeItemRequest075 Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="ConsumeItemRequest075" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(ConsumeItemRequest075.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="TalkToNpcRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct TalkToNpcRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TalkToNpcRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public TalkToNpcRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new TalkToNpcRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(TalkToNpcRequest.Length)[..TalkToNpcRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public TalkToNpcRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="TalkToNpcRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(TalkToNpcRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="CloseNpcRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct CloseNpcRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CloseNpcRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public CloseNpcRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new CloseNpcRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(CloseNpcRequest.Length)[..CloseNpcRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public CloseNpcRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="CloseNpcRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(CloseNpcRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="BuyItemFromNpcRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct BuyItemFromNpcRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BuyItemFromNpcRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public BuyItemFromNpcRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new BuyItemFromNpcRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(BuyItemFromNpcRequest.Length)[..BuyItemFromNpcRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public BuyItemFromNpcRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="BuyItemFromNpcRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(BuyItemFromNpcRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="SellItemToNpcRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct SellItemToNpcRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SellItemToNpcRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public SellItemToNpcRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new SellItemToNpcRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(SellItemToNpcRequest.Length)[..SellItemToNpcRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public SellItemToNpcRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="SellItemToNpcRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(SellItemToNpcRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="RepairItemRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct RepairItemRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RepairItemRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public RepairItemRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new RepairItemRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(RepairItemRequest.Length)[..RepairItemRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public RepairItemRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="RepairItemRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(RepairItemRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="WarpCommandRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct WarpCommandRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WarpCommandRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public WarpCommandRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new WarpCommandRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(WarpCommandRequest.Length)[..WarpCommandRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public WarpCommandRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="WarpCommandRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(WarpCommandRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="EnterGateRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct EnterGateRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnterGateRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public EnterGateRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new EnterGateRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(EnterGateRequest.Length)[..EnterGateRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public EnterGateRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="EnterGateRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(EnterGateRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="EnterGateRequest075"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct EnterGateRequest075ThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnterGateRequest075ThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public EnterGateRequest075ThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new EnterGateRequest075(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(EnterGateRequest075.Length)[..EnterGateRequest075.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public EnterGateRequest075 Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="EnterGateRequest075" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(EnterGateRequest075.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="UnlockVault"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct UnlockVaultThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UnlockVaultThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public UnlockVaultThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new UnlockVault(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(UnlockVault.Length)[..UnlockVault.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public UnlockVault Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="UnlockVault" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(UnlockVault.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="SetVaultPin"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct SetVaultPinThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SetVaultPinThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public SetVaultPinThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new SetVaultPin(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(SetVaultPin.Length)[..SetVaultPin.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public SetVaultPin Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="SetVaultPin" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(SetVaultPin.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="RemoveVaultPin"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct RemoveVaultPinThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RemoveVaultPinThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public RemoveVaultPinThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new RemoveVaultPin(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(RemoveVaultPin.Length)[..RemoveVaultPin.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public RemoveVaultPin Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="RemoveVaultPin" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(RemoveVaultPin.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="VaultClosed"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct VaultClosedThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VaultClosedThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public VaultClosedThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new VaultClosed(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(VaultClosed.Length)[..VaultClosed.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public VaultClosed Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="VaultClosed" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(VaultClosed.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="VaultMoveMoneyRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct VaultMoveMoneyRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VaultMoveMoneyRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public VaultMoveMoneyRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new VaultMoveMoneyRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(VaultMoveMoneyRequest.Length)[..VaultMoveMoneyRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public VaultMoveMoneyRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="VaultMoveMoneyRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(VaultMoveMoneyRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="LahapJewelMixRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct LahapJewelMixRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LahapJewelMixRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public LahapJewelMixRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new LahapJewelMixRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(LahapJewelMixRequest.Length)[..LahapJewelMixRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public LahapJewelMixRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="LahapJewelMixRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(LahapJewelMixRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PartyListRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PartyListRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PartyListRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PartyListRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PartyListRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PartyListRequest.Length)[..PartyListRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PartyListRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PartyListRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PartyListRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PartyPlayerKickRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PartyPlayerKickRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PartyPlayerKickRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PartyPlayerKickRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PartyPlayerKickRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PartyPlayerKickRequest.Length)[..PartyPlayerKickRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PartyPlayerKickRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PartyPlayerKickRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PartyPlayerKickRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PartyInviteRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PartyInviteRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PartyInviteRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PartyInviteRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PartyInviteRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PartyInviteRequest.Length)[..PartyInviteRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PartyInviteRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PartyInviteRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PartyInviteRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PartyInviteResponse"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PartyInviteResponseThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PartyInviteResponseThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PartyInviteResponseThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PartyInviteResponse(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PartyInviteResponse.Length)[..PartyInviteResponse.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PartyInviteResponse Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PartyInviteResponse" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PartyInviteResponse.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="InstantMoveRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct InstantMoveRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InstantMoveRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public InstantMoveRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new InstantMoveRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(InstantMoveRequest.Length)[..InstantMoveRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public InstantMoveRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="InstantMoveRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(InstantMoveRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="AnimationRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct AnimationRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AnimationRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public AnimationRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new AnimationRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(AnimationRequest.Length)[..AnimationRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public AnimationRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="AnimationRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(AnimationRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="RequestCharacterList"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct RequestCharacterListThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RequestCharacterListThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public RequestCharacterListThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new RequestCharacterList(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(RequestCharacterList.Length)[..RequestCharacterList.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public RequestCharacterList Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="RequestCharacterList" />.
+    /// </summary>
+    public void Commit()
     {
-        private readonly IConnection connection;
+        this.connection.Output.AdvanceAndFlushSafely(RequestCharacterList.Length);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TargetedSkillThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public TargetedSkillThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new TargetedSkill(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TargetedSkill.Length)[..TargetedSkill.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public TargetedSkill Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="TargetedSkill" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="CreateCharacter"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct CreateCharacterThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateCharacterThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public CreateCharacterThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(TargetedSkill.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new CreateCharacter(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(CreateCharacter.Length)[..CreateCharacter.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public CreateCharacter Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="CreateCharacter" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(CreateCharacter.Length);
+    }
+
     /// <summary>
-    /// A helper struct to write a <see cref="TargetedSkill075"/> safely to a <see cref="IConnection.Output" />.
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
-    public readonly ref struct TargetedSkill075ThreadSafeWriter
+    public void Dispose()
     {
-        private readonly IConnection connection;
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="DeleteCharacter"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct DeleteCharacterThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TargetedSkill075ThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public TargetedSkill075ThreadSafeWriter(IConnection connection)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DeleteCharacterThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public DeleteCharacterThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new DeleteCharacter(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new TargetedSkill075(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(DeleteCharacter.Length)[..DeleteCharacter.Length];
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TargetedSkill075.Length)[..TargetedSkill075.Length];
+    /// <summary>Gets the packet to write at.</summary>
+    public DeleteCharacter Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="DeleteCharacter" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(DeleteCharacter.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public TargetedSkill075 Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="SelectCharacter"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct SelectCharacterThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="TargetedSkill075" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SelectCharacterThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public SelectCharacterThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(TargetedSkill075.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new SelectCharacter(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(SelectCharacter.Length)[..SelectCharacter.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public SelectCharacter Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="TargetedSkill095"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="SelectCharacter" />.
     /// </summary>
-    public readonly ref struct TargetedSkill095ThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
+        this.connection.Output.AdvanceAndFlushSafely(SelectCharacter.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="FocusCharacter"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct FocusCharacterThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TargetedSkill095ThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public TargetedSkill095ThreadSafeWriter(IConnection connection)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FocusCharacterThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public FocusCharacterThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new FocusCharacter(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new TargetedSkill095(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(FocusCharacter.Length)[..FocusCharacter.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public FocusCharacter Packet => this.Span;
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TargetedSkill095.Length)[..TargetedSkill095.Length];
+    /// <summary>
+    /// Commits the data of the <see cref="FocusCharacter" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(FocusCharacter.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public TargetedSkill095 Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="IncreaseCharacterStatPoint"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct IncreaseCharacterStatPointThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="TargetedSkill095" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IncreaseCharacterStatPointThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public IncreaseCharacterStatPointThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(TargetedSkill095.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new IncreaseCharacterStatPoint(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(IncreaseCharacterStatPoint.Length)[..IncreaseCharacterStatPoint.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public IncreaseCharacterStatPoint Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="IncreaseCharacterStatPoint" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(IncreaseCharacterStatPoint.Length);
+    }
+
     /// <summary>
-    /// A helper struct to write a <see cref="MagicEffectCancelRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
-    public readonly ref struct MagicEffectCancelRequestThreadSafeWriter
+    public void Dispose()
     {
-        private readonly IConnection connection;
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ClientReadyAfterMapChange"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ClientReadyAfterMapChangeThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MagicEffectCancelRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public MagicEffectCancelRequestThreadSafeWriter(IConnection connection)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClientReadyAfterMapChangeThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ClientReadyAfterMapChangeThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ClientReadyAfterMapChange(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new MagicEffectCancelRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ClientReadyAfterMapChange.Length)[..ClientReadyAfterMapChange.Length];
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(MagicEffectCancelRequest.Length)[..MagicEffectCancelRequest.Length];
+    /// <summary>Gets the packet to write at.</summary>
+    public ClientReadyAfterMapChange Packet => this.Span;
 
-        /// <summary>Gets the packet to write at.</summary>
-        public MagicEffectCancelRequest Packet => this.Span;
+    /// <summary>
+    /// Commits the data of the <see cref="ClientReadyAfterMapChange" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(ClientReadyAfterMapChange.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="AddMasterSkillPoint"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct AddMasterSkillPointThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="MagicEffectCancelRequest" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddMasterSkillPointThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public AddMasterSkillPointThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(MagicEffectCancelRequest.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new AddMasterSkillPoint(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(AddMasterSkillPoint.Length)[..AddMasterSkillPoint.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public AddMasterSkillPoint Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="AddMasterSkillPoint" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(AddMasterSkillPoint.Length);
+    }
+
     /// <summary>
-    /// A helper struct to write a <see cref="AreaSkill"/> safely to a <see cref="IConnection.Output" />.
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
-    public readonly ref struct AreaSkillThreadSafeWriter
+    public void Dispose()
     {
-        private readonly IConnection connection;
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="HitRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct HitRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AreaSkillThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public AreaSkillThreadSafeWriter(IConnection connection)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HitRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public HitRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new AreaSkill(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new HitRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkill.Length)[..AreaSkill.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(HitRequest.Length)[..HitRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public AreaSkill Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public HitRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="AreaSkill" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Commits the data of the <see cref="HitRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(HitRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="TargetedSkill"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct TargetedSkillThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TargetedSkillThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public TargetedSkillThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(AreaSkill.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new TargetedSkill(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(TargetedSkill.Length)[..TargetedSkill.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public TargetedSkill Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="TargetedSkill" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(TargetedSkill.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="TargetedSkill075"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct TargetedSkill075ThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TargetedSkill075ThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public TargetedSkill075ThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new TargetedSkill075(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(TargetedSkill075.Length)[..TargetedSkill075.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public TargetedSkill075 Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="AreaSkillHit"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="TargetedSkill075" />.
     /// </summary>
-    public readonly ref struct AreaSkillHitThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
+        this.connection.Output.AdvanceAndFlushSafely(TargetedSkill075.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="TargetedSkill095"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct TargetedSkill095ThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AreaSkillHitThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public AreaSkillHitThreadSafeWriter(IConnection connection)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TargetedSkill095ThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public TargetedSkill095ThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new TargetedSkill095(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new AreaSkillHit(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(TargetedSkill095.Length)[..TargetedSkill095.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public TargetedSkill095 Packet => this.Span;
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkillHit.Length)[..AreaSkillHit.Length];
+    /// <summary>
+    /// Commits the data of the <see cref="TargetedSkill095" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(TargetedSkill095.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public AreaSkillHit Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="MagicEffectCancelRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct MagicEffectCancelRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="AreaSkillHit" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MagicEffectCancelRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public MagicEffectCancelRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(AreaSkillHit.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new MagicEffectCancelRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(MagicEffectCancelRequest.Length)[..MagicEffectCancelRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public MagicEffectCancelRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="MagicEffectCancelRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(MagicEffectCancelRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="AreaSkill"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct AreaSkillThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaSkillThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public AreaSkillThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new AreaSkill(span);
+        }
+        catch (InvalidOperationException)
+        {
             Monitor.Exit(this.connection);
+            throw;
         }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(AreaSkill.Length)[..AreaSkill.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public AreaSkill Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="AreaSkill" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(AreaSkill.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="AreaSkillHit"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct AreaSkillHitThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaSkillHitThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public AreaSkillHitThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new AreaSkillHit(span);
+        }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(AreaSkillHit.Length)[..AreaSkillHit.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public AreaSkillHit Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="AreaSkillHit" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(AreaSkillHit.Length);
+    }
+
     /// <summary>
-    /// A helper struct to write a <see cref="AreaSkill075"/> safely to a <see cref="IConnection.Output" />.
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
-    public readonly ref struct AreaSkill075ThreadSafeWriter
+    public void Dispose()
     {
-        private readonly IConnection connection;
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="AreaSkill075"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct AreaSkill075ThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AreaSkill075ThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public AreaSkill075ThreadSafeWriter(IConnection connection)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaSkill075ThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public AreaSkill075ThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new AreaSkill075(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new AreaSkill075(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkill075.Length)[..AreaSkill075.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(AreaSkill075.Length)[..AreaSkill075.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public AreaSkill075 Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public AreaSkill075 Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="AreaSkill075" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(AreaSkill075.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="AreaSkill075" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(AreaSkill075.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="AreaSkill095"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct AreaSkill095ThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="AreaSkill095"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="AreaSkill095ThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct AreaSkill095ThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public AreaSkill095ThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AreaSkill095ThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public AreaSkill095ThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new AreaSkill095(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new AreaSkill095(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AreaSkill095.Length)[..AreaSkill095.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(AreaSkill095.Length)[..AreaSkill095.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public AreaSkill095 Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public AreaSkill095 Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="AreaSkill095" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(AreaSkill095.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="AreaSkill095" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(AreaSkill095.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="TradeCancel"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct TradeCancelThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="TradeCancel"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="TradeCancelThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct TradeCancelThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public TradeCancelThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TradeCancelThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public TradeCancelThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new TradeCancel(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new TradeCancel(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeCancel.Length)[..TradeCancel.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(TradeCancel.Length)[..TradeCancel.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public TradeCancel Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public TradeCancel Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="TradeCancel" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(TradeCancel.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="TradeCancel" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(TradeCancel.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="TradeButtonStateChange"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct TradeButtonStateChangeThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="TradeButtonStateChange"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="TradeButtonStateChangeThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct TradeButtonStateChangeThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public TradeButtonStateChangeThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TradeButtonStateChangeThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public TradeButtonStateChangeThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new TradeButtonStateChange(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new TradeButtonStateChange(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeButtonStateChange.Length)[..TradeButtonStateChange.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(TradeButtonStateChange.Length)[..TradeButtonStateChange.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public TradeButtonStateChange Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public TradeButtonStateChange Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="TradeButtonStateChange" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(TradeButtonStateChange.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="TradeButtonStateChange" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(TradeButtonStateChange.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="TradeRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct TradeRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="TradeRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="TradeRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct TradeRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public TradeRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TradeRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public TradeRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new TradeRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new TradeRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeRequest.Length)[..TradeRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(TradeRequest.Length)[..TradeRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public TradeRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public TradeRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="TradeRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(TradeRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="TradeRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(TradeRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="TradeRequestResponse"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct TradeRequestResponseThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="TradeRequestResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="TradeRequestResponseThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct TradeRequestResponseThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public TradeRequestResponseThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TradeRequestResponseThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public TradeRequestResponseThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new TradeRequestResponse(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new TradeRequestResponse(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(TradeRequestResponse.Length)[..TradeRequestResponse.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(TradeRequestResponse.Length)[..TradeRequestResponse.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public TradeRequestResponse Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public TradeRequestResponse Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="TradeRequestResponse" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(TradeRequestResponse.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="TradeRequestResponse" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(TradeRequestResponse.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="SetTradeMoney"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct SetTradeMoneyThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="SetTradeMoney"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="SetTradeMoneyThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct SetTradeMoneyThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public SetTradeMoneyThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SetTradeMoneyThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public SetTradeMoneyThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new SetTradeMoney(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new SetTradeMoney(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SetTradeMoney.Length)[..SetTradeMoney.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(SetTradeMoney.Length)[..SetTradeMoney.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public SetTradeMoney Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public SetTradeMoney Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="SetTradeMoney" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(SetTradeMoney.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="SetTradeMoney" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(SetTradeMoney.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="LetterDeleteRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct LetterDeleteRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="LetterDeleteRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="LetterDeleteRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct LetterDeleteRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public LetterDeleteRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LetterDeleteRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public LetterDeleteRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new LetterDeleteRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new LetterDeleteRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LetterDeleteRequest.Length)[..LetterDeleteRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(LetterDeleteRequest.Length)[..LetterDeleteRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public LetterDeleteRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public LetterDeleteRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="LetterDeleteRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(LetterDeleteRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="LetterDeleteRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(LetterDeleteRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="LetterReadRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct LetterReadRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="LetterReadRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="LetterReadRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct LetterReadRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public LetterReadRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LetterReadRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public LetterReadRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new LetterReadRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new LetterReadRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LetterReadRequest.Length)[..LetterReadRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(LetterReadRequest.Length)[..LetterReadRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public LetterReadRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public LetterReadRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="LetterReadRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(LetterReadRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="LetterReadRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(LetterReadRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="GuildJoinRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct GuildJoinRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="GuildJoinRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="GuildJoinRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct GuildJoinRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public GuildJoinRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildJoinRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public GuildJoinRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new GuildJoinRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new GuildJoinRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildJoinRequest.Length)[..GuildJoinRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(GuildJoinRequest.Length)[..GuildJoinRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public GuildJoinRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public GuildJoinRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="GuildJoinRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(GuildJoinRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="GuildJoinRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(GuildJoinRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="GuildJoinResponse"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct GuildJoinResponseThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="GuildJoinResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="GuildJoinResponseThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct GuildJoinResponseThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public GuildJoinResponseThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildJoinResponseThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public GuildJoinResponseThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new GuildJoinResponse(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new GuildJoinResponse(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildJoinResponse.Length)[..GuildJoinResponse.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(GuildJoinResponse.Length)[..GuildJoinResponse.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public GuildJoinResponse Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public GuildJoinResponse Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="GuildJoinResponse" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(GuildJoinResponse.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="GuildJoinResponse" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(GuildJoinResponse.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="GuildListRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct GuildListRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="GuildListRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="GuildListRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct GuildListRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public GuildListRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildListRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public GuildListRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new GuildListRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new GuildListRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildListRequest.Length)[..GuildListRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(GuildListRequest.Length)[..GuildListRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public GuildListRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public GuildListRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="GuildListRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(GuildListRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="GuildListRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(GuildListRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="GuildCreateRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct GuildCreateRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="GuildCreateRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="GuildCreateRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct GuildCreateRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public GuildCreateRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildCreateRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public GuildCreateRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new GuildCreateRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new GuildCreateRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildCreateRequest.Length)[..GuildCreateRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(GuildCreateRequest.Length)[..GuildCreateRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public GuildCreateRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public GuildCreateRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="GuildCreateRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(GuildCreateRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="GuildCreateRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(GuildCreateRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="GuildCreateRequest075"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct GuildCreateRequest075ThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="GuildCreateRequest075"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="GuildCreateRequest075ThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct GuildCreateRequest075ThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public GuildCreateRequest075ThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildCreateRequest075ThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public GuildCreateRequest075ThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new GuildCreateRequest075(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new GuildCreateRequest075(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildCreateRequest075.Length)[..GuildCreateRequest075.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(GuildCreateRequest075.Length)[..GuildCreateRequest075.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public GuildCreateRequest075 Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public GuildCreateRequest075 Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="GuildCreateRequest075" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(GuildCreateRequest075.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="GuildCreateRequest075" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(GuildCreateRequest075.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="GuildMasterAnswer"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct GuildMasterAnswerThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="GuildMasterAnswer"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="GuildMasterAnswerThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct GuildMasterAnswerThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public GuildMasterAnswerThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildMasterAnswerThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public GuildMasterAnswerThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new GuildMasterAnswer(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new GuildMasterAnswer(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildMasterAnswer.Length)[..GuildMasterAnswer.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(GuildMasterAnswer.Length)[..GuildMasterAnswer.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public GuildMasterAnswer Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public GuildMasterAnswer Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="GuildMasterAnswer" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(GuildMasterAnswer.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="GuildMasterAnswer" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(GuildMasterAnswer.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="CancelGuildCreation"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct CancelGuildCreationThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="CancelGuildCreation"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="CancelGuildCreationThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct CancelGuildCreationThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public CancelGuildCreationThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CancelGuildCreationThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public CancelGuildCreationThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new CancelGuildCreation(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CancelGuildCreation.Length)[..CancelGuildCreation.Length];
-
-        /// <summary>Gets the packet to write at.</summary>
-        public CancelGuildCreation Packet => this.Span;
-
-        /// <summary>
-        /// Commits the data of the <see cref="CancelGuildCreation" />.
-        /// </summary>
-        public void Commit()
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(CancelGuildCreation.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new CancelGuildCreation(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(CancelGuildCreation.Length)[..CancelGuildCreation.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public CancelGuildCreation Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="GuildWarResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="CancelGuildCreation" />.
     /// </summary>
-    public readonly ref struct GuildWarResponseThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildWarResponseThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public GuildWarResponseThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new GuildWarResponse(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildWarResponse.Length)[..GuildWarResponse.Length];
+        this.connection.Output.AdvanceAndFlushSafely(CancelGuildCreation.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public GuildWarResponse Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="GuildWarResponse"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct GuildWarResponseThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="GuildWarResponse" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuildWarResponseThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public GuildWarResponseThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(GuildWarResponse.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new GuildWarResponse(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(GuildWarResponse.Length)[..GuildWarResponse.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public GuildWarResponse Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="GuildInfoRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="GuildWarResponse" />.
     /// </summary>
-    public readonly ref struct GuildInfoRequestThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuildInfoRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public GuildInfoRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new GuildInfoRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(GuildInfoRequest.Length)[..GuildInfoRequest.Length];
+        this.connection.Output.AdvanceAndFlushSafely(GuildWarResponse.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public GuildInfoRequest Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="GuildInfoRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct GuildInfoRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="GuildInfoRequest" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuildInfoRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public GuildInfoRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(GuildInfoRequest.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new GuildInfoRequest(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(GuildInfoRequest.Length)[..GuildInfoRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public GuildInfoRequest Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="ItemRepair"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="GuildInfoRequest" />.
     /// </summary>
-    public readonly ref struct ItemRepairThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ItemRepairThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public ItemRepairThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new ItemRepair(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ItemRepair.Length)[..ItemRepair.Length];
+        this.connection.Output.AdvanceAndFlushSafely(GuildInfoRequest.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public ItemRepair Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ItemRepair"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ItemRepairThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="ItemRepair" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemRepairThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ItemRepairThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(ItemRepair.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ItemRepair(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ItemRepair.Length)[..ItemRepair.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ItemRepair Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="ChaosMachineMixRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="ItemRepair" />.
     /// </summary>
-    public readonly ref struct ChaosMachineMixRequestThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChaosMachineMixRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public ChaosMachineMixRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new ChaosMachineMixRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ChaosMachineMixRequest.Length)[..ChaosMachineMixRequest.Length];
+        this.connection.Output.AdvanceAndFlushSafely(ItemRepair.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public ChaosMachineMixRequest Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ChaosMachineMixRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ChaosMachineMixRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="ChaosMachineMixRequest" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosMachineMixRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ChaosMachineMixRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(ChaosMachineMixRequest.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ChaosMachineMixRequest(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ChaosMachineMixRequest.Length)[..ChaosMachineMixRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ChaosMachineMixRequest Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="CraftingDialogCloseRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="ChaosMachineMixRequest" />.
     /// </summary>
-    public readonly ref struct CraftingDialogCloseRequestThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CraftingDialogCloseRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public CraftingDialogCloseRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new CraftingDialogCloseRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(CraftingDialogCloseRequest.Length)[..CraftingDialogCloseRequest.Length];
+        this.connection.Output.AdvanceAndFlushSafely(ChaosMachineMixRequest.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public CraftingDialogCloseRequest Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="CraftingDialogCloseRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct CraftingDialogCloseRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="CraftingDialogCloseRequest" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CraftingDialogCloseRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public CraftingDialogCloseRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(CraftingDialogCloseRequest.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new CraftingDialogCloseRequest(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(CraftingDialogCloseRequest.Length)[..CraftingDialogCloseRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public CraftingDialogCloseRequest Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="FriendAddRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="CraftingDialogCloseRequest" />.
     /// </summary>
-    public readonly ref struct FriendAddRequestThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FriendAddRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public FriendAddRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new FriendAddRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FriendAddRequest.Length)[..FriendAddRequest.Length];
+        this.connection.Output.AdvanceAndFlushSafely(CraftingDialogCloseRequest.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public FriendAddRequest Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="FriendAddRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct FriendAddRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="FriendAddRequest" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FriendAddRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public FriendAddRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(FriendAddRequest.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new FriendAddRequest(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(FriendAddRequest.Length)[..FriendAddRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public FriendAddRequest Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="FriendDelete"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="FriendAddRequest" />.
     /// </summary>
-    public readonly ref struct FriendDeleteThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FriendDeleteThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public FriendDeleteThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new FriendDelete(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FriendDelete.Length)[..FriendDelete.Length];
+        this.connection.Output.AdvanceAndFlushSafely(FriendAddRequest.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public FriendDelete Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="FriendDelete"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct FriendDeleteThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="FriendDelete" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FriendDeleteThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public FriendDeleteThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(FriendDelete.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new FriendDelete(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(FriendDelete.Length)[..FriendDelete.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public FriendDelete Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="ChatRoomCreateRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="FriendDelete" />.
     /// </summary>
-    public readonly ref struct ChatRoomCreateRequestThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoomCreateRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public ChatRoomCreateRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new ChatRoomCreateRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomCreateRequest.Length)[..ChatRoomCreateRequest.Length];
+        this.connection.Output.AdvanceAndFlushSafely(FriendDelete.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public ChatRoomCreateRequest Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ChatRoomCreateRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ChatRoomCreateRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="ChatRoomCreateRequest" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatRoomCreateRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ChatRoomCreateRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(ChatRoomCreateRequest.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ChatRoomCreateRequest(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomCreateRequest.Length)[..ChatRoomCreateRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ChatRoomCreateRequest Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="FriendAddResponse"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="ChatRoomCreateRequest" />.
     /// </summary>
-    public readonly ref struct FriendAddResponseThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FriendAddResponseThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public FriendAddResponseThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new FriendAddResponse(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(FriendAddResponse.Length)[..FriendAddResponse.Length];
+        this.connection.Output.AdvanceAndFlushSafely(ChatRoomCreateRequest.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public FriendAddResponse Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="FriendAddResponse"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct FriendAddResponseThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="FriendAddResponse" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FriendAddResponseThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public FriendAddResponseThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(FriendAddResponse.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new FriendAddResponse(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(FriendAddResponse.Length)[..FriendAddResponse.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public FriendAddResponse Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="SetFriendOnlineState"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="FriendAddResponse" />.
     /// </summary>
-    public readonly ref struct SetFriendOnlineStateThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SetFriendOnlineStateThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public SetFriendOnlineStateThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new SetFriendOnlineState(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(SetFriendOnlineState.Length)[..SetFriendOnlineState.Length];
+        this.connection.Output.AdvanceAndFlushSafely(FriendAddResponse.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public SetFriendOnlineState Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="SetFriendOnlineState"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct SetFriendOnlineStateThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="SetFriendOnlineState" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SetFriendOnlineStateThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public SetFriendOnlineStateThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(SetFriendOnlineState.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new SetFriendOnlineState(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(SetFriendOnlineState.Length)[..SetFriendOnlineState.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public SetFriendOnlineState Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="ChatRoomInvitationRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="SetFriendOnlineState" />.
     /// </summary>
-    public readonly ref struct ChatRoomInvitationRequestThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoomInvitationRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public ChatRoomInvitationRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new ChatRoomInvitationRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomInvitationRequest.Length)[..ChatRoomInvitationRequest.Length];
+        this.connection.Output.AdvanceAndFlushSafely(SetFriendOnlineState.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public ChatRoomInvitationRequest Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ChatRoomInvitationRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ChatRoomInvitationRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="ChatRoomInvitationRequest" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatRoomInvitationRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ChatRoomInvitationRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(ChatRoomInvitationRequest.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ChatRoomInvitationRequest(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ChatRoomInvitationRequest.Length)[..ChatRoomInvitationRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ChatRoomInvitationRequest Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="LegacyQuestStateRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="ChatRoomInvitationRequest" />.
     /// </summary>
-    public readonly ref struct LegacyQuestStateRequestThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LegacyQuestStateRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public LegacyQuestStateRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new LegacyQuestStateRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestStateRequest.Length)[..LegacyQuestStateRequest.Length];
+        this.connection.Output.AdvanceAndFlushSafely(ChatRoomInvitationRequest.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public LegacyQuestStateRequest Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="LegacyQuestStateRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct LegacyQuestStateRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="LegacyQuestStateRequest" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LegacyQuestStateRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public LegacyQuestStateRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(LegacyQuestStateRequest.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new LegacyQuestStateRequest(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
     }
-      
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestStateRequest.Length)[..LegacyQuestStateRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public LegacyQuestStateRequest Packet => this.Span;
+
     /// <summary>
-    /// A helper struct to write a <see cref="LegacyQuestStateSetRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Commits the data of the <see cref="LegacyQuestStateRequest" />.
     /// </summary>
-    public readonly ref struct LegacyQuestStateSetRequestThreadSafeWriter
+    public void Commit()
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LegacyQuestStateSetRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public LegacyQuestStateSetRequestThreadSafeWriter(IConnection connection)
-        {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new LegacyQuestStateSetRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
-        }
-
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestStateSetRequest.Length)[..LegacyQuestStateSetRequest.Length];
+        this.connection.Output.AdvanceAndFlushSafely(LegacyQuestStateRequest.Length);
+    }
 
-        /// <summary>Gets the packet to write at.</summary>
-        public LegacyQuestStateSetRequest Packet => this.Span;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="LegacyQuestStateSetRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct LegacyQuestStateSetRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
 
-        /// <summary>
-        /// Commits the data of the <see cref="LegacyQuestStateSetRequest" />.
-        /// </summary>
-        public void Commit()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LegacyQuestStateSetRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public LegacyQuestStateSetRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection.Output.AdvanceAndFlushSafely(LegacyQuestStateSetRequest.Length);
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new LegacyQuestStateSetRequest(span);
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        catch (InvalidOperationException)
         {
             Monitor.Exit(this.connection);
+            throw;
         }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(LegacyQuestStateSetRequest.Length)[..LegacyQuestStateSetRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public LegacyQuestStateSetRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="LegacyQuestStateSetRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(LegacyQuestStateSetRequest.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="PetCommandRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PetCommandRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="PetCommandRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="PetCommandRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct PetCommandRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public PetCommandRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PetCommandRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PetCommandRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PetCommandRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PetCommandRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PetCommandRequest.Length)[..PetCommandRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PetCommandRequest.Length)[..PetCommandRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public PetCommandRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public PetCommandRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="PetCommandRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PetCommandRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="PetCommandRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PetCommandRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="PetInfoRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PetInfoRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="PetInfoRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="PetInfoRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct PetInfoRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public PetInfoRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PetInfoRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PetInfoRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new PetInfoRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PetInfoRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(PetInfoRequest.Length)[..PetInfoRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PetInfoRequest.Length)[..PetInfoRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public PetInfoRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public PetInfoRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="PetInfoRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(PetInfoRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="PetInfoRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(PetInfoRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="QuestSelectRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct QuestSelectRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="QuestSelectRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="QuestSelectRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct QuestSelectRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public QuestSelectRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuestSelectRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public QuestSelectRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new QuestSelectRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new QuestSelectRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestSelectRequest.Length)[..QuestSelectRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(QuestSelectRequest.Length)[..QuestSelectRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public QuestSelectRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public QuestSelectRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="QuestSelectRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(QuestSelectRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="QuestSelectRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(QuestSelectRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="QuestProceedRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct QuestProceedRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="QuestProceedRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="QuestProceedRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct QuestProceedRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public QuestProceedRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuestProceedRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public QuestProceedRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new QuestProceedRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new QuestProceedRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestProceedRequest.Length)[..QuestProceedRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(QuestProceedRequest.Length)[..QuestProceedRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public QuestProceedRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public QuestProceedRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="QuestProceedRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(QuestProceedRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="QuestProceedRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(QuestProceedRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="QuestCompletionRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct QuestCompletionRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="QuestCompletionRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="QuestCompletionRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct QuestCompletionRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public QuestCompletionRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuestCompletionRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public QuestCompletionRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new QuestCompletionRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new QuestCompletionRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestCompletionRequest.Length)[..QuestCompletionRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(QuestCompletionRequest.Length)[..QuestCompletionRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public QuestCompletionRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public QuestCompletionRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="QuestCompletionRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(QuestCompletionRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="QuestCompletionRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(QuestCompletionRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="QuestCancelRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct QuestCancelRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="QuestCancelRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="QuestCancelRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct QuestCancelRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public QuestCancelRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuestCancelRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public QuestCancelRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new QuestCancelRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new QuestCancelRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestCancelRequest.Length)[..QuestCancelRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(QuestCancelRequest.Length)[..QuestCancelRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public QuestCancelRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public QuestCancelRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="QuestCancelRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(QuestCancelRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="QuestCancelRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(QuestCancelRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="QuestClientActionRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct QuestClientActionRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="QuestClientActionRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="QuestClientActionRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct QuestClientActionRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public QuestClientActionRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuestClientActionRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public QuestClientActionRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new QuestClientActionRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new QuestClientActionRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestClientActionRequest.Length)[..QuestClientActionRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(QuestClientActionRequest.Length)[..QuestClientActionRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public QuestClientActionRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public QuestClientActionRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="QuestClientActionRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(QuestClientActionRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="QuestClientActionRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(QuestClientActionRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="ActiveQuestListRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ActiveQuestListRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="ActiveQuestListRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="ActiveQuestListRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct ActiveQuestListRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public ActiveQuestListRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ActiveQuestListRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public ActiveQuestListRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new ActiveQuestListRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ActiveQuestListRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(ActiveQuestListRequest.Length)[..ActiveQuestListRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ActiveQuestListRequest.Length)[..ActiveQuestListRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public ActiveQuestListRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public ActiveQuestListRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="ActiveQuestListRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(ActiveQuestListRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="ActiveQuestListRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(ActiveQuestListRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="QuestStateRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct QuestStateRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="QuestStateRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="QuestStateRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct QuestStateRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public QuestStateRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuestStateRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public QuestStateRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new QuestStateRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new QuestStateRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(QuestStateRequest.Length)[..QuestStateRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(QuestStateRequest.Length)[..QuestStateRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public QuestStateRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public QuestStateRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="QuestStateRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(QuestStateRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="QuestStateRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(QuestStateRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="EventQuestStateListRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct EventQuestStateListRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="EventQuestStateListRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="EventQuestStateListRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct EventQuestStateListRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public EventQuestStateListRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventQuestStateListRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public EventQuestStateListRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new EventQuestStateListRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new EventQuestStateListRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(EventQuestStateListRequest.Length)[..EventQuestStateListRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(EventQuestStateListRequest.Length)[..EventQuestStateListRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public EventQuestStateListRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public EventQuestStateListRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="EventQuestStateListRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(EventQuestStateListRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="EventQuestStateListRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(EventQuestStateListRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="AvailableQuestsRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct AvailableQuestsRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="AvailableQuestsRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="AvailableQuestsRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct AvailableQuestsRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public AvailableQuestsRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AvailableQuestsRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public AvailableQuestsRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new AvailableQuestsRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new AvailableQuestsRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(AvailableQuestsRequest.Length)[..AvailableQuestsRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(AvailableQuestsRequest.Length)[..AvailableQuestsRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public AvailableQuestsRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public AvailableQuestsRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="AvailableQuestsRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(AvailableQuestsRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="AvailableQuestsRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(AvailableQuestsRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="NpcBuffRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct NpcBuffRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="NpcBuffRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="NpcBuffRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct NpcBuffRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public NpcBuffRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NpcBuffRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public NpcBuffRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new NpcBuffRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new NpcBuffRequest(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(NpcBuffRequest.Length)[..NpcBuffRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(NpcBuffRequest.Length)[..NpcBuffRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public NpcBuffRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public NpcBuffRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="NpcBuffRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(NpcBuffRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="NpcBuffRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(NpcBuffRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="DevilSquareEnterRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct DevilSquareEnterRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="DevilSquareEnterRequest"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="DevilSquareEnterRequestThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct DevilSquareEnterRequestThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public DevilSquareEnterRequestThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DevilSquareEnterRequestThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public DevilSquareEnterRequestThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new DevilSquareEnterRequest(span);
+        }
+        catch (InvalidOperationException)
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new DevilSquareEnterRequest(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            Monitor.Exit(this.connection);
+            throw;
         }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(DevilSquareEnterRequest.Length)[..DevilSquareEnterRequest.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(DevilSquareEnterRequest.Length)[..DevilSquareEnterRequest.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public DevilSquareEnterRequest Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public DevilSquareEnterRequest Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="DevilSquareEnterRequest" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(DevilSquareEnterRequest.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="DevilSquareEnterRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(DevilSquareEnterRequest.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
+}
       
+/// <summary>
+/// A helper struct to write a <see cref="RequestEventRemainingTime"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct RequestEventRemainingTimeThreadSafeWriter
+{
+    private readonly IConnection connection;
+
     /// <summary>
-    /// A helper struct to write a <see cref="RequestEventRemainingTime"/> safely to a <see cref="IConnection.Output" />.
+    /// Initializes a new instance of the <see cref="RequestEventRemainingTimeThreadSafeWriter" /> struct.
     /// </summary>
-    public readonly ref struct RequestEventRemainingTimeThreadSafeWriter
+    /// <param name="connection">The connection.</param>
+    public RequestEventRemainingTimeThreadSafeWriter(IConnection connection)
     {
-        private readonly IConnection connection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RequestEventRemainingTimeThreadSafeWriter" /> struct.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public RequestEventRemainingTimeThreadSafeWriter(IConnection connection)
+        this.connection = connection;
+        Monitor.Enter(this.connection);
+        try
         {
-            this.connection = connection;
-            Monitor.Enter(this.connection);
-            try
-            {
-                // Initialize header and default values
-                var span = this.Span;
-                span.Clear();
-                _ = new RequestEventRemainingTime(span);
-            }
-            catch (InvalidOperationException)
-            {
-                Monitor.Exit(this.connection);
-                throw;
-            }
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new RequestEventRemainingTime(span);
         }
+        catch (InvalidOperationException)
+        {
+            Monitor.Exit(this.connection);
+            throw;
+        }
+    }
 
-        /// <summary>Gets the span to write at.</summary>
-        private Span<byte> Span => this.connection.Output.GetSpan(RequestEventRemainingTime.Length)[..RequestEventRemainingTime.Length];
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(RequestEventRemainingTime.Length)[..RequestEventRemainingTime.Length];
 
-        /// <summary>Gets the packet to write at.</summary>
-        public RequestEventRemainingTime Packet => this.Span;
+    /// <summary>Gets the packet to write at.</summary>
+    public RequestEventRemainingTime Packet => this.Span;
 
-        /// <summary>
-        /// Commits the data of the <see cref="RequestEventRemainingTime" />.
-        /// </summary>
-        public void Commit()
-        {
-            this.connection.Output.AdvanceAndFlushSafely(RequestEventRemainingTime.Length);
-        }
+    /// <summary>
+    /// Commits the data of the <see cref="RequestEventRemainingTime" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceAndFlushSafely(RequestEventRemainingTime.Length);
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Monitor.Exit(this.connection);
-        }
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Monitor.Exit(this.connection);
     }
-      }
+}
+      

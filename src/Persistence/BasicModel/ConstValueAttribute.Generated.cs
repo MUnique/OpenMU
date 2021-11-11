@@ -10,69 +10,66 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="ConstValueAttribute"/>.
+/// </summary>
+public partial class ConstValueAttribute : MUnique.OpenMU.AttributeSystem.ConstValueAttribute, IIdentifiable, IConvertibleTo<ConstValueAttribute>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
+    
+    /// <inheritdoc />
+    public ConstValueAttribute(System.Single value, MUnique.OpenMU.AttributeSystem.AttributeDefinition definition)
+        : base(value, definition)
+    {
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of this instance.
+    /// </summary>
+    public Guid Id { get; set; }
     
     /// <summary>
-    /// A plain implementation of <see cref="ConstValueAttribute"/>.
+    /// Gets the raw object of <see cref="Definition" />.
     /// </summary>
-    public partial class ConstValueAttribute : MUnique.OpenMU.AttributeSystem.ConstValueAttribute, IIdentifiable, IConvertibleTo<ConstValueAttribute>
+    [Newtonsoft.Json.JsonProperty("definition")]
+    [System.Text.Json.Serialization.JsonPropertyName("definition")]
+    public AttributeDefinition RawDefinition
     {
-        
-        /// <inheritdoc />
-        public ConstValueAttribute(System.Single value, MUnique.OpenMU.AttributeSystem.AttributeDefinition definition)
-            : base(value, definition)
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="Definition" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("definition")]
-        [System.Text.Json.Serialization.JsonPropertyName("definition")]
-        public AttributeDefinition RawDefinition
-        {
-            get => base.Definition as AttributeDefinition;
-            set => base.Definition = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Definition
-        {
-            get => base.Definition;
-            protected set => base.Definition = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public ConstValueAttribute Convert() => this;
+        get => base.Definition as AttributeDefinition;
+        set => base.Definition = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Definition
+    {
+        get => base.Definition;
+        protected set => base.Definition = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public ConstValueAttribute Convert() => this;
 }

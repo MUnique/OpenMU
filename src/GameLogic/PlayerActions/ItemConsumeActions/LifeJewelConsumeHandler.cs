@@ -4,23 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
-{
-    using MUnique.OpenMU.DataModel.Configuration.Items;
-    using MUnique.OpenMU.Persistence;
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// Consume handler for the Jewel of Life which adds and increases the item option of <see cref="ItemOptionTypes.Option"/>.
+/// </summary>
+public class LifeJewelConsumeHandler : ItemUpgradeConsumeHandler
+{
     /// <summary>
-    /// Consume handler for the Jewel of Life which adds and increases the item option of <see cref="ItemOptionTypes.Option"/>.
+    /// Initializes a new instance of the <see cref="LifeJewelConsumeHandler" /> class.
     /// </summary>
-    public class LifeJewelConsumeHandler : ItemUpgradeConsumeHandler
+    /// <param name="persistenceContextProvider">The persistence context provider.</param>
+    public LifeJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
+        : base(persistenceContextProvider, new ItemUpgradeConfiguration(ItemOptionTypes.Option, true, true, 0.5, ItemFailResult.DecreaseOptionByOneOrRemove))
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LifeJewelConsumeHandler" /> class.
-        /// </summary>
-        /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public LifeJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
-            : base(persistenceContextProvider, new ItemUpgradeConfiguration(ItemOptionTypes.Option, true, true, 0.5, ItemFailResult.DecreaseOptionByOneOrRemove))
-        {
-        }
     }
 }

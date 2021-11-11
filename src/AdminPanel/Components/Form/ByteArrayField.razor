@@ -6,7 +6,7 @@
 
 @inherits NotifyableInputBase<byte[]>
 
-@inject IModalService ModalService
+@inject IModalService _modalService
 
     <div>
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
@@ -78,7 +78,7 @@
             await using var memoryStream = new MemoryStream();
             await file.Data.CopyToAsync(memoryStream);
             this.CurrentValue = memoryStream.ToArray();
-            await this.ModalService.ShowMessageAsync(this.FieldIdentifier.FieldName, $"Loaded {file.Name} with {this.CurrentValue.Length} bytes.");
+            await this._modalService.ShowMessageAsync(this.FieldIdentifier.FieldName, $"Loaded {file.Name} with {this.CurrentValue.Length} bytes.");
         }
     }
 }

@@ -2,77 +2,73 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
+
+using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.Views.NPC;
+
+/// <summary>
+/// Crafting to add the Guardian Options (Level 380) to corresponding items.
+/// </summary>
+public class GuardianOptionCrafting : SimpleItemCraftingHandler
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Items;
-    using MUnique.OpenMU.GameLogic.Views.NPC;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuardianOptionCrafting"/> class.
+    /// </summary>
+    /// <param name="settings">The settings.</param>
+    public GuardianOptionCrafting(SimpleCraftingSettings settings)
+        : base(settings)
+    {
+    }
 
     /// <summary>
-    /// Crafting to add the Guardian Options (Level 380) to corresponding items.
+    /// Gets the reference to the affected item which must be specified in the <see cref="ItemCraftingRequiredItem.Reference"/>.
     /// </summary>
-    public class GuardianOptionCrafting : SimpleItemCraftingHandler
+    public static byte ItemReference { get; } = 0x88;
+
+    /// <inheritdoc />
+    protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GuardianOptionCrafting"/> class.
-        /// </summary>
-        /// <param name="settings">The settings.</param>
-        public GuardianOptionCrafting(SimpleCraftingSettings settings)
-            : base(settings)
+        var item = requiredItems.First(i => i.ItemRequirement.Reference == ItemReference && i.Items.Any()).Items.First();
+        foreach (var optionDefinition in item.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption)).PossibleOptions)
         {
+            var optionLink = player.PersistenceContext.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = optionDefinition;
+            item.ItemOptions.Add(optionLink);
         }
 
-        /// <summary>
-        /// Gets the reference to the affected item which must be specified in the <see cref="ItemCraftingRequiredItem.Reference"/>.
-        /// </summary>
-        public static byte ItemReference { get; } = 0x88;
+        yield return item;
+    }
 
-        /// <inheritdoc />
-        protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    /// <inheritdoc />
+    protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    {
+        if (base.TryGetRequiredItems(player, out items, out successRate) is { } error)
         {
-            var item = requiredItems.First(i => i.ItemRequirement.Reference == ItemReference && i.Items.Any()).Items.First();
-            foreach (var optionDefinition in item.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption)).PossibleOptions)
-            {
-                var optionLink = player.PersistenceContext.CreateNew<ItemOptionLink>();
-                optionLink.ItemOption = optionDefinition;
-                item.ItemOptions.Add(optionLink);
-            }
-
-            yield return item;
+            return error;
         }
 
-        /// <inheritdoc />
-        protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+        if (items.Where(i => i.ItemRequirement.Reference == ItemReference).Sum(i => i.Items.Count()) > 1)
         {
-            if (base.TryGetRequiredItems(player, out items, out successRate) is { } error)
-            {
-                return error;
-            }
-
-            if (items.Where(i => i.ItemRequirement.Reference == ItemReference).Sum(i => i.Items.Count()) > 1)
-            {
-                return CraftingResult.TooManyItems;
-            }
-
-            return default;
+            return CraftingResult.TooManyItems;
         }
 
-        /// <inheritdoc />
-        protected override bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
-        {
-            if (requiredItem.Reference == 0)
-            {
-                return base.RequiredItemMatches(item, requiredItem);
-            }
+        return default;
+    }
 
-            return base.RequiredItemMatches(item, requiredItem)
-                   && item.Definition!.PossibleItemOptions.Any(o =>
-                       o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption))
-                   && item.ItemOptions.All(o => o.ItemOption!.OptionType != ItemOptionTypes.GuardianOption);
+    /// <inheritdoc />
+    protected override bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
+    {
+        if (requiredItem.Reference == 0)
+        {
+            return base.RequiredItemMatches(item, requiredItem);
         }
+
+        return base.RequiredItemMatches(item, requiredItem)
+               && item.Definition!.PossibleItemOptions.Any(o =>
+                   o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption))
+               && item.ItemOptions.All(o => o.ItemOption!.OptionType != ItemOptionTypes.GuardianOption);
     }
 }

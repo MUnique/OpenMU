@@ -2,38 +2,35 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.GameLogic;
+
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// A temporary item which is not persistent (yet).
+/// </summary>
+/// <seealso cref="MUnique.OpenMU.DataModel.Entities.Item" />
+public sealed class TemporaryItem : Item
 {
-    using System.Collections.Generic;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.Persistence;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TemporaryItem"/> class.
+    /// </summary>
+    public TemporaryItem()
+    {
+        this.ItemOptions = new List<ItemOptionLink>();
+        this.ItemSetGroups = new List<ItemSetGroup>();
+    }
 
     /// <summary>
-    /// A temporary item which is not persistent (yet).
+    /// Makes this item persistent.
     /// </summary>
-    /// <seealso cref="MUnique.OpenMU.DataModel.Entities.Item" />
-    public sealed class TemporaryItem : Item
+    /// <param name="persistenceContext">The persistence context where the item should be added.</param>
+    /// <returns>The persistent item.</returns>
+    public Item MakePersistent(IContext persistenceContext)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TemporaryItem"/> class.
-        /// </summary>
-        public TemporaryItem()
-        {
-            this.ItemOptions = new List<ItemOptionLink>();
-            this.ItemSetGroups = new List<ItemSetGroup>();
-        }
-
-        /// <summary>
-        /// Makes this item persistent.
-        /// </summary>
-        /// <param name="persistenceContext">The persistence context where the item should be added.</param>
-        /// <returns>The persistent item.</returns>
-        public Item MakePersistent(IContext persistenceContext)
-        {
-            var persistentItem = persistenceContext.CreateNew<Item>();
-            persistentItem.AssignValues(this);
-            return persistentItem;
-        }
+        var persistentItem = persistenceContext.CreateNew<Item>();
+        persistentItem.AssignValues(this);
+        return persistentItem;
     }
 }

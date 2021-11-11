@@ -2,34 +2,33 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns
+namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns;
+
+using System.Threading;
+using Microsoft.JSInterop;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Views.World;
+
+/// <summary>
+/// Implementation of <see cref="IObjectGotKilledPlugIn"/> which uses the javascript map app.
+/// </summary>
+public class ObjectGotKilledPlugIn : JsViewPlugInBase, IObjectGotKilledPlugIn
 {
-    using System.Threading;
-    using Microsoft.JSInterop;
-    using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.Views.World;
-
     /// <summary>
-    /// Implementation of <see cref="IObjectGotKilledPlugIn"/> which uses the javascript map app.
+    /// Initializes a new instance of the <see cref="ObjectGotKilledPlugIn"/> class.
     /// </summary>
-    public class ObjectGotKilledPlugIn : JsViewPlugInBase, IObjectGotKilledPlugIn
+    /// <param name="jsRuntime">The js runtime.</param>
+    /// <param name="worldAccessor">The world accessor.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    public ObjectGotKilledPlugIn(IJSRuntime jsRuntime, string worldAccessor, CancellationToken cancellationToken)
+        : base(jsRuntime, $"{worldAccessor}.killObject", cancellationToken)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectGotKilledPlugIn"/> class.
-        /// </summary>
-        /// <param name="jsRuntime">The js runtime.</param>
-        /// <param name="worldAccessor">The world accessor.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public ObjectGotKilledPlugIn(IJSRuntime jsRuntime, string worldAccessor, CancellationToken cancellationToken)
-            : base(jsRuntime, $"{worldAccessor}.killObject", cancellationToken)
-        {
-        }
+    }
 
-        /// <inheritdoc />
-        public async void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject, Skill? skill = null)
-        {
-            await this.InvokeAsync(killedObject.Id, killerObject.Id);
-        }
+    /// <inheritdoc />
+    public async void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject, Skill? skill = null)
+    {
+        await this.InvokeAsync(killedObject.Id, killerObject.Id);
     }
 }

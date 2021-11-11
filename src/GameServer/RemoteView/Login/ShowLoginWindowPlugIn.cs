@@ -2,52 +2,50 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView.Login
+namespace MUnique.OpenMU.GameServer.RemoteView.Login;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Login;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="IShowLoginWindowPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn(nameof(ShowLoginWindowPlugIn), "The default implementation of the IShowLoginWindowPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Guid("c5240952-1870-4f09-a3e4-9f6413845a23")]
+public class ShowLoginWindowPlugIn : IShowLoginWindowPlugIn
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.GameLogic.Views.Login;
-    using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets.ServerToClient;
-    using MUnique.OpenMU.Network.PlugIns;
-    using MUnique.OpenMU.PlugIns;
+    private readonly RemotePlayer _player;
 
     /// <summary>
-    /// The default implementation of the <see cref="IShowLoginWindowPlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// Initializes a new instance of the <see cref="ShowLoginWindowPlugIn"/> class.
     /// </summary>
-    [PlugIn(nameof(ShowLoginWindowPlugIn), "The default implementation of the IShowLoginWindowPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("c5240952-1870-4f09-a3e4-9f6413845a23")]
-    public class ShowLoginWindowPlugIn : IShowLoginWindowPlugIn
+    /// <param name="player">The player.</param>
+    public ShowLoginWindowPlugIn(RemotePlayer player)
     {
-        private readonly RemotePlayer player;
+        this._player = player;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ShowLoginWindowPlugIn"/> class.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        public ShowLoginWindowPlugIn(RemotePlayer player)
+    /// <inheritdoc/>
+    public void ShowLoginWindow()
+    {
+        var connection = this._player.Connection;
+        if (connection is null)
         {
-            this.player = player;
+            return;
         }
 
-        /// <inheritdoc/>
-        public void ShowLoginWindow()
+        using var writer = connection.StartSafeWrite(GameServerEntered.HeaderType, GameServerEntered.Length);
+        var message = new GameServerEntered(writer.Span)
         {
-            var connection = this.player.Connection;
-            if (connection is null)
-            {
-                return;
-            }
+            PlayerId = ViewExtensions.ConstantPlayerId,
+        };
 
-            using var writer = connection.StartSafeWrite(GameServerEntered.HeaderType, GameServerEntered.Length);
-            var message = new GameServerEntered(writer.Span)
-            {
-                PlayerId = ViewExtensions.ConstantPlayerId,
-            };
-
-            ClientVersionResolver.Resolve(this.player.ClientVersion).CopyTo(message.Version);
-            writer.Commit();
-        }
+        ClientVersionResolver.Resolve(this._player.ClientVersion).CopyTo(message.Version);
+        writer.Commit();
     }
 }

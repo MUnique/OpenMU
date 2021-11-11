@@ -2,16 +2,15 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Interfaces
+namespace MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// The interface for a connect server.
+/// </summary>
+public interface IConnectServer : IManageableServer, IGameServerStateObserver
 {
     /// <summary>
-    /// The interface for a connect server.
+    /// Gets the settings.
     /// </summary>
-    public interface IConnectServer : IManageableServer, IGameServerStateObserver
-    {
-        /// <summary>
-        /// Gets the settings.
-        /// </summary>
-        IConnectServerSettings Settings { get; }
-    }
+    IConnectServerSettings Settings { get; }
 }

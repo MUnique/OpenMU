@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(MonsterDefinitionDropItemGroup), Schema = SchemaNames.Configuration)]
+internal partial class MonsterDefinitionDropItemGroup
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid MonsterDefinitionId { get; set; }
+    public MonsterDefinition MonsterDefinition { get; set; }
 
-    [Table(nameof(MonsterDefinitionDropItemGroup), Schema = SchemaNames.Configuration)]
-    internal partial class MonsterDefinitionDropItemGroup
-    {
-        public Guid MonsterDefinitionId { get; set; }
-        public MonsterDefinition MonsterDefinition { get; set; }
+    public Guid DropItemGroupId { get; set; }
+    public DropItemGroup DropItemGroup { get; set; }
+}
 
-        public Guid DropItemGroupId { get; set; }
-        public DropItemGroup DropItemGroup { get; set; }
-    }
-
-    internal partial class MonsterDefinition
-    {
-        public ICollection<MonsterDefinitionDropItemGroup> JoinedDropItemGroups { get; } = new EntityFramework.List<MonsterDefinitionDropItemGroup>();
-    }
+internal partial class MonsterDefinition
+{
+    public ICollection<MonsterDefinitionDropItemGroup> JoinedDropItemGroups { get; } = new EntityFramework.List<MonsterDefinitionDropItemGroup>();
 }

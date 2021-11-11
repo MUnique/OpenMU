@@ -2,89 +2,86 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Network.Analyzer
+namespace MUnique.OpenMU.Network.Analyzer;
+
+using System.ComponentModel;
+using System.Windows.Forms;
+
+/// <summary>
+/// A simple packet sender form which allows to send data packets to the client or the server.
+/// </summary>
+public partial class PacketSenderForm : Form
 {
-    using System;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Windows.Forms;
+    private readonly LiveConnection _connection = null!;
 
     /// <summary>
-    /// A simple packet sender form which allows to send data packets to the client or the server.
+    /// Initializes a new instance of the <see cref="PacketSenderForm"/> class.
     /// </summary>
-    public partial class PacketSenderForm : Form
+    public PacketSenderForm()
     {
-        private readonly LiveConnection connection = null!;
+        this.InitializeComponent();
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PacketSenderForm"/> class.
-        /// </summary>
-        public PacketSenderForm()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PacketSenderForm"/> class.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PacketSenderForm(LiveConnection connection)
+    {
+        this.InitializeComponent();
+        this._connection = connection;
+
+        this.SetText();
+
+        this.sendButton.Click += this.SendButtonClick;
+        connection.PropertyChanged += this.ConnectionOnPropertyChanged;
+    }
+
+    private void ConnectionOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (!this.InvokeRequired)
         {
-            this.InitializeComponent();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PacketSenderForm"/> class.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        public PacketSenderForm(LiveConnection connection)
-        {
-            this.InitializeComponent();
-            this.connection = connection;
-
             this.SetText();
-
-            this.sendButton.Click += this.SendButtonClick;
-            connection.PropertyChanged += this.ConnectionOnPropertyChanged;
+            return;
         }
 
-        private void ConnectionOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        if (this.IsHandleCreated)
         {
-            if (!this.InvokeRequired)
+            this.Invoke((Action)this.SetText);
+        }
+    }
+
+    private void SetText()
+    {
+        this.Text = $"Packet Sender ({this._connection.Name})";
+        if (!this._connection.IsConnected)
+        {
+            this.sendButton.Enabled = false;
+        }
+    }
+
+    private void SendButtonClick(object? sender, EventArgs e)
+    {
+        foreach (var line in this.packetTextBox.Lines.Where(l => !string.IsNullOrEmpty(l.Trim())))
+        {
+            if (!CapturedConnectionExtensions.TryParseArray(line.Trim(), out var data))
             {
-                this.SetText();
+                MessageBox.Show("Wrong format. Please enter the packet in hex format with a space between each byte. \n Example: C1 03 30", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (this.IsHandleCreated)
+            if (!this._connection.IsConnected)
             {
-                this.Invoke((Action)this.SetText);
+                return;
             }
-        }
 
-        private void SetText()
-        {
-            this.Text = $"Packet Sender ({this.connection.Name})";
-            if (!this.connection.IsConnected)
+            if (this.toClientRadioButton.Checked)
             {
-                this.sendButton.Enabled = false;
+                this._connection.SendToClient(data);
             }
-        }
-
-        private void SendButtonClick(object? sender, EventArgs e)
-        {
-            foreach (var line in this.packetTextBox.Lines.Where(l => !string.IsNullOrEmpty(l.Trim())))
+            else
             {
-                if (!CapturedConnectionExtensions.TryParseArray(line.Trim(), out var data))
-                {
-                    MessageBox.Show("Wrong format. Please enter the packet in hex format with a space between each byte. \n Example: C1 03 30", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                if (!this.connection.IsConnected)
-                {
-                    return;
-                }
-
-                if (this.toClientRadioButton.Checked)
-                {
-                    this.connection.SendToClient(data);
-                }
-                else
-                {
-                    this.connection.SendToServer(data);
-                }
+                this._connection.SendToServer(data);
             }
         }
     }

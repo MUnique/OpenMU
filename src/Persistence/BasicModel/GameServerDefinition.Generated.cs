@@ -10,106 +10,103 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="GameServerDefinition"/>.
+/// </summary>
+public partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configuration.GameServerDefinition, IIdentifiable, IConvertibleTo<GameServerDefinition>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="GameServerDefinition"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configuration.GameServerDefinition, IIdentifiable, IConvertibleTo<GameServerDefinition>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="Endpoints" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("endpoints")]
+    [System.Text.Json.Serialization.JsonPropertyName("endpoints")]
+    public ICollection<GameServerEndpoint> RawEndpoints { get; } = new List<GameServerEndpoint>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint> Endpoints
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="Endpoints" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("endpoints")]
-        [System.Text.Json.Serialization.JsonPropertyName("endpoints")]
-        public ICollection<GameServerEndpoint> RawEndpoints { get; } = new List<GameServerEndpoint>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint> Endpoints
+        get => base.Endpoints ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint, GameServerEndpoint>(this.RawEndpoints);
+        protected set
         {
-            get => base.Endpoints ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint, GameServerEndpoint>(this.RawEndpoints);
-            protected set
+            this.Endpoints.Clear();
+            foreach (var item in value)
             {
-                this.Endpoints.Clear();
-                foreach (var item in value)
-                {
-                    this.Endpoints.Add(item);
-                }
+                this.Endpoints.Add(item);
             }
         }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="ServerConfiguration" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("serverConfiguration")]
-        [System.Text.Json.Serialization.JsonPropertyName("serverConfiguration")]
-        public GameServerConfiguration RawServerConfiguration
-        {
-            get => base.ServerConfiguration as GameServerConfiguration;
-            set => base.ServerConfiguration = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration ServerConfiguration
-        {
-            get => base.ServerConfiguration;
-            set => base.ServerConfiguration = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="GameConfiguration" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("gameConfiguration")]
-        [System.Text.Json.Serialization.JsonPropertyName("gameConfiguration")]
-        public GameConfiguration RawGameConfiguration
-        {
-            get => base.GameConfiguration as GameConfiguration;
-            set => base.GameConfiguration = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration GameConfiguration
-        {
-            get => base.GameConfiguration;
-            set => base.GameConfiguration = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public GameServerDefinition Convert() => this;
     }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ServerConfiguration" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("serverConfiguration")]
+    [System.Text.Json.Serialization.JsonPropertyName("serverConfiguration")]
+    public GameServerConfiguration RawServerConfiguration
+    {
+        get => base.ServerConfiguration as GameServerConfiguration;
+        set => base.ServerConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration ServerConfiguration
+    {
+        get => base.ServerConfiguration;
+        set => base.ServerConfiguration = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="GameConfiguration" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("gameConfiguration")]
+    [System.Text.Json.Serialization.JsonPropertyName("gameConfiguration")]
+    public GameConfiguration RawGameConfiguration
+    {
+        get => base.GameConfiguration as GameConfiguration;
+        set => base.GameConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration GameConfiguration
+    {
+        get => base.GameConfiguration;
+        set => base.GameConfiguration = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public GameServerDefinition Convert() => this;
 }

@@ -10,132 +10,129 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MonsterDefinition"/>.
+/// </summary>
+[Table(nameof(MonsterDefinition), Schema = SchemaNames.Configuration)]
+internal partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.MonsterDefinition, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    /// <inheritdoc />
+    public MonsterDefinition()
+    {
+        this.InitJoinCollections();
+    }
+
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MonsterDefinition"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(MonsterDefinition), Schema = SchemaNames.Configuration)]
-    internal partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.MonsterDefinition, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="ItemCraftings" />.
+    /// </summary>
+    public ICollection<ItemCrafting> RawItemCraftings { get; } = new EntityFramework.List<ItemCrafting>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting> ItemCraftings => base.ItemCraftings ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting, ItemCrafting>(this.RawItemCraftings);
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="Attributes" />.
+    /// </summary>
+    public ICollection<MonsterAttribute> RawAttributes { get; } = new EntityFramework.List<MonsterAttribute>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute> Attributes => base.Attributes ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, MonsterAttribute>(this.RawAttributes);
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="Quests" />.
+    /// </summary>
+    public ICollection<QuestDefinition> RawQuests { get; } = new EntityFramework.List<QuestDefinition>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition> Quests => base.Quests ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, QuestDefinition>(this.RawQuests);
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="AttackSkill"/>.
+    /// </summary>
+    public Guid? AttackSkillId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="AttackSkill" />.
+    /// </summary>
+    [ForeignKey(nameof(AttackSkillId))]
+    public Skill RawAttackSkill
     {
-        /// <inheritdoc />
-        public MonsterDefinition()
+        get => base.AttackSkill as Skill;
+        set => base.AttackSkill = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Skill AttackSkill
+    {
+        get => base.AttackSkill;set
         {
-            this.InitJoinCollections();
+            base.AttackSkill = value;
+            this.AttackSkillId = this.RawAttackSkill?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="MerchantStore"/>.
+    /// </summary>
+    public Guid? MerchantStoreId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="MerchantStore" />.
+    /// </summary>
+    [ForeignKey(nameof(MerchantStoreId))]
+    public ItemStorage RawMerchantStore
+    {
+        get => base.MerchantStore as ItemStorage;
+        set => base.MerchantStore = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage MerchantStore
+    {
+        get => base.MerchantStore;set
+        {
+            base.MerchantStore = value;
+            this.MerchantStoreId = this.RawMerchantStore?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
         }
 
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="ItemCraftings" />.
-        /// </summary>
-        public ICollection<ItemCrafting> RawItemCraftings { get; } = new EntityFramework.List<ItemCrafting>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting> ItemCraftings => base.ItemCraftings ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting, ItemCrafting>(this.RawItemCraftings);
+        return base.Equals(obj);
+    }
 
-        /// <summary>
-        /// Gets the raw collection of <see cref="Attributes" />.
-        /// </summary>
-        public ICollection<MonsterAttribute> RawAttributes { get; } = new EntityFramework.List<MonsterAttribute>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute> Attributes => base.Attributes ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, MonsterAttribute>(this.RawAttributes);
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
 
-        /// <summary>
-        /// Gets the raw collection of <see cref="Quests" />.
-        /// </summary>
-        public ICollection<QuestDefinition> RawQuests { get; } = new EntityFramework.List<QuestDefinition>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition> Quests => base.Quests ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, QuestDefinition>(this.RawQuests);
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="AttackSkill"/>.
-        /// </summary>
-        public Guid? AttackSkillId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="AttackSkill" />.
-        /// </summary>
-        [ForeignKey(nameof(AttackSkillId))]
-        public Skill RawAttackSkill
-        {
-            get => base.AttackSkill as Skill;
-            set => base.AttackSkill = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Skill AttackSkill
-        {
-            get => base.AttackSkill;set
-            {
-                base.AttackSkill = value;
-                this.AttackSkillId = this.RawAttackSkill?.Id;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="MerchantStore"/>.
-        /// </summary>
-        public Guid? MerchantStoreId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="MerchantStore" />.
-        /// </summary>
-        [ForeignKey(nameof(MerchantStoreId))]
-        public ItemStorage RawMerchantStore
-        {
-            get => base.MerchantStore as ItemStorage;
-            set => base.MerchantStore = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Entities.ItemStorage MerchantStore
-        {
-            get => base.MerchantStore;set
-            {
-                base.MerchantStore = value;
-                this.MerchantStoreId = this.RawMerchantStore?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        protected void InitJoinCollections()
-        {
-            this.DropItemGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, MonsterDefinitionDropItemGroup>(this.JoinedDropItemGroups, joinEntity => joinEntity.DropItemGroup, entity => new MonsterDefinitionDropItemGroup { MonsterDefinition = this, MonsterDefinitionId = this.Id, DropItemGroup = (DropItemGroup)entity, DropItemGroupId = ((DropItemGroup)entity).Id});
-        }
+    protected void InitJoinCollections()
+    {
+        this.DropItemGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, MonsterDefinitionDropItemGroup>(this.JoinedDropItemGroups, joinEntity => joinEntity.DropItemGroup, entity => new MonsterDefinitionDropItemGroup { MonsterDefinition = this, MonsterDefinitionId = this.Id, DropItemGroup = (DropItemGroup)entity, DropItemGroupId = ((DropItemGroup)entity).Id});
     }
 }

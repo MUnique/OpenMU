@@ -2,219 +2,214 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AttributeSystem
+namespace MUnique.OpenMU.AttributeSystem;
+
+using System.Globalization;
+
+/// <summary>
+/// The attribute system which holds all attributes of a character.
+/// </summary>
+public class AttributeSystem : IAttributeSystem
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Text;
+    private readonly IDictionary<AttributeDefinition, IAttribute> _attributes = new Dictionary<AttributeDefinition, IAttribute>();
 
     /// <summary>
-    /// The attribute system which holds all attributes of a character.
+    /// Initializes a new instance of the <see cref="AttributeSystem" /> class.
     /// </summary>
-    public class AttributeSystem : IAttributeSystem
+    /// <param name="statAttributes">The stat attributes. These attributes are added just as-is and are not wrapped by a <see cref="ComposableAttribute"/>.</param>
+    /// <param name="baseAttributes">The initial base attributes. These attributes contain the base values which will be wrapped by a <see cref="ComposableAttribute"/>, so additional elements can contribute to the attributes value. Instead of providing them here, you could also add them to the system by calling <see cref="AddElement"/> later.</param>
+    /// <param name="attributeRelationships">The initial attribute relationships. Instead of providing them here, you could also add them to the system by calling <see cref="AddAttributeRelationship(AttributeRelationship, IAttributeSystem)"/> later.</param>
+    public AttributeSystem(IEnumerable<IAttribute> statAttributes, IEnumerable<IAttribute> baseAttributes, IEnumerable<AttributeRelationship> attributeRelationships)
     {
-        private readonly IDictionary<AttributeDefinition, IAttribute> attributes = new Dictionary<AttributeDefinition, IAttribute>();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AttributeSystem" /> class.
-        /// </summary>
-        /// <param name="statAttributes">The stat attributes. These attributes are added just as-is and are not wrapped by a <see cref="ComposableAttribute"/>.</param>
-        /// <param name="baseAttributes">The initial base attributes. These attributes contain the base values which will be wrapped by a <see cref="ComposableAttribute"/>, so additional elements can contribute to the attributes value. Instead of providing them here, you could also add them to the system by calling <see cref="AddElement"/> later.</param>
-        /// <param name="attributeRelationships">The initial attribute relationships. Instead of providing them here, you could also add them to the system by calling <see cref="AddAttributeRelationship(AttributeRelationship, IAttributeSystem)"/> later.</param>
-        public AttributeSystem(IEnumerable<IAttribute> statAttributes, IEnumerable<IAttribute> baseAttributes, IEnumerable<AttributeRelationship> attributeRelationships)
+        foreach (var statAttribute in statAttributes)
         {
-            foreach (var statAttribute in statAttributes)
-            {
-                this.attributes.Add(statAttribute.Definition, statAttribute);
-            }
-
-            foreach (var baseAttribute in baseAttributes)
-            {
-                this.AddElement(baseAttribute, baseAttribute.Definition);
-            }
-
-            foreach (var combination in attributeRelationships)
-            {
-                this.AddAttributeRelationship(combination);
-            }
+            this._attributes.Add(statAttribute.Definition, statAttribute);
         }
 
-        /// <inheritdoc/>
-        public float this[AttributeDefinition? attributeDefinition]
+        foreach (var baseAttribute in baseAttributes)
         {
-            get => this.GetValueOfAttribute(attributeDefinition);
-
-            set => this.SetStatAttribute(attributeDefinition, value);
+            this.AddElement(baseAttribute, baseAttribute.Definition);
         }
 
-        /// <inheritdoc/>
-        public void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
+        foreach (var combination in attributeRelationships)
         {
-            if (this.GetOrCreateAttribute(relationship.GetTargetAttribute()) is IComposableAttribute targetAttribute)
-            {
-                var relatedElement = this.CreateRelatedAttribute(relationship, sourceAttributeHolder);
-                targetAttribute.AddElement(relatedElement);
-            }
+            this.AddAttributeRelationship(combination);
         }
+    }
 
-        /// <summary>
-        /// Creates the related attribute.
-        /// </summary>
-        /// <param name="relationship">The relationship.</param>
-        /// <param name="sourceAttributeHolder">The source attribute holder. May be the attribute system of another player.</param>
-        /// <returns>The newly created relationship element.</returns>
-        public IElement CreateRelatedAttribute(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
+    /// <inheritdoc/>
+    public float this[AttributeDefinition? attributeDefinition]
+    {
+        get => this.GetValueOfAttribute(attributeDefinition);
+
+        set => this.SetStatAttribute(attributeDefinition, value);
+    }
+
+    /// <inheritdoc/>
+    public void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
+    {
+        if (this.GetOrCreateAttribute(relationship.GetTargetAttribute()) is IComposableAttribute targetAttribute)
         {
-            var inputElements = new[] { sourceAttributeHolder.GetOrCreateAttribute(relationship.GetInputAttribute()) };
-            return new AttributeRelationshipElement(inputElements, relationship.InputOperand, relationship.InputOperator);
+            var relatedElement = this.CreateRelatedAttribute(relationship, sourceAttributeHolder);
+            targetAttribute.AddElement(relatedElement);
         }
+    }
 
-        /// <summary>
-        /// Sets the stat attribute, if the <paramref name="attributeDefinition"/> is a stat attribute.
-        /// </summary>
-        /// <param name="attributeDefinition">The attribute definition.</param>
-        /// <param name="newValue">The new value.</param>
-        /// <returns>The success.</returns>
-        public bool SetStatAttribute(AttributeDefinition? attributeDefinition, float newValue)
+    /// <summary>
+    /// Creates the related attribute.
+    /// </summary>
+    /// <param name="relationship">The relationship.</param>
+    /// <param name="sourceAttributeHolder">The source attribute holder. May be the attribute system of another player.</param>
+    /// <returns>The newly created relationship element.</returns>
+    public IElement CreateRelatedAttribute(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
+    {
+        var inputElements = new[] { sourceAttributeHolder.GetOrCreateAttribute(relationship.GetInputAttribute()) };
+        return new AttributeRelationshipElement(inputElements, relationship.InputOperand, relationship.InputOperator);
+    }
+
+    /// <summary>
+    /// Sets the stat attribute, if the <paramref name="attributeDefinition"/> is a stat attribute.
+    /// </summary>
+    /// <param name="attributeDefinition">The attribute definition.</param>
+    /// <param name="newValue">The new value.</param>
+    /// <returns>The success.</returns>
+    public bool SetStatAttribute(AttributeDefinition? attributeDefinition, float newValue)
+    {
+        if (attributeDefinition is null)
         {
-            if (attributeDefinition is null)
-            {
-                return false;
-            }
-
-            if (this.attributes.TryGetValue(attributeDefinition, out var attribute)
-                && attribute is StatAttribute statAttribute)
-            {
-                statAttribute.Value = newValue;
-
-                return true;
-            }
-
             return false;
         }
 
-        /// <summary>
-        /// Gets the composable attribute.
-        /// </summary>
-        /// <param name="attributeDefinition">The attribute definition.</param>
-        /// <returns>The composable attribute.</returns>
-        public ComposableAttribute? GetComposableAttribute(AttributeDefinition attributeDefinition)
+        if (this._attributes.TryGetValue(attributeDefinition, out var attribute)
+            && attribute is StatAttribute statAttribute)
         {
-            return this.GetOrCreateAttribute(attributeDefinition) as ComposableAttribute;
+            statAttribute.Value = newValue;
+
+            return true;
         }
 
-        /// <inheritdoc/>
-        public float GetValueOfAttribute(AttributeDefinition? attributeDefinition)
-        {
-            var element = this.GetAttribute(attributeDefinition);
-            if (element != null)
-            {
-                return element.Value;
-            }
+        return false;
+    }
 
-            return 0;
+    /// <summary>
+    /// Gets the composable attribute.
+    /// </summary>
+    /// <param name="attributeDefinition">The attribute definition.</param>
+    /// <returns>The composable attribute.</returns>
+    public ComposableAttribute? GetComposableAttribute(AttributeDefinition attributeDefinition)
+    {
+        return this.GetOrCreateAttribute(attributeDefinition) as ComposableAttribute;
+    }
+
+    /// <inheritdoc/>
+    public float GetValueOfAttribute(AttributeDefinition? attributeDefinition)
+    {
+        var element = this.GetAttribute(attributeDefinition);
+        if (element != null)
+        {
+            return element.Value;
         }
 
-        /// <inheritdoc/>
-        public void AddElement(IElement element, AttributeDefinition targetAttribute)
-        {
-            if (!this.attributes.TryGetValue(targetAttribute, out var attribute))
-            {
-                attribute = new ComposableAttribute(targetAttribute);
-                this.attributes.Add(targetAttribute, attribute);
-            }
+        return 0;
+    }
 
+    /// <inheritdoc/>
+    public void AddElement(IElement element, AttributeDefinition targetAttribute)
+    {
+        if (!this._attributes.TryGetValue(targetAttribute, out var attribute))
+        {
+            attribute = new ComposableAttribute(targetAttribute);
+            this._attributes.Add(targetAttribute, attribute);
+        }
+
+        if (attribute is IComposableAttribute composableAttribute)
+        {
+            composableAttribute.AddElement(element);
+        }
+        else
+        {
+            throw new ArgumentException($"Attribute {targetAttribute} is not a composable attribute.");
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RemoveElement(IElement element, AttributeDefinition targetAttribute)
+    {
+        if (this._attributes.TryGetValue(targetAttribute, out var attribute))
+        {
             if (attribute is IComposableAttribute composableAttribute)
             {
-                composableAttribute.AddElement(element);
+                composableAttribute.RemoveElement(element);
+                if (!composableAttribute.Elements.Any())
+                {
+                    this._attributes.Remove(targetAttribute);
+                }
             }
             else
             {
                 throw new ArgumentException($"Attribute {targetAttribute} is not a composable attribute.");
             }
         }
+    }
 
-        /// <inheritdoc/>
-        public void RemoveElement(IElement element, AttributeDefinition targetAttribute)
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        var stringBuilder = new StringBuilder();
+        stringBuilder.AppendLine("Stat Attributes:");
+        foreach (var statAttribute in this._attributes.OfType<StatAttribute>())
         {
-            if (this.attributes.TryGetValue(targetAttribute, out var attribute))
-            {
-                if (attribute is IComposableAttribute composableAttribute)
-                {
-                    composableAttribute.RemoveElement(element);
-                    if (!composableAttribute.Elements.Any())
-                    {
-                        this.attributes.Remove(targetAttribute);
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Attribute {targetAttribute} is not a composable attribute.");
-                }
-            }
+            stringBuilder.AppendLine(statAttribute.Value.ToString(CultureInfo.InvariantCulture));
         }
 
-        /// <inheritdoc/>
-        public override string ToString()
+        stringBuilder.AppendLine("Others:");
+        foreach (var attribute in this._attributes.OfType<IComposableAttribute>())
         {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("Stat Attributes:");
-            foreach (var statAttribute in this.attributes.OfType<StatAttribute>())
-            {
-                stringBuilder.AppendLine(statAttribute.Value.ToString(CultureInfo.InvariantCulture));
-            }
-
-            stringBuilder.AppendLine("Others:");
-            foreach (var attribute in this.attributes.OfType<IComposableAttribute>())
-            {
-                stringBuilder.AppendLine(attribute.Value.ToString(CultureInfo.InvariantCulture));
-            }
-
-            return stringBuilder.ToString();
+            stringBuilder.AppendLine(attribute.Value.ToString(CultureInfo.InvariantCulture));
         }
 
-        /// <summary>
-        /// Gets or creates the element with the specified attribute.
-        /// </summary>
-        /// <param name="attributeDefinition">The attribute definition.</param>
-        /// <returns>The element of the attribute.</returns>
-        public IElement GetOrCreateAttribute(AttributeDefinition attributeDefinition)
-        {
-            var element = this.GetAttribute(attributeDefinition);
-            if (element is null)
-            {
-                var composableAttribute = new ComposableAttribute(attributeDefinition);
-                element = composableAttribute;
-                this.attributes.Add(attributeDefinition, composableAttribute);
-            }
+        return stringBuilder.ToString();
+    }
 
-            return element;
+    /// <summary>
+    /// Gets or creates the element with the specified attribute.
+    /// </summary>
+    /// <param name="attributeDefinition">The attribute definition.</param>
+    /// <returns>The element of the attribute.</returns>
+    public IElement GetOrCreateAttribute(AttributeDefinition attributeDefinition)
+    {
+        var element = this.GetAttribute(attributeDefinition);
+        if (element is null)
+        {
+            var composableAttribute = new ComposableAttribute(attributeDefinition);
+            element = composableAttribute;
+            this._attributes.Add(attributeDefinition, composableAttribute);
         }
 
-        /// <summary>
-        /// Adds the attribute relationship.
-        /// </summary>
-        /// <param name="combination">The combination.</param>
-        private void AddAttributeRelationship(AttributeRelationship combination)
+        return element;
+    }
+
+    /// <summary>
+    /// Adds the attribute relationship.
+    /// </summary>
+    /// <param name="combination">The combination.</param>
+    private void AddAttributeRelationship(AttributeRelationship combination)
+    {
+        this.AddAttributeRelationship(combination, this);
+    }
+
+    private IElement? GetAttribute(AttributeDefinition? attributeDefinition)
+    {
+        if (attributeDefinition is null)
         {
-            this.AddAttributeRelationship(combination, this);
-        }
-
-        private IElement? GetAttribute(AttributeDefinition? attributeDefinition)
-        {
-            if (attributeDefinition is null)
-            {
-                return null;
-            }
-
-            if (this.attributes.TryGetValue(attributeDefinition, out var attribute))
-            {
-                return attribute;
-            }
-
             return null;
         }
+
+        if (this._attributes.TryGetValue(attributeDefinition, out var attribute))
+        {
+            return attribute;
+        }
+
+        return null;
     }
 }

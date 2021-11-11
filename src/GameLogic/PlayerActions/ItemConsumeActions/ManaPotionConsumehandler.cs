@@ -4,46 +4,44 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Views.Character;
+
+/// <summary>
+/// Consume handler for potions which refills the players attribute <see cref="Stats.CurrentMana"/>.
+/// </summary>
+public abstract class ManaPotionConsumehandler : RecoverConsumeHandler.ManaHealthConsumeHandler, IItemConsumeHandler
 {
-    using MUnique.OpenMU.AttributeSystem;
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Attributes;
-    using MUnique.OpenMU.GameLogic.Views.Character;
-
-    /// <summary>
-    /// Consume handler for potions which refills the players attribute <see cref="Stats.CurrentMana"/>.
-    /// </summary>
-    public abstract class ManaPotionConsumehandler : RecoverConsumeHandler.ManaHealthConsumeHandler, IItemConsumeHandler
+    /// <inheritdoc/>
+    protected override AttributeDefinition MaximumAttribute
     {
-        /// <inheritdoc/>
-        protected override AttributeDefinition MaximumAttribute
+        get
         {
-            get
-            {
-                return Stats.MaximumMana;
-            }
+            return Stats.MaximumMana;
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override AttributeDefinition CurrentAttribute
+    {
+        get
+        {
+            return Stats.CurrentMana;
+        }
+    }
+
+    /// <inheritdoc />
+    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    {
+        if (base.ConsumeItem(player, item, targetItem, fruitUsage))
+        {
+            player.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
+            return true;
         }
 
-        /// <inheritdoc/>
-        protected override AttributeDefinition CurrentAttribute
-        {
-            get
-            {
-                return Stats.CurrentMana;
-            }
-        }
-
-        /// <inheritdoc />
-        public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
-        {
-            if (base.ConsumeItem(player, item, targetItem, fruitUsage))
-            {
-                player.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
-                return true;
-            }
-
-            return false;
-        }
+        return false;
     }
 }

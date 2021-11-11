@@ -2,34 +2,32 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.MessageHandler.Guild
+namespace MUnique.OpenMU.GameServer.MessageHandler.Guild;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
+using MUnique.OpenMU.Network.Packets.ClientToServer;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Handler for guild master answer packets.
+/// </summary>
+[PlugIn(nameof(CancelGuildCreationHandlerPlugIn), "Handler for CancelGuildCreation packets.")]
+[Guid("CDB87F7F-24FC-42E1-B375-9EAAEAAC0F8C")]
+internal class CancelGuildCreationHandlerPlugIn : IPacketHandlerPlugIn
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
-    using MUnique.OpenMU.Network.Packets.ClientToServer;
-    using MUnique.OpenMU.PlugIns;
+    private readonly GuildMasterAnswerAction _answerAction = new ();
 
-    /// <summary>
-    /// Handler for guild master answer packets.
-    /// </summary>
-    [PlugIn(nameof(CancelGuildCreationHandlerPlugIn), "Handler for CancelGuildCreation packets.")]
-    [Guid("CDB87F7F-24FC-42E1-B375-9EAAEAAC0F8C")]
-    internal class CancelGuildCreationHandlerPlugIn : IPacketHandlerPlugIn
+    /// <inheritdoc/>
+    public bool IsEncryptionExpected => false;
+
+    /// <inheritdoc/>
+    public byte Key => CancelGuildCreation.Code;
+
+    /// <inheritdoc/>
+    public void HandlePacket(Player player, Span<byte> packet)
     {
-        private readonly GuildMasterAnswerAction answerAction = new ();
-
-        /// <inheritdoc/>
-        public bool IsEncryptionExpected => false;
-
-        /// <inheritdoc/>
-        public byte Key => CancelGuildCreation.Code;
-
-        /// <inheritdoc/>
-        public void HandlePacket(Player player, Span<byte> packet)
-        {
-            this.answerAction.ProcessAnswer(player, GuildMasterAnswerAction.Answer.Cancel);
-        }
+        this._answerAction.ProcessAnswer(player, GuildMasterAnswerAction.Answer.Cancel);
     }
 }

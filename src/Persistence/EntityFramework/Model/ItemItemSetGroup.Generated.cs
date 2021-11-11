@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(ItemItemSetGroup), Schema = SchemaNames.AccountData)]
+internal partial class ItemItemSetGroup
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid ItemId { get; set; }
+    public Item Item { get; set; }
 
-    [Table(nameof(ItemItemSetGroup), Schema = SchemaNames.AccountData)]
-    internal partial class ItemItemSetGroup
-    {
-        public Guid ItemId { get; set; }
-        public Item Item { get; set; }
+    public Guid ItemSetGroupId { get; set; }
+    public ItemSetGroup ItemSetGroup { get; set; }
+}
 
-        public Guid ItemSetGroupId { get; set; }
-        public ItemSetGroup ItemSetGroup { get; set; }
-    }
-
-    internal partial class Item
-    {
-        public ICollection<ItemItemSetGroup> JoinedItemSetGroups { get; } = new EntityFramework.List<ItemItemSetGroup>();
-    }
+internal partial class Item
+{
+    public ICollection<ItemItemSetGroup> JoinedItemSetGroups { get; } = new EntityFramework.List<ItemItemSetGroup>();
 }

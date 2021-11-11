@@ -2,43 +2,40 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework
+namespace MUnique.OpenMU.Persistence.EntityFramework;
+
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+/// <summary>
+/// Repository which is able to load <see cref="LetterBody"/>s for a specific letter header.
+/// </summary>
+internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
 {
-    using System;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.Persistence.EntityFramework.Model;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LetterBodyRepository" /> class.
+    /// </summary>
+    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="logger">The logger.</param>
+    public LetterBodyRepository(RepositoryManager repositoryManager, ILogger<LetterBodyRepository> logger)
+        : base(repositoryManager, logger)
+    {
+    }
 
     /// <summary>
-    /// Repository which is able to load <see cref="LetterBody"/>s for a specific letter header.
+    /// Gets the letter body by the id of its header.
     /// </summary>
-    internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
+    /// <param name="headerId">The id of its header.</param>
+    /// <returns>The body of the header.</returns>
+    public LetterBody? GetBodyByHeaderId(Guid headerId)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LetterBodyRepository" /> class.
-        /// </summary>
-        /// <param name="repositoryManager">The repository manager.</param>
-        /// <param name="logger">The logger.</param>
-        public LetterBodyRepository(RepositoryManager repositoryManager, ILogger<LetterBodyRepository> logger)
-            : base(repositoryManager, logger)
+        using var context = this.GetContext();
+        var letterBody = context.Context.Set<LetterBody>().FirstOrDefault(body => body.HeaderId == headerId);
+        if (letterBody != null)
         {
+            this.LoadDependentData(letterBody, context.Context);
         }
 
-        /// <summary>
-        /// Gets the letter body by the id of its header.
-        /// </summary>
-        /// <param name="headerId">The id of its header.</param>
-        /// <returns>The body of the header.</returns>
-        public LetterBody? GetBodyByHeaderId(Guid headerId)
-        {
-            using var context = this.GetContext();
-            var letterBody = context.Context.Set<LetterBody>().FirstOrDefault(body => body.HeaderId == headerId);
-            if (letterBody != null)
-            {
-                this.LoadDependentData(letterBody, context.Context);
-            }
-
-            return letterBody;
-        }
+        return letterBody;
     }
 }

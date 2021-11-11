@@ -10,83 +10,80 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="JewelMix"/>.
+/// </summary>
+public partial class JewelMix : MUnique.OpenMU.DataModel.Configuration.JewelMix, IIdentifiable, IConvertibleTo<JewelMix>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="JewelMix"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class JewelMix : MUnique.OpenMU.DataModel.Configuration.JewelMix, IIdentifiable, IConvertibleTo<JewelMix>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="SingleJewel" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("singleJewel")]
+    [System.Text.Json.Serialization.JsonPropertyName("singleJewel")]
+    public ItemDefinition RawSingleJewel
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="SingleJewel" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("singleJewel")]
-        [System.Text.Json.Serialization.JsonPropertyName("singleJewel")]
-        public ItemDefinition RawSingleJewel
-        {
-            get => base.SingleJewel as ItemDefinition;
-            set => base.SingleJewel = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition SingleJewel
-        {
-            get => base.SingleJewel;
-            set => base.SingleJewel = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="MixedJewel" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("mixedJewel")]
-        [System.Text.Json.Serialization.JsonPropertyName("mixedJewel")]
-        public ItemDefinition RawMixedJewel
-        {
-            get => base.MixedJewel as ItemDefinition;
-            set => base.MixedJewel = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition MixedJewel
-        {
-            get => base.MixedJewel;
-            set => base.MixedJewel = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public JewelMix Convert() => this;
+        get => base.SingleJewel as ItemDefinition;
+        set => base.SingleJewel = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition SingleJewel
+    {
+        get => base.SingleJewel;
+        set => base.SingleJewel = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="MixedJewel" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("mixedJewel")]
+    [System.Text.Json.Serialization.JsonPropertyName("mixedJewel")]
+    public ItemDefinition RawMixedJewel
+    {
+        get => base.MixedJewel as ItemDefinition;
+        set => base.MixedJewel = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition MixedJewel
+    {
+        get => base.MixedJewel;
+        set => base.MixedJewel = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public JewelMix Convert() => this;
 }

@@ -2,44 +2,43 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.ConnectServer
+namespace MUnique.OpenMU.ConnectServer;
+
+using System.Net.Sockets;
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// Plugin which checks if the maximum number of connections got exceeded. Refuses the connection to new clients, if that happens.
+/// </summary>
+internal class CheckMaximumConnectionsPlugin : IAfterSocketAcceptPlugin
 {
-    using System.Net.Sockets;
-    using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.Interfaces;
+    private readonly ILogger<CheckMaximumConnectionsPlugin> _logger;
+    private readonly ClientListener _clientListener;
+    private readonly IConnectServerSettings _connectServerSettings;
 
     /// <summary>
-    /// Plugin which checks if the maximum number of connections got exceeded. Refuses the connection to new clients, if that happens.
+    /// Initializes a new instance of the <see cref="CheckMaximumConnectionsPlugin" /> class.
     /// </summary>
-    internal class CheckMaximumConnectionsPlugin : IAfterSocketAcceptPlugin
+    /// <param name="server">The server.</param>
+    /// <param name="logger">The logger.</param>
+    public CheckMaximumConnectionsPlugin(ConnectServer server, ILogger<CheckMaximumConnectionsPlugin> logger)
     {
-        private readonly ILogger<CheckMaximumConnectionsPlugin> logger;
-        private readonly ClientListener clientListener;
-        private readonly IConnectServerSettings connectServerSettings;
+        this._logger = logger;
+        this._clientListener = server.ClientListener;
+        this._connectServerSettings = server.Settings;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CheckMaximumConnectionsPlugin" /> class.
-        /// </summary>
-        /// <param name="server">The server.</param>
-        /// <param name="logger">The logger.</param>
-        public CheckMaximumConnectionsPlugin(ConnectServer server, ILogger<CheckMaximumConnectionsPlugin> logger)
+    /// <inheritdoc/>
+    public bool OnAfterSocketAccept(Socket socket)
+    {
+        var maxConnections = this._connectServerSettings.MaxConnections;
+        if (maxConnections <= this._clientListener.Clients.Count)
         {
-            this.logger = logger;
-            this.clientListener = server.ClientListener;
-            this.connectServerSettings = server.Settings;
+            this._logger.LogWarning("Connection refused from {0}: maximum connections ({1}) reached.", socket.RemoteEndPoint, maxConnections);
+            return false;
         }
 
-        /// <inheritdoc/>
-        public bool OnAfterSocketAccept(Socket socket)
-        {
-            var maxConnections = this.connectServerSettings.MaxConnections;
-            if (maxConnections <= this.clientListener.Clients.Count)
-            {
-                this.logger.LogWarning("Connection refused from {0}: maximum connections ({1}) reached.", socket.RemoteEndPoint, maxConnections);
-                return false;
-            }
-
-            return true;
-        }
+        return true;
     }
 }

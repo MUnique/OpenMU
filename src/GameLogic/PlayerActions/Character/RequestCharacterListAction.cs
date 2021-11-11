@@ -2,25 +2,24 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.Character
-{
-    using MUnique.OpenMU.GameLogic.Views.Character;
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Character;
 
+using MUnique.OpenMU.GameLogic.Views.Character;
+
+/// <summary>
+/// Action to request the character list.
+/// </summary>
+public class RequestCharacterListAction
+{
     /// <summary>
-    /// Action to request the character list.
+    /// Requests the character list and advances the player state to <see cref="PlayerState.CharacterSelection"/>.
     /// </summary>
-    public class RequestCharacterListAction
+    /// <param name="player">The player who requests the character list.</param>
+    public void RequestCharacterList(Player player)
     {
-        /// <summary>
-        /// Requests the character list and advances the player state to <see cref="PlayerState.CharacterSelection"/>.
-        /// </summary>
-        /// <param name="player">The player who requests the character list.</param>
-        public void RequestCharacterList(Player player)
+        if (player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection))
         {
-            if (player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection))
-            {
-                player.ViewPlugIns.GetPlugIn<IShowCharacterListPlugIn>()?.ShowCharacterList();
-            }
+            player.ViewPlugIns.GetPlugIn<IShowCharacterListPlugIn>()?.ShowCharacterList();
         }
     }
 }

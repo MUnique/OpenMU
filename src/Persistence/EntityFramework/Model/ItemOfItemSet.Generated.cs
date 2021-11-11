@@ -10,97 +10,94 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet"/>.
+/// </summary>
+[Table(nameof(ItemOfItemSet), Schema = SchemaNames.Configuration)]
+internal partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(ItemOfItemSet), Schema = SchemaNames.Configuration)]
-    internal partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="ItemDefinition"/>.
+    /// </summary>
+    public Guid? ItemDefinitionId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ItemDefinition" />.
+    /// </summary>
+    [ForeignKey(nameof(ItemDefinitionId))]
+    public ItemDefinition RawItemDefinition
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="ItemDefinition"/>.
-        /// </summary>
-        public Guid? ItemDefinitionId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="ItemDefinition" />.
-        /// </summary>
-        [ForeignKey(nameof(ItemDefinitionId))]
-        public ItemDefinition RawItemDefinition
-        {
-            get => base.ItemDefinition as ItemDefinition;
-            set => base.ItemDefinition = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
-        {
-            get => base.ItemDefinition;set
-            {
-                base.ItemDefinition = value;
-                this.ItemDefinitionId = this.RawItemDefinition?.Id;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="BonusOption"/>.
-        /// </summary>
-        public Guid? BonusOptionId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="BonusOption" />.
-        /// </summary>
-        [ForeignKey(nameof(BonusOptionId))]
-        public IncreasableItemOption RawBonusOption
-        {
-            get => base.BonusOption as IncreasableItemOption;
-            set => base.BonusOption = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption BonusOption
-        {
-            get => base.BonusOption;set
-            {
-                base.BonusOption = value;
-                this.BonusOptionId = this.RawBonusOption?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.ItemDefinition as ItemDefinition;
+        set => base.ItemDefinition = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
+    {
+        get => base.ItemDefinition;set
+        {
+            base.ItemDefinition = value;
+            this.ItemDefinitionId = this.RawItemDefinition?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="BonusOption"/>.
+    /// </summary>
+    public Guid? BonusOptionId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="BonusOption" />.
+    /// </summary>
+    [ForeignKey(nameof(BonusOptionId))]
+    public IncreasableItemOption RawBonusOption
+    {
+        get => base.BonusOption as IncreasableItemOption;
+        set => base.BonusOption = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption BonusOption
+    {
+        get => base.BonusOption;set
+        {
+            base.BonusOption = value;
+            this.BonusOptionId = this.RawBonusOption?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

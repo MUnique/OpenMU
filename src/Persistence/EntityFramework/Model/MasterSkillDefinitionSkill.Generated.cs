@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(MasterSkillDefinitionSkill), Schema = SchemaNames.Configuration)]
+internal partial class MasterSkillDefinitionSkill
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid MasterSkillDefinitionId { get; set; }
+    public MasterSkillDefinition MasterSkillDefinition { get; set; }
 
-    [Table(nameof(MasterSkillDefinitionSkill), Schema = SchemaNames.Configuration)]
-    internal partial class MasterSkillDefinitionSkill
-    {
-        public Guid MasterSkillDefinitionId { get; set; }
-        public MasterSkillDefinition MasterSkillDefinition { get; set; }
+    public Guid SkillId { get; set; }
+    public Skill Skill { get; set; }
+}
 
-        public Guid SkillId { get; set; }
-        public Skill Skill { get; set; }
-    }
-
-    internal partial class MasterSkillDefinition
-    {
-        public ICollection<MasterSkillDefinitionSkill> JoinedRequiredMasterSkills { get; } = new EntityFramework.List<MasterSkillDefinitionSkill>();
-    }
+internal partial class MasterSkillDefinition
+{
+    public ICollection<MasterSkillDefinitionSkill> JoinedRequiredMasterSkills { get; } = new EntityFramework.List<MasterSkillDefinitionSkill>();
 }

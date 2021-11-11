@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(ItemCraftingRequiredItemItemOptionType), Schema = SchemaNames.Configuration)]
+internal partial class ItemCraftingRequiredItemItemOptionType
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid ItemCraftingRequiredItemId { get; set; }
+    public ItemCraftingRequiredItem ItemCraftingRequiredItem { get; set; }
 
-    [Table(nameof(ItemCraftingRequiredItemItemOptionType), Schema = SchemaNames.Configuration)]
-    internal partial class ItemCraftingRequiredItemItemOptionType
-    {
-        public Guid ItemCraftingRequiredItemId { get; set; }
-        public ItemCraftingRequiredItem ItemCraftingRequiredItem { get; set; }
+    public Guid ItemOptionTypeId { get; set; }
+    public ItemOptionType ItemOptionType { get; set; }
+}
 
-        public Guid ItemOptionTypeId { get; set; }
-        public ItemOptionType ItemOptionType { get; set; }
-    }
-
-    internal partial class ItemCraftingRequiredItem
-    {
-        public ICollection<ItemCraftingRequiredItemItemOptionType> JoinedRequiredItemOptions { get; } = new EntityFramework.List<ItemCraftingRequiredItemItemOptionType>();
-    }
+internal partial class ItemCraftingRequiredItem
+{
+    public ICollection<ItemCraftingRequiredItemItemOptionType> JoinedRequiredItemOptions { get; } = new EntityFramework.List<ItemCraftingRequiredItemItemOptionType>();
 }

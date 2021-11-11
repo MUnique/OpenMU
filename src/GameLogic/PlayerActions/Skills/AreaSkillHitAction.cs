@@ -2,36 +2,32 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions;
+
+/// <summary>
+/// Action to hit targets with an area skill, which requires explicit hits <seealso cref="SkillType.AreaSkillExplicitHits"/>.
+/// </summary>
+public class AreaSkillHitAction
 {
-    using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Entities;
-
     /// <summary>
-    /// Action to hit targets with an area skill, which requires explicit hits <seealso cref="SkillType.AreaSkillExplicitHits"/>.
+    /// Attacks the target by the player with the specified skill.
     /// </summary>
-    public class AreaSkillHitAction
+    /// <param name="player">The player who is performing the skill.</param>
+    /// <param name="target">The target.</param>
+    /// <param name="skill">The skill.</param>
+    public void AttackTarget(Player player, IAttackable target, SkillEntry skill)
     {
-        /// <summary>
-        /// Attacks the target by the player with the specified skill.
-        /// </summary>
-        /// <param name="player">The player who is performing the skill.</param>
-        /// <param name="target">The target.</param>
-        /// <param name="skill">The skill.</param>
-        public void AttackTarget(Player player, IAttackable target, SkillEntry skill)
+        if (skill.Skill?.SkillType != SkillType.AreaSkillExplicitHits
+            || target is null
+            || !target.IsAlive)
         {
-            if (skill.Skill?.SkillType != SkillType.AreaSkillExplicitHits
-                || target is null
-                || !target.IsAlive)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (target.CheckSkillTargetRestrictions(player, skill.Skill))
-            {
-                target.AttackBy(player, skill);
-                target.TryApplyElementalEffects(player, skill);
-            }
+        if (target.CheckSkillTargetRestrictions(player, skill.Skill))
+        {
+            target.AttackBy(player, skill);
+            target.TryApplyElementalEffects(player, skill);
         }
     }
 }

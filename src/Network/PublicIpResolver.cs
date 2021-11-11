@@ -2,65 +2,63 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Network
+namespace MUnique.OpenMU.Network;
+
+using System.Net;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
+
+/// <summary>
+/// Resolves the own ip address by calling an external API to get the public <see cref="IPAddress"/>.
+/// </summary>
+public class PublicIpResolver : IIpAddressResolver
 {
-    using System;
-    using System.Net;
-    using System.Text.RegularExpressions;
-    using Microsoft.Extensions.Logging;
+    private readonly ILogger<PublicIpResolver> _logger;
+    private readonly TimeSpan _maximumCachedAddressLifetime = new (0, 5, 0);
+    private IPAddress? _publicIPv4;
+    private DateTime _lastRequest = DateTime.MinValue;
 
     /// <summary>
-    /// Resolves the own ip address by calling an external API to get the public <see cref="IPAddress"/>.
+    /// Initializes a new instance of the <see cref="PublicIpResolver"/> class.
     /// </summary>
-    public class PublicIpResolver : IIpAddressResolver
+    /// <param name="logger">The logger.</param>
+    public PublicIpResolver(ILogger<PublicIpResolver> logger)
     {
-        private readonly ILogger<PublicIpResolver> logger;
-        private readonly TimeSpan maximumCachedAddressLifetime = new (0, 5, 0);
-        private IPAddress? publicIPv4;
-        private DateTime lastRequest = DateTime.MinValue;
+        this._logger = logger;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PublicIpResolver"/> class.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        public PublicIpResolver(ILogger<PublicIpResolver> logger)
+    /// <summary>
+    /// Gets the public IPv4 address with the help of the following api: https://www.ipify.org/.
+    /// </summary>
+    /// <returns>The public IPv4 address.</returns>
+    public IPAddress ResolveIPv4()
+    {
+        if (this._lastRequest + this._maximumCachedAddressLifetime < DateTime.Now)
         {
-            this.logger = logger;
+            this._publicIPv4 = this.InternalGetIPv4();
+            this._lastRequest = DateTime.Now;
         }
 
-        /// <summary>
-        /// Gets the public IPv4 address with the help of the following api: https://www.ipify.org/.
-        /// </summary>
-        /// <returns>The public IPv4 address.</returns>
-        public IPAddress ResolveIPv4()
-        {
-            if (this.lastRequest + this.maximumCachedAddressLifetime < DateTime.Now)
-            {
-                this.publicIPv4 = this.InternalGetIPv4();
-                this.lastRequest = DateTime.Now;
-            }
+        return this._publicIPv4!;
+    }
 
-            return this.publicIPv4!;
+    private IPAddress InternalGetIPv4()
+    {
+        const string url = "https://api.ipify.org/?format=text";
+        this._logger.LogDebug("Start Requesting public ip from {url}", url);
+        using var client = new System.Net.Http.HttpClient();
+        var task = client.GetStringAsync(url);
+        task.Wait();
+        var response = task.Result;
+        var match = Regex.Match(response, @".*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*");
+        if (match.Success)
+        {
+            var ipString = match.Groups[1].Value;
+            this._logger.LogDebug("Request of public ip answered with: {ipString}", ipString);
+            return IPAddress.Parse(ipString);
         }
 
-        private IPAddress InternalGetIPv4()
-        {
-            const string url = "https://api.ipify.org/?format=text";
-            this.logger.LogDebug("Start Requesting public ip from {url}", url);
-            using var client = new System.Net.Http.HttpClient();
-            var task = client.GetStringAsync(url);
-            task.Wait();
-            var response = task.Result;
-            var match = Regex.Match(response, @".*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*");
-            if (match.Success)
-            {
-                var ipString = match.Groups[1].Value;
-                this.logger.LogDebug("Request of public ip answered with: {ipString}", ipString);
-                return IPAddress.Parse(ipString);
-            }
-
-            this.logger.LogDebug("Request of public ip answered with unknown format: {response}", response);
-            throw new FormatException($"Request of public ip answered with unknown format: {response}");
-        }
+        this._logger.LogDebug("Request of public ip answered with unknown format: {response}", response);
+        throw new FormatException($"Request of public ip answered with unknown format: {response}");
     }
 }

@@ -10,78 +10,75 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.AttributeSystem.ConstValueAttribute"/>.
+/// </summary>
+[Table(nameof(ConstValueAttribute), Schema = SchemaNames.Configuration)]
+internal partial class ConstValueAttribute : MUnique.OpenMU.AttributeSystem.ConstValueAttribute, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
+    /// <inheritdoc />
+    public ConstValueAttribute(System.Single value, MUnique.OpenMU.AttributeSystem.AttributeDefinition definition)
+        : base(value, definition)
+    {
+
+    }
+
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.AttributeSystem.ConstValueAttribute"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(ConstValueAttribute), Schema = SchemaNames.Configuration)]
-    internal partial class ConstValueAttribute : MUnique.OpenMU.AttributeSystem.ConstValueAttribute, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="Definition"/>.
+    /// </summary>
+    public Guid? DefinitionId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Definition" />.
+    /// </summary>
+    [ForeignKey(nameof(DefinitionId))]
+    public AttributeDefinition RawDefinition
     {
-        
-        /// <inheritdoc />
-        public ConstValueAttribute(System.Single value, MUnique.OpenMU.AttributeSystem.AttributeDefinition definition)
-            : base(value, definition)
-        {
-
-        }
-
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="Definition"/>.
-        /// </summary>
-        public Guid? DefinitionId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Definition" />.
-        /// </summary>
-        [ForeignKey(nameof(DefinitionId))]
-        public AttributeDefinition RawDefinition
-        {
-            get => base.Definition as AttributeDefinition;
-            set => base.Definition = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Definition
-        {
-            get => base.Definition;protected set
-            {
-                base.Definition = value;
-                this.DefinitionId = this.RawDefinition?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.Definition as AttributeDefinition;
+        set => base.Definition = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Definition
+    {
+        get => base.Definition;protected set
+        {
+            base.Definition = value;
+            this.DefinitionId = this.RawDefinition?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

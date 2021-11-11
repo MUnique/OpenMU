@@ -2,30 +2,27 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.GameLogic;
+
+/// <summary>
+/// Extensions for objects.
+/// </summary>
+public static class ObjectExtensions
 {
-    using System.Collections.Generic;
-
     /// <summary>
-    /// Extensions for objects.
+    /// Gets a single object as enumerable.
     /// </summary>
-    public static class ObjectExtensions
+    /// <typeparam name="T">The type of the object.</typeparam>
+    /// <param name="obj">The object.</param>
+    /// <returns>The enumerable with <paramref name="obj"/> as the only result.</returns>
+    public static IEnumerable<T> GetAsEnumerable<T>(this T? obj)
+        where T : class
     {
-        /// <summary>
-        /// Gets a single object as enumerable.
-        /// </summary>
-        /// <typeparam name="T">The type of the object.</typeparam>
-        /// <param name="obj">The object.</param>
-        /// <returns>The enumerable with <paramref name="obj"/> as the only result.</returns>
-        public static IEnumerable<T> GetAsEnumerable<T>(this T? obj)
-            where T : class
+        if (obj is null)
         {
-            if (obj is null)
-            {
-                yield break;
-            }
-
-            yield return obj;
+            yield break;
         }
+
+        yield return obj;
     }
 }

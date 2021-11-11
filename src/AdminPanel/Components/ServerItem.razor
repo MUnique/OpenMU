@@ -29,7 +29,7 @@
                 break;
         }
 
-        @if (this.isExpanded && this.Server.Type == ServerType.GameServer)
+        @if (this._isExpanded && this.Server.Type == ServerType.GameServer)
         {
             <div class="jumbotron jumbotron-fluid">
                 <div class="container">
@@ -38,7 +38,7 @@
             </div>
         }
 
-        @if (this.isExpanded && this.Server.Type == ServerType.ConnectServer)
+        @if (this._isExpanded && this.Server.Type == ServerType.ConnectServer)
         {
             <div class="jumbotron jumbotron-fluid">
                 <div class="container">
@@ -58,7 +58,7 @@
 
 @code {
 
-    private bool isExpanded;
+    private bool _isExpanded;
 
     /// <summary>
     /// Gets or sets the server which is shown in this component.
@@ -86,7 +86,7 @@
 
     private string GetExpandIconClass()
     {
-        if (this.isExpanded)
+        if (this._isExpanded)
         {
             return "oi oi-minus";
         }
@@ -110,7 +110,7 @@
 
     private void OnExpandClick(MouseEventArgs eventArgs)
     {
-        this.isExpanded = !this.isExpanded;
+        this._isExpanded = !this._isExpanded;
         this.StateHasChanged();
     }
 

@@ -2,35 +2,33 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps
+namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Maps;
+
+using MUnique.OpenMU.DataModel.Configuration;
+
+/// <summary>
+/// The initialization for the Noria map.
+/// </summary>
+internal class Noria : Version075.Maps.Noria
 {
-    using System.Collections.Generic;
-    using MUnique.OpenMU.DataModel.Configuration;
-
     /// <summary>
-    /// The initialization for the Noria map.
+    /// Initializes a new instance of the <see cref="Noria"/> class.
     /// </summary>
-    internal class Noria : Version075.Maps.Noria
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    public Noria(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Noria"/> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
-        public Noria(IContext context, GameConfiguration gameConfiguration)
-            : base(context, gameConfiguration)
+    }
+
+    /// <inheritdoc/>
+    protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
+    {
+        foreach (var npc in base.CreateNpcSpawns())
         {
+            yield return npc;
         }
 
-        /// <inheritdoc/>
-        protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
-        {
-            foreach (var npc in base.CreateNpcSpawns())
-            {
-                yield return npc;
-            }
-
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[237], 171, 105, Direction.SouthEast); // Charon (Devil Square)
-        }
+        yield return this.CreateMonsterSpawn(this.NpcDictionary[237], 171, 105, Direction.SouthEast); // Charon (Devil Square)
     }
 }
