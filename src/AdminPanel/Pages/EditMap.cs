@@ -24,6 +24,7 @@ public sealed class EditMap : ComponentBase, IDisposable
     private GameMapDefinition? _model;
     private IContext? _persistenceContext;
     private CancellationTokenSource? _disposeCts;
+    private bool _isLoading;
 
     /// <summary>
     /// Gets or sets the identifier of the object which should be edited.
@@ -81,14 +82,26 @@ public sealed class EditMap : ComponentBase, IDisposable
     {
         this._disposeCts?.Cancel();
         this._disposeCts?.Dispose();
-        var cts = new CancellationTokenSource();
-        this._disposeCts = cts;
+        this._disposeCts = null;
+
         this._model = null;
-        Task.Run(() => this.LoadData(cts.Token), cts.Token);
+
         return base.OnParametersSetAsync();
     }
 
-    private async Task LoadData(CancellationToken cancellationToken)
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (!this._isLoading && this._model is null)
+        {
+            this._disposeCts = new CancellationTokenSource();
+            var cts = this._disposeCts.Token;
+            Task.Run(() => this.LoadDataAsync(cts), cts);
+        }
+    }
+
+    private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
         IDisposable? modal = null;
         var showModalTask = this.InvokeAsync(() => modal = this.ModalService.ShowLoadingIndicator());
