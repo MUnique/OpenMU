@@ -4,26 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+
+using MUnique.OpenMU.GameLogic.Views;
+
+/// <summary>
+/// The alcohol consume handler.
+/// </summary>
+public class AlcoholConsumeHandler : BaseConsumeHandler
 {
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Views;
-
-    /// <summary>
-    /// The alcohol consume handler.
-    /// </summary>
-    public class AlcoholConsumeHandler : BaseConsumeHandler
+    /// <inheritdoc/>
+    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        /// <inheritdoc/>
-        public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+        if (base.ConsumeItem(player, item, targetItem, fruitUsage))
         {
-            if (base.ConsumeItem(player, item, targetItem, fruitUsage))
-            {
-                player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()?.DrinkAlcohol();
-                return true;
-            }
-
-            return false;
+            player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()?.DrinkAlcohol();
+            return true;
         }
+
+        return false;
     }
 }

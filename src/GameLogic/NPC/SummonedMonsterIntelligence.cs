@@ -2,74 +2,71 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.NPC
+namespace MUnique.OpenMU.GameLogic.NPC;
+
+/// <summary>
+/// The intelligence for a summoned monster.
+/// It's basically the same as for the <see cref="BasicMonsterIntelligence"/>, but chooses monsters as targets.
+/// </summary>
+public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
 {
-    using System.Linq;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SummonedMonsterIntelligence"/> class.
+    /// </summary>
+    /// <param name="owner">The owner.</param>
+    public SummonedMonsterIntelligence(Player owner)
+    {
+        this.Owner = owner;
+    }
 
     /// <summary>
-    /// The intelligence for a summoned monster.
-    /// It's basically the same as for the <see cref="BasicMonsterIntelligence"/>, but chooses monsters as targets.
+    /// Gets the owner of the summoned monster.
     /// </summary>
-    public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
+    public Player Owner { get; }
+
+    /// <inheritdoc />
+    public override void RegisterHit(IAttacker attacker)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SummonedMonsterIntelligence"/> class.
-        /// </summary>
-        /// <param name="owner">The owner.</param>
-        public SummonedMonsterIntelligence(Player owner)
+        if (this.CurrentTarget is null
+            || attacker.IsInRange(this.Npc.Position, this.Npc.Definition.AttackRange))
         {
-            this.Owner = owner;
+            base.RegisterHit(attacker);
         }
+    }
 
-        /// <summary>
-        /// Gets the owner of the summoned monster.
-        /// </summary>
-        public Player Owner { get; }
+    /// <inheritdoc />
+    protected override IAttackable? SearchNextTarget()
+    {
+        var currentMap = this.Owner.CurrentMap;
 
-        /// <inheritdoc />
-        public override void RegisterHit(IAttacker attacker)
+        return currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
+            .Where(o => o is Monster { SummonedBy: null, IsAlive: true })
+            .OfType<NonPlayerCharacter>()
+            .OrderBy(o => o.GetDistanceTo(this.Owner))
+            .FirstOrDefault() as IAttackable;
+    }
+
+    /// <inheritdoc />
+    protected override bool CanAttack()
+    {
+        var maxDistance = this.CurrentTarget is null ? 2 : 5;
+        var distanceToOwner = this.Owner.GetDistanceTo(this.Npc);
+        if (distanceToOwner > maxDistance && this.Owner.IsAlive)
         {
-            if (this.CurrentTarget is null
-                || attacker.IsInRange(this.Npc.Position, this.Npc.Definition.AttackRange))
+            // follow the player
+            var target = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(this.Owner.Position, 2);
+            if (this.Monster.Observers.Contains(this.Owner))
             {
-                base.RegisterHit(attacker);
+                this.Monster.WalkTo(target);
             }
-        }
-
-        /// <inheritdoc />
-        protected override IAttackable? SearchNextTarget()
-        {
-            var currentMap = this.Owner.CurrentMap;
-
-            return currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
-                .Where(o => o is Monster { SummonedBy: null, IsAlive: true })
-                .OfType<NonPlayerCharacter>()
-                .OrderBy(o => o.GetDistanceTo(this.Owner))
-                .FirstOrDefault() as IAttackable;
-        }
-
-        /// <inheritdoc />
-        protected override bool CanAttack()
-        {
-            var maxDistance = this.CurrentTarget is null ? 2 : 5;
-            var distanceToOwner = this.Owner.GetDistanceTo(this.Npc);
-            if (distanceToOwner > maxDistance && this.Owner.IsAlive)
+            else
             {
-                // follow the player
-                var target = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(this.Owner.Position, 2);
-                if (this.Monster.Observers.Contains(this.Owner))
-                {
-                    this.Monster.WalkTo(target);
-                }
-                else
-                {
-                    this.Monster.Move(target);
-                }
-
-                return false;
+                this.Monster.Move(target);
             }
 
-            return true;
+            return false;
         }
+
+        return true;
     }
 }

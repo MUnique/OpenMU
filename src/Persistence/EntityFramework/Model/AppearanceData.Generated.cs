@@ -10,80 +10,77 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.AppearanceData"/>.
+/// </summary>
+[Table(nameof(AppearanceData), Schema = SchemaNames.AccountData)]
+internal partial class AppearanceData : MUnique.OpenMU.DataModel.Entities.AppearanceData, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.AppearanceData"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(AppearanceData), Schema = SchemaNames.AccountData)]
-    internal partial class AppearanceData : MUnique.OpenMU.DataModel.Entities.AppearanceData, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="EquippedItems" />.
+    /// </summary>
+    public ICollection<ItemAppearance> RawEquippedItems { get; } = new EntityFramework.List<ItemAppearance>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.ItemAppearance> EquippedItems => base.EquippedItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.ItemAppearance, ItemAppearance>(this.RawEquippedItems);
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="CharacterClass"/>.
+    /// </summary>
+    public Guid? CharacterClassId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CharacterClass" />.
+    /// </summary>
+    [ForeignKey(nameof(CharacterClassId))]
+    public CharacterClass RawCharacterClass
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="EquippedItems" />.
-        /// </summary>
-        public ICollection<ItemAppearance> RawEquippedItems { get; } = new EntityFramework.List<ItemAppearance>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.ItemAppearance> EquippedItems => base.EquippedItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.ItemAppearance, ItemAppearance>(this.RawEquippedItems);
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="CharacterClass"/>.
-        /// </summary>
-        public Guid? CharacterClassId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="CharacterClass" />.
-        /// </summary>
-        [ForeignKey(nameof(CharacterClassId))]
-        public CharacterClass RawCharacterClass
-        {
-            get => base.CharacterClass as CharacterClass;
-            set => base.CharacterClass = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
-        {
-            get => base.CharacterClass;set
-            {
-                base.CharacterClass = value;
-                this.CharacterClassId = this.RawCharacterClass?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.CharacterClass as CharacterClass;
+        set => base.CharacterClass = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
+    {
+        get => base.CharacterClass;set
+        {
+            base.CharacterClass = value;
+            this.CharacterClassId = this.RawCharacterClass?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

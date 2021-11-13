@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(AccountCharacterClass), Schema = SchemaNames.AccountData)]
+internal partial class AccountCharacterClass
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid AccountId { get; set; }
+    public Account Account { get; set; }
 
-    [Table(nameof(AccountCharacterClass), Schema = SchemaNames.AccountData)]
-    internal partial class AccountCharacterClass
-    {
-        public Guid AccountId { get; set; }
-        public Account Account { get; set; }
+    public Guid CharacterClassId { get; set; }
+    public CharacterClass CharacterClass { get; set; }
+}
 
-        public Guid CharacterClassId { get; set; }
-        public CharacterClass CharacterClass { get; set; }
-    }
-
-    internal partial class Account
-    {
-        public ICollection<AccountCharacterClass> JoinedUnlockedCharacterClasses { get; } = new EntityFramework.List<AccountCharacterClass>();
-    }
+internal partial class Account
+{
+    public ICollection<AccountCharacterClass> JoinedUnlockedCharacterClasses { get; } = new EntityFramework.List<AccountCharacterClass>();
 }

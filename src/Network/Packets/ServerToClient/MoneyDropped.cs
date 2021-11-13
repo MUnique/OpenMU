@@ -2,45 +2,44 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Network.Packets.ServerToClient
+namespace MUnique.OpenMU.Network.Packets.ServerToClient;
+
+/// <summary>
+/// Extends the <see cref="MoneyDropped"/>.
+/// </summary>
+public readonly ref partial struct MoneyDropped
 {
     /// <summary>
-    /// Extends the <see cref="MoneyDropped"/>.
+    /// Gets or sets the amount.
     /// </summary>
-    public readonly ref partial struct MoneyDropped
+    public uint Amount
     {
-        /// <summary>
-        /// Gets or sets the amount.
-        /// </summary>
-        public uint Amount
+        get => (uint)(this._data[10] << 16 | this._data[11] << 8 | this._data[13]);
+        set
         {
-            get => (uint)(this.data[10] << 16 | this.data[11] << 8 | this.data[13]);
-            set
-            {
-                this.data[10] = (byte)(value >> 16 & 0xFF);
-                this.data[11] = (byte)(value >> 8 & 0xFF);
-                this.data[13] = (byte)(value & 0xFF);
-            }
+            this._data[10] = (byte)(value >> 16 & 0xFF);
+            this._data[11] = (byte)(value >> 8 & 0xFF);
+            this._data[13] = (byte)(value & 0xFF);
         }
     }
+}
 
+/// <summary>
+/// Extends the <see cref="MoneyDropped075"/>.
+/// </summary>
+public readonly ref partial struct MoneyDropped075
+{
     /// <summary>
-    /// Extends the <see cref="MoneyDropped075"/>.
+    /// Gets or sets the amount.
     /// </summary>
-    public readonly ref partial struct MoneyDropped075
+    public uint Amount
     {
-        /// <summary>
-        /// Gets or sets the amount.
-        /// </summary>
-        public uint Amount
+        get => (uint)(this._data[10] << 16 | this._data[11] << 8 | this._data[12]);
+        set
         {
-            get => (uint)(this.data[10] << 16 | this.data[11] << 8 | this.data[12]);
-            set
-            {
-                this.data[10] = (byte)(value >> 16 & 0xFF);
-                this.data[11] = (byte)(value >> 8 & 0xFF);
-                this.data[12] = (byte)(value & 0xFF);
-            }
+            this._data[10] = (byte)(value >> 16 & 0xFF);
+            this._data[11] = (byte)(value >> 8 & 0xFF);
+            this._data[12] = (byte)(value & 0xFF);
         }
     }
 }

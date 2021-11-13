@@ -10,63 +10,60 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="CombinationBonusRequirement"/>.
+/// </summary>
+public partial class CombinationBonusRequirement : MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement, IIdentifiable, IConvertibleTo<CombinationBonusRequirement>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="CombinationBonusRequirement"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class CombinationBonusRequirement : MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement, IIdentifiable, IConvertibleTo<CombinationBonusRequirement>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="OptionType" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("optionType")]
+    [System.Text.Json.Serialization.JsonPropertyName("optionType")]
+    public ItemOptionType RawOptionType
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="OptionType" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("optionType")]
-        [System.Text.Json.Serialization.JsonPropertyName("optionType")]
-        public ItemOptionType RawOptionType
-        {
-            get => base.OptionType as ItemOptionType;
-            set => base.OptionType = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
-        {
-            get => base.OptionType;
-            set => base.OptionType = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public CombinationBonusRequirement Convert() => this;
+        get => base.OptionType as ItemOptionType;
+        set => base.OptionType = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
+    {
+        get => base.OptionType;
+        set => base.OptionType = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public CombinationBonusRequirement Convert() => this;
 }

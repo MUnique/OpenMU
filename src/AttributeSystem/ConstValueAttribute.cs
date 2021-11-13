@@ -2,69 +2,66 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AttributeSystem
+namespace MUnique.OpenMU.AttributeSystem;
+
+/// <summary>
+/// An attribute with a constant value.
+/// </summary>
+public class ConstValueAttribute : IAttribute
 {
-    using System;
+    private AttributeDefinition _definition = null!;
 
     /// <summary>
-    /// An attribute with a constant value.
+    /// Initializes a new instance of the <see cref="ConstValueAttribute" /> class.
     /// </summary>
-    public class ConstValueAttribute : IAttribute
+    /// <param name="value">The value.</param>
+    /// <param name="definition">The definition.</param>
+    public ConstValueAttribute(float value, AttributeDefinition definition)
     {
-        private AttributeDefinition definition = null!;
+        this.Value = value;
+        this._definition = definition;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConstValueAttribute" /> class.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="definition">The definition.</param>
-        public ConstValueAttribute(float value, AttributeDefinition definition)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConstValueAttribute"/> class.
+    /// </summary>
+    protected ConstValueAttribute()
+    {
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>Empty implementation, because the value can't change.</remarks>
+    public event EventHandler? ValueChanged
+    {
+#pragma warning disable S3237 //Empty implementation, because the value can't change.
+        add
         {
-            this.Value = value;
-            this.definition = definition;
+            // no action required
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConstValueAttribute"/> class.
-        /// </summary>
-        protected ConstValueAttribute()
+        remove
         {
+            // no action required
         }
+#pragma warning restore S3237
+    }
 
-        /// <inheritdoc/>
-        /// <remarks>Empty implementation, because the value can't change.</remarks>
-        public event EventHandler? ValueChanged
-        {
-            #pragma warning disable S3237 //Empty implementation, because the value can't change.
-            add
-            {
-                // no action required
-            }
+    /// <inheritdoc/>
+    public virtual AttributeDefinition Definition
+    {
+        get => this._definition;
+        protected set => this._definition = value;
+    }
 
-            remove
-            {
-                // no action required
-            }
-            #pragma warning restore S3237
-        }
+    /// <inheritdoc/>
+    public float Value { get; protected set; }
 
-        /// <inheritdoc/>
-        public virtual AttributeDefinition Definition
-        {
-            get => this.definition;
-            protected set => this.definition = value;
-        }
+    /// <inheritdoc/>
+    public AggregateType AggregateType => AggregateType.AddRaw;
 
-        /// <inheritdoc/>
-        public float Value { get; protected set; }
-
-        /// <inheritdoc/>
-        public AggregateType AggregateType => AggregateType.AddRaw;
-
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            return $"{this.Definition.Designation}: {this.Value}";
-        }
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{this.Definition.Designation}: {this.Value}";
     }
 }

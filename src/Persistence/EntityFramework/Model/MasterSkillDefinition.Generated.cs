@@ -10,131 +10,128 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition"/>.
+/// </summary>
+[Table(nameof(MasterSkillDefinition), Schema = SchemaNames.Configuration)]
+internal partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    /// <inheritdoc />
+    public MasterSkillDefinition()
+    {
+        this.InitJoinCollections();
+    }
+
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(MasterSkillDefinition), Schema = SchemaNames.Configuration)]
-    internal partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="Root"/>.
+    /// </summary>
+    public Guid? RootId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Root" />.
+    /// </summary>
+    [ForeignKey(nameof(RootId))]
+    public MasterSkillRoot RawRoot
     {
-        /// <inheritdoc />
-        public MasterSkillDefinition()
+        get => base.Root as MasterSkillRoot;
+        set => base.Root = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot Root
+    {
+        get => base.Root;set
         {
-            this.InitJoinCollections();
+            base.Root = value;
+            this.RootId = this.RawRoot?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="TargetAttribute"/>.
+    /// </summary>
+    public Guid? TargetAttributeId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="TargetAttribute" />.
+    /// </summary>
+    [ForeignKey(nameof(TargetAttributeId))]
+    public AttributeDefinition RawTargetAttribute
+    {
+        get => base.TargetAttribute as AttributeDefinition;
+        set => base.TargetAttribute = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
+    {
+        get => base.TargetAttribute;set
+        {
+            base.TargetAttribute = value;
+            this.TargetAttributeId = this.RawTargetAttribute?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="ReplacedSkill"/>.
+    /// </summary>
+    public Guid? ReplacedSkillId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ReplacedSkill" />.
+    /// </summary>
+    [ForeignKey(nameof(ReplacedSkillId))]
+    public Skill RawReplacedSkill
+    {
+        get => base.ReplacedSkill as Skill;
+        set => base.ReplacedSkill = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Skill ReplacedSkill
+    {
+        get => base.ReplacedSkill;set
+        {
+            base.ReplacedSkill = value;
+            this.ReplacedSkillId = this.RawReplacedSkill?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
         }
 
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="Root"/>.
-        /// </summary>
-        public Guid? RootId { get; set; }
+        return base.Equals(obj);
+    }
 
-        /// <summary>
-        /// Gets the raw object of <see cref="Root" />.
-        /// </summary>
-        [ForeignKey(nameof(RootId))]
-        public MasterSkillRoot RawRoot
-        {
-            get => base.Root as MasterSkillRoot;
-            set => base.Root = value;
-        }
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
 
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot Root
-        {
-            get => base.Root;set
-            {
-                base.Root = value;
-                this.RootId = this.RawRoot?.Id;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="TargetAttribute"/>.
-        /// </summary>
-        public Guid? TargetAttributeId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="TargetAttribute" />.
-        /// </summary>
-        [ForeignKey(nameof(TargetAttributeId))]
-        public AttributeDefinition RawTargetAttribute
-        {
-            get => base.TargetAttribute as AttributeDefinition;
-            set => base.TargetAttribute = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
-        {
-            get => base.TargetAttribute;set
-            {
-                base.TargetAttribute = value;
-                this.TargetAttributeId = this.RawTargetAttribute?.Id;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="ReplacedSkill"/>.
-        /// </summary>
-        public Guid? ReplacedSkillId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="ReplacedSkill" />.
-        /// </summary>
-        [ForeignKey(nameof(ReplacedSkillId))]
-        public Skill RawReplacedSkill
-        {
-            get => base.ReplacedSkill as Skill;
-            set => base.ReplacedSkill = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.Skill ReplacedSkill
-        {
-            get => base.ReplacedSkill;set
-            {
-                base.ReplacedSkill = value;
-                this.ReplacedSkillId = this.RawReplacedSkill?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        protected void InitJoinCollections()
-        {
-            this.RequiredMasterSkills = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Skill, MasterSkillDefinitionSkill>(this.JoinedRequiredMasterSkills, joinEntity => joinEntity.Skill, entity => new MasterSkillDefinitionSkill { MasterSkillDefinition = this, MasterSkillDefinitionId = this.Id, Skill = (Skill)entity, SkillId = ((Skill)entity).Id});
-        }
+    protected void InitJoinCollections()
+    {
+        this.RequiredMasterSkills = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Skill, MasterSkillDefinitionSkill>(this.JoinedRequiredMasterSkills, joinEntity => joinEntity.Skill, entity => new MasterSkillDefinitionSkill { MasterSkillDefinition = this, MasterSkillDefinitionId = this.Id, Skill = (Skill)entity, SkillId = ((Skill)entity).Id});
     }
 }

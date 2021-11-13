@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(GameServerConfigurationGameMapDefinition), Schema = SchemaNames.Configuration)]
+internal partial class GameServerConfigurationGameMapDefinition
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid GameServerConfigurationId { get; set; }
+    public GameServerConfiguration GameServerConfiguration { get; set; }
 
-    [Table(nameof(GameServerConfigurationGameMapDefinition), Schema = SchemaNames.Configuration)]
-    internal partial class GameServerConfigurationGameMapDefinition
-    {
-        public Guid GameServerConfigurationId { get; set; }
-        public GameServerConfiguration GameServerConfiguration { get; set; }
+    public Guid GameMapDefinitionId { get; set; }
+    public GameMapDefinition GameMapDefinition { get; set; }
+}
 
-        public Guid GameMapDefinitionId { get; set; }
-        public GameMapDefinition GameMapDefinition { get; set; }
-    }
-
-    internal partial class GameServerConfiguration
-    {
-        public ICollection<GameServerConfigurationGameMapDefinition> JoinedMaps { get; } = new EntityFramework.List<GameServerConfigurationGameMapDefinition>();
-    }
+internal partial class GameServerConfiguration
+{
+    public ICollection<GameServerConfigurationGameMapDefinition> JoinedMaps { get; } = new EntityFramework.List<GameServerConfigurationGameMapDefinition>();
 }

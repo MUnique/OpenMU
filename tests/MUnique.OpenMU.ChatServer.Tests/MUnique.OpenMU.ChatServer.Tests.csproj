@@ -19,10 +19,16 @@
 
   <ItemGroup>
     <Compile Include="..\..\src\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="..\..\src\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
+    <Compile Include="..\SharedTestUsings.cs" Link="SharedTestUsings.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="..\..\src\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\src\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>

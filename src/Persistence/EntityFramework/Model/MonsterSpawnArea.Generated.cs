@@ -10,97 +10,94 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea"/>.
+/// </summary>
+[Table(nameof(MonsterSpawnArea), Schema = SchemaNames.Configuration)]
+internal partial class MonsterSpawnArea : MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(MonsterSpawnArea), Schema = SchemaNames.Configuration)]
-    internal partial class MonsterSpawnArea : MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="MonsterDefinition"/>.
+    /// </summary>
+    public Guid? MonsterDefinitionId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="MonsterDefinition" />.
+    /// </summary>
+    [ForeignKey(nameof(MonsterDefinitionId))]
+    public MonsterDefinition RawMonsterDefinition
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="MonsterDefinition"/>.
-        /// </summary>
-        public Guid? MonsterDefinitionId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="MonsterDefinition" />.
-        /// </summary>
-        [ForeignKey(nameof(MonsterDefinitionId))]
-        public MonsterDefinition RawMonsterDefinition
-        {
-            get => base.MonsterDefinition as MonsterDefinition;
-            set => base.MonsterDefinition = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition MonsterDefinition
-        {
-            get => base.MonsterDefinition;set
-            {
-                base.MonsterDefinition = value;
-                this.MonsterDefinitionId = this.RawMonsterDefinition?.Id;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="GameMap"/>.
-        /// </summary>
-        public Guid? GameMapId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="GameMap" />.
-        /// </summary>
-        [ForeignKey(nameof(GameMapId))]
-        public GameMapDefinition RawGameMap
-        {
-            get => base.GameMap as GameMapDefinition;
-            set => base.GameMap = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition GameMap
-        {
-            get => base.GameMap;set
-            {
-                base.GameMap = value;
-                this.GameMapId = this.RawGameMap?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.MonsterDefinition as MonsterDefinition;
+        set => base.MonsterDefinition = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition MonsterDefinition
+    {
+        get => base.MonsterDefinition;set
+        {
+            base.MonsterDefinition = value;
+            this.MonsterDefinitionId = this.RawMonsterDefinition?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="GameMap"/>.
+    /// </summary>
+    public Guid? GameMapId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="GameMap" />.
+    /// </summary>
+    [ForeignKey(nameof(GameMapId))]
+    public GameMapDefinition RawGameMap
+    {
+        get => base.GameMap as GameMapDefinition;
+        set => base.GameMap = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition GameMap
+    {
+        get => base.GameMap;set
+        {
+            base.GameMap = value;
+            this.GameMapId = this.RawGameMap?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

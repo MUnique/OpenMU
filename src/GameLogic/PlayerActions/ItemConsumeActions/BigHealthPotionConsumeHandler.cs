@@ -4,17 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+
+/// <summary>
+/// Consume handler for big health potions.
+/// </summary>
+public class BigHealthPotionConsumeHandler : HealthPotionConsumeHandler
 {
-    /// <summary>
-    /// Consume handler for big health potions.
-    /// </summary>
-    public class BigHealthPotionConsumeHandler : HealthPotionConsumeHandler
+    /// <inheritdoc/>
+    protected override int Multiplier
     {
-        /// <inheritdoc/>
-        protected override int Multiplier
-        {
-            get { return 3; }
-        }
+        get { return 3; }
     }
 }

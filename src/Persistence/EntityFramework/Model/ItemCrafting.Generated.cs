@@ -10,71 +10,68 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting"/>.
+/// </summary>
+[Table(nameof(ItemCrafting), Schema = SchemaNames.Configuration)]
+internal partial class ItemCrafting : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(ItemCrafting), Schema = SchemaNames.Configuration)]
-    internal partial class ItemCrafting : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="SimpleCraftingSettings"/>.
+    /// </summary>
+    public Guid? SimpleCraftingSettingsId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="SimpleCraftingSettings" />.
+    /// </summary>
+    [ForeignKey(nameof(SimpleCraftingSettingsId))]
+    public SimpleCraftingSettings RawSimpleCraftingSettings
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="SimpleCraftingSettings"/>.
-        /// </summary>
-        public Guid? SimpleCraftingSettingsId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="SimpleCraftingSettings" />.
-        /// </summary>
-        [ForeignKey(nameof(SimpleCraftingSettingsId))]
-        public SimpleCraftingSettings RawSimpleCraftingSettings
-        {
-            get => base.SimpleCraftingSettings as SimpleCraftingSettings;
-            set => base.SimpleCraftingSettings = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings SimpleCraftingSettings
-        {
-            get => base.SimpleCraftingSettings;set
-            {
-                base.SimpleCraftingSettings = value;
-                this.SimpleCraftingSettingsId = this.RawSimpleCraftingSettings?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.SimpleCraftingSettings as SimpleCraftingSettings;
+        set => base.SimpleCraftingSettings = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings SimpleCraftingSettings
+    {
+        get => base.SimpleCraftingSettings;set
+        {
+            base.SimpleCraftingSettings = value;
+            this.SimpleCraftingSettingsId = this.RawSimpleCraftingSettings?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

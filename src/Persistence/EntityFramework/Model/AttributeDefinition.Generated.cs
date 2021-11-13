@@ -10,53 +10,50 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.AttributeSystem.AttributeDefinition"/>.
+/// </summary>
+[Table(nameof(AttributeDefinition), Schema = SchemaNames.Configuration)]
+internal partial class AttributeDefinition : MUnique.OpenMU.AttributeSystem.AttributeDefinition, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    
-    /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.AttributeSystem.AttributeDefinition"/>.
-    /// </summary>
-    [Table(nameof(AttributeDefinition), Schema = SchemaNames.Configuration)]
-    internal partial class AttributeDefinition : MUnique.OpenMU.AttributeSystem.AttributeDefinition, IIdentifiable
+    /// <inheritdoc />
+    public AttributeDefinition()
     {
-        /// <inheritdoc />
-        public AttributeDefinition()
-        {
 
-        }
-
-        /// <inheritdoc />
-        public AttributeDefinition(System.Guid id, System.String designation, System.String description)
-            : base(id, designation, description)
-        {
-
-        }
-
-        
-        
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
     }
+
+    /// <inheritdoc />
+    public AttributeDefinition(System.Guid id, System.String designation, System.String description)
+        : base(id, designation, description)
+    {
+
+    }
+
+    
+    
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

@@ -10,53 +10,50 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.GuildMember"/>.
+/// </summary>
+[Table(nameof(GuildMember), Schema = SchemaNames.AccountData)]
+internal partial class GuildMember : MUnique.OpenMU.DataModel.Entities.GuildMember, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    
-    /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Entities.GuildMember"/>.
-    /// </summary>
-    [Table(nameof(GuildMember), Schema = SchemaNames.AccountData)]
-    internal partial class GuildMember : MUnique.OpenMU.DataModel.Entities.GuildMember, IIdentifiable
+    /// <inheritdoc />
+    public GuildMember()
     {
-        /// <inheritdoc />
-        public GuildMember()
-        {
 
-        }
-
-        /// <inheritdoc />
-        public GuildMember(System.Guid id)
-            : base(id)
-        {
-
-        }
-
-        
-        
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
     }
+
+    /// <inheritdoc />
+    public GuildMember(System.Guid id)
+        : base(id)
+    {
+
+    }
+
+    
+    
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

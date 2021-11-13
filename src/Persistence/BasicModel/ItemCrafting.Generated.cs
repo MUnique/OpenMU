@@ -10,63 +10,60 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="ItemCrafting"/>.
+/// </summary>
+public partial class ItemCrafting : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting, IIdentifiable, IConvertibleTo<ItemCrafting>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="ItemCrafting"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class ItemCrafting : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting, IIdentifiable, IConvertibleTo<ItemCrafting>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="SimpleCraftingSettings" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("simpleCraftingSettings")]
+    [System.Text.Json.Serialization.JsonPropertyName("simpleCraftingSettings")]
+    public SimpleCraftingSettings RawSimpleCraftingSettings
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="SimpleCraftingSettings" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("simpleCraftingSettings")]
-        [System.Text.Json.Serialization.JsonPropertyName("simpleCraftingSettings")]
-        public SimpleCraftingSettings RawSimpleCraftingSettings
-        {
-            get => base.SimpleCraftingSettings as SimpleCraftingSettings;
-            set => base.SimpleCraftingSettings = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings SimpleCraftingSettings
-        {
-            get => base.SimpleCraftingSettings;
-            set => base.SimpleCraftingSettings = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public ItemCrafting Convert() => this;
+        get => base.SimpleCraftingSettings as SimpleCraftingSettings;
+        set => base.SimpleCraftingSettings = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings SimpleCraftingSettings
+    {
+        get => base.SimpleCraftingSettings;
+        set => base.SimpleCraftingSettings = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public ItemCrafting Convert() => this;
 }

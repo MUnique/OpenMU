@@ -4,17 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+
+/// <summary>
+/// Consume handler for small shield potions.
+/// </summary>
+public class SmallShieldPotionConsumeHandler : ShieldPotionConsumeHandler
 {
-    /// <summary>
-    /// Consume handler for small shield potions.
-    /// </summary>
-    public class SmallShieldPotionConsumeHandler : ShieldPotionConsumeHandler
+    /// <inheritdoc/>
+    protected override int RecoverPercent
     {
-        /// <inheritdoc/>
-        protected override int RecoverPercent
-        {
-            get { return 20; }
-        }
+        get { return 20; }
     }
 }

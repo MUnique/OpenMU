@@ -4,22 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
-{
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.Interfaces;
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
-    /// <summary>
-    /// A consume handler which is not implemented yet. It will show a message to the player.
-    /// </summary>
-    internal class NotImplementedItemConsumeHandler : IItemConsumeHandler
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// A consume handler which is not implemented yet. It will show a message to the player.
+/// </summary>
+internal class NotImplementedItemConsumeHandler : IItemConsumeHandler
+{
+    /// <inheritdoc/>
+    public bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        /// <inheritdoc/>
-        public bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
-        {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Using this item is not implemented yet.", MessageType.BlueNormal);
-            return false;
-        }
+        player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Using this item is not implemented yet.", MessageType.BlueNormal);
+        return false;
     }
 }

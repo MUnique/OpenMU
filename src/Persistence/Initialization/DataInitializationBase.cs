@@ -2,219 +2,215 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization
+namespace MUnique.OpenMU.Persistence.Initialization;
+
+using System.ComponentModel.Design;
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Resets;
+using MUnique.OpenMU.GameServer.MessageHandler;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Class to manage data initialization.
+/// </summary>
+public abstract class DataInitializationBase : IDataInitializationPlugIn
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.Design;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.Resets;
-    using MUnique.OpenMU.GameServer.MessageHandler;
-    using MUnique.OpenMU.Network.PlugIns;
-    using MUnique.OpenMU.PlugIns;
+    private readonly IPersistenceContextProvider _persistenceContextProvider;
+
+    private readonly ILoggerFactory _loggerFactory;
+    private GameConfiguration? _gameConfiguration;
+    private IContext? _context;
 
     /// <summary>
-    /// Class to manage data initialization.
+    /// Initializes a new instance of the <see cref="DataInitializationBase" /> class.
     /// </summary>
-    public abstract class DataInitializationBase : IDataInitializationPlugIn
+    /// <param name="persistenceContextProvider">The persistence context provider.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    protected DataInitializationBase(IPersistenceContextProvider persistenceContextProvider, ILoggerFactory loggerFactory)
     {
-        private readonly IPersistenceContextProvider persistenceContextProvider;
+        this._persistenceContextProvider = persistenceContextProvider;
+        this._loggerFactory = loggerFactory;
+    }
 
-        private readonly ILoggerFactory loggerFactory;
-        private GameConfiguration? gameConfiguration;
-        private IContext? context;
+    /// <inheritdoc />
+    public abstract string Key { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DataInitializationBase" /> class.
-        /// </summary>
-        /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        /// <param name="loggerFactory">The logger factory.</param>
-        protected DataInitializationBase(IPersistenceContextProvider persistenceContextProvider, ILoggerFactory loggerFactory)
+    /// <summary>
+    /// Gets or sets the game configuration.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">not initialized yet.</exception>
+    protected GameConfiguration GameConfiguration
+    {
+        get => this._gameConfiguration ?? throw new InvalidOperationException("not initialized yet.");
+        set => this._gameConfiguration = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the context.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">not initialized yet.</exception>
+    protected IContext Context
+    {
+        get => this._context ?? throw new InvalidOperationException("not initialized yet.");
+        set => this._context = value;
+    }
+
+    /// <summary>
+    /// Gets the game configuration initializer.
+    /// </summary>
+    protected abstract IInitializer GameConfigurationInitializer { get; }
+
+    /// <summary>
+    /// Gets the maps initializer.
+    /// </summary>
+    protected abstract IGameMapsInitializer GameMapsInitializer { get; }
+
+    /// <summary>
+    /// Gets the test accounts initializer.
+    /// </summary>
+    protected abstract IInitializer? TestAccountsInitializer { get; }
+
+    /// <summary>
+    /// Creates the initial data for a server.
+    /// </summary>
+    /// <param name="numberOfGameServers">The number of game servers.</param>
+    /// <param name="createTestAccounts">If set to <c>true</c>, test accounts should be created.</param>
+    public void CreateInitialData(byte numberOfGameServers, bool createTestAccounts)
+    {
+        BaseMapInitializer.ClearDefaultDropItemGroups();
+        using (var temporaryContext = this._persistenceContextProvider.CreateNewContext())
         {
-            this.persistenceContextProvider = persistenceContextProvider;
-            this.loggerFactory = loggerFactory;
+            this.GameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
+            temporaryContext.SaveChanges();
         }
 
-        /// <inheritdoc />
-        public abstract string Key { get; }
+        using var contextWithConfiguration = this._persistenceContextProvider.CreateNewContext(this.GameConfiguration);
+        this.Context = contextWithConfiguration;
+        this.CreateGameClientDefinition();
+        this.CreateChatServerDefinition();
+        this.GameConfigurationInitializer.Initialize();
 
-        /// <summary>
-        /// Gets or sets the game configuration.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">not initialized yet.</exception>
-        protected GameConfiguration GameConfiguration
+        var gameServerConfiguration = this.CreateGameServerConfiguration(this.GameConfiguration.Maps);
+        this.CreateGameServerDefinitions(gameServerConfiguration, numberOfGameServers);
+        this.CreateConnectServerDefinition();
+        this.Context.SaveChanges();
+
+        this.GameMapsInitializer.SetSafezoneMaps();
+
+        if (createTestAccounts)
         {
-            get => this.gameConfiguration ?? throw new InvalidOperationException("not initialized yet.");
-            set => this.gameConfiguration = value;
+            this.TestAccountsInitializer?.Initialize();
         }
 
-        /// <summary>
-        /// Gets or sets the context.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">not initialized yet.</exception>
-        protected IContext Context
+        if (!AppDomain.CurrentDomain.GetAssemblies().Contains(typeof(GameServer.GameServer).Assembly))
         {
-            get => this.context ?? throw new InvalidOperationException("not initialized yet.");
-            set => this.context = value;
+            // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
         }
 
-        /// <summary>
-        /// Gets the game configuration initializer.
-        /// </summary>
-        protected abstract IInitializer GameConfigurationInitializer { get; }
-
-        /// <summary>
-        /// Gets the maps initializer.
-        /// </summary>
-        protected abstract IGameMapsInitializer GameMapsInitializer { get; }
-
-        /// <summary>
-        /// Gets the test accounts initializer.
-        /// </summary>
-        protected abstract IInitializer? TestAccountsInitializer { get; }
-
-        /// <summary>
-        /// Creates the initial data for a server.
-        /// </summary>
-        /// <param name="numberOfGameServers">The number of game servers.</param>
-        /// <param name="createTestAccounts">If set to <c>true</c>, test accounts should be created.</param>
-        public void CreateInitialData(byte numberOfGameServers, bool createTestAccounts)
+        var serviceContainer = new ServiceContainer();
+        serviceContainer.AddService(typeof(IPersistenceContextProvider), this._persistenceContextProvider);
+        var plugInManager = new PlugInManager(null, this._loggerFactory, serviceContainer);
+        plugInManager.DiscoverAndRegisterPlugIns();
+        plugInManager.KnownPlugInTypes.ForEach(plugInType =>
         {
-            BaseMapInitializer.ClearDefaultDropItemGroups();
-            using (var temporaryContext = this.persistenceContextProvider.CreateNewContext())
+            var plugInConfiguration = this.Context.CreateNew<PlugInConfiguration>();
+            plugInConfiguration.TypeId = plugInType.GUID;
+            plugInConfiguration.IsActive = true;
+            this.GameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
+
+            // Resets are disabled by default.
+            if (plugInType == typeof(ResetFeaturePlugIn))
             {
-                this.GameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
-                temporaryContext.SaveChanges();
+                plugInConfiguration.IsActive = false;
+                plugInConfiguration.SetConfiguration(new ResetConfiguration());
             }
 
-            using var contextWithConfiguration = this.persistenceContextProvider.CreateNewContext(this.GameConfiguration);
-            this.Context = contextWithConfiguration;
-            this.CreateGameClientDefinition();
-            this.CreateChatServerDefinition();
-            this.GameConfigurationInitializer.Initialize();
-
-            var gameServerConfiguration = this.CreateGameServerConfiguration(this.GameConfiguration.Maps);
-            this.CreateGameServerDefinitions(gameServerConfiguration, numberOfGameServers);
-            this.CreateConnectServerDefinition();
-            this.Context.SaveChanges();
-
-            this.GameMapsInitializer.SetSafezoneMaps();
-
-            if (createTestAccounts)
+            // We don't move the player anymore by his request. This was usually requested after a player performed a skill.
+            // However, it adds way for cheaters to move through the map.
+            // The plugin is therefore deactivated by default.
+            if (plugInType.IsAssignableTo(typeof(CharacterMoveBaseHandlerPlugIn)))
             {
-                this.TestAccountsInitializer?.Initialize();
+                plugInConfiguration.IsActive = false;
             }
+        });
 
-            if (!AppDomain.CurrentDomain.GetAssemblies().Contains(typeof(GameServer.GameServer).Assembly))
-            {
-                // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
-            }
+        this.Context.SaveChanges();
+    }
 
-            var serviceContainer = new ServiceContainer();
-            serviceContainer.AddService(typeof(IPersistenceContextProvider), this.persistenceContextProvider);
-            var plugInManager = new PlugInManager(null, this.loggerFactory, serviceContainer);
-            plugInManager.DiscoverAndRegisterPlugIns();
-            plugInManager.KnownPlugInTypes.ForEach(plugInType =>
-            {
-                var plugInConfiguration = this.Context.CreateNew<PlugInConfiguration>();
-                plugInConfiguration.TypeId = plugInType.GUID;
-                plugInConfiguration.IsActive = true;
-                this.GameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
+    /// <summary>
+    /// Creates the game client definition.
+    /// </summary>
+    protected abstract void CreateGameClientDefinition();
 
-                // Resets are disabled by default.
-                if (plugInType == typeof(ResetFeaturePlugIn))
-                {
-                    plugInConfiguration.IsActive = false;
-                    plugInConfiguration.SetConfiguration(new ResetConfiguration());
-                }
+    private void CreateConnectServerDefinition()
+    {
+        var client = this.Context!.Get<GameClientDefinition>().First();
+        var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
+        connectServer.Client = client;
+        connectServer.ClientListenerPort = 44405;
+        connectServer.Description = $"Connect Server ({new ClientVersion(client.Season, client.Episode, client.Language)})";
+        connectServer.DisconnectOnUnknownPacket = true;
+        connectServer.MaximumReceiveSize = 6;
+        connectServer.Timeout = new TimeSpan(0, 1, 0);
+        connectServer.CurrentPatchVersion = new byte[] { 1, 3, 0x2B };
+        connectServer.PatchAddress = "patch.muonline.webzen.com";
+        connectServer.MaxConnectionsPerAddress = 30;
+        connectServer.CheckMaxConnectionsPerAddress = true;
+        connectServer.MaxConnections = 10000;
+        connectServer.ListenerBacklog = 100;
+        connectServer.MaxFtpRequests = 1;
+        connectServer.MaxIpRequests = 5;
+        connectServer.MaxServerListRequests = 20;
+    }
 
-                // We don't move the player anymore by his request. This was usually requested after a player performed a skill.
-                // However, it adds way for cheaters to move through the map.
-                // The plugin is therefore deactivated by default.
-                if (plugInType.IsAssignableTo(typeof(CharacterMoveBaseHandlerPlugIn)))
-                {
-                    plugInConfiguration.IsActive = false;
-                }
-            });
-
-            this.Context.SaveChanges();
-        }
-
-        /// <summary>
-        /// Creates the game client definition.
-        /// </summary>
-        protected abstract void CreateGameClientDefinition();
-
-        private void CreateConnectServerDefinition()
+    private void CreateGameServerDefinitions(GameServerConfiguration gameServerConfiguration, int numberOfServers)
+    {
+        for (int i = 0; i < numberOfServers; i++)
         {
-            var client = this.Context!.Get<GameClientDefinition>().First();
-            var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
-            connectServer.Client = client;
-            connectServer.ClientListenerPort = 44405;
-            connectServer.Description = $"Connect Server ({new ClientVersion(client.Season, client.Episode, client.Language)})";
-            connectServer.DisconnectOnUnknownPacket = true;
-            connectServer.MaximumReceiveSize = 6;
-            connectServer.Timeout = new TimeSpan(0, 1, 0);
-            connectServer.CurrentPatchVersion = new byte[] { 1, 3, 0x2B };
-            connectServer.PatchAddress = "patch.muonline.webzen.com";
-            connectServer.MaxConnectionsPerAddress = 30;
-            connectServer.CheckMaxConnectionsPerAddress = true;
-            connectServer.MaxConnections = 10000;
-            connectServer.ListenerBacklog = 100;
-            connectServer.MaxFtpRequests = 1;
-            connectServer.MaxIpRequests = 5;
-            connectServer.MaxServerListRequests = 20;
-        }
+            var server = this.Context!.CreateNew<GameServerDefinition>();
+            server.ServerID = (byte)i;
+            server.Description = $"Server {i}";
+            server.ExperienceRate = 1.0f;
+            server.GameConfiguration = this.GameConfiguration;
+            server.ServerConfiguration = gameServerConfiguration;
 
-        private void CreateGameServerDefinitions(GameServerConfiguration gameServerConfiguration, int numberOfServers)
-        {
-            for (int i = 0; i < numberOfServers; i++)
+            foreach (var client in this.Context.Get<GameClientDefinition>().ToList())
             {
-                var server = this.Context!.CreateNew<GameServerDefinition>();
-                server.ServerID = (byte)i;
-                server.Description = $"Server {i}";
-                server.ExperienceRate = 1.0f;
-                server.GameConfiguration = this.GameConfiguration;
-                server.ServerConfiguration = gameServerConfiguration;
-
-                foreach (var client in this.Context.Get<GameClientDefinition>().ToList())
-                {
-                    var endPoint = this.Context.CreateNew<GameServerEndpoint>();
-                    endPoint.Client = client;
-                    endPoint.NetworkPort = 55901 + i;
-                    server.Endpoints.Add(endPoint);
-                }
+                var endPoint = this.Context.CreateNew<GameServerEndpoint>();
+                endPoint.Client = client;
+                endPoint.NetworkPort = 55901 + i;
+                server.Endpoints.Add(endPoint);
             }
         }
+    }
 
-        private void CreateChatServerDefinition()
+    private void CreateChatServerDefinition()
+    {
+        var server = this.Context!.CreateNew<ChatServerDefinition>();
+        server.ServerId = 0;
+        server.Description = "Chat Server";
+
+        var client = this.Context!.Get<GameClientDefinition>().First();
+        var endPoint = this.Context.CreateNew<ChatServerEndpoint>();
+        endPoint.Client = client;
+        endPoint.NetworkPort = 55980;
+        server.Endpoints.Add(endPoint);
+    }
+
+    private GameServerConfiguration CreateGameServerConfiguration(ICollection<GameMapDefinition> maps)
+    {
+        var gameServerConfiguration = this.Context!.CreateNew<GameServerConfiguration>();
+        gameServerConfiguration.MaximumPlayers = 1000;
+
+        // by default we add every map to a server configuration
+        foreach (var map in maps)
         {
-            var server = this.Context!.CreateNew<ChatServerDefinition>();
-            server.ServerId = 0;
-            server.Description = "Chat Server";
-
-            var client = this.Context!.Get<GameClientDefinition>().First();
-            var endPoint = this.Context.CreateNew<ChatServerEndpoint>();
-            endPoint.Client = client;
-            endPoint.NetworkPort = 55980;
-            server.Endpoints.Add(endPoint);
+            gameServerConfiguration.Maps.Add(map);
         }
 
-        private GameServerConfiguration CreateGameServerConfiguration(ICollection<GameMapDefinition> maps)
-        {
-            var gameServerConfiguration = this.Context!.CreateNew<GameServerConfiguration>();
-            gameServerConfiguration.MaximumPlayers = 1000;
-
-            // by default we add every map to a server configuration
-            foreach (var map in maps)
-            {
-                gameServerConfiguration.Maps.Add(map);
-            }
-
-            return gameServerConfiguration;
-        }
+        return gameServerConfiguration;
     }
 }

@@ -2,26 +2,25 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.Views.Trade
+namespace MUnique.OpenMU.GameLogic.Views.Trade;
+
+/// <summary>
+/// The state of the trade button.
+/// </summary>
+public enum TradeButtonState : byte
 {
     /// <summary>
-    /// The state of the trade button.
+    /// Trade button is not pressed. It means that the trade is not yet accepted by the trader.
     /// </summary>
-    public enum TradeButtonState : byte
-    {
-        /// <summary>
-        /// Trade button is not pressed. It means that the trade is not yet accepted by the trader.
-        /// </summary>
-        Unchecked,
+    Unchecked,
 
-        /// <summary>
-        /// Trade Button is pressed. It means that the trade is accepted by the trader.
-        /// </summary>
-        Checked,
+    /// <summary>
+    /// Trade Button is pressed. It means that the trade is accepted by the trader.
+    /// </summary>
+    Checked,
 
-        /// <summary>
-        /// This state is only sent to the client. After some seconds the client is changing back to normal Unchecked.
-        /// </summary>
-        Red,
-    }
+    /// <summary>
+    /// This state is only sent to the client. After some seconds the client is changing back to normal Unchecked.
+    /// </summary>
+    Red,
 }

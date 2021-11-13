@@ -2,35 +2,32 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.DataModel.Configuration
+namespace MUnique.OpenMU.DataModel.Configuration;
+
+/// <summary>
+/// Defines a gate which a player can enter to move to another <see cref="ExitGate"/>.
+/// </summary>
+public class EnterGate : Gate
 {
-    using System.ComponentModel.DataAnnotations;
+    /// <summary>
+    /// Gets or sets the target gate.
+    /// </summary>
+    [Required]
+    public virtual ExitGate? TargetGate { get; set; }
 
     /// <summary>
-    /// Defines a gate which a player can enter to move to another <see cref="ExitGate"/>.
+    /// Gets or sets the level requirement which the player needs to move through the gate.
     /// </summary>
-    public class EnterGate : Gate
+    public short LevelRequirement { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of the gate.
+    /// </summary>
+    public short Number { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
     {
-        /// <summary>
-        /// Gets or sets the target gate.
-        /// </summary>
-        [Required]
-        public virtual ExitGate? TargetGate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the level requirement which the player needs to move through the gate.
-        /// </summary>
-        public short LevelRequirement { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of the gate.
-        /// </summary>
-        public short Number { get; set; }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"{base.ToString()} ({this.Number}) (Level {this.LevelRequirement}) to {this.TargetGate}";
-        }
+        return $"{base.ToString()} ({this.Number}) (Level {this.LevelRequirement}) to {this.TargetGate}";
     }
 }

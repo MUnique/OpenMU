@@ -2,142 +2,139 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.GameLogic;
+
+using System.Collections;
+using System.Threading;
+
+/// <summary>
+/// A bucket, which can be observed for added and removed items.
+/// </summary>
+/// <typeparam name="T">The type which should be hold by this bucket.</typeparam>
+public sealed class Bucket<T> : IEnumerable<T>, IDisposable
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading;
+    private readonly List<T> _innerList;
+
+    private readonly ReaderWriterLockSlim _locker = new ();
 
     /// <summary>
-    /// A bucket, which can be observed for added and removed items.
+    /// Initializes a new instance of the <see cref="Bucket{T}"/> class.
     /// </summary>
-    /// <typeparam name="T">The type which should be hold by this bucket.</typeparam>
-    public sealed class Bucket<T> : IEnumerable<T>, IDisposable
+    /// <param name="capacity">The initial capacity.</param>
+    public Bucket(int capacity)
     {
-        private readonly List<T> innerList;
+        this._innerList = new List<T>(capacity);
+    }
 
-        private readonly ReaderWriterLockSlim locker = new ();
+    /// <summary>
+    /// Occurs when an item has been added.
+    /// </summary>
+    public event EventHandler<BucketItemEventArgs<T>>? ItemAdded;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Bucket{T}"/> class.
-        /// </summary>
-        /// <param name="capacity">The initial capacity.</param>
-        public Bucket(int capacity)
+    /// <summary>
+    /// Occurs when an item has been removed.
+    /// </summary>
+    public event EventHandler<BucketItemEventArgs<T>>? ItemRemoved;
+
+    /// <summary>
+    /// Gets the count.
+    /// </summary>
+    public int Count => this._innerList.Count;
+
+    /// <summary>
+    /// Adds the specified item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    public void Add(T item)
+    {
+        this._locker.EnterWriteLock();
+        try
         {
-            this.innerList = new List<T>(capacity);
+            this._innerList.Add(item);
+        }
+        finally
+        {
+            this._locker.ExitWriteLock();
         }
 
-        /// <summary>
-        /// Occurs when an item has been added.
-        /// </summary>
-        public event EventHandler<BucketItemEventArgs<T>>? ItemAdded;
+        this.ItemAdded?.Invoke(this, new BucketItemEventArgs<T>(item));
+    }
 
-        /// <summary>
-        /// Occurs when an item has been removed.
-        /// </summary>
-        public event EventHandler<BucketItemEventArgs<T>>? ItemRemoved;
-
-        /// <summary>
-        /// Gets the count.
-        /// </summary>
-        public int Count => this.innerList.Count;
-
-        /// <summary>
-        /// Adds the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        public void Add(T item)
+    /// <summary>
+    /// Removes the specified item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The success.</returns>
+    public bool Remove(T item)
+    {
+        bool result;
+        this._locker.EnterWriteLock();
+        try
         {
-            this.locker.EnterWriteLock();
-            try
-            {
-                this.innerList.Add(item);
-            }
-            finally
-            {
-                this.locker.ExitWriteLock();
-            }
-
-            this.ItemAdded?.Invoke(this, new BucketItemEventArgs<T>(item));
+            result = this._innerList.Remove(item);
+        }
+        finally
+        {
+            this._locker.ExitWriteLock();
         }
 
-        /// <summary>
-        /// Removes the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>The success.</returns>
-        public bool Remove(T item)
+        if (result)
         {
-            bool result;
-            this.locker.EnterWriteLock();
-            try
-            {
-                result = this.innerList.Remove(item);
-            }
-            finally
-            {
-                this.locker.ExitWriteLock();
-            }
-
-            if (result)
-            {
-                this.ItemRemoved?.Invoke(this, new BucketItemEventArgs<T>(item));
-            }
-
-            return result;
+            this.ItemRemoved?.Invoke(this, new BucketItemEventArgs<T>(item));
         }
 
-        /// <inheritdoc/>
-        public IEnumerator<T> GetEnumerator()
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public IEnumerator<T> GetEnumerator()
+    {
+        return new LockingEnumerator<T>(this._locker, this._innerList.GetEnumerator());
+    }
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        this._locker.Dispose();
+    }
+
+    private sealed class LockingEnumerator<TEnumerated> : IEnumerator<TEnumerated>
+    {
+        private readonly ReaderWriterLockSlim _locker;
+        private readonly IEnumerator<TEnumerated> _enumerator;
+
+        public LockingEnumerator(ReaderWriterLockSlim locker, IEnumerator<TEnumerated> innerEnumerator)
         {
-            return new LockingEnumerator<T>(this.locker, this.innerList.GetEnumerator());
+            this._locker = locker;
+
+            locker.EnterReadLock();
+            this._enumerator = innerEnumerator;
         }
 
-        /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator()
+        public TEnumerated Current => this._enumerator.Current;
+
+        object IEnumerator.Current => this.Current!;
+
+        public bool MoveNext()
         {
-            return this.GetEnumerator();
+            return this._enumerator.MoveNext();
         }
 
-        /// <inheritdoc/>
+        public void Reset()
+        {
+            this._enumerator.Reset();
+        }
+
         public void Dispose()
         {
-            this.locker.Dispose();
-        }
-
-        private sealed class LockingEnumerator<TEnumerated> : IEnumerator<TEnumerated>
-        {
-            private readonly ReaderWriterLockSlim locker;
-            private readonly IEnumerator<TEnumerated> enumerator;
-
-            public LockingEnumerator(ReaderWriterLockSlim locker, IEnumerator<TEnumerated> innerEnumerator)
-            {
-                this.locker = locker;
-
-                locker.EnterReadLock();
-                this.enumerator = innerEnumerator;
-            }
-
-            public TEnumerated Current => this.enumerator.Current;
-
-            object IEnumerator.Current => this.Current!;
-
-            public bool MoveNext()
-            {
-                return this.enumerator.MoveNext();
-            }
-
-            public void Reset()
-            {
-                this.enumerator.Reset();
-            }
-
-            public void Dispose()
-            {
-                this.enumerator.Dispose();
-                this.locker.ExitReadLock();
-            }
+            this._enumerator.Dispose();
+            this._locker.ExitReadLock();
         }
     }
 }

@@ -10,63 +10,60 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="MonsterAttribute"/>.
+/// </summary>
+public partial class MonsterAttribute : MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, IIdentifiable, IConvertibleTo<MonsterAttribute>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="MonsterAttribute"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class MonsterAttribute : MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, IIdentifiable, IConvertibleTo<MonsterAttribute>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="AttributeDefinition" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("attributeDefinition")]
+    [System.Text.Json.Serialization.JsonPropertyName("attributeDefinition")]
+    public AttributeDefinition RawAttributeDefinition
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="AttributeDefinition" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("attributeDefinition")]
-        [System.Text.Json.Serialization.JsonPropertyName("attributeDefinition")]
-        public AttributeDefinition RawAttributeDefinition
-        {
-            get => base.AttributeDefinition as AttributeDefinition;
-            set => base.AttributeDefinition = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition AttributeDefinition
-        {
-            get => base.AttributeDefinition;
-            set => base.AttributeDefinition = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public MonsterAttribute Convert() => this;
+        get => base.AttributeDefinition as AttributeDefinition;
+        set => base.AttributeDefinition = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition AttributeDefinition
+    {
+        get => base.AttributeDefinition;
+        set => base.AttributeDefinition = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public MonsterAttribute Convert() => this;
 }

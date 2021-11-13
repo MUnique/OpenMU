@@ -2,27 +2,26 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AttributeSystem
+namespace MUnique.OpenMU.AttributeSystem;
+
+/// <summary>
+/// Common extension methods.
+/// </summary>
+public static class Extensions
 {
     /// <summary>
-    /// Common extension methods.
+    /// Returns the input operator as string.
     /// </summary>
-    public static class Extensions
+    /// <param name="inputOperator">The input operator.</param>
+    /// <returns>The textual representation of the input operator.</returns>
+    public static string AsString(this InputOperator inputOperator)
     {
-        /// <summary>
-        /// Returns the input operator as string.
-        /// </summary>
-        /// <param name="inputOperator">The input operator.</param>
-        /// <returns>The textual representation of the input operator.</returns>
-        public static string AsString(this InputOperator inputOperator)
+        return inputOperator switch
         {
-            return inputOperator switch
-            {
-                InputOperator.Add => "+",
-                InputOperator.Multiply => "*",
-                InputOperator.Exponentiate => "^",
-                _ => string.Empty
-            };
-        }
+            InputOperator.Add => "+",
+            InputOperator.Multiply => "*",
+            InputOperator.Exponentiate => "^",
+            _ => string.Empty
+        };
     }
 }

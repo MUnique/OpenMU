@@ -10,83 +10,80 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="MiniGameRankingEntry"/>.
+/// </summary>
+public partial class MiniGameRankingEntry : MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry, IIdentifiable, IConvertibleTo<MiniGameRankingEntry>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="MiniGameRankingEntry"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class MiniGameRankingEntry : MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry, IIdentifiable, IConvertibleTo<MiniGameRankingEntry>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="Character" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("character")]
+    [System.Text.Json.Serialization.JsonPropertyName("character")]
+    public Character RawCharacter
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="Character" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("character")]
-        [System.Text.Json.Serialization.JsonPropertyName("character")]
-        public Character RawCharacter
-        {
-            get => base.Character as Character;
-            set => base.Character = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Entities.Character Character
-        {
-            get => base.Character;
-            set => base.Character = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="MiniGame" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("miniGame")]
-        [System.Text.Json.Serialization.JsonPropertyName("miniGame")]
-        public MiniGameDefinition RawMiniGame
-        {
-            get => base.MiniGame as MiniGameDefinition;
-            set => base.MiniGame = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition MiniGame
-        {
-            get => base.MiniGame;
-            set => base.MiniGame = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public MiniGameRankingEntry Convert() => this;
+        get => base.Character as Character;
+        set => base.Character = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Entities.Character Character
+    {
+        get => base.Character;
+        set => base.Character = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="MiniGame" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("miniGame")]
+    [System.Text.Json.Serialization.JsonPropertyName("miniGame")]
+    public MiniGameDefinition RawMiniGame
+    {
+        get => base.MiniGame as MiniGameDefinition;
+        set => base.MiniGame = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition MiniGame
+    {
+        get => base.MiniGame;
+        set => base.MiniGame = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public MiniGameRankingEntry Convert() => this;
 }

@@ -10,71 +10,68 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement"/>.
+/// </summary>
+[Table(nameof(QuestMonsterKillRequirement), Schema = SchemaNames.Configuration)]
+internal partial class QuestMonsterKillRequirement : MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(QuestMonsterKillRequirement), Schema = SchemaNames.Configuration)]
-    internal partial class QuestMonsterKillRequirement : MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="Monster"/>.
+    /// </summary>
+    public Guid? MonsterId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Monster" />.
+    /// </summary>
+    [ForeignKey(nameof(MonsterId))]
+    public MonsterDefinition RawMonster
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="Monster"/>.
-        /// </summary>
-        public Guid? MonsterId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Monster" />.
-        /// </summary>
-        [ForeignKey(nameof(MonsterId))]
-        public MonsterDefinition RawMonster
-        {
-            get => base.Monster as MonsterDefinition;
-            set => base.Monster = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
-        {
-            get => base.Monster;set
-            {
-                base.Monster = value;
-                this.MonsterId = this.RawMonster?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.Monster as MonsterDefinition;
+        set => base.Monster = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
+    {
+        get => base.Monster;set
+        {
+            base.Monster = value;
+            this.MonsterId = this.RawMonster?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

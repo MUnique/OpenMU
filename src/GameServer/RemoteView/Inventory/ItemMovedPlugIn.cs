@@ -2,57 +2,56 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView.Inventory
+namespace MUnique.OpenMU.GameServer.RemoteView.Inventory;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Packets;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="IItemMovedPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn("ItemMovedPlugIn", "The default implementation of the IItemMovedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Guid("5c4c20fe-763d-42b6-bdfa-2ec943b191bc")]
+public class ItemMovedPlugIn : IItemMovedPlugIn
 {
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.Views.Inventory;
-    using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets;
-    using MUnique.OpenMU.Network.Packets.ServerToClient;
-    using MUnique.OpenMU.PlugIns;
+    private readonly RemotePlayer _player;
 
     /// <summary>
-    /// The default implementation of the <see cref="IItemMovedPlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// Initializes a new instance of the <see cref="ItemMovedPlugIn"/> class.
     /// </summary>
-    [PlugIn("ItemMovedPlugIn", "The default implementation of the IItemMovedPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("5c4c20fe-763d-42b6-bdfa-2ec943b191bc")]
-    public class ItemMovedPlugIn : IItemMovedPlugIn
+    /// <param name="player">The player.</param>
+    public ItemMovedPlugIn(RemotePlayer player) => this._player = player;
+
+    /// <inheritdoc/>
+    public void ItemMoved(Item item, byte toSlot, Storages storage)
     {
-        private readonly RemotePlayer player;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ItemMovedPlugIn"/> class.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        public ItemMovedPlugIn(RemotePlayer player) => this.player = player;
-
-        /// <inheritdoc/>
-        public void ItemMoved(Item item, byte toSlot, Storages storage)
+        var connection = this._player.Connection;
+        if (connection is null)
         {
-            var connection = this.player.Connection;
-            if (connection is null)
-            {
-                return;
-            }
-
-            var itemSerializer = this.player.ItemSerializer;
-            var targetStorage = storage.Convert();
-            if (targetStorage == ItemStorageKind.PlayerShop)
-            {
-                targetStorage = ItemStorageKind.Inventory;
-            }
-
-            using var writer = connection.StartSafeWrite(Network.Packets.ServerToClient.ItemMoved.HeaderType, Network.Packets.ServerToClient.ItemMoved.GetRequiredSize(itemSerializer.NeededSpace));
-            var message = new ItemMoved(writer.Span)
-            {
-                TargetStorageType = targetStorage,
-                TargetSlot = toSlot,
-            };
-            itemSerializer.SerializeItem(message.ItemData, item);
-
-            writer.Commit();
+            return;
         }
+
+        var itemSerializer = this._player.ItemSerializer;
+        var targetStorage = storage.Convert();
+        if (targetStorage == ItemStorageKind.PlayerShop)
+        {
+            targetStorage = ItemStorageKind.Inventory;
+        }
+
+        using var writer = connection.StartSafeWrite(Network.Packets.ServerToClient.ItemMoved.HeaderType, Network.Packets.ServerToClient.ItemMoved.GetRequiredSize(itemSerializer.NeededSpace));
+        var message = new ItemMoved(writer.Span)
+        {
+            TargetStorageType = targetStorage,
+            TargetSlot = toSlot,
+        };
+        itemSerializer.SerializeItem(message.ItemData, item);
+
+        writer.Commit();
     }
 }

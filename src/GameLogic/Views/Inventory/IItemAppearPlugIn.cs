@@ -2,19 +2,16 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.Views.Inventory
-{
-    using MUnique.OpenMU.DataModel.Entities;
+namespace MUnique.OpenMU.GameLogic.Views.Inventory;
 
+/// <summary>
+/// Interface of a view whose implementation informs about a new item which appeared in the inventory.
+/// </summary>
+public interface IItemAppearPlugIn : IViewPlugIn
+{
     /// <summary>
-    /// Interface of a view whose implementation informs about a new item which appeared in the inventory.
+    /// Notifies the client that a new item appears in the inventory.
     /// </summary>
-    public interface IItemAppearPlugIn : IViewPlugIn
-    {
-        /// <summary>
-        /// Notifies the client that a new item appears in the inventory.
-        /// </summary>
-        /// <param name="newItem">The new item.</param>
-        void ItemAppear(Item newItem);
-    }
+    /// <param name="newItem">The new item.</param>
+    void ItemAppear(Item newItem);
 }

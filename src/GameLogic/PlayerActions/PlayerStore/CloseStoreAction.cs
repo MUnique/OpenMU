@@ -2,32 +2,31 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore
+namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
+
+using MUnique.OpenMU.GameLogic.Views.PlayerShop;
+
+/// <summary>
+/// Action to close the own player store.
+/// </summary>
+public class CloseStoreAction
 {
-    using MUnique.OpenMU.GameLogic.Views.PlayerShop;
-
     /// <summary>
-    /// Action to close the own player store.
+    /// Closes the store of the player.
     /// </summary>
-    public class CloseStoreAction
+    /// <param name="player">The player.</param>
+    public void CloseStore(Player player)
     {
-        /// <summary>
-        /// Closes the store of the player.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        public void CloseStore(Player player)
+        if (player.ShopStorage is null)
         {
-            if (player.ShopStorage is null)
-            {
-                return;
-            }
-
-            lock (player.ShopStorage.StoreLock)
-            {
-                player.ShopStorage.StoreOpen = false;
-            }
-
-            player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerShopClosedPlugIn>()?.PlayerShopClosed(player), true);
+            return;
         }
+
+        lock (player.ShopStorage.StoreLock)
+        {
+            player.ShopStorage.StoreOpen = false;
+        }
+
+        player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerShopClosedPlugIn>()?.PlayerShopClosed(player), true);
     }
 }

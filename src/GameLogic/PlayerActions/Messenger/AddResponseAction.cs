@@ -2,39 +2,38 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
+
+using MUnique.OpenMU.GameLogic.Views.Messenger;
+
+/// <summary>
+/// Action to respond to a friend request.
+/// </summary>
+public class AddResponseAction
 {
-    using MUnique.OpenMU.GameLogic.Views.Messenger;
-
     /// <summary>
-    /// Action to respond to a friend request.
+    /// Proceeds the response.
     /// </summary>
-    public class AddResponseAction
+    /// <param name="player">The player.</param>
+    /// <param name="requesterName">Name of the requester.</param>
+    /// <param name="accepted">if set to <c>true</c> the request has been accepted.</param>
+    public void ProceedResponse(Player player, string requesterName, bool accepted)
     {
-        /// <summary>
-        /// Proceeds the response.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="requesterName">Name of the requester.</param>
-        /// <param name="accepted">if set to <c>true</c> the request has been accepted.</param>
-        public void ProceedResponse(Player player, string requesterName, bool accepted)
+        if (string.IsNullOrEmpty(requesterName))
         {
-            if (string.IsNullOrEmpty(requesterName))
+            // this happens after a letter has been sent to an unknown character
+            return;
+        }
+
+        var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
+        if (friendServer != null && player.SelectedCharacter is { } character)
+        {
+            if (accepted)
             {
-                // this happens after a letter has been sent to an unknown character
-                return;
+                player.ViewPlugIns.GetPlugIn<IFriendAddedPlugIn>()?.FriendAdded(requesterName);
             }
 
-            var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
-            if (friendServer != null && player.SelectedCharacter is { } character)
-            {
-                if (accepted)
-                {
-                    player.ViewPlugIns.GetPlugIn<IFriendAddedPlugIn>()?.FriendAdded(requesterName);
-                }
-
-                friendServer.FriendResponse(character.Name, requesterName, accepted);
-            }
+            friendServer.FriendResponse(character.Name, requesterName, accepted);
         }
     }
 }

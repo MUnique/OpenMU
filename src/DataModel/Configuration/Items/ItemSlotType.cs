@@ -2,23 +2,20 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.DataModel.Configuration.Items
+namespace MUnique.OpenMU.DataModel.Configuration.Items;
+
+/// <summary>
+/// The item slot type. Each of this may have one or more actual item slots.
+/// </summary>
+public class ItemSlotType
 {
-    using System.Collections.Generic;
+    /// <summary>
+    /// Gets or sets the description.
+    /// </summary>
+    public string Description { get; set; } = string.Empty;
 
     /// <summary>
-    /// The item slot type. Each of this may have one or more actual item slots.
+    /// Gets or sets the item slots of this slot type.
     /// </summary>
-    public class ItemSlotType
-    {
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        public string Description { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the item slots of this slot type.
-        /// </summary>
-        public virtual ICollection<int> ItemSlots { get; protected set; } = null!;
-    }
+    public virtual ICollection<int> ItemSlots { get; protected set; } = null!;
 }

@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(SkillCharacterClass), Schema = SchemaNames.Configuration)]
+internal partial class SkillCharacterClass
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid SkillId { get; set; }
+    public Skill Skill { get; set; }
 
-    [Table(nameof(SkillCharacterClass), Schema = SchemaNames.Configuration)]
-    internal partial class SkillCharacterClass
-    {
-        public Guid SkillId { get; set; }
-        public Skill Skill { get; set; }
+    public Guid CharacterClassId { get; set; }
+    public CharacterClass CharacterClass { get; set; }
+}
 
-        public Guid CharacterClassId { get; set; }
-        public CharacterClass CharacterClass { get; set; }
-    }
-
-    internal partial class Skill
-    {
-        public ICollection<SkillCharacterClass> JoinedQualifiedCharacters { get; } = new EntityFramework.List<SkillCharacterClass>();
-    }
+internal partial class Skill
+{
+    public ICollection<SkillCharacterClass> JoinedQualifiedCharacters { get; } = new EntityFramework.List<SkillCharacterClass>();
 }

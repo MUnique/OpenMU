@@ -10,106 +10,103 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="IncreasableItemOption"/>.
+/// </summary>
+public partial class IncreasableItemOption : MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IIdentifiable, IConvertibleTo<IncreasableItemOption>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="IncreasableItemOption"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class IncreasableItemOption : MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IIdentifiable, IConvertibleTo<IncreasableItemOption>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="LevelDependentOptions" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("levelDependentOptions")]
+    [System.Text.Json.Serialization.JsonPropertyName("levelDependentOptions")]
+    public ICollection<ItemOptionOfLevel> RawLevelDependentOptions { get; } = new List<ItemOptionOfLevel>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel> LevelDependentOptions
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="LevelDependentOptions" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("levelDependentOptions")]
-        [System.Text.Json.Serialization.JsonPropertyName("levelDependentOptions")]
-        public ICollection<ItemOptionOfLevel> RawLevelDependentOptions { get; } = new List<ItemOptionOfLevel>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel> LevelDependentOptions
+        get => base.LevelDependentOptions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel, ItemOptionOfLevel>(this.RawLevelDependentOptions);
+        protected set
         {
-            get => base.LevelDependentOptions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel, ItemOptionOfLevel>(this.RawLevelDependentOptions);
-            protected set
+            this.LevelDependentOptions.Clear();
+            foreach (var item in value)
             {
-                this.LevelDependentOptions.Clear();
-                foreach (var item in value)
-                {
-                    this.LevelDependentOptions.Add(item);
-                }
+                this.LevelDependentOptions.Add(item);
             }
         }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="OptionType" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("optionType")]
-        [System.Text.Json.Serialization.JsonPropertyName("optionType")]
-        public ItemOptionType RawOptionType
-        {
-            get => base.OptionType as ItemOptionType;
-            set => base.OptionType = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
-        {
-            get => base.OptionType;
-            set => base.OptionType = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="PowerUpDefinition" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
-        [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
-        public PowerUpDefinition RawPowerUpDefinition
-        {
-            get => base.PowerUpDefinition as PowerUpDefinition;
-            set => base.PowerUpDefinition = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition PowerUpDefinition
-        {
-            get => base.PowerUpDefinition;
-            set => base.PowerUpDefinition = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public IncreasableItemOption Convert() => this;
     }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="OptionType" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("optionType")]
+    [System.Text.Json.Serialization.JsonPropertyName("optionType")]
+    public ItemOptionType RawOptionType
+    {
+        get => base.OptionType as ItemOptionType;
+        set => base.OptionType = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
+    {
+        get => base.OptionType;
+        set => base.OptionType = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="PowerUpDefinition" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
+    [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
+    public PowerUpDefinition RawPowerUpDefinition
+    {
+        get => base.PowerUpDefinition as PowerUpDefinition;
+        set => base.PowerUpDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition PowerUpDefinition
+    {
+        get => base.PowerUpDefinition;
+        set => base.PowerUpDefinition = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public IncreasableItemOption Convert() => this;
 }

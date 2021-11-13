@@ -4,31 +4,28 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+
+/// <summary>
+/// Consume handler for the antidote potion. It removes the poison effect from the player.
+/// </summary>
+public class AntidoteConsumeHandler : BaseConsumeHandler
 {
-    using MUnique.OpenMU.DataModel.Entities;
+    private const short PoisonEffectNumber = 0x37;
 
-    /// <summary>
-    /// Consume handler for the antidote potion. It removes the poison effect from the player.
-    /// </summary>
-    public class AntidoteConsumeHandler : BaseConsumeHandler
+    /// <inheritdoc />
+    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        private const short PoisonEffectNumber = 0x37;
-
-        /// <inheritdoc />
-        public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+        if (base.ConsumeItem(player, item, targetItem, fruitUsage))
         {
-            if (base.ConsumeItem(player, item, targetItem, fruitUsage))
+            if (player.MagicEffectList.ActiveEffects.TryGetValue(PoisonEffectNumber, out var effect))
             {
-                if (player.MagicEffectList.ActiveEffects.TryGetValue(PoisonEffectNumber, out var effect))
-                {
-                    effect.Dispose();
-                }
-
-                return true;
+                effect.Dispose();
             }
 
-            return false;
+            return true;
         }
+
+        return false;
     }
 }

@@ -2,60 +2,59 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Network.Packets.ServerToClient
+namespace MUnique.OpenMU.Network.Packets.ServerToClient;
+
+/// <summary>
+/// This part contains the custom indexer.
+/// </summary>
+public readonly ref partial struct AddTransformedCharactersToScope
 {
     /// <summary>
-    /// This part contains the custom indexer.
+    /// Gets the final size, depending on the specified effects of each character.
     /// </summary>
-    public readonly ref partial struct AddTransformedCharactersToScope
+    public int FinalSize
     {
-        /// <summary>
-        /// Gets the final size, depending on the specified effects of each character.
-        /// </summary>
-        public int FinalSize
+        get
         {
-            get
-            {
-                // we can take the next potential index of the last character also as the size of the packet.
-                _ = this.GetIndexOfCharacter(this.CharacterCount - 1, out int finalSize);
-                return finalSize;
-            }
+            // we can take the next potential index of the last character also as the size of the packet.
+            _ = this.GetIndexOfCharacter(this.CharacterCount - 1, out int finalSize);
+            return finalSize;
+        }
+    }
+
+    /// <summary>
+    /// Gets the <see cref="MUnique.OpenMU.Network.Packets.ServerToClient.AddCharactersToScope.CharacterData" /> with the specified character index.
+    /// </summary>
+    /// <value>
+    /// The <see cref="MUnique.OpenMU.Network.Packets.ServerToClient.AddCharactersToScope.CharacterData" />.
+    /// </value>
+    /// <param name="characterIndex">Index of the character.</param>
+    /// <returns>The character data of the specified index.</returns>
+    /// <remarks>
+    /// It goes sequentially through the data. So when creating a new packet, it makes sense to create them sequentially in order of the index.
+    /// </remarks>
+    public CharacterData this[int characterIndex]
+    {
+        get
+        {
+            var index = this.GetIndexOfCharacter(characterIndex, out _);
+            return new CharacterData(this._data.Slice(index));
+        }
+    }
+
+    private int GetIndexOfCharacter(int characterIndex, out int nextIndex)
+    {
+        const int charactersStartIndex = 5;
+        const int sizeWithoutEffects = 38;
+        var currentIndex = charactersStartIndex;
+        nextIndex = currentIndex;
+        for (int i = 0; i <= characterIndex; i++)
+        {
+            currentIndex = nextIndex;
+            var currentEffectCount = this._data[currentIndex + sizeWithoutEffects - 1];
+            nextIndex += sizeWithoutEffects + currentEffectCount;
         }
 
-        /// <summary>
-        /// Gets the <see cref="MUnique.OpenMU.Network.Packets.ServerToClient.AddCharactersToScope.CharacterData" /> with the specified character index.
-        /// </summary>
-        /// <value>
-        /// The <see cref="MUnique.OpenMU.Network.Packets.ServerToClient.AddCharactersToScope.CharacterData" />.
-        /// </value>
-        /// <param name="characterIndex">Index of the character.</param>
-        /// <returns>The character data of the specified index.</returns>
-        /// <remarks>
-        /// It goes sequentially through the data. So when creating a new packet, it makes sense to create them sequentially in order of the index.
-        /// </remarks>
-        public CharacterData this[int characterIndex]
-        {
-            get
-            {
-                var index = this.GetIndexOfCharacter(characterIndex, out _);
-                return new CharacterData(this.data.Slice(index));
-            }
-        }
-
-        private int GetIndexOfCharacter(int characterIndex, out int nextIndex)
-        {
-            const int charactersStartIndex = 5;
-            const int sizeWithoutEffects = 38;
-            var currentIndex = charactersStartIndex;
-            nextIndex = currentIndex;
-            for (int i = 0; i <= characterIndex; i++)
-            {
-                currentIndex = nextIndex;
-                var currentEffectCount = this.data[currentIndex + sizeWithoutEffects - 1];
-                nextIndex += sizeWithoutEffects + currentEffectCount;
-            }
-
-            return currentIndex;
-        }
+        return currentIndex;
     }
 }

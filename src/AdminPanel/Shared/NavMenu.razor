@@ -1,8 +1,8 @@
 ﻿@using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Persistence;
 
-@inject NavigationManager navigationManager
-@inject GameConfiguration GameConfiguration
+@inject NavigationManager _navigationManager
+@inject GameConfiguration _gameConfiguration
 
 <nav>
     <div>
@@ -31,15 +31,15 @@
                     <span class="oi oi-list" aria-hidden="true"></span> Accounts
                 </NavLink>
             </li>
-            @if (this.GameConfiguration != null)
+            @if (this._gameConfiguration != null)
             {
             <li>
-                <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this.GameConfiguration.GetId())">
+                <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this._gameConfiguration.GetId())">
                     <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
                 </NavLink>
             </li>
             <li>
-                <NavLink href="@("map-editor/" + this.GameConfiguration.Maps.OrderBy(c => c.Number).First().GetId())">
+                <NavLink href="@("map-editor/" + this._gameConfiguration.Maps.OrderBy(c => c.Number).First().GetId())">
                     <span class="oi oi-globe" aria-hidden="true"></span> Map Editor
                 </NavLink>
             </li>
@@ -52,7 +52,7 @@
             <li>
                 <NavLink href="log">
                     <span class="oi oi-list" aria-hidden="true"></span> Log 
-                    @if (!navigationManager.Uri.EndsWith("/log"))
+                    @if (!_navigationManager.Uri.EndsWith("/log"))
                     {
                         <LogNotifications/>
                     }
@@ -65,17 +65,17 @@
 
 
 @code {
-    private bool collapseNavMenu = true;
+    private bool _collapseNavMenu = true;
 
     /// <summary>
     /// Returns the class for the entries of the navigation menu.
     /// "collapse" is a class of bootstrap which hides it.
     /// In our css we also define to show it anyway, if the width sufficient.
     /// </summary>
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : string.Empty;
+    private string NavMenuCssClass => _collapseNavMenu ? "collapse" : string.Empty;
 
     private void ToggleNavMenu()
     {
-        collapseNavMenu = !collapseNavMenu;
+        _collapseNavMenu = !_collapseNavMenu;
     }
 }

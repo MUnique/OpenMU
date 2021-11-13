@@ -10,66 +10,63 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="ItemOptionDefinition"/>.
+/// </summary>
+public partial class ItemOptionDefinition : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition, IIdentifiable, IConvertibleTo<ItemOptionDefinition>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="ItemOptionDefinition"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class ItemOptionDefinition : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition, IIdentifiable, IConvertibleTo<ItemOptionDefinition>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="PossibleOptions" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("possibleOptions")]
+    [System.Text.Json.Serialization.JsonPropertyName("possibleOptions")]
+    public ICollection<IncreasableItemOption> RawPossibleOptions { get; } = new List<IncreasableItemOption>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> PossibleOptions
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="PossibleOptions" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("possibleOptions")]
-        [System.Text.Json.Serialization.JsonPropertyName("possibleOptions")]
-        public ICollection<IncreasableItemOption> RawPossibleOptions { get; } = new List<IncreasableItemOption>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> PossibleOptions
+        get => base.PossibleOptions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IncreasableItemOption>(this.RawPossibleOptions);
+        protected set
         {
-            get => base.PossibleOptions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IncreasableItemOption>(this.RawPossibleOptions);
-            protected set
+            this.PossibleOptions.Clear();
+            foreach (var item in value)
             {
-                this.PossibleOptions.Clear();
-                foreach (var item in value)
-                {
-                    this.PossibleOptions.Add(item);
-                }
+                this.PossibleOptions.Add(item);
             }
         }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public ItemOptionDefinition Convert() => this;
     }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public ItemOptionDefinition Convert() => this;
 }

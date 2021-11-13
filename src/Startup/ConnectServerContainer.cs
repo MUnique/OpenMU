@@ -2,107 +2,104 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Startup
+namespace MUnique.OpenMU.Startup;
+
+using System.Collections;
+using System.Threading;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.ConnectServer;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// A container which keeps all <see cref="Interfaces.IConnectServer"/>s in one <see cref="IHostedService"/>.
+/// </summary>
+public class ConnectServerContainer : IHostedService, IEnumerable<IConnectServer>
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.ConnectServer;
-    using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.Interfaces;
-    using MUnique.OpenMU.Network.PlugIns;
-    using MUnique.OpenMU.Persistence;
+    private readonly IList<IManageableServer> _servers;
+    private readonly IPersistenceContextProvider _persistenceContextProvider;
+    private readonly ConnectServerFactory _connectServerFactory;
+    private readonly ILogger<ConnectServerContainer> _logger;
+    private readonly IList<IConnectServer> _connectServers = new List<IConnectServer>();
+    private readonly IDictionary<GameClientDefinition, IGameServerStateObserver> _observers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
 
     /// <summary>
-    /// A container which keeps all <see cref="Interfaces.IConnectServer"/>s in one <see cref="IHostedService"/>.
+    /// Initializes a new instance of the <see cref="ConnectServerContainer" /> class.
     /// </summary>
-    public class ConnectServerContainer : IHostedService, IEnumerable<IConnectServer>
+    /// <param name="servers">The servers.</param>
+    /// <param name="persistenceContextProvider">The persistence context provider.</param>
+    /// <param name="logger">The logger.</param>
+    /// <param name="connectServerFactory">The connect server factory.</param>
+    public ConnectServerContainer(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, ILogger<ConnectServerContainer> logger, ConnectServerFactory connectServerFactory)
     {
-        private readonly IList<IManageableServer> servers;
-        private readonly IPersistenceContextProvider persistenceContextProvider;
-        private readonly ConnectServerFactory connectServerFactory;
-        private readonly ILogger<ConnectServerContainer> logger;
-        private readonly IList<IConnectServer> connectServers = new List<IConnectServer>();
-        private readonly IDictionary<GameClientDefinition, IGameServerStateObserver> observers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
+        this._servers = servers;
+        this._persistenceContextProvider = persistenceContextProvider;
+        this._connectServerFactory = connectServerFactory;
+        this._logger = logger;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectServerContainer" /> class.
-        /// </summary>
-        /// <param name="servers">The servers.</param>
-        /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        /// <param name="logger">The logger.</param>
-        /// <param name="connectServerFactory">The connect server factory.</param>
-        public ConnectServerContainer(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, ILogger<ConnectServerContainer> logger, ConnectServerFactory connectServerFactory)
+    /// <inheritdoc />
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
+        foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
         {
-            this.servers = servers;
-            this.persistenceContextProvider = persistenceContextProvider;
-            this.connectServerFactory = connectServerFactory;
-            this.logger = logger;
-        }
+            var clientVersion = new ClientVersion(connectServerDefinition.Client!.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
+            var connectServer = this._connectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
+            this._servers.Add(connectServer);
+            this._connectServers.Add(connectServer);
 
-        /// <inheritdoc />
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            using var persistenceContext = this.persistenceContextProvider.CreateNewConfigurationContext();
-            foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
+            if (this._observers.TryGetValue(connectServerDefinition.Client, out var observer))
             {
-                var clientVersion = new ClientVersion(connectServerDefinition.Client!.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
-                var connectServer = this.connectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
-                this.servers.Add(connectServer);
-                this.connectServers.Add(connectServer);
-
-                if (this.observers.TryGetValue(connectServerDefinition.Client, out var observer))
+                this._logger.LogWarning($"Multiple connect servers for game client '{connectServerDefinition.Client.Description}' configured. Only one per client makes sense.");
+                if (observer is not MulticastConnectionServerStateObserver)
                 {
-                    this.logger.LogWarning($"Multiple connect servers for game client '{connectServerDefinition.Client.Description}' configured. Only one per client makes sense.");
-                    if (observer is not MulticastConnectionServerStateObserver)
-                    {
-                        var multicastObserver = new MulticastConnectionServerStateObserver();
-                        multicastObserver.AddObserver(observer);
-                        multicastObserver.AddObserver(connectServer);
-                        this.observers[connectServerDefinition.Client] = multicastObserver;
-                    }
-                }
-                else
-                {
-                    this.observers[connectServerDefinition.Client] = connectServer;
+                    var multicastObserver = new MulticastConnectionServerStateObserver();
+                    multicastObserver.AddObserver(observer);
+                    multicastObserver.AddObserver(connectServer);
+                    this._observers[connectServerDefinition.Client] = multicastObserver;
                 }
             }
-
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            foreach (var connectServer in this.connectServers)
+            else
             {
-                await connectServer.StopAsync(cancellationToken);
+                this._observers[connectServerDefinition.Client] = connectServer;
             }
         }
 
-        /// <summary>
-        /// Gets the observer.
-        /// </summary>
-        /// <param name="gameClient">The game client.</param>
-        /// <returns>The observer for the client.</returns>
-        public IGameServerStateObserver GetObserver(GameClientDefinition gameClient)
-        {
-            return this.observers[gameClient];
-        }
+        return Task.CompletedTask;
+    }
 
-        /// <inheritdoc />
-        public IEnumerator<IConnectServer> GetEnumerator()
+    /// <inheritdoc />
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        foreach (var connectServer in this._connectServers)
         {
-            return this.connectServers.GetEnumerator();
+            await connectServer.StopAsync(cancellationToken);
         }
+    }
 
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
+    /// <summary>
+    /// Gets the observer.
+    /// </summary>
+    /// <param name="gameClient">The game client.</param>
+    /// <returns>The observer for the client.</returns>
+    public IGameServerStateObserver GetObserver(GameClientDefinition gameClient)
+    {
+        return this._observers[gameClient];
+    }
+
+    /// <inheritdoc />
+    public IEnumerator<IConnectServer> GetEnumerator()
+    {
+        return this._connectServers.GetEnumerator();
+    }
+
+    /// <inheritdoc />
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
     }
 }

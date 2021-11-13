@@ -2,21 +2,19 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.Views.World
-{
-    using System.Collections.Generic;
-    using MUnique.OpenMU.GameLogic.NPC;
+namespace MUnique.OpenMU.GameLogic.Views.World;
 
+using MUnique.OpenMU.GameLogic.NPC;
+
+/// <summary>
+/// Interface of a view whose implementation informs about non-player-characters which went into the observing scope.
+/// </summary>
+public interface INewNpcsInScopePlugIn : IViewPlugIn
+{
     /// <summary>
-    /// Interface of a view whose implementation informs about non-player-characters which went into the observing scope.
+    /// Shows the new npcs in scope.
     /// </summary>
-    public interface INewNpcsInScopePlugIn : IViewPlugIn
-    {
-        /// <summary>
-        /// Shows the new npcs in scope.
-        /// </summary>
-        /// <param name="newObjects">The new objects.</param>
-        /// <param name="isSpawned">If set to <c>true</c>, the players spawned on the map.</param>
-        void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true);
-    }
+    /// <param name="newObjects">The new objects.</param>
+    /// <param name="isSpawned">If set to <c>true</c>, the players spawned on the map.</param>
+    void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true);
 }

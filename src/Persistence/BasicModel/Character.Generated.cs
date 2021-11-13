@@ -10,215 +10,212 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="Character"/>.
+/// </summary>
+public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, IIdentifiable, IConvertibleTo<Character>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
+    
+    
     
     /// <summary>
-    /// A plain implementation of <see cref="Character"/>.
+    /// Gets the raw collection of <see cref="Attributes" />.
     /// </summary>
-    public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, IIdentifiable, IConvertibleTo<Character>
+    [Newtonsoft.Json.JsonProperty("attributes")]
+    [System.Text.Json.Serialization.JsonPropertyName("attributes")]
+    public ICollection<StatAttribute> RawAttributes { get; } = new List<StatAttribute>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.StatAttribute> Attributes
     {
-        
-        
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="Attributes" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("attributes")]
-        [System.Text.Json.Serialization.JsonPropertyName("attributes")]
-        public ICollection<StatAttribute> RawAttributes { get; } = new List<StatAttribute>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.AttributeSystem.StatAttribute> Attributes
+        get => base.Attributes ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.StatAttribute, StatAttribute>(this.RawAttributes);
+        protected set
         {
-            get => base.Attributes ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.StatAttribute, StatAttribute>(this.RawAttributes);
-            protected set
+            this.Attributes.Clear();
+            foreach (var item in value)
             {
-                this.Attributes.Clear();
-                foreach (var item in value)
-                {
-                    this.Attributes.Add(item);
-                }
+                this.Attributes.Add(item);
             }
         }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="Letters" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("letters")]
-        [System.Text.Json.Serialization.JsonPropertyName("letters")]
-        public IList<LetterHeader> RawLetters { get; } = new List<LetterHeader>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override IList<MUnique.OpenMU.Interfaces.LetterHeader> Letters
-        {
-            get => base.Letters ??= new ListAdapter<MUnique.OpenMU.Interfaces.LetterHeader, LetterHeader>(this.RawLetters);
-            protected set
-            {
-                this.Letters.Clear();
-                foreach (var item in value)
-                {
-                    this.Letters.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="LearnedSkills" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("learnedSkills")]
-        [System.Text.Json.Serialization.JsonPropertyName("learnedSkills")]
-        public ICollection<SkillEntry> RawLearnedSkills { get; } = new List<SkillEntry>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.SkillEntry> LearnedSkills
-        {
-            get => base.LearnedSkills ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.SkillEntry, SkillEntry>(this.RawLearnedSkills);
-            protected set
-            {
-                this.LearnedSkills.Clear();
-                foreach (var item in value)
-                {
-                    this.LearnedSkills.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="DropItemGroups" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("dropItemGroups")]
-        [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
-        public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
-        {
-            get => base.DropItemGroups ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawDropItemGroups);
-            protected set
-            {
-                this.DropItemGroups.Clear();
-                foreach (var item in value)
-                {
-                    this.DropItemGroups.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="QuestStates" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("questStates")]
-        [System.Text.Json.Serialization.JsonPropertyName("questStates")]
-        public ICollection<CharacterQuestState> RawQuestStates { get; } = new List<CharacterQuestState>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.CharacterQuestState> QuestStates
-        {
-            get => base.QuestStates ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CharacterQuestState, CharacterQuestState>(this.RawQuestStates);
-            protected set
-            {
-                this.QuestStates.Clear();
-                foreach (var item in value)
-                {
-                    this.QuestStates.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="CharacterClass" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("characterClass")]
-        [System.Text.Json.Serialization.JsonPropertyName("characterClass")]
-        public CharacterClass RawCharacterClass
-        {
-            get => base.CharacterClass as CharacterClass;
-            set => base.CharacterClass = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
-        {
-            get => base.CharacterClass;
-            set => base.CharacterClass = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="CurrentMap" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("currentMap")]
-        [System.Text.Json.Serialization.JsonPropertyName("currentMap")]
-        public GameMapDefinition RawCurrentMap
-        {
-            get => base.CurrentMap as GameMapDefinition;
-            set => base.CurrentMap = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition CurrentMap
-        {
-            get => base.CurrentMap;
-            set => base.CurrentMap = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Inventory" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("inventory")]
-        [System.Text.Json.Serialization.JsonPropertyName("inventory")]
-        public ItemStorage RawInventory
-        {
-            get => base.Inventory as ItemStorage;
-            set => base.Inventory = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Entities.ItemStorage Inventory
-        {
-            get => base.Inventory;
-            set => base.Inventory = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public Character Convert() => this;
     }
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="Letters" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("letters")]
+    [System.Text.Json.Serialization.JsonPropertyName("letters")]
+    public IList<LetterHeader> RawLetters { get; } = new List<LetterHeader>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override IList<MUnique.OpenMU.Interfaces.LetterHeader> Letters
+    {
+        get => base.Letters ??= new ListAdapter<MUnique.OpenMU.Interfaces.LetterHeader, LetterHeader>(this.RawLetters);
+        protected set
+        {
+            this.Letters.Clear();
+            foreach (var item in value)
+            {
+                this.Letters.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="LearnedSkills" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("learnedSkills")]
+    [System.Text.Json.Serialization.JsonPropertyName("learnedSkills")]
+    public ICollection<SkillEntry> RawLearnedSkills { get; } = new List<SkillEntry>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.SkillEntry> LearnedSkills
+    {
+        get => base.LearnedSkills ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.SkillEntry, SkillEntry>(this.RawLearnedSkills);
+        protected set
+        {
+            this.LearnedSkills.Clear();
+            foreach (var item in value)
+            {
+                this.LearnedSkills.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="DropItemGroups" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("dropItemGroups")]
+    [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
+    public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
+    {
+        get => base.DropItemGroups ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawDropItemGroups);
+        protected set
+        {
+            this.DropItemGroups.Clear();
+            foreach (var item in value)
+            {
+                this.DropItemGroups.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="QuestStates" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("questStates")]
+    [System.Text.Json.Serialization.JsonPropertyName("questStates")]
+    public ICollection<CharacterQuestState> RawQuestStates { get; } = new List<CharacterQuestState>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.CharacterQuestState> QuestStates
+    {
+        get => base.QuestStates ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CharacterQuestState, CharacterQuestState>(this.RawQuestStates);
+        protected set
+        {
+            this.QuestStates.Clear();
+            foreach (var item in value)
+            {
+                this.QuestStates.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CharacterClass" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("characterClass")]
+    [System.Text.Json.Serialization.JsonPropertyName("characterClass")]
+    public CharacterClass RawCharacterClass
+    {
+        get => base.CharacterClass as CharacterClass;
+        set => base.CharacterClass = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
+    {
+        get => base.CharacterClass;
+        set => base.CharacterClass = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CurrentMap" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("currentMap")]
+    [System.Text.Json.Serialization.JsonPropertyName("currentMap")]
+    public GameMapDefinition RawCurrentMap
+    {
+        get => base.CurrentMap as GameMapDefinition;
+        set => base.CurrentMap = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition CurrentMap
+    {
+        get => base.CurrentMap;
+        set => base.CurrentMap = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Inventory" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("inventory")]
+    [System.Text.Json.Serialization.JsonPropertyName("inventory")]
+    public ItemStorage RawInventory
+    {
+        get => base.Inventory as ItemStorage;
+        set => base.Inventory = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage Inventory
+    {
+        get => base.Inventory;
+        set => base.Inventory = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public Character Convert() => this;
 }

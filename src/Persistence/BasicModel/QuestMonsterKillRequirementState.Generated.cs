@@ -10,63 +10,60 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="QuestMonsterKillRequirementState"/>.
+/// </summary>
+public partial class QuestMonsterKillRequirementState : MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, IIdentifiable, IConvertibleTo<QuestMonsterKillRequirementState>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="QuestMonsterKillRequirementState"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class QuestMonsterKillRequirementState : MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, IIdentifiable, IConvertibleTo<QuestMonsterKillRequirementState>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="Requirement" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("requirement")]
+    [System.Text.Json.Serialization.JsonPropertyName("requirement")]
+    public QuestMonsterKillRequirement RawRequirement
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="Requirement" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("requirement")]
-        [System.Text.Json.Serialization.JsonPropertyName("requirement")]
-        public QuestMonsterKillRequirement RawRequirement
-        {
-            get => base.Requirement as QuestMonsterKillRequirement;
-            set => base.Requirement = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement Requirement
-        {
-            get => base.Requirement;
-            set => base.Requirement = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public QuestMonsterKillRequirementState Convert() => this;
+        get => base.Requirement as QuestMonsterKillRequirement;
+        set => base.Requirement = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement Requirement
+    {
+        get => base.Requirement;
+        set => base.Requirement = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public QuestMonsterKillRequirementState Convert() => this;
 }

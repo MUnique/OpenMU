@@ -2,37 +2,35 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.MessageHandler.Items
+namespace MUnique.OpenMU.GameServer.MessageHandler.Items;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.Network.Packets.ClientToServer;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Handler for chaos mix packets.
+/// </summary>
+[PlugIn(nameof(ChaosMixHandlerPlugIn), "Handler for chaos mix packets.")]
+[Guid("0693e102-0adc-41e4-b0d4-ce22687b6dbb")]
+internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Items;
-    using MUnique.OpenMU.Network.Packets.ClientToServer;
-    using MUnique.OpenMU.PlugIns;
+    private readonly ItemCraftAction _mixAction = new ();
 
-    /// <summary>
-    /// Handler for chaos mix packets.
-    /// </summary>
-    [PlugIn(nameof(ChaosMixHandlerPlugIn), "Handler for chaos mix packets.")]
-    [Guid("0693e102-0adc-41e4-b0d4-ce22687b6dbb")]
-    internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
+    /// <inheritdoc/>
+    public bool IsEncryptionExpected => false;
+
+    /// <inheritdoc/>
+    public byte Key => ChaosMachineMixRequest.Code;
+
+    /// <inheritdoc/>
+    public void HandlePacket(Player player, Span<byte> packet)
     {
-        private readonly ItemCraftAction mixAction = new ();
-
-        /// <inheritdoc/>
-        public bool IsEncryptionExpected => false;
-
-        /// <inheritdoc/>
-        public byte Key => ChaosMachineMixRequest.Code;
-
-        /// <inheritdoc/>
-        public void HandlePacket(Player player, Span<byte> packet)
-        {
-            ChaosMachineMixRequest message = packet;
-            var socketSlot = packet.Length > 4 ? message.SocketSlot : (byte)0;
-            var mixType = packet.Length > 3 ? message.MixType : ChaosMachineMixRequest.ChaosMachineMixType.ChaosWeapon;
-            this.mixAction.MixItems(player, (byte)mixType, socketSlot);
-        }
+        ChaosMachineMixRequest message = packet;
+        var socketSlot = packet.Length > 4 ? message.SocketSlot : (byte)0;
+        var mixType = packet.Length > 3 ? message.MixType : ChaosMachineMixRequest.ChaosMachineMixType.ChaosWeapon;
+        this._mixAction.MixItems(player, (byte)mixType, socketSlot);
     }
 }

@@ -10,579 +10,579 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MUnique.OpenMU.Network.Packets.ChatServer
+namespace MUnique.OpenMU.Network.Packets.ChatServer;
+
+using System;
+using static System.Buffers.Binary.BinaryPrimitives;
+
+/// <summary>
+/// Is sent by the client when: This packet is sent by the client after it connected to the server, to authenticate itself.
+/// Causes reaction on server side: The server will check the token. If it's correct, the client gets added to the requested chat room.
+/// </summary>
+public readonly ref struct Authenticate
 {
-    using System;
-    using static System.Buffers.Binary.BinaryPrimitives;
+    private readonly Span<byte> _data;
 
     /// <summary>
-    /// Is sent by the client when: This packet is sent by the client after it connected to the server, to authenticate itself.
-    /// Causes reaction on server side: The server will check the token. If it's correct, the client gets added to the requested chat room.
+    /// Initializes a new instance of the <see cref="Authenticate"/> struct.
     /// </summary>
-    public readonly ref struct Authenticate
+    /// <param name="data">The underlying data.</param>
+    public Authenticate(Span<byte> data)
+        : this(data, true)
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Authenticate"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public Authenticate(Span<byte> data)
-            : this(data, true)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Authenticate"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private Authenticate(Span<byte> data, bool initialize)
-        {
-            this.data = data;
-            if (initialize)
-            {
-                var header = this.Header;
-                header.Type = HeaderType;
-                header.Code = Code;
-                header.Length = (byte)Math.Min(data.Length, Length);
-            }
-        }
-
-        /// <summary>
-        /// Gets the header type of this data packet.
-        /// </summary>
-        public static byte HeaderType => 0xC1;
-
-        /// <summary>
-        /// Gets the operation code of this data packet.
-        /// </summary>
-        public static byte Code => 0x00;
-
-        /// <summary>
-        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-        /// </summary>
-        public static int Length => 16;
-
-        /// <summary>
-        /// Gets the header of this packet.
-        /// </summary>
-        public C1HeaderWithSubCode Header => new (this.data);
-
-        /// <summary>
-        /// Gets or sets the room id.
-        /// </summary>
-        public ushort RoomId
-        {
-            get => ReadUInt16LittleEndian(this.data[4..]);
-            set => WriteUInt16LittleEndian(this.data[4..], value);
-        }
-
-        /// <summary>
-        /// Gets or sets a token (integer number), formatted as string. This value is also "encrypted" with the 3-byte XOR key (FC CF AB).
-        /// </summary>
-        public string Token
-        {
-            get => this.data.ExtractString(6, 10, System.Text.Encoding.UTF8);
-            set => this.data.Slice(6, 10).WriteString(value, System.Text.Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="Authenticate"/>.
-        /// </summary>
-        /// <param name="packet">The packet as span.</param>
-        /// <returns>The packet as struct.</returns>
-        public static implicit operator Authenticate(Span<byte> packet) => new (packet, false);
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Authenticate"/> to a Span of bytes.
-        /// </summary>
-        /// <param name="packet">The packet as struct.</param>
-        /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(Authenticate packet) => packet.data; 
     }
-
 
     /// <summary>
-    /// Is sent by the server when: This packet is sent by the server after another chat client joined the chat room.
-    /// Causes reaction on client side: The client will add the client in its list (if over 2 clients are connected to the same room), or show its name in the title bar.
+    /// Initializes a new instance of the <see cref="Authenticate"/> struct.
     /// </summary>
-    public readonly ref struct ChatRoomClientJoined
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private Authenticate(Span<byte> data, bool initialize)
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoomClientJoined"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public ChatRoomClientJoined(Span<byte> data)
-            : this(data, true)
+        this._data = data;
+        if (initialize)
         {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoomClientJoined"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private ChatRoomClientJoined(Span<byte> data, bool initialize)
-        {
-            this.data = data;
-            if (initialize)
-            {
-                var header = this.Header;
-                header.Type = HeaderType;
-                header.Code = Code;
-                header.Length = (byte)Math.Min(data.Length, Length);
-                header.SubCode = SubCode;
-            }
-        }
-
-        /// <summary>
-        /// Gets the header type of this data packet.
-        /// </summary>
-        public static byte HeaderType => 0xC1;
-
-        /// <summary>
-        /// Gets the operation code of this data packet.
-        /// </summary>
-        public static byte Code => 0x01;
-
-        /// <summary>
-        /// Gets the operation sub-code of this data packet.
-        /// The <see cref="Code" /> is used as a grouping key.
-        /// </summary>
-        public static byte SubCode => 0x00;
-
-        /// <summary>
-        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-        /// </summary>
-        public static int Length => 15;
-
-        /// <summary>
-        /// Gets the header of this packet.
-        /// </summary>
-        public C1HeaderWithSubCode Header => new (this.data);
-
-        /// <summary>
-        /// Gets or sets the client index.
-        /// </summary>
-        public byte ClientIndex
-        {
-            get => this.data[4];
-            set => this.data[4] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        public string Name
-        {
-            get => this.data.ExtractString(5, 10, System.Text.Encoding.UTF8);
-            set => this.data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClientJoined"/>.
-        /// </summary>
-        /// <param name="packet">The packet as span.</param>
-        /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatRoomClientJoined(Span<byte> packet) => new (packet, false);
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="ChatRoomClientJoined"/> to a Span of bytes.
-        /// </summary>
-        /// <param name="packet">The packet as struct.</param>
-        /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(ChatRoomClientJoined packet) => packet.data; 
     }
-
 
     /// <summary>
-    /// Is sent by the server when: This packet is sent by the server after a chat client left the chat room.
-    /// Causes reaction on client side: The client will remove the client from its list, or mark its name in the title bar as offline.
+    /// Gets the header type of this data packet.
     /// </summary>
-    public readonly ref struct ChatRoomClientLeft
-    {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoomClientLeft"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public ChatRoomClientLeft(Span<byte> data)
-            : this(data, true)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoomClientLeft"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private ChatRoomClientLeft(Span<byte> data, bool initialize)
-        {
-            this.data = data;
-            if (initialize)
-            {
-                var header = this.Header;
-                header.Type = HeaderType;
-                header.Code = Code;
-                header.Length = (byte)Math.Min(data.Length, Length);
-                header.SubCode = SubCode;
-            }
-        }
-
-        /// <summary>
-        /// Gets the header type of this data packet.
-        /// </summary>
-        public static byte HeaderType => 0xC1;
-
-        /// <summary>
-        /// Gets the operation code of this data packet.
-        /// </summary>
-        public static byte Code => 0x01;
-
-        /// <summary>
-        /// Gets the operation sub-code of this data packet.
-        /// The <see cref="Code" /> is used as a grouping key.
-        /// </summary>
-        public static byte SubCode => 0x01;
-
-        /// <summary>
-        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-        /// </summary>
-        public static int Length => 15;
-
-        /// <summary>
-        /// Gets the header of this packet.
-        /// </summary>
-        public C1HeaderWithSubCode Header => new (this.data);
-
-        /// <summary>
-        /// Gets or sets the client index.
-        /// </summary>
-        public byte ClientIndex
-        {
-            get => this.data[4];
-            set => this.data[4] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        public string Name
-        {
-            get => this.data.ExtractString(5, 10, System.Text.Encoding.UTF8);
-            set => this.data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClientLeft"/>.
-        /// </summary>
-        /// <param name="packet">The packet as span.</param>
-        /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatRoomClientLeft(Span<byte> packet) => new (packet, false);
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="ChatRoomClientLeft"/> to a Span of bytes.
-        /// </summary>
-        /// <param name="packet">The packet as struct.</param>
-        /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(ChatRoomClientLeft packet) => packet.data; 
-    }
-
+    public static byte HeaderType => 0xC1;
 
     /// <summary>
-    /// Is sent by the server when: This packet is sent by the server after another chat client sent a message to the current chat room.
-    /// Causes reaction on client side: The client will show the message.
+    /// Gets the operation code of this data packet.
     /// </summary>
-    public readonly ref struct ChatRoomClients
-    {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoomClients"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public ChatRoomClients(Span<byte> data)
-            : this(data, true)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatRoomClients"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private ChatRoomClients(Span<byte> data, bool initialize)
-        {
-            this.data = data;
-            if (initialize)
-            {
-                var header = this.Header;
-                header.Type = HeaderType;
-                header.Code = Code;
-                header.Length = (ushort)data.Length;
-            }
-        }
-
-        /// <summary>
-        /// Gets the header type of this data packet.
-        /// </summary>
-        public static byte HeaderType => 0xC2;
-
-        /// <summary>
-        /// Gets the operation code of this data packet.
-        /// </summary>
-        public static byte Code => 0x02;
-
-        /// <summary>
-        /// Gets the header of this packet.
-        /// </summary>
-        public C2Header Header => new (this.data);
-
-        /// <summary>
-        /// Gets or sets the client count.
-        /// </summary>
-        public byte ClientCount
-        {
-            get => this.data[6];
-            set => this.data[6] = value;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="ChatClient"/> of the specified index.
-        /// </summary>
-        public ChatClient this[int index] => new (this.data[(8 + index * ChatClient.Length)..]);
-
-        /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClients"/>.
-        /// </summary>
-        /// <param name="packet">The packet as span.</param>
-        /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatRoomClients(Span<byte> packet) => new (packet, false);
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="ChatRoomClients"/> to a Span of bytes.
-        /// </summary>
-        /// <param name="packet">The packet as struct.</param>
-        /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(ChatRoomClients packet) => packet.data; 
-
-        /// <summary>
-        /// Calculates the size of the packet for the specified count of <see cref="ChatClient"/>.
-        /// </summary>
-        /// <param name="clientsCount">The count of <see cref="ChatClient"/> from which the size will be calculated.</param>
-        public static int GetRequiredSize(int clientsCount) => clientsCount * ChatClient.Length + 8;
-
+    public static byte Code => 0x00;
 
     /// <summary>
-    /// Contains the index and the name of a connected chat client in the room..
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public readonly ref struct ChatClient
-    {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatClient"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public ChatClient(Span<byte> data)
-        {
-            this.data = data;
-        }
-
-        /// <summary>
-        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-        /// </summary>
-        public static int Length => 11;
-
-        /// <summary>
-        /// Gets or sets the index.
-        /// </summary>
-        public byte Index
-        {
-            get => this.data[0];
-            set => this.data[0] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        public string Name
-        {
-            get => this.data.ExtractString(1, 10, System.Text.Encoding.UTF8);
-            set => this.data.Slice(1, 10).WriteString(value, System.Text.Encoding.UTF8);
-        }
-    }
-    }
-
+    public static int Length => 16;
 
     /// <summary>
-    /// Is sent by the server when: This packet is sent by the server after another chat client sent a message to the current chat room.
-    /// Causes reaction on client side: The client will show the message.
+    /// Gets the header of this packet.
     /// </summary>
-    public readonly ref struct ChatMessage
-    {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatMessage"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public ChatMessage(Span<byte> data)
-            : this(data, true)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatMessage"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private ChatMessage(Span<byte> data, bool initialize)
-        {
-            this.data = data;
-            if (initialize)
-            {
-                var header = this.Header;
-                header.Type = HeaderType;
-                header.Code = Code;
-                header.Length = (byte)data.Length;
-            }
-        }
-
-        /// <summary>
-        /// Gets the header type of this data packet.
-        /// </summary>
-        public static byte HeaderType => 0xC1;
-
-        /// <summary>
-        /// Gets the operation code of this data packet.
-        /// </summary>
-        public static byte Code => 0x04;
-
-        /// <summary>
-        /// Gets the header of this packet.
-        /// </summary>
-        public C1Header Header => new (this.data);
-
-        /// <summary>
-        /// Gets or sets the sender index.
-        /// </summary>
-        public byte SenderIndex
-        {
-            get => this.data[3];
-            set => this.data[3] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the message length.
-        /// </summary>
-        public byte MessageLength
-        {
-            get => this.data[4];
-            set => this.data[4] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the message. It's "encrypted" with the 3-byte XOR key (FC CF AB).
-        /// </summary>
-        public string Message
-        {
-            get => this.data.ExtractString(5, this.data.Length - 5, System.Text.Encoding.UTF8);
-            set => this.data.Slice(5).WriteString(value, System.Text.Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatMessage"/>.
-        /// </summary>
-        /// <param name="packet">The packet as span.</param>
-        /// <returns>The packet as struct.</returns>
-        public static implicit operator ChatMessage(Span<byte> packet) => new (packet, false);
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="ChatMessage"/> to a Span of bytes.
-        /// </summary>
-        /// <param name="packet">The packet as struct.</param>
-        /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(ChatMessage packet) => packet.data; 
-
-        /// <summary>
-        /// Calculates the size of the packet for the specified field content.
-        /// </summary>
-        /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
-        public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 5;
-    }
-
+    public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Is sent by the client when: This packet is sent by the client in a fixed interval.
-    /// Causes reaction on server side: The server will keep the connection and chat room intact as long as the clients sends a message in a certain period of time.
+    /// Gets or sets the room id.
     /// </summary>
-    public readonly ref struct KeepAlive
+    public ushort RoomId
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeepAlive"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public KeepAlive(Span<byte> data)
-            : this(data, true)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeepAlive"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-        private KeepAlive(Span<byte> data, bool initialize)
-        {
-            this.data = data;
-            if (initialize)
-            {
-                var header = this.Header;
-                header.Type = HeaderType;
-                header.Code = Code;
-                header.Length = (byte)Math.Min(data.Length, Length);
-            }
-        }
-
-        /// <summary>
-        /// Gets the header type of this data packet.
-        /// </summary>
-        public static byte HeaderType => 0xC1;
-
-        /// <summary>
-        /// Gets the operation code of this data packet.
-        /// </summary>
-        public static byte Code => 0x05;
-
-        /// <summary>
-        /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-        /// </summary>
-        public static int Length => 3;
-
-        /// <summary>
-        /// Gets the header of this packet.
-        /// </summary>
-        public C1Header Header => new (this.data);
-
-        /// <summary>
-        /// Performs an implicit conversion from a Span of bytes to a <see cref="KeepAlive"/>.
-        /// </summary>
-        /// <param name="packet">The packet as span.</param>
-        /// <returns>The packet as struct.</returns>
-        public static implicit operator KeepAlive(Span<byte> packet) => new (packet, false);
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="KeepAlive"/> to a Span of bytes.
-        /// </summary>
-        /// <param name="packet">The packet as struct.</param>
-        /// <returns>The packet as byte span.</returns>
-        public static implicit operator Span<byte>(KeepAlive packet) => packet.data; 
+        get => ReadUInt16LittleEndian(this._data[4..]);
+        set => WriteUInt16LittleEndian(this._data[4..], value);
     }
+
+    /// <summary>
+    /// Gets or sets a token (integer number), formatted as string. This value is also "encrypted" with the 3-byte XOR key (FC CF AB).
+    /// </summary>
+    public string Token
+    {
+        get => this._data.ExtractString(6, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="Authenticate"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator Authenticate(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Authenticate"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(Authenticate packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: This packet is sent by the server after another chat client joined the chat room.
+/// Causes reaction on client side: The client will add the client in its list (if over 2 clients are connected to the same room), or show its name in the title bar.
+/// </summary>
+public readonly ref struct ChatRoomClientJoined
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatRoomClientJoined"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatRoomClientJoined(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatRoomClientJoined"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChatRoomClientJoined(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x01;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 15;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the client index.
+    /// </summary>
+    public byte ClientIndex
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.ExtractString(5, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClientJoined"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChatRoomClientJoined(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChatRoomClientJoined"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ChatRoomClientJoined packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: This packet is sent by the server after a chat client left the chat room.
+/// Causes reaction on client side: The client will remove the client from its list, or mark its name in the title bar as offline.
+/// </summary>
+public readonly ref struct ChatRoomClientLeft
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatRoomClientLeft"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatRoomClientLeft(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatRoomClientLeft"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChatRoomClientLeft(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x01;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 15;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the client index.
+    /// </summary>
+    public byte ClientIndex
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.ExtractString(5, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClientLeft"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChatRoomClientLeft(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChatRoomClientLeft"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ChatRoomClientLeft packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: This packet is sent by the server after another chat client sent a message to the current chat room.
+/// Causes reaction on client side: The client will show the message.
+/// </summary>
+public readonly ref struct ChatRoomClients
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatRoomClients"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatRoomClients(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatRoomClients"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChatRoomClients(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x02;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the client count.
+    /// </summary>
+    public byte ClientCount
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ChatClient"/> of the specified index.
+    /// </summary>
+        public ChatClient this[int index] => new (this._data[(8 + index * ChatClient.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClients"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChatRoomClients(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChatRoomClients"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ChatRoomClients packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="ChatClient"/>.
+    /// </summary>
+    /// <param name="clientsCount">The count of <see cref="ChatClient"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int clientsCount) => clientsCount * ChatClient.Length + 8;
+
+
+/// <summary>
+/// Contains the index and the name of a connected chat client in the room..
+/// </summary>
+public readonly ref struct ChatClient
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatClient"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatClient(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 11;
+
+    /// <summary>
+    /// Gets or sets the index.
+    /// </summary>
+    public byte Index
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.ExtractString(1, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(1, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: This packet is sent by the server after another chat client sent a message to the current chat room.
+/// Causes reaction on client side: The client will show the message.
+/// </summary>
+public readonly ref struct ChatMessage
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatMessage"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChatMessage(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatMessage"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChatMessage(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x04;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the sender index.
+    /// </summary>
+    public byte SenderIndex
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the message length.
+    /// </summary>
+    public byte MessageLength
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the message. It's "encrypted" with the 3-byte XOR key (FC CF AB).
+    /// </summary>
+    public string Message
+    {
+        get => this._data.ExtractString(5, this._data.Length - 5, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatMessage"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChatMessage(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChatMessage"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ChatMessage packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 5;
+}
+
+
+/// <summary>
+/// Is sent by the client when: This packet is sent by the client in a fixed interval.
+/// Causes reaction on server side: The server will keep the connection and chat room intact as long as the clients sends a message in a certain period of time.
+/// </summary>
+public readonly ref struct KeepAlive
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeepAlive"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public KeepAlive(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeepAlive"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private KeepAlive(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x05;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 3;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="KeepAlive"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator KeepAlive(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="KeepAlive"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(KeepAlive packet) => packet._data; 
 }

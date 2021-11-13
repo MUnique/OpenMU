@@ -2,44 +2,41 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading.Tasks;
+namespace MUnique.OpenMU.AdminPanel.Components.Form;
 
-namespace MUnique.OpenMU.AdminPanel.Components.Form
+using System.ComponentModel.DataAnnotations;
+using Blazored.Modal;
+using Blazored.Modal.Services;
+using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.AdminPanel.Services;
+
+/// <summary>
+/// A component which allows to select an instance of <typeparamref name="TItem"/> through the <see cref="ILookupController"/>.
+/// </summary>
+/// <typeparam name="TItem">The type of the item.</typeparam>
+/// <seealso cref="Microsoft.AspNetCore.Components.ComponentBase" />
+public partial class ModalObjectSelection<TItem>
+    where TItem : class
 {
-    using System.ComponentModel.DataAnnotations;
-    using Blazored.Modal;
-    using Blazored.Modal.Services;
-    using Microsoft.AspNetCore.Components;
-    using MUnique.OpenMU.AdminPanel.Services;
+    /// <summary>
+    /// Gets or sets the selected item.
+    /// </summary>
+    [Required]
+    public TItem? Item { get; set; }
 
     /// <summary>
-    /// A component which allows to select an instance of <typeparamref name="TItem"/> through the <see cref="ILookupController"/>.
+    /// Gets or sets the modal instance.
     /// </summary>
-    /// <typeparam name="TItem">The type of the item.</typeparam>
-    /// <seealso cref="Microsoft.AspNetCore.Components.ComponentBase" />
-    public partial class ModalObjectSelection<TItem>
-        where TItem : class
+    [CascadingParameter]
+    public BlazoredModalInstance BlazoredModal { get; set; } = null!;
+
+    private Task SubmitAsync()
     {
-        /// <summary>
-        /// Gets or sets the selected item.
-        /// </summary>
-        [Required]
-        public TItem? Item { get; set; }
+        return this.BlazoredModal.CloseAsync(ModalResult.Ok(this.Item));
+    }
 
-        /// <summary>
-        /// Gets or sets the modal instance.
-        /// </summary>
-        [CascadingParameter]
-        public BlazoredModalInstance BlazoredModal { get; set; } = null!;
-
-        private Task SubmitAsync()
-        {
-            return this.BlazoredModal.CloseAsync(ModalResult.Ok(this.Item));
-        }
-
-        private Task CancelAsync()
-        {
-            return this.BlazoredModal.CancelAsync();
-        }
+    private Task CancelAsync()
+    {
+        return this.BlazoredModal.CancelAsync();
     }
 }

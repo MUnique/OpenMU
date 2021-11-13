@@ -4,43 +4,41 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// Consume handler for upgrading items up to level 6 using the Jewel of Bless.
+/// </summary>
+public class BlessJewelConsumeHandler : ItemModifyConsumeHandler
 {
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.Persistence;
-
     /// <summary>
-    /// Consume handler for upgrading items up to level 6 using the Jewel of Bless.
+    /// Initializes a new instance of the <see cref="BlessJewelConsumeHandler"/> class.
     /// </summary>
-    public class BlessJewelConsumeHandler : ItemModifyConsumeHandler
+    /// <param name="persistenceContextProvider">The persistence context provider.</param>
+    public BlessJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
+        : base(persistenceContextProvider)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BlessJewelConsumeHandler"/> class.
-        /// </summary>
-        /// <param name="persistenceContextProvider">The persistence context provider.</param>
-        public BlessJewelConsumeHandler(IPersistenceContextProvider persistenceContextProvider)
-            : base(persistenceContextProvider)
+    }
+
+    /// <inheritdoc/>
+    protected override bool ModifyItem(Item item, IContext persistenceContext)
+    {
+        if (!item.CanLevelBeUpgraded())
         {
+            return false;
         }
 
-        /// <inheritdoc/>
-        protected override bool ModifyItem(Item item, IContext persistenceContext)
+        byte level = item.Level;
+        if (level > 5)
         {
-            if (!item.CanLevelBeUpgraded())
-            {
-                return false;
-            }
-
-            byte level = item.Level;
-            if (level > 5)
-            {
-                // Webzen's server lacks of such a check... ;)
-                return false;
-            }
-
-            level++;
-            item.Level = level;
-            return true;
+            // Webzen's server lacks of such a check... ;)
+            return false;
         }
+
+        level++;
+        item.Level = level;
+        return true;
     }
 }

@@ -2,74 +2,73 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView.Character
+namespace MUnique.OpenMU.GameServer.RemoteView.Character;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="IUpdateCharacterStatsPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn(nameof(UpdateCharacterStatsPlugIn097), "The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Guid("8ACD9D6B-6FA7-42C3-8C07-E137655CB92F")]
+[MinimumClient(0, 97, ClientLanguage.Invariant)]
+public class UpdateCharacterStatsPlugIn097 : IUpdateCharacterStatsPlugIn
 {
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.Attributes;
-    using MUnique.OpenMU.GameLogic.Views.Character;
-    using MUnique.OpenMU.Network;
-    using MUnique.OpenMU.Network.Packets.ServerToClient;
-    using MUnique.OpenMU.Network.PlugIns;
-    using MUnique.OpenMU.PlugIns;
+    private readonly RemotePlayer _player;
 
     /// <summary>
-    /// The default implementation of the <see cref="IUpdateCharacterStatsPlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// Initializes a new instance of the <see cref="UpdateCharacterStatsPlugIn097"/> class.
     /// </summary>
-    [PlugIn(nameof(UpdateCharacterStatsPlugIn097), "The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("8ACD9D6B-6FA7-42C3-8C07-E137655CB92F")]
-    [MinimumClient(0, 97, ClientLanguage.Invariant)]
-    public class UpdateCharacterStatsPlugIn097 : IUpdateCharacterStatsPlugIn
+    /// <param name="player">The player.</param>
+    public UpdateCharacterStatsPlugIn097(RemotePlayer player) => this._player = player;
+
+    /// <inheritdoc/>
+    public void UpdateCharacterStats()
     {
-        private readonly RemotePlayer player;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateCharacterStatsPlugIn097"/> class.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        public UpdateCharacterStatsPlugIn097(RemotePlayer player) => this.player = player;
-
-        /// <inheritdoc/>
-        public void UpdateCharacterStats()
+        var connection = this._player.Connection;
+        if (connection is null || this._player.Account is null)
         {
-            var connection = this.player.Connection;
-            if (connection is null || this.player.Account is null)
-            {
-                return;
-            }
-
-            using (var writer = connection.StartSafeWrite(CharacterInformation097.HeaderType, CharacterInformation097.Length))
-            {
-                _ = new CharacterInformation097(writer.Span)
-                {
-                    X = this.player.Position.X,
-                    Y = this.player.Position.Y,
-                    MapId = (byte)this.player.SelectedCharacter!.CurrentMap!.Number,
-                    CurrentExperience = (uint)this.player.SelectedCharacter.Experience,
-                    ExperienceForNextLevel = (uint)this.player.GameServerContext.Configuration.ExperienceTable![(int)this.player.Attributes![Stats.Level] + 1],
-                    LevelUpPoints = (ushort)this.player.SelectedCharacter.LevelUpPoints,
-                    Strength = (ushort)this.player.Attributes[Stats.BaseStrength],
-                    Agility = (ushort)this.player.Attributes[Stats.BaseAgility],
-                    Vitality = (ushort)this.player.Attributes[Stats.BaseVitality],
-                    Energy = (ushort)this.player.Attributes[Stats.BaseEnergy],
-                    CurrentHealth = (ushort)this.player.Attributes[Stats.CurrentHealth],
-                    MaximumHealth = (ushort)this.player.Attributes[Stats.MaximumHealth],
-                    CurrentMana = (ushort)this.player.Attributes[Stats.CurrentMana],
-                    MaximumMana = (ushort)this.player.Attributes[Stats.MaximumMana],
-                    CurrentAbility = (ushort)this.player.Attributes[Stats.CurrentAbility],
-                    MaximumAbility = (ushort)this.player.Attributes[Stats.MaximumAbility],
-                    Money = (uint)this.player.Money,
-                    HeroState = this.player.SelectedCharacter.State.Convert(),
-                    Status = this.player.SelectedCharacter.CharacterStatus.Convert(),
-                    UsedFruitPoints = (ushort)this.player.SelectedCharacter.UsedFruitPoints,
-                    MaxFruitPoints = this.player.SelectedCharacter.GetMaximumFruitPoints(),
-                    Leadership = (ushort)this.player.Attributes[Stats.BaseLeadership],
-                };
-
-                writer.Commit();
-            }
-
-            this.player.ViewPlugIns.GetPlugIn<IApplyKeyConfigurationPlugIn>()?.ApplyKeyConfiguration();
+            return;
         }
+
+        using (var writer = connection.StartSafeWrite(CharacterInformation097.HeaderType, CharacterInformation097.Length))
+        {
+            _ = new CharacterInformation097(writer.Span)
+            {
+                X = this._player.Position.X,
+                Y = this._player.Position.Y,
+                MapId = (byte)this._player.SelectedCharacter!.CurrentMap!.Number,
+                CurrentExperience = (uint)this._player.SelectedCharacter.Experience,
+                ExperienceForNextLevel = (uint)this._player.GameServerContext.Configuration.ExperienceTable![(int)this._player.Attributes![Stats.Level] + 1],
+                LevelUpPoints = (ushort)this._player.SelectedCharacter.LevelUpPoints,
+                Strength = (ushort)this._player.Attributes[Stats.BaseStrength],
+                Agility = (ushort)this._player.Attributes[Stats.BaseAgility],
+                Vitality = (ushort)this._player.Attributes[Stats.BaseVitality],
+                Energy = (ushort)this._player.Attributes[Stats.BaseEnergy],
+                CurrentHealth = (ushort)this._player.Attributes[Stats.CurrentHealth],
+                MaximumHealth = (ushort)this._player.Attributes[Stats.MaximumHealth],
+                CurrentMana = (ushort)this._player.Attributes[Stats.CurrentMana],
+                MaximumMana = (ushort)this._player.Attributes[Stats.MaximumMana],
+                CurrentAbility = (ushort)this._player.Attributes[Stats.CurrentAbility],
+                MaximumAbility = (ushort)this._player.Attributes[Stats.MaximumAbility],
+                Money = (uint)this._player.Money,
+                HeroState = this._player.SelectedCharacter.State.Convert(),
+                Status = this._player.SelectedCharacter.CharacterStatus.Convert(),
+                UsedFruitPoints = (ushort)this._player.SelectedCharacter.UsedFruitPoints,
+                MaxFruitPoints = this._player.SelectedCharacter.GetMaximumFruitPoints(),
+                Leadership = (ushort)this._player.Attributes[Stats.BaseLeadership],
+            };
+
+            writer.Commit();
+        }
+
+        this._player.ViewPlugIns.GetPlugIn<IApplyKeyConfigurationPlugIn>()?.ApplyKeyConfiguration();
     }
 }

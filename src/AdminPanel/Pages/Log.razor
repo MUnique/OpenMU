@@ -1,7 +1,7 @@
 ﻿@page "/log"
 @using MUnique.OpenMU.AdminPanel.Services
 
-@inject LogController logController;
+@inject LogController _logController;
 
 <div class="log">
     <LogFilter />
@@ -14,7 +14,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var entry in this.logController.Entries.Take(20))
+            @foreach (var entry in this._logController.Entries.Take(20))
             {
                 <tr class=@($"log {entry.Level.Name}")>
                     <td>@entry.TimeStamp</td>
@@ -32,6 +32,6 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.logController.EntriesChanged += (_, __) => this.InvokeAsync(this.StateHasChanged);
+        this._logController.EntriesChanged += (_, __) => this.InvokeAsync(this.StateHasChanged);
     }
 }

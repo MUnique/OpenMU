@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(GameMapDefinitionDropItemGroup), Schema = SchemaNames.Configuration)]
+internal partial class GameMapDefinitionDropItemGroup
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid GameMapDefinitionId { get; set; }
+    public GameMapDefinition GameMapDefinition { get; set; }
 
-    [Table(nameof(GameMapDefinitionDropItemGroup), Schema = SchemaNames.Configuration)]
-    internal partial class GameMapDefinitionDropItemGroup
-    {
-        public Guid GameMapDefinitionId { get; set; }
-        public GameMapDefinition GameMapDefinition { get; set; }
+    public Guid DropItemGroupId { get; set; }
+    public DropItemGroup DropItemGroup { get; set; }
+}
 
-        public Guid DropItemGroupId { get; set; }
-        public DropItemGroup DropItemGroup { get; set; }
-    }
-
-    internal partial class GameMapDefinition
-    {
-        public ICollection<GameMapDefinitionDropItemGroup> JoinedDropItemGroups { get; } = new EntityFramework.List<GameMapDefinitionDropItemGroup>();
-    }
+internal partial class GameMapDefinition
+{
+    public ICollection<GameMapDefinitionDropItemGroup> JoinedDropItemGroups { get; } = new EntityFramework.List<GameMapDefinitionDropItemGroup>();
 }

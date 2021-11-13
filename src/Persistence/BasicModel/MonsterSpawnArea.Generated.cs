@@ -10,83 +10,80 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="MonsterSpawnArea"/>.
+/// </summary>
+public partial class MonsterSpawnArea : MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea, IIdentifiable, IConvertibleTo<MonsterSpawnArea>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="MonsterSpawnArea"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class MonsterSpawnArea : MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea, IIdentifiable, IConvertibleTo<MonsterSpawnArea>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="MonsterDefinition" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("monsterDefinition")]
+    [System.Text.Json.Serialization.JsonPropertyName("monsterDefinition")]
+    public MonsterDefinition RawMonsterDefinition
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="MonsterDefinition" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("monsterDefinition")]
-        [System.Text.Json.Serialization.JsonPropertyName("monsterDefinition")]
-        public MonsterDefinition RawMonsterDefinition
-        {
-            get => base.MonsterDefinition as MonsterDefinition;
-            set => base.MonsterDefinition = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition MonsterDefinition
-        {
-            get => base.MonsterDefinition;
-            set => base.MonsterDefinition = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="GameMap" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("gameMap")]
-        [System.Text.Json.Serialization.JsonPropertyName("gameMap")]
-        public GameMapDefinition RawGameMap
-        {
-            get => base.GameMap as GameMapDefinition;
-            set => base.GameMap = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition GameMap
-        {
-            get => base.GameMap;
-            set => base.GameMap = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public MonsterSpawnArea Convert() => this;
+        get => base.MonsterDefinition as MonsterDefinition;
+        set => base.MonsterDefinition = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition MonsterDefinition
+    {
+        get => base.MonsterDefinition;
+        set => base.MonsterDefinition = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="GameMap" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("gameMap")]
+    [System.Text.Json.Serialization.JsonPropertyName("gameMap")]
+    public GameMapDefinition RawGameMap
+    {
+        get => base.GameMap as GameMapDefinition;
+        set => base.GameMap = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition GameMap
+    {
+        get => base.GameMap;
+        set => base.GameMap = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public MonsterSpawnArea Convert() => this;
 }

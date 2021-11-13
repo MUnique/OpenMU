@@ -10,103 +10,100 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="Guild"/>.
+/// </summary>
+public partial class Guild : MUnique.OpenMU.DataModel.Entities.Guild, IIdentifiable, IConvertibleTo<Guild>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
+    
+    
     
     /// <summary>
-    /// A plain implementation of <see cref="Guild"/>.
+    /// Gets the raw collection of <see cref="Members" />.
     /// </summary>
-    public partial class Guild : MUnique.OpenMU.DataModel.Entities.Guild, IIdentifiable, IConvertibleTo<Guild>
+    [Newtonsoft.Json.JsonProperty("members")]
+    [System.Text.Json.Serialization.JsonPropertyName("members")]
+    public ICollection<GuildMember> RawMembers { get; } = new List<GuildMember>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.GuildMember> Members
     {
-        
-        
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="Members" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("members")]
-        [System.Text.Json.Serialization.JsonPropertyName("members")]
-        public ICollection<GuildMember> RawMembers { get; } = new List<GuildMember>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.GuildMember> Members
+        get => base.Members ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.GuildMember, GuildMember>(this.RawMembers);
+        protected set
         {
-            get => base.Members ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.GuildMember, GuildMember>(this.RawMembers);
-            protected set
+            this.Members.Clear();
+            foreach (var item in value)
             {
-                this.Members.Clear();
-                foreach (var item in value)
-                {
-                    this.Members.Add(item);
-                }
+                this.Members.Add(item);
             }
         }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Hostility" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("hostility")]
-        [System.Text.Json.Serialization.JsonPropertyName("hostility")]
-        public Guild RawHostility
-        {
-            get => base.Hostility as Guild;
-            set => base.Hostility = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.Interfaces.Guild Hostility
-        {
-            get => base.Hostility;
-            set => base.Hostility = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="AllianceGuild" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("allianceGuild")]
-        [System.Text.Json.Serialization.JsonPropertyName("allianceGuild")]
-        public Guild RawAllianceGuild
-        {
-            get => base.AllianceGuild as Guild;
-            set => base.AllianceGuild = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.Interfaces.Guild AllianceGuild
-        {
-            get => base.AllianceGuild;
-            set => base.AllianceGuild = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public Guild Convert() => this;
     }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Hostility" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("hostility")]
+    [System.Text.Json.Serialization.JsonPropertyName("hostility")]
+    public Guild RawHostility
+    {
+        get => base.Hostility as Guild;
+        set => base.Hostility = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.Interfaces.Guild Hostility
+    {
+        get => base.Hostility;
+        set => base.Hostility = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="AllianceGuild" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("allianceGuild")]
+    [System.Text.Json.Serialization.JsonPropertyName("allianceGuild")]
+    public Guild RawAllianceGuild
+    {
+        get => base.AllianceGuild as Guild;
+        set => base.AllianceGuild = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.Interfaces.Guild AllianceGuild
+    {
+        get => base.AllianceGuild;
+        set => base.AllianceGuild = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public Guild Convert() => this;
 }

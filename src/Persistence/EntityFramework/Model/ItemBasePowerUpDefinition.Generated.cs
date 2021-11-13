@@ -10,80 +10,77 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition"/>.
+/// </summary>
+[Table(nameof(ItemBasePowerUpDefinition), Schema = SchemaNames.Configuration)]
+internal partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(ItemBasePowerUpDefinition), Schema = SchemaNames.Configuration)]
-    internal partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="BonusPerLevel" />.
+    /// </summary>
+    public ICollection<LevelBonus> RawBonusPerLevel { get; } = new EntityFramework.List<LevelBonus>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus> BonusPerLevel => base.BonusPerLevel ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus, LevelBonus>(this.RawBonusPerLevel);
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="TargetAttribute"/>.
+    /// </summary>
+    public Guid? TargetAttributeId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="TargetAttribute" />.
+    /// </summary>
+    [ForeignKey(nameof(TargetAttributeId))]
+    public AttributeDefinition RawTargetAttribute
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="BonusPerLevel" />.
-        /// </summary>
-        public ICollection<LevelBonus> RawBonusPerLevel { get; } = new EntityFramework.List<LevelBonus>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus> BonusPerLevel => base.BonusPerLevel ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus, LevelBonus>(this.RawBonusPerLevel);
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="TargetAttribute"/>.
-        /// </summary>
-        public Guid? TargetAttributeId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="TargetAttribute" />.
-        /// </summary>
-        [ForeignKey(nameof(TargetAttributeId))]
-        public AttributeDefinition RawTargetAttribute
-        {
-            get => base.TargetAttribute as AttributeDefinition;
-            set => base.TargetAttribute = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
-        {
-            get => base.TargetAttribute;set
-            {
-                base.TargetAttribute = value;
-                this.TargetAttributeId = this.RawTargetAttribute?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.TargetAttribute as AttributeDefinition;
+        set => base.TargetAttribute = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
+    {
+        get => base.TargetAttribute;set
+        {
+            base.TargetAttribute = value;
+            this.TargetAttributeId = this.RawTargetAttribute?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

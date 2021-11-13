@@ -10,403 +10,402 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MUnique.OpenMU.Network.Packets
+namespace MUnique.OpenMU.Network.Packets;
+
+using System;
+using static System.Buffers.Binary.BinaryPrimitives;
+
+/// <summary>
+/// The structure for a C1 packet header. Usually encrypted by Xor32..
+/// </summary>
+public readonly ref struct C1Header
 {
-    using System;
-    using static System.Buffers.Binary.BinaryPrimitives;
+    private readonly Span<byte> _data;
 
     /// <summary>
-    /// The structure for a C1 packet header. Usually encrypted by Xor32..
+    /// Initializes a new instance of the <see cref="C1Header"/> struct.
     /// </summary>
-    public readonly ref struct C1Header
+    /// <param name="data">The underlying data.</param>
+    public C1Header(Span<byte> data)
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="C1Header"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public C1Header(Span<byte> data)
-        {
-            this.data = data;
-        }
-
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        public byte Type
-        {
-            get => this.data[0];
-            set => this.data[0] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the length.
-        /// </summary>
-        public byte Length
-        {
-            get => this.data[1];
-            set => this.data[1] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        public byte Code
-        {
-            get => this.data[2];
-            set => this.data[2] = value;
-        }
+        this._data = data;
     }
 
-
     /// <summary>
-    /// The structure for a C1 packet header with sub code. Usually encrypted by Xor32..
+    /// Gets or sets the type.
     /// </summary>
-    public readonly ref struct C1HeaderWithSubCode
+    public byte Type
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="C1HeaderWithSubCode"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public C1HeaderWithSubCode(Span<byte> data)
-        {
-            this.data = data;
-        }
-
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        public byte Type
-        {
-            get => this.data[0];
-            set => this.data[0] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the length.
-        /// </summary>
-        public byte Length
-        {
-            get => this.data[1];
-            set => this.data[1] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        public byte Code
-        {
-            get => this.data[2];
-            set => this.data[2] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the sub code.
-        /// </summary>
-        public byte SubCode
-        {
-            get => this.data[3];
-            set => this.data[3] = value;
-        }
+        get => this._data[0];
+        set => this._data[0] = value;
     }
 
-
     /// <summary>
-    /// The structure for a C2 packet header. Usually encrypted by Xor32..
+    /// Gets or sets the length.
     /// </summary>
-    public readonly ref struct C2Header
+    public byte Length
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="C2Header"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public C2Header(Span<byte> data)
-        {
-            this.data = data;
-        }
-
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        public byte Type
-        {
-            get => this.data[0];
-            set => this.data[0] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the length.
-        /// </summary>
-        public ushort Length
-        {
-            get => ReadUInt16BigEndian(this.data[1..]);
-            set => WriteUInt16BigEndian(this.data[1..], value);
-        }
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        public byte Code
-        {
-            get => this.data[3];
-            set => this.data[3] = value;
-        }
+        get => this._data[1];
+        set => this._data[1] = value;
     }
 
+    /// <summary>
+    /// Gets or sets the code.
+    /// </summary>
+    public byte Code
+    {
+        get => this._data[2];
+        set => this._data[2] = value;
+    }
+}
+
+
+/// <summary>
+/// The structure for a C1 packet header with sub code. Usually encrypted by Xor32..
+/// </summary>
+public readonly ref struct C1HeaderWithSubCode
+{
+    private readonly Span<byte> _data;
 
     /// <summary>
-    /// The structure for a C2 packet header. Usually encrypted by Xor32..
+    /// Initializes a new instance of the <see cref="C1HeaderWithSubCode"/> struct.
     /// </summary>
-    public readonly ref struct C2HeaderWithSubCode
+    /// <param name="data">The underlying data.</param>
+    public C1HeaderWithSubCode(Span<byte> data)
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="C2HeaderWithSubCode"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public C2HeaderWithSubCode(Span<byte> data)
-        {
-            this.data = data;
-        }
-
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        public byte Type
-        {
-            get => this.data[0];
-            set => this.data[0] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the length.
-        /// </summary>
-        public ushort Length
-        {
-            get => ReadUInt16BigEndian(this.data[1..]);
-            set => WriteUInt16BigEndian(this.data[1..], value);
-        }
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        public byte Code
-        {
-            get => this.data[3];
-            set => this.data[3] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the sub code.
-        /// </summary>
-        public byte SubCode
-        {
-            get => this.data[4];
-            set => this.data[4] = value;
-        }
+        this._data = data;
     }
 
-
     /// <summary>
-    /// The structure for a C3 packet header. Usually encrypted by Xor32 and SimpleModulus..
+    /// Gets or sets the type.
     /// </summary>
-    public readonly ref struct C3Header
+    public byte Type
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="C3Header"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public C3Header(Span<byte> data)
-        {
-            this.data = data;
-        }
-
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        public byte Type
-        {
-            get => this.data[0];
-            set => this.data[0] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the length.
-        /// </summary>
-        public byte Length
-        {
-            get => this.data[1];
-            set => this.data[1] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        public byte Code
-        {
-            get => this.data[2];
-            set => this.data[2] = value;
-        }
+        get => this._data[0];
+        set => this._data[0] = value;
     }
 
-
     /// <summary>
-    /// The structure for a C3 packet header with sub code. Usually encrypted by Xor32 and SimpleModulus..
+    /// Gets or sets the length.
     /// </summary>
-    public readonly ref struct C3HeaderWithSubCode
+    public byte Length
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="C3HeaderWithSubCode"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public C3HeaderWithSubCode(Span<byte> data)
-        {
-            this.data = data;
-        }
-
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        public byte Type
-        {
-            get => this.data[0];
-            set => this.data[0] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the length.
-        /// </summary>
-        public byte Length
-        {
-            get => this.data[1];
-            set => this.data[1] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        public byte Code
-        {
-            get => this.data[2];
-            set => this.data[2] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the sub code.
-        /// </summary>
-        public byte SubCode
-        {
-            get => this.data[3];
-            set => this.data[3] = value;
-        }
+        get => this._data[1];
+        set => this._data[1] = value;
     }
 
-
     /// <summary>
-    /// The structure for a C4 packet header. Usually encrypted by Xor32 and SimpleModulus..
+    /// Gets or sets the code.
     /// </summary>
-    public readonly ref struct C4Header
+    public byte Code
     {
-        private readonly Span<byte> data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="C4Header"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public C4Header(Span<byte> data)
-        {
-            this.data = data;
-        }
-
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        public byte Type
-        {
-            get => this.data[0];
-            set => this.data[0] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the length.
-        /// </summary>
-        public ushort Length
-        {
-            get => ReadUInt16BigEndian(this.data[1..]);
-            set => WriteUInt16BigEndian(this.data[1..], value);
-        }
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        public byte Code
-        {
-            get => this.data[3];
-            set => this.data[3] = value;
-        }
+        get => this._data[2];
+        set => this._data[2] = value;
     }
 
+    /// <summary>
+    /// Gets or sets the sub code.
+    /// </summary>
+    public byte SubCode
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+}
+
+
+/// <summary>
+/// The structure for a C2 packet header. Usually encrypted by Xor32..
+/// </summary>
+public readonly ref struct C2Header
+{
+    private readonly Span<byte> _data;
 
     /// <summary>
-    /// The structure for a C4 packet header with sub code. Usually encrypted by Xor32 and SimpleModulus..
+    /// Initializes a new instance of the <see cref="C2Header"/> struct.
     /// </summary>
-    public readonly ref struct C4HeaderWithSubCode
+    /// <param name="data">The underlying data.</param>
+    public C2Header(Span<byte> data)
     {
-        private readonly Span<byte> data;
+        this._data = data;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="C4HeaderWithSubCode"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public C4HeaderWithSubCode(Span<byte> data)
-        {
-            this.data = data;
-        }
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
 
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        public byte Type
-        {
-            get => this.data[0];
-            set => this.data[0] = value;
-        }
+    /// <summary>
+    /// Gets or sets the length.
+    /// </summary>
+    public ushort Length
+    {
+        get => ReadUInt16BigEndian(this._data[1..]);
+        set => WriteUInt16BigEndian(this._data[1..], value);
+    }
 
-        /// <summary>
-        /// Gets or sets the length.
-        /// </summary>
-        public ushort Length
-        {
-            get => ReadUInt16BigEndian(this.data[1..]);
-            set => WriteUInt16BigEndian(this.data[1..], value);
-        }
+    /// <summary>
+    /// Gets or sets the code.
+    /// </summary>
+    public byte Code
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+}
 
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        public byte Code
-        {
-            get => this.data[3];
-            set => this.data[3] = value;
-        }
 
-        /// <summary>
-        /// Gets or sets the sub code.
-        /// </summary>
-        public byte SubCode
-        {
-            get => this.data[4];
-            set => this.data[4] = value;
-        }
+/// <summary>
+/// The structure for a C2 packet header. Usually encrypted by Xor32..
+/// </summary>
+public readonly ref struct C2HeaderWithSubCode
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="C2HeaderWithSubCode"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public C2HeaderWithSubCode(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the length.
+    /// </summary>
+    public ushort Length
+    {
+        get => ReadUInt16BigEndian(this._data[1..]);
+        set => WriteUInt16BigEndian(this._data[1..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the code.
+    /// </summary>
+    public byte Code
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the sub code.
+    /// </summary>
+    public byte SubCode
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+}
+
+
+/// <summary>
+/// The structure for a C3 packet header. Usually encrypted by Xor32 and SimpleModulus..
+/// </summary>
+public readonly ref struct C3Header
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="C3Header"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public C3Header(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the length.
+    /// </summary>
+    public byte Length
+    {
+        get => this._data[1];
+        set => this._data[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the code.
+    /// </summary>
+    public byte Code
+    {
+        get => this._data[2];
+        set => this._data[2] = value;
+    }
+}
+
+
+/// <summary>
+/// The structure for a C3 packet header with sub code. Usually encrypted by Xor32 and SimpleModulus..
+/// </summary>
+public readonly ref struct C3HeaderWithSubCode
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="C3HeaderWithSubCode"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public C3HeaderWithSubCode(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the length.
+    /// </summary>
+    public byte Length
+    {
+        get => this._data[1];
+        set => this._data[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the code.
+    /// </summary>
+    public byte Code
+    {
+        get => this._data[2];
+        set => this._data[2] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the sub code.
+    /// </summary>
+    public byte SubCode
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+}
+
+
+/// <summary>
+/// The structure for a C4 packet header. Usually encrypted by Xor32 and SimpleModulus..
+/// </summary>
+public readonly ref struct C4Header
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="C4Header"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public C4Header(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the length.
+    /// </summary>
+    public ushort Length
+    {
+        get => ReadUInt16BigEndian(this._data[1..]);
+        set => WriteUInt16BigEndian(this._data[1..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the code.
+    /// </summary>
+    public byte Code
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+}
+
+
+/// <summary>
+/// The structure for a C4 packet header with sub code. Usually encrypted by Xor32 and SimpleModulus..
+/// </summary>
+public readonly ref struct C4HeaderWithSubCode
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="C4HeaderWithSubCode"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public C4HeaderWithSubCode(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the length.
+    /// </summary>
+    public ushort Length
+    {
+        get => ReadUInt16BigEndian(this._data[1..]);
+        set => WriteUInt16BigEndian(this._data[1..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the code.
+    /// </summary>
+    public byte Code
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the sub code.
+    /// </summary>
+    public byte SubCode
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
     }
 }

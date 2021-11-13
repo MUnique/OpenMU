@@ -2,21 +2,20 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.Views.Guild
+namespace MUnique.OpenMU.GameLogic.Views.Guild;
+
+/// <summary>
+/// Guild create error detail code.
+/// </summary>
+public enum GuildCreateErrorDetail : byte
 {
     /// <summary>
-    /// Guild create error detail code.
+    /// No error occured.
     /// </summary>
-    public enum GuildCreateErrorDetail : byte
-    {
-        /// <summary>
-        /// No error occured.
-        /// </summary>
-        None,
+    None,
 
-        /// <summary>
-        /// The guild already exists.
-        /// </summary>
-        GuildAlreadyExist,
-    }
+    /// <summary>
+    /// The guild already exists.
+    /// </summary>
+    GuildAlreadyExist,
 }

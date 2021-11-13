@@ -2,119 +2,114 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AdminPanel.Services
+namespace MUnique.OpenMU.AdminPanel.Services;
+
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
+using MUnique.Log4Net.CoreSignalR;
+using MUnique.OpenMU.GameLogic;
+
+/// <summary>
+/// Service which connects to the log hub.
+/// </summary>
+public class LogService
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.SignalR.Client;
-    using MUnique.Log4Net.CoreSignalR;
-    using MUnique.OpenMU.GameLogic;
+    private readonly HubConnection _connection;
+
+    private long _idOfLastMessage;
 
     /// <summary>
-    /// Service which connects to the log hub.
+    /// Initializes a new instance of the <see cref="LogService"/> class.
     /// </summary>
-    public class LogService
+    public LogService()
     {
-        private readonly HubConnection connection;
+        this._connection = new HubConnectionBuilder()
+            .WithUrl("http://localhost:1234/signalr/hubs/logHub")
+            .Build();
 
-        private long idOfLastMessage;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LogService"/> class.
-        /// </summary>
-        public LogService()
+        this._connection.Closed += async _ =>
         {
-            this.connection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:1234/signalr/hubs/logHub")
-                .Build();
+            await Task.Delay(new Random().Next(0, 5) * 1000).ConfigureAwait(false);
+            await this.Connect().ConfigureAwait(false);
+        };
 
-            this.connection.Closed += async (error) =>
+        this._connection.On<string, LogEventData, long>("OnLoggedEvent", this.OnLoggedEvent);
+        this._connection.On<string[], LogEntry[]>("Initialize", this.OnInitialize);
+
+        Task EnsureConnected()
+        {
+            if (this._connection.State == HubConnectionState.Disconnected)
             {
-                await Task.Delay(new Random().Next(0, 5) * 1000).ConfigureAwait(false);
-                await this.Connect().ConfigureAwait(false);
-            };
-
-            this.connection.On<string, LogEventData, long>("OnLoggedEvent", this.OnLoggedEvent);
-            this.connection.On<string[], LogEntry[]>("Initialize", this.OnInitialize);
-
-            Task EnsureConnected()
-            {
-                if (this.connection.State == HubConnectionState.Disconnected)
-                {
-                    return this.Connect();
-                }
-
-                return Task.CompletedTask;
+                return this.Connect();
             }
 
-            this.Initialization = EnsureConnected();
+            return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Occurs when a log event was received.
-        /// </summary>
-        public event EventHandler<LogEntryReceivedEventArgs>? LogEventReceived;
+        this.Initialization = EnsureConnected();
+    }
 
-        /// <summary>
-        /// Gets the known loggers.
-        /// </summary>
-        public ICollection<string> Loggers { get; private set; } = new List<string>();
+    /// <summary>
+    /// Occurs when a log event was received.
+    /// </summary>
+    public event EventHandler<LogEntryReceivedEventArgs>? LogEventReceived;
 
-        /// <summary>
-        /// Gets the captured entries.
-        /// </summary>
-        public LinkedList<LogEventData> Entries { get; } = new ();
+    /// <summary>
+    /// Gets the known loggers.
+    /// </summary>
+    public ICollection<string> Loggers { get; private set; } = new List<string>();
 
-        /// <summary>
-        /// Gets or sets an event callback which occurs when the connection state to the hub changed.
-        /// </summary>
-        public EventCallback<bool>? IsConnectedChanged { get; set; }
+    /// <summary>
+    /// Gets the captured entries.
+    /// </summary>
+    public LinkedList<LogEventData> Entries { get; } = new ();
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is connected to the log hub.
-        /// </summary>
-        public bool IsConnected => this.connection.State == HubConnectionState.Connected;
+    /// <summary>
+    /// Gets or sets an event callback which occurs when the connection state to the hub changed.
+    /// </summary>
+    public EventCallback<bool>? IsConnectedChanged { get; set; }
 
-        /// <summary>
-        /// Gets the initialization task.
-        /// </summary>
-        public Task Initialization { get; }
+    /// <summary>
+    /// Gets a value indicating whether this instance is connected to the log hub.
+    /// </summary>
+    public bool IsConnected => this._connection.State == HubConnectionState.Connected;
 
-        /// <summary>
-        /// Gets or sets the maximum size of <see cref="Entries"/>.
-        /// </summary>
-        public int MaximumEntries { get; set; } = 500;
+    /// <summary>
+    /// Gets the initialization task.
+    /// </summary>
+    public Task Initialization { get; }
 
-        private void OnInitialize(string[] loggers, LogEntry[] cachedEntries)
+    /// <summary>
+    /// Gets or sets the maximum size of <see cref="Entries"/>.
+    /// </summary>
+    public int MaximumEntries { get; set; } = 500;
+
+    private void OnInitialize(string[] loggers, LogEntry[] cachedEntries)
+    {
+        this.Loggers = loggers.ToList();
+        cachedEntries.Select(entry => entry.LoggingEvent).ForEach(e => this.Entries.AddLast(e));
+    }
+
+    private async Task Connect()
+    {
+        await this._connection.StartAsync();
+        await this._connection.InvokeAsync("SubscribeToGroupWithMessageOffset", "MyGroup", this._idOfLastMessage);
+        var isConnectedChanged = this.IsConnectedChanged;
+        if (isConnectedChanged != null)
         {
-            this.Loggers = loggers.ToList();
-            cachedEntries.Select(entry => entry.LoggingEvent).ForEach(e => this.Entries.AddLast(e));
+            await isConnectedChanged.Value.InvokeAsync(this.IsConnected);
         }
+    }
 
-        private async Task Connect()
+    private void OnLoggedEvent(string formattedEvent, LogEventData entry, long id)
+    {
+        this._idOfLastMessage = id;
+        this.Entries.AddLast(entry);
+        while (this.Entries.Count > this.MaximumEntries)
         {
-            await this.connection.StartAsync();
-            await this.connection.InvokeAsync("SubscribeToGroupWithMessageOffset", "MyGroup", this.idOfLastMessage);
-            var isConnectedChanged = this.IsConnectedChanged;
-            if (isConnectedChanged != null)
-            {
-                await isConnectedChanged.Value.InvokeAsync(this.IsConnected);
-            }
+            this.Entries.RemoveFirst();
         }
 
-        private void OnLoggedEvent(string formattedEvent, LogEventData entry, long id)
-        {
-            this.idOfLastMessage = id;
-            this.Entries.AddLast(entry);
-            while (this.Entries.Count > this.MaximumEntries)
-            {
-                this.Entries.RemoveFirst();
-            }
-
-            this.LogEventReceived?.Invoke(this, new LogEntryReceivedEventArgs(entry));
-        }
+        this.LogEventReceived?.Invoke(this, new LogEntryReceivedEventArgs(entry));
     }
 }

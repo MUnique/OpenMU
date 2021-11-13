@@ -2,46 +2,45 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView.World
+namespace MUnique.OpenMU.GameServer.RemoteView.World;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="IMapChangePlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn(nameof(MapChangePlugIn075), "The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Guid("88195844-06C7-4EDA-8501-8B75A8B4B3F4")]
+public class MapChangePlugIn075 : IMapChangePlugIn
 {
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic.Views.World;
-    using MUnique.OpenMU.Network.Packets.ServerToClient;
-    using MUnique.OpenMU.PlugIns;
+    private readonly RemotePlayer _player;
 
     /// <summary>
-    /// The default implementation of the <see cref="IMapChangePlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// Initializes a new instance of the <see cref="MapChangePlugIn075"/> class.
     /// </summary>
-    [PlugIn(nameof(MapChangePlugIn075), "The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("88195844-06C7-4EDA-8501-8B75A8B4B3F4")]
-    public class MapChangePlugIn075 : IMapChangePlugIn
+    /// <param name="player">The player.</param>
+    public MapChangePlugIn075(RemotePlayer player) => this._player = player;
+
+    /// <inheritdoc/>
+    public void MapChange()
     {
-        private readonly RemotePlayer player;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MapChangePlugIn075"/> class.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        public MapChangePlugIn075(RemotePlayer player) => this.player = player;
-
-        /// <inheritdoc/>
-        public void MapChange()
+        if (this._player.SelectedCharacter?.CurrentMap is null)
         {
-            if (this.player.SelectedCharacter?.CurrentMap is null)
-            {
-                return;
-            }
-
-            var mapNumber = (byte)this.player.SelectedCharacter.CurrentMap.Number;
-            var position = this.player.IsWalking ? this.player.WalkTarget : this.player.Position;
-
-            this.player.Connection?.SendMapChanged075(mapNumber, position.X, position.Y, this.player.Rotation.ToPacketByte());
+            return;
         }
 
-        /// <inheritdoc/>
-        public void MapChangeFailed()
-        {
-            // not implemented?
-        }
+        var mapNumber = (byte)this._player.SelectedCharacter.CurrentMap.Number;
+        var position = this._player.IsWalking ? this._player.WalkTarget : this._player.Position;
+
+        this._player.Connection?.SendMapChanged075(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte());
+    }
+
+    /// <inheritdoc/>
+    public void MapChangeFailed()
+    {
+        // not implemented?
     }
 }

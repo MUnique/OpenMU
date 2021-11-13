@@ -2,156 +2,154 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization.Items
+namespace MUnique.OpenMU.Persistence.Initialization.Items;
+
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
+
+/// <summary>
+/// Initializer for excellent options.
+/// </summary>
+public class ExcellentOptions : InitializerBase
 {
-    using System.Linq;
-    using MUnique.OpenMU.AttributeSystem;
-    using MUnique.OpenMU.DataModel.Attributes;
-    using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.DataModel.Configuration.Items;
-    using MUnique.OpenMU.GameLogic.Attributes;
+    /// <summary>
+    /// The name of the <see cref="ItemOptionDefinition"/> of excellent defense options.
+    /// </summary>
+    public static readonly string DefenseOptionsName = "Excellent Defense Options";
 
     /// <summary>
-    /// Initializer for excellent options.
+    /// The name of the <see cref="ItemOptionDefinition"/> of excellent physical attack options.
     /// </summary>
-    public class ExcellentOptions : InitializerBase
+    public static readonly string PhysicalAttackOptionsName = "Excellent Physical Attack Options";
+
+    /// <summary>
+    /// The name of the <see cref="ItemOptionDefinition"/> of excellent wizardry attack options.
+    /// </summary>
+    public static readonly string WizardryAttackOptionsName = "Excellent Wizardry Attack Options";
+
+    /// <summary>
+    /// The name of the <see cref="ItemOptionDefinition"/> of excellent curse attack options.
+    /// </summary>
+    public static readonly string CurseAttackOptionsName = "Excellent Curse Attack Options";
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExcellentOptions"/> class.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    public ExcellentOptions(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
     {
-        /// <summary>
-        /// The name of the <see cref="ItemOptionDefinition"/> of excellent defense options.
-        /// </summary>
-        public static readonly string DefenseOptionsName = "Excellent Defense Options";
+    }
 
-        /// <summary>
-        /// The name of the <see cref="ItemOptionDefinition"/> of excellent physical attack options.
-        /// </summary>
-        public static readonly string PhysicalAttackOptionsName = "Excellent Physical Attack Options";
+    /// <inheritdoc/>
+    public override void Initialize()
+    {
+        this.CreateDefenseOptions();
+        this.CreatePhysicalAttackOptions();
+        this.CreateWizardryAttackOptions();
+        this.CreateCurseAttackOptions();
+    }
 
-        /// <summary>
-        /// The name of the <see cref="ItemOptionDefinition"/> of excellent wizardry attack options.
-        /// </summary>
-        public static readonly string WizardryAttackOptionsName = "Excellent Wizardry Attack Options";
+    private void CreateCurseAttackOptions()
+    {
+        var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        this.GameConfiguration.ItemOptions.Add(definition);
+        definition.Name = CurseAttackOptionsName;
+        definition.AddChance = 0.001f;
+        definition.AddsRandomly = true;
+        definition.MaximumOptionsPerItem = 2;
 
-        /// <summary>
-        /// The name of the <see cref="ItemOptionDefinition"/> of excellent curse attack options.
-        /// </summary>
-        public static readonly string CurseAttackOptionsName = "Excellent Curse Attack Options";
+        definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumCurseBaseDmg, 1.02f, AggregateType.Multiplicate));
+        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumCurseBaseDmg, Stats.Level, 20));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExcellentOptions"/> class.
-        /// </summary>
-        /// <param name="context">The persistence context.</param>
-        /// <param name="gameConfiguration">The game configuration.</param>
-        public ExcellentOptions(IContext context, GameConfiguration gameConfiguration)
-            : base(context, gameConfiguration)
-        {
-        }
+    private void CreateWizardryAttackOptions()
+    {
+        var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        this.GameConfiguration.ItemOptions.Add(definition);
+        definition.Name = WizardryAttackOptionsName;
+        definition.AddChance = 0.001f;
+        definition.AddsRandomly = true;
+        definition.MaximumOptionsPerItem = 2;
 
-        /// <inheritdoc/>
-        public override void Initialize()
-        {
-            this.CreateDefenseOptions();
-            this.CreatePhysicalAttackOptions();
-            this.CreateWizardryAttackOptions();
-            this.CreateCurseAttackOptions();
-        }
+        definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumWizBaseDmg, 1.02f, AggregateType.Multiplicate));
+        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumWizBaseDmg, Stats.Level, 20));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
+    }
 
-        private void CreateCurseAttackOptions()
-        {
-            var definition = this.Context.CreateNew<ItemOptionDefinition>();
-            this.GameConfiguration.ItemOptions.Add(definition);
-            definition.Name = CurseAttackOptionsName;
-            definition.AddChance = 0.001f;
-            definition.AddsRandomly = true;
-            definition.MaximumOptionsPerItem = 2;
+    private void CreatePhysicalAttackOptions()
+    {
+        var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        this.GameConfiguration.ItemOptions.Add(definition);
+        definition.Name = PhysicalAttackOptionsName;
+        definition.AddChance = 0.001f;
+        definition.AddsRandomly = true;
+        definition.MaximumOptionsPerItem = 2;
 
-            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumCurseBaseDmg, 1.02f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumCurseBaseDmg, Stats.Level, 20));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
-        }
+        definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumPhysBaseDmg, 1.02f, AggregateType.Multiplicate));
+        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumPhysBaseDmg, Stats.Level, 1f / 20f));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
+    }
 
-        private void CreateWizardryAttackOptions()
-        {
-            var definition = this.Context.CreateNew<ItemOptionDefinition>();
-            this.GameConfiguration.ItemOptions.Add(definition);
-            definition.Name = WizardryAttackOptionsName;
-            definition.AddChance = 0.001f;
-            definition.AddsRandomly = true;
-            definition.MaximumOptionsPerItem = 2;
+    private void CreateDefenseOptions()
+    {
+        var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        this.GameConfiguration.ItemOptions.Add(definition);
+        definition.Name = DefenseOptionsName;
+        definition.AddChance = 0.001f;
+        definition.AddsRandomly = true;
+        definition.MaximumOptionsPerItem = 2;
 
-            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumWizBaseDmg, 1.02f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumWizBaseDmg, Stats.Level, 20));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
-        }
+        definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.MoneyAmountRate, 1.4f, AggregateType.Multiplicate));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.DefenseRatePvm, 1.1f, AggregateType.Multiplicate));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.DamageReflection, 0.04f, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.DamageReceiveDecrement, 0.96f, AggregateType.Multiplicate));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumMana, 1.04f, AggregateType.Multiplicate));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.MaximumHealth, 1.04f, AggregateType.Multiplicate));
+    }
 
-        private void CreatePhysicalAttackOptions()
-        {
-            var definition = this.Context.CreateNew<ItemOptionDefinition>();
-            this.GameConfiguration.ItemOptions.Add(definition);
-            definition.Name = PhysicalAttackOptionsName;
-            definition.AddChance = 0.001f;
-            definition.AddsRandomly = true;
-            definition.MaximumOptionsPerItem = 2;
+    private IncreasableItemOption CreateExcellentOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
+    {
+        var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Excellent);
+        itemOption.Number = number;
+        itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        itemOption.PowerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
+        itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        itemOption.PowerUpDefinition.Boost.ConstantValue.Value = value;
+        itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+        return itemOption;
+    }
 
-            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumPhysBaseDmg, 1.02f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumPhysBaseDmg, Stats.Level, 1f / 20f));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
-        }
+    private IncreasableItemOption CreateRelatedExcellentOption(int number, AttributeDefinition targetAttribute, AttributeDefinition sourceAttribute, float multiplier)
+    {
+        var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Excellent);
+        itemOption.Number = number;
+        itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        itemOption.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
 
-        private void CreateDefenseOptions()
-        {
-            var definition = this.Context.CreateNew<ItemOptionDefinition>();
-            this.GameConfiguration.ItemOptions.Add(definition);
-            definition.Name = DefenseOptionsName;
-            definition.AddChance = 0.001f;
-            definition.AddsRandomly = true;
-            definition.MaximumOptionsPerItem = 2;
-
-            definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.MoneyAmountRate, 1.4f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.DefenseRatePvm, 1.1f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.DamageReflection, 0.04f, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.DamageReceiveDecrement, 0.96f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumMana, 1.04f, AggregateType.Multiplicate));
-            definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.MaximumHealth, 1.04f, AggregateType.Multiplicate));
-        }
-
-        private IncreasableItemOption CreateExcellentOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
-        {
-            var itemOption = this.Context.CreateNew<IncreasableItemOption>();
-            itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Excellent);
-            itemOption.Number = number;
-            itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-            itemOption.PowerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
-            itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-            itemOption.PowerUpDefinition.Boost.ConstantValue.Value = value;
-            itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
-            return itemOption;
-        }
-
-        private IncreasableItemOption CreateRelatedExcellentOption(int number, AttributeDefinition targetAttribute, AttributeDefinition sourceAttribute, float multiplier)
-        {
-            var itemOption = this.Context.CreateNew<IncreasableItemOption>();
-            itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Excellent);
-            itemOption.Number = number;
-            itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-            itemOption.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
-            itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-
-            var attributeRelationship = this.Context.CreateNew<AttributeRelationship>();
-            itemOption.PowerUpDefinition.Boost.RelatedValues.Add(attributeRelationship);
-            attributeRelationship.InputOperator = InputOperator.Multiply;
-            attributeRelationship.InputOperand = multiplier;
-            attributeRelationship.InputAttribute = sourceAttribute.GetPersistent(this.GameConfiguration);
-            attributeRelationship.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
-            return itemOption;
-        }
+        var attributeRelationship = this.Context.CreateNew<AttributeRelationship>();
+        itemOption.PowerUpDefinition.Boost.RelatedValues.Add(attributeRelationship);
+        attributeRelationship.InputOperator = InputOperator.Multiply;
+        attributeRelationship.InputOperand = multiplier;
+        attributeRelationship.InputAttribute = sourceAttribute.GetPersistent(this.GameConfiguration);
+        attributeRelationship.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        return itemOption;
     }
 }

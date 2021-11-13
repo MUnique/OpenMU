@@ -6,11 +6,11 @@
 @implements IDisposable
 
 <div class="livemap">
-    <LiveMap Id="@this.MapFactory.GetMapContainerIdentifier(this.ServerId, this.MapId)" MapController="@this.lazyController" />
-    @if (this.controller is { })
+    <LiveMap Id="@this.MapFactory.GetMapContainerIdentifier(this.ServerId, this.MapId)" MapController="@this._lazyController" />
+    @if (this._controller is { })
     {
         <div class="livemap-players">
-            <div><MapPlayerList MapController="@this.controller" /></div>
+            <div><MapPlayerList MapController="@this._controller" /></div>
             <!-- TODO -->
             <div id="selected_info" style="padding-left: 8px; position: absolute; bottom: 0; display: none">
                 <p>Name: <span id="objectData_name"></span>, ID: <span id="objectData_id"></span>, Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</p>
@@ -39,18 +39,18 @@
     [Parameter]
     public int MapId { get; set; }
 
-    private IMapController? controller;
+    private IMapController? _controller;
 
-    private AsyncLazy<IMapController>? lazyController;
+    private AsyncLazy<IMapController>? _lazyController;
 
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        lazyController = new AsyncLazy<IMapController>(async () =>
+        _lazyController = new AsyncLazy<IMapController>(async () =>
         {
-            this.controller = await this.MapFactory.CreateMap(this.ServerId, this.MapId);
+            this._controller = await this.MapFactory.CreateMap(this.ServerId, this.MapId);
             await this.InvokeAsync(this.StateHasChanged);
-            return this.controller;
+            return this._controller;
         });
         base.OnInitialized();
     }
@@ -61,11 +61,11 @@
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        if (this.controller is IAsyncDisposable disposable)
+        if (this._controller is IAsyncDisposable disposable)
         {
             await disposable.DisposeAsync();
         }
 
-        this.controller = null;
+        this._controller = null;
     }
 }

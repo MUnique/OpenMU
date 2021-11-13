@@ -2,75 +2,72 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AttributeSystem
+namespace MUnique.OpenMU.AttributeSystem;
+
+/// <summary>
+/// A simple element with a variable value.
+/// </summary>
+public class SimpleElement : IElement
 {
-    using System;
+    private float _value;
+    private AggregateType _aggregateType;
 
     /// <summary>
-    /// A simple element with a variable value.
+    /// Initializes a new instance of the <see cref="SimpleElement"/> class.
     /// </summary>
-    public class SimpleElement : IElement
+    public SimpleElement()
     {
-        private float value;
-        private AggregateType aggregateType;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleElement"/> class.
-        /// </summary>
-        public SimpleElement()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SimpleElement"/> class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="aggregateType">Type of the aggregate.</param>
+    public SimpleElement(float value, AggregateType aggregateType)
+    {
+        this._value = value;
+        this._aggregateType = aggregateType;
+    }
+
+    /// <inheritdoc/>
+    public event EventHandler? ValueChanged;
+
+    /// <inheritdoc/>
+    public virtual float Value
+    {
+        get => this._value;
+
+        set
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleElement"/> class.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="aggregateType">Type of the aggregate.</param>
-        public SimpleElement(float value, AggregateType aggregateType)
-        {
-            this.value = value;
-            this.aggregateType = aggregateType;
-        }
-
-        /// <inheritdoc/>
-        public event EventHandler? ValueChanged;
-
-        /// <inheritdoc/>
-        public virtual float Value
-        {
-            get => this.value;
-
-            set
+            if (Math.Abs(this._value - value) > 0.00001f)
             {
-                if (Math.Abs(this.value - value) > 0.00001f)
-                {
-                    this.value = value;
-                    this.RaiseValueChanged();
-                }
+                this._value = value;
+                this.RaiseValueChanged();
             }
         }
+    }
 
-        /// <inheritdoc/>
-        public AggregateType AggregateType
+    /// <inheritdoc/>
+    public AggregateType AggregateType
+    {
+        get => this._aggregateType;
+
+        set
         {
-            get => this.aggregateType;
-
-            set
+            if (this._aggregateType != value)
             {
-                if (this.aggregateType != value)
-                {
-                    this.aggregateType = value;
-                    this.RaiseValueChanged();
-                }
+                this._aggregateType = value;
+                this.RaiseValueChanged();
             }
         }
+    }
 
-        /// <summary>
-        /// Raises the value changed event.
-        /// </summary>
-        protected void RaiseValueChanged()
-        {
-            this.ValueChanged?.Invoke(this, EventArgs.Empty);
-        }
+    /// <summary>
+    /// Raises the value changed event.
+    /// </summary>
+    protected void RaiseValueChanged()
+    {
+        this.ValueChanged?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -10,106 +10,103 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="CharacterQuestState"/>.
+/// </summary>
+public partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.CharacterQuestState, IIdentifiable, IConvertibleTo<CharacterQuestState>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="CharacterQuestState"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.CharacterQuestState, IIdentifiable, IConvertibleTo<CharacterQuestState>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="RequirementStates" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("requirementStates")]
+    [System.Text.Json.Serialization.JsonPropertyName("requirementStates")]
+    public ICollection<QuestMonsterKillRequirementState> RawRequirementStates { get; } = new List<QuestMonsterKillRequirementState>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState> RequirementStates
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="RequirementStates" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("requirementStates")]
-        [System.Text.Json.Serialization.JsonPropertyName("requirementStates")]
-        public ICollection<QuestMonsterKillRequirementState> RawRequirementStates { get; } = new List<QuestMonsterKillRequirementState>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState> RequirementStates
+        get => base.RequirementStates ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, QuestMonsterKillRequirementState>(this.RawRequirementStates);
+        protected set
         {
-            get => base.RequirementStates ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState, QuestMonsterKillRequirementState>(this.RawRequirementStates);
-            protected set
+            this.RequirementStates.Clear();
+            foreach (var item in value)
             {
-                this.RequirementStates.Clear();
-                foreach (var item in value)
-                {
-                    this.RequirementStates.Add(item);
-                }
+                this.RequirementStates.Add(item);
             }
         }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="LastFinishedQuest" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("lastFinishedQuest")]
-        [System.Text.Json.Serialization.JsonPropertyName("lastFinishedQuest")]
-        public QuestDefinition RawLastFinishedQuest
-        {
-            get => base.LastFinishedQuest as QuestDefinition;
-            set => base.LastFinishedQuest = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition LastFinishedQuest
-        {
-            get => base.LastFinishedQuest;
-            set => base.LastFinishedQuest = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="ActiveQuest" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("activeQuest")]
-        [System.Text.Json.Serialization.JsonPropertyName("activeQuest")]
-        public QuestDefinition RawActiveQuest
-        {
-            get => base.ActiveQuest as QuestDefinition;
-            set => base.ActiveQuest = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition ActiveQuest
-        {
-            get => base.ActiveQuest;
-            set => base.ActiveQuest = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public CharacterQuestState Convert() => this;
     }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="LastFinishedQuest" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("lastFinishedQuest")]
+    [System.Text.Json.Serialization.JsonPropertyName("lastFinishedQuest")]
+    public QuestDefinition RawLastFinishedQuest
+    {
+        get => base.LastFinishedQuest as QuestDefinition;
+        set => base.LastFinishedQuest = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition LastFinishedQuest
+    {
+        get => base.LastFinishedQuest;
+        set => base.LastFinishedQuest = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ActiveQuest" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("activeQuest")]
+    [System.Text.Json.Serialization.JsonPropertyName("activeQuest")]
+    public QuestDefinition RawActiveQuest
+    {
+        get => base.ActiveQuest as QuestDefinition;
+        set => base.ActiveQuest = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition ActiveQuest
+    {
+        get => base.ActiveQuest;
+        set => base.ActiveQuest = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public CharacterQuestState Convert() => this;
 }

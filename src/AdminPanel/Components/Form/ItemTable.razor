@@ -3,15 +3,15 @@
 @using MUnique.OpenMU.Persistence
 @inherits InputBase<ICollection<TItem>>
 
-@inject IModalService Modal
-@inject NavigationManager NavigationManager
+@inject IModalService _modal
+@inject NavigationManager _navigationManager
 
     <div class="card">
         <h5 class="card-header">
             <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-            @if (this.isStartingCollapsed)
+            @if (this._isStartingCollapsed)
         {
-            @if (this.isCollapsed)
+            @if (this._isCollapsed)
             {
             <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
             }
@@ -21,7 +21,7 @@
             }
         }
         </h5>
-        @if (!this.isCollapsed)
+        @if (!this._isCollapsed)
         {
             <div class="card-body card-text">
                 <table>
@@ -35,13 +35,13 @@
                                 @item.Name
                             </td>
                             <td>
-                                @if (this.isEditable)
+                                @if (this._isEditable)
                                 {
-                                    <button type="button" class="btn-info" @onclick="@(() => this.NavigationManager.NavigateTo("edit/" + typeof(TItem).FullName + "/" + item.Id, true))">Edit</button>
+                                    <button type="button" class="btn-info" @onclick="@(() => this._navigationManager.NavigateTo("edit/" + typeof(TItem).FullName + "/" + item.Id, true))">Edit</button>
                                 }
                             </td>
                             <td>
-                                @if (this.isEditable)
+                                @if (this._isEditable)
                                 {
                                     <button type="button" class="btn-danger" @onclick="@(() => OnRemoveClick(item.Item))">Remove</button>
                                 }
@@ -52,12 +52,12 @@
                     <tfooter>
                         <tr>
                             <td colspan="3">
-                                @if (this.isAddingSupported)
+                                @if (this._isAddingSupported)
                                 {
                                     <button type="button" class="btn-primary" @onclick="@OnAddClick">Add</button>
                                 }
 
-                                @if (this.isCreatingSupported)
+                                @if (this._isCreatingSupported)
                                 {
                                     <button type="button" class="btn-primary" @onclick="@OnCreateClick">Create</button>
                                 }

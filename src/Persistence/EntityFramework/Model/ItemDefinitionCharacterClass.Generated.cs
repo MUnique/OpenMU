@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(ItemDefinitionCharacterClass), Schema = SchemaNames.Configuration)]
+internal partial class ItemDefinitionCharacterClass
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid ItemDefinitionId { get; set; }
+    public ItemDefinition ItemDefinition { get; set; }
 
-    [Table(nameof(ItemDefinitionCharacterClass), Schema = SchemaNames.Configuration)]
-    internal partial class ItemDefinitionCharacterClass
-    {
-        public Guid ItemDefinitionId { get; set; }
-        public ItemDefinition ItemDefinition { get; set; }
+    public Guid CharacterClassId { get; set; }
+    public CharacterClass CharacterClass { get; set; }
+}
 
-        public Guid CharacterClassId { get; set; }
-        public CharacterClass CharacterClass { get; set; }
-    }
-
-    internal partial class ItemDefinition
-    {
-        public ICollection<ItemDefinitionCharacterClass> JoinedQualifiedCharacters { get; } = new EntityFramework.List<ItemDefinitionCharacterClass>();
-    }
+internal partial class ItemDefinition
+{
+    public ICollection<ItemDefinitionCharacterClass> JoinedQualifiedCharacters { get; } = new EntityFramework.List<ItemDefinitionCharacterClass>();
 }

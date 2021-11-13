@@ -2,79 +2,77 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated
+namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated;
+
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlugIns;
+
+/// <summary>
+/// Base class for a <see cref="ICharacterCreatedPlugIn"/> which adds an item to the inventory
+/// of the created character.
+/// </summary>
+public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
 {
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.DataModel.Entities;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.PlugIns;
+    private readonly byte _characterClassNumber;
+    private readonly byte _itemGroup;
+    private readonly byte _itemNumber;
+    private readonly byte _itemSlot;
 
     /// <summary>
-    /// Base class for a <see cref="ICharacterCreatedPlugIn"/> which adds an item to the inventory
-    /// of the created character.
+    /// Initializes a new instance of the <see cref="AddInitialItemPlugInBase" /> class.
     /// </summary>
-    public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
+    /// <param name="characterClassNumber">The character class number.</param>
+    /// <param name="itemGroup">The item group.</param>
+    /// <param name="itemNumber">The item number.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    protected AddInitialItemPlugInBase(byte characterClassNumber, byte itemGroup, byte itemNumber, byte itemSlot)
     {
-        private readonly byte characterClassNumber;
-        private readonly byte itemGroup;
-        private readonly byte itemNumber;
-        private readonly byte itemSlot;
+        this._characterClassNumber = characterClassNumber;
+        this._itemGroup = itemGroup;
+        this._itemNumber = itemNumber;
+        this._itemSlot = itemSlot;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddInitialItemPlugInBase" /> class.
-        /// </summary>
-        /// <param name="characterClassNumber">The character class number.</param>
-        /// <param name="itemGroup">The item group.</param>
-        /// <param name="itemNumber">The item number.</param>
-        /// <param name="itemSlot">The item slot.</param>
-        protected AddInitialItemPlugInBase(byte characterClassNumber, byte itemGroup, byte itemNumber, byte itemSlot)
+    /// <inheritdoc/>
+    public void CharacterCreated(Player player, Character createdCharacter)
+    {
+        using var logScope = player.Logger.BeginScope(this.GetType());
+        if (this._characterClassNumber != createdCharacter.CharacterClass?.Number)
         {
-            this.characterClassNumber = characterClassNumber;
-            this.itemGroup = itemGroup;
-            this.itemNumber = itemNumber;
-            this.itemSlot = itemSlot;
+            player.Logger.LogDebug("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass?.Number, this._characterClassNumber);
+            return;
         }
 
-        /// <inheritdoc/>
-        public void CharacterCreated(Player player, Character createdCharacter)
+        if (this.CreateItem(player, createdCharacter) is { } item)
         {
-            using var logScope = player.Logger.BeginScope(this.GetType());
-            if (this.characterClassNumber != createdCharacter.CharacterClass?.Number)
-            {
-                player.Logger.LogDebug("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass?.Number, this.characterClassNumber);
-                return;
-            }
+            createdCharacter.Inventory!.Items.Add(item);
+        }
+    }
 
-            if (this.CreateItem(player, createdCharacter) is { } item)
-            {
-                createdCharacter.Inventory!.Items.Add(item);
-            }
+    /// <summary>
+    /// Creates the item.
+    /// Can be overwritten to modify the default.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="createdCharacter">The created character.</param>
+    /// <returns>The created item.</returns>
+    protected virtual Item? CreateItem(Player player, Character createdCharacter)
+    {
+        if (player.GameContext.Configuration.Items
+                .FirstOrDefault(def => def.Group == this._itemGroup && def.Number == this._itemNumber)
+            is { } itemDefinition)
+        {
+            var item = player.PersistenceContext.CreateNew<Item>();
+
+            item.Definition = itemDefinition;
+            item.Durability = item.Definition.Durability;
+            item.ItemSlot = this._itemSlot;
+            return item;
         }
 
-        /// <summary>
-        /// Creates the item.
-        /// Can be overwritten to modify the default.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="createdCharacter">The created character.</param>
-        /// <returns>The created item.</returns>
-        protected virtual Item? CreateItem(Player player, Character createdCharacter)
-        {
-            if (player.GameContext.Configuration.Items
-                    .FirstOrDefault(def => def.Group == this.itemGroup && def.Number == this.itemNumber)
-                is { } itemDefinition)
-            {
-                var item = player.PersistenceContext.CreateNew<Item>();
-
-                item.Definition = itemDefinition;
-                item.Durability = item.Definition.Durability;
-                item.ItemSlot = this.itemSlot;
-                return item;
-            }
-
-            player.Logger.LogWarning($"Unknown item, group {this.itemGroup}, number {this.itemNumber}.");
-            return null;
-        }
+        player.Logger.LogWarning($"Unknown item, group {this._itemGroup}, number {this._itemNumber}.");
+        return null;
     }
 }

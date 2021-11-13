@@ -10,43 +10,40 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="GameClientDefinition"/>.
+/// </summary>
+public partial class GameClientDefinition : MUnique.OpenMU.DataModel.Configuration.GameClientDefinition, IIdentifiable, IConvertibleTo<GameClientDefinition>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="GameClientDefinition"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class GameClientDefinition : MUnique.OpenMU.DataModel.Configuration.GameClientDefinition, IIdentifiable, IConvertibleTo<GameClientDefinition>
+    public Guid Id { get; set; }
+    
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
         {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
+            return baseObject.Id == this.Id;
         }
 
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public GameClientDefinition Convert() => this;
+        return base.Equals(obj);
     }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public GameClientDefinition Convert() => this;
 }

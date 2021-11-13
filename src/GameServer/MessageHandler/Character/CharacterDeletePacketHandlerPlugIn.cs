@@ -2,36 +2,34 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.MessageHandler.Character
+namespace MUnique.OpenMU.GameServer.MessageHandler.Character;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+using MUnique.OpenMU.Network.Packets.ClientToServer;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Packet handler for character delete packets (0xF3, 0x02 identifier).
+/// </summary>
+[PlugIn("Character - Delete", "Packet handler for character delete packets (0xF3, 0x02 identifier).")]
+[Guid("5391D003-E244-42E8-AF30-33CB0654B66A")]
+[BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
+internal class CharacterDeletePacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.PlayerActions.Character;
-    using MUnique.OpenMU.Network.Packets.ClientToServer;
-    using MUnique.OpenMU.PlugIns;
+    private readonly DeleteCharacterAction _deleteCharacterAction = new ();
 
-    /// <summary>
-    /// Packet handler for character delete packets (0xF3, 0x02 identifier).
-    /// </summary>
-    [PlugIn("Character - Delete", "Packet handler for character delete packets (0xF3, 0x02 identifier).")]
-    [Guid("5391D003-E244-42E8-AF30-33CB0654B66A")]
-    [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
-    internal class CharacterDeletePacketHandlerPlugIn : ISubPacketHandlerPlugIn
+    /// <inheritdoc/>
+    public bool IsEncryptionExpected => false;
+
+    /// <inheritdoc/>
+    public byte Key => 2;
+
+    /// <inheritdoc />
+    public void HandlePacket(Player player, Span<byte> packet)
     {
-        private readonly DeleteCharacterAction deleteCharacterAction = new ();
-
-        /// <inheritdoc/>
-        public bool IsEncryptionExpected => false;
-
-        /// <inheritdoc/>
-        public byte Key => 2;
-
-        /// <inheritdoc />
-        public void HandlePacket(Player player, Span<byte> packet)
-        {
-            DeleteCharacter message = packet;
-            this.deleteCharacterAction.DeleteCharacter(player, message.Name, message.SecurityCode);
-        }
+        DeleteCharacter message = packet;
+        this._deleteCharacterAction.DeleteCharacter(player, message.Name, message.SecurityCode);
     }
 }

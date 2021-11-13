@@ -10,175 +10,172 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="MonsterDefinition"/>.
+/// </summary>
+public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.MonsterDefinition, IIdentifiable, IConvertibleTo<MonsterDefinition>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="MonsterDefinition"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.MonsterDefinition, IIdentifiable, IConvertibleTo<MonsterDefinition>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="ItemCraftings" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("itemCraftings")]
+    [System.Text.Json.Serialization.JsonPropertyName("itemCraftings")]
+    public ICollection<ItemCrafting> RawItemCraftings { get; } = new List<ItemCrafting>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting> ItemCraftings
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="ItemCraftings" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("itemCraftings")]
-        [System.Text.Json.Serialization.JsonPropertyName("itemCraftings")]
-        public ICollection<ItemCrafting> RawItemCraftings { get; } = new List<ItemCrafting>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting> ItemCraftings
+        get => base.ItemCraftings ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting, ItemCrafting>(this.RawItemCraftings);
+        protected set
         {
-            get => base.ItemCraftings ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting, ItemCrafting>(this.RawItemCraftings);
-            protected set
+            this.ItemCraftings.Clear();
+            foreach (var item in value)
             {
-                this.ItemCraftings.Clear();
-                foreach (var item in value)
-                {
-                    this.ItemCraftings.Add(item);
-                }
+                this.ItemCraftings.Add(item);
             }
         }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="DropItemGroups" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("dropItemGroups")]
-        [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
-        public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
-        {
-            get => base.DropItemGroups ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawDropItemGroups);
-            protected set
-            {
-                this.DropItemGroups.Clear();
-                foreach (var item in value)
-                {
-                    this.DropItemGroups.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="Attributes" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("attributes")]
-        [System.Text.Json.Serialization.JsonPropertyName("attributes")]
-        public ICollection<MonsterAttribute> RawAttributes { get; } = new List<MonsterAttribute>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute> Attributes
-        {
-            get => base.Attributes ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, MonsterAttribute>(this.RawAttributes);
-            protected set
-            {
-                this.Attributes.Clear();
-                foreach (var item in value)
-                {
-                    this.Attributes.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the raw collection of <see cref="Quests" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("quests")]
-        [System.Text.Json.Serialization.JsonPropertyName("quests")]
-        public ICollection<QuestDefinition> RawQuests { get; } = new List<QuestDefinition>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition> Quests
-        {
-            get => base.Quests ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, QuestDefinition>(this.RawQuests);
-            protected set
-            {
-                this.Quests.Clear();
-                foreach (var item in value)
-                {
-                    this.Quests.Add(item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="AttackSkill" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("attackSkill")]
-        [System.Text.Json.Serialization.JsonPropertyName("attackSkill")]
-        public Skill RawAttackSkill
-        {
-            get => base.AttackSkill as Skill;
-            set => base.AttackSkill = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Skill AttackSkill
-        {
-            get => base.AttackSkill;
-            set => base.AttackSkill = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="MerchantStore" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("merchantStore")]
-        [System.Text.Json.Serialization.JsonPropertyName("merchantStore")]
-        public ItemStorage RawMerchantStore
-        {
-            get => base.MerchantStore as ItemStorage;
-            set => base.MerchantStore = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Entities.ItemStorage MerchantStore
-        {
-            get => base.MerchantStore;
-            set => base.MerchantStore = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public MonsterDefinition Convert() => this;
     }
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="DropItemGroups" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("dropItemGroups")]
+    [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
+    public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
+    {
+        get => base.DropItemGroups ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.DropItemGroup, DropItemGroup>(this.RawDropItemGroups);
+        protected set
+        {
+            this.DropItemGroups.Clear();
+            foreach (var item in value)
+            {
+                this.DropItemGroups.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="Attributes" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("attributes")]
+    [System.Text.Json.Serialization.JsonPropertyName("attributes")]
+    public ICollection<MonsterAttribute> RawAttributes { get; } = new List<MonsterAttribute>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute> Attributes
+    {
+        get => base.Attributes ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute, MonsterAttribute>(this.RawAttributes);
+        protected set
+        {
+            this.Attributes.Clear();
+            foreach (var item in value)
+            {
+                this.Attributes.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="Quests" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("quests")]
+    [System.Text.Json.Serialization.JsonPropertyName("quests")]
+    public ICollection<QuestDefinition> RawQuests { get; } = new List<QuestDefinition>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition> Quests
+    {
+        get => base.Quests ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition, QuestDefinition>(this.RawQuests);
+        protected set
+        {
+            this.Quests.Clear();
+            foreach (var item in value)
+            {
+                this.Quests.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="AttackSkill" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("attackSkill")]
+    [System.Text.Json.Serialization.JsonPropertyName("attackSkill")]
+    public Skill RawAttackSkill
+    {
+        get => base.AttackSkill as Skill;
+        set => base.AttackSkill = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Skill AttackSkill
+    {
+        get => base.AttackSkill;
+        set => base.AttackSkill = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="MerchantStore" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("merchantStore")]
+    [System.Text.Json.Serialization.JsonPropertyName("merchantStore")]
+    public ItemStorage RawMerchantStore
+    {
+        get => base.MerchantStore as ItemStorage;
+        set => base.MerchantStore = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage MerchantStore
+    {
+        get => base.MerchantStore;
+        set => base.MerchantStore = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public MonsterDefinition Convert() => this;
 }

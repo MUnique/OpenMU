@@ -24,6 +24,10 @@
 
   <ItemGroup>
     <Compile Include="..\..\src\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="..\..\src\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,11 +3,11 @@
 @using System.Reflection
 @typeparam TValue
 
-<label for="@this.fieldIdentifier.FieldName">@this.actualLabel</label>
+<label for="@this._fieldIdentifier.FieldName">@this._actualLabel</label>
 
 @code {
-    private string actualLabel = null!;
-    private FieldIdentifier fieldIdentifier;
+    private string _actualLabel = null!;
+    private FieldIdentifier _fieldIdentifier;
 
     /// <summary>
     /// Gets or sets the text.
@@ -25,9 +25,9 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        this.fieldIdentifier = FieldIdentifier.Create(this.ValueExpression);
-        this.actualLabel = (string.IsNullOrWhiteSpace(this.Text) ? null : this.Text)
-                           ?? this.fieldIdentifier.Model.GetType().GetProperty(this.fieldIdentifier.FieldName)?.GetCustomAttribute<DisplayAttribute>()?.Name
-                           ?? this.fieldIdentifier.FieldName;
+        this._fieldIdentifier = FieldIdentifier.Create(this.ValueExpression);
+        this._actualLabel = (string.IsNullOrWhiteSpace(this.Text) ? null : this.Text)
+                           ?? this._fieldIdentifier.Model.GetType().GetProperty(this._fieldIdentifier.FieldName)?.GetCustomAttribute<DisplayAttribute>()?.Name
+                           ?? this._fieldIdentifier.FieldName;
     }
 }

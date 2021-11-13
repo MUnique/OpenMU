@@ -2,39 +2,38 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop
+namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.PlayerShop;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="IPlayerShopClosedPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn("PlayerShopClosedPlugIn", "The default implementation of the IPlayerShopClosedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Guid("351cf726-5091-4995-9228-81c089d1da16")]
+public class PlayerShopClosedPlugIn : IPlayerShopClosedPlugIn
 {
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic;
-    using MUnique.OpenMU.GameLogic.Views;
-    using MUnique.OpenMU.GameLogic.Views.PlayerShop;
-    using MUnique.OpenMU.Network.Packets.ServerToClient;
-    using MUnique.OpenMU.PlugIns;
+    private readonly RemotePlayer _player;
 
     /// <summary>
-    /// The default implementation of the <see cref="IPlayerShopClosedPlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// Initializes a new instance of the <see cref="PlayerShopClosedPlugIn"/> class.
     /// </summary>
-    [PlugIn("PlayerShopClosedPlugIn", "The default implementation of the IPlayerShopClosedPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("351cf726-5091-4995-9228-81c089d1da16")]
-    public class PlayerShopClosedPlugIn : IPlayerShopClosedPlugIn
+    /// <param name="player">The player.</param>
+    public PlayerShopClosedPlugIn(RemotePlayer player) => this._player = player;
+
+    /// <inheritdoc/>
+    public void PlayerShopClosed(Player playerWithClosedShop)
     {
-        private readonly RemotePlayer player;
+        var playerId = playerWithClosedShop.GetId(this._player);
+        this._player.Connection?.SendPlayerShopClosed(playerId);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerShopClosedPlugIn"/> class.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        public PlayerShopClosedPlugIn(RemotePlayer player) => this.player = player;
-
-        /// <inheritdoc/>
-        public void PlayerShopClosed(Player playerWithClosedShop)
-        {
-            var playerId = playerWithClosedShop.GetId(this.player);
-            this.player.Connection?.SendPlayerShopClosed(playerId);
-
-            // The following usually just needs to be sent to all players which currently have the shop dialog open
-            // For the sake of simplicity, we send it to all players.
-            this.player.Connection?.SendClosePlayerShopDialog(playerId);
-        }
+        // The following usually just needs to be sent to all players which currently have the shop dialog open
+        // For the sake of simplicity, we send it to all players.
+        this._player.Connection?.SendClosePlayerShopDialog(playerId);
     }
 }

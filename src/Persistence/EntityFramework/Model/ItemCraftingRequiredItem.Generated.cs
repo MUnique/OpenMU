@@ -10,54 +10,51 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem"/>.
+/// </summary>
+[Table(nameof(ItemCraftingRequiredItem), Schema = SchemaNames.Configuration)]
+internal partial class ItemCraftingRequiredItem : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    /// <inheritdoc />
+    public ItemCraftingRequiredItem()
+    {
+        this.InitJoinCollections();
+    }
+
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(ItemCraftingRequiredItem), Schema = SchemaNames.Configuration)]
-    internal partial class ItemCraftingRequiredItem : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem, IIdentifiable
+    public Guid Id { get; set; }
+    
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
     {
-        /// <inheritdoc />
-        public ItemCraftingRequiredItem()
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
         {
-            this.InitJoinCollections();
+            return baseObject.Id == this.Id;
         }
 
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
+        return base.Equals(obj);
+    }
 
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
 
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        protected void InitJoinCollections()
-        {
-            this.PossibleItems = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition, ItemCraftingRequiredItemItemDefinition>(this.JoinedPossibleItems, joinEntity => joinEntity.ItemDefinition, entity => new ItemCraftingRequiredItemItemDefinition { ItemCraftingRequiredItem = this, ItemCraftingRequiredItemId = this.Id, ItemDefinition = (ItemDefinition)entity, ItemDefinitionId = ((ItemDefinition)entity).Id});
-            this.RequiredItemOptions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, ItemCraftingRequiredItemItemOptionType>(this.JoinedRequiredItemOptions, joinEntity => joinEntity.ItemOptionType, entity => new ItemCraftingRequiredItemItemOptionType { ItemCraftingRequiredItem = this, ItemCraftingRequiredItemId = this.Id, ItemOptionType = (ItemOptionType)entity, ItemOptionTypeId = ((ItemOptionType)entity).Id});
-        }
+    protected void InitJoinCollections()
+    {
+        this.PossibleItems = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition, ItemCraftingRequiredItemItemDefinition>(this.JoinedPossibleItems, joinEntity => joinEntity.ItemDefinition, entity => new ItemCraftingRequiredItemItemDefinition { ItemCraftingRequiredItem = this, ItemCraftingRequiredItemId = this.Id, ItemDefinition = (ItemDefinition)entity, ItemDefinitionId = ((ItemDefinition)entity).Id});
+        this.RequiredItemOptions = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, ItemCraftingRequiredItemItemOptionType>(this.JoinedRequiredItemOptions, joinEntity => joinEntity.ItemOptionType, entity => new ItemCraftingRequiredItemItemOptionType { ItemCraftingRequiredItem = this, ItemCraftingRequiredItemId = this.Id, ItemOptionType = (ItemOptionType)entity, ItemOptionTypeId = ((ItemOptionType)entity).Id});
     }
 }

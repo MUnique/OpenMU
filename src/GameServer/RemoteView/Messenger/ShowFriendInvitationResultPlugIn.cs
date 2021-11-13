@@ -2,32 +2,31 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer.RemoteView.Messenger
+namespace MUnique.OpenMU.GameServer.RemoteView.Messenger;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Views.Messenger;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="IShowFriendInvitationResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn("ShowFriendInvitationResultPlugIn", "The default implementation of the IShowFriendInvitationResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Guid("8df329bd-88da-423c-8f85-173180ab8601")]
+public class ShowFriendInvitationResultPlugIn : IShowFriendInvitationResultPlugIn
 {
-    using System.Runtime.InteropServices;
-    using MUnique.OpenMU.GameLogic.Views.Messenger;
-    using MUnique.OpenMU.Network.Packets.ServerToClient;
-    using MUnique.OpenMU.PlugIns;
+    private readonly RemotePlayer _player;
 
     /// <summary>
-    /// The default implementation of the <see cref="IShowFriendInvitationResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
+    /// Initializes a new instance of the <see cref="ShowFriendInvitationResultPlugIn"/> class.
     /// </summary>
-    [PlugIn("ShowFriendInvitationResultPlugIn", "The default implementation of the IShowFriendInvitationResultPlugIn which is forwarding everything to the game client with specific data packets.")]
-    [Guid("8df329bd-88da-423c-8f85-173180ab8601")]
-    public class ShowFriendInvitationResultPlugIn : IShowFriendInvitationResultPlugIn
+    /// <param name="player">The player.</param>
+    public ShowFriendInvitationResultPlugIn(RemotePlayer player) => this._player = player;
+
+    /// <inheritdoc/>
+    public void ShowFriendInvitationResult(bool success, uint requestId)
     {
-        private readonly RemotePlayer player;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ShowFriendInvitationResultPlugIn"/> class.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        public ShowFriendInvitationResultPlugIn(RemotePlayer player) => this.player = player;
-
-        /// <inheritdoc/>
-        public void ShowFriendInvitationResult(bool success, uint requestId)
-        {
-            this.player.Connection?.SendFriendInvitationResult(success, requestId);
-        }
+        this._player.Connection?.SendFriendInvitationResult(success, requestId);
     }
 }

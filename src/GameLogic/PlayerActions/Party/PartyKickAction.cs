@@ -2,35 +2,33 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.Party
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Party;
+
+using MUnique.OpenMU.GameLogic;
+
+/// <summary>
+/// Action to kick players from the party.
+/// </summary>
+public class PartyKickAction
 {
-    using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.GameLogic;
-
     /// <summary>
-    /// Action to kick players from the party.
+    /// Kicks the player.
+    /// Only the party master is allowed to kick other players. However, players can kick themselves out of the party.
     /// </summary>
-    public class PartyKickAction
+    /// <param name="player">The player.</param>
+    /// <param name="index">The index.</param>
+    public void KickPlayer(Player player, byte index)
     {
-        /// <summary>
-        /// Kicks the player.
-        /// Only the party master is allowed to kick other players. However, players can kick themselves out of the party.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="index">The index.</param>
-        public void KickPlayer(Player player, byte index)
+        if (player.Party is { } party)
         {
-            if (player.Party is { } party)
+            if (!Equals(player, party.PartyList[0]) &&
+                !Equals(player, party.PartyList[index]))
             {
-                if (!Equals(player, party.PartyList[0]) &&
-                    !Equals(player, party.PartyList[index]))
-                {
-                    player.Logger.LogWarning("Suspicious party kick request of {0}, could be hack attempt.", player);
-                    return;
-                }
-
-                party.KickPlayer(index);
+                player.Logger.LogWarning("Suspicious party kick request of {0}, could be hack attempt.", player);
+                return;
             }
+
+            party.KickPlayer(index);
         }
     }
 }

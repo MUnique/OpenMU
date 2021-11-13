@@ -2,44 +2,41 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AttributeSystem
+namespace MUnique.OpenMU.AttributeSystem;
+
+/// <summary>
+/// An element with a constant value.
+/// </summary>
+public class ConstantElement : IElement
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConstantElement"/> class.
+    /// </summary>
+    /// <param name="value">The constant value.</param>
+    public ConstantElement(float value)
+    {
+        this.Value = value;
+    }
 
     /// <summary>
-    /// An element with a constant value.
+    /// Never occurs, so the implementation is empty.
     /// </summary>
-    public class ConstantElement : IElement
+    public event EventHandler? ValueChanged
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConstantElement"/> class.
-        /// </summary>
-        /// <param name="value">The constant value.</param>
-        public ConstantElement(float value)
+        add
         {
-            this.Value = value;
+            // do nothing, as the value never changes.
         }
 
-        /// <summary>
-        /// Never occurs, so the implementation is empty.
-        /// </summary>
-        public event EventHandler? ValueChanged
+        remove
         {
-            add
-            {
-                // do nothing, as the value never changes.
-            }
-
-            remove
-            {
-                // do nothing, as the value never changes.
-            }
+            // do nothing, as the value never changes.
         }
-
-        /// <inheritdoc/>
-        public float Value { get; }
-
-        /// <inheritdoc/>
-        public AggregateType AggregateType { get; } = AggregateType.AddRaw;
     }
+
+    /// <inheritdoc/>
+    public float Value { get; }
+
+    /// <inheritdoc/>
+    public AggregateType AggregateType { get; } = AggregateType.AddRaw;
 }

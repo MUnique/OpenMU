@@ -4,62 +4,59 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions
+namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+
+/// <summary>
+/// Base class of an item consumption handler.
+/// </summary>
+public class BaseConsumeHandler : IItemConsumeHandler
 {
-    using MUnique.OpenMU.DataModel.Entities;
+    /// <inheritdoc/>
+    public virtual bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    {
+        if (!this.CheckPreconditions(player, item))
+        {
+            return false;
+        }
+
+        this.ConsumeSourceItem(player, item);
+
+        return true;
+    }
 
     /// <summary>
-    /// Base class of an item consumption handler.
+    /// Consumes the source item.
     /// </summary>
-    public class BaseConsumeHandler : IItemConsumeHandler
+    /// <param name="player">The player.</param>
+    /// <param name="item">The item.</param>
+    protected void ConsumeSourceItem(Player player, Item item)
     {
-        /// <inheritdoc/>
-        public virtual bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+        if (item.Durability > 0)
         {
-            if (!this.CheckPreconditions(player, item))
-            {
-                return false;
-            }
-
-            this.ConsumeSourceItem(player, item);
-
-            return true;
+            item.Durability -= 1;
         }
 
-        /// <summary>
-        /// Consumes the source item.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="item">The item.</param>
-        protected void ConsumeSourceItem(Player player, Item item)
+        if (item.Durability == 0)
         {
-            if (item.Durability > 0)
-            {
-                item.Durability -= 1;
-            }
+            player.Inventory?.RemoveItem(item);
+            player.PersistenceContext.Delete(item);
+        }
+    }
 
-            if (item.Durability == 0)
-            {
-                player.Inventory?.RemoveItem(item);
-                player.PersistenceContext.Delete(item);
-            }
+    /// <summary>
+    /// Checks the preconditions.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="item">The item.</param>
+    /// <returns><c>True</c>, if preconditions are met.</returns>
+    protected bool CheckPreconditions(Player player, Item item)
+    {
+        if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
+            || item.Durability == 0)
+        {
+            return false;
         }
 
-        /// <summary>
-        /// Checks the preconditions.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="item">The item.</param>
-        /// <returns><c>True</c>, if preconditions are met.</returns>
-        protected bool CheckPreconditions(Player player, Item item)
-        {
-            if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
-                || item.Durability == 0)
-            {
-                return false;
-            }
-
-            return true;
-        }
+        return true;
     }
 }

@@ -10,54 +10,51 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition"/>.
+/// </summary>
+[Table(nameof(ItemOptionDefinition), Schema = SchemaNames.Configuration)]
+internal partial class ItemOptionDefinition : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(ItemOptionDefinition), Schema = SchemaNames.Configuration)]
-    internal partial class ItemOptionDefinition : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="PossibleOptions" />.
+    /// </summary>
+    public ICollection<IncreasableItemOption> RawPossibleOptions { get; } = new EntityFramework.List<IncreasableItemOption>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> PossibleOptions => base.PossibleOptions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IncreasableItemOption>(this.RawPossibleOptions);
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="PossibleOptions" />.
-        /// </summary>
-        public ICollection<IncreasableItemOption> RawPossibleOptions { get; } = new EntityFramework.List<IncreasableItemOption>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> PossibleOptions => base.PossibleOptions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IncreasableItemOption>(this.RawPossibleOptions);
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
         {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
+            return baseObject.Id == this.Id;
         }
 
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        return base.Equals(obj);
     }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

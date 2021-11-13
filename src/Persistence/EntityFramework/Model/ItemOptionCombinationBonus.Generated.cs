@@ -10,80 +10,77 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus"/>.
+/// </summary>
+[Table(nameof(ItemOptionCombinationBonus), Schema = SchemaNames.Configuration)]
+internal partial class ItemOptionCombinationBonus : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(ItemOptionCombinationBonus), Schema = SchemaNames.Configuration)]
-    internal partial class ItemOptionCombinationBonus : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="Requirements" />.
+    /// </summary>
+    public ICollection<CombinationBonusRequirement> RawRequirements { get; } = new EntityFramework.List<CombinationBonusRequirement>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement> Requirements => base.Requirements ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement, CombinationBonusRequirement>(this.RawRequirements);
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="Bonus"/>.
+    /// </summary>
+    public Guid? BonusId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Bonus" />.
+    /// </summary>
+    [ForeignKey(nameof(BonusId))]
+    public PowerUpDefinition RawBonus
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="Requirements" />.
-        /// </summary>
-        public ICollection<CombinationBonusRequirement> RawRequirements { get; } = new EntityFramework.List<CombinationBonusRequirement>();
-        
-        /// <inheritdoc/>
-        [NotMapped]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement> Requirements => base.Requirements ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement, CombinationBonusRequirement>(this.RawRequirements);
-
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="Bonus"/>.
-        /// </summary>
-        public Guid? BonusId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Bonus" />.
-        /// </summary>
-        [ForeignKey(nameof(BonusId))]
-        public PowerUpDefinition RawBonus
-        {
-            get => base.Bonus as PowerUpDefinition;
-            set => base.Bonus = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition Bonus
-        {
-            get => base.Bonus;set
-            {
-                base.Bonus = value;
-                this.BonusId = this.RawBonus?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.Bonus as PowerUpDefinition;
+        set => base.Bonus = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition Bonus
+    {
+        get => base.Bonus;set
+        {
+            base.Bonus = value;
+            this.BonusId = this.RawBonus?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

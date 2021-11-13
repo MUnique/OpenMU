@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(DropItemGroupItemDefinition), Schema = SchemaNames.Configuration)]
+internal partial class DropItemGroupItemDefinition
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid DropItemGroupId { get; set; }
+    public DropItemGroup DropItemGroup { get; set; }
 
-    [Table(nameof(DropItemGroupItemDefinition), Schema = SchemaNames.Configuration)]
-    internal partial class DropItemGroupItemDefinition
-    {
-        public Guid DropItemGroupId { get; set; }
-        public DropItemGroup DropItemGroup { get; set; }
+    public Guid ItemDefinitionId { get; set; }
+    public ItemDefinition ItemDefinition { get; set; }
+}
 
-        public Guid ItemDefinitionId { get; set; }
-        public ItemDefinition ItemDefinition { get; set; }
-    }
-
-    internal partial class DropItemGroup
-    {
-        public ICollection<DropItemGroupItemDefinition> JoinedPossibleItems { get; } = new EntityFramework.List<DropItemGroupItemDefinition>();
-    }
+internal partial class DropItemGroup
+{
+    public ICollection<DropItemGroupItemDefinition> JoinedPossibleItems { get; } = new EntityFramework.List<DropItemGroupItemDefinition>();
 }

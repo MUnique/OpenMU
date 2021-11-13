@@ -10,103 +10,100 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="PowerUpDefinitionWithDuration"/>.
+/// </summary>
+public partial class PowerUpDefinitionWithDuration : MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionWithDuration, IIdentifiable, IConvertibleTo<PowerUpDefinitionWithDuration>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="PowerUpDefinitionWithDuration"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class PowerUpDefinitionWithDuration : MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionWithDuration, IIdentifiable, IConvertibleTo<PowerUpDefinitionWithDuration>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="Duration" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("duration")]
+    [System.Text.Json.Serialization.JsonPropertyName("duration")]
+    public PowerUpDefinitionValue RawDuration
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="Duration" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("duration")]
-        [System.Text.Json.Serialization.JsonPropertyName("duration")]
-        public PowerUpDefinitionValue RawDuration
-        {
-            get => base.Duration as PowerUpDefinitionValue;
-            set => base.Duration = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Duration
-        {
-            get => base.Duration;
-            set => base.Duration = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="TargetAttribute" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("targetAttribute")]
-        [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
-        public AttributeDefinition RawTargetAttribute
-        {
-            get => base.TargetAttribute as AttributeDefinition;
-            set => base.TargetAttribute = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
-        {
-            get => base.TargetAttribute;
-            set => base.TargetAttribute = value;
-        }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="Boost" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("boost")]
-        [System.Text.Json.Serialization.JsonPropertyName("boost")]
-        public PowerUpDefinitionValue RawBoost
-        {
-            get => base.Boost as PowerUpDefinitionValue;
-            set => base.Boost = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Boost
-        {
-            get => base.Boost;
-            set => base.Boost = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public PowerUpDefinitionWithDuration Convert() => this;
+        get => base.Duration as PowerUpDefinitionValue;
+        set => base.Duration = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Duration
+    {
+        get => base.Duration;
+        set => base.Duration = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="TargetAttribute" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("targetAttribute")]
+    [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
+    public AttributeDefinition RawTargetAttribute
+    {
+        get => base.TargetAttribute as AttributeDefinition;
+        set => base.TargetAttribute = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
+    {
+        get => base.TargetAttribute;
+        set => base.TargetAttribute = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Boost" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("boost")]
+    [System.Text.Json.Serialization.JsonPropertyName("boost")]
+    public PowerUpDefinitionValue RawBoost
+    {
+        get => base.Boost as PowerUpDefinitionValue;
+        set => base.Boost = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Boost
+    {
+        get => base.Boost;
+        set => base.Boost = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public PowerUpDefinitionWithDuration Convert() => this;
 }

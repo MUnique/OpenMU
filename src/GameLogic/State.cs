@@ -2,110 +2,109 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic
+namespace MUnique.OpenMU.GameLogic;
+
+/// <summary>
+/// A state of a state machine.
+/// </summary>
+public sealed class State : IEquatable<State>
 {
-    using System;
-    using System.Collections.Generic;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="State"/> class.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    public State(Guid id)
+    {
+        this.Id = id;
+    }
 
     /// <summary>
-    /// A state of a state machine.
+    /// Gets the unique id of a state.
     /// </summary>
-    public class State : IEquatable<State>
+    public Guid Id
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="State"/> class.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        public State(Guid id)
+        get;
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the state.
+    /// </summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the possible transitions to which this state can advance.
+    /// </summary>
+    public ICollection<State>? PossibleTransitions
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Implements the operator ==.
+    /// </summary>
+    /// <param name="lhs">The LHS.</param>
+    /// <param name="rhs">The RHS.</param>
+    /// <returns>
+    /// The result of the operator.
+    /// </returns>
+    public static bool operator ==(State? lhs, State? rhs)
+    {
+        if (ReferenceEquals(lhs, rhs))
         {
-            this.Id = id;
+            return true;
         }
 
-        /// <summary>
-        /// Gets the unique id of a state.
-        /// </summary>
-        public Guid Id
+        if (ReferenceEquals(lhs, null) || ReferenceEquals(rhs, null))
         {
-            get;
+            return false;
         }
 
-        /// <summary>
-        /// Gets or sets the name of the state.
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
+        return lhs.Equals(rhs);
+    }
 
-        /// <summary>
-        /// Gets or sets the possible transitions to which this state can advance.
-        /// </summary>
-        public ICollection<State>? PossibleTransitions
+    /// <summary>
+    /// Implements the operator !=.
+    /// </summary>
+    /// <param name="lhs">The LHS.</param>
+    /// <param name="rhs">The RHS.</param>
+    /// <returns>
+    /// The result of the operator.
+    /// </returns>
+    public static bool operator !=(State? lhs, State? rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        return this.Equals(obj as State);
+    }
+
+    /// <inheritdoc />
+    public bool Equals(State? other)
+    {
+        if (other is null)
         {
-            get;
-            set;
+            return false;
         }
 
-        /// <summary>
-        /// Implements the operator ==.
-        /// </summary>
-        /// <param name="lhs">The LHS.</param>
-        /// <param name="rhs">The RHS.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static bool operator ==(State? lhs, State? rhs)
-        {
-            if (ReferenceEquals(lhs, rhs))
-            {
-                return true;
-            }
+        return this.Id == other.Id;
+    }
 
-            if (ReferenceEquals(lhs, null) || ReferenceEquals(rhs, null))
-            {
-                return false;
-            }
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
 
-            return lhs.Equals(rhs);
-        }
-
-        /// <summary>
-        /// Implements the operator !=.
-        /// </summary>
-        /// <param name="lhs">The LHS.</param>
-        /// <param name="rhs">The RHS.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static bool operator !=(State? lhs, State? rhs)
-        {
-            return !(lhs == rhs);
-        }
-
-        /// <inheritdoc/>
-        public override bool Equals(object? obj) => this.Equals(obj as State);
-
-        /// <inheritdoc />
-        public bool Equals(State? other)
-        {
-            if (other is null)
-            {
-                return false;
-            }
-
-            return this.Id == other.Id;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <summary>
-        /// Returns the name of the state.
-        /// </summary>
-        /// <returns>The name of the state.</returns>
-        public override string ToString()
-        {
-            return this.Name;
-        }
+    /// <summary>
+    /// Returns the name of the state.
+    /// </summary>
+    /// <returns>The name of the state.</returns>
+    public override string ToString()
+    {
+        return this.Name;
     }
 }

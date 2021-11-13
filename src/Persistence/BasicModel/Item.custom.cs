@@ -2,23 +2,22 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+/// <summary>
+/// Extended <see cref="Item"/> to implement <see cref="CloneItemOptionLink"/>.
+/// </summary>
+public partial class Item
 {
     /// <summary>
-    /// Extended <see cref="Item"/> to implement <see cref="CloneItemOptionLink"/>.
+    /// Clones the item option link.
     /// </summary>
-    public partial class Item
+    /// <param name="link">The link.</param>
+    /// <returns>The cloned item option link.</returns>
+    protected override DataModel.Entities.ItemOptionLink CloneItemOptionLink(DataModel.Entities.ItemOptionLink link)
     {
-        /// <summary>
-        /// Clones the item option link.
-        /// </summary>
-        /// <param name="link">The link.</param>
-        /// <returns>The cloned item option link.</returns>
-        protected override DataModel.Entities.ItemOptionLink CloneItemOptionLink(DataModel.Entities.ItemOptionLink link)
-        {
-            var persistentLink = new ItemOptionLink();
-            persistentLink.AssignValues(link);
-            return persistentLink;
-        }
+        var persistentLink = new ItemOptionLink();
+        persistentLink.AssignValues(link);
+        return persistentLink;
     }
 }

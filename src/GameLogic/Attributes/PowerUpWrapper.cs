@@ -2,94 +2,90 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.Attributes
+namespace MUnique.OpenMU.GameLogic.Attributes;
+
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
+
+/// <summary>
+/// A wrapper class which adapts power ups to <see cref="IElement"/> instances.
+/// </summary>
+public sealed class PowerUpWrapper : IElement, IDisposable
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.AttributeSystem;
-    using MUnique.OpenMU.DataModel;
-    using MUnique.OpenMU.DataModel.Attributes;
+    private readonly IElement _element;
+
+    private ComposableAttribute? _parentAttribute;
 
     /// <summary>
-    /// A wrapper class which adapts power ups to <see cref="IElement"/> instances.
+    /// Initializes a new instance of the <see cref="PowerUpWrapper"/> class.
     /// </summary>
-    public sealed class PowerUpWrapper : IElement, IDisposable
+    /// <param name="element">The element.</param>
+    /// <param name="targetAttribute">The target attribute.</param>
+    /// <param name="attributeHolder">The attribute holder.</param>
+    public PowerUpWrapper(IElement element, AttributeDefinition targetAttribute, AttributeSystem attributeHolder)
     {
-        private readonly IElement element;
-
-        private ComposableAttribute? parentAttribute;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PowerUpWrapper"/> class.
-        /// </summary>
-        /// <param name="element">The element.</param>
-        /// <param name="targetAttribute">The target attribute.</param>
-        /// <param name="attributeHolder">The attribute holder.</param>
-        public PowerUpWrapper(IElement element, AttributeDefinition targetAttribute, AttributeSystem attributeHolder)
+        this._parentAttribute = attributeHolder.GetComposableAttribute(targetAttribute);
+        if (this._parentAttribute is null)
         {
-            this.parentAttribute = attributeHolder.GetComposableAttribute(targetAttribute);
-            if (this.parentAttribute is null)
-            {
-                throw new ArgumentException($"Target attribute [{targetAttribute}] is not composable", nameof(targetAttribute));
-            }
-
-            this.element = element;
-            this.parentAttribute.AddElement(this);
-            this.element.ValueChanged += this.OnValueChanged;
+            throw new ArgumentException($"Target attribute [{targetAttribute}] is not composable", nameof(targetAttribute));
         }
 
-        /// <inheritdoc/>
-        public event EventHandler? ValueChanged;
+        this._element = element;
+        this._parentAttribute.AddElement(this);
+        this._element.ValueChanged += this.OnValueChanged;
+    }
 
-        /// <inheritdoc/>
-        public float Value => this.element.Value;
+    /// <inheritdoc/>
+    public event EventHandler? ValueChanged;
 
-        /// <inheritdoc/>
-        public AggregateType AggregateType => this.element.AggregateType;
+    /// <inheritdoc/>
+    public float Value => this._element.Value;
 
-        /// <summary>
-        /// Creates elements by a <see cref="PowerUpDefinition"/>.
-        /// </summary>
-        /// <param name="powerUpDef">The power up definition.</param>
-        /// <param name="attributeHolder">The attribute holder.</param>
-        /// <returns>The elements which represent the power-up.</returns>
-        public static IEnumerable<PowerUpWrapper> CreateByPowerUpDefinition(PowerUpDefinition powerUpDef, AttributeSystem attributeHolder)
+    /// <inheritdoc/>
+    public AggregateType AggregateType => this._element.AggregateType;
+
+    /// <summary>
+    /// Creates elements by a <see cref="PowerUpDefinition"/>.
+    /// </summary>
+    /// <param name="powerUpDef">The power up definition.</param>
+    /// <param name="attributeHolder">The attribute holder.</param>
+    /// <returns>The elements which represent the power-up.</returns>
+    public static IEnumerable<PowerUpWrapper> CreateByPowerUpDefinition(PowerUpDefinition powerUpDef, AttributeSystem attributeHolder)
+    {
+        if (powerUpDef.Boost?.ConstantValue != null)
         {
-            if (powerUpDef.Boost?.ConstantValue != null)
+            yield return new PowerUpWrapper(
+                powerUpDef.Boost.ConstantValue,
+                powerUpDef.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDef, nameof(PowerUpDefinition.TargetAttribute)),
+                attributeHolder);
+        }
+
+        if (powerUpDef.Boost?.RelatedValues != null)
+        {
+            foreach (var relationship in powerUpDef.Boost.RelatedValues)
             {
                 yield return new PowerUpWrapper(
-                    powerUpDef.Boost.ConstantValue,
+                    attributeHolder.CreateRelatedAttribute(relationship, attributeHolder),
                     powerUpDef.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDef, nameof(PowerUpDefinition.TargetAttribute)),
                     attributeHolder);
             }
-
-            if (powerUpDef.Boost?.RelatedValues != null)
-            {
-                foreach (var relationship in powerUpDef.Boost.RelatedValues)
-                {
-                    yield return new PowerUpWrapper(
-                        attributeHolder.CreateRelatedAttribute(relationship, attributeHolder),
-                        powerUpDef.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDef, nameof(PowerUpDefinition.TargetAttribute)),
-                        attributeHolder);
-                }
-            }
         }
+    }
 
-        /// <inheritdoc/>
-        public void Dispose()
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (this._parentAttribute != null)
         {
-            if (this.parentAttribute != null)
-            {
-                this.parentAttribute.RemoveElement(this);
-                this.ValueChanged = null;
-                this.parentAttribute = null;
-                this.element.ValueChanged -= this.OnValueChanged;
-            }
+            this._parentAttribute.RemoveElement(this);
+            this.ValueChanged = null;
+            this._parentAttribute = null;
+            this._element.ValueChanged -= this.OnValueChanged;
         }
+    }
 
-        private void OnValueChanged(object? sender, EventArgs eventArgs)
-        {
-            this.ValueChanged?.Invoke(sender, eventArgs);
-        }
+    private void OnValueChanged(object? sender, EventArgs eventArgs)
+    {
+        this.ValueChanged?.Invoke(sender, eventArgs);
     }
 }

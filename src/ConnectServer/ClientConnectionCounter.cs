@@ -2,72 +2,70 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.ConnectServer
+namespace MUnique.OpenMU.ConnectServer;
+
+using System.Net;
+
+/// <summary>
+/// Counts the connections per ip address.
+/// </summary>
+internal class ClientConnectionCounter
 {
-    using System.Collections.Generic;
-    using System.Net;
+    private readonly IDictionary<IPAddress, int> _connections = new Dictionary<IPAddress, int>();
+    private readonly object _syncRoot = new ();
 
     /// <summary>
-    /// Counts the connections per ip address.
+    /// Gets the connection count of the specified ip address.
     /// </summary>
-    internal class ClientConnectionCounter
+    /// <param name="ipAddress">The ip address.</param>
+    /// <returns>The counted connections of the ip address.</returns>
+    public int GetConnectionCount(IPAddress ipAddress)
     {
-        private readonly IDictionary<IPAddress, int> connections = new Dictionary<IPAddress, int>();
-        private readonly object syncRoot = new ();
-
-        /// <summary>
-        /// Gets the connection count of the specified ip address.
-        /// </summary>
-        /// <param name="ipAddress">The ip address.</param>
-        /// <returns>The counted connections of the ip address.</returns>
-        public int GetConnectionCount(IPAddress ipAddress)
+        int count;
+        lock (this._syncRoot)
         {
-            int count;
-            lock (this.syncRoot)
-            {
-                this.connections.TryGetValue(ipAddress, out count);
-            }
-
-            return count;
+            this._connections.TryGetValue(ipAddress, out count);
         }
 
-        /// <summary>
-        /// Adds the connection and increases its count for the specified ip address.
-        /// </summary>
-        /// <param name="ipAddress">The ip address.</param>
-        public void AddConnection(IPAddress ipAddress)
+        return count;
+    }
+
+    /// <summary>
+    /// Adds the connection and increases its count for the specified ip address.
+    /// </summary>
+    /// <param name="ipAddress">The ip address.</param>
+    public void AddConnection(IPAddress ipAddress)
+    {
+        lock (this._syncRoot)
         {
-            lock (this.syncRoot)
+            if (this._connections.ContainsKey(ipAddress))
             {
-                if (this.connections.ContainsKey(ipAddress))
-                {
-                    this.connections[ipAddress]++;
-                }
-                else
-                {
-                    this.connections.Add(ipAddress, 1);
-                }
+                this._connections[ipAddress]++;
+            }
+            else
+            {
+                this._connections.Add(ipAddress, 1);
             }
         }
+    }
 
-        /// <summary>
-        /// Removes the connection and decreases its count for the specified ip address.
-        /// </summary>
-        /// <param name="ipAddress">The ip address.</param>
-        public void RemoveConnection(IPAddress ipAddress)
+    /// <summary>
+    /// Removes the connection and decreases its count for the specified ip address.
+    /// </summary>
+    /// <param name="ipAddress">The ip address.</param>
+    public void RemoveConnection(IPAddress ipAddress)
+    {
+        lock (this._syncRoot)
         {
-            lock (this.syncRoot)
+            if (!this._connections.ContainsKey(ipAddress))
             {
-                if (!this.connections.ContainsKey(ipAddress))
-                {
-                    return;
-                }
+                return;
+            }
 
-                this.connections[ipAddress]--;
-                if (this.connections[ipAddress] == 0)
-                {
-                    this.connections.Remove(ipAddress);
-                }
+            this._connections[ipAddress]--;
+            if (this._connections[ipAddress] == 0)
+            {
+                this._connections.Remove(ipAddress);
             }
         }
     }

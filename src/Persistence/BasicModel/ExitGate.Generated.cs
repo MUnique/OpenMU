@@ -10,63 +10,60 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="ExitGate"/>.
+/// </summary>
+public partial class ExitGate : MUnique.OpenMU.DataModel.Configuration.ExitGate, IIdentifiable, IConvertibleTo<ExitGate>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="ExitGate"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class ExitGate : MUnique.OpenMU.DataModel.Configuration.ExitGate, IIdentifiable, IConvertibleTo<ExitGate>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="Map" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("map")]
+    [System.Text.Json.Serialization.JsonPropertyName("map")]
+    public GameMapDefinition RawMap
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="Map" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("map")]
-        [System.Text.Json.Serialization.JsonPropertyName("map")]
-        public GameMapDefinition RawMap
-        {
-            get => base.Map as GameMapDefinition;
-            set => base.Map = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition Map
-        {
-            get => base.Map;
-            set => base.Map = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public ExitGate Convert() => this;
+        get => base.Map as GameMapDefinition;
+        set => base.Map = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition Map
+    {
+        get => base.Map;
+        set => base.Map = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public ExitGate Convert() => this;
 }

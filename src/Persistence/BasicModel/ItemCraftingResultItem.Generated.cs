@@ -10,63 +10,60 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="ItemCraftingResultItem"/>.
+/// </summary>
+public partial class ItemCraftingResultItem : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem, IIdentifiable, IConvertibleTo<ItemCraftingResultItem>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="ItemCraftingResultItem"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class ItemCraftingResultItem : MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem, IIdentifiable, IConvertibleTo<ItemCraftingResultItem>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw object of <see cref="ItemDefinition" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("itemDefinition")]
+    [System.Text.Json.Serialization.JsonPropertyName("itemDefinition")]
+    public ItemDefinition RawItemDefinition
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw object of <see cref="ItemDefinition" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("itemDefinition")]
-        [System.Text.Json.Serialization.JsonPropertyName("itemDefinition")]
-        public ItemDefinition RawItemDefinition
-        {
-            get => base.ItemDefinition as ItemDefinition;
-            set => base.ItemDefinition = value;
-        }
-
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
-        {
-            get => base.ItemDefinition;
-            set => base.ItemDefinition = value;
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public ItemCraftingResultItem Convert() => this;
+        get => base.ItemDefinition as ItemDefinition;
+        set => base.ItemDefinition = value;
     }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
+    {
+        get => base.ItemDefinition;
+        set => base.ItemDefinition = value;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public ItemCraftingResultItem Convert() => this;
 }

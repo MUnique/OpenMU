@@ -10,40 +10,37 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="ItemOptionType"/>.
+/// </summary>
+public partial class ItemOptionType : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, IIdentifiable, IConvertibleTo<ItemOptionType>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
-    /// <summary>
-    /// A plain implementation of <see cref="ItemOptionType"/>.
-    /// </summary>
-    public partial class ItemOptionType : MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType, IIdentifiable, IConvertibleTo<ItemOptionType>
+    
+    
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
     {
-        
-        
-        
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
         {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
+            return baseObject.Id == this.Id;
         }
 
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public ItemOptionType Convert() => this;
+        return base.Equals(obj);
     }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public ItemOptionType Convert() => this;
 }

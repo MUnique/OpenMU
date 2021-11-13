@@ -2,46 +2,43 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.LoginServer
+namespace MUnique.OpenMU.LoginServer;
+
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// The login server which keeps track of connected accounts.
+/// </summary>
+public class LoginServer : ILoginServer
 {
-    using System.Collections.Generic;
+    private readonly IDictionary<string, byte> _connectedAccounts = new Dictionary<string, byte>();
 
-    using MUnique.OpenMU.Interfaces;
+    private readonly object _syncRoot = new ();
 
-    /// <summary>
-    /// The login server which keeps track of connected accounts.
-    /// </summary>
-    public class LoginServer : ILoginServer
+    /// <inheritdoc/>
+    public bool TryLogin(string accountName, byte serverId)
     {
-        private readonly IDictionary<string, byte> connectedAccounts = new Dictionary<string, byte>();
-
-        private readonly object syncRoot = new ();
-
-        /// <inheritdoc/>
-        public bool TryLogin(string accountName, byte serverId)
+        lock (this._syncRoot)
         {
-            lock (this.syncRoot)
+            if (this._connectedAccounts.ContainsKey(accountName))
             {
-                if (this.connectedAccounts.ContainsKey(accountName))
-                {
-                    return false;
-                }
-
-                this.connectedAccounts.Add(accountName, serverId);
+                return false;
             }
 
-            return true;
+            this._connectedAccounts.Add(accountName, serverId);
         }
 
-        /// <inheritdoc/>
-        public void LogOff(string accountName, byte serverId)
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public void LogOff(string accountName, byte serverId)
+    {
+        if (accountName != null)
         {
-            if (accountName != null)
+            lock (this._syncRoot)
             {
-                lock (this.syncRoot)
-                {
-                    this.connectedAccounts.Remove(accountName);
-                }
+                this._connectedAccounts.Remove(accountName);
             }
         }
     }

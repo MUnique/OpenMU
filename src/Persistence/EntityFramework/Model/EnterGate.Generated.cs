@@ -10,71 +10,68 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.EnterGate"/>.
+/// </summary>
+[Table(nameof(EnterGate), Schema = SchemaNames.Configuration)]
+internal partial class EnterGate : MUnique.OpenMU.DataModel.Configuration.EnterGate, IIdentifiable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
+    
     
     /// <summary>
-    /// The Entity Framework Core implementation of <see cref="MUnique.OpenMU.DataModel.Configuration.EnterGate"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    [Table(nameof(EnterGate), Schema = SchemaNames.Configuration)]
-    internal partial class EnterGate : MUnique.OpenMU.DataModel.Configuration.EnterGate, IIdentifiable
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="TargetGate"/>.
+    /// </summary>
+    public Guid? TargetGateId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="TargetGate" />.
+    /// </summary>
+    [ForeignKey(nameof(TargetGateId))]
+    public ExitGate RawTargetGate
     {
-        
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the identifier of <see cref="TargetGate"/>.
-        /// </summary>
-        public Guid? TargetGateId { get; set; }
-
-        /// <summary>
-        /// Gets the raw object of <see cref="TargetGate" />.
-        /// </summary>
-        [ForeignKey(nameof(TargetGateId))]
-        public ExitGate RawTargetGate
-        {
-            get => base.TargetGate as ExitGate;
-            set => base.TargetGate = value;
-        }
-
-        /// <inheritdoc/>
-        [NotMapped]
-        public override MUnique.OpenMU.DataModel.Configuration.ExitGate TargetGate
-        {
-            get => base.TargetGate;set
-            {
-                base.TargetGate = value;
-                this.TargetGateId = this.RawTargetGate?.Id;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        
+        get => base.TargetGate as ExitGate;
+        set => base.TargetGate = value;
     }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.ExitGate TargetGate
+    {
+        get => base.TargetGate;set
+        {
+            base.TargetGate = value;
+            this.TargetGateId = this.RawTargetGate?.Id;
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    
 }

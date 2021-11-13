@@ -10,66 +10,63 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.BasicModel
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using MUnique.OpenMU.Persistence.Json;
+
+/// <summary>
+/// A plain implementation of <see cref="GameServerConfiguration"/>.
+/// </summary>
+public partial class GameServerConfiguration : MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration, IIdentifiable, IConvertibleTo<GameServerConfiguration>
 {
-    using System;
-    using System.Collections.Generic;
-    using MUnique.OpenMU.Persistence.Json;
     
     /// <summary>
-    /// A plain implementation of <see cref="GameServerConfiguration"/>.
+    /// Gets or sets the identifier of this instance.
     /// </summary>
-    public partial class GameServerConfiguration : MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration, IIdentifiable, IConvertibleTo<GameServerConfiguration>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets the raw collection of <see cref="Maps" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("maps")]
+    [System.Text.Json.Serialization.JsonPropertyName("maps")]
+    public ICollection<GameMapDefinition> RawMaps { get; } = new List<GameMapDefinition>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition> Maps
     {
-        
-        /// <summary>
-        /// Gets or sets the identifier of this instance.
-        /// </summary>
-        public Guid Id { get; set; }
-        
-        /// <summary>
-        /// Gets the raw collection of <see cref="Maps" />.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("maps")]
-        [System.Text.Json.Serialization.JsonPropertyName("maps")]
-        public ICollection<GameMapDefinition> RawMaps { get; } = new List<GameMapDefinition>();
-        
-        /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition> Maps
+        get => base.Maps ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition, GameMapDefinition>(this.RawMaps);
+        protected set
         {
-            get => base.Maps ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition, GameMapDefinition>(this.RawMaps);
-            protected set
+            this.Maps.Clear();
+            foreach (var item in value)
             {
-                this.Maps.Clear();
-                foreach (var item in value)
-                {
-                    this.Maps.Add(item);
-                }
+                this.Maps.Add(item);
             }
         }
-
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            var baseObject = obj as IIdentifiable;
-            if (baseObject != null)
-            {
-                return baseObject.Id == this.Id;
-            }
-
-            return base.Equals(obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public GameServerConfiguration Convert() => this;
     }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        var baseObject = obj as IIdentifiable;
+        if (baseObject != null)
+        {
+            return baseObject.Id == this.Id;
+        }
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public GameServerConfiguration Convert() => this;
 }

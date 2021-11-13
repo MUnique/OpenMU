@@ -10,26 +10,23 @@
 
 // ReSharper disable All
 
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof(ItemDefinitionItemOptionDefinition), Schema = SchemaNames.Configuration)]
+internal partial class ItemDefinitionItemOptionDefinition
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using MUnique.OpenMU.Persistence;
-    using MUnique.OpenMU.Persistence.EntityFramework;
+    public Guid ItemDefinitionId { get; set; }
+    public ItemDefinition ItemDefinition { get; set; }
 
-    [Table(nameof(ItemDefinitionItemOptionDefinition), Schema = SchemaNames.Configuration)]
-    internal partial class ItemDefinitionItemOptionDefinition
-    {
-        public Guid ItemDefinitionId { get; set; }
-        public ItemDefinition ItemDefinition { get; set; }
+    public Guid ItemOptionDefinitionId { get; set; }
+    public ItemOptionDefinition ItemOptionDefinition { get; set; }
+}
 
-        public Guid ItemOptionDefinitionId { get; set; }
-        public ItemOptionDefinition ItemOptionDefinition { get; set; }
-    }
-
-    internal partial class ItemDefinition
-    {
-        public ICollection<ItemDefinitionItemOptionDefinition> JoinedPossibleItemOptions { get; } = new EntityFramework.List<ItemDefinitionItemOptionDefinition>();
-    }
+internal partial class ItemDefinition
+{
+    public ICollection<ItemDefinitionItemOptionDefinition> JoinedPossibleItemOptions { get; } = new EntityFramework.List<ItemDefinitionItemOptionDefinition>();
 }

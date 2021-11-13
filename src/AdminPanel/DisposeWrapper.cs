@@ -2,30 +2,27 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.AdminPanel
+namespace MUnique.OpenMU.AdminPanel;
+
+/// <summary>
+/// A wrapper for an <see cref="IDisposable"/> which allows to execute additional code before disposing the target.
+/// </summary>
+public sealed class DisposeWrapper : IDisposable
 {
-    using System;
+    private readonly Action _disposeAction;
 
     /// <summary>
-    /// A wrapper for an <see cref="IDisposable"/> which allows to execute additional code before disposing the target.
+    /// Initializes a new instance of the <see cref="DisposeWrapper"/> class.
     /// </summary>
-    public sealed class DisposeWrapper : IDisposable
+    /// <param name="disposeAction">The dispose action.</param>
+    public DisposeWrapper(Action disposeAction)
     {
-        private readonly Action disposeAction;
+        this._disposeAction = disposeAction;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DisposeWrapper"/> class.
-        /// </summary>
-        /// <param name="disposeAction">The dispose action.</param>
-        public DisposeWrapper(Action disposeAction)
-        {
-            this.disposeAction = disposeAction;
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            this.disposeAction();
-        }
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this._disposeAction();
     }
 }

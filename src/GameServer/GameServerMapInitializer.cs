@@ -2,41 +2,38 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameServer
+namespace MUnique.OpenMU.GameServer;
+
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
+
+/// <summary>
+/// A game map initializer which takes aspects of the <see cref="GameServer"/> into account.
+/// </summary>
+internal class GameServerMapInitializer : MapInitializer
 {
-    using System;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using MUnique.OpenMU.DataModel.Configuration;
-    using MUnique.OpenMU.GameLogic;
+    private readonly GameServerDefinition _serverDefinition;
 
     /// <summary>
-    /// A game map initializer which takes aspects of the <see cref="GameServer"/> into account.
+    /// Initializes a new instance of the <see cref="GameServerMapInitializer" /> class.
     /// </summary>
-    internal class GameServerMapInitializer : MapInitializer
+    /// <param name="serverDefinition">The server definition.</param>
+    /// <param name="logger">The logger.</param>
+    /// <param name="dropGenerator">The drop generator.</param>
+    public GameServerMapInitializer(GameServerDefinition serverDefinition, ILogger<GameServerMapInitializer> logger, IDropGenerator dropGenerator)
+        : base(serverDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"), logger, dropGenerator)
     {
-        private readonly GameServerDefinition serverDefinition;
+        this._serverDefinition = serverDefinition;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameServerMapInitializer" /> class.
-        /// </summary>
-        /// <param name="serverDefinition">The server definition.</param>
-        /// <param name="logger">The logger.</param>
-        /// <param name="dropGenerator">The drop generator.</param>
-        public GameServerMapInitializer(GameServerDefinition serverDefinition, ILogger<GameServerMapInitializer> logger, IDropGenerator dropGenerator)
-            : base(serverDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"), logger, dropGenerator)
-        {
-            this.serverDefinition = serverDefinition;
-        }
-
-        /// <summary>
-        /// Gets the map definition by searching for it at the <see cref="GameServerConfiguration"/>.
-        /// </summary>
-        /// <param name="mapNumber">The map number.</param>
-        /// <returns>The game map definition.</returns>
-        protected override GameMapDefinition? GetMapDefinition(ushort mapNumber)
-        {
-            return this.serverDefinition.ServerConfiguration?.Maps.FirstOrDefault(map => map.Number == mapNumber);
-        }
+    /// <summary>
+    /// Gets the map definition by searching for it at the <see cref="GameServerConfiguration"/>.
+    /// </summary>
+    /// <param name="mapNumber">The map number.</param>
+    /// <returns>The game map definition.</returns>
+    protected override GameMapDefinition? GetMapDefinition(ushort mapNumber)
+    {
+        return this._serverDefinition.ServerConfiguration?.Maps.FirstOrDefault(map => map.Number == mapNumber);
     }
 }
