@@ -14,7 +14,7 @@ public class FriendServer : IFriendServer
 {
     private readonly IPersistenceContextProvider _persistenceContextProvider;
 
-    private readonly IChatServer? _chatServer;
+    private readonly IChatServer _chatServer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FriendServer" /> class.
@@ -22,7 +22,7 @@ public class FriendServer : IFriendServer
     /// <param name="gameServers">The game servers.</param>
     /// <param name="chatServer">The chat server.</param>
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
-    public FriendServer(IDictionary<int, IGameServer> gameServers, IChatServer? chatServer, IPersistenceContextProvider persistenceContextProvider)
+    public FriendServer(IDictionary<int, IGameServer> gameServers, IChatServer chatServer, IPersistenceContextProvider persistenceContextProvider)
     {
         this._chatServer = chatServer;
         this.GameServers = gameServers;
@@ -39,9 +39,6 @@ public class FriendServer : IFriendServer
     /// Gets the server id which represents being invisible (=offline to other players).
     /// </summary>
     public static int InvisibleServerId { get; } = (int)SpecialServerId.Invisible;
-
-    /// <inheritdoc/>
-    public string ChatServerIp => this._chatServer?.IpAddress ?? string.Empty;
 
     /// <summary>
     /// Gets the online friends dictionary. The key is the name of the character of the corresponding OnlineFriend object.
@@ -132,49 +129,48 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc/>
-    public ChatServerAuthenticationInfo? CreateChatRoom(string playerName, string friendName)
+    public void CreateChatRoom(string playerName, string friendName)
     {
-        if (this._chatServer is null)
-        {
-            return null;
-        }
-
         if (!this.OnlineFriends.TryGetValue(playerName, out var player))
         {
-            return null;
+            return;
         }
 
         if (!this.OnlineFriends.TryGetValue(friendName, out var friend))
         {
-            return null;
+            return;
         }
 
         if (!friend.HasSubscriber(player))
         {
-            return null;
+            return;
+        }
+
+        if (!this.GameServers.TryGetValue(player.ServerId, out var gameServerOfPlayer))
+        {
+            return;
         }
 
         if (!this.GameServers.TryGetValue(friend.ServerId, out var gameServerOfFriend))
         {
-            return null;
+            return;
         }
 
+        // TODO: Remove direct dependency to the chat server.
+        //       Instead of calling the chat server directly here, we could publish a request
+        //       to create the chat room to an pub/sub-system. An available chat server could then
+        //       process the request and notify the corresponding game servers.
         var roomId = this._chatServer.CreateChatRoom();
         var authenticationInfoPlayer = this._chatServer.RegisterClient(roomId, playerName);
+        gameServerOfPlayer.ChatRoomCreated(authenticationInfoPlayer, friendName);
+
         var authenticationInfoFriend = this._chatServer.RegisterClient(roomId, friendName);
         gameServerOfFriend.ChatRoomCreated(authenticationInfoFriend, playerName);
-
-        return authenticationInfoPlayer;
     }
 
     /// <inheritdoc />
     public bool InviteFriendToChatRoom(string playerName, string friendName, ushort roomId)
     {
-        if (this._chatServer is null)
-        {
-            return false;
-        }
-
         if (!this.OnlineFriends.TryGetValue(playerName, out var player))
         {
             return false;

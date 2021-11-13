@@ -126,7 +126,7 @@ public sealed class ChatServer : IChatServer, IDisposable
         }
 
         var index = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(index, roomId, clientName, this.GetRandomAuthenticationToken(index));
+        var authenticationInfo = new ChatServerAuthenticationInfo(index, roomId, clientName, this.IpAddress, this.GetRandomAuthenticationToken(index));
         room.RegisterClient(authenticationInfo);
         return authenticationInfo;
     }

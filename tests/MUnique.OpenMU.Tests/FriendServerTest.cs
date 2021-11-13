@@ -41,7 +41,7 @@ public sealed class FriendServerTest
             { this._gameServer2.Object.Id, this._gameServer2.Object },
         };
         this._persistenceContextProvider = new InMemoryPersistenceContextProvider();
-        this._friendServer = new FriendServer.FriendServer(this._gameServers, null, this._persistenceContextProvider);
+        this._friendServer = new FriendServer.FriendServer(this._gameServers, new Mock<IChatServer>().Object, this._persistenceContextProvider);
         var context = this._persistenceContextProvider.CreateNewContext();
         this._player1 = context.CreateNew<Character>();
         this._player1.Name = "player1";

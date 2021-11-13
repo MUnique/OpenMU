@@ -28,7 +28,6 @@ public class ChatRoomCreatedPlugIn : IChatRoomCreatedPlugIn
     /// <inheritdoc/>
     public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success)
     {
-        var chatServerIp = this._player.GameServerContext.FriendServer.ChatServerIp;
-        this._player.Connection?.SendChatRoomConnectionInfo(chatServerIp, authenticationInfo.RoomId, uint.Parse(authenticationInfo.AuthenticationToken), friendName, success);
+        this._player.Connection?.SendChatRoomConnectionInfo(authenticationInfo.HostAddress, authenticationInfo.RoomId, uint.Parse(authenticationInfo.AuthenticationToken), friendName, success);
     }
 }

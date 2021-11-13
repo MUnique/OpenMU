@@ -15,6 +15,8 @@ using MUnique.OpenMU.Interfaces;
 [TestFixture]
 public class ChatRoomTests
 {
+    private const string ChatServerHost = "";
+
     /// <summary>
     /// Tests if a new room returns the specified room id, which was given to the constructor.
     /// </summary>
@@ -35,7 +37,7 @@ public class ChatRoomTests
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId - 1, "Bob", "123456789");
+        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId - 1, "Bob", ChatServerHost, "123456789");
         Assert.Throws<ArgumentException>(() => room.RegisterClient(authenticationInfo));
     }
 
@@ -48,7 +50,7 @@ public class ChatRoomTests
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
+        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         Assert.DoesNotThrow(() => room.RegisterClient(authenticationInfo));
     }
 
@@ -61,7 +63,7 @@ public class ChatRoomTests
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
+        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
         Assert.Throws<ArgumentNullException>(() => room.TryJoin(null!));
     }
@@ -75,7 +77,7 @@ public class ChatRoomTests
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
+        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         Assert.That(room.TryJoin(chatClient.Object), Is.False);
@@ -90,7 +92,7 @@ public class ChatRoomTests
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
+        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns("987654321");
@@ -106,7 +108,7 @@ public class ChatRoomTests
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
+        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
@@ -122,7 +124,7 @@ public class ChatRoomTests
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
+        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
@@ -139,7 +141,7 @@ public class ChatRoomTests
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", "123456789");
+        var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
@@ -158,8 +160,8 @@ public class ChatRoomTests
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId0 = room.GetNextClientIndex();
         var clientId1 = room.GetNextClientIndex();
-        var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", "99999");
-        var authenticationInfo1 = new ChatServerAuthenticationInfo(clientId1, roomId, "Bob", "123456789");
+        var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", ChatServerHost, "99999");
+        var authenticationInfo1 = new ChatServerAuthenticationInfo(clientId1, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo0);
         room.RegisterClient(authenticationInfo1);
 
@@ -186,8 +188,8 @@ public class ChatRoomTests
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId0 = room.GetNextClientIndex();
         var clientId1 = room.GetNextClientIndex();
-        var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", "99999");
-        var authenticationInfo1 = new ChatServerAuthenticationInfo(clientId1, roomId, "Bob", "123456789");
+        var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", ChatServerHost, "99999");
+        var authenticationInfo1 = new ChatServerAuthenticationInfo(clientId1, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo0);
         room.RegisterClient(authenticationInfo1);
 
@@ -217,8 +219,8 @@ public class ChatRoomTests
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId0 = room.GetNextClientIndex();
         var clientId1 = room.GetNextClientIndex();
-        var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", "99999");
-        var authenticationInfo1 = new ChatServerAuthenticationInfo(clientId1, roomId, "Bob", "123456789");
+        var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", ChatServerHost, "99999");
+        var authenticationInfo1 = new ChatServerAuthenticationInfo(clientId1, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo0);
         room.RegisterClient(authenticationInfo1);
 
@@ -246,8 +248,8 @@ public class ChatRoomTests
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId0 = room.GetNextClientIndex();
         var clientId1 = room.GetNextClientIndex();
-        var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", "99999");
-        var authenticationInfo1 = new ChatServerAuthenticationInfo(clientId1, roomId, "Bob", "123456789");
+        var authenticationInfo0 = new ChatServerAuthenticationInfo(clientId0, roomId, "Alice", ChatServerHost, "99999");
+        var authenticationInfo1 = new ChatServerAuthenticationInfo(clientId1, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo0);
         room.RegisterClient(authenticationInfo1);
 

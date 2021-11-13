@@ -26,11 +26,7 @@ public class ChatRequestAction
 
         var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
 
-        var authenticationInfo = friendServer?.CreateChatRoom(character.Name, friendName);
-        if (authenticationInfo != null)
-        {
-            player.ViewPlugIns.GetPlugIn<IChatRoomCreatedPlugIn>()?.ChatRoomCreated(authenticationInfo, friendName, true);
-        }
+        friendServer?.CreateChatRoom(character.Name, friendName);
     }
 
     /// <summary>

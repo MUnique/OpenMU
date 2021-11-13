@@ -17,13 +17,15 @@ public class ChatServerAuthenticationInfo
     /// <param name="index">The index of the client in the room.</param>
     /// <param name="roomId">The room identifier.</param>
     /// <param name="clientName">Name of the client.</param>
+    /// <param name="hostAddress">The address of the chat server which hosts the chat room.</param>
     /// <param name="authenticationToken">The authentication token.</param>
-    public ChatServerAuthenticationInfo(byte index, ushort roomId, string clientName, string authenticationToken)
+    public ChatServerAuthenticationInfo(byte index, ushort roomId, string clientName, string hostAddress, string authenticationToken)
     {
         this.Index = index;
         this.RoomId = roomId;
         this.ClientName = clientName;
         this.AuthenticationToken = authenticationToken;
+        this.HostAddress = hostAddress;
         this.AuthenticationRequiredUntil = DateTime.Now.AddSeconds(30);
     }
 
@@ -46,6 +48,11 @@ public class ChatServerAuthenticationInfo
     /// Gets the authentication token. It's like a random passwort which the client has to provide to enter the chat room.
     /// </summary>
     public string AuthenticationToken { get; }
+
+    /// <summary>
+    /// Gets the (IP-)address of the chat server which hosts the chat room.
+    /// </summary>
+    public string HostAddress { get; }
 
     /// <summary>
     /// Gets the datetime until a authentication of at least two clients is required. If this time passed by, the chat room will be closed automatically.

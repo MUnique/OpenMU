@@ -28,12 +28,6 @@ public enum SpecialServerId : byte
 public interface IFriendServer
 {
     /// <summary>
-    /// Gets the chat server ip.
-    /// </summary>
-    /// <returns>The chat server ip.</returns>
-    string ChatServerIp { get; }
-
-    /// <summary>
     /// Forwards the letter.
     /// </summary>
     /// <param name="letter">The letter.</param>
@@ -46,14 +40,6 @@ public interface IFriendServer
     /// <param name="friendName">The character name of the requester.</param>
     /// <param name="accepted">Indicating whether the request got accepted.</param>
     void FriendResponse(string characterName, string friendName, bool accepted);
-
-    /// <summary>
-    /// Creates a new chat room.
-    /// </summary>
-    /// <param name="playerName">Name of the player who is creating the chat room.</param>
-    /// <param name="friendName">Name of the friend who should be invited to the chat room.</param>
-    /// <returns>The authentication information for the <paramref name="playerName"/>.</returns>
-    ChatServerAuthenticationInfo? CreateChatRoom(string playerName, string friendName);
 
     /// <summary>
     /// Gets the friend list of a character.
@@ -91,6 +77,13 @@ public interface IFriendServer
     /// <param name="characterId">Character id.</param>
     /// <returns>The character names of all open friend requests.</returns>
     IEnumerable<string> GetOpenFriendRequests(Guid characterId);
+
+    /// <summary>
+    /// Creates a new chat room.
+    /// </summary>
+    /// <param name="playerName">Name of the player who is creating the chat room.</param>
+    /// <param name="friendName">Name of the friend who should be invited to the chat room.</param>
+    void CreateChatRoom(string playerName, string friendName);
 
     /// <summary>
     /// Invites a friend to an existing chat room.

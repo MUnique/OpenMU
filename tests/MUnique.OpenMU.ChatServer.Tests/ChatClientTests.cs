@@ -15,6 +15,8 @@ using MUnique.OpenMU.Network;
 [TestFixture]
 public class ChatClientTests
 {
+    private const string ChatServerHost = "";
+
     /// <summary>
     /// Tests if the client joined the room when the authentication was successful.
     /// </summary>
@@ -28,7 +30,7 @@ public class ChatClientTests
         var duplexPipe = new DuplexPipe();
         var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
-        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
 
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
         await duplexPipe.ReceivePipe.Writer.WriteAsync(authenticationPacket);
@@ -50,7 +52,7 @@ public class ChatClientTests
         var duplexPipe = new DuplexPipe();
         var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
-        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450674"));
+        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450674"));
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
         await duplexPipe.ReceivePipe.Writer.WriteAsync(authenticationPacket);
         await duplexPipe.ReceivePipe.Writer.FlushAsync();
@@ -69,7 +71,7 @@ public class ChatClientTests
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();
         var room = manager.GetChatRoom(roomId);
-        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
         var duplexPipe1 = new DuplexPipe();
         var connection1 = new Connection(duplexPipe1, null, null, new NullLogger<Connection>());
@@ -106,7 +108,7 @@ public class ChatClientTests
         var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
 
-        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
         await duplexPipe.ReceivePipe.Writer.WriteAsync(authenticationPacket);
         await duplexPipe.ReceivePipe.Writer.FlushAsync();
@@ -128,7 +130,7 @@ public class ChatClientTests
         var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
 
-        var authInfo = new ChatServerAuthenticationInfo(3, roomId, "Bob", "128450673");
+        var authInfo = new ChatServerAuthenticationInfo(3, roomId, "Bob", ChatServerHost, "128450673");
         room!.RegisterClient(authInfo);
 
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
@@ -169,7 +171,7 @@ public class ChatClientTests
         var duplexPipe = new DuplexPipe();
         var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
-        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
+        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
 
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
         duplexPipe.ReceivePipe.Writer.Write(authenticationPacket);
@@ -195,8 +197,8 @@ public class ChatClientTests
         var duplexPipe1 = new DuplexPipe();
         var connection1 = new Connection(duplexPipe1, null, null, new NullLogger<Connection>());
         var client1 = new ChatClient(connection1, manager, new NullLogger<ChatClient>());
-        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
-        room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
+        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
+        room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", ChatServerHost, "94371960"));
 
         var authenticationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
         duplexPipe1.ReceivePipe.Writer.Write(authenticationPacket1);
@@ -236,8 +238,8 @@ public class ChatClientTests
         var duplexPipe1 = new DuplexPipe();
         var connection1 = new Connection(duplexPipe1, null, null, new NullLogger<Connection>());
         var client1 = new ChatClient(connection1, manager, new NullLogger<ChatClient>());
-        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
-        room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
+        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
+        room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", ChatServerHost, "94371960"));
 
         var authenticationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
         await duplexPipe1.ReceivePipe.Writer.WriteAsync(authenticationPacket1);
@@ -276,8 +278,8 @@ public class ChatClientTests
         var room = manager.GetChatRoom(roomId);
         var bobsPipe = new DuplexPipe();
         var bobsClient = new ChatClient(new Connection(bobsPipe, null, null, new NullLogger<Connection>()), manager, new NullLogger<ChatClient>());
-        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", "128450673"));
-        room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", "94371960"));
+        room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
+        room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", ChatServerHost, "94371960"));
 
         var bobsAuthPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
         await bobsPipe.ReceivePipe.Writer.WriteAsync(bobsAuthPacket);
