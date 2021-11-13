@@ -141,7 +141,7 @@ public class ComposableAttributeTests
         this._composableAttribute.AddElement(element);
 
         bool eventCalled = false;
-        this._composableAttribute.ValueChanged += (sender, e) => eventCalled = true;
+        this._composableAttribute.ValueChanged += (_, _) => eventCalled = true;
         this._composableAttribute.RemoveElement(element);
         Assert.That(eventCalled, Is.True);
     }
