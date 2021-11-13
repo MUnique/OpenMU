@@ -20,9 +20,10 @@
     public CancellationToken CancellationToken { get; set; }
 
     /// <inheritdoc />
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnParametersSetAsync();
+        await base.OnAfterRenderAsync(firstRender);
+
         if (this.CancellationToken.IsCancellationRequested)
         {
             await this.InvokeAsync(this.Modal.CloseAsync);
