@@ -116,15 +116,15 @@ public class DictionaryAdapter<TKey, TClass, TPersistent> : IDictionary<TKey, TC
     }
 
     /// <inheritdoc/>
-    public bool ContainsKey(TKey key)
-    {
-        return this._innerDictionary.Any(join => object.Equals(join.Key, key));
-    }
-
-    /// <inheritdoc/>
     public bool Remove(TKey key)
     {
         return this._innerDictionary.Remove(key);
+    }
+
+    /// <inheritdoc/>
+    public bool ContainsKey(TKey key)
+    {
+        return this._innerDictionary.Any(join => object.Equals(join.Key, key));
     }
 
     /// <inheritdoc/>

@@ -12,7 +12,7 @@ using MUnique.OpenMU.GameLogic.Views.Party;
 /// <summary>
 /// The party object. Contains a group of players who can chat with each other, and get information about the health status of their party mates.
 /// </summary>
-public sealed class Party : IDisposable
+public sealed class Party : Disposable
 {
     private readonly ILogger<Party> _logger;
 
@@ -167,7 +167,7 @@ public sealed class Party : IDisposable
     }
 
     /// <inheritdoc/>
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
         if (this.PartyList.Count > 0)
         {
@@ -185,8 +185,9 @@ public sealed class Party : IDisposable
             }
 
             this.PartyList.Clear();
-            this._healthUpdate.Dispose();
         }
+
+        this._healthUpdate.Dispose();
     }
 
     private int InternalDistributeExperienceAfterKill(IAttackable killedObject, IObservable killer)
