@@ -7576,8 +7576,8 @@ export class MorphBlendMesh extends Mesh {
 
 export interface WebVRManager {
     enabled: boolean;
-    getDevice(): VRDisplay | null;
-    setDevice(device: VRDisplay | null): void;
+    getDevice(): any | null;
+    setDevice(device: any | null): void;
     setPoseTarget(object: Object3D | null): void;
     getCamera(camera: PerspectiveCamera): PerspectiveCamera | ArrayCamera;
     submitFrame(): void;
