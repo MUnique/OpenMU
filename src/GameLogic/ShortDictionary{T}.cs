@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.DataStructures;
+namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics.CodeAnalysis;
 
@@ -113,6 +113,12 @@ public class ShortDictionary<T> : IDictionary<ushort, T>
     }
 
     /// <inheritdoc/>
+    public void Add(KeyValuePair<ushort, T> item)
+    {
+        this.Add(item.Key, item.Value);
+    }
+
+    /// <inheritdoc/>
     public void Add(ushort key, T value)
     {
         lock (this.SyncRoot)
@@ -150,6 +156,12 @@ public class ShortDictionary<T> : IDictionary<ushort, T>
     }
 
     /// <inheritdoc/>
+    public bool Remove(KeyValuePair<ushort, T> item)
+    {
+        return this.Remove(item.Key);
+    }
+
+    /// <inheritdoc/>
     public bool Remove(ushort key)
     {
         lock (this.SyncRoot)
@@ -180,12 +192,6 @@ public class ShortDictionary<T> : IDictionary<ushort, T>
         }
 
         return false;
-    }
-
-    /// <inheritdoc/>
-    public void Add(KeyValuePair<ushort, T> item)
-    {
-        this.Add(item.Key, item.Value);
     }
 
     /// <inheritdoc/>
@@ -227,12 +233,6 @@ public class ShortDictionary<T> : IDictionary<ushort, T>
             array[j] = new KeyValuePair<ushort, T>(keys[i], values[i]);
             ++j;
         }
-    }
-
-    /// <inheritdoc/>
-    public bool Remove(KeyValuePair<ushort, T> item)
-    {
-        return this.Remove(item.Key);
     }
 
     /// <inheritdoc/>

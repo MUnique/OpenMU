@@ -78,6 +78,19 @@ public class DictionaryAdapter<TKey, TClass, TPersistent> : IDictionary<TKey, TC
     }
 
     /// <inheritdoc/>
+    public void Add(TKey key, TClass value)
+    {
+        if (value is TPersistent persistentValue)
+        {
+            this._innerDictionary.Add(key, persistentValue);
+        }
+        else
+        {
+            throw new ArgumentException($"{nameof(value)} is not of type {typeof(TPersistent)}");
+        }
+    }
+
+    /// <inheritdoc/>
     public void Clear()
     {
         this._innerDictionary.Clear();
@@ -106,19 +119,6 @@ public class DictionaryAdapter<TKey, TClass, TPersistent> : IDictionary<TKey, TC
     public bool ContainsKey(TKey key)
     {
         return this._innerDictionary.Any(join => object.Equals(join.Key, key));
-    }
-
-    /// <inheritdoc/>
-    public void Add(TKey key, TClass value)
-    {
-        if (value is TPersistent persistentValue)
-        {
-            this._innerDictionary.Add(key, persistentValue);
-        }
-        else
-        {
-            throw new ArgumentException($"{nameof(value)} is not of type {typeof(TPersistent)}");
-        }
     }
 
     /// <inheritdoc/>

@@ -19,12 +19,10 @@ internal sealed class Client : IDisposable
     private static readonly byte[] HelloPacket = { 0xC1, 4, 0, 1 };
 
     private readonly ILogger<Client> _logger;
-
-    private readonly object _disposeLock = new ();
     private readonly byte[] _receiveBuffer;
-
     private readonly Timer _onlineTimer;
     private readonly IPacketHandler<Client> _packetHandler;
+
     private bool _disposed;
 
     private DateTime _lastReceive;
@@ -93,15 +91,9 @@ internal sealed class Client : IDisposable
     {
         if (!this._disposed)
         {
-            lock (this._disposeLock)
-            {
-                if (!this._disposed)
-                {
-                    this._onlineTimer.Dispose();
-                    this.Connection.Dispose();
-                    this._disposed = true;
-                }
-            }
+            this._disposed = true;
+            this._onlineTimer.Dispose();
+            this.Connection.Dispose();
         }
     }
 

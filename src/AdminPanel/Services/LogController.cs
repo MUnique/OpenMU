@@ -28,7 +28,7 @@ public class LogController
     {
         this._logService = logService;
         this.UpdateEntries();
-        this._logService.LogEventReceived += (sender, e) =>
+        this._logService.LogEventReceived += (_, e) =>
         {
             if (this.MeetsFilterCriteria(e.Data))
             {

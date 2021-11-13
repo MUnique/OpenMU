@@ -78,7 +78,7 @@ public class ExDbClient
 
         this._connection = new Connection(SocketConnection.Create(socket), null, null, this._loggerFactory.CreateLogger<Connection>());
         this._connection.PacketReceived += this.ExDbPacketReceived;
-        this._connection.Disconnected += (sender, e) => Task.Run(async () => await this.Connect().ConfigureAwait(false));
+        this._connection.Disconnected += (_, _) => Task.Run(async () => await this.Connect().ConfigureAwait(false));
         this.SendHello();
         await this._connection!.BeginReceive();
     }

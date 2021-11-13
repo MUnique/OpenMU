@@ -80,6 +80,12 @@ public class CollectionToDictionaryAdapter<TKey, TClass, TPersistent, TJoin> : I
     }
 
     /// <inheritdoc/>
+    public void Add(TKey key, TClass value)
+    {
+        this._rawCollection.Add(new TJoin { Key = key, Value = (TPersistent)value, ValueId = ((TPersistent)value).Id });
+    }
+
+    /// <inheritdoc/>
     public void Clear()
     {
         this._rawCollection.Clear();
@@ -105,18 +111,6 @@ public class CollectionToDictionaryAdapter<TKey, TClass, TPersistent, TJoin> : I
     }
 
     /// <inheritdoc/>
-    public bool ContainsKey(TKey key)
-    {
-        return this._rawCollection.Any(join => object.Equals(join.Key, key));
-    }
-
-    /// <inheritdoc/>
-    public void Add(TKey key, TClass value)
-    {
-        this._rawCollection.Add(new TJoin { Key = key, Value = (TPersistent)value, ValueId = ((TPersistent)value).Id });
-    }
-
-    /// <inheritdoc/>
     public bool Remove(TKey key)
     {
         if (this._rawCollection.FirstOrDefault(join => object.Equals(join.Key, key)) is { } joinItem)
@@ -125,6 +119,12 @@ public class CollectionToDictionaryAdapter<TKey, TClass, TPersistent, TJoin> : I
         }
 
         return false;
+    }
+
+    /// <inheritdoc/>
+    public bool ContainsKey(TKey key)
+    {
+        return this._rawCollection.Any(join => object.Equals(join.Key, key));
     }
 
     /// <inheritdoc/>

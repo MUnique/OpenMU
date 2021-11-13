@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Pathfinding;
 
+using System.Threading;
+
 /// <summary>
 /// An implementation of the pathfinder which finds paths inside a two-dimensional grid.
 /// Please note, that this path finder is not thread safe,
@@ -14,7 +16,6 @@ public class PathFinder : IPathFinder
     private readonly INetwork _network;
     private readonly IPriorityQueue<Node> _openList;
     private readonly IList<PathResultNode> _resultList = new List<PathResultNode>();
-    private bool _stop;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PathFinder"/> class.
@@ -57,7 +58,7 @@ public class PathFinder : IPathFinder
     public IHeuristic Heuristic { get; set; } = new NoHeuristic();
 
     /// <inheritdoc/>
-    public IList<PathResultNode>? FindPath(Point start, Point end)
+    public IList<PathResultNode>? FindPath(Point start, Point end, CancellationToken cancellationToken = default)
     {
         if (this.MaximumDistanceExceeded(start, end))
         {
@@ -65,7 +66,6 @@ public class PathFinder : IPathFinder
         }
 
         var pathFound = false;
-        this._stop = false;
         this._openList.Clear();
         this._network.ResetStatus();
         if (this.Heuristic != null)
@@ -79,7 +79,7 @@ public class PathFinder : IPathFinder
         startNode.PreviousNode = startNode;
         startNode.Status = NodeStatus.Open;
         this._openList.Push(startNode);
-        while (this._openList.Count > 0 && !this._stop)
+        while (this._openList.Count > 0 && !cancellationToken.IsCancellationRequested)
         {
             var node = this._openList.Pop();
             if (node.Status == NodeStatus.Closed)
@@ -114,21 +114,12 @@ public class PathFinder : IPathFinder
     }
 
     /// <summary>
-    /// Stops the pathfinder.
-    /// </summary>
-    public void StopPathfinder()
-    {
-        this._stop = true;
-    }
-
-    /// <summary>
     /// Resets the pathfinder.
     /// </summary>
     public void ResetPathFinder()
     {
         this._openList.Clear();
         this._resultList.Clear();
-        this._stop = false;
     }
 
     private void ExpandNodes(Node node, Point start, Point end)

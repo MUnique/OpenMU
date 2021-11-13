@@ -27,7 +27,7 @@ public class LogService
             .WithUrl("http://localhost:1234/signalr/hubs/logHub")
             .Build();
 
-        this._connection.Closed += async (error) =>
+        this._connection.Closed += async _ =>
         {
             await Task.Delay(new Random().Next(0, 5) * 1000).ConfigureAwait(false);
             await this.Connect().ConfigureAwait(false);

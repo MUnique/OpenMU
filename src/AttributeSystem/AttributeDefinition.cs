@@ -98,12 +98,6 @@ public class AttributeDefinition : IEquatable<AttributeDefinition>
         return this.Designation;
     }
 
-    /// <inheritdoc />
-    public bool Equals(AttributeDefinition? other)
-    {
-        return this.Id == other?.Id;
-    }
-
     /// <summary>
     /// Determines whether the specified <see cref="object" />, is equal to this instance.
     /// </summary>
@@ -113,13 +107,13 @@ public class AttributeDefinition : IEquatable<AttributeDefinition>
     /// </returns>
     public override bool Equals(object? obj)
     {
-        var other = obj as AttributeDefinition;
-        if (other is null)
-        {
-            return false;
-        }
+        return this.Equals(obj as AttributeDefinition);
+    }
 
-        return this.Equals(other);
+    /// <inheritdoc />
+    public bool Equals(AttributeDefinition? other)
+    {
+        return this.Id == other?.Id;
     }
 
     /// <summary>

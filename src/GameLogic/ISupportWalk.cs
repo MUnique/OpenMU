@@ -40,31 +40,3 @@ public interface ISupportWalk : ILocateable
     /// <returns>The number of written directions.</returns>
     int GetDirections(Span<Direction> directions);
 }
-
-/// <summary>
-/// A walking step information.
-/// </summary>
-public struct WalkingStep : IEquatable<WalkingStep>
-{
-    /// <summary>
-    /// Gets or sets point from where the step originates.
-    /// </summary>
-    public Point From { get; set; }
-
-    /// <summary>
-    /// Gets or sets the point where the step targets.
-    /// </summary>
-    public Point To { get; set; }
-
-    /// <summary>
-    /// Gets or sets the direction (1 - 8).
-    /// </summary>
-    public Direction Direction { get; set; }
-
-    /// <inheritdoc/>
-    public bool Equals(WalkingStep other)
-    {
-        return this.From == other.From
-               && this.Direction == other.Direction;
-    }
-}

@@ -27,8 +27,8 @@ public class CombinedElement : IElement
 
         this._element1 = element1;
         this._element2 = element2;
-        this._element1.ValueChanged += (_, e) => this.ValueChanged?.Invoke(this, EventArgs.Empty);
-        this._element2.ValueChanged += (_, e) => this.ValueChanged?.Invoke(this, EventArgs.Empty);
+        this._element1.ValueChanged += (_, _) => this.ValueChanged?.Invoke(this, EventArgs.Empty);
+        this._element2.ValueChanged += (_, _) => this.ValueChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />

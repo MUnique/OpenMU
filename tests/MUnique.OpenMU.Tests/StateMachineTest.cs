@@ -97,7 +97,7 @@ public class StateMachineTest
     public void ChangesEventStateObject()
     {
         State? stateInEvent = null;
-        this._stateMachine.StateChanges += (sender, args) =>
+        this._stateMachine.StateChanges += (_, args) =>
         {
             stateInEvent = args.NextState;
         };
@@ -111,7 +111,7 @@ public class StateMachineTest
     [Test]
     public void ChangesEventCancels()
     {
-        this._stateMachine.StateChanges += (sender, args) =>
+        this._stateMachine.StateChanges += (_, args) =>
         {
             args.Cancel = true;
         };
@@ -127,7 +127,7 @@ public class StateMachineTest
     public void ChangedEvent()
     {
         var stateChangeEventCalled = false;
-        this._stateMachine.StateChanged += (sender, args) => stateChangeEventCalled = true;
+        this._stateMachine.StateChanged += (_, _) => stateChangeEventCalled = true;
         this._stateMachine.TryAdvanceTo(this._nextState);
         Assert.That(stateChangeEventCalled, Is.True);
     }

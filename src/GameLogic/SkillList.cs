@@ -151,7 +151,7 @@ public class SkillList : ISkillList
         }
 
         // maybe to do: We don't need to hold it, as it's added to the player attributes.
-        new PowerUpWrapper(new PassiveSkillBoostPowerUp(skillEntry), masterDefinition.TargetAttribute, this._player.Attributes!);
+        _ = new PowerUpWrapper(new PassiveSkillBoostPowerUp(skillEntry), masterDefinition.TargetAttribute, this._player.Attributes!);
     }
 
     private void Inventory_WearingItemsChanged(object? sender, ItemEventArgs eventArgs)

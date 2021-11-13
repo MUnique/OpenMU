@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic;
 /// <summary>
 /// A state of a state machine.
 /// </summary>
-public class State : IEquatable<State>
+public sealed class State : IEquatable<State>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="State"/> class.
@@ -77,7 +77,10 @@ public class State : IEquatable<State>
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => this.Equals(obj as State);
+    public override bool Equals(object? obj)
+    {
+        return this.Equals(obj as State);
+    }
 
     /// <inheritdoc />
     public bool Equals(State? other)

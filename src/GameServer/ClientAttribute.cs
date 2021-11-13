@@ -106,7 +106,7 @@ public class ClientAttribute : Attribute, IComparable<ClientAttribute>, ICompara
     /// <inheritdoc />
     public override bool Equals(object? obj)
     {
-        return this.CompareTo(obj) == 0;
+        return this.Equals(obj as ClientAttribute);
     }
 
     /// <inheritdoc />

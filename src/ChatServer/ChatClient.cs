@@ -51,7 +51,7 @@ internal class ChatClient : IChatClient
         this._logger = logger;
         this._connection = connection;
         this._connection.PacketReceived += this.ReadPacket;
-        this._connection.Disconnected += (sender, e) => this.LogOff();
+        this._connection.Disconnected += (_, _) => this.LogOff();
 
         this.LastActivity = DateTime.Now;
         this._connection.BeginReceive();

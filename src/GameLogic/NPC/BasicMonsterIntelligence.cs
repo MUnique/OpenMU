@@ -88,11 +88,8 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// <param name="managed"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool managed)
     {
-        if (this._aiTimer != null)
-        {
-            this._aiTimer.Dispose();
-            this._aiTimer = null;
-        }
+        this._aiTimer?.Dispose();
+        this._aiTimer = null;
     }
 
     /// <summary>

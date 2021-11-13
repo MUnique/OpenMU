@@ -111,8 +111,8 @@ public class ComposableAttributeTests
         var element = new SimpleElement { Value = 5 };
         this._composableAttribute.AddElement(element);
 
-        bool eventCalled = false;
-        this._composableAttribute.ValueChanged += (sender, e) => eventCalled = true;
+        var eventCalled = false;
+        this._composableAttribute.ValueChanged += (_, _) => eventCalled = true;
         element.Value = 6;
 
         Assert.That(eventCalled, Is.True);
