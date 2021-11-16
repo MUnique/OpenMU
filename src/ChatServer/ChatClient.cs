@@ -8,6 +8,7 @@ using System.Buffers;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets;
+using MUnique.OpenMU.Network.Packets.ChatServer;
 using MUnique.OpenMU.Network.Xor;
 
 /// <summary>
@@ -86,13 +87,12 @@ internal class ChatClient : IChatClient
             return;
         }
 
-        var messageByteLength = Encoding.UTF8.GetByteCount(message);
-        using var writer = this._connection.StartSafeWrite(0xC1, 5 + messageByteLength);
-        var packet = writer.Span;
-        packet[2] = 0x04;
-        packet[3] = senderId;
-        packet[4] = (byte)messageByteLength;
-        packet.Slice(5).WriteString(message, Encoding.UTF8);
+        var messageByteLength = (byte)Encoding.UTF8.GetByteCount(message);
+        using var writer = this._connection.StartSafeWrite(ChatMessage.HeaderType, ChatMessage.GetRequiredSize(message));
+        var packet = new ChatMessage(writer.Span);
+        packet.SenderIndex = senderId;
+        packet.MessageLength = messageByteLength;
+        packet.Message = message;
         MessageEncryptor.Encrypt(packet);
         writer.Commit();
     }
@@ -105,17 +105,15 @@ internal class ChatClient : IChatClient
             return;
         }
 
-        const int sizePerClient = 11;
-        using var writer = this._connection.StartSafeWrite(0xC2, 8 + (sizePerClient * clients.Count));
-        var packet = writer.Span;
-        packet[3] = 2; // packet type
-        packet[6] = (byte)clients.Count;
+        using var writer = this._connection.StartSafeWrite(ChatRoomClients.HeaderType, ChatRoomClients.GetRequiredSize(clients.Count));
+        var packet = new ChatRoomClients(writer.Span);
+        packet.ClientCount = (byte)clients.Count;
         int i = 0;
         foreach (var client in clients)
         {
-            var clientBlock = packet.Slice(8 + (i * sizePerClient), sizePerClient);
-            clientBlock[0] = client.Index;
-            clientBlock.Slice(1).WriteString(client.Nickname ?? string.Empty, Encoding.UTF8);
+            var clientBlock = packet[i];
+            clientBlock.Index = client.Index;
+            clientBlock.Name = client.Nickname ?? string.Empty;
             i++;
         }
 
@@ -125,19 +123,26 @@ internal class ChatClient : IChatClient
     /// <inheritdoc/>
     public void SendChatRoomClientUpdate(byte updatedClientId, string updatedClientName, ChatRoomClientUpdateType updateType)
     {
-        if (this._connection is null)
+        if (this._connection is null || !this._connection.Connected)
         {
             return;
         }
 
-        using var writer = this._connection.StartSafeWrite(0xC1, 0x0F);
-        var packet = writer.Span;
-        packet[2] = 0x01;
-        packet[3] = (byte)updateType;
-        packet[4] = updatedClientId;
-        packet.Slice(5).WriteString(updatedClientName, Encoding.UTF8);
-
-        writer.Commit();
+        try
+        {
+            if (updateType == ChatRoomClientUpdateType.Joined)
+            {
+                this._connection.SendChatRoomClientJoined(updatedClientId, updatedClientName);
+            }
+            else
+            {
+                this._connection.SendChatRoomClientLeft(updatedClientId, updatedClientName);
+            }
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error sending room update");
+        }
     }
 
     /// <inheritdoc/>

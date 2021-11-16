@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Network;
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Pipelines.Sockets.Unofficial;
 
@@ -37,6 +38,9 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger = logger;
         this.Source = decryptionPipe?.Reader ?? this._duplexPipe!.Input;
         this._remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
+        this.OutputLock = new SemaphoreSlim(1);
+
+        _ = Task.Run(this.FlushLoopAsync);
     }
 
     /// <inheritdoc />
@@ -53,6 +57,9 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
 
     /// <inheritdoc />
     public PipeWriter Output => this._outputWriter ??= this._encryptionPipe?.Writer ?? this._duplexPipe!.Output;
+
+    /// <inheritdoc />
+    public SemaphoreSlim OutputLock { get; }
 
     /// <summary>
     /// Gets the socket connection, if the <see cref="_duplexPipe"/> is an instance of <see cref="SocketConnection"/>. Otherwise, it returns null.
@@ -133,5 +140,36 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     {
         this.PacketReceived?.Invoke(this, packet);
         return Task.CompletedTask;
+    }
+
+    private async Task FlushLoopAsync()
+    {
+        while (!this._disconnected)
+        {
+            try
+            {
+                if ((!this.Output.CanGetUnflushedBytes || this.Output.UnflushedBytes > 0)
+                    && await this.OutputLock.WaitAsync(10).ConfigureAwait(false))
+                {
+                    try
+                    {
+                        if (!this.Output.CanGetUnflushedBytes || this.Output.UnflushedBytes > 0)
+                        {
+                            await this.Output.FlushAsync().ConfigureAwait(false);
+                        }
+                    }
+                    finally
+                    {
+                        this.OutputLock.Release();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Unexpected error in flush loop");
+            }
+
+            await Task.Delay(10).ConfigureAwait(false);
+        }
     }
 }

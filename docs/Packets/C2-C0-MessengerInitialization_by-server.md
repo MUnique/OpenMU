@@ -29,4 +29,4 @@ Length: 11 Bytes
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 10 | String |  | Name |
-| 1 | 1 | Byte |  | ServerId; The server id on which the player currently is online. 0xFF means offline. |
+| 10 | 1 | Byte |  | ServerId; The server id on which the player currently is online. 0xFF means offline. |

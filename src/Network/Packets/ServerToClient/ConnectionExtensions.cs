@@ -4374,7 +4374,7 @@ public readonly ref struct GameServerEnteredThreadSafeWriter
     public GameServerEnteredThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4384,7 +4384,7 @@ public readonly ref struct GameServerEnteredThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4400,7 +4400,7 @@ public readonly ref struct GameServerEnteredThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GameServerEntered.Length);
+        this.connection.Output.AdvanceSafely(GameServerEntered.Length);
     }
 
     /// <summary>
@@ -4408,7 +4408,7 @@ public readonly ref struct GameServerEnteredThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4426,7 +4426,7 @@ public readonly ref struct MagicEffectStatusThreadSafeWriter
     public MagicEffectStatusThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4436,7 +4436,7 @@ public readonly ref struct MagicEffectStatusThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4452,7 +4452,7 @@ public readonly ref struct MagicEffectStatusThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MagicEffectStatus.Length);
+        this.connection.Output.AdvanceSafely(MagicEffectStatus.Length);
     }
 
     /// <summary>
@@ -4460,7 +4460,7 @@ public readonly ref struct MagicEffectStatusThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4478,7 +4478,7 @@ public readonly ref struct WeatherStatusUpdateThreadSafeWriter
     public WeatherStatusUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4488,7 +4488,7 @@ public readonly ref struct WeatherStatusUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4504,7 +4504,7 @@ public readonly ref struct WeatherStatusUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(WeatherStatusUpdate.Length);
+        this.connection.Output.AdvanceSafely(WeatherStatusUpdate.Length);
     }
 
     /// <summary>
@@ -4512,7 +4512,7 @@ public readonly ref struct WeatherStatusUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4530,7 +4530,7 @@ public readonly ref struct ObjectGotKilledThreadSafeWriter
     public ObjectGotKilledThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4540,7 +4540,7 @@ public readonly ref struct ObjectGotKilledThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4556,7 +4556,7 @@ public readonly ref struct ObjectGotKilledThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ObjectGotKilled.Length);
+        this.connection.Output.AdvanceSafely(ObjectGotKilled.Length);
     }
 
     /// <summary>
@@ -4564,7 +4564,7 @@ public readonly ref struct ObjectGotKilledThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4582,7 +4582,7 @@ public readonly ref struct ObjectAnimationThreadSafeWriter
     public ObjectAnimationThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4592,7 +4592,7 @@ public readonly ref struct ObjectAnimationThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4608,7 +4608,7 @@ public readonly ref struct ObjectAnimationThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ObjectAnimation.Length);
+        this.connection.Output.AdvanceSafely(ObjectAnimation.Length);
     }
 
     /// <summary>
@@ -4616,7 +4616,7 @@ public readonly ref struct ObjectAnimationThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4634,7 +4634,7 @@ public readonly ref struct AreaSkillAnimationThreadSafeWriter
     public AreaSkillAnimationThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4644,7 +4644,7 @@ public readonly ref struct AreaSkillAnimationThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4660,7 +4660,7 @@ public readonly ref struct AreaSkillAnimationThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(AreaSkillAnimation.Length);
+        this.connection.Output.AdvanceSafely(AreaSkillAnimation.Length);
     }
 
     /// <summary>
@@ -4668,7 +4668,7 @@ public readonly ref struct AreaSkillAnimationThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4686,7 +4686,7 @@ public readonly ref struct SkillAnimationThreadSafeWriter
     public SkillAnimationThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4696,7 +4696,7 @@ public readonly ref struct SkillAnimationThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4712,7 +4712,7 @@ public readonly ref struct SkillAnimationThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SkillAnimation.Length);
+        this.connection.Output.AdvanceSafely(SkillAnimation.Length);
     }
 
     /// <summary>
@@ -4720,7 +4720,7 @@ public readonly ref struct SkillAnimationThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4738,7 +4738,7 @@ public readonly ref struct AreaSkillAnimation075ThreadSafeWriter
     public AreaSkillAnimation075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4748,7 +4748,7 @@ public readonly ref struct AreaSkillAnimation075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4764,7 +4764,7 @@ public readonly ref struct AreaSkillAnimation075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(AreaSkillAnimation075.Length);
+        this.connection.Output.AdvanceSafely(AreaSkillAnimation075.Length);
     }
 
     /// <summary>
@@ -4772,7 +4772,7 @@ public readonly ref struct AreaSkillAnimation075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4790,7 +4790,7 @@ public readonly ref struct AreaSkillAnimation095ThreadSafeWriter
     public AreaSkillAnimation095ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4800,7 +4800,7 @@ public readonly ref struct AreaSkillAnimation095ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4816,7 +4816,7 @@ public readonly ref struct AreaSkillAnimation095ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(AreaSkillAnimation095.Length);
+        this.connection.Output.AdvanceSafely(AreaSkillAnimation095.Length);
     }
 
     /// <summary>
@@ -4824,7 +4824,7 @@ public readonly ref struct AreaSkillAnimation095ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4842,7 +4842,7 @@ public readonly ref struct SkillAnimation075ThreadSafeWriter
     public SkillAnimation075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4852,7 +4852,7 @@ public readonly ref struct SkillAnimation075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4868,7 +4868,7 @@ public readonly ref struct SkillAnimation075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SkillAnimation075.Length);
+        this.connection.Output.AdvanceSafely(SkillAnimation075.Length);
     }
 
     /// <summary>
@@ -4876,7 +4876,7 @@ public readonly ref struct SkillAnimation075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4894,7 +4894,7 @@ public readonly ref struct SkillAnimation095ThreadSafeWriter
     public SkillAnimation095ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4904,7 +4904,7 @@ public readonly ref struct SkillAnimation095ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4920,7 +4920,7 @@ public readonly ref struct SkillAnimation095ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SkillAnimation095.Length);
+        this.connection.Output.AdvanceSafely(SkillAnimation095.Length);
     }
 
     /// <summary>
@@ -4928,7 +4928,7 @@ public readonly ref struct SkillAnimation095ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4946,7 +4946,7 @@ public readonly ref struct MagicEffectCancelledThreadSafeWriter
     public MagicEffectCancelledThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -4956,7 +4956,7 @@ public readonly ref struct MagicEffectCancelledThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -4972,7 +4972,7 @@ public readonly ref struct MagicEffectCancelledThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MagicEffectCancelled.Length);
+        this.connection.Output.AdvanceSafely(MagicEffectCancelled.Length);
     }
 
     /// <summary>
@@ -4980,7 +4980,7 @@ public readonly ref struct MagicEffectCancelledThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -4998,7 +4998,7 @@ public readonly ref struct MagicEffectCancelled075ThreadSafeWriter
     public MagicEffectCancelled075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5008,7 +5008,7 @@ public readonly ref struct MagicEffectCancelled075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5024,7 +5024,7 @@ public readonly ref struct MagicEffectCancelled075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MagicEffectCancelled075.Length);
+        this.connection.Output.AdvanceSafely(MagicEffectCancelled075.Length);
     }
 
     /// <summary>
@@ -5032,7 +5032,7 @@ public readonly ref struct MagicEffectCancelled075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5050,7 +5050,7 @@ public readonly ref struct PartyRequestThreadSafeWriter
     public PartyRequestThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5060,7 +5060,7 @@ public readonly ref struct PartyRequestThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5076,7 +5076,7 @@ public readonly ref struct PartyRequestThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(PartyRequest.Length);
+        this.connection.Output.AdvanceSafely(PartyRequest.Length);
     }
 
     /// <summary>
@@ -5084,7 +5084,7 @@ public readonly ref struct PartyRequestThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5102,7 +5102,7 @@ public readonly ref struct RemovePartyMemberThreadSafeWriter
     public RemovePartyMemberThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5112,7 +5112,7 @@ public readonly ref struct RemovePartyMemberThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5128,7 +5128,7 @@ public readonly ref struct RemovePartyMemberThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(RemovePartyMember.Length);
+        this.connection.Output.AdvanceSafely(RemovePartyMember.Length);
     }
 
     /// <summary>
@@ -5136,7 +5136,7 @@ public readonly ref struct RemovePartyMemberThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5154,7 +5154,7 @@ public readonly ref struct PlayerShopOpenSuccessfulThreadSafeWriter
     public PlayerShopOpenSuccessfulThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5164,7 +5164,7 @@ public readonly ref struct PlayerShopOpenSuccessfulThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5180,7 +5180,7 @@ public readonly ref struct PlayerShopOpenSuccessfulThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(PlayerShopOpenSuccessful.Length);
+        this.connection.Output.AdvanceSafely(PlayerShopOpenSuccessful.Length);
     }
 
     /// <summary>
@@ -5188,7 +5188,7 @@ public readonly ref struct PlayerShopOpenSuccessfulThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5206,7 +5206,7 @@ public readonly ref struct TradeButtonStateChangedThreadSafeWriter
     public TradeButtonStateChangedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5216,7 +5216,7 @@ public readonly ref struct TradeButtonStateChangedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5232,7 +5232,7 @@ public readonly ref struct TradeButtonStateChangedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(TradeButtonStateChanged.Length);
+        this.connection.Output.AdvanceSafely(TradeButtonStateChanged.Length);
     }
 
     /// <summary>
@@ -5240,7 +5240,7 @@ public readonly ref struct TradeButtonStateChangedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5258,7 +5258,7 @@ public readonly ref struct TradeMoneySetResponseThreadSafeWriter
     public TradeMoneySetResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5268,7 +5268,7 @@ public readonly ref struct TradeMoneySetResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5284,7 +5284,7 @@ public readonly ref struct TradeMoneySetResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(TradeMoneySetResponse.Length);
+        this.connection.Output.AdvanceSafely(TradeMoneySetResponse.Length);
     }
 
     /// <summary>
@@ -5292,7 +5292,7 @@ public readonly ref struct TradeMoneySetResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5310,7 +5310,7 @@ public readonly ref struct TradeMoneyUpdateThreadSafeWriter
     public TradeMoneyUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5320,7 +5320,7 @@ public readonly ref struct TradeMoneyUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5336,7 +5336,7 @@ public readonly ref struct TradeMoneyUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(TradeMoneyUpdate.Length);
+        this.connection.Output.AdvanceSafely(TradeMoneyUpdate.Length);
     }
 
     /// <summary>
@@ -5344,7 +5344,7 @@ public readonly ref struct TradeMoneyUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5362,7 +5362,7 @@ public readonly ref struct TradeRequestAnswerThreadSafeWriter
     public TradeRequestAnswerThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5372,7 +5372,7 @@ public readonly ref struct TradeRequestAnswerThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5388,7 +5388,7 @@ public readonly ref struct TradeRequestAnswerThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(TradeRequestAnswer.Length);
+        this.connection.Output.AdvanceSafely(TradeRequestAnswer.Length);
     }
 
     /// <summary>
@@ -5396,7 +5396,7 @@ public readonly ref struct TradeRequestAnswerThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5414,7 +5414,7 @@ public readonly ref struct TradeRequestThreadSafeWriter
     public TradeRequestThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5424,7 +5424,7 @@ public readonly ref struct TradeRequestThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5440,7 +5440,7 @@ public readonly ref struct TradeRequestThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(TradeRequest.Length);
+        this.connection.Output.AdvanceSafely(TradeRequest.Length);
     }
 
     /// <summary>
@@ -5448,7 +5448,7 @@ public readonly ref struct TradeRequestThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5466,7 +5466,7 @@ public readonly ref struct TradeFinishedThreadSafeWriter
     public TradeFinishedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5476,7 +5476,7 @@ public readonly ref struct TradeFinishedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5492,7 +5492,7 @@ public readonly ref struct TradeFinishedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(TradeFinished.Length);
+        this.connection.Output.AdvanceSafely(TradeFinished.Length);
     }
 
     /// <summary>
@@ -5500,7 +5500,7 @@ public readonly ref struct TradeFinishedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5518,7 +5518,7 @@ public readonly ref struct TradeItemRemovedThreadSafeWriter
     public TradeItemRemovedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5528,7 +5528,7 @@ public readonly ref struct TradeItemRemovedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5544,7 +5544,7 @@ public readonly ref struct TradeItemRemovedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(TradeItemRemoved.Length);
+        this.connection.Output.AdvanceSafely(TradeItemRemoved.Length);
     }
 
     /// <summary>
@@ -5552,7 +5552,7 @@ public readonly ref struct TradeItemRemovedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5570,7 +5570,7 @@ public readonly ref struct LoginResponseThreadSafeWriter
     public LoginResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5580,7 +5580,7 @@ public readonly ref struct LoginResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5596,7 +5596,7 @@ public readonly ref struct LoginResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(LoginResponse.Length);
+        this.connection.Output.AdvanceSafely(LoginResponse.Length);
     }
 
     /// <summary>
@@ -5604,7 +5604,7 @@ public readonly ref struct LoginResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5622,7 +5622,7 @@ public readonly ref struct LogoutResponseThreadSafeWriter
     public LogoutResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5632,7 +5632,7 @@ public readonly ref struct LogoutResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5648,7 +5648,7 @@ public readonly ref struct LogoutResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(LogoutResponse.Length);
+        this.connection.Output.AdvanceSafely(LogoutResponse.Length);
     }
 
     /// <summary>
@@ -5656,7 +5656,7 @@ public readonly ref struct LogoutResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5674,7 +5674,7 @@ public readonly ref struct ObjectHitThreadSafeWriter
     public ObjectHitThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5684,7 +5684,7 @@ public readonly ref struct ObjectHitThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5700,7 +5700,7 @@ public readonly ref struct ObjectHitThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ObjectHit.Length);
+        this.connection.Output.AdvanceSafely(ObjectHit.Length);
     }
 
     /// <summary>
@@ -5708,7 +5708,7 @@ public readonly ref struct ObjectHitThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5726,7 +5726,7 @@ public readonly ref struct ObjectMovedThreadSafeWriter
     public ObjectMovedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5736,7 +5736,7 @@ public readonly ref struct ObjectMovedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5752,7 +5752,7 @@ public readonly ref struct ObjectMovedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ObjectMoved.Length);
+        this.connection.Output.AdvanceSafely(ObjectMoved.Length);
     }
 
     /// <summary>
@@ -5760,7 +5760,7 @@ public readonly ref struct ObjectMovedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5778,7 +5778,7 @@ public readonly ref struct ObjectWalked075ThreadSafeWriter
     public ObjectWalked075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5788,7 +5788,7 @@ public readonly ref struct ObjectWalked075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5804,7 +5804,7 @@ public readonly ref struct ObjectWalked075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ObjectWalked075.Length);
+        this.connection.Output.AdvanceSafely(ObjectWalked075.Length);
     }
 
     /// <summary>
@@ -5812,7 +5812,7 @@ public readonly ref struct ObjectWalked075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5830,7 +5830,7 @@ public readonly ref struct ExperienceGainedThreadSafeWriter
     public ExperienceGainedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5840,7 +5840,7 @@ public readonly ref struct ExperienceGainedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5856,7 +5856,7 @@ public readonly ref struct ExperienceGainedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ExperienceGained.Length);
+        this.connection.Output.AdvanceSafely(ExperienceGained.Length);
     }
 
     /// <summary>
@@ -5864,7 +5864,7 @@ public readonly ref struct ExperienceGainedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5882,7 +5882,7 @@ public readonly ref struct MapChangedThreadSafeWriter
     public MapChangedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5892,7 +5892,7 @@ public readonly ref struct MapChangedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5908,7 +5908,7 @@ public readonly ref struct MapChangedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MapChanged.Length);
+        this.connection.Output.AdvanceSafely(MapChanged.Length);
     }
 
     /// <summary>
@@ -5916,7 +5916,7 @@ public readonly ref struct MapChangedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5934,7 +5934,7 @@ public readonly ref struct MapChanged075ThreadSafeWriter
     public MapChanged075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5944,7 +5944,7 @@ public readonly ref struct MapChanged075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -5960,7 +5960,7 @@ public readonly ref struct MapChanged075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MapChanged075.Length);
+        this.connection.Output.AdvanceSafely(MapChanged075.Length);
     }
 
     /// <summary>
@@ -5968,7 +5968,7 @@ public readonly ref struct MapChanged075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -5986,7 +5986,7 @@ public readonly ref struct MoneyDroppedThreadSafeWriter
     public MoneyDroppedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -5996,7 +5996,7 @@ public readonly ref struct MoneyDroppedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6012,7 +6012,7 @@ public readonly ref struct MoneyDroppedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MoneyDropped.Length);
+        this.connection.Output.AdvanceSafely(MoneyDropped.Length);
     }
 
     /// <summary>
@@ -6020,7 +6020,7 @@ public readonly ref struct MoneyDroppedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6038,7 +6038,7 @@ public readonly ref struct MoneyDropped075ThreadSafeWriter
     public MoneyDropped075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6048,7 +6048,7 @@ public readonly ref struct MoneyDropped075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6064,7 +6064,7 @@ public readonly ref struct MoneyDropped075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MoneyDropped075.Length);
+        this.connection.Output.AdvanceSafely(MoneyDropped075.Length);
     }
 
     /// <summary>
@@ -6072,7 +6072,7 @@ public readonly ref struct MoneyDropped075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6090,7 +6090,7 @@ public readonly ref struct ItemDropResponseThreadSafeWriter
     public ItemDropResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6100,7 +6100,7 @@ public readonly ref struct ItemDropResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6116,7 +6116,7 @@ public readonly ref struct ItemDropResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ItemDropResponse.Length);
+        this.connection.Output.AdvanceSafely(ItemDropResponse.Length);
     }
 
     /// <summary>
@@ -6124,7 +6124,7 @@ public readonly ref struct ItemDropResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6142,7 +6142,7 @@ public readonly ref struct ItemPickUpRequestFailedThreadSafeWriter
     public ItemPickUpRequestFailedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6152,7 +6152,7 @@ public readonly ref struct ItemPickUpRequestFailedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6168,7 +6168,7 @@ public readonly ref struct ItemPickUpRequestFailedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ItemPickUpRequestFailed.Length);
+        this.connection.Output.AdvanceSafely(ItemPickUpRequestFailed.Length);
     }
 
     /// <summary>
@@ -6176,7 +6176,7 @@ public readonly ref struct ItemPickUpRequestFailedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6194,7 +6194,7 @@ public readonly ref struct InventoryMoneyUpdateThreadSafeWriter
     public InventoryMoneyUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6204,7 +6204,7 @@ public readonly ref struct InventoryMoneyUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6220,7 +6220,7 @@ public readonly ref struct InventoryMoneyUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(InventoryMoneyUpdate.Length);
+        this.connection.Output.AdvanceSafely(InventoryMoneyUpdate.Length);
     }
 
     /// <summary>
@@ -6228,7 +6228,7 @@ public readonly ref struct InventoryMoneyUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6246,7 +6246,7 @@ public readonly ref struct CurrentHealthAndShieldThreadSafeWriter
     public CurrentHealthAndShieldThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6256,7 +6256,7 @@ public readonly ref struct CurrentHealthAndShieldThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6272,7 +6272,7 @@ public readonly ref struct CurrentHealthAndShieldThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CurrentHealthAndShield.Length);
+        this.connection.Output.AdvanceSafely(CurrentHealthAndShield.Length);
     }
 
     /// <summary>
@@ -6280,7 +6280,7 @@ public readonly ref struct CurrentHealthAndShieldThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6298,7 +6298,7 @@ public readonly ref struct MaximumHealthAndShieldThreadSafeWriter
     public MaximumHealthAndShieldThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6308,7 +6308,7 @@ public readonly ref struct MaximumHealthAndShieldThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6324,7 +6324,7 @@ public readonly ref struct MaximumHealthAndShieldThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MaximumHealthAndShield.Length);
+        this.connection.Output.AdvanceSafely(MaximumHealthAndShield.Length);
     }
 
     /// <summary>
@@ -6332,7 +6332,7 @@ public readonly ref struct MaximumHealthAndShieldThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6350,7 +6350,7 @@ public readonly ref struct ItemConsumptionFailedThreadSafeWriter
     public ItemConsumptionFailedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6360,7 +6360,7 @@ public readonly ref struct ItemConsumptionFailedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6376,7 +6376,7 @@ public readonly ref struct ItemConsumptionFailedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ItemConsumptionFailed.Length);
+        this.connection.Output.AdvanceSafely(ItemConsumptionFailed.Length);
     }
 
     /// <summary>
@@ -6384,7 +6384,7 @@ public readonly ref struct ItemConsumptionFailedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6402,7 +6402,7 @@ public readonly ref struct CurrentManaAndAbilityThreadSafeWriter
     public CurrentManaAndAbilityThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6412,7 +6412,7 @@ public readonly ref struct CurrentManaAndAbilityThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6428,7 +6428,7 @@ public readonly ref struct CurrentManaAndAbilityThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CurrentManaAndAbility.Length);
+        this.connection.Output.AdvanceSafely(CurrentManaAndAbility.Length);
     }
 
     /// <summary>
@@ -6436,7 +6436,7 @@ public readonly ref struct CurrentManaAndAbilityThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6454,7 +6454,7 @@ public readonly ref struct MaximumManaAndAbilityThreadSafeWriter
     public MaximumManaAndAbilityThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6464,7 +6464,7 @@ public readonly ref struct MaximumManaAndAbilityThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6480,7 +6480,7 @@ public readonly ref struct MaximumManaAndAbilityThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MaximumManaAndAbility.Length);
+        this.connection.Output.AdvanceSafely(MaximumManaAndAbility.Length);
     }
 
     /// <summary>
@@ -6488,7 +6488,7 @@ public readonly ref struct MaximumManaAndAbilityThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6506,7 +6506,7 @@ public readonly ref struct ItemRemovedThreadSafeWriter
     public ItemRemovedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6516,7 +6516,7 @@ public readonly ref struct ItemRemovedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6532,7 +6532,7 @@ public readonly ref struct ItemRemovedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ItemRemoved.Length);
+        this.connection.Output.AdvanceSafely(ItemRemoved.Length);
     }
 
     /// <summary>
@@ -6540,7 +6540,7 @@ public readonly ref struct ItemRemovedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6558,7 +6558,7 @@ public readonly ref struct ConsumeItemWithEffectThreadSafeWriter
     public ConsumeItemWithEffectThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6568,7 +6568,7 @@ public readonly ref struct ConsumeItemWithEffectThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6584,7 +6584,7 @@ public readonly ref struct ConsumeItemWithEffectThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ConsumeItemWithEffect.Length);
+        this.connection.Output.AdvanceSafely(ConsumeItemWithEffect.Length);
     }
 
     /// <summary>
@@ -6592,7 +6592,7 @@ public readonly ref struct ConsumeItemWithEffectThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6610,7 +6610,7 @@ public readonly ref struct ItemDurabilityChangedThreadSafeWriter
     public ItemDurabilityChangedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6620,7 +6620,7 @@ public readonly ref struct ItemDurabilityChangedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6636,7 +6636,7 @@ public readonly ref struct ItemDurabilityChangedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ItemDurabilityChanged.Length);
+        this.connection.Output.AdvanceSafely(ItemDurabilityChanged.Length);
     }
 
     /// <summary>
@@ -6644,7 +6644,7 @@ public readonly ref struct ItemDurabilityChangedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6662,7 +6662,7 @@ public readonly ref struct FruitConsumptionResponseThreadSafeWriter
     public FruitConsumptionResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6672,7 +6672,7 @@ public readonly ref struct FruitConsumptionResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6688,7 +6688,7 @@ public readonly ref struct FruitConsumptionResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(FruitConsumptionResponse.Length);
+        this.connection.Output.AdvanceSafely(FruitConsumptionResponse.Length);
     }
 
     /// <summary>
@@ -6696,7 +6696,7 @@ public readonly ref struct FruitConsumptionResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6714,7 +6714,7 @@ public readonly ref struct NpcWindowResponseThreadSafeWriter
     public NpcWindowResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6724,7 +6724,7 @@ public readonly ref struct NpcWindowResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6740,7 +6740,7 @@ public readonly ref struct NpcWindowResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(NpcWindowResponse.Length);
+        this.connection.Output.AdvanceSafely(NpcWindowResponse.Length);
     }
 
     /// <summary>
@@ -6748,7 +6748,7 @@ public readonly ref struct NpcWindowResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6766,7 +6766,7 @@ public readonly ref struct NpcItemBuyFailedThreadSafeWriter
     public NpcItemBuyFailedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6776,7 +6776,7 @@ public readonly ref struct NpcItemBuyFailedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6792,7 +6792,7 @@ public readonly ref struct NpcItemBuyFailedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(NpcItemBuyFailed.Length);
+        this.connection.Output.AdvanceSafely(NpcItemBuyFailed.Length);
     }
 
     /// <summary>
@@ -6800,7 +6800,7 @@ public readonly ref struct NpcItemBuyFailedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6818,7 +6818,7 @@ public readonly ref struct NpcItemSellResultThreadSafeWriter
     public NpcItemSellResultThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6828,7 +6828,7 @@ public readonly ref struct NpcItemSellResultThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6844,7 +6844,7 @@ public readonly ref struct NpcItemSellResultThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(NpcItemSellResult.Length);
+        this.connection.Output.AdvanceSafely(NpcItemSellResult.Length);
     }
 
     /// <summary>
@@ -6852,7 +6852,7 @@ public readonly ref struct NpcItemSellResultThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6870,7 +6870,7 @@ public readonly ref struct PlayerShopSetItemPriceResponseThreadSafeWriter
     public PlayerShopSetItemPriceResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6880,7 +6880,7 @@ public readonly ref struct PlayerShopSetItemPriceResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6896,7 +6896,7 @@ public readonly ref struct PlayerShopSetItemPriceResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(PlayerShopSetItemPriceResponse.Length);
+        this.connection.Output.AdvanceSafely(PlayerShopSetItemPriceResponse.Length);
     }
 
     /// <summary>
@@ -6904,7 +6904,7 @@ public readonly ref struct PlayerShopSetItemPriceResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6922,7 +6922,7 @@ public readonly ref struct PlayerShopClosedThreadSafeWriter
     public PlayerShopClosedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6932,7 +6932,7 @@ public readonly ref struct PlayerShopClosedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -6948,7 +6948,7 @@ public readonly ref struct PlayerShopClosedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(PlayerShopClosed.Length);
+        this.connection.Output.AdvanceSafely(PlayerShopClosed.Length);
     }
 
     /// <summary>
@@ -6956,7 +6956,7 @@ public readonly ref struct PlayerShopClosedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -6974,7 +6974,7 @@ public readonly ref struct PlayerShopItemSoldToPlayerThreadSafeWriter
     public PlayerShopItemSoldToPlayerThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -6984,7 +6984,7 @@ public readonly ref struct PlayerShopItemSoldToPlayerThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7000,7 +7000,7 @@ public readonly ref struct PlayerShopItemSoldToPlayerThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(PlayerShopItemSoldToPlayer.Length);
+        this.connection.Output.AdvanceSafely(PlayerShopItemSoldToPlayer.Length);
     }
 
     /// <summary>
@@ -7008,7 +7008,7 @@ public readonly ref struct PlayerShopItemSoldToPlayerThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7026,7 +7026,7 @@ public readonly ref struct ClosePlayerShopDialogThreadSafeWriter
     public ClosePlayerShopDialogThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7036,7 +7036,7 @@ public readonly ref struct ClosePlayerShopDialogThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7052,7 +7052,7 @@ public readonly ref struct ClosePlayerShopDialogThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ClosePlayerShopDialog.Length);
+        this.connection.Output.AdvanceSafely(ClosePlayerShopDialog.Length);
     }
 
     /// <summary>
@@ -7060,7 +7060,7 @@ public readonly ref struct ClosePlayerShopDialogThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7078,7 +7078,7 @@ public readonly ref struct CharacterCreationSuccessfulThreadSafeWriter
     public CharacterCreationSuccessfulThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7088,7 +7088,7 @@ public readonly ref struct CharacterCreationSuccessfulThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7104,7 +7104,7 @@ public readonly ref struct CharacterCreationSuccessfulThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CharacterCreationSuccessful.Length);
+        this.connection.Output.AdvanceSafely(CharacterCreationSuccessful.Length);
     }
 
     /// <summary>
@@ -7112,7 +7112,7 @@ public readonly ref struct CharacterCreationSuccessfulThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7130,7 +7130,7 @@ public readonly ref struct CharacterCreationFailedThreadSafeWriter
     public CharacterCreationFailedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7140,7 +7140,7 @@ public readonly ref struct CharacterCreationFailedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7156,7 +7156,7 @@ public readonly ref struct CharacterCreationFailedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CharacterCreationFailed.Length);
+        this.connection.Output.AdvanceSafely(CharacterCreationFailed.Length);
     }
 
     /// <summary>
@@ -7164,7 +7164,7 @@ public readonly ref struct CharacterCreationFailedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7182,7 +7182,7 @@ public readonly ref struct RespawnAfterDeath075ThreadSafeWriter
     public RespawnAfterDeath075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7192,7 +7192,7 @@ public readonly ref struct RespawnAfterDeath075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7208,7 +7208,7 @@ public readonly ref struct RespawnAfterDeath075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(RespawnAfterDeath075.Length);
+        this.connection.Output.AdvanceSafely(RespawnAfterDeath075.Length);
     }
 
     /// <summary>
@@ -7216,7 +7216,7 @@ public readonly ref struct RespawnAfterDeath075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7234,7 +7234,7 @@ public readonly ref struct RespawnAfterDeath095ThreadSafeWriter
     public RespawnAfterDeath095ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7244,7 +7244,7 @@ public readonly ref struct RespawnAfterDeath095ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7260,7 +7260,7 @@ public readonly ref struct RespawnAfterDeath095ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(RespawnAfterDeath095.Length);
+        this.connection.Output.AdvanceSafely(RespawnAfterDeath095.Length);
     }
 
     /// <summary>
@@ -7268,7 +7268,7 @@ public readonly ref struct RespawnAfterDeath095ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7286,7 +7286,7 @@ public readonly ref struct PoisonDamageThreadSafeWriter
     public PoisonDamageThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7296,7 +7296,7 @@ public readonly ref struct PoisonDamageThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7312,7 +7312,7 @@ public readonly ref struct PoisonDamageThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(PoisonDamage.Length);
+        this.connection.Output.AdvanceSafely(PoisonDamage.Length);
     }
 
     /// <summary>
@@ -7320,7 +7320,7 @@ public readonly ref struct PoisonDamageThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7338,7 +7338,7 @@ public readonly ref struct HeroStateChangedThreadSafeWriter
     public HeroStateChangedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7348,7 +7348,7 @@ public readonly ref struct HeroStateChangedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7364,7 +7364,7 @@ public readonly ref struct HeroStateChangedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(HeroStateChanged.Length);
+        this.connection.Output.AdvanceSafely(HeroStateChanged.Length);
     }
 
     /// <summary>
@@ -7372,7 +7372,7 @@ public readonly ref struct HeroStateChangedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7390,7 +7390,7 @@ public readonly ref struct SkillAddedThreadSafeWriter
     public SkillAddedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7400,7 +7400,7 @@ public readonly ref struct SkillAddedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7416,7 +7416,7 @@ public readonly ref struct SkillAddedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SkillAdded.Length);
+        this.connection.Output.AdvanceSafely(SkillAdded.Length);
     }
 
     /// <summary>
@@ -7424,7 +7424,7 @@ public readonly ref struct SkillAddedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7442,7 +7442,7 @@ public readonly ref struct SkillRemovedThreadSafeWriter
     public SkillRemovedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7452,7 +7452,7 @@ public readonly ref struct SkillRemovedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7468,7 +7468,7 @@ public readonly ref struct SkillRemovedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SkillRemoved.Length);
+        this.connection.Output.AdvanceSafely(SkillRemoved.Length);
     }
 
     /// <summary>
@@ -7476,7 +7476,7 @@ public readonly ref struct SkillRemovedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7494,7 +7494,7 @@ public readonly ref struct SkillAdded075ThreadSafeWriter
     public SkillAdded075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7504,7 +7504,7 @@ public readonly ref struct SkillAdded075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7520,7 +7520,7 @@ public readonly ref struct SkillAdded075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SkillAdded075.Length);
+        this.connection.Output.AdvanceSafely(SkillAdded075.Length);
     }
 
     /// <summary>
@@ -7528,7 +7528,7 @@ public readonly ref struct SkillAdded075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7546,7 +7546,7 @@ public readonly ref struct SkillRemoved075ThreadSafeWriter
     public SkillRemoved075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7556,7 +7556,7 @@ public readonly ref struct SkillRemoved075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7572,7 +7572,7 @@ public readonly ref struct SkillRemoved075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SkillRemoved075.Length);
+        this.connection.Output.AdvanceSafely(SkillRemoved075.Length);
     }
 
     /// <summary>
@@ -7580,7 +7580,7 @@ public readonly ref struct SkillRemoved075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7598,7 +7598,7 @@ public readonly ref struct SkillAdded095ThreadSafeWriter
     public SkillAdded095ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7608,7 +7608,7 @@ public readonly ref struct SkillAdded095ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7624,7 +7624,7 @@ public readonly ref struct SkillAdded095ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SkillAdded095.Length);
+        this.connection.Output.AdvanceSafely(SkillAdded095.Length);
     }
 
     /// <summary>
@@ -7632,7 +7632,7 @@ public readonly ref struct SkillAdded095ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7650,7 +7650,7 @@ public readonly ref struct SkillRemoved095ThreadSafeWriter
     public SkillRemoved095ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7660,7 +7660,7 @@ public readonly ref struct SkillRemoved095ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7676,7 +7676,7 @@ public readonly ref struct SkillRemoved095ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SkillRemoved095.Length);
+        this.connection.Output.AdvanceSafely(SkillRemoved095.Length);
     }
 
     /// <summary>
@@ -7684,7 +7684,7 @@ public readonly ref struct SkillRemoved095ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7702,7 +7702,7 @@ public readonly ref struct CharacterFocusedThreadSafeWriter
     public CharacterFocusedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7712,7 +7712,7 @@ public readonly ref struct CharacterFocusedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7728,7 +7728,7 @@ public readonly ref struct CharacterFocusedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CharacterFocused.Length);
+        this.connection.Output.AdvanceSafely(CharacterFocused.Length);
     }
 
     /// <summary>
@@ -7736,7 +7736,7 @@ public readonly ref struct CharacterFocusedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7754,7 +7754,7 @@ public readonly ref struct CharacterStatIncreaseResponseThreadSafeWriter
     public CharacterStatIncreaseResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7764,7 +7764,7 @@ public readonly ref struct CharacterStatIncreaseResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7780,7 +7780,7 @@ public readonly ref struct CharacterStatIncreaseResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CharacterStatIncreaseResponse.Length);
+        this.connection.Output.AdvanceSafely(CharacterStatIncreaseResponse.Length);
     }
 
     /// <summary>
@@ -7788,7 +7788,7 @@ public readonly ref struct CharacterStatIncreaseResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7806,7 +7806,7 @@ public readonly ref struct CharacterDeleteResponseThreadSafeWriter
     public CharacterDeleteResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7816,7 +7816,7 @@ public readonly ref struct CharacterDeleteResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7832,7 +7832,7 @@ public readonly ref struct CharacterDeleteResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CharacterDeleteResponse.Length);
+        this.connection.Output.AdvanceSafely(CharacterDeleteResponse.Length);
     }
 
     /// <summary>
@@ -7840,7 +7840,7 @@ public readonly ref struct CharacterDeleteResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7858,7 +7858,7 @@ public readonly ref struct CharacterLevelUpdateThreadSafeWriter
     public CharacterLevelUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7868,7 +7868,7 @@ public readonly ref struct CharacterLevelUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7884,7 +7884,7 @@ public readonly ref struct CharacterLevelUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CharacterLevelUpdate.Length);
+        this.connection.Output.AdvanceSafely(CharacterLevelUpdate.Length);
     }
 
     /// <summary>
@@ -7892,7 +7892,7 @@ public readonly ref struct CharacterLevelUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7910,7 +7910,7 @@ public readonly ref struct CharacterInformationThreadSafeWriter
     public CharacterInformationThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7920,7 +7920,7 @@ public readonly ref struct CharacterInformationThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7936,7 +7936,7 @@ public readonly ref struct CharacterInformationThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CharacterInformation.Length);
+        this.connection.Output.AdvanceSafely(CharacterInformation.Length);
     }
 
     /// <summary>
@@ -7944,7 +7944,7 @@ public readonly ref struct CharacterInformationThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -7962,7 +7962,7 @@ public readonly ref struct CharacterInformation075ThreadSafeWriter
     public CharacterInformation075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -7972,7 +7972,7 @@ public readonly ref struct CharacterInformation075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -7988,7 +7988,7 @@ public readonly ref struct CharacterInformation075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CharacterInformation075.Length);
+        this.connection.Output.AdvanceSafely(CharacterInformation075.Length);
     }
 
     /// <summary>
@@ -7996,7 +7996,7 @@ public readonly ref struct CharacterInformation075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8014,7 +8014,7 @@ public readonly ref struct CharacterInformation097ThreadSafeWriter
     public CharacterInformation097ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8024,7 +8024,7 @@ public readonly ref struct CharacterInformation097ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8040,7 +8040,7 @@ public readonly ref struct CharacterInformation097ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CharacterInformation097.Length);
+        this.connection.Output.AdvanceSafely(CharacterInformation097.Length);
     }
 
     /// <summary>
@@ -8048,7 +8048,7 @@ public readonly ref struct CharacterInformation097ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8066,7 +8066,7 @@ public readonly ref struct SummonHealthUpdateThreadSafeWriter
     public SummonHealthUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8076,7 +8076,7 @@ public readonly ref struct SummonHealthUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8092,7 +8092,7 @@ public readonly ref struct SummonHealthUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SummonHealthUpdate.Length);
+        this.connection.Output.AdvanceSafely(SummonHealthUpdate.Length);
     }
 
     /// <summary>
@@ -8100,7 +8100,7 @@ public readonly ref struct SummonHealthUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8118,7 +8118,7 @@ public readonly ref struct GuildSoccerTimeUpdateThreadSafeWriter
     public GuildSoccerTimeUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8128,7 +8128,7 @@ public readonly ref struct GuildSoccerTimeUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8144,7 +8144,7 @@ public readonly ref struct GuildSoccerTimeUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildSoccerTimeUpdate.Length);
+        this.connection.Output.AdvanceSafely(GuildSoccerTimeUpdate.Length);
     }
 
     /// <summary>
@@ -8152,7 +8152,7 @@ public readonly ref struct GuildSoccerTimeUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8170,7 +8170,7 @@ public readonly ref struct GuildSoccerScoreUpdateThreadSafeWriter
     public GuildSoccerScoreUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8180,7 +8180,7 @@ public readonly ref struct GuildSoccerScoreUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8196,7 +8196,7 @@ public readonly ref struct GuildSoccerScoreUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildSoccerScoreUpdate.Length);
+        this.connection.Output.AdvanceSafely(GuildSoccerScoreUpdate.Length);
     }
 
     /// <summary>
@@ -8204,7 +8204,7 @@ public readonly ref struct GuildSoccerScoreUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8222,7 +8222,7 @@ public readonly ref struct MasterStatsUpdateThreadSafeWriter
     public MasterStatsUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8232,7 +8232,7 @@ public readonly ref struct MasterStatsUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8248,7 +8248,7 @@ public readonly ref struct MasterStatsUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MasterStatsUpdate.Length);
+        this.connection.Output.AdvanceSafely(MasterStatsUpdate.Length);
     }
 
     /// <summary>
@@ -8256,7 +8256,7 @@ public readonly ref struct MasterStatsUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8274,7 +8274,7 @@ public readonly ref struct MasterSkillLevelUpdateThreadSafeWriter
     public MasterSkillLevelUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8284,7 +8284,7 @@ public readonly ref struct MasterSkillLevelUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8300,7 +8300,7 @@ public readonly ref struct MasterSkillLevelUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MasterSkillLevelUpdate.Length);
+        this.connection.Output.AdvanceSafely(MasterSkillLevelUpdate.Length);
     }
 
     /// <summary>
@@ -8308,7 +8308,7 @@ public readonly ref struct MasterSkillLevelUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8326,7 +8326,7 @@ public readonly ref struct GuildJoinRequestThreadSafeWriter
     public GuildJoinRequestThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8336,7 +8336,7 @@ public readonly ref struct GuildJoinRequestThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8352,7 +8352,7 @@ public readonly ref struct GuildJoinRequestThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildJoinRequest.Length);
+        this.connection.Output.AdvanceSafely(GuildJoinRequest.Length);
     }
 
     /// <summary>
@@ -8360,7 +8360,7 @@ public readonly ref struct GuildJoinRequestThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8378,7 +8378,7 @@ public readonly ref struct GuildJoinResponseThreadSafeWriter
     public GuildJoinResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8388,7 +8388,7 @@ public readonly ref struct GuildJoinResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8404,7 +8404,7 @@ public readonly ref struct GuildJoinResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildJoinResponse.Length);
+        this.connection.Output.AdvanceSafely(GuildJoinResponse.Length);
     }
 
     /// <summary>
@@ -8412,7 +8412,7 @@ public readonly ref struct GuildJoinResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8430,7 +8430,7 @@ public readonly ref struct GuildKickResponseThreadSafeWriter
     public GuildKickResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8440,7 +8440,7 @@ public readonly ref struct GuildKickResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8456,7 +8456,7 @@ public readonly ref struct GuildKickResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildKickResponse.Length);
+        this.connection.Output.AdvanceSafely(GuildKickResponse.Length);
     }
 
     /// <summary>
@@ -8464,7 +8464,7 @@ public readonly ref struct GuildKickResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8482,7 +8482,7 @@ public readonly ref struct ShowGuildMasterDialogThreadSafeWriter
     public ShowGuildMasterDialogThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8492,7 +8492,7 @@ public readonly ref struct ShowGuildMasterDialogThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8508,7 +8508,7 @@ public readonly ref struct ShowGuildMasterDialogThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ShowGuildMasterDialog.Length);
+        this.connection.Output.AdvanceSafely(ShowGuildMasterDialog.Length);
     }
 
     /// <summary>
@@ -8516,7 +8516,7 @@ public readonly ref struct ShowGuildMasterDialogThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8534,7 +8534,7 @@ public readonly ref struct ShowGuildCreationDialogThreadSafeWriter
     public ShowGuildCreationDialogThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8544,7 +8544,7 @@ public readonly ref struct ShowGuildCreationDialogThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8560,7 +8560,7 @@ public readonly ref struct ShowGuildCreationDialogThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ShowGuildCreationDialog.Length);
+        this.connection.Output.AdvanceSafely(ShowGuildCreationDialog.Length);
     }
 
     /// <summary>
@@ -8568,7 +8568,7 @@ public readonly ref struct ShowGuildCreationDialogThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8586,7 +8586,7 @@ public readonly ref struct GuildCreationResultThreadSafeWriter
     public GuildCreationResultThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8596,7 +8596,7 @@ public readonly ref struct GuildCreationResultThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8612,7 +8612,7 @@ public readonly ref struct GuildCreationResultThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildCreationResult.Length);
+        this.connection.Output.AdvanceSafely(GuildCreationResult.Length);
     }
 
     /// <summary>
@@ -8620,7 +8620,7 @@ public readonly ref struct GuildCreationResultThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8638,7 +8638,7 @@ public readonly ref struct GuildMemberLeftGuildThreadSafeWriter
     public GuildMemberLeftGuildThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8648,7 +8648,7 @@ public readonly ref struct GuildMemberLeftGuildThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8664,7 +8664,7 @@ public readonly ref struct GuildMemberLeftGuildThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildMemberLeftGuild.Length);
+        this.connection.Output.AdvanceSafely(GuildMemberLeftGuild.Length);
     }
 
     /// <summary>
@@ -8672,7 +8672,7 @@ public readonly ref struct GuildMemberLeftGuildThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8690,7 +8690,7 @@ public readonly ref struct GuildWarRequestResultThreadSafeWriter
     public GuildWarRequestResultThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8700,7 +8700,7 @@ public readonly ref struct GuildWarRequestResultThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8716,7 +8716,7 @@ public readonly ref struct GuildWarRequestResultThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildWarRequestResult.Length);
+        this.connection.Output.AdvanceSafely(GuildWarRequestResult.Length);
     }
 
     /// <summary>
@@ -8724,7 +8724,7 @@ public readonly ref struct GuildWarRequestResultThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8742,7 +8742,7 @@ public readonly ref struct GuildWarRequestThreadSafeWriter
     public GuildWarRequestThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8752,7 +8752,7 @@ public readonly ref struct GuildWarRequestThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8768,7 +8768,7 @@ public readonly ref struct GuildWarRequestThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildWarRequest.Length);
+        this.connection.Output.AdvanceSafely(GuildWarRequest.Length);
     }
 
     /// <summary>
@@ -8776,7 +8776,7 @@ public readonly ref struct GuildWarRequestThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8794,7 +8794,7 @@ public readonly ref struct GuildWarDeclaredThreadSafeWriter
     public GuildWarDeclaredThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8804,7 +8804,7 @@ public readonly ref struct GuildWarDeclaredThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8820,7 +8820,7 @@ public readonly ref struct GuildWarDeclaredThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildWarDeclared.Length);
+        this.connection.Output.AdvanceSafely(GuildWarDeclared.Length);
     }
 
     /// <summary>
@@ -8828,7 +8828,7 @@ public readonly ref struct GuildWarDeclaredThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8846,7 +8846,7 @@ public readonly ref struct GuildWarEndedThreadSafeWriter
     public GuildWarEndedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8856,7 +8856,7 @@ public readonly ref struct GuildWarEndedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8872,7 +8872,7 @@ public readonly ref struct GuildWarEndedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildWarEnded.Length);
+        this.connection.Output.AdvanceSafely(GuildWarEnded.Length);
     }
 
     /// <summary>
@@ -8880,7 +8880,7 @@ public readonly ref struct GuildWarEndedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8898,7 +8898,7 @@ public readonly ref struct GuildWarScoreUpdateThreadSafeWriter
     public GuildWarScoreUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8908,7 +8908,7 @@ public readonly ref struct GuildWarScoreUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8924,7 +8924,7 @@ public readonly ref struct GuildWarScoreUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildWarScoreUpdate.Length);
+        this.connection.Output.AdvanceSafely(GuildWarScoreUpdate.Length);
     }
 
     /// <summary>
@@ -8932,7 +8932,7 @@ public readonly ref struct GuildWarScoreUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -8950,7 +8950,7 @@ public readonly ref struct GuildInformationThreadSafeWriter
     public GuildInformationThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -8960,7 +8960,7 @@ public readonly ref struct GuildInformationThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -8976,7 +8976,7 @@ public readonly ref struct GuildInformationThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(GuildInformation.Length);
+        this.connection.Output.AdvanceSafely(GuildInformation.Length);
     }
 
     /// <summary>
@@ -8984,7 +8984,7 @@ public readonly ref struct GuildInformationThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9002,7 +9002,7 @@ public readonly ref struct SingleGuildInformation075ThreadSafeWriter
     public SingleGuildInformation075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9012,7 +9012,7 @@ public readonly ref struct SingleGuildInformation075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9028,7 +9028,7 @@ public readonly ref struct SingleGuildInformation075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(SingleGuildInformation075.Length);
+        this.connection.Output.AdvanceSafely(SingleGuildInformation075.Length);
     }
 
     /// <summary>
@@ -9036,7 +9036,7 @@ public readonly ref struct SingleGuildInformation075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9054,7 +9054,7 @@ public readonly ref struct VaultMoneyUpdateThreadSafeWriter
     public VaultMoneyUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9064,7 +9064,7 @@ public readonly ref struct VaultMoneyUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9080,7 +9080,7 @@ public readonly ref struct VaultMoneyUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(VaultMoneyUpdate.Length);
+        this.connection.Output.AdvanceSafely(VaultMoneyUpdate.Length);
     }
 
     /// <summary>
@@ -9088,7 +9088,7 @@ public readonly ref struct VaultMoneyUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9106,7 +9106,7 @@ public readonly ref struct VaultClosedThreadSafeWriter
     public VaultClosedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9116,7 +9116,7 @@ public readonly ref struct VaultClosedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9132,7 +9132,7 @@ public readonly ref struct VaultClosedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(VaultClosed.Length);
+        this.connection.Output.AdvanceSafely(VaultClosed.Length);
     }
 
     /// <summary>
@@ -9140,7 +9140,7 @@ public readonly ref struct VaultClosedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9158,7 +9158,7 @@ public readonly ref struct VaultProtectionInformationThreadSafeWriter
     public VaultProtectionInformationThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9168,7 +9168,7 @@ public readonly ref struct VaultProtectionInformationThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9184,7 +9184,7 @@ public readonly ref struct VaultProtectionInformationThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(VaultProtectionInformation.Length);
+        this.connection.Output.AdvanceSafely(VaultProtectionInformation.Length);
     }
 
     /// <summary>
@@ -9192,7 +9192,7 @@ public readonly ref struct VaultProtectionInformationThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9210,7 +9210,7 @@ public readonly ref struct CraftingDialogClosed075ThreadSafeWriter
     public CraftingDialogClosed075ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9220,7 +9220,7 @@ public readonly ref struct CraftingDialogClosed075ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9236,7 +9236,7 @@ public readonly ref struct CraftingDialogClosed075ThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(CraftingDialogClosed075.Length);
+        this.connection.Output.AdvanceSafely(CraftingDialogClosed075.Length);
     }
 
     /// <summary>
@@ -9244,7 +9244,7 @@ public readonly ref struct CraftingDialogClosed075ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9262,7 +9262,7 @@ public readonly ref struct LegacyQuestStateDialogThreadSafeWriter
     public LegacyQuestStateDialogThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9272,7 +9272,7 @@ public readonly ref struct LegacyQuestStateDialogThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9288,7 +9288,7 @@ public readonly ref struct LegacyQuestStateDialogThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(LegacyQuestStateDialog.Length);
+        this.connection.Output.AdvanceSafely(LegacyQuestStateDialog.Length);
     }
 
     /// <summary>
@@ -9296,7 +9296,7 @@ public readonly ref struct LegacyQuestStateDialogThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9314,7 +9314,7 @@ public readonly ref struct LegacySetQuestStateResponseThreadSafeWriter
     public LegacySetQuestStateResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9324,7 +9324,7 @@ public readonly ref struct LegacySetQuestStateResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9340,7 +9340,7 @@ public readonly ref struct LegacySetQuestStateResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(LegacySetQuestStateResponse.Length);
+        this.connection.Output.AdvanceSafely(LegacySetQuestStateResponse.Length);
     }
 
     /// <summary>
@@ -9348,7 +9348,7 @@ public readonly ref struct LegacySetQuestStateResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9366,7 +9366,7 @@ public readonly ref struct LegacyQuestRewardThreadSafeWriter
     public LegacyQuestRewardThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9376,7 +9376,7 @@ public readonly ref struct LegacyQuestRewardThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9392,7 +9392,7 @@ public readonly ref struct LegacyQuestRewardThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(LegacyQuestReward.Length);
+        this.connection.Output.AdvanceSafely(LegacyQuestReward.Length);
     }
 
     /// <summary>
@@ -9400,7 +9400,7 @@ public readonly ref struct LegacyQuestRewardThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9418,7 +9418,7 @@ public readonly ref struct LegacyQuestMonsterKillInfoThreadSafeWriter
     public LegacyQuestMonsterKillInfoThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9428,7 +9428,7 @@ public readonly ref struct LegacyQuestMonsterKillInfoThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9444,7 +9444,7 @@ public readonly ref struct LegacyQuestMonsterKillInfoThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(LegacyQuestMonsterKillInfo.Length);
+        this.connection.Output.AdvanceSafely(LegacyQuestMonsterKillInfo.Length);
     }
 
     /// <summary>
@@ -9452,7 +9452,7 @@ public readonly ref struct LegacyQuestMonsterKillInfoThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9470,7 +9470,7 @@ public readonly ref struct PetModeThreadSafeWriter
     public PetModeThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9480,7 +9480,7 @@ public readonly ref struct PetModeThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9496,7 +9496,7 @@ public readonly ref struct PetModeThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(PetMode.Length);
+        this.connection.Output.AdvanceSafely(PetMode.Length);
     }
 
     /// <summary>
@@ -9504,7 +9504,7 @@ public readonly ref struct PetModeThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9522,7 +9522,7 @@ public readonly ref struct PetAttackThreadSafeWriter
     public PetAttackThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9532,7 +9532,7 @@ public readonly ref struct PetAttackThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9548,7 +9548,7 @@ public readonly ref struct PetAttackThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(PetAttack.Length);
+        this.connection.Output.AdvanceSafely(PetAttack.Length);
     }
 
     /// <summary>
@@ -9556,7 +9556,7 @@ public readonly ref struct PetAttackThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9574,7 +9574,7 @@ public readonly ref struct PetInfoResponseThreadSafeWriter
     public PetInfoResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9584,7 +9584,7 @@ public readonly ref struct PetInfoResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9600,7 +9600,7 @@ public readonly ref struct PetInfoResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(PetInfoResponse.Length);
+        this.connection.Output.AdvanceSafely(PetInfoResponse.Length);
     }
 
     /// <summary>
@@ -9608,7 +9608,7 @@ public readonly ref struct PetInfoResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9626,7 +9626,7 @@ public readonly ref struct FriendAddedThreadSafeWriter
     public FriendAddedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9636,7 +9636,7 @@ public readonly ref struct FriendAddedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9652,7 +9652,7 @@ public readonly ref struct FriendAddedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(FriendAdded.Length);
+        this.connection.Output.AdvanceSafely(FriendAdded.Length);
     }
 
     /// <summary>
@@ -9660,7 +9660,7 @@ public readonly ref struct FriendAddedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9678,7 +9678,7 @@ public readonly ref struct FriendRequestThreadSafeWriter
     public FriendRequestThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9688,7 +9688,7 @@ public readonly ref struct FriendRequestThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9704,7 +9704,7 @@ public readonly ref struct FriendRequestThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(FriendRequest.Length);
+        this.connection.Output.AdvanceSafely(FriendRequest.Length);
     }
 
     /// <summary>
@@ -9712,7 +9712,7 @@ public readonly ref struct FriendRequestThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9730,7 +9730,7 @@ public readonly ref struct FriendDeletedThreadSafeWriter
     public FriendDeletedThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9740,7 +9740,7 @@ public readonly ref struct FriendDeletedThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9756,7 +9756,7 @@ public readonly ref struct FriendDeletedThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(FriendDeleted.Length);
+        this.connection.Output.AdvanceSafely(FriendDeleted.Length);
     }
 
     /// <summary>
@@ -9764,7 +9764,7 @@ public readonly ref struct FriendDeletedThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9782,7 +9782,7 @@ public readonly ref struct FriendOnlineStateUpdateThreadSafeWriter
     public FriendOnlineStateUpdateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9792,7 +9792,7 @@ public readonly ref struct FriendOnlineStateUpdateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9808,7 +9808,7 @@ public readonly ref struct FriendOnlineStateUpdateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(FriendOnlineStateUpdate.Length);
+        this.connection.Output.AdvanceSafely(FriendOnlineStateUpdate.Length);
     }
 
     /// <summary>
@@ -9816,7 +9816,7 @@ public readonly ref struct FriendOnlineStateUpdateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9834,7 +9834,7 @@ public readonly ref struct LetterSendResponseThreadSafeWriter
     public LetterSendResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9844,7 +9844,7 @@ public readonly ref struct LetterSendResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9860,7 +9860,7 @@ public readonly ref struct LetterSendResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(LetterSendResponse.Length);
+        this.connection.Output.AdvanceSafely(LetterSendResponse.Length);
     }
 
     /// <summary>
@@ -9868,7 +9868,7 @@ public readonly ref struct LetterSendResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9886,7 +9886,7 @@ public readonly ref struct AddLetterThreadSafeWriter
     public AddLetterThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9896,7 +9896,7 @@ public readonly ref struct AddLetterThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9912,7 +9912,7 @@ public readonly ref struct AddLetterThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(AddLetter.Length);
+        this.connection.Output.AdvanceSafely(AddLetter.Length);
     }
 
     /// <summary>
@@ -9920,7 +9920,7 @@ public readonly ref struct AddLetterThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9938,7 +9938,7 @@ public readonly ref struct RemoveLetterThreadSafeWriter
     public RemoveLetterThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -9948,7 +9948,7 @@ public readonly ref struct RemoveLetterThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -9964,7 +9964,7 @@ public readonly ref struct RemoveLetterThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(RemoveLetter.Length);
+        this.connection.Output.AdvanceSafely(RemoveLetter.Length);
     }
 
     /// <summary>
@@ -9972,7 +9972,7 @@ public readonly ref struct RemoveLetterThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -9990,7 +9990,7 @@ public readonly ref struct ChatRoomConnectionInfoThreadSafeWriter
     public ChatRoomConnectionInfoThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10000,7 +10000,7 @@ public readonly ref struct ChatRoomConnectionInfoThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10016,7 +10016,7 @@ public readonly ref struct ChatRoomConnectionInfoThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(ChatRoomConnectionInfo.Length);
+        this.connection.Output.AdvanceSafely(ChatRoomConnectionInfo.Length);
     }
 
     /// <summary>
@@ -10024,7 +10024,7 @@ public readonly ref struct ChatRoomConnectionInfoThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10042,7 +10042,7 @@ public readonly ref struct FriendInvitationResultThreadSafeWriter
     public FriendInvitationResultThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10052,7 +10052,7 @@ public readonly ref struct FriendInvitationResultThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10068,7 +10068,7 @@ public readonly ref struct FriendInvitationResultThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(FriendInvitationResult.Length);
+        this.connection.Output.AdvanceSafely(FriendInvitationResult.Length);
     }
 
     /// <summary>
@@ -10076,7 +10076,7 @@ public readonly ref struct FriendInvitationResultThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10094,7 +10094,7 @@ public readonly ref struct QuestEventResponseThreadSafeWriter
     public QuestEventResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10104,7 +10104,7 @@ public readonly ref struct QuestEventResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10120,7 +10120,7 @@ public readonly ref struct QuestEventResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(QuestEventResponse.Length);
+        this.connection.Output.AdvanceSafely(QuestEventResponse.Length);
     }
 
     /// <summary>
@@ -10128,7 +10128,7 @@ public readonly ref struct QuestEventResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10146,7 +10146,7 @@ public readonly ref struct QuestStepInfoThreadSafeWriter
     public QuestStepInfoThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10156,7 +10156,7 @@ public readonly ref struct QuestStepInfoThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10172,7 +10172,7 @@ public readonly ref struct QuestStepInfoThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(QuestStepInfo.Length);
+        this.connection.Output.AdvanceSafely(QuestStepInfo.Length);
     }
 
     /// <summary>
@@ -10180,7 +10180,7 @@ public readonly ref struct QuestStepInfoThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10198,7 +10198,7 @@ public readonly ref struct QuestProgressThreadSafeWriter
     public QuestProgressThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10208,7 +10208,7 @@ public readonly ref struct QuestProgressThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10224,7 +10224,7 @@ public readonly ref struct QuestProgressThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(QuestProgress.Length);
+        this.connection.Output.AdvanceSafely(QuestProgress.Length);
     }
 
     /// <summary>
@@ -10232,7 +10232,7 @@ public readonly ref struct QuestProgressThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10250,7 +10250,7 @@ public readonly ref struct QuestCompletionResponseThreadSafeWriter
     public QuestCompletionResponseThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10260,7 +10260,7 @@ public readonly ref struct QuestCompletionResponseThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10276,7 +10276,7 @@ public readonly ref struct QuestCompletionResponseThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(QuestCompletionResponse.Length);
+        this.connection.Output.AdvanceSafely(QuestCompletionResponse.Length);
     }
 
     /// <summary>
@@ -10284,7 +10284,7 @@ public readonly ref struct QuestCompletionResponseThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10302,7 +10302,7 @@ public readonly ref struct QuestCancelledThreadSafeWriter
     public QuestCancelledThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10312,7 +10312,7 @@ public readonly ref struct QuestCancelledThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10328,7 +10328,7 @@ public readonly ref struct QuestCancelledThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(QuestCancelled.Length);
+        this.connection.Output.AdvanceSafely(QuestCancelled.Length);
     }
 
     /// <summary>
@@ -10336,7 +10336,7 @@ public readonly ref struct QuestCancelledThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10354,7 +10354,7 @@ public readonly ref struct QuestStateThreadSafeWriter
     public QuestStateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10364,7 +10364,7 @@ public readonly ref struct QuestStateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10380,7 +10380,7 @@ public readonly ref struct QuestStateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(QuestState.Length);
+        this.connection.Output.AdvanceSafely(QuestState.Length);
     }
 
     /// <summary>
@@ -10388,7 +10388,7 @@ public readonly ref struct QuestStateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10406,7 +10406,7 @@ public readonly ref struct OpenNpcDialogThreadSafeWriter
     public OpenNpcDialogThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10416,7 +10416,7 @@ public readonly ref struct OpenNpcDialogThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10432,7 +10432,7 @@ public readonly ref struct OpenNpcDialogThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(OpenNpcDialog.Length);
+        this.connection.Output.AdvanceSafely(OpenNpcDialog.Length);
     }
 
     /// <summary>
@@ -10440,7 +10440,7 @@ public readonly ref struct OpenNpcDialogThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10458,7 +10458,7 @@ public readonly ref struct DevilSquareEnterResultThreadSafeWriter
     public DevilSquareEnterResultThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10468,7 +10468,7 @@ public readonly ref struct DevilSquareEnterResultThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10484,7 +10484,7 @@ public readonly ref struct DevilSquareEnterResultThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(DevilSquareEnterResult.Length);
+        this.connection.Output.AdvanceSafely(DevilSquareEnterResult.Length);
     }
 
     /// <summary>
@@ -10492,7 +10492,7 @@ public readonly ref struct DevilSquareEnterResultThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10510,7 +10510,7 @@ public readonly ref struct MiniGameOpeningStateThreadSafeWriter
     public MiniGameOpeningStateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10520,7 +10520,7 @@ public readonly ref struct MiniGameOpeningStateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10536,7 +10536,7 @@ public readonly ref struct MiniGameOpeningStateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(MiniGameOpeningState.Length);
+        this.connection.Output.AdvanceSafely(MiniGameOpeningState.Length);
     }
 
     /// <summary>
@@ -10544,7 +10544,7 @@ public readonly ref struct MiniGameOpeningStateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       
@@ -10562,7 +10562,7 @@ public readonly ref struct UpdateMiniGameStateThreadSafeWriter
     public UpdateMiniGameStateThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -10572,7 +10572,7 @@ public readonly ref struct UpdateMiniGameStateThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -10588,7 +10588,7 @@ public readonly ref struct UpdateMiniGameStateThreadSafeWriter
     /// </summary>
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(UpdateMiniGameState.Length);
+        this.connection.Output.AdvanceSafely(UpdateMiniGameState.Length);
     }
 
     /// <summary>
@@ -10596,7 +10596,7 @@ public readonly ref struct UpdateMiniGameStateThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       

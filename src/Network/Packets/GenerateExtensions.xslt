@@ -66,7 +66,7 @@ public readonly ref struct %NAME%ThreadSafeWriter
     public %NAME%ThreadSafeWriter(IConnection connection)
     {
         this.connection = connection;
-        Monitor.Enter(this.connection);
+        this.connection.OutputLock.Wait();
         try
         {
             // Initialize header and default values
@@ -76,7 +76,7 @@ public readonly ref struct %NAME%ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(this.connection);
+            this.connection.OutputLock.Release();
             throw;
         }
     }
@@ -92,7 +92,7 @@ public readonly ref struct %NAME%ThreadSafeWriter
     /// &lt;/summary&gt;
     public void Commit()
     {
-        this.connection.Output.AdvanceAndFlushSafely(%NAME%.Length);
+        this.connection.Output.AdvanceSafely(%NAME%.Length);
     }
 
     /// &lt;summary&gt;
@@ -100,7 +100,7 @@ public readonly ref struct %NAME%ThreadSafeWriter
     /// &lt;/summary&gt;
     public void Dispose()
     {
-        Monitor.Exit(this.connection);
+        this.connection.OutputLock.Release();
     }
 }
       </xsl:text>

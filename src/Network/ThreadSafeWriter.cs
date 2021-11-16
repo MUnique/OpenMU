@@ -27,7 +27,7 @@ public readonly ref struct ThreadSafeWriter
     {
         this._connection = connection;
         this._expectedPacketSize = expectedPacketSize;
-        Monitor.Enter(connection);
+        connection.OutputLock.Wait();
         try
         {
             var span = this.Span;
@@ -37,7 +37,7 @@ public readonly ref struct ThreadSafeWriter
         }
         catch (InvalidOperationException)
         {
-            Monitor.Exit(connection);
+            connection.OutputLock.Release();
             throw;
         }
     }
@@ -58,7 +58,7 @@ public readonly ref struct ThreadSafeWriter
     /// <param name="packetSize">Size of the packet.</param>
     public void Commit(int packetSize)
     {
-        this._connection.Output.AdvanceAndFlushSafely(packetSize);
+        this._connection.Output.AdvanceSafely(packetSize);
     }
 
     /// <summary>
@@ -66,6 +66,6 @@ public readonly ref struct ThreadSafeWriter
     /// </summary>
     public void Dispose()
     {
-        Monitor.Exit(this._connection);
+        this._connection.OutputLock.Release();
     }
 }

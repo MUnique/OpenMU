@@ -6689,7 +6689,7 @@
               <Length>10</Length>
             </Field>
             <Field>
-              <Index>1</Index>
+              <Index>10</Index>
               <Type>Byte</Type>
               <Name>ServerId</Name>
               <Description>The server id on which the player currently is online. 0xFF means offline.</Description>

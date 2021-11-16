@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Network;
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
+using System.Threading;
 
 /// <summary>
 /// A delegate which is executed when a packet gets received from a connection.
@@ -61,6 +62,11 @@ public interface IConnection : IDisposable
     /// The pipe writer.
     /// </value>
     PipeWriter Output { get; }
+
+    /// <summary>
+    /// Gets a <see cref="SemaphoreSlim"/> to synchronize writes to the <see cref="Output"/>.
+    /// </summary>
+    SemaphoreSlim OutputLock { get; }
 
     /// <summary>
     /// Begins receiving from the client.

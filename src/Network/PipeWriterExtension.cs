@@ -13,30 +13,15 @@ using System.IO.Pipelines;
 public static class PipeWriterExtension
 {
     /// <summary>
-    /// Tries to advance and to flush the <see cref="PipeWriter"/>.
+    /// Advances the <see cref="PipeWriter"/> and catches possible errors.
     /// </summary>
     /// <param name="pipeWriter">The <see cref="PipeWriter"/>.</param>
     /// <param name="bytes">The number of data items written to the <see cref="T:System.Span`1" /> or <see cref="T:System.Memory`1" />.</param>
-    public static void AdvanceAndFlushSafely(this PipeWriter pipeWriter, int bytes)
+    public static void AdvanceSafely(this PipeWriter pipeWriter, int bytes)
     {
         try
         {
             pipeWriter.Advance(bytes);
-
-            Task.Run(async () =>
-            {
-                try
-                {
-                    await pipeWriter.FlushAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    if (Debugger.IsLogging())
-                    {
-                        Debug.Fail(ex.ToString());
-                    }
-                }
-            });
         }
         catch (Exception ex)
         {

@@ -18629,8 +18629,8 @@ public readonly ref struct Friend
     /// </summary>
     public byte ServerId
     {
-        get => this._data[1];
-        set => this._data[1] = value;
+        get => this._data[10];
+        set => this._data[10] = value;
     }
 }
 }
