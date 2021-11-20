@@ -30,6 +30,7 @@ public class EntityDataContext : ExtendedTypeContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
         modelBuilder.Ignore<ConstantElement>();
         modelBuilder.Ignore<SimpleElement>();
         modelBuilder.Entity<Model.AttributeDefinition>();
@@ -58,7 +59,6 @@ public class EntityDataContext : ExtendedTypeContext
         {
             entity.Property(account => account.LoginName).HasMaxLength(10).IsRequired();
             entity.HasIndex(account => account.LoginName).IsUnique();
-            entity.Property(account => account.RegistrationDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         modelBuilder.Entity<Character>(entity =>
@@ -67,7 +67,6 @@ public class EntityDataContext : ExtendedTypeContext
             entity.HasIndex(character => character.Name).IsUnique();
             entity.Metadata.FindNavigation(nameof(Character.RawCharacterClass))!.ForeignKey.IsRequired = true;
             entity.Property(character => character.CharacterSlot).IsRequired();
-            entity.Property(character => character.CreateDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
             var accountKey = entity.Metadata.GetForeignKeys().First(key => key.PrincipalEntityType == modelBuilder.Entity<Account>().Metadata);
             accountKey.DeleteBehavior = DeleteBehavior.Cascade;
 

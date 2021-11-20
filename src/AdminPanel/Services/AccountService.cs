@@ -95,7 +95,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
             item.EMail = accountParameters.EMail;
             item.State = accountParameters.State;
             item.SecurityCode = accountParameters.SecurityCode;
-            item.RegistrationDate = DateTime.Now;
+            item.RegistrationDate = DateTime.UtcNow;
             this._playerContext.SaveChanges();
             this.RaiseDataChanged();
         }

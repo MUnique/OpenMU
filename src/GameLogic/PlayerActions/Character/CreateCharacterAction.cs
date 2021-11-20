@@ -76,7 +76,7 @@ public class CreateCharacterAction
         character.CharacterClass = charclass;
         character.Name = name;
         character.CharacterSlot = freeSlot.Value;
-        character.CreateDate = DateTime.Now;
+        character.CreateDate = DateTime.UtcNow;
         character.KeyConfiguration = new byte[30];
         var attributes = character.CharacterClass.StatAttributes.Select(a => player.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
         attributes.ForEach(character.Attributes.Add);

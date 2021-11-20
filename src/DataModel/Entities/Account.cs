@@ -81,7 +81,7 @@ public class Account
     /// <summary>
     /// Gets or sets the registration date.
     /// </summary>
-    public DateTime RegistrationDate { get; set; }
+    public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Gets or sets the state.

@@ -126,7 +126,7 @@ public class Character
     /// <summary>
     /// Gets or sets the create date.
     /// </summary>
-    public DateTime CreateDate { get; set; }
+    public DateTime CreateDate { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Gets or sets the experience.

@@ -84,7 +84,7 @@ public class LetterSendAction
     private LetterHeader CreateLetter(IContext context, Player player, string receiver, string message, string title, byte rotation, byte animation)
     {
         var letterHeader = context.CreateNew<LetterHeader>();
-        letterHeader.LetterDate = DateTime.Now;
+        letterHeader.LetterDate = DateTime.UtcNow;
         letterHeader.SenderName = player.SelectedCharacter!.Name;
         letterHeader.ReceiverName = receiver;
         letterHeader.Subject = title;

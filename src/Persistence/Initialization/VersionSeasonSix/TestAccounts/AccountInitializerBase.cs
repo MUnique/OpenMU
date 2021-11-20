@@ -165,7 +165,7 @@ internal abstract class AccountInitializerBase : InitializerBase
         character.CharacterClass = this.GameConfiguration.CharacterClasses.First(c => c.Number == (byte)characterClass);
         character.Name = name;
         character.CharacterSlot = slot;
-        character.CreateDate = DateTime.Now;
+        character.CreateDate = DateTime.UtcNow;
         character.KeyConfiguration = new byte[30];
         foreach (
             var attribute in
