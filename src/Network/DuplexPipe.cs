@@ -13,14 +13,24 @@ using System.IO.Pipelines;
 public class DuplexPipe : IDuplexPipe
 {
     /// <summary>
+    /// Initializes a new instance of <see cref="DuplexPipe"/>.
+    /// </summary>
+    /// <param name="options">The optional pipe options. If null, the default options are applied.</param>
+    public DuplexPipe(PipeOptions? options = null)
+    {
+        this.SendPipe = new Pipe(options ?? PipeOptions.Default);
+        this.ReceivePipe = new Pipe(options ?? PipeOptions.Default);
+    }
+
+    /// <summary>
     /// Gets the send pipe.
     /// </summary>
-    public Pipe SendPipe { get; } = new ();
+    public Pipe SendPipe { get; }
 
     /// <summary>
     /// Gets the receive pipe.
     /// </summary>
-    public Pipe ReceivePipe { get; } = new ();
+    public Pipe ReceivePipe { get; }
 
     /// <summary>
     /// Gets the input pipe reader. It's the reader of the <see cref="ReceivePipe"/>.

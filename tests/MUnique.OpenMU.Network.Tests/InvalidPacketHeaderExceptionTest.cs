@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Network.Tests;
 
+using System.IO.Pipelines;
 using Microsoft.Extensions.Logging.Abstractions;
 
 /// <summary>
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 [TestFixture]
 public class InvalidPacketHeaderExceptionTest
 {
-    private readonly byte[] malformedData = { 0xC1, 0x03, 0xFF, 0x00, 0x00, 0x00 };
+    private readonly byte[] _malformedData = { 0xC1, 0x03, 0xFF, 0x00, 0x00, 0x00 };
 
     /// <summary>
     /// Tests if the exception is thrown.
@@ -51,18 +52,19 @@ public class InvalidPacketHeaderExceptionTest
     [Test]
     public async Task TestBufferContent()
     {
-        await this.TestException(e => Assert.That(e.BufferContent, Is.EquivalentTo(this.malformedData)));
+        await this.TestException(e => Assert.That(e.BufferContent, Is.EquivalentTo(this._malformedData)));
     }
 
     private async ValueTask TestException(Action<InvalidPacketHeaderException> check)
     {
         bool thrown = false;
-        var duplexPipe = new DuplexPipe();
+        var duplexPipe = new DuplexPipe(new PipeOptions(pauseWriterThreshold: 1, resumeWriterThreshold: 1));
         using var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output), new NullLogger<Connection>());
         _ = connection.BeginReceive();
+
         try
         {
-            await duplexPipe.ReceivePipe.Writer.WriteAsync(this.malformedData);
+            _ = await duplexPipe.ReceivePipe.Writer.WriteAsync(this._malformedData).ConfigureAwait(false);
         }
         catch (InvalidPacketHeaderException e)
         {
