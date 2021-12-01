@@ -40,6 +40,7 @@ public class AutoFields : ComponentBase
         Builders.Add(new BooleanFieldBuilder());
         Builders.Add(new DateFieldBuilder());
         Builders.Add(new EnumFieldBuilder());
+        Builders.Add(new ExitGateFieldBuilder());
         Builders.Add(new LookupFieldBuilder());
         Builders.Add(new EmbeddedFormFieldBuilder());
         Builders.Add(new ObjectCollectionFieldBuilder());

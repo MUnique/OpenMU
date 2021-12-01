@@ -8398,7 +8398,8 @@ mark {
 
 .map-host {
   position: relative;
-  user-select: none; }
+  user-select: none;
+  z-index: 0; }
 
 .map-host > img {
   image-rendering: pixelated;
@@ -8418,7 +8419,7 @@ mark {
   left: 800px;
   width: 40%; }
 
-.map-object, .gate-enter, .gate-exit, .spawn, .spawn-area, .spawn-area-focused, .spawn-single, .spawn-single-focused {
+.map-object, .gate-enter, .gate-exit, .spawn, .spawn-area, .spawn-single {
   position: absolute; }
 
 .gate-enter {
@@ -8429,23 +8430,22 @@ mark {
   background: blue;
   opacity: 0.8; }
 
-.spawn, .spawn-area, .spawn-area-focused, .spawn-single, .spawn-single-focused {
+.spawn, .spawn-area, .spawn-single {
   background: indigo; }
 
-.spawn-area, .spawn-area-focused {
+.spawn-area {
   opacity: 0.3;
   border-color: white;
   border-style: dotted; }
 
-.spawn-area-focused {
-  opacity: 0.6;
-  border-style: solid; }
-
-.spawn-single, .spawn-single-focused {
+.spawn-single {
   opacity: 0.66; }
 
-.spawn-single-focused {
-  opacity: 1.0; }
+.focused-object {
+  opacity: 1.0;
+  border-color: white;
+  border-style: solid;
+  border-width: thin; }
 
 .resizers .resizer {
   width: 20px;

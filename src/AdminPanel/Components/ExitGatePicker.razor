@@ -1,0 +1,34 @@
+﻿@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Persistence
+
+<div class="input-group border rounded">
+    <div class="input-group-prepend">
+        <span class="" id="targetMapLabel">Target map:</span>
+    </div>
+    <div class="form-control border-0 mb-3 ml-1">
+        <select title="Target map" @onchange=this.OnMapSelected id="targetMapSelect" autocomplete="off">
+            @foreach (var map in this.LookupController.GetSuggestionsAsync<GameMapDefinition>(string.Empty, this.PersistenceContext).Result.OrderBy(c => c.Number))
+            {
+                <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>Map: @map.ToString()</option>
+            }
+        </select>
+    </div>
+</div>
+
+@if (this.Map is not null)
+{
+    <div class="map-host" width="@(_scale * SideLength)" height="@(_scale * SideLength)">
+        <img src="@(this.ImageData)"
+             width="@(_scale * SideLength)"
+             height="@(_scale * SideLength)"/>
+
+        @foreach (var exitGate in this.Map.ExitGates)
+        {
+            <div class="@this.GetCssClass(exitGate)"
+                 title="@exitGate.ToString()"
+                 style="@this.GetSizeAndPositionStyle(exitGate)"
+                 @onclick="@(_ => this.OnSelected(exitGate))">
+            </div>
+        }
+    </div>
+}

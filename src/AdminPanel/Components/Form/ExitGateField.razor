@@ -1,0 +1,27 @@
+﻿@inherits NotifyableInputBase<MUnique.OpenMU.DataModel.Configuration.ExitGate>
+
+<div>
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    <div class="btn-toolbar my-2 justify-content-between" role="toolbar" aria-label="Exit gate selector">
+        <div class="btn-group w-100 rounded" role="group">
+            <div></div>
+            <button type="button" class="btn btn-secondary w-100 rounded text-left" @onclick="() => this._showPicker = !this._showPicker">
+                @if (this._showPicker)
+                {
+                    <span class="oi oi-expand-up"></span>
+                }
+                else
+                {
+                    <span class="oi oi-expand-down"></span>
+                }
+                <span class="ml-3">@(this.CurrentValue?.ToString() ?? "None selected")</span>
+            </button>
+        </div>
+    </div>
+    @if (this._showPicker)
+    {
+        <ExitGatePicker @bind-SelectedGate="@this.CurrentValue" />
+    }
+    
+    <ValidationMessage For=@this.ValueExpression />
+</div>

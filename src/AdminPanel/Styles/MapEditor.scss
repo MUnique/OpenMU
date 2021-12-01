@@ -3,6 +3,7 @@
 .map-host {
     position: relative;
     user-select: none;
+    z-index: 0;
 }
 
 .map-host > img {
@@ -54,20 +55,16 @@
     border-style: dotted;
 }
 
-.spawn-area-focused {
-    @extend .spawn-area;
-    opacity: 0.6;
-    border-style: solid;
-}
-
 .spawn-single {
     @extend .spawn;
     opacity: 0.66;
 }
 
-.spawn-single-focused {
-    @extend .spawn-single;
+.focused-object {
     opacity: 1.0;
+    border-color: white;
+    border-style: solid;
+    border-width: thin;
 }
 
 .resizers .resizer {
