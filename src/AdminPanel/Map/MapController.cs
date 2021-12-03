@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.AdminPanel.Map;
 
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.AdminPanel.Map.ViewPlugIns;
 using MUnique.OpenMU.GameLogic;
@@ -30,10 +31,11 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     /// Initializes a new instance of the <see cref="MapController" /> class.
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="mapIdentifier">The map identifier.</param>
     /// <param name="gameServer">The game server.</param>
     /// <param name="mapNumber">The map number.</param>
-    public MapController(IJSRuntime jsRuntime, string mapIdentifier, IGameServer gameServer, int mapNumber)
+    public MapController(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string mapIdentifier, IGameServer gameServer, int mapNumber)
     {
         this._jsRuntime = jsRuntime;
 
@@ -44,14 +46,14 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
 
         var viewPlugIns = new CustomPlugInContainer<IViewPlugIn>();
         var worldAccessor = $"{mapIdentifier}.world";
-        viewPlugIns.RegisterPlugIn<IObjectGotKilledPlugIn>(new ObjectGotKilledPlugIn(this._jsRuntime, worldAccessor, this._disposeCts.Token));
-        viewPlugIns.RegisterPlugIn<IObjectMovedPlugIn>(new ObjectMovedPlugIn(this._jsRuntime, worldAccessor, this._disposeCts.Token));
-        viewPlugIns.RegisterPlugIn<IShowAnimationPlugIn>(new ShowAnimationPlugIn(this._jsRuntime, worldAccessor, this._disposeCts.Token));
-        viewPlugIns.RegisterPlugIn<IObjectsOutOfScopePlugIn>(new ObjectsOutOfScopePlugIn(this._jsRuntime, worldAccessor, this._disposeCts.Token, this.Objects, () => this.ObjectsChanged?.Invoke(this, EventArgs.Empty)));
-        viewPlugIns.RegisterPlugIn<INewPlayersInScopePlugIn>(new NewPlayersInScopePlugIn(this._jsRuntime, worldAccessor, this._disposeCts.Token, this.Objects, () => this.ObjectsChanged?.Invoke(this, EventArgs.Empty)));
-        viewPlugIns.RegisterPlugIn<INewNpcsInScopePlugIn>(new NewNpcsInScopePlugIn(this._jsRuntime, worldAccessor, this._disposeCts.Token, this.Objects, () => this.ObjectsChanged?.Invoke(this, EventArgs.Empty)));
-        viewPlugIns.RegisterPlugIn<IShowSkillAnimationPlugIn>(new ShowSkillAnimationPlugIn(this._jsRuntime, worldAccessor, this._disposeCts.Token));
-        viewPlugIns.RegisterPlugIn<IShowAreaSkillAnimationPlugIn>(new ShowAreaSkillAnimationPlugIn(this._jsRuntime, worldAccessor, this._disposeCts.Token));
+        viewPlugIns.RegisterPlugIn<IObjectGotKilledPlugIn>(new ObjectGotKilledPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
+        viewPlugIns.RegisterPlugIn<IObjectMovedPlugIn>(new ObjectMovedPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
+        viewPlugIns.RegisterPlugIn<IShowAnimationPlugIn>(new ShowAnimationPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
+        viewPlugIns.RegisterPlugIn<IObjectsOutOfScopePlugIn>(new ObjectsOutOfScopePlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token, this.Objects, () => this.ObjectsChanged?.Invoke(this, EventArgs.Empty)));
+        viewPlugIns.RegisterPlugIn<INewPlayersInScopePlugIn>(new NewPlayersInScopePlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token, this.Objects, () => this.ObjectsChanged?.Invoke(this, EventArgs.Empty)));
+        viewPlugIns.RegisterPlugIn<INewNpcsInScopePlugIn>(new NewNpcsInScopePlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token, this.Objects, () => this.ObjectsChanged?.Invoke(this, EventArgs.Empty)));
+        viewPlugIns.RegisterPlugIn<IShowSkillAnimationPlugIn>(new ShowSkillAnimationPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
+        viewPlugIns.RegisterPlugIn<IShowAreaSkillAnimationPlugIn>(new ShowAreaSkillAnimationPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
 
         this.ViewPlugIns = viewPlugIns;
     }

@@ -4,8 +4,7 @@
 
 namespace MUnique.OpenMU.AdminPanel.Services;
 
-using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Mapster;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
@@ -16,8 +15,7 @@ using MUnique.OpenMU.Persistence;
 /// </summary>
 public class ConnectServerService
 {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
-
+    private readonly ILogger<ConnectServerService> _logger;
     private readonly IList<IManageableServer> _servers;
     private readonly IPersistenceContextProvider _persistenceContextProvider;
     private readonly IServerConfigurationChangeListener _changeListener;
@@ -28,11 +26,13 @@ public class ConnectServerService
     /// <param name="servers">The servers.</param>
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
     /// <param name="changeListener">The change listener.</param>
-    public ConnectServerService(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, IServerConfigurationChangeListener changeListener)
+    /// <param name="logger">The logger.</param>
+    public ConnectServerService(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, IServerConfigurationChangeListener changeListener, ILogger<ConnectServerService> logger)
     {
         this._servers = servers;
         this._persistenceContextProvider = persistenceContextProvider;
         this._changeListener = changeListener;
+        this._logger = logger;
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public class ConnectServerService
     {
         try
         {
-            Log.Warn($"User requested to delete connect server {connectServer.Id}.");
+            this._logger.LogWarning($"User requested to delete connect server {connectServer.Id}.");
             if (connectServer.Settings is ConnectServerDefinition settings)
             {
                 using var configContext = this._persistenceContextProvider.CreateNewContext();
@@ -62,17 +62,17 @@ public class ConnectServerService
                 {
                     connectServer.Shutdown();
                     this._servers.Remove(connectServer);
-                    Log.Warn($"User successfully deleted connect server {connectServer.Id}.");
+                    this._logger.LogWarning($"User successfully deleted connect server {connectServer.Id}.");
                 }
             }
             else
             {
-                Log.Error($"User couldn't delete connect server {connectServer.Id}, id {connectServer.Settings.GetId()}.");
+                this._logger.LogError($"User couldn't delete connect server {connectServer.Id}, id {connectServer.Settings.GetId()}.");
             }
         }
         catch (Exception e)
         {
-            Log.Error($"An unexpected error occured during the request to delete connect server {connectServer.Id}.", e);
+            this._logger.LogError(e, $"An unexpected error occured during the request to delete connect server {connectServer.Id}.");
             throw;
         }
     }
@@ -85,7 +85,7 @@ public class ConnectServerService
     {
         try
         {
-            Log.Info($"requested to save configuration of connect server {configuration.ServerId}");
+            this._logger.LogInformation($"requested to save configuration of connect server {configuration.ServerId}");
             DataModel.Configuration.ConnectServerDefinition? currentConfiguration = null;
             if (this._servers.OfType<IConnectServer>().FirstOrDefault(s => s.Settings.GetId() == configuration.GetId()) is { } server)
             {
@@ -134,7 +134,7 @@ public class ConnectServerService
         }
         catch (Exception ex)
         {
-            Log.Error($"An unexpected exception occured during saving the connect server configuration for server id {configuration.ServerId}", ex);
+            this._logger.LogError($"An unexpected exception occured during saving the connect server configuration for server id {configuration.ServerId}", ex);
             throw;
         }
     }

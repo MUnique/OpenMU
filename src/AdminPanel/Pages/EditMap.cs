@@ -7,9 +7,9 @@ namespace MUnique.OpenMU.AdminPanel.Pages;
 using System.Reflection;
 using System.Threading;
 using Blazored.Modal.Services;
-using log4net;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AdminPanel.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
@@ -20,11 +20,9 @@ using MUnique.OpenMU.Persistence;
 [Route("/map-editor/{id:guid}")]
 public sealed class EditMap : ComponentBase, IDisposable
 {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
     private GameMapDefinition? _model;
     private IContext? _persistenceContext;
     private CancellationTokenSource? _disposeCts;
-    private bool _isLoading;
 
     /// <summary>
     /// Gets or sets the identifier of the object which should be edited.
@@ -36,13 +34,15 @@ public sealed class EditMap : ComponentBase, IDisposable
     /// Gets or sets the persistence context provider which loads and saves the object.
     /// </summary>
     [Inject]
-    public IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
+    private IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the modal service.
     /// </summary>
     [Inject]
-    public IModalService ModalService { get; set; } = null!;
+    private IModalService ModalService { get; set; } = null!;
+
+    [Inject] private ILogger<EditMap> Logger { get; set; } = null!;
 
     /// <inheritdoc />
     public void Dispose()
@@ -93,7 +93,7 @@ public sealed class EditMap : ComponentBase, IDisposable
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        if (!this._isLoading && this._model is null)
+        if (this._model is null)
         {
             this._disposeCts = new CancellationTokenSource();
             var cts = this._disposeCts.Token;
@@ -117,7 +117,7 @@ public sealed class EditMap : ComponentBase, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"Could not load game map with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
+                    this.Logger.LogError(ex, $"Could not load game map with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                     await this.ModalService.ShowMessageAsync("Error", "Could not load the map data. Check the logs for details.");
                 }
 
@@ -146,7 +146,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         }
         catch (Exception ex)
         {
-            LogManager.GetLogger(this.GetType()).Error($"Error during saving {this.Id}", ex);
+            this.Logger.LogError(ex, $"Error during saving {this.Id}");
             text = $"An unexpected error occured: {ex.Message}.";
         }
 

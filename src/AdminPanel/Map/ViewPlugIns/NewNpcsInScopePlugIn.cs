@@ -4,9 +4,8 @@
 
 namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns;
 
-using System.Reflection;
 using System.Threading;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -17,8 +16,6 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public class NewNpcsInScopePlugIn : JsViewPlugInBase, INewNpcsInScopePlugIn
 {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
-
     private readonly IDictionary<int, ILocateable> _objects;
     private readonly Action _objectsChangedCallback;
 
@@ -26,12 +23,13 @@ public class NewNpcsInScopePlugIn : JsViewPlugInBase, INewNpcsInScopePlugIn
     /// Initializes a new instance of the <see cref="NewNpcsInScopePlugIn" /> class.
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="worldAccessor">The world accessor.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <param name="objects">The objects.</param>
     /// <param name="objectsChangedCallback">The objects changed callback.</param>
-    public NewNpcsInScopePlugIn(IJSRuntime jsRuntime, string worldAccessor, CancellationToken cancellationToken, IDictionary<int, ILocateable> objects, Action objectsChangedCallback)
-        : base(jsRuntime, $"{worldAccessor}.addOrUpdateNpc", cancellationToken)
+    public NewNpcsInScopePlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken, IDictionary<int, ILocateable> objects, Action objectsChangedCallback)
+        : base(jsRuntime, loggerFactory, $"{worldAccessor}.addOrUpdateNpc", cancellationToken)
     {
         this._objects = objects;
         this._objectsChangedCallback = objectsChangedCallback;
@@ -62,7 +60,7 @@ public class NewNpcsInScopePlugIn : JsViewPlugInBase, INewNpcsInScopePlugIn
         }
         catch (Exception e)
         {
-            Log.Error($"Error in {nameof(this.NewNpcsInScope)}", e);
+            this.Logger.LogError(e, $"Error in {nameof(this.NewNpcsInScope)}");
         }
     }
 }

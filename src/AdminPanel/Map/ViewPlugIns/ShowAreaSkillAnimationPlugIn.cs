@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns;
 
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
@@ -20,10 +21,11 @@ public class ShowAreaSkillAnimationPlugIn : JsViewPlugInBase, IShowAreaSkillAnim
     /// Initializes a new instance of the <see cref="ShowAreaSkillAnimationPlugIn"/> class.
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="worldAccessor">The world accessor.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public ShowAreaSkillAnimationPlugIn(IJSRuntime jsRuntime, string worldAccessor, CancellationToken cancellationToken)
-        : base(jsRuntime, $"{worldAccessor}.addAreaSkillAnimation", cancellationToken)
+    public ShowAreaSkillAnimationPlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken)
+        : base(jsRuntime, loggerFactory, $"{worldAccessor}.addAreaSkillAnimation", cancellationToken)
     {
     }
 

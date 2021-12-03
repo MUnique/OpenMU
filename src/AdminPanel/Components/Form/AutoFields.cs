@@ -6,10 +6,10 @@ namespace MUnique.OpenMU.AdminPanel.Components.Form;
 
 using System.ComponentModel;
 using System.Reflection;
-using log4net;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AdminPanel.ComponentBuilders;
 using MUnique.OpenMU.AdminPanel.Services;
 using MUnique.OpenMU.DataModel.Composition;
@@ -21,8 +21,6 @@ using MUnique.OpenMU.DataModel.Composition;
 public class AutoFields : ComponentBase
 {
     private static readonly IList<IComponentBuilder> Builders = new List<IComponentBuilder>();
-
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
 
     /// <summary>
     /// Initializes static members of the <see cref="AutoFields"/> class.
@@ -58,15 +56,6 @@ public class AutoFields : ComponentBase
     public EditContext Context { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the notification service.
-    /// </summary>
-    /// <value>
-    /// The notification service.
-    /// </value>
-    [Inject]
-    public IChangeNotificationService NotificationService { get; set; } = null!;
-
-    /// <summary>
     /// Gets the properties which should be shown in this component.
     /// </summary>
     /// <returns>The properties which should be shown in this component.</returns>
@@ -76,7 +65,7 @@ public class AutoFields : ComponentBase
         {
             if (this.Context?.Model is null)
             {
-                Log.Error(this.Context is null ? "Context is null" : "Model is null");
+                this.Logger.LogError(this.Context is null ? "Context is null" : "Model is null");
                 return Enumerable.Empty<PropertyInfo>();
             }
 
@@ -96,12 +85,24 @@ public class AutoFields : ComponentBase
             }
             catch (Exception ex)
             {
-                Log.Error($"Error during determining properties of type {this.Context.Model.GetType()}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
+                this.Logger.LogError(ex, $"Error during determining properties of type {this.Context.Model.GetType()}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
 
             return Enumerable.Empty<PropertyInfo>();
         }
     }
+
+    /// <summary>
+    /// Gets or sets the notification service.
+    /// </summary>
+    /// <value>
+    /// The notification service.
+    /// </value>
+    [Inject]
+    private IChangeNotificationService NotificationService { get; set; } = null!;
+
+    [Inject]
+    private ILogger<AutoFields> Logger { get; set; } = null!;
 
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
@@ -120,7 +121,7 @@ public class AutoFields : ComponentBase
             }
             catch (Exception ex)
             {
-                Log.Error($"Error building component for property {this.Context.Model.GetType().Name}.{propertyInfo.Name} with component builder {componentBuilder}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
+                this.Logger.LogError(ex, $"Error building component for property {this.Context.Model.GetType().Name}.{propertyInfo.Name} with component builder {componentBuilder}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
         }
     }

@@ -4,9 +4,8 @@
 
 namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns;
 
-using System.Reflection;
 using System.Threading;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
@@ -17,16 +16,15 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public class ShowSkillAnimationPlugIn : JsViewPlugInBase, IShowSkillAnimationPlugIn
 {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ShowSkillAnimationPlugIn"/> class.
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="worldAccessor">The world accessor.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public ShowSkillAnimationPlugIn(IJSRuntime jsRuntime, string worldAccessor, CancellationToken cancellationToken)
-        : base(jsRuntime, $"{worldAccessor}.addSkillAnimation", cancellationToken)
+    public ShowSkillAnimationPlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken)
+        : base(jsRuntime, loggerFactory, $"{worldAccessor}.addSkillAnimation", cancellationToken)
     {
     }
 

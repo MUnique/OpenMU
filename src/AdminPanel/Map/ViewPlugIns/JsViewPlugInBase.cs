@@ -4,30 +4,34 @@
 
 namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns;
 
-using System.Reflection;
 using System.Threading;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 /// <summary>
 /// Base class for a javascript map view plugin.
 /// </summary>
-public class JsViewPlugInBase
+public abstract class JsViewPlugInBase
 {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
-
     /// <summary>
     /// Initializes a new instance of the <see cref="JsViewPlugInBase"/> class.
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="jsMethodName">Name of the js method.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public JsViewPlugInBase(IJSRuntime jsRuntime, string jsMethodName, CancellationToken cancellationToken)
+    protected JsViewPlugInBase(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string jsMethodName, CancellationToken cancellationToken)
     {
         this.JsRuntime = jsRuntime;
         this.JsMethodName = jsMethodName;
         this.CancellationToken = cancellationToken;
+        this.Logger = loggerFactory.CreateLogger(this.GetType());
     }
+
+    /// <summary>
+    /// Gets the logger for this class.
+    /// </summary>
+    protected ILogger Logger { get; }
 
     /// <summary>
     /// Gets the <see cref="IJSRuntime" /> to call the <see cref="JsMethodName" />.
@@ -74,7 +78,7 @@ public class JsViewPlugInBase
             catch (Exception e)
             {
                 tryAgain = false;
-                Log.Error($"Error in {this.GetType().Name}; params: {string.Join(';', args)}", e);
+                this.Logger.LogError(e, $"Error in {this.GetType().Name}; params: {string.Join(';', args)}");
             }
         }
     }

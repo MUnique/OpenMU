@@ -4,9 +4,8 @@
 
 namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns;
 
-using System.Reflection;
 using System.Threading;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -16,8 +15,6 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public class ObjectsOutOfScopePlugIn : JsViewPlugInBase, IObjectsOutOfScopePlugIn
 {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
-
     private readonly IDictionary<int, ILocateable> _objects;
 
     private readonly Action _objectsChangedCallback;
@@ -26,12 +23,13 @@ public class ObjectsOutOfScopePlugIn : JsViewPlugInBase, IObjectsOutOfScopePlugI
     /// Initializes a new instance of the <see cref="ObjectsOutOfScopePlugIn" /> class.
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="worldAccessor">The world accessor.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <param name="objects">The objects.</param>
     /// <param name="objectsChangedCallback">The objects changed callback.</param>
-    public ObjectsOutOfScopePlugIn(IJSRuntime jsRuntime, string worldAccessor, CancellationToken cancellationToken, IDictionary<int, ILocateable> objects, Action objectsChangedCallback)
-        : base(jsRuntime, $"{worldAccessor}.removeObject", cancellationToken)
+    public ObjectsOutOfScopePlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken, IDictionary<int, ILocateable> objects, Action objectsChangedCallback)
+        : base(jsRuntime, loggerFactory, $"{worldAccessor}.removeObject", cancellationToken)
     {
         this._objects = objects;
         this._objectsChangedCallback = objectsChangedCallback;
@@ -58,7 +56,7 @@ public class ObjectsOutOfScopePlugIn : JsViewPlugInBase, IObjectsOutOfScopePlugI
         }
         catch (Exception e)
         {
-            Log.Error($"Error in {nameof(this.ObjectsOutOfScope)}; objects: {string.Join(';', objects)}", e);
+            this.Logger.LogError(e, $"Error in {nameof(this.ObjectsOutOfScope)}; objects: {string.Join(';', objects)}");
         }
     }
 }

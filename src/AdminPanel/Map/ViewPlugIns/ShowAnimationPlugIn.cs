@@ -4,9 +4,8 @@
 
 namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns;
 
-using System.Reflection;
 using System.Threading;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
@@ -19,16 +18,15 @@ public class ShowAnimationPlugIn : JsViewPlugInBase, IShowAnimationPlugIn
 {
     private const byte MonsterAttackAnimation = 0x78;
 
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ShowAnimationPlugIn"/> class.
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="worldAccessor">The world accessor.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public ShowAnimationPlugIn(IJSRuntime jsRuntime, string worldAccessor, CancellationToken cancellationToken)
-        : base(jsRuntime, $"{worldAccessor}.addAnimation", cancellationToken)
+    public ShowAnimationPlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken)
+        : base(jsRuntime, loggerFactory, $"{worldAccessor}.addAnimation", cancellationToken)
     {
     }
 

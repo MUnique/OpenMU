@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.AdminPanel.Map;
 
 using System.IO;
-using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
 using SixLabors.ImageSharp;
@@ -18,16 +18,18 @@ using SixLabors.ImageSharp;
 [ApiController]
 public class TerrainController : Controller
 {
-    private static readonly ILog Log = LogManager.GetLogger(typeof(TerrainController));
     private readonly IList<IManageableServer> _servers;
+    private readonly ILogger<TerrainController> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TerrainController"/> class.
     /// </summary>
     /// <param name="servers">The servers.</param>
-    public TerrainController(IList<IManageableServer> servers)
+    /// <param name="logger">The logger.</param>
+    public TerrainController(IList<IManageableServer> servers, ILogger<TerrainController> logger)
     {
         this._servers = servers;
+        this._logger = logger;
     }
 
     /// <summary>
@@ -44,7 +46,7 @@ public class TerrainController : Controller
         var map = gameServer?.ServerInfo.Maps.FirstOrDefault(m => m.MapNumber == mapId);
         if (map is null)
         {
-            Log.Warn($"requested map not available. map number: {mapId}; server id: {serverId}");
+            this._logger.LogWarning($"requested map not available. map number: {mapId}; server id: {serverId}");
             return this.NotFound();
         }
 

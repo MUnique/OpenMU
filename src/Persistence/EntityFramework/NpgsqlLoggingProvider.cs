@@ -50,14 +50,14 @@ public class NpgsqlLoggingProvider : INpgsqlLoggingProvider
     private class NpgsqlLogger : Npgsql.Logging.NpgsqlLogger
     {
         /// <summary>
-        /// The log4net logger.
+        /// The <see cref="ILogger"/> to which the calls are forwarded.
         /// </summary>
         private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NpgsqlLogger"/> class.
         /// </summary>
-        /// <param name="logger">The log4net logger.</param>
+        /// <param name="logger">The <see cref="ILogger"/> to which the calls are forwarded.</param>
         public NpgsqlLogger(ILogger logger)
         {
             this._logger = logger;

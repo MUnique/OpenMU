@@ -1,9 +1,10 @@
 ﻿@using System.ComponentModel
-@using log4net
+@using Microsoft.Extensions.Logging
 @using MUnique.OpenMU.Interfaces
 
 @implements IDisposable
 @inject IJSRuntime _jsRuntime;
+@inject ILogger<MapList> _logger;
 
 @if (this.Maps == null)
 {
@@ -73,7 +74,7 @@ else
         }
         catch (Exception ex)
         {
-            LogManager.GetLogger(this.GetType()).Debug("Error occured in handling ServerInfo.PropertyChanged", ex);
+            this._logger.LogDebug(ex, "Error occured in handling ServerInfo.PropertyChanged");
         }
     }
 }

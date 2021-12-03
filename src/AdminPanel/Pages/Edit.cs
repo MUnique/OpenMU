@@ -8,9 +8,9 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using Blazored.Modal.Services;
-using log4net;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AdminPanel.Components.Form;
 using MUnique.OpenMU.AdminPanel.Services;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -28,7 +28,9 @@ public sealed class Edit : ComponentBase, IAsyncDisposable
             { typeof(GameMapDefinition), new List<(string, string)> { ("Map Editor", "/map-editor/{0}") } },
         };
 
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
+    [Inject]
+    private ILogger<Edit>? Logger { get; set; }
+
     private object? _model;
     private Type? _type;
     private IContext? _persistenceContext;
@@ -214,7 +216,7 @@ public sealed class Edit : ComponentBase, IAsyncDisposable
                 catch (Exception ex)
                 {
                     this._loadingState = DataLoadingState.Error;
-                    Log.Error($"Could not load {this._type.FullName} with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}", ex);
+                    this.Logger?.LogError(ex, $"Could not load {this._type.FullName} with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                     await this.InvokeAsync(() => this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details."));
                 }
 
@@ -241,7 +243,7 @@ public sealed class Edit : ComponentBase, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            LogManager.GetLogger(this.GetType()).Error($"Error during saving {this.Id}", ex);
+            this.Logger?.LogError(ex, $"Error during saving {this.Id}");
             text = $"An unexpected error occured: {ex.Message}.";
         }
 

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.AdminPanel.Map;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.AdminPanel.Services;
 
@@ -14,6 +15,7 @@ public sealed class JavascriptMapFactory : IMapFactory
 {
     private readonly IJSRuntime _jsRuntime;
     private readonly ServerService _serverService;
+    private readonly ILoggerFactory _loggerFactory;
 
     private int _mapCount;
 
@@ -22,10 +24,12 @@ public sealed class JavascriptMapFactory : IMapFactory
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
     /// <param name="serverService">The server service.</param>
-    public JavascriptMapFactory(IJSRuntime jsRuntime, ServerService serverService)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public JavascriptMapFactory(IJSRuntime jsRuntime, ServerService serverService, ILoggerFactory loggerFactory)
     {
         this._jsRuntime = jsRuntime;
         this._serverService = serverService;
+        this._loggerFactory = loggerFactory;
     }
 
     /// <inheritdoc />
@@ -37,7 +41,7 @@ public sealed class JavascriptMapFactory : IMapFactory
             var appId = this.GenerateMapAppIdentifier(serverId, mapId);
             await this._jsRuntime.InvokeVoidAsync("CreateMap", serverId, mapId, this.GetMapContainerIdentifier(serverId, mapId), appId);
             var gameServer = this._serverService.GetGameServer(serverId);
-            mapController = new MapController(this._jsRuntime, appId, gameServer, mapId);
+            mapController = new MapController(this._jsRuntime, this._loggerFactory, appId, gameServer, mapId);
             gameServer.RegisterMapObserver((ushort)mapId, mapController);
         }
         catch

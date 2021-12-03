@@ -4,9 +4,8 @@
 
 namespace MUnique.OpenMU.AdminPanel.Map.ViewPlugIns;
 
-using System.Reflection;
 using System.Threading;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
@@ -18,16 +17,15 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
 {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ObjectMovedPlugIn"/> class.
     /// </summary>
     /// <param name="jsRuntime">The js runtime.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="worldAccessor">The world accessor.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public ObjectMovedPlugIn(IJSRuntime jsRuntime, string worldAccessor, CancellationToken cancellationToken)
-        : base(jsRuntime, $"{worldAccessor}.objectMoved", cancellationToken)
+    public ObjectMovedPlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken)
+        : base(jsRuntime, loggerFactory, $"{worldAccessor}.objectMoved", cancellationToken)
     {
     }
 
@@ -44,7 +42,7 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
         }
         catch (Exception e)
         {
-            Log.Error($"Error in {nameof(this.ObjectMoved)}; movedObject: {movedObject}, moveType: {moveType}", e);
+            this.Logger.LogError(e, $"Error in {nameof(this.ObjectMoved)}; movedObject: {movedObject}, moveType: {moveType}");
         }
     }
 
