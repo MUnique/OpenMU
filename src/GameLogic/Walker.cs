@@ -235,15 +235,17 @@ public sealed class Walker : IDisposable
 
     private void WalkNextStepIfStepAvailable()
     {
-        if (!this.ShouldWalkerStop())
+        if (this.ShouldWalkerStop())
         {
-            var nextStep = this._nextSteps.Dequeue();
-            this._walkSupporter.Position = nextStep.To;
+            return;
+        }
 
-            if (this._walkSupporter is IRotatable rotatable)
-            {
-                rotatable.Rotation = nextStep.Direction;
-            }
+        var nextStep = this._nextSteps.Dequeue();
+        this._walkSupporter.Position = nextStep.To;
+
+        if (this._walkSupporter is IRotatable rotatable)
+        {
+            rotatable.Rotation = nextStep.Direction;
         }
     }
 
