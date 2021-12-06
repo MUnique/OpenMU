@@ -39,7 +39,7 @@ public static class CommandExtensions
         }
 
         var attributedArguments = properties
-            .Select(p => p.GetCustomAttribute<ArgumentAttribute>())
+            .Select(p => p.GetCustomAttribute<ArgumentAttribute>(inherit: true))
             .Where(a => a is { })
             .Select(a => a!)
             .ToList();

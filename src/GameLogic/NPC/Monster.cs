@@ -285,7 +285,6 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
             this._respawnTimer?.Dispose();
             this._walker.Dispose();
             (this._intelligence as IDisposable)?.Dispose();
-            this.CurrentMap?.Remove(this);
             this.IsAlive = false;
         }
 
