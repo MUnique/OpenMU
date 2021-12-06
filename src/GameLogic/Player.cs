@@ -738,15 +738,77 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
     /// <returns>The gained experience.</returns>
     public int AddExpAfterKill(IAttackable killedObject)
     {
+        if (this.SelectedCharacter?.CharacterClass is not { } characterClass)
+        {
+            return 0;
+        }
+
+        var isMasterClass = characterClass.IsMasterClass;
+        var expRateAttribute = isMasterClass ? Stats.MasterExperienceRate : Stats.ExperienceRate;
+
         // Calculate the Exp
         var experience = killedObject.Attributes[Stats.Level] * 1000 / this.Attributes![Stats.Level];
         experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
-        experience *= this.Attributes[Stats.ExperienceRate];
+        experience *= this.Attributes[expRateAttribute];
         experience *= this.GameContext.ExperienceRate;
 
-        // todo: master exp
-        this.AddExperience((int)experience, killedObject);
+        if (isMasterClass)
+        {
+            this.AddMasterExperience((int)experience, killedObject);
+        }
+        else
+        {
+            this.AddExperience((int)experience, killedObject);
+        }
+
         return (int)experience;
+    }
+
+    /// <summary>
+    /// Adds the master experience.
+    /// </summary>
+    /// <param name="experience">The experience which should be added.</param>
+    /// <param name="killedObject">The killed object which caused the experience gain.</param>
+    public void AddMasterExperience(int experience, IAttackable? killedObject)
+    {
+        if (!(this.Attributes![Stats.MasterLevel] < this.GameContext.Configuration.MaximumMasterLevel))
+        {
+            this.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You already reached maximum master Level.", MessageType.BlueNormal);
+            return;
+        }
+
+        if (killedObject is not null && killedObject.Attributes[Stats.Level] < this.GameContext.Configuration.MinimumMonsterLevelForMasterExperience)
+        {
+            this.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You need to kill stronger monsters to gain master experience.", MessageType.BlueNormal);
+            return;
+        }
+
+        long exp = experience;
+
+        // Add the Exp
+        bool lvlup = false;
+        var expTable = this.GameContext.Configuration.MasterExperienceTable ?? throw Error.NotInitializedProperty(this.GameContext.Configuration, nameof(GameConfiguration.MasterExperienceTable));
+        if (expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter!.MasterExperience < exp)
+        {
+            exp = expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter.MasterExperience;
+            lvlup = true;
+        }
+
+        this.SelectedCharacter.MasterExperience += exp;
+
+        // Tell it to the Player
+        this.ViewPlugIns.GetPlugIn<IAddExperiencePlugIn>()?.AddExperience((int)exp, killedObject);
+
+        // Check the lvl up
+        if (lvlup)
+        {
+            this.Attributes[Stats.MasterLevel]++;
+            this.SelectedCharacter.MasterLevelUpPoints += (int)this.Attributes[Stats.MasterPointsPerLevelUp];
+            this.SetReclaimableAttributesToMaximum();
+            this.Logger.LogDebug("Character {0} leveled up to master level {1}", this.SelectedCharacter.Name, this.Attributes[Stats.MasterLevel]);
+            this.ViewPlugIns.GetPlugIn<IUpdateLevelPlugIn>()?.UpdateLevel();
+            this.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IShowEffectPlugIn>()?.ShowEffect(this, IShowEffectPlugIn.EffectType.LevelUp), true);
+        }
     }
 
     /// <summary>
@@ -756,37 +818,37 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
     /// <param name="killedObject">The killed object which caused the experience gain.</param>
     public void AddExperience(int experience, IAttackable? killedObject)
     {
-        if (this.Attributes![Stats.Level] < this.GameContext.Configuration.MaximumLevel)
-        {
-            long exp = experience;
-
-            // Add the Exp
-            bool lvlup = false;
-            var expTable = this.GameContext.Configuration.ExperienceTable ?? throw Error.NotInitializedProperty(this.GameContext.Configuration, nameof(GameConfiguration.ExperienceTable));
-            if (expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter!.Experience < exp)
-            {
-                exp = expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter.Experience;
-                lvlup = true;
-            }
-
-            this.SelectedCharacter.Experience += exp;
-
-            // Tell it to the Player
-            this.ViewPlugIns.GetPlugIn<IAddExperiencePlugIn>()?.AddExperience((int)exp, killedObject);
-
-            // Check the lvl up
-            if (lvlup)
-            {
-                this.Attributes[Stats.Level]++;
-                this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
-                this.SetReclaimableAttributesToMaximum();
-                this.Logger.LogDebug("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
-                this.ViewPlugIns.GetPlugIn<IUpdateLevelPlugIn>()?.UpdateLevel();
-            }
-        }
-        else
+        if (!(this.Attributes![Stats.Level] < this.GameContext.Configuration.MaximumLevel))
         {
             this.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You already reached maximum Level.", MessageType.BlueNormal);
+            return;
+        }
+
+        long exp = experience;
+
+        // Add the Exp
+        bool lvlup = false;
+        var expTable = this.GameContext.Configuration.ExperienceTable ?? throw Error.NotInitializedProperty(this.GameContext.Configuration, nameof(GameConfiguration.ExperienceTable));
+        if (expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter!.Experience < exp)
+        {
+            exp = expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter.Experience;
+            lvlup = true;
+        }
+
+        this.SelectedCharacter.Experience += exp;
+
+        // Tell it to the Player
+        this.ViewPlugIns.GetPlugIn<IAddExperiencePlugIn>()?.AddExperience((int)exp, killedObject);
+
+        // Check the lvl up
+        if (lvlup)
+        {
+            this.Attributes[Stats.Level]++;
+            this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
+            this.SetReclaimableAttributesToMaximum();
+            this.Logger.LogDebug("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
+            this.ViewPlugIns.GetPlugIn<IUpdateLevelPlugIn>()?.UpdateLevel();
+            this.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IShowEffectPlugIn>()?.ShowEffect(this, IShowEffectPlugIn.EffectType.LevelUp), true);
         }
     }
 
