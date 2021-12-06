@@ -38,18 +38,35 @@ public class UpdateLevelPlugIn : IUpdateLevelPlugIn
             return;
         }
 
-        this._player.Connection?.SendCharacterLevelUpdate(
-            (ushort)charStats[Stats.Level],
-            (ushort)selectedCharacter.LevelUpPoints,
-            (ushort)charStats[Stats.MaximumHealth],
-            (ushort)charStats[Stats.MaximumMana],
-            (ushort)charStats[Stats.MaximumShield],
-            (ushort)charStats[Stats.MaximumAbility],
-            (ushort)selectedCharacter.UsedFruitPoints,
-            selectedCharacter.GetMaximumFruitPoints(),
-            (ushort)selectedCharacter.UsedNegFruitPoints,
-            selectedCharacter.GetMaximumFruitPoints());
+        if (selectedCharacter.CharacterClass?.IsMasterClass ?? false)
+        {
+            this._player.Connection?.SendMasterCharacterLevelUpdate(
+                (ushort)charStats[Stats.MasterLevel],
+                (ushort)charStats[Stats.MasterPointsPerLevelUp],
+                (ushort)selectedCharacter.MasterLevelUpPoints,
+                (ushort)this._player.GameContext.Configuration.MaximumMasterLevel,
+                (ushort)charStats[Stats.MaximumHealth],
+                (ushort)charStats[Stats.MaximumMana],
+                (ushort)charStats[Stats.MaximumShield],
+                (ushort)charStats[Stats.MaximumAbility]);
 
-        this._player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Congratulations, you are Level {charStats[Stats.Level]} now.", MessageType.BlueNormal);
+            this._player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Congratulations, you are Master Level {charStats[Stats.MasterLevel]} now.", MessageType.BlueNormal);
+        }
+        else
+        {
+            this._player.Connection?.SendCharacterLevelUpdate(
+                (ushort)charStats[Stats.Level],
+                (ushort)selectedCharacter.LevelUpPoints,
+                (ushort)charStats[Stats.MaximumHealth],
+                (ushort)charStats[Stats.MaximumMana],
+                (ushort)charStats[Stats.MaximumShield],
+                (ushort)charStats[Stats.MaximumAbility],
+                (ushort)selectedCharacter.UsedFruitPoints,
+                selectedCharacter.GetMaximumFruitPoints(),
+                (ushort)selectedCharacter.UsedNegFruitPoints,
+                selectedCharacter.GetMaximumFruitPoints());
+
+            this._player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Congratulations, you are Level {charStats[Stats.Level]} now.", MessageType.BlueNormal);
+        }
     }
 }
