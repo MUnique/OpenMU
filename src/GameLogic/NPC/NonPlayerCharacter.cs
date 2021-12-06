@@ -138,6 +138,8 @@ public class NonPlayerCharacter : IObservable, IRotatable, ILocateable, IHasBuck
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "<ObserverLock>k__BackingField", Justification = "Can't access backing field.")]
     protected virtual void Dispose(bool managed)
     {
+        this.CurrentMap?.Remove(this);
+
         this.ObserverLock.Dispose();
     }
 
