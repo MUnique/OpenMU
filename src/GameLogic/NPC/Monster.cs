@@ -188,11 +188,11 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
 
         var targetNode = calculatedPath.Last(); // that's one step before the target coordinates actually are reached.
         Span<WalkingStep> steps = stackalloc WalkingStep[calculatedPath.Count];
-        var i = steps.Length;
+        var i = 0;
         foreach (var step in calculatedPath.Select(GetStep))
         {
-            i--;
             steps[i] = step;
+            i++;
         }
 
         this.WalkTo(new Point(targetNode.X, targetNode.Y), steps);
