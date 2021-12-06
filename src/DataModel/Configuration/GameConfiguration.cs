@@ -21,9 +21,20 @@ public class GameConfiguration
     public short MaximumLevel { get; set; }
 
     /// <summary>
+    /// Gets or sets the maximum reachable master level.
+    /// </summary>
+    public short MaximumMasterLevel { get; set; }
+
+    /// <summary>
     /// Gets or sets the experience rate of the game.
     /// </summary>
     public float ExperienceRate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum monster level which are required to be killed
+    /// in order to gain master experience for master character classes.
+    /// </summary>
+    public byte MinimumMonsterLevelForMasterExperience { get; set; }
 
     /// <summary>
     /// Gets or sets the information range. This defines how far players can see other game objects.
