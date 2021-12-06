@@ -703,6 +703,19 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Starts a safe write of a <see cref="ShowEffect" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a player achieved or lost something.
+    /// Causes reaction on client side: An effect is shown for the affected player.
+    /// </remarks>
+    public static ShowEffectThreadSafeWriter StartWriteShowEffect(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
     /// Starts a safe write of a <see cref="CharacterCreationSuccessful" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -997,6 +1010,19 @@ public static class ConnectionExtensions
     /// Causes reaction on client side: The master related data is available.
     /// </remarks>
     public static MasterStatsUpdateThreadSafeWriter StartWriteMasterStatsUpdate(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="MasterCharacterLevelUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a master character leveled up.
+    /// Causes reaction on client side: Updates the master level (and other related stats) in the game client and shows an effect.
+    /// </remarks>
+    public static MasterCharacterLevelUpdateThreadSafeWriter StartWriteMasterCharacterLevelUpdate(this IConnection connection)
     {
         return new (connection);
     }
@@ -2841,6 +2867,25 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="ShowEffect" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="effect">The effect.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a player achieved or lost something.
+    /// Causes reaction on client side: An effect is shown for the affected player.
+    /// </remarks>
+    public static void SendShowEffect(this IConnection connection, ushort @playerId, ShowEffect.EffectType @effect)
+    {
+        using var writer = connection.StartWriteShowEffect();
+        var packet = writer.Packet;
+        packet.PlayerId = @playerId;
+        packet.Effect = @effect;
+        writer.Commit();
+    }
+
+    /// <summary>
     /// Sends a <see cref="CharacterCreationSuccessful" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -3486,6 +3531,37 @@ public static class ConnectionExtensions
         packet.MasterExperience = @masterExperience;
         packet.MasterExperienceOfNextLevel = @masterExperienceOfNextLevel;
         packet.MasterLevelUpPoints = @masterLevelUpPoints;
+        packet.MaximumHealth = @maximumHealth;
+        packet.MaximumMana = @maximumMana;
+        packet.MaximumShield = @maximumShield;
+        packet.MaximumAbility = @maximumAbility;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MasterCharacterLevelUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="masterLevel">The master level.</param>
+    /// <param name="gainedMasterPoints">The gained master points.</param>
+    /// <param name="currentMasterPoints">The current master points.</param>
+    /// <param name="maximumMasterPoints">The maximum master points.</param>
+    /// <param name="maximumHealth">The maximum health.</param>
+    /// <param name="maximumMana">The maximum mana.</param>
+    /// <param name="maximumShield">The maximum shield.</param>
+    /// <param name="maximumAbility">The maximum ability.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a master character leveled up.
+    /// Causes reaction on client side: Updates the master level (and other related stats) in the game client and shows an effect.
+    /// </remarks>
+    public static void SendMasterCharacterLevelUpdate(this IConnection connection, ushort @masterLevel, ushort @gainedMasterPoints, ushort @currentMasterPoints, ushort @maximumMasterPoints, ushort @maximumHealth, ushort @maximumMana, ushort @maximumShield, ushort @maximumAbility)
+    {
+        using var writer = connection.StartWriteMasterCharacterLevelUpdate();
+        var packet = writer.Packet;
+        packet.MasterLevel = @masterLevel;
+        packet.GainedMasterPoints = @gainedMasterPoints;
+        packet.CurrentMasterPoints = @currentMasterPoints;
+        packet.MaximumMasterPoints = @maximumMasterPoints;
         packet.MaximumHealth = @maximumHealth;
         packet.MaximumMana = @maximumMana;
         packet.MaximumShield = @maximumShield;
@@ -7065,6 +7141,58 @@ public readonly ref struct ClosePlayerShopDialogThreadSafeWriter
 }
       
 /// <summary>
+/// A helper struct to write a <see cref="ShowEffect"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ShowEffectThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShowEffectThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ShowEffectThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ShowEffect(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ShowEffect.Length)[..ShowEffect.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ShowEffect Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="ShowEffect" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(ShowEffect.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
 /// A helper struct to write a <see cref="CharacterCreationSuccessful"/> safely to a <see cref="IConnection.Output" />.
 /// </summary>
 public readonly ref struct CharacterCreationSuccessfulThreadSafeWriter
@@ -8249,6 +8377,58 @@ public readonly ref struct MasterStatsUpdateThreadSafeWriter
     public void Commit()
     {
         this.connection.Output.AdvanceSafely(MasterStatsUpdate.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="MasterCharacterLevelUpdate"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct MasterCharacterLevelUpdateThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MasterCharacterLevelUpdateThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public MasterCharacterLevelUpdateThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new MasterCharacterLevelUpdate(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(MasterCharacterLevelUpdate.Length)[..MasterCharacterLevelUpdate.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public MasterCharacterLevelUpdate Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="MasterCharacterLevelUpdate" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(MasterCharacterLevelUpdate.Length);
     }
 
     /// <summary>
