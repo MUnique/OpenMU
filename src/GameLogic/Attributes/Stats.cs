@@ -92,9 +92,14 @@ public class Stats
     public static AttributeDefinition Level { get; } = new (new Guid("560931AD-0901-4342-B7F4-FD2E2FCC0563"), "Level", "The level of the character.");
 
     /// <summary>
-    /// Gets the points per level up.
+    /// Gets the <see cref="Character.LevelUpPoints"/> per level up.
     /// </summary>
     public static AttributeDefinition PointsPerLevelUp { get; } = new (new Guid("48074BC6-DDC9-4264-8F1E-004D46D5B6EC"), "Points per Level up", "Defines the level up points per achieved level.");
+
+    /// <summary>
+    /// Gets the <see cref="Character.MasterLevelUpPoints"/> per level up.
+    /// </summary>
+    public static AttributeDefinition MasterPointsPerLevelUp { get; } = new(new Guid("E0C7D483-E7B2-4898-89C3-4C72E64A4418"), "Master points per master Level up", "Defines the master level up points per achieved master level.");
 
     /// <summary>
     /// Gets the experience rate attribute definition.

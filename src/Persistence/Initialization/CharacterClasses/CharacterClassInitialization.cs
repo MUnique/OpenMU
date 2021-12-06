@@ -92,6 +92,7 @@ internal partial class CharacterClassInitialization : InitializerBase
 
         if (isMaster)
         {
+            baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MasterPointsPerLevelUp));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MasterExperienceRate));
         }
 
