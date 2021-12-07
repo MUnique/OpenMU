@@ -10384,6 +10384,115 @@ public readonly ref struct EffectId
 
 
 /// <summary>
+/// Is sent by the server when: After a player achieved or lost something.
+/// Causes reaction on client side: An effect is shown for the affected player.
+/// </summary>
+public readonly ref struct ShowEffect
+{
+    /// <summary>
+    /// Defines the effect which is shown for the player.
+    /// </summary>
+    public enum EffectType
+    {
+        /// <summary>
+        /// The player gained shield by drinking a potion.
+        /// </summary>
+            ShieldPotion = 3,
+
+        /// <summary>
+        /// A level up effect is shown for the player.
+        /// </summary>
+            LevelUp = 16,
+
+        /// <summary>
+        /// The players shield depleted.
+        /// </summary>
+            ShieldLost = 17,
+    }
+
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShowEffect"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ShowEffect(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShowEffect"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ShowEffect(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x48;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16BigEndian(this._data[3..]);
+        set => WriteUInt16BigEndian(this._data[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the effect.
+    /// </summary>
+    public ShowEffect.EffectType Effect
+    {
+        get => (EffectType)this._data[5];
+        set => this._data[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ShowEffect"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ShowEffect(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ShowEffect"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ShowEffect packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: After the game client requested it, usually after a successful login.
 /// Causes reaction on client side: The game client shows the available characters of the account.
 /// </summary>
@@ -14500,6 +14609,155 @@ public readonly ref struct MasterStatsUpdate
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(MasterStatsUpdate packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After a master character leveled up.
+/// Causes reaction on client side: Updates the master level (and other related stats) in the game client and shows an effect.
+/// </summary>
+public readonly ref struct MasterCharacterLevelUpdate
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MasterCharacterLevelUpdate"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MasterCharacterLevelUpdate(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MasterCharacterLevelUpdate"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MasterCharacterLevelUpdate(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF3;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x51;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 20;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the master level.
+    /// </summary>
+    public ushort MasterLevel
+    {
+        get => ReadUInt16LittleEndian(this._data[4..]);
+        set => WriteUInt16LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the gained master points.
+    /// </summary>
+    public ushort GainedMasterPoints
+    {
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current master points.
+    /// </summary>
+    public ushort CurrentMasterPoints
+    {
+        get => ReadUInt16LittleEndian(this._data[8..]);
+        set => WriteUInt16LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum master points.
+    /// </summary>
+    public ushort MaximumMasterPoints
+    {
+        get => ReadUInt16LittleEndian(this._data[10..]);
+        set => WriteUInt16LittleEndian(this._data[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum health.
+    /// </summary>
+    public ushort MaximumHealth
+    {
+        get => ReadUInt16LittleEndian(this._data[12..]);
+        set => WriteUInt16LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum mana.
+    /// </summary>
+    public ushort MaximumMana
+    {
+        get => ReadUInt16LittleEndian(this._data[14..]);
+        set => WriteUInt16LittleEndian(this._data[14..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum shield.
+    /// </summary>
+    public ushort MaximumShield
+    {
+        get => ReadUInt16LittleEndian(this._data[16..]);
+        set => WriteUInt16LittleEndian(this._data[16..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum ability.
+    /// </summary>
+    public ushort MaximumAbility
+    {
+        get => ReadUInt16LittleEndian(this._data[18..]);
+        set => WriteUInt16LittleEndian(this._data[18..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="MasterCharacterLevelUpdate"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MasterCharacterLevelUpdate(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MasterCharacterLevelUpdate"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(MasterCharacterLevelUpdate packet) => packet._data; 
 }
 
 

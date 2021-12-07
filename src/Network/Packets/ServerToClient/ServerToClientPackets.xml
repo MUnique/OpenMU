@@ -3773,6 +3773,51 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>48</Code>
+      <Name>ShowEffect</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a player achieved or lost something.</SentWhen>
+      <CausedReaction>An effect is shown for the affected player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>EffectType</TypeName>
+          <Name>Effect</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EffectType</Name>
+          <Description>Defines the effect which is shown for the player.</Description>
+          <Values>
+            <EnumValue>
+              <Name>ShieldPotion</Name>
+              <Description>The player gained shield by drinking a potion.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LevelUp</Name>
+              <Description>A level up effect is shown for the player.</Description>
+              <Value>16</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ShieldLost</Name>
+              <Description>The players shield depleted.</Description>
+              <Value>17</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
       <SubCode>00</SubCode>
@@ -5174,6 +5219,58 @@
         </Field>
         <Field>
           <Index>30</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>51</SubCode>
+      <Name>MasterCharacterLevelUpdate</Name>
+      <Length>20</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a master character leveled up.</SentWhen>
+      <CausedReaction>Updates the master level (and other related stats) in the game client and shows an effect.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MasterLevel</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>GainedMasterPoints</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CurrentMasterPoints</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumMasterPoints</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>18</Index>
           <Type>ShortLittleEndian</Type>
           <Name>MaximumAbility</Name>
         </Field>

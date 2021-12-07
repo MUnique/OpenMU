@@ -215,15 +215,27 @@ public sealed class Party : Disposable
             return count;
         }
 
-        var totalLevel = this._distributionList.Sum(p => (int)p.Attributes![Stats.Level]);
+        var totalLevel = this._distributionList.Sum(p => (int)p.Attributes![Stats.Level] + p.Attributes![Stats.MasterLevel]);
         var averageLevel = totalLevel / count;
-        var averageExperience = killedObject.Attributes[Stats.Level] * 1000 / averageLevel;
+        var averageExperience = killedObject.CalculateBaseExperience(averageLevel);
         var totalAverageExperience = averageExperience * count * Math.Pow(1.2, count - 1);
+        totalAverageExperience *= killedObject.CurrentMap?.Definition.ExpMultiplier ?? 0;
+        totalAverageExperience *= this._distributionList.First().GameContext.ExperienceRate;
+
         var randomizedTotalExperience = Rand.NextInt((int)(totalAverageExperience * 0.8), (int)(totalAverageExperience * 1.2));
         var randomizedTotalExperiencePerLevel = randomizedTotalExperience / (float)totalLevel;
         foreach (var player in this._distributionList)
         {
-            player.AddExperience((int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * player.Attributes[Stats.ExperienceRate] * player.GameContext.ExperienceRate), killedObject);
+            if (player.SelectedCharacter?.CharacterClass?.IsMasterClass ?? false)
+            {
+                var exp = (int)(randomizedTotalExperiencePerLevel * (player.Attributes![Stats.MasterLevel] + player.Attributes![Stats.Level]) * player.Attributes[Stats.MasterExperienceRate]);
+                player.AddMasterExperience(exp, killedObject);
+            }
+            else
+            {
+                var exp = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * player.Attributes[Stats.ExperienceRate]);
+                player.AddExperience(exp, killedObject);
+            }
         }
 
         return randomizedTotalExperience;

@@ -47,7 +47,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("RegistrationDate")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SecurityCode")
@@ -273,7 +272,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreateDate")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("CurrentMapId")
@@ -830,6 +828,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<short>("MaximumLevel")
                         .HasColumnType("smallint");
 
+                    b.Property<short>("MaximumMasterLevel")
+                        .HasColumnType("smallint");
+
                     b.Property<byte>("MaximumPartySize")
                         .HasColumnType("smallint");
 
@@ -838,6 +839,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("MaximumVaultMoney")
                         .HasColumnType("integer");
+
+                    b.Property<byte>("MinimumMonsterLevelForMasterExperience")
+                        .HasColumnType("smallint");
 
                     b.Property<int>("RecoveryInterval")
                         .HasColumnType("integer");
