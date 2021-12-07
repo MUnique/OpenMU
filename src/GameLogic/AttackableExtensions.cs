@@ -316,6 +316,30 @@ public static class AttackableExtensions
         return (int)(attributeRequirement.MinimumValue * modifier);
     }
 
+    /// <summary>
+    /// Calculates the base experience for a killed target object.
+    /// </summary>
+    /// <param name="killedObject">The killed target object.</param>
+    /// <param name="killerLevel">The level of the killer.</param>
+    /// <returns>The calculated base experience.</returns>
+    public static double CalculateBaseExperience(this IAttackable killedObject, float killerLevel)
+    {
+        var targetLevel = killedObject.Attributes[Stats.Level];
+        var tempExperience = (targetLevel + 25) * targetLevel / 3.0;
+
+        if (killerLevel > targetLevel + 10)
+        {
+            tempExperience *= (targetLevel + 10) / killerLevel;
+        }
+
+        if (killedObject.Attributes[Stats.Level] >= 65)
+        {
+            tempExperience += (targetLevel - 64) * (targetLevel / 4);
+        }
+
+        return Math.Max(tempExperience, 0) * 1.25;
+    }
+
     private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)
     {
         var hitChance = attacker.GetHitChanceTo(defender);

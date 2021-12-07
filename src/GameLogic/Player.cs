@@ -746,11 +746,12 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
         var isMasterClass = characterClass.IsMasterClass;
         var expRateAttribute = isMasterClass ? Stats.MasterExperienceRate : Stats.ExperienceRate;
 
-        // Calculate the Exp
-        var experience = killedObject.Attributes[Stats.Level] * 1000 / this.Attributes![Stats.Level];
-        experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
-        experience *= this.Attributes[expRateAttribute];
+        var totalLevel = this.Attributes![Stats.Level] + this.Attributes![Stats.MasterLevel];
+        var experience = killedObject.CalculateBaseExperience(totalLevel);
         experience *= this.GameContext.ExperienceRate;
+        experience *= this.Attributes[expRateAttribute];
+        experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
+        experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
 
         if (isMasterClass)
         {
@@ -771,7 +772,7 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
     /// <param name="killedObject">The killed object which caused the experience gain.</param>
     public void AddMasterExperience(int experience, IAttackable? killedObject)
     {
-        if (!(this.Attributes![Stats.MasterLevel] < this.GameContext.Configuration.MaximumMasterLevel))
+        if (this.Attributes![Stats.MasterLevel] >= this.GameContext.Configuration.MaximumMasterLevel)
         {
             this.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You already reached maximum master Level.", MessageType.BlueNormal);
             return;
@@ -818,7 +819,7 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
     /// <param name="killedObject">The killed object which caused the experience gain.</param>
     public void AddExperience(int experience, IAttackable? killedObject)
     {
-        if (!(this.Attributes![Stats.Level] < this.GameContext.Configuration.MaximumLevel))
+        if (this.Attributes![Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
         {
             this.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You already reached maximum Level.", MessageType.BlueNormal);
             return;
