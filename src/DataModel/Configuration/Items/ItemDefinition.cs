@@ -126,4 +126,11 @@ public class ItemDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<ItemBasePowerUpDefinition> BasePowerUpAttributes { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the drop item groups (one per possible item level), which are used to
+    /// generate a new item when this item gets dropped by a player.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemDropItemGroup> DropItems { get; protected set; } = null!;
 }

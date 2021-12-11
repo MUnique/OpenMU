@@ -52,6 +52,15 @@ internal partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.I
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition> BasePowerUpAttributes => base.BasePowerUpAttributes ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition, ItemBasePowerUpDefinition>(this.RawBasePowerUpAttributes);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="DropItems" />.
+    /// </summary>
+    public ICollection<ItemDropItemGroup> RawDropItems { get; } = new EntityFramework.List<ItemDropItemGroup>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup> DropItems => base.DropItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup, ItemDropItemGroup>(this.RawDropItems);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="ItemSlot"/>.
     /// </summary>
     public Guid? ItemSlotId { get; set; }

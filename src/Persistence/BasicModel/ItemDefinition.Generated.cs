@@ -141,6 +141,29 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="DropItems" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("dropItems")]
+    [System.Text.Json.Serialization.JsonPropertyName("dropItems")]
+    public ICollection<ItemDropItemGroup> RawDropItems { get; } = new List<ItemDropItemGroup>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup> DropItems
+    {
+        get => base.DropItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup, ItemDropItemGroup>(this.RawDropItems);
+        protected set
+        {
+            this.DropItems.Clear();
+            foreach (var item in value)
+            {
+                this.DropItems.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="ItemSlot" />.
     /// </summary>
     [Newtonsoft.Json.JsonProperty("itemSlot")]

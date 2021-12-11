@@ -52,6 +52,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Gate>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.JewelMix>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.LevelDependentDamage>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition>();
@@ -122,6 +123,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameMapDefinitionDropItemGroup>().HasKey(join => new { join.GameMapDefinitionId, join.DropItemGroupId });
         modelBuilder.Entity<GameServerConfiguration>().HasMany(entity => entity.JoinedMaps).WithOne(join => join.GameServerConfiguration);
         modelBuilder.Entity<GameServerConfigurationGameMapDefinition>().HasKey(join => new { join.GameServerConfigurationId, join.GameMapDefinitionId });
+        modelBuilder.Entity<ItemDropItemGroup>().HasMany(entity => entity.JoinedPossibleItems).WithOne(join => join.ItemDropItemGroup);
+        modelBuilder.Entity<ItemDropItemGroupItemDefinition>().HasKey(join => new { join.ItemDropItemGroupId, join.ItemDefinitionId });
         modelBuilder.Entity<MasterSkillDefinition>().HasMany(entity => entity.JoinedRequiredMasterSkills).WithOne(join => join.MasterSkillDefinition);
         modelBuilder.Entity<MasterSkillDefinitionSkill>().HasKey(join => new { join.MasterSkillDefinitionId, join.SkillId });
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.JoinedDropItemGroups).WithOne(join => join.MonsterDefinition);
