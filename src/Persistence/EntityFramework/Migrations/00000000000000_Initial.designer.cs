@@ -1454,6 +1454,67 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("ItemDefinitionItemSetGroup", "config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Chance")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("ItemDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte?>("ItemLevel")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("ItemType")
+                        .HasColumnType("integer");
+
+                    b.Property<byte?>("MaximumMonsterLevel")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte?>("MinimumMonsterLevel")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("MoneyAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("MonsterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte>("SourceItemLevel")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemDefinitionId");
+
+                    b.HasIndex("MonsterId");
+
+                    b.ToTable("ItemDropItemGroup", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroupItemDefinition", b =>
+                {
+                    b.Property<Guid>("ItemDropItemGroupId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ItemDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ItemDropItemGroupId", "ItemDefinitionId");
+
+                    b.HasIndex("ItemDefinitionId");
+
+                    b.ToTable("ItemDropItemGroupItemDefinition", "config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemItemSetGroup", b =>
                 {
                     b.Property<Guid>("ItemId")
@@ -3445,6 +3506,38 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("ItemSetGroup");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", null)
+                        .WithMany("RawDropItems")
+                        .HasForeignKey("ItemDefinitionId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawMonster")
+                        .WithMany()
+                        .HasForeignKey("MonsterId");
+
+                    b.Navigation("RawMonster");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroupItemDefinition", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", "ItemDefinition")
+                        .WithMany()
+                        .HasForeignKey("ItemDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup", "ItemDropItemGroup")
+                        .WithMany("JoinedPossibleItems")
+                        .HasForeignKey("ItemDropItemGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemDefinition");
+
+                    b.Navigation("ItemDropItemGroup");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemItemSetGroup", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Item", "Item")
@@ -4163,7 +4256,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Navigation("RawBasePowerUpAttributes");
 
+                    b.Navigation("RawDropItems");
+
                     b.Navigation("RawRequirements");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup", b =>
+                {
+                    b.Navigation("JoinedPossibleItems");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionCombinationBonus", b =>

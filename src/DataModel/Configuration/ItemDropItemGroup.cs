@@ -15,4 +15,9 @@ public class ItemDropItemGroup : DropItemGroup
     /// Gets or sets the <see cref="Item.Level"/> of the source item which was dropped by the player.
     /// </summary>
     public byte SourceItemLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the amount of money, in case <see cref="DropItemGroup.ItemType"/> is <see cref="SpecialItemType.Money"/>.
+    /// </summary>
+    public int MoneyAmount { get; set; }
 }

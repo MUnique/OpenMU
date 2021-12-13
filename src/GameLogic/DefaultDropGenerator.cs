@@ -113,6 +113,25 @@ public class DefaultDropGenerator : IDropGenerator
         return item;
     }
 
+    /// <inheritdoc/>
+    public Item? GenerateItemDrop(IEnumerable<DropItemGroup> groups, out uint? droppedMoney)
+    {
+        droppedMoney = null;
+        var group = this.SelectRandomGroup(groups.OrderBy(group => group.Chance));
+        if (group is null)
+        {
+            return null;
+        }
+
+        if (group.ItemType == SpecialItemType.Money && group is ItemDropItemGroup itemDropItemGroup)
+        {
+            droppedMoney = (uint)itemDropItemGroup.MoneyAmount;
+            return null;
+        }
+
+        return this.GenerateRandomItem(group.PossibleItems);
+    }
+
     /// <summary>
     /// Gets a random item.
     /// </summary>

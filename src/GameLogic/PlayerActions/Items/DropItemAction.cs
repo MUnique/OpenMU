@@ -24,9 +24,10 @@ public class DropItemAction
 
         if (item is not null && (player.CurrentMap?.Terrain.WalkMap[target.X, target.Y] ?? false))
         {
-            if (item.Definition!.DropItems.FirstOrDefault(di => di.SourceItemLevel == item.Level) is { } itemDropGroup)
+            if (item.Definition!.DropItems.Count > 0
+                && item.Definition!.DropItems.Where(di => di.SourceItemLevel == item.Level) is { } itemDropGroups)
             {
-                this.DropRandomItem(item, player, itemDropGroup, target);
+                this.DropRandomItem(item, player, itemDropGroups, target);
             }
             else
             {
@@ -44,11 +45,18 @@ public class DropItemAction
     /// </summary>
     /// <param name="sourceItem">The source item.</param>
     /// <param name="player">The player.</param>
-    /// <param name="dropItemGroup">The <see cref="DropItemGroup"/> from which the random item is generated.</param>
+    /// <param name="dropItemGroups">The <see cref="DropItemGroup"/> from which the random item is generated.</param>
     /// <param name="target">The target coordinates.</param>
-    private void DropRandomItem(Item sourceItem, Player player, DropItemGroup dropItemGroup, Point target)
+    private void DropRandomItem(Item sourceItem, Player player, IEnumerable<ItemDropItemGroup> dropItemGroups, Point target)
     {
-        if (player.GameContext.DropGenerator.GenerateItemDrop(dropItemGroup) is { } item)
+        var item = player.GameContext.DropGenerator.GenerateItemDrop(dropItemGroups, out var droppedMoneyAmount);
+        if (droppedMoneyAmount is { })
+        {
+            var droppedMoney = new DroppedMoney(droppedMoneyAmount.Value, target, player.CurrentMap!);
+            player.CurrentMap!.Add(droppedMoney);
+        }
+
+        if (item is { })
         {
             var droppedItem = new DroppedItem(item, target, player.CurrentMap!, player);
             player.CurrentMap!.Add(droppedItem);

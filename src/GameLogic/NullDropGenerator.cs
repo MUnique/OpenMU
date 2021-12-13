@@ -35,4 +35,11 @@ public class NullDropGenerator : IDropGenerator
     {
         return null;
     }
+
+    /// <inheritdoc />
+    public Item? GenerateItemDrop(IEnumerable<DropItemGroup> group, out uint? droppedMoney)
+    {
+        droppedMoney = null;
+        return null;
+    }
 }
