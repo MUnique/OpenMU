@@ -87,9 +87,9 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(boxOfLuck, 0, 10); // Light Saber
         this.AddDropItem(boxOfLuck, 0, 13); // Double Blade
         this.AddDropItem(boxOfLuck, 4, 4); // Tiger Bow
+        this.AddDropItem(boxOfLuck, 4, 5); // Silver Bow
         this.AddDropItem(boxOfLuck, 4, 9); // Golden Crossbow
         this.AddDropItem(boxOfLuck, 4, 11); // Light Crossbow
-        this.AddDropItem(boxOfLuck, 4, 5); // Silver Bow
         this.AddDropItem(boxOfLuck, 4, 12); // Serpent Crossbow
         this.AddDropItem(boxOfLuck, 5, 0); // Skull Staff
         this.AddDropItem(boxOfLuck, 5, 2); // Serpent Staff
@@ -117,14 +117,14 @@ internal class BoxOfLuck : InitializerBase
         star.Description = "Star of the Sacred Birth";
         star.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(star);
-        this.AddDropItem(star, 0, 20); // Knight Blade
-        this.AddDropItem(star, 3, 10); // Dragon Spear
         this.AddDropItem(star, 0, 17); // Dark Breaker
+        this.AddDropItem(star, 0, 20); // Knight Blade
         this.AddDropItem(star, 0, 21); // Dark Reign Blade
         this.AddDropItem(star, 2, 12); // Great Lord Scepter
-        this.AddDropItem(star, 5, 11); // Staff of Kundun
+        this.AddDropItem(star, 3, 10); // Dragon Spear
         this.AddDropItem(star, 4, 19); // Great Reign Crossbow
         this.AddDropItem(star, 4, 20); // Arrow Viper Bow
+        this.AddDropItem(star, 5, 11); // Staff of Kundun
         this.AddDropItem(star, 6, 13); // Dragon Shield
         this.AddDropItem(star, 6, 15); // Grand Soul Shield
         this.AddArmorSet(star, 21); // Great Dragon Set
@@ -141,10 +141,10 @@ internal class BoxOfLuck : InitializerBase
         firecrackerJewels.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(firecrackerJewels);
         this.AddDropItem(firecrackerJewels, 12, 15); // Jewel of Chaos
+        this.AddDropItem(firecrackerJewels, 13, 2); // Horn of Uniria
         this.AddDropItem(firecrackerJewels, 14, 14); // Jewel of Soul
         this.AddDropItem(firecrackerJewels, 14, 13); // Jewel of Bless
-        this.AddDropItem(firecrackerJewels, 13, 2); // Horn of Uniria
-
+        
         var firecracker = this.Context.CreateNew<ItemDropItemGroup>();
         firecracker.ItemType = SpecialItemType.RandomItem;
         firecracker.SourceItemLevel = 2;
@@ -160,8 +160,8 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(firecracker, 0, 8); // Serpant Sword
         this.AddDropItem(firecracker, 0, 11); // Legendary Sword
         this.AddDropItem(firecracker, 0, 12); // Heliacal Sword
-        this.AddDropItem(firecracker, 0, 15); // Giant Sword
         this.AddDropItem(firecracker, 0, 14); // Lightning Sword
+        this.AddDropItem(firecracker, 0, 15); // Giant Sword
         this.AddDropItem(firecracker, 1, 3); // Tomahawk
         this.AddDropItem(firecracker, 1, 4); // Fairy Axe
         this.AddDropItem(firecracker, 1, 5); // Battle Axe
@@ -176,9 +176,9 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(firecracker, 4, 2); // Elven Bow
         this.AddDropItem(firecracker, 4, 3); // Battle Bow
         this.AddDropItem(firecracker, 4, 4); // Tiger Bow
+        this.AddDropItem(firecracker, 4, 10); // Arquebus
         this.AddDropItem(firecracker, 4, 11); // Light Crossbow
         this.AddDropItem(firecracker, 4, 12); // Serpent Crossbow
-        this.AddDropItem(firecracker, 4, 10); // Arquebus
         this.AddDropItem(firecracker, 5, 0); // Skull Staff
         this.AddDropItem(firecracker, 5, 1); // Angelic Staff
         this.AddDropItem(firecracker, 5, 2); // Serpent Staff
@@ -213,9 +213,9 @@ internal class BoxOfLuck : InitializerBase
         heartJewels.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(heartJewels);
         this.AddDropItem(heartJewels, 12, 15); // Jewel of Chaos
+        this.AddDropItem(heartJewels, 13, 2); // Horn of Uniria
         this.AddDropItem(heartJewels, 14, 14); // Jewel of Soul
         this.AddDropItem(heartJewels, 14, 13); // Jewel of Bless
-        this.AddDropItem(heartJewels, 13, 2); // Horn of Uniria
 
         var heart = this.Context.CreateNew<ItemDropItemGroup>();
         heart.ItemType = SpecialItemType.RandomItem;
@@ -232,8 +232,8 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(heart, 0, 8); // Serpant Sword
         this.AddDropItem(heart, 0, 11); // Legendary Sword
         this.AddDropItem(heart, 0, 12); // Heliacal Sword
-        this.AddDropItem(heart, 0, 15); // Giant Sword
         this.AddDropItem(heart, 0, 14); // Lightning Sword
+        this.AddDropItem(heart, 0, 15); // Giant Sword
         this.AddDropItem(heart, 1, 3); // Tomahawk
         this.AddDropItem(heart, 1, 4); // Fairy Axe
         this.AddDropItem(heart, 1, 5); // Battle Axe
@@ -248,9 +248,9 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(heart, 4, 2); // Elven Bow
         this.AddDropItem(heart, 4, 3); // Battle Bow
         this.AddDropItem(heart, 4, 4); // Tiger Bow
+        this.AddDropItem(heart, 4, 10); // Arquebus
         this.AddDropItem(heart, 4, 11); // Light Crossbow
         this.AddDropItem(heart, 4, 12); // Serpent Crossbow
-        this.AddDropItem(heart, 4, 10); // Arquebus
         this.AddDropItem(heart, 5, 0); // Skull Staff
         this.AddDropItem(heart, 5, 1); // Angelic Staff
         this.AddDropItem(heart, 5, 2); // Serpent Staff
@@ -286,12 +286,13 @@ internal class BoxOfLuck : InitializerBase
         silverMedal.MaximumLevel = 6;
         silverMedal.DropEffect = ItemDropEffect.FanfareSound;
         box.DropItems.Add(silverMedal);
+        this.AddDropItem(silverMedal, 12, 15); // Jewel of Chaos
         this.AddDropItem(silverMedal, 13, 0); // Guardian Angel
         this.AddDropItem(silverMedal, 13, 1); // Imp
         this.AddDropItem(silverMedal, 13, 2); // Horn of Uniria
         this.AddDropItem(silverMedal, 14, 13); // Jewel of Bless
         this.AddDropItem(silverMedal, 14, 14); // Jewel of Soul
-        this.AddDropItem(silverMedal, 12, 15); // Jewel of Chaos
+        
         this.AddDropItem(silverMedal, 0, 10); // Light Saber
         this.AddDropItem(silverMedal, 0, 11); // Legendary Sword
         this.AddDropItem(silverMedal, 0, 13); // Double Blade
@@ -300,12 +301,13 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(silverMedal, 2, 3); // Great Warhammer
         this.AddDropItem(silverMedal, 3, 0); // Light Spear
         this.AddDropItem(silverMedal, 3, 4); // Serpent Spear
-        this.AddDropItem(silverMedal, 4, 11); // Light Crossbow
         this.AddDropItem(silverMedal, 4, 3); // Battle Bow
+        this.AddDropItem(silverMedal, 4, 11); // Light Crossbow
+        
         this.AddDropItem(silverMedal, 5, 2); // Serpent Staff
         this.AddDropItem(silverMedal, 5, 3); // Lightning Staff
-        this.AddDropItem(silverMedal, 6, 6); // Skull Shield
         this.AddDropItem(silverMedal, 6, 5); // Dragon Slayer Shield
+        this.AddDropItem(silverMedal, 6, 6); // Skull Shield
         this.AddArmorSet(silverMedal, 6); // Scale Set
         this.AddArmorSet(silverMedal, 8); // Brass Set
         this.AddArmorSet(silverMedal, 4); // Bone Set
@@ -322,14 +324,14 @@ internal class BoxOfLuck : InitializerBase
         goldMedal.MaximumLevel = 7;
         goldMedal.DropEffect = ItemDropEffect.FanfareSound;
         box.DropItems.Add(goldMedal);
+        this.AddDropItem(goldMedal, 12, 15); // Jewel of Chaos
         this.AddDropItem(goldMedal, 13, 0); // Guardian Angel
         this.AddDropItem(goldMedal, 13, 1); // Imp
         this.AddDropItem(goldMedal, 13, 2); // Horn of Uniria
         this.AddDropItem(goldMedal, 14, 13); // Jewel of Bless
         this.AddDropItem(goldMedal, 14, 14); // Jewel of Soul
-        this.AddDropItem(goldMedal, 12, 15); // Jewel of Chaos
-        this.AddDropItem(goldMedal, 0, 15); // Giant Sword
         this.AddDropItem(goldMedal, 0, 12); // Heliacal Sword
+        this.AddDropItem(goldMedal, 0, 15); // Giant Sword
         this.AddDropItem(goldMedal, 0, 32); // Sacred Fire RF
         this.AddDropItem(goldMedal, 1, 8); // Crescent Axe
         this.AddDropItem(goldMedal, 3, 8); // Great Scythe
@@ -478,8 +480,8 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(boxOfKundun3, 4, 6); // Chaos Nature Bow
         this.AddDropItem(boxOfKundun3, 4, 13); // Bluewing Crossbow
         this.AddDropItem(boxOfKundun3, 4, 14); // Aquagold Crossbow
-        this.AddDropItem(boxOfKundun3, 5, 5); // Legendary Staff
         this.AddDropItem(boxOfKundun3, 5, 3); // Staff of Resurrection
+        this.AddDropItem(boxOfKundun3, 5, 5); // Legendary Staff
         this.AddDropItem(boxOfKundun3, 5, 7); // Chaos Lightning Staff
         this.AddDropItem(boxOfKundun3, 5, 17); // Ancient Stick
         this.AddDropItem(boxOfKundun3, 5, 18); // Black Rose Stick
@@ -617,9 +619,9 @@ internal class BoxOfLuck : InitializerBase
         pinkBox.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(pinkBox);
         this.AddDropItem(pinkBox, 0, 3);
+        this.AddDropItem(pinkBox, 0, 5);
         this.AddDropItem(pinkBox, 0, 7);
         this.AddDropItem(pinkBox, 0, 8);
-        this.AddDropItem(pinkBox, 0, 5);
         this.AddDropItem(pinkBox, 0, 10);
         this.AddDropItem(pinkBox, 0, 11);
         this.AddDropItem(pinkBox, 1, 3);
@@ -627,6 +629,7 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(pinkBox, 1, 6);
         this.AddDropItem(pinkBox, 2, 1);
         this.AddDropItem(pinkBox, 2, 3);
+        this.AddDropItem(pinkBox, 2, 8);
         this.AddDropItem(pinkBox, 3, 2);
         this.AddDropItem(pinkBox, 3, 0);
         this.AddDropItem(pinkBox, 4, 2);
@@ -637,12 +640,11 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(pinkBox, 5, 0);
         this.AddDropItem(pinkBox, 5, 2);
         this.AddDropItem(pinkBox, 5, 3);
-        this.AddDropItem(pinkBox, 2, 8);
-        this.AddDropItem(pinkBox, 6, 9);
         this.AddDropItem(pinkBox, 6, 3);
-        this.AddDropItem(pinkBox, 6, 6);
         this.AddDropItem(pinkBox, 6, 5);
+        this.AddDropItem(pinkBox, 6, 6);
         this.AddDropItem(pinkBox, 6, 8);
+        this.AddDropItem(pinkBox, 6, 9);
 
         this.AddArmorSet(pinkBox, 5); // Leather Set
         this.AddArmorSet(pinkBox, 2); // Pad Set
@@ -672,11 +674,11 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(pinkBoxExc, 4, 3); // Battle Bow
         this.AddDropItem(pinkBoxExc, 4, 11); // Light Crossbow
         this.AddDropItem(pinkBoxExc, 5, 2); // Serpent Staff
-        this.AddDropItem(pinkBoxExc, 6, 9); // Plate Shield
         this.AddDropItem(pinkBoxExc, 6, 8); // Tower Shield
-        this.AddDropItem(pinkBoxExc, 8, 0); // Bronze Set
-        this.AddDropItem(pinkBoxExc, 8, 11); // Silk Set
-        this.AddDropItem(pinkBoxExc, 8, 4); // Bone Set
+        this.AddDropItem(pinkBoxExc, 6, 9); // Plate Shield
+        this.AddArmorSet(pinkBoxExc, 0); // Bronze Set
+        this.AddArmorSet(pinkBoxExc, 11); // Silk Set
+        this.AddArmorSet(pinkBoxExc, 4); // Bone Set
 
         this.AddMoneyDropFallback(box, 100000, pinkBox, "Pink Chocolate Box");
 
@@ -690,9 +692,9 @@ internal class BoxOfLuck : InitializerBase
         lightPurpleCandyBox.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(lightPurpleCandyBox);
         this.AddDropItem(lightPurpleCandyBox, 0, 3);
+        this.AddDropItem(lightPurpleCandyBox, 0, 5);
         this.AddDropItem(lightPurpleCandyBox, 0, 7);
         this.AddDropItem(lightPurpleCandyBox, 0, 8);
-        this.AddDropItem(lightPurpleCandyBox, 0, 5);
         this.AddDropItem(lightPurpleCandyBox, 0, 10);
         this.AddDropItem(lightPurpleCandyBox, 0, 11);
         this.AddDropItem(lightPurpleCandyBox, 1, 3);
@@ -700,8 +702,9 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(lightPurpleCandyBox, 1, 6);
         this.AddDropItem(lightPurpleCandyBox, 2, 1);
         this.AddDropItem(lightPurpleCandyBox, 2, 3);
-        this.AddDropItem(lightPurpleCandyBox, 3, 2);
+        this.AddDropItem(lightPurpleCandyBox, 2, 8);
         this.AddDropItem(lightPurpleCandyBox, 3, 0);
+        this.AddDropItem(lightPurpleCandyBox, 3, 2);
         this.AddDropItem(lightPurpleCandyBox, 4, 2);
         this.AddDropItem(lightPurpleCandyBox, 4, 4);
         this.AddDropItem(lightPurpleCandyBox, 4, 9);
@@ -710,12 +713,12 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(lightPurpleCandyBox, 5, 0);
         this.AddDropItem(lightPurpleCandyBox, 5, 2);
         this.AddDropItem(lightPurpleCandyBox, 5, 3);
-        this.AddDropItem(lightPurpleCandyBox, 2, 8);
-        this.AddDropItem(lightPurpleCandyBox, 6, 9);
+        
         this.AddDropItem(lightPurpleCandyBox, 6, 3);
-        this.AddDropItem(lightPurpleCandyBox, 6, 6);
         this.AddDropItem(lightPurpleCandyBox, 6, 5);
+        this.AddDropItem(lightPurpleCandyBox, 6, 6);
         this.AddDropItem(lightPurpleCandyBox, 6, 8);
+        this.AddDropItem(lightPurpleCandyBox, 6, 9);
 
         this.AddArmorSet(lightPurpleCandyBox, 5); // Leather Set
         this.AddArmorSet(lightPurpleCandyBox, 2); // Pad Set
@@ -745,11 +748,11 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(lightPurpleCandyBoxExc, 4, 3); // Battle Bow
         this.AddDropItem(lightPurpleCandyBoxExc, 4, 11); // Light Crossbow
         this.AddDropItem(lightPurpleCandyBoxExc, 5, 2); // Serpent Staff
-        this.AddDropItem(lightPurpleCandyBoxExc, 6, 9); // Plate Shield
         this.AddDropItem(lightPurpleCandyBoxExc, 6, 8); // Tower Shield
-        this.AddDropItem(lightPurpleCandyBoxExc, 8, 0); // Bronze Set
-        this.AddDropItem(lightPurpleCandyBoxExc, 8, 11); // Silk Set
-        this.AddDropItem(lightPurpleCandyBoxExc, 8, 4); // Bone Set
+        this.AddDropItem(lightPurpleCandyBoxExc, 6, 9); // Plate Shield
+        this.AddArmorSet(lightPurpleCandyBoxExc, 0); // Bronze Set
+        this.AddArmorSet(lightPurpleCandyBoxExc, 11); // Silk Set
+        this.AddArmorSet(lightPurpleCandyBoxExc, 4); // Bone Set
 
         this.AddMoneyDropFallback(box, 100000, lightPurpleCandyBox, "Light Purple Candy Box");
     }
@@ -766,22 +769,22 @@ internal class BoxOfLuck : InitializerBase
         redBox.MaximumLevel = 9;
         redBox.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(redBox);
+        this.AddDropItem(redBox, 0, 12);
         this.AddDropItem(redBox, 0, 13);
         this.AddDropItem(redBox, 0, 14);
-        this.AddDropItem(redBox, 0, 12);
         this.AddDropItem(redBox, 1, 8);
         this.AddDropItem(redBox, 2, 4);
+        this.AddDropItem(redBox, 2, 9);
+        this.AddDropItem(redBox, 2, 5);
+        this.AddDropItem(redBox, 2, 10);
         this.AddDropItem(redBox, 3, 9);
         this.AddDropItem(redBox, 4, 5);
         this.AddDropItem(redBox, 4, 13);
+        this.AddDropItem(redBox, 4, 14);
         this.AddDropItem(redBox, 5, 5);
         this.AddDropItem(redBox, 5, 6);
-        this.AddDropItem(redBox, 2, 9);
-        this.AddDropItem(redBox, 2, 5);
-        this.AddDropItem(redBox, 4, 14);
-        this.AddDropItem(redBox, 2, 10);
-        this.AddDropItem(redBox, 6, 12);
         this.AddDropItem(redBox, 6, 11);
+        this.AddDropItem(redBox, 6, 12);
         this.AddDropItem(redBox, 6, 13);
         this.AddDropItem(redBox, 6, 14);
         this.AddDropItem(redBox, 12, 15); // Jewel of Chaos
@@ -849,22 +852,22 @@ internal class BoxOfLuck : InitializerBase
         vermilionBox.MaximumLevel = 9;
         vermilionBox.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(vermilionBox);
+        this.AddDropItem(vermilionBox, 0, 12);
         this.AddDropItem(vermilionBox, 0, 13);
         this.AddDropItem(vermilionBox, 0, 14);
-        this.AddDropItem(vermilionBox, 0, 12);
         this.AddDropItem(vermilionBox, 1, 8);
         this.AddDropItem(vermilionBox, 2, 4);
+        this.AddDropItem(vermilionBox, 2, 5);
+        this.AddDropItem(vermilionBox, 2, 9);
+        this.AddDropItem(vermilionBox, 2, 10);
         this.AddDropItem(vermilionBox, 3, 9);
         this.AddDropItem(vermilionBox, 4, 5);
         this.AddDropItem(vermilionBox, 4, 13);
+        this.AddDropItem(vermilionBox, 4, 14);
         this.AddDropItem(vermilionBox, 5, 5);
         this.AddDropItem(vermilionBox, 5, 6);
-        this.AddDropItem(vermilionBox, 2, 9);
-        this.AddDropItem(vermilionBox, 2, 5);
-        this.AddDropItem(vermilionBox, 4, 14);
-        this.AddDropItem(vermilionBox, 2, 10);
-        this.AddDropItem(vermilionBox, 6, 12);
         this.AddDropItem(vermilionBox, 6, 11);
+        this.AddDropItem(vermilionBox, 6, 12);
         this.AddDropItem(vermilionBox, 6, 13);
         this.AddDropItem(vermilionBox, 6, 14);
         this.AddDropItem(vermilionBox, 12, 15); // Jewel of Chaos
@@ -906,8 +909,8 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(vermilionBoxExc, 5, 2);
         this.AddDropItem(vermilionBoxExc, 5, 3);
         this.AddDropItem(vermilionBoxExc, 5, 6);
-        this.AddDropItem(vermilionBoxExc, 6, 12);
         this.AddDropItem(vermilionBoxExc, 6, 11);
+        this.AddDropItem(vermilionBoxExc, 6, 12);
         this.AddDropItem(vermilionBoxExc, 6, 13);
         this.AddDropItem(vermilionBoxExc, 6, 14);
         this.AddDropItem(vermilionBoxExc, 13, 8); // Ring of Ice
@@ -967,16 +970,16 @@ internal class BoxOfLuck : InitializerBase
         blueBoxExc.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(blueBoxExc);
         this.AddDropItem(blueBoxExc, 0, 16);
-        this.AddDropItem(blueBoxExc, 2, 5);
         this.AddDropItem(blueBoxExc, 0, 31);
+        this.AddDropItem(blueBoxExc, 2, 5);
+        this.AddDropItem(blueBoxExc, 2, 10);
         this.AddDropItem(blueBoxExc, 4, 14);
         this.AddDropItem(blueBoxExc, 4, 16);
         this.AddDropItem(blueBoxExc, 5, 8);
-        this.AddDropItem(blueBoxExc, 2, 10);
         this.AddDropItem(blueBoxExc, 6, 13);
         this.AddDropItem(blueBoxExc, 6, 14);
-        this.AddDropItem(blueBoxExc, 6, 16);
         this.AddDropItem(blueBoxExc, 6, 15);
+        this.AddDropItem(blueBoxExc, 6, 16);
         this.AddDropItem(blueBoxExc, 13, 8); // Ring of Ice
         this.AddDropItem(blueBoxExc, 13, 9); // Ring of Poison
         this.AddDropItem(blueBoxExc, 13, 21); // Ring of Fire
@@ -1030,16 +1033,16 @@ internal class BoxOfLuck : InitializerBase
         deepBlueBoxExc.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(deepBlueBoxExc);
         this.AddDropItem(deepBlueBoxExc, 0, 16);
-        this.AddDropItem(deepBlueBoxExc, 2, 5);
         this.AddDropItem(deepBlueBoxExc, 0, 31);
+        this.AddDropItem(deepBlueBoxExc, 2, 5);
+        this.AddDropItem(deepBlueBoxExc, 2, 10);
         this.AddDropItem(deepBlueBoxExc, 4, 14);
         this.AddDropItem(deepBlueBoxExc, 4, 16);
         this.AddDropItem(deepBlueBoxExc, 5, 8);
-        this.AddDropItem(deepBlueBoxExc, 2, 10);
         this.AddDropItem(deepBlueBoxExc, 6, 13);
         this.AddDropItem(deepBlueBoxExc, 6, 14);
-        this.AddDropItem(deepBlueBoxExc, 6, 16);
         this.AddDropItem(deepBlueBoxExc, 6, 15);
+        this.AddDropItem(deepBlueBoxExc, 6, 16);
         this.AddDropItem(deepBlueBoxExc, 13, 8); // Ring of Ice
         this.AddDropItem(deepBlueBoxExc, 13, 9); // Ring of Poison
         this.AddDropItem(deepBlueBoxExc, 13, 21); // Ring of Fire
@@ -1198,22 +1201,22 @@ internal class BoxOfLuck : InitializerBase
         blueBoxExc.Description = "Blue Ribbon Box - Excellent Items";
         blueBoxExc.DropEffect = ItemDropEffect.Fireworks;
         box.DropItems.Add(blueBoxExc);
-        this.AddDropItem(blueBox, 0, 14);
-        this.AddDropItem(blueBox, 2, 5);
-        this.AddDropItem(blueBox, 2, 9);
-        this.AddDropItem(blueBox, 4, 14);
-        this.AddDropItem(blueBox, 5, 5);
-        this.AddDropItem(blueBox, 4, 16);
-        this.AddDropItem(blueBox, 6, 13);
-        this.AddDropItem(blueBox, 6, 14);
-        this.AddDropItem(blueBox, 13, 8);
-        this.AddDropItem(blueBox, 13, 9);
-        this.AddDropItem(blueBox, 13, 12);
-        this.AddDropItem(blueBox, 13, 13);
-        this.AddArmorSet(blueBox, 1);
-        this.AddArmorSet(blueBox, 14);
-        this.AddArmorSet(blueBox, 3);
-        this.AddArmorSet(blueBox, 26);
+        this.AddDropItem(blueBoxExc, 0, 14);
+        this.AddDropItem(blueBoxExc, 2, 5);
+        this.AddDropItem(blueBoxExc, 2, 9);
+        this.AddDropItem(blueBoxExc, 4, 14);
+        this.AddDropItem(blueBoxExc, 5, 5);
+        this.AddDropItem(blueBoxExc, 4, 16);
+        this.AddDropItem(blueBoxExc, 6, 13);
+        this.AddDropItem(blueBoxExc, 6, 14);
+        this.AddDropItem(blueBoxExc, 13, 8);
+        this.AddDropItem(blueBoxExc, 13, 9);
+        this.AddDropItem(blueBoxExc, 13, 12);
+        this.AddDropItem(blueBoxExc, 13, 13);
+        this.AddArmorSet(blueBoxExc, 1);
+        this.AddArmorSet(blueBoxExc, 14);
+        this.AddArmorSet(blueBoxExc, 3);
+        this.AddArmorSet(blueBoxExc, 26);
 
         this.AddMoneyDropFallback(box, 80000, blueBox, "Blue Ribbon Box");
     }
@@ -1305,9 +1308,9 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(level40Ring, 0, 13); // Double Blade
         this.AddDropItem(level40Ring, 3, 8); // Great Scythe
         this.AddDropItem(level40Ring, 4, 4); // Tiger Bow
+        this.AddDropItem(level40Ring, 4, 5); // Silver Bow
         this.AddDropItem(level40Ring, 4, 9); // Golden Crossbow
         this.AddDropItem(level40Ring, 4, 11); // Light Crossbow
-        this.AddDropItem(level40Ring, 4, 5); // Silver Bow
         this.AddDropItem(level40Ring, 4, 12); // Serpent Crossbow
         this.AddDropItem(level40Ring, 5, 0); // Skull Staff
         this.AddDropItem(level40Ring, 5, 2); // Serpent Staff
@@ -1341,9 +1344,9 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(level80Ring, 0, 13); // Double Blade
         this.AddDropItem(level80Ring, 3, 8); // Great Scythe
         this.AddDropItem(level80Ring, 4, 4); // Tiger Bow
+        this.AddDropItem(level80Ring, 4, 5); // Silver Bow
         this.AddDropItem(level80Ring, 4, 9); // Golden Crossbow
         this.AddDropItem(level80Ring, 4, 11); // Light Crossbow
-        this.AddDropItem(level80Ring, 4, 5); // Silver Bow
         this.AddDropItem(level80Ring, 4, 12); // Serpent Crossbow
         this.AddDropItem(level80Ring, 5, 0); // Skull Staff
         this.AddDropItem(level80Ring, 5, 2); // Serpent Staff
