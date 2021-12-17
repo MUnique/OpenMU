@@ -35,6 +35,11 @@ public interface IShowEffectPlugIn : IViewPlugIn
         /// The players <see cref="Stats.CurrentShield"/> reached 0.
         /// </summary>
         ShieldLost,
+
+        /// <summary>
+        /// A swirl is shown around the player, e.g. after dropping event items.
+        /// </summary>
+        Swirl,
     }
 
     /// <summary>
