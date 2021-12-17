@@ -1467,6 +1467,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("DropEffect")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("ItemDefinitionId")
                         .HasColumnType("uuid");
 
@@ -1476,7 +1479,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("ItemType")
                         .HasColumnType("integer");
 
+                    b.Property<byte>("MaximumLevel")
+                        .HasColumnType("smallint");
+
                     b.Property<byte?>("MaximumMonsterLevel")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("MinimumLevel")
                         .HasColumnType("smallint");
 
                     b.Property<byte?>("MinimumMonsterLevel")
@@ -1487,6 +1496,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("MonsterId")
                         .HasColumnType("uuid");
+
+                    b.Property<short>("RequiredCharacterLevel")
+                        .HasColumnType("smallint");
 
                     b.Property<byte>("SourceItemLevel")
                         .HasColumnType("smallint");

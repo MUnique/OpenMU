@@ -106,6 +106,7 @@ public class GameConfigurationInitializer : InitializerBase
         new PackedJewels(this.Context, this.GameConfiguration).Initialize();
         new Jewelery(this.Context, this.GameConfiguration).Initialize();
         new AncientSets(this.Context, this.GameConfiguration).Initialize();
+        new BoxOfLuck(this.Context, this.GameConfiguration).Initialize();
         this.CreateJewelMixes();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
         new GameMapsInitializer(this.Context, this.GameConfiguration).Initialize();

@@ -2068,7 +2068,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     ItemLevel = table.Column<byte>(type: "smallint", nullable: true),
                     ItemType = table.Column<int>(type: "integer", nullable: false),
                     SourceItemLevel = table.Column<byte>(type: "smallint", nullable: false),
-                    MoneyAmount = table.Column<int>(type: "integer", nullable: false)
+                    MoneyAmount = table.Column<int>(type: "integer", nullable: false),
+                    MinimumLevel = table.Column<byte>(type: "smallint", nullable: false),
+                    MaximumLevel = table.Column<byte>(type: "smallint", nullable: false),
+                    RequiredCharacterLevel = table.Column<short>(type: "smallint", nullable: false),
+                    DropEffect = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
