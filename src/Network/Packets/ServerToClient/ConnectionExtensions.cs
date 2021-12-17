@@ -1002,6 +1002,71 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Starts a safe write of a <see cref="ServerCommand" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor, or a specific dialog should be shown.
+    /// Causes reaction on client side: The client shows an effect, e.g. a firework.
+    /// </remarks>
+    public static ServerCommandThreadSafeWriter StartWriteServerCommand(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ShowFireworks" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor.
+    /// Causes reaction on client side: The client shows an fireworks effect at the specified coordinates.
+    /// </remarks>
+    public static ShowFireworksThreadSafeWriter StartWriteShowFireworks(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ShowChristmasFireworks" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor.
+    /// Causes reaction on client side: The client shows an christmas fireworks effect at the specified coordinates.
+    /// </remarks>
+    public static ShowChristmasFireworksThreadSafeWriter StartWriteShowChristmasFireworks(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="PlayFanfareSound" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor.
+    /// Causes reaction on client side: The client plays a fanfare sound at the specified coordinates.
+    /// </remarks>
+    public static PlayFanfareSoundThreadSafeWriter StartWritePlayFanfareSound(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="ShowSwirl" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor.
+    /// Causes reaction on client side: The client shows a swirl effect at the specified object.
+    /// </remarks>
+    public static ShowSwirlThreadSafeWriter StartWriteShowSwirl(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
     /// Starts a safe write of a <see cref="MasterStatsUpdate" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -3504,6 +3569,109 @@ public static class ConnectionExtensions
         packet.RedTeamGoals = @redTeamGoals;
         packet.BlueTeamName = @blueTeamName;
         packet.BlueTeamGoals = @blueTeamGoals;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ServerCommand" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="commandType">The command type.</param>
+    /// <param name="parameter1">The parameter 1.</param>
+    /// <param name="parameter2">The parameter 2.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor, or a specific dialog should be shown.
+    /// Causes reaction on client side: The client shows an effect, e.g. a firework.
+    /// </remarks>
+    public static void SendServerCommand(this IConnection connection, byte @commandType, byte @parameter1, byte @parameter2)
+    {
+        using var writer = connection.StartWriteServerCommand();
+        var packet = writer.Packet;
+        packet.CommandType = @commandType;
+        packet.Parameter1 = @parameter1;
+        packet.Parameter2 = @parameter2;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ShowFireworks" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <param name="effectType">The effect type.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor.
+    /// Causes reaction on client side: The client shows an fireworks effect at the specified coordinates.
+    /// </remarks>
+    public static void SendShowFireworks(this IConnection connection, byte @x, byte @y, byte @effectType = 0)
+    {
+        using var writer = connection.StartWriteShowFireworks();
+        var packet = writer.Packet;
+        packet.EffectType = @effectType;
+        packet.X = @x;
+        packet.Y = @y;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ShowChristmasFireworks" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <param name="effectType">The effect type.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor.
+    /// Causes reaction on client side: The client shows an christmas fireworks effect at the specified coordinates.
+    /// </remarks>
+    public static void SendShowChristmasFireworks(this IConnection connection, byte @x, byte @y, byte @effectType = 59)
+    {
+        using var writer = connection.StartWriteShowChristmasFireworks();
+        var packet = writer.Packet;
+        packet.EffectType = @effectType;
+        packet.X = @x;
+        packet.Y = @y;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayFanfareSound" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <param name="effectType">The effect type.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor.
+    /// Causes reaction on client side: The client plays a fanfare sound at the specified coordinates.
+    /// </remarks>
+    public static void SendPlayFanfareSound(this IConnection connection, byte @x, byte @y, byte @effectType = 2)
+    {
+        using var writer = connection.StartWritePlayFanfareSound();
+        var packet = writer.Packet;
+        packet.EffectType = @effectType;
+        packet.X = @x;
+        packet.Y = @y;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ShowSwirl" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetObjectId">The target object id.</param>
+    /// <param name="effectType">The effect type.</param>
+    /// <remarks>
+    /// Is sent by the server when: E.g. when event items are dropped to the floor.
+    /// Causes reaction on client side: The client shows a swirl effect at the specified object.
+    /// </remarks>
+    public static void SendShowSwirl(this IConnection connection, ushort @targetObjectId, byte @effectType = 58)
+    {
+        using var writer = connection.StartWriteShowSwirl();
+        var packet = writer.Packet;
+        packet.EffectType = @effectType;
+        packet.TargetObjectId = @targetObjectId;
         writer.Commit();
     }
 
@@ -8325,6 +8493,266 @@ public readonly ref struct GuildSoccerScoreUpdateThreadSafeWriter
     public void Commit()
     {
         this.connection.Output.AdvanceSafely(GuildSoccerScoreUpdate.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ServerCommand"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ServerCommandThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServerCommandThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ServerCommandThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ServerCommand(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ServerCommand.Length)[..ServerCommand.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ServerCommand Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="ServerCommand" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(ServerCommand.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ShowFireworks"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ShowFireworksThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShowFireworksThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ShowFireworksThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ShowFireworks(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ShowFireworks.Length)[..ShowFireworks.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ShowFireworks Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="ShowFireworks" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(ShowFireworks.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ShowChristmasFireworks"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ShowChristmasFireworksThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShowChristmasFireworksThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ShowChristmasFireworksThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ShowChristmasFireworks(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ShowChristmasFireworks.Length)[..ShowChristmasFireworks.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ShowChristmasFireworks Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="ShowChristmasFireworks" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(ShowChristmasFireworks.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="PlayFanfareSound"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct PlayFanfareSoundThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayFanfareSoundThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public PlayFanfareSoundThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new PlayFanfareSound(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(PlayFanfareSound.Length)[..PlayFanfareSound.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public PlayFanfareSound Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="PlayFanfareSound" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(PlayFanfareSound.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="ShowSwirl"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct ShowSwirlThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShowSwirlThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public ShowSwirlThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new ShowSwirl(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(ShowSwirl.Length)[..ShowSwirl.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public ShowSwirl Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="ShowSwirl" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(ShowSwirl.Length);
     }
 
     /// <summary>
