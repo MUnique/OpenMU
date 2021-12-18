@@ -92,10 +92,20 @@ public class DefaultDropGenerator : IDropGenerator
             return null;
         }
 
-        if (selectedGroup.ItemLevel is byte itemLevel)
+        if (selectedGroup is ItemDropItemGroup itemDropItemGroup)
+        {
+            item.Level = (byte)this._randomizer.NextInt(itemDropItemGroup.MinimumLevel, itemDropItemGroup.MaximumLevel + 1);
+        }
+        else if (selectedGroup.ItemLevel is { } itemLevel)
         {
             item.Level = itemLevel;
         }
+        else
+        {
+            // no level defined, so it stays at 0.
+        }
+
+        item.Level = Math.Min(item.Level, item.Definition!.MaximumItemLevel);
 
         if (selectedGroup.ItemType == SpecialItemType.Ancient)
         {
@@ -111,6 +121,30 @@ public class DefaultDropGenerator : IDropGenerator
         }
 
         return item;
+    }
+
+    /// <inheritdoc/>
+    public Item? GenerateItemDrop(IEnumerable<DropItemGroup> groups, out ItemDropEffect? dropEffect, out uint? droppedMoney)
+    {
+        droppedMoney = null;
+        dropEffect = ItemDropEffect.Undefined;
+        var group = this.SelectRandomGroup(groups.OrderBy(group => group.Chance));
+        if (group is null)
+        {
+            return null;
+        }
+
+        if (@group is ItemDropItemGroup itemDropItemGroup)
+        {
+            dropEffect = itemDropItemGroup.DropEffect;
+            if (group.ItemType == SpecialItemType.Money)
+            {
+                droppedMoney = (uint)itemDropItemGroup.MoneyAmount;
+                return null;
+            }
+        }
+
+        return this.GenerateItemDrop(group);
     }
 
     /// <summary>

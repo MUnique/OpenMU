@@ -2054,6 +2054,65 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ItemDropItemGroup",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MonsterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ItemDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Chance = table.Column<double>(type: "double precision", nullable: false),
+                    MinimumMonsterLevel = table.Column<byte>(type: "smallint", nullable: true),
+                    MaximumMonsterLevel = table.Column<byte>(type: "smallint", nullable: true),
+                    ItemLevel = table.Column<byte>(type: "smallint", nullable: true),
+                    ItemType = table.Column<int>(type: "integer", nullable: false),
+                    SourceItemLevel = table.Column<byte>(type: "smallint", nullable: false),
+                    MoneyAmount = table.Column<int>(type: "integer", nullable: false),
+                    MinimumLevel = table.Column<byte>(type: "smallint", nullable: false),
+                    MaximumLevel = table.Column<byte>(type: "smallint", nullable: false),
+                    RequiredCharacterLevel = table.Column<short>(type: "smallint", nullable: false),
+                    DropEffect = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemDropItemGroup", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemDropItemGroup_ItemDefinition_ItemDefinitionId",
+                        column: x => x.ItemDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "ItemDefinition",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemDropItemGroupItemDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    ItemDropItemGroupId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemDefinitionId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemDropItemGroupItemDefinition", x => new { x.ItemDropItemGroupId, x.ItemDefinitionId });
+                    table.ForeignKey(
+                        name: "FK_ItemDropItemGroupItemDefinition_ItemDefinition_ItemDefiniti~",
+                        column: x => x.ItemDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "ItemDefinition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ItemDropItemGroupItemDefinition_ItemDropItemGroup_ItemDropI~",
+                        column: x => x.ItemDropItemGroupId,
+                        principalSchema: "config",
+                        principalTable: "ItemDropItemGroup",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MasterSkillDefinition",
                 schema: "config",
                 columns: table => new
@@ -2996,6 +3055,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ItemSetGroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ItemDropItemGroup_ItemDefinitionId",
+                schema: "config",
+                table: "ItemDropItemGroup",
+                column: "ItemDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemDropItemGroup_MonsterId",
+                schema: "config",
+                table: "ItemDropItemGroup",
+                column: "MonsterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemDropItemGroupItemDefinition_ItemDefinitionId",
+                schema: "config",
+                table: "ItemDropItemGroupItemDefinition",
+                column: "ItemDefinitionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ItemItemSetGroup_ItemSetGroupId",
                 schema: "data",
                 table: "ItemItemSetGroup",
@@ -3583,6 +3660,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
+                name: "FK_ItemDropItemGroup_MonsterDefinition_MonsterId",
+                schema: "config",
+                table: "ItemDropItemGroup",
+                column: "MonsterId",
+                principalSchema: "config",
+                principalTable: "MonsterDefinition",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_MasterSkillDefinition_Skill_ReplacedSkillId",
                 schema: "config",
                 table: "MasterSkillDefinition",
@@ -3699,6 +3785,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "ItemDefinitionItemSetGroup",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ItemDropItemGroupItemDefinition",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -3819,6 +3909,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "ItemCraftingRequiredItem",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ItemDropItemGroup",
                 schema: "config");
 
             migrationBuilder.DropTable(

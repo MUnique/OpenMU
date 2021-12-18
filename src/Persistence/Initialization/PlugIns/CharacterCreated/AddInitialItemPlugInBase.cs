@@ -15,10 +15,11 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 /// </summary>
 public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
 {
-    private readonly byte _characterClassNumber;
+    private readonly byte? _characterClassNumber;
     private readonly byte _itemGroup;
     private readonly byte _itemNumber;
     private readonly byte _itemSlot;
+    private readonly byte _itemLevel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AddInitialItemPlugInBase" /> class.
@@ -27,21 +28,29 @@ public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
     /// <param name="itemGroup">The item group.</param>
     /// <param name="itemNumber">The item number.</param>
     /// <param name="itemSlot">The item slot.</param>
-    protected AddInitialItemPlugInBase(byte characterClassNumber, byte itemGroup, byte itemNumber, byte itemSlot)
+    /// <param name="itemLevel">The item level.</param>
+    protected AddInitialItemPlugInBase(byte? characterClassNumber, byte itemGroup, byte itemNumber, byte itemSlot, byte itemLevel = 0)
     {
         this._characterClassNumber = characterClassNumber;
         this._itemGroup = itemGroup;
         this._itemNumber = itemNumber;
         this._itemSlot = itemSlot;
+        this._itemLevel = itemLevel;
     }
 
     /// <inheritdoc/>
     public void CharacterCreated(Player player, Character createdCharacter)
     {
         using var logScope = player.Logger.BeginScope(this.GetType());
-        if (this._characterClassNumber != createdCharacter.CharacterClass?.Number)
+        if (this._characterClassNumber.HasValue && this._characterClassNumber != createdCharacter.CharacterClass?.Number)
         {
             player.Logger.LogDebug("Wrong character class {0}, expected {1}", createdCharacter.CharacterClass?.Number, this._characterClassNumber);
+            return;
+        }
+
+        if (createdCharacter.Inventory!.Items.FirstOrDefault(i => i.ItemSlot == this._itemSlot) is { } existingItem)
+        {
+            player.Logger.LogError("Item slot {0} already contains an item ({1}).", this._itemSlot, existingItem);
             return;
         }
 
@@ -69,6 +78,7 @@ public class AddInitialItemPlugInBase : ICharacterCreatedPlugIn
             item.Definition = itemDefinition;
             item.Durability = item.Definition.Durability;
             item.ItemSlot = this._itemSlot;
+            item.Level = this._itemLevel;
             return item;
         }
 

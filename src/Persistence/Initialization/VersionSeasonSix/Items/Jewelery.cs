@@ -112,7 +112,9 @@ internal class Jewelery : Version095d.Items.Jewelery
     }
 
     /// <summary>
-    /// Creates the wizard ring which is dropped by the white wizard.
+    /// Creates the wizard ring which is dropped by the white wizard (level 0).
+    /// Level 1 and 2 are Ring of Warriors which can be dropped at level 40 and 80, <see cref="BoxOfLuck.CreateWizardsRings"/>.
+    /// These can be equipped but have no options, and are bound to the character.
     /// </summary>
     /// <remarks>
     /// Options:
@@ -122,10 +124,11 @@ internal class Jewelery : Version095d.Items.Jewelery
     private void CreateWizardsRing()
     {
         var ring = this.CreateJewelery(20, 10, false, "Wizards Ring", 0, 250, null, null, null);
+        ring.MaximumItemLevel = 2;
+        ring.IsBoundToCharacter = true;
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
         ring.PossibleItemOptions.Add(optionDefinition);
-        ring.MaximumItemLevel = 0;
         optionDefinition.Name = "Wizard Ring Options";
 
         var increaseDamage = this.Context.CreateNew<IncreasableItemOption>();

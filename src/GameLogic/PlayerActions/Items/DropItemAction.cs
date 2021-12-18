@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
 
@@ -24,11 +25,67 @@ public class DropItemAction
 
         if (item is not null && (player.CurrentMap?.Terrain.WalkMap[target.X, target.Y] ?? false))
         {
-            this.DropItem(player, item, target);
+            if (item.Definition!.DropItems.Count > 0
+                && item.Definition!.DropItems.Where(di => di.SourceItemLevel == item.Level) is { } itemDropGroups)
+            {
+                this.DropRandomItem(item, player, itemDropGroups);
+            }
+            else
+            {
+                this.DropItem(player, item, target);
+            }
         }
         else
         {
             player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(slot, false);
+        }
+    }
+
+    /// <summary>
+    /// Drops a random item of the given <see cref="DropItemGroup"/> at the players coordinates.
+    /// </summary>
+    /// <param name="sourceItem">The source item.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="dropItemGroups">The <see cref="DropItemGroup"/> from which the random item is generated.</param>
+    private void DropRandomItem(Item sourceItem, Player player, IEnumerable<ItemDropItemGroup> dropItemGroups)
+    {
+        if (dropItemGroups.Any(g => g.RequiredCharacterLevel > player.Level))
+        {
+            player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(sourceItem.ItemSlot, false);
+            return;
+        }
+
+        var item = player.GameContext.DropGenerator.GenerateItemDrop(dropItemGroups, out var dropEffect, out var droppedMoneyAmount);
+        if (droppedMoneyAmount is { })
+        {
+            var droppedMoney = new DroppedMoney(droppedMoneyAmount.Value, player.Position, player.CurrentMap!);
+            player.CurrentMap!.Add(droppedMoney);
+        }
+
+        if (item is { })
+        {
+            var droppedItem = new DroppedItem(item, player.Position, player.CurrentMap!, player);
+            player.CurrentMap!.Add(droppedItem);
+        }
+
+        if (dropEffect is { } && dropEffect != ItemDropEffect.Undefined)
+        {
+            this.ShowDropEffect(player, dropEffect.Value);
+        }
+
+        this.RemoveItemFromInventory(player, sourceItem);
+        player.PersistenceContext.Delete(sourceItem);
+    }
+
+    private void ShowDropEffect(Player player, ItemDropEffect dropEffect)
+    {
+        if (dropEffect == ItemDropEffect.Swirl)
+        {
+            player.ViewPlugIns.GetPlugIn<IShowEffectPlugIn>()?.ShowEffect(player, IShowEffectPlugIn.EffectType.Swirl);
+        }
+        else
+        {
+            player.ViewPlugIns.GetPlugIn<IShowItemDropEffectPlugIn>()?.ShowEffect(dropEffect, player.Position);
         }
     }
 
@@ -39,6 +96,11 @@ public class DropItemAction
             : player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
         var droppedItem = new DroppedItem(item, target, player.CurrentMap!, player, owners);
         player.CurrentMap!.Add(droppedItem);
+        this.RemoveItemFromInventory(player, item);
+    }
+
+    private void RemoveItemFromInventory(Player player, Item item)
+    {
         player.Inventory!.RemoveItem(item);
         player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(item.ItemSlot, true);
     }

@@ -122,6 +122,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Gate, MUnique.OpenMU.DataModel.Configuration.Gate>()
             .Include<Gate, BasicModel.Gate>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup, MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup>()
+            .Include<ItemDropItemGroup, BasicModel.ItemDropItemGroup>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.JewelMix, MUnique.OpenMU.DataModel.Configuration.JewelMix>()
             .Include<JewelMix, BasicModel.JewelMix>();
 

@@ -120,7 +120,7 @@ internal partial class {className} : {fullName}, IIdentifiable
         foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
         {
             var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
-            var joinTypeName = propertyInfo.DeclaringType!.Name + elementType.Name;
+            var joinTypeName = propertyInfo.ReflectedType!.Name + elementType.Name;
 
             var source = $@"{string.Format(FileHeaderTemplate, joinTypeName)}
 
@@ -130,17 +130,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 
-[Table(nameof({joinTypeName}), Schema = {(IsConfigurationType(propertyInfo.DeclaringType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
+[Table(nameof({joinTypeName}), Schema = {(IsConfigurationType(propertyInfo.ReflectedType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
 internal partial class {joinTypeName}
 {{
-    public Guid {propertyInfo.DeclaringType.Name}Id {{ get; set; }}
-    public {propertyInfo.DeclaringType.Name} {propertyInfo.DeclaringType.Name} {{ get; set; }}
+    public Guid {propertyInfo.ReflectedType.Name}Id {{ get; set; }}
+    public {propertyInfo.ReflectedType.Name} {propertyInfo.ReflectedType.Name} {{ get; set; }}
 
     public Guid {elementType.Name}Id {{ get; set; }}
     public {elementType.Name} {elementType.Name} {{ get; set; }}
 }}
 
-internal partial class {propertyInfo.DeclaringType.Name}
+internal partial class {propertyInfo.ReflectedType.Name}
 {{
     public ICollection<{joinTypeName}> Joined{propertyInfo.Name} {{ get; }} = new EntityFramework.List<{joinTypeName}>();
 }}
@@ -214,10 +214,10 @@ public static class MapsterConfigurator
         foreach (PropertyInfo propertyInfo in allStandaloneCollectionProperties)
         {
             var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
-            var joinTypeName = propertyInfo.DeclaringType!.Name + elementType.Name;
+            var joinTypeName = propertyInfo.ReflectedType!.Name + elementType.Name;
             joinDefinitions
-                .AppendLine($"        modelBuilder.Entity<{propertyInfo.DeclaringType.Name}>().HasMany(entity => entity.Joined{propertyInfo.Name}).WithOne(join => join.{propertyInfo.DeclaringType.Name});")
-                .AppendLine($"        modelBuilder.Entity<{joinTypeName}>().HasKey(join => new {{ join.{propertyInfo.DeclaringType.Name}Id, join.{elementType.Name}Id }});");
+                .AppendLine($"        modelBuilder.Entity<{propertyInfo.ReflectedType.Name}>().HasMany(entity => entity.Joined{propertyInfo.Name}).WithOne(join => join.{propertyInfo.ReflectedType.Name});")
+                .AppendLine($"        modelBuilder.Entity<{joinTypeName}>().HasKey(join => new {{ join.{propertyInfo.ReflectedType.Name}Id, join.{elementType.Name}Id }});");
         }
 
         var source = $@"{string.Format(FileHeaderTemplate, "ExtendedTypeContext")}
@@ -264,7 +264,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
         {
             var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
-            var joinTypeName = propertyInfo.DeclaringType!.Name + elementType.Name;
+            var joinTypeName = propertyInfo.ReflectedType!.Name + elementType.Name;
             result.AppendLine($@"        this.{propertyInfo.Name} = new ManyToManyCollectionAdapter<{elementType.FullName}, {joinTypeName}>(this.Joined{propertyInfo.Name}, joinEntity => joinEntity.{elementType.Name}, entity => new {joinTypeName} {{ {type.Name} = this, {type.Name}Id = this.Id, {elementType.Name} = ({elementType.Name})entity, {elementType.Name}Id = (({elementType.Name})entity).Id}});");
         }
 
