@@ -1358,7 +1358,7 @@ internal class BoxOfLuck : InitializerBase
         this.AddMoneyDropFallback(box, 100000, level80Ring);
     }
 
-    private ItemDefinition CreateBox(string name, byte group, byte number, byte width = 1, byte height = 1, byte maximumItemLevel = 0, int? fallbackZenAmount = null)
+    private ItemDefinition CreateBox(string name, byte group, byte number, byte width = 1, byte height = 1, byte maximumItemLevel = 0)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);
