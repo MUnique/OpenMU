@@ -1280,8 +1280,8 @@ internal class BoxOfLuck : InitializerBase
     private void CreateWizardsRings()
     {
         // The ring already exists. At item level 0 it drops from the white wizard and can be equipped.
-        // At item level 1 it acts like a box of luck, but the character must be at least of level 40. RingOfHeroBoxOpen
-        // At item level 2 it acts like a box of luck, but the character must be at least of level 80. FriendShipItemBoxOpen
+        // At item level 1 it acts like a box of luck, but the character must be at least of level 40.
+        // At item level 2 it acts like a box of luck, but the character must be at least of level 80.
         var box = this.GameConfiguration.Items.First(i => i.Group == 13 && i.Number == 20);
         box.MaximumItemLevel = 2;
 

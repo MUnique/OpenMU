@@ -49,6 +49,12 @@ public class DropItemAction
     /// <param name="dropItemGroups">The <see cref="DropItemGroup"/> from which the random item is generated.</param>
     private void DropRandomItem(Item sourceItem, Player player, IEnumerable<ItemDropItemGroup> dropItemGroups)
     {
+        if (dropItemGroups.Any(g => g.RequiredCharacterLevel > player.Level))
+        {
+            player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(sourceItem.ItemSlot, false);
+            return;
+        }
+
         var item = player.GameContext.DropGenerator.GenerateItemDrop(dropItemGroups, out var dropEffect, out var droppedMoneyAmount);
         if (droppedMoneyAmount is { })
         {
