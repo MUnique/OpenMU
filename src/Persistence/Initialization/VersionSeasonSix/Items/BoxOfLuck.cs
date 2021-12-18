@@ -144,7 +144,7 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(firecrackerJewels, 13, 2); // Horn of Uniria
         this.AddDropItem(firecrackerJewels, 14, 14); // Jewel of Soul
         this.AddDropItem(firecrackerJewels, 14, 13); // Jewel of Bless
-        
+
         var firecracker = this.Context.CreateNew<ItemDropItemGroup>();
         firecracker.ItemType = SpecialItemType.RandomItem;
         firecracker.SourceItemLevel = 2;
@@ -292,7 +292,6 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(silverMedal, 13, 2); // Horn of Uniria
         this.AddDropItem(silverMedal, 14, 13); // Jewel of Bless
         this.AddDropItem(silverMedal, 14, 14); // Jewel of Soul
-        
         this.AddDropItem(silverMedal, 0, 10); // Light Saber
         this.AddDropItem(silverMedal, 0, 11); // Legendary Sword
         this.AddDropItem(silverMedal, 0, 13); // Double Blade
@@ -303,7 +302,6 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(silverMedal, 3, 4); // Serpent Spear
         this.AddDropItem(silverMedal, 4, 3); // Battle Bow
         this.AddDropItem(silverMedal, 4, 11); // Light Crossbow
-        
         this.AddDropItem(silverMedal, 5, 2); // Serpent Staff
         this.AddDropItem(silverMedal, 5, 3); // Lightning Staff
         this.AddDropItem(silverMedal, 6, 5); // Dragon Slayer Shield
@@ -340,7 +338,6 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(goldMedal, 5, 4); // Gorgon Staff
         this.AddDropItem(goldMedal, 6, 8); // Tower Shield
         this.AddDropItem(goldMedal, 6, 11); // Serpent Shield
-
         this.AddArmorSet(goldMedal, 9); // Plate Armor
         this.AddArmorSet(goldMedal, 7); // Sphinx Armor
         this.AddArmorSet(goldMedal, 12); // Wind Armor
@@ -713,13 +710,11 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(lightPurpleCandyBox, 5, 0);
         this.AddDropItem(lightPurpleCandyBox, 5, 2);
         this.AddDropItem(lightPurpleCandyBox, 5, 3);
-        
         this.AddDropItem(lightPurpleCandyBox, 6, 3);
         this.AddDropItem(lightPurpleCandyBox, 6, 5);
         this.AddDropItem(lightPurpleCandyBox, 6, 6);
         this.AddDropItem(lightPurpleCandyBox, 6, 8);
         this.AddDropItem(lightPurpleCandyBox, 6, 9);
-
         this.AddArmorSet(lightPurpleCandyBox, 5); // Leather Set
         this.AddArmorSet(lightPurpleCandyBox, 2); // Pad Set
         this.AddArmorSet(lightPurpleCandyBox, 10); // Vine Set
@@ -791,7 +786,6 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(redBox, 14, 13); // Jewel of Bless
         this.AddDropItem(redBox, 14, 14); // Jewel of Soul
         this.AddDropItem(redBox, 14, 16); // Jewel of Life
-
         this.AddArmorSet(redBox, 34);
         this.AddArmorSet(redBox, 35);
         this.AddArmorSet(redBox, 36);
@@ -874,7 +868,6 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(vermilionBox, 14, 13); // Jewel of Bless
         this.AddDropItem(vermilionBox, 14, 14); // Jewel of Soul
         this.AddDropItem(vermilionBox, 14, 16); // Jewel of Life
-
         this.AddArmorSet(vermilionBox, 34);
         this.AddArmorSet(vermilionBox, 35);
         this.AddArmorSet(vermilionBox, 36);
