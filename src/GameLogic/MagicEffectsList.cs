@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
@@ -85,6 +86,28 @@ public class MagicEffectsList
         {
             this.ActiveEffects.Values.First().Dispose();
         }
+    }
+
+    /// <summary>
+    /// Tries to get the currently active effect of the specified <see cref="MagicEffectDefinition.SubType"/>.
+    /// </summary>
+    /// <param name="subType">The <see cref="MagicEffectDefinition.SubType"/>.</param>
+    /// <param name="effect">The effect, if found.</param>
+    /// <returns><see langword="true"/>, if found.</returns>
+    public bool TryGetActiveEffectOfSubType(byte subType, [MaybeNullWhen(false)] out MagicEffect effect)
+    {
+        lock (this._addLock)
+        {
+            effect = this.ActiveEffects.Values.FirstOrDefault(e => e.Definition.SubType == subType);
+            return effect is not null;
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        this.ClearAllEffects();
     }
 
     private void OnEffectTimeOut(object? sender, EventArgs args)

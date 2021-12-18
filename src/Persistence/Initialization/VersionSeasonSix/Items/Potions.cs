@@ -4,8 +4,12 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
 /// Class which contains item definitions for jewels.
@@ -45,6 +49,16 @@ public class Potions : InitializerBase
         this.GameConfiguration.Items.Add(this.CreateTownPortalScroll());
         this.GameConfiguration.Items.Add(this.CreateFruits());
         this.GameConfiguration.Items.Add(this.CreateSiegePotion());
+
+        this.GameConfiguration.Items.Add(this.CreateJackOLanternBlessings());
+        this.GameConfiguration.Items.Add(this.CreateJackOLanternWrath());
+        this.GameConfiguration.Items.Add(this.CreateJackOLanternCry());
+        this.GameConfiguration.Items.Add(this.CreateJackOLanternFood());
+        this.GameConfiguration.Items.Add(this.CreateJackOLanternDrink());
+
+        this.GameConfiguration.Items.Add(this.CreateCherryBlossomWine());
+        this.GameConfiguration.Items.Add(this.CreateCherryBlossomRiceCake());
+        this.GameConfiguration.Items.Add(this.CreateCherryBlossomFlowerPetal());
     }
 
     private ItemDefinition CreateAlcohol()
@@ -394,5 +408,129 @@ public class Potions : InitializerBase
         fruits.Width = 1;
         fruits.Height = 1;
         return fruits;
+    }
+
+    private ItemDefinition CreateJackOLanternBlessings()
+    {
+        var item = this.Context.CreateNew<ItemDefinition>();
+        item.Name = "Jack O'Lantern Blessings";
+        item.Number = 46;
+        item.Group = 14;
+        item.Durability = 10;
+        item.Width = 1;
+        item.Height = 2;
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternBlessing, Stats.AttackSpeed, 10, TimeSpan.FromMinutes(32));
+        return item;
+    }
+
+    private ItemDefinition CreateJackOLanternWrath()
+    {
+        var item = this.Context.CreateNew<ItemDefinition>();
+        item.Name = "Jack O'Lantern Wrath";
+        item.Number = 47;
+        item.Group = 14;
+        item.Durability = 10;
+        item.Width = 1;
+        item.Height = 2;
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternWrath, Stats.BaseDamageBonus, 25, TimeSpan.FromMinutes(30));
+        return item;
+    }
+
+    private ItemDefinition CreateJackOLanternCry()
+    {
+        var item = this.Context.CreateNew<ItemDefinition>();
+        item.Name = "Jack O'Lantern Cry";
+        item.Number = 48;
+        item.Group = 14;
+        item.Durability = 10;
+        item.Width = 1;
+        item.Height = 2;
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternCry, Stats.DefenseBase, 100, TimeSpan.FromMinutes(30));
+        return item;
+    }
+
+    private ItemDefinition CreateJackOLanternFood()
+    {
+        var item = this.Context.CreateNew<ItemDefinition>();
+        item.Name = "Jack O'Lantern Food";
+        item.Number = 49;
+        item.Group = 14;
+        item.Durability = 10;
+        item.Width = 1;
+        item.Height = 1;
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternFood, Stats.MaximumHealth, 500, TimeSpan.FromMinutes(30));
+        return item;
+    }
+
+    private ItemDefinition CreateJackOLanternDrink()
+    {
+        var item = this.Context.CreateNew<ItemDefinition>();
+        item.Name = "Jack O'Lantern Drink";
+        item.Number = 50;
+        item.Group = 14;
+        item.Durability = 10;
+        item.Width = 1;
+        item.Height = 1;
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternDrink, Stats.MaximumMana, 500, TimeSpan.FromMinutes(30));
+        return item;
+    }
+
+    private ItemDefinition CreateCherryBlossomWine()
+    {
+        var item = this.Context.CreateNew<ItemDefinition>();
+        item.Name = "Cherry Blossom Wine";
+        item.Number = 85;
+        item.Group = 14;
+        item.Durability = 10;
+        item.Width = 1;
+        item.Height = 2;
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomWine, Stats.MaximumMana, 700, TimeSpan.FromMinutes(30));
+        return item;
+    }
+
+    private ItemDefinition CreateCherryBlossomRiceCake()
+    {
+        var item = this.Context.CreateNew<ItemDefinition>();
+        item.Name = "Cherry Blossom Rice Cake";
+        item.Number = 86;
+        item.Group = 14;
+        item.Durability = 10;
+        item.Width = 1;
+        item.Height = 1;
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomRiceCake, Stats.MaximumHealth, 700, TimeSpan.FromMinutes(30));
+        return item;
+    }
+
+    private ItemDefinition CreateCherryBlossomFlowerPetal()
+    {
+        var item = this.Context.CreateNew<ItemDefinition>();
+        item.Name = "Cherry Blossom Flower Petal";
+        item.Number = 87;
+        item.Group = 14;
+        item.Durability = 10;
+        item.Width = 1;
+        item.Height = 1;
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomFlowerPetal, Stats.BaseDamageBonus, 40, TimeSpan.FromMinutes(30));
+        return item;
+    }
+
+    private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, AttributeDefinition targetAttribute, float boostValue, TimeSpan duration)
+    {
+        var effect = this.Context.CreateNew<MagicEffectDefinition>();
+        this.GameConfiguration.MagicEffects.Add(effect);
+        item.ConsumeEffect = effect;
+        effect.Name = item.Name;
+        effect.InformObservers = false;
+        effect.Number = (short)effectNumber;
+        effect.StopByDeath = true;
+        effect.SubType = subType;
+        effect.SendDuration = true;
+        effect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
+        effect.PowerUpDefinition.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        effect.PowerUpDefinition.Duration.ConstantValue.Value = (float)duration.TotalSeconds;
+        effect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        effect.PowerUpDefinition.Boost.ConstantValue.Value = boostValue;
+        effect.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        return effect;
     }
 }

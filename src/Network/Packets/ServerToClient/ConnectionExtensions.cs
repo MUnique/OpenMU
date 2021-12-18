@@ -612,6 +612,19 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Starts a safe write of a <see cref="EffectItemConsumption" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to consume an item which gives a magic effect.
+    /// Causes reaction on client side: The client updates the user interface, it shows the remaining time at the effect icon.
+    /// </remarks>
+    public static EffectItemConsumptionThreadSafeWriter StartWriteEffectItemConsumption(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
     /// Starts a safe write of a <see cref="NpcWindowResponse" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -2785,6 +2798,31 @@ public static class ConnectionExtensions
         packet.Result = @result;
         packet.StatPoints = @statPoints;
         packet.StatType = @statType;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EffectItemConsumption" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="origin">The origin.</param>
+    /// <param name="type">The type.</param>
+    /// <param name="action">The action.</param>
+    /// <param name="remainingSeconds">The remaining seconds.</param>
+    /// <param name="magicEffectNumber">The magic effect number.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to consume an item which gives a magic effect.
+    /// Causes reaction on client side: The client updates the user interface, it shows the remaining time at the effect icon.
+    /// </remarks>
+    public static void SendEffectItemConsumption(this IConnection connection, EffectItemConsumption.EffectOrigin @origin, EffectItemConsumption.EffectType @type, EffectItemConsumption.EffectAction @action, uint @remainingSeconds, byte @magicEffectNumber)
+    {
+        using var writer = connection.StartWriteEffectItemConsumption();
+        var packet = writer.Packet;
+        packet.Origin = @origin;
+        packet.Type = @type;
+        packet.Action = @action;
+        packet.RemainingSeconds = @remainingSeconds;
+        packet.MagicEffectNumber = @magicEffectNumber;
         writer.Commit();
     }
 
@@ -6933,6 +6971,58 @@ public readonly ref struct FruitConsumptionResponseThreadSafeWriter
     public void Commit()
     {
         this.connection.Output.AdvanceSafely(FruitConsumptionResponse.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="EffectItemConsumption"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct EffectItemConsumptionThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EffectItemConsumptionThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public EffectItemConsumptionThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new EffectItemConsumption(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(EffectItemConsumption.Length)[..EffectItemConsumption.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public EffectItemConsumption Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="EffectItemConsumption" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(EffectItemConsumption.Length);
     }
 
     /// <summary>

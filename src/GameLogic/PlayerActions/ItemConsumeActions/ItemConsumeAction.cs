@@ -91,6 +91,13 @@ public class ItemConsumeAction
             var consumeHandler = this.CreateConsumeHandler(gameContext, item.ConsumeHandlerClass!);
             this._consumeHandlers.Add(item, consumeHandler);
         }
+
+        IItemConsumeHandler effectHandler = new ApplyMagicEffectConsumeHandler();
+        var effectItems = gameContext.Configuration.Items.Where(def => def.ConsumeEffect is not null);
+        foreach (var item in effectItems)
+        {
+            this._consumeHandlers.Add(item, effectHandler);
+        }
     }
 
     private IItemConsumeHandler CreateConsumeHandler(IGameContext gameContext, string handlerTypeName)

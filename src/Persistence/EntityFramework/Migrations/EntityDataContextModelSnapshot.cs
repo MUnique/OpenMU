@@ -1344,6 +1344,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ConsumeEffectId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("ConsumeHandlerClass")
                         .HasColumnType("text");
 
@@ -1397,6 +1400,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("smallint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ConsumeEffectId");
 
                     b.HasIndex("GameConfigurationId");
 
@@ -3442,6 +3447,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", "RawConsumeEffect")
+                        .WithMany()
+                        .HasForeignKey("ConsumeEffectId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawItems")
                         .HasForeignKey("GameConfigurationId");
@@ -3453,6 +3462,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "RawSkill")
                         .WithMany()
                         .HasForeignKey("SkillId");
+
+                    b.Navigation("RawConsumeEffect");
 
                     b.Navigation("RawItemSlot");
 
