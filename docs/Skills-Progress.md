@@ -18,13 +18,13 @@ Some general notes:
 
 | Number | Name                        | State                                                            |
 |--------|-----------------------------|------------------------------------------------------------------|
-| 1      | Poison                      | Damage works, poisoning not yet                                  |
+| 1      | Poison                      | works                                                            |
 | 2      | Meteorite                   | works                                                            |
 | 3      | Lightning                   | works                                                            |
 | 4      | Fire Ball                   | works                                                            |
 | 5      | Flame                       | works                                                            |
 | 6      | Teleport                    | works                                                            |
-| 7      | Ice                         | Damage works, icing not yet                                      |
+| 7      | Ice                         | works                                                            |
 | 8      | Twister                     | works                                                            |
 | 9      | Evil Spirit                 | works                                                            |
 | 10     | Hellfire                    | works                                                            |
@@ -41,19 +41,19 @@ Some general notes:
 | 21     | Uppercut                    | works                                                            |
 | 22     | Cyclone                     | works                                                            |
 | 23     | Slash                       | works                                                            |
-| 24     | Triple Shot                 | works,                                                           |
+| 24     | Triple Shot                 | works                                                            |
 | 26     | Heal                        | works                                                            |
 | 27     | Greater Defense             | works                                                            |
 | 28     | Greater Damage              | works                                                            |
-| 30     | Summon Goblin               | not implemented yet                                              |
-| 31     | Summon Stone Golem          |                                                                  |
-| 32     | Summon Assassin             |                                                                  |
-| 33     | Summon Elite Yeti           |                                                                  |
-| 34     | Summon Dark Knight          |                                                                  |
-| 35     | Summon Bali                 |                                                                  |
-| 36     | Summon Soldier              |                                                                  |
-| 38     | Decay                       | works, poison isn't applied yet                                  |
-| 39     | Ice Storm                   | works, icing isn't applied yet                                   |
+| 30     | Summon Goblin               | works                                                            |
+| 31     | Summon Stone Golem          | works                                                            |
+| 32     | Summon Assassin             | works                                                            |
+| 33     | Summon Elite Yeti           | works                                                            |
+| 34     | Summon Dark Knight          | works                                                            |
+| 35     | Summon Bali                 | works                                                            |
+| 36     | Summon Soldier              | works                                                            |
+| 38     | Decay                       | works                                                            |
+| 39     | Ice Storm                   | works                                                            |
 | 40     | Nova                        | not implemented yet                                              |
 | 41     | Twisting Slash              | works                                                            |
 | 42     | Rageful Blow                | works                                                            |
