@@ -27,7 +27,7 @@ public class MagicEffectDefinition
 
     /// <summary>
     /// Gets or sets the sub type.
-    /// Same sub type = cant stack. adding a magic effect with the same sub type will cause the existing magic effect to disappear.
+    /// Same sub type = cant stack. Adding a magic effect with the same sub type will cause the existing magic effect to disappear.
     /// </summary>
     public byte SubType { get; set; }
 
