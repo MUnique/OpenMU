@@ -28,7 +28,8 @@ public class UpdateMaximumManaPlugIn : IUpdateMaximumManaPlugIn
     /// <inheritdoc/>
     public void UpdateMaximumMana()
     {
-        if (this._player.Attributes is null)
+        if (this._player.Attributes is null
+            || !(this._player.Connection?.Connected ?? false))
         {
             return;
         }

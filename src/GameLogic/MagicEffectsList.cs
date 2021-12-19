@@ -11,7 +11,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// <summary>
 /// The list of magic effects of a player instance. Automatically applies the power-ups of the effects to the player.
 /// </summary>
-public class MagicEffectsList
+public class MagicEffectsList : Disposable
 {
     private readonly BitArray _contains = new (0x100);
     private readonly IAttackable _owner;
