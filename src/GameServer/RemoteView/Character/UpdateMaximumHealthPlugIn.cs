@@ -28,7 +28,8 @@ public class UpdateMaximumHealthPlugIn : IUpdateMaximumHealthPlugIn
     /// <inheritdoc/>
     public void UpdateMaximumHealth()
     {
-        if (this._player.Attributes is null)
+        if (this._player.Attributes is null
+            || !(this._player.Connection?.Connected ?? false))
         {
             return;
         }

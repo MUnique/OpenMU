@@ -1054,7 +1054,7 @@ internal class BoxOfLuck : InitializerBase
     {
         var box = this.CreateBox("Pumpkin of Luck", 14, 45);
         box.Value = 1;
-        /* TODO: add the scrolls below as consumables
+
         var pumpkinBox = this.Context.CreateNew<ItemDropItemGroup>();
         pumpkinBox.ItemType = SpecialItemType.RandomItem;
         pumpkinBox.Chance = 1.0;
@@ -1066,7 +1066,6 @@ internal class BoxOfLuck : InitializerBase
         this.AddDropItem(pumpkinBox, 14, 48); // Jack O'Lantern Scream Scroll
         this.AddDropItem(pumpkinBox, 14, 49); // Jack O'Lantern Food Scroll
         this.AddDropItem(pumpkinBox, 14, 50); // Jack O'Lantern Drink Scroll
-        */
     }
 
     private void CreateRedRibbonBox()
@@ -1251,12 +1250,11 @@ internal class BoxOfLuck : InitializerBase
         playBox.Description = "Cherry Blossom Play-Box";
         playBox.DropEffect = ItemDropEffect.Swirl;
         box.DropItems.Add(playBox);
-        /* TODO: Add these items
+
         this.AddDropItem(playBox, 14, 85); // Cherry Blossom Wine
         this.AddDropItem(playBox, 14, 86); // Cherry Blossom Rice Cake
         this.AddDropItem(playBox, 14, 87); // Cherry Blossom Flower Petal
         this.AddDropItem(playBox, 14, 90); // Golden Cherry Blossom Branch
-        */
     }
 
     // season 4

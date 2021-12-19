@@ -3063,6 +3063,175 @@
       </Enums>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>2D</Code>
+      <Name>EffectItemConsumption</Name>
+      <Length>17</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to consume an item which gives a magic effect.</SentWhen>
+      <CausedReaction>The client updates the user interface, it shows the remaining time at the effect icon.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>EffectOrigin</TypeName>
+          <Name>Origin</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Enum</Type>
+          <TypeName>EffectType</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Enum</Type>
+          <TypeName>EffectAction</TypeName>
+          <Name>Action</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RemainingSeconds</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>Byte</Type>
+          <Name>MagicEffectNumber</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EffectOrigin</Name>
+          <Description>Defines the origin of the effect.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Undefined</Name>
+              <Description>Not defined.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>HalloweenAndCherryBlossomEvent</Name>
+              <Description>Options of Halloween and Cherry Blossom Event items.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CashShopItem</Name>
+              <Description>Options of cash shop items, like Seals.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>EffectAction</Name>
+          <Description>Defines the effect option.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Add</Name>
+              <Description>Effect is added.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Remove</Name>
+              <Description>Effect is removed.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Replace</Name>
+              <Description>Effect is removed, because its getting replaced.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+        <Enum>
+          <Name>EffectType</Name>
+          <Description>Defines the kind of effect which was applied.</Description>
+          <Values>
+            <EnumValue>
+              <Name>AttackSpeed</Name>
+              <Description>Attack speed increase.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Damage</Name>
+              <Description>Damage increase.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Defense</Name>
+              <Description>Defense increase.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MaximumHealth</Name>
+              <Description>Maximum Health increase.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MaximumMana</Name>
+              <Description>Maximum Mana increase.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ExperienceRate</Name>
+              <Description>Experience rate increase.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DropRate</Name>
+              <Description>Drop rate increase.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Sustenance</Name>
+              <Description>Sustenance effect, means no experience is gained during this effect.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Strength</Name>
+              <Description>Strength stat increase.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Agility</Name>
+              <Description>Agility stat increase.</Description>
+              <Value>10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Vitality</Name>
+              <Description>Vitality stat increase.</Description>
+              <Value>11</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Energy</Name>
+              <Description>Energy stat increase.</Description>
+              <Value>12</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Leadership</Name>
+              <Description>Leadership stat increase.</Description>
+              <Value>13</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PhysicalDamage</Name>
+              <Description>Physical damage increase.</Description>
+              <Value>14</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>WizardryDamage</Name>
+              <Description>Wizardry damage increase.</Description>
+              <Value>15</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Mobility</Name>
+              <Description>Mobility increase.</Description>
+              <Value>16</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>30</Code>
       <Name>NpcWindowResponse</Name>
@@ -5301,7 +5470,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetObjectId</Name>
         </Field>
       </Fields>

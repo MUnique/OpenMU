@@ -175,6 +175,26 @@ internal enum MagicEffectNumber : short
     ScrollOfDefense = 0x2D,
 
     /// <summary>
+    /// The scroll of wrath effect.
+    /// </summary>
+    ScrollOfWrath = 0x2E,
+
+    /// <summary>
+    /// The scroll of wizardry effect.
+    /// </summary>
+    ScrollOfWizardry = 0x2F,
+
+    /// <summary>
+    /// The scroll of health effect.
+    /// </summary>
+    ScrollOfHealth = 0x30,
+
+    /// <summary>
+    /// The scroll of mana effect.
+    /// </summary>
+    ScrollOfMana = 0x31,
+
+    /// <summary>
     /// The poisoned effect.
     /// </summary>
     Poisoned = 0x37,
@@ -218,6 +238,21 @@ internal enum MagicEffectNumber : short
     /// The blind effect.
     /// </summary>
     Blind = 0x49,
+
+    /// <summary>
+    /// The cherry blossom wine effect (+ 700 Mana).
+    /// </summary>
+    CherryBlossomWine = 0x4E,
+
+    /// <summary>
+    /// The cherry blossom rice cake effect (+ 700 Health).
+    /// </summary>
+    CherryBlossomRiceCake = 0x4F,
+
+    /// <summary>
+    /// The cherry blossom flower petal effect (+ 40 dmg).
+    /// </summary>
+    CherryBlossomFlowerPetal = 0x50,
 
     /// <summary>
     /// The wiz enhance effect.

@@ -87,6 +87,32 @@ internal partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.I
     }
 
     /// <summary>
+    /// Gets or sets the identifier of <see cref="ConsumeEffect"/>.
+    /// </summary>
+    public Guid? ConsumeEffectId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ConsumeEffect" />.
+    /// </summary>
+    [ForeignKey(nameof(ConsumeEffectId))]
+    public MagicEffectDefinition RawConsumeEffect
+    {
+        get => base.ConsumeEffect as MagicEffectDefinition;
+        set => base.ConsumeEffect = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition ConsumeEffect
+    {
+        get => base.ConsumeEffect;set
+        {
+            base.ConsumeEffect = value;
+            this.ConsumeEffectId = this.RawConsumeEffect?.Id;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="Skill"/>.
     /// </summary>
     public Guid? SkillId { get; set; }

@@ -83,6 +83,12 @@ public class ItemDefinition
     public string? ConsumeHandlerClass { get; set; }
 
     /// <summary>
+    /// Gets or sets the effect which is applied when this item is consumed.
+    /// Setting the <see cref="ConsumeHandlerClass"/> is not required when this effect definition is set.
+    /// </summary>
+    public virtual MagicEffectDefinition? ConsumeEffect { get; set; }
+
+    /// <summary>
     /// Gets or sets the maximum number of sockets an instance of this item can have.
     /// </summary>
     public int MaximumSockets { get; set; }

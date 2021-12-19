@@ -8638,6 +8638,249 @@ public readonly ref struct FruitConsumptionResponse
 
 
 /// <summary>
+/// Is sent by the server when: The player requested to consume an item which gives a magic effect.
+/// Causes reaction on client side: The client updates the user interface, it shows the remaining time at the effect icon.
+/// </summary>
+public readonly ref struct EffectItemConsumption
+{
+    /// <summary>
+    /// Defines the origin of the effect.
+    /// </summary>
+    public enum EffectOrigin
+    {
+        /// <summary>
+        /// Not defined.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// Options of Halloween and Cherry Blossom Event items.
+        /// </summary>
+            HalloweenAndCherryBlossomEvent = 1,
+
+        /// <summary>
+        /// Options of cash shop items, like Seals.
+        /// </summary>
+            CashShopItem = 2,
+    }
+
+    /// <summary>
+    /// Defines the effect option.
+    /// </summary>
+    public enum EffectAction
+    {
+        /// <summary>
+        /// Effect is added.
+        /// </summary>
+            Add = 0,
+
+        /// <summary>
+        /// Effect is removed.
+        /// </summary>
+            Remove = 1,
+
+        /// <summary>
+        /// Effect is removed, because its getting replaced.
+        /// </summary>
+            Replace = 2,
+    }
+
+    /// <summary>
+    /// Defines the kind of effect which was applied.
+    /// </summary>
+    public enum EffectType
+    {
+        /// <summary>
+        /// Attack speed increase.
+        /// </summary>
+            AttackSpeed = 1,
+
+        /// <summary>
+        /// Damage increase.
+        /// </summary>
+            Damage = 2,
+
+        /// <summary>
+        /// Defense increase.
+        /// </summary>
+            Defense = 3,
+
+        /// <summary>
+        /// Maximum Health increase.
+        /// </summary>
+            MaximumHealth = 4,
+
+        /// <summary>
+        /// Maximum Mana increase.
+        /// </summary>
+            MaximumMana = 5,
+
+        /// <summary>
+        /// Experience rate increase.
+        /// </summary>
+            ExperienceRate = 6,
+
+        /// <summary>
+        /// Drop rate increase.
+        /// </summary>
+            DropRate = 7,
+
+        /// <summary>
+        /// Sustenance effect, means no experience is gained during this effect.
+        /// </summary>
+            Sustenance = 8,
+
+        /// <summary>
+        /// Strength stat increase.
+        /// </summary>
+            Strength = 9,
+
+        /// <summary>
+        /// Agility stat increase.
+        /// </summary>
+            Agility = 10,
+
+        /// <summary>
+        /// Vitality stat increase.
+        /// </summary>
+            Vitality = 11,
+
+        /// <summary>
+        /// Energy stat increase.
+        /// </summary>
+            Energy = 12,
+
+        /// <summary>
+        /// Leadership stat increase.
+        /// </summary>
+            Leadership = 13,
+
+        /// <summary>
+        /// Physical damage increase.
+        /// </summary>
+            PhysicalDamage = 14,
+
+        /// <summary>
+        /// Wizardry damage increase.
+        /// </summary>
+            WizardryDamage = 15,
+
+        /// <summary>
+        /// Mobility increase.
+        /// </summary>
+            Mobility = 16,
+    }
+
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EffectItemConsumption"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EffectItemConsumption(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EffectItemConsumption"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private EffectItemConsumption(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x2D;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 17;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the origin.
+    /// </summary>
+    public EffectItemConsumption.EffectOrigin Origin
+    {
+        get => (EffectOrigin)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public EffectItemConsumption.EffectType Type
+    {
+        get => (EffectType)this._data[6];
+        set => this._data[6] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the action.
+    /// </summary>
+    public EffectItemConsumption.EffectAction Action
+    {
+        get => (EffectAction)this._data[8];
+        set => this._data[8] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the remaining seconds.
+    /// </summary>
+    public uint RemainingSeconds
+    {
+        get => ReadUInt32LittleEndian(this._data[12..]);
+        set => WriteUInt32LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the magic effect number.
+    /// </summary>
+    public byte MagicEffectNumber
+    {
+        get => this._data[16];
+        set => this._data[16] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="EffectItemConsumption"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator EffectItemConsumption(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="EffectItemConsumption"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(EffectItemConsumption packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: After the client talked to an NPC which should cause a dialog to open on the client side.
 /// Causes reaction on client side: The client opens the specified dialog.
 /// </summary>
@@ -14958,8 +15201,8 @@ public readonly ref struct ShowSwirl
     /// </summary>
     public ushort TargetObjectId
     {
-        get => ReadUInt16LittleEndian(this._data[5..]);
-        set => WriteUInt16LittleEndian(this._data[5..], value);
+        get => ReadUInt16BigEndian(this._data[5..]);
+        set => WriteUInt16BigEndian(this._data[5..], value);
     }
 
     /// <summary>

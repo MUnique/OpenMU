@@ -184,6 +184,26 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     }
 
     /// <summary>
+    /// Gets the raw object of <see cref="ConsumeEffect" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("consumeEffect")]
+    [System.Text.Json.Serialization.JsonPropertyName("consumeEffect")]
+    public MagicEffectDefinition RawConsumeEffect
+    {
+        get => base.ConsumeEffect as MagicEffectDefinition;
+        set => base.ConsumeEffect = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition ConsumeEffect
+    {
+        get => base.ConsumeEffect;
+        set => base.ConsumeEffect = value;
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="Skill" />.
     /// </summary>
     [Newtonsoft.Json.JsonProperty("skill")]

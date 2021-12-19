@@ -1167,6 +1167,7 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
             this._observerToWorldViewAdapter.Dispose();
             this._walker.Dispose();
             this.ObserverLock.Dispose();
+            this.MagicEffectList.Dispose();
         }
     }
 

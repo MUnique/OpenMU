@@ -17,4 +17,4 @@ The client shows a swirl effect at the specified object.
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x40  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte | 58 | EffectType |
-| 5 | 2 | ShortLittleEndian |  | TargetObjectId |
+| 5 | 2 | ShortBigEndian |  | TargetObjectId |

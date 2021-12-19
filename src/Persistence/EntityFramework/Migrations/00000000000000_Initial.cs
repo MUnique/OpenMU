@@ -1703,6 +1703,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemSlotId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ConsumeEffectId = table.Column<Guid>(type: "uuid", nullable: true),
                     SkillId = table.Column<Guid>(type: "uuid", nullable: true),
                     GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
                     Number = table.Column<short>(type: "smallint", nullable: false),
@@ -1734,6 +1735,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.ItemSlotId,
                         principalSchema: "config",
                         principalTable: "ItemSlotType",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ItemDefinition_MagicEffectDefinition_ConsumeEffectId",
+                        column: x => x.ConsumeEffectId,
+                        principalSchema: "config",
+                        principalTable: "MagicEffectDefinition",
                         principalColumn: "Id");
                 });
 
@@ -3017,6 +3024,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "ItemCraftingResultItem",
                 column: "SimpleCraftingSettingsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemDefinition_ConsumeEffectId",
+                schema: "config",
+                table: "ItemDefinition",
+                column: "ConsumeEffectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemDefinition_GameConfigurationId",

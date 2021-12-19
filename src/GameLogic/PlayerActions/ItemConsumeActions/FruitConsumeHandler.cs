@@ -178,7 +178,7 @@ public class FruitConsumeHandler : BaseConsumeHandler
             2 => Stats.BaseAgility,
             3 => Stats.BaseStrength,
             4 => Stats.BaseLeadership,
-            _ => throw new ArgumentException("Invalid item level {item.Level}"),
+            _ => throw new ArgumentException($"Invalid item level {item.Level}"),
         };
     }
 }
