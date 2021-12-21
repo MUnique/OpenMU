@@ -14,6 +14,8 @@ using MUnique.OpenMU.Persistence;
 /// </summary>
 public static class ItemExtensions
 {
+    private const byte ShieldItemGroup = 6;
+
     private static readonly byte[] AdditionalDurabilityPerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21, 26, 32, 39, 47 };
 
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> RequirementAttributeMapping = new Dictionary<AttributeDefinition, AttributeDefinition>
@@ -143,6 +145,93 @@ public static class ItemExtensions
     ///   <c>true</c> if this item is of the same type as the specified other item; otherwise, <c>false</c>.
     /// </returns>
     public static bool IsSameItemAs(this Item item, Item otherItem) => item.Definition == otherItem.Definition && item.Level == otherItem.Level;
+
+    /// <summary>
+    /// Gets the <see cref="Item.Durability"/> as byte value, rounded off.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The durability.</returns>
+    public static byte Durability(this Item item) => (byte)Math.Floor(item.Durability);
+
+    /// <summary>
+    /// Decreases the durability of an item, and returns <see langword="true"/>, if the integral number changed.
+    /// </summary>
+    /// <param name="item">The item whose durability should be decreased.</param>
+    /// <param name="decrement">The decrement value.</param>
+    /// <returns><see langword="true"/>, if the integral number changed.</returns>
+    public static bool DecreaseDurability(this Item item, double decrement)
+    {
+        var previous = item.Durability;
+        item.Durability = Math.Max(previous - decrement, 0.0);
+        return (byte)Math.Floor(item.Durability) != (byte)Math.Floor(previous);
+    }
+
+    /// <summary>
+    /// Determines whether this item is a pet (Dark Raven, Dark Horse) which can gain levels itself.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns><see langword="true"/>, if the item is a pet.</returns>
+    public static bool IsPet(this Item item)
+    {
+        // TODO: Change this as soon as the pet system is implemented. The code shouldn't be aware of item numbers.
+        const byte darkHorseNumber = 4;
+        const byte darkRavenNumber = 5;
+        return (item.Definition?.Number == darkHorseNumber || item.Definition?.Number == darkRavenNumber)
+               && item.Definition.Number == 13;
+    }
+
+    /// <summary>
+    /// Determines whether this item is a defensive item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns><see langword="true"/>, if the item is defensive.</returns>
+    public static bool IsDefensiveItem(this Item item)
+    {
+        return InventoryConstants.IsDefenseItemSlot(item.ItemSlot) || item.Definition?.Group == ShieldItemGroup;
+    }
+
+    /// <summary>
+    /// Returns a random offensive item of the storage.
+    /// </summary>
+    /// <param name="storage">The storage.</param>
+    /// <returns>A randomly selected offensive item.</returns>
+    public static Item? GetRandomOffensiveItem(this IInventoryStorage storage)
+    {
+        var left = storage.GetItem(InventoryConstants.LeftHandSlot);
+        var right = storage.GetItem(InventoryConstants.RightHandSlot);
+        var pendant = storage.GetItem(InventoryConstants.PendantSlot);
+
+        if ((left?.Definition?.IsAmmunition ?? false)
+            || left?.Definition?.Group == ShieldItemGroup)
+        {
+            left = null;
+        }
+
+        if ((right?.Definition?.IsAmmunition ?? false)
+            || right?.Definition?.Group == ShieldItemGroup)
+        {
+            right = null;
+        }
+
+        var random = Rand.NextInt(3, 6);
+        Item? result = left ?? right ?? pendant;
+        if (result is null)
+        {
+            return null;
+        }
+
+        switch (random % 3)
+        {
+            case 0 when left is { }: result = left;
+                break;
+            case 1 when right is { }: result = right;
+                break;
+            case 2 when pendant is { }: result = pendant;
+                break;
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Gets the requirement as a tuple of an attribute and the corresponding value.

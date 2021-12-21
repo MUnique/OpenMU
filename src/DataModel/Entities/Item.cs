@@ -25,7 +25,7 @@ public class Item
     /// <summary>
     /// Gets or sets the currently remaining durability.
     /// </summary>
-    public byte Durability { get; set; }
+    public double Durability { get; set; }
 
     /// <summary>
     /// Gets or sets the level of the item.

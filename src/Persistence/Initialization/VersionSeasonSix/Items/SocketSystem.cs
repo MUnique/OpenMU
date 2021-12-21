@@ -297,7 +297,7 @@ public class SocketSystem : InitializerBase
         definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Ice, Stats.ManaAfterMonsterKillMultiplier, AggregateType.AddRaw, 1f / 8f, 1f / 7f, 1f / 6f, 1f / 5f, 1f / 4f));
         definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Ice, Stats.SkillDamageBonus, AggregateType.AddRaw, 37, 40, 45, 50, 60));
         definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Ice, Stats.AttackRatePvm, AggregateType.AddRaw, 25, 27, 30, 35, 40));
-        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Ice, Stats.ItemDurationIncrease, AggregateType.AddRaw, 1.30f, 1.32f, 1.34f, 1.36f, 1.38f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Ice, Stats.ItemDurationIncrease, AggregateType.Multiplicate, 1.30f, 1.32f, 1.34f, 1.36f, 1.38f));
         return definition;
     }
 

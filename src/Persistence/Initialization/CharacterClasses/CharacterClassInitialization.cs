@@ -89,6 +89,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExperienceRate));
         baseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.PoisonDamageMultiplier));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ItemDurationIncrease));
 
         if (isMaster)
         {

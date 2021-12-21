@@ -168,4 +168,16 @@ public static class InventoryConstants
 
         return (byte)size;
     }
+
+    /// <summary>
+    /// Determines whether the item slot is of an defending item.
+    /// </summary>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <returns><see langword="true"/>, if the slot is of an defending item.</returns>
+    public static bool IsDefenseItemSlot(byte itemSlot)
+    {
+        return (itemSlot >= HelmSlot && itemSlot <= WingsSlot)
+               || itemSlot == Ring1Slot
+               || itemSlot == Ring2Slot;
+    }
 }

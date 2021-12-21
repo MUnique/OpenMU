@@ -136,19 +136,19 @@ season 6, but probably in later seasons. Therefore, they are also *not implement
 
 | Number | Name                          | State           |
 |--------|-------------------------------|-----------------|
-| 300    | Durability Reduction (1)      | not implemented |
+| 300    | Durability Reduction (1)      | works           |
 | 301    | PvP Defence Rate Inc          | works           |
 | 302    | Maximum SD increase           | works           |
 | 303    | Automatic Mana Rec Inc        | works           |
 | 304    | Poison Resistance Inc         | not implemented |
-| 305    | Durability Reduction (2)      | not implemented |
+| 305    | Durability Reduction (2)      | works           |
 | 306    | SD Recovery Speed Inc         | not implemented |
 | 307    | Automatic HP Rec Inc          | works           |
 | 308    | Lightning Resistance Inc      | not implemented |
 | 309    | Defense Increase              | works           |
 | 310    | Automatic AG Rec Inc          | works           |
 | 311    | Ice Resistance Increase       | not implemented |
-| 312    | Durability Reduction (3)      | not implemented |
+| 312    | Durability Reduction (3)      | works           |
 | 313    | Defense Success Rate Inc      | works           |
 | 314    | Cast Invincibility            | unused          |
 | 315    | Armor Set Bonus Inc           | unused          |
@@ -373,19 +373,19 @@ season 6, but probably in later seasons. Therefore, they are also *not implement
 | 571    | Equipped Weapon Mastery       | not implemented |
 | 572    | DefSuccessRate IncMastery     | not implemented |
 | 573    | Stamina Increase Strengthener | not implemented |
-| 578    | Durability Reduction (1)      | not implemented |
+| 578    | Durability Reduction (1)      | works           |
 | 579    | Increase PvP Defense Rate     | works           |
 | 580    | Increase Maximum SD           | works           |
 | 581    | Increase Mana Recovery Rate   | works           |
 | 582    | Increase Poison Resistance    | not implemented |
-| 583    | Durability Reduction (2)      | not implemented |
+| 583    | Durability Reduction (2)      | works           |
 | 584    | Increase SD Recovery Rate     | works           |
 | 585    | Increase HP Recovery Rate     | works           |
 | 586    | Increase Lightning Resistance | not implemented |
 | 587    | Increases Defense             | works           |
 | 588    | Increases AG Recovery Rate    | not implemented |
 | 589    | Increase Ice Resistance       | not implemented |
-| 590    | Durability Reduction(3)       | not implemented |
+| 590    | Durability Reduction(3)       | works           |
 | 591    | Increase Defense Success Rate | works           |
 | 592    | Cast Invincibility            | unused          |
 | 599    | Increase Attack Success Rate  | works           |

@@ -95,7 +95,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     CharacterNameRegex = table.Column<string>(type: "text", nullable: true),
                     MaximumPasswordLength = table.Column<int>(type: "integer", nullable: false),
                     MaximumPartySize = table.Column<byte>(type: "smallint", nullable: false),
-                    ShouldDropMoney = table.Column<bool>(type: "boolean", nullable: false)
+                    ShouldDropMoney = table.Column<bool>(type: "boolean", nullable: false),
+                    DamagePerOneItemDurability = table.Column<double>(type: "double precision", nullable: false),
+                    DamagePerOnePetDurability = table.Column<double>(type: "double precision", nullable: false),
+                    HitsPerOneItemDurability = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1465,7 +1468,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     ItemStorageId = table.Column<Guid>(type: "uuid", nullable: true),
                     DefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     ItemSlot = table.Column<byte>(type: "smallint", nullable: false),
-                    Durability = table.Column<byte>(type: "smallint", nullable: false),
+                    Durability = table.Column<double>(type: "double precision", nullable: false),
                     Level = table.Column<byte>(type: "smallint", nullable: false),
                     HasSkill = table.Column<bool>(type: "boolean", nullable: false),
                     SocketCount = table.Column<int>(type: "integer", nullable: false),

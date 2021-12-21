@@ -805,8 +805,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("CharacterNameRegex")
                         .HasColumnType("text");
 
+                    b.Property<double>("DamagePerOneItemDurability")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("DamagePerOnePetDurability")
+                        .HasColumnType("double precision");
+
                     b.Property<float>("ExperienceRate")
                         .HasColumnType("real");
+
+                    b.Property<double>("HitsPerOneItemDurability")
+                        .HasColumnType("double precision");
 
                     b.Property<byte>("InfoRange")
                         .HasColumnType("smallint");
@@ -1101,8 +1110,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("DefinitionId")
                         .HasColumnType("uuid");
 
-                    b.Property<byte>("Durability")
-                        .HasColumnType("smallint");
+                    b.Property<double>("Durability")
+                        .HasColumnType("double precision");
 
                     b.Property<bool>("HasSkill")
                         .HasColumnType("boolean");

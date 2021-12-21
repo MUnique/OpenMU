@@ -50,6 +50,9 @@ public class GameConfigurationInitializer : InitializerBase
         this.GameConfiguration.MaximumPasswordLength = 20;
         this.GameConfiguration.MaximumPartySize = 5;
         this.GameConfiguration.ShouldDropMoney = true;
+        this.GameConfiguration.DamagePerOneItemDurability = 2000;
+        this.GameConfiguration.DamagePerOnePetDurability = 100000;
+        this.GameConfiguration.HitsPerOneItemDurability = 10000;
         this.GameConfiguration.ExperienceTable =
             Enumerable.Range(0, this.GameConfiguration.MaximumLevel + 2)
                 .Select(level => CalculateNeededExperience(level))

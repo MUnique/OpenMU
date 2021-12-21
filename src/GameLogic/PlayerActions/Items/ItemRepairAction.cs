@@ -35,7 +35,7 @@ public class ItemRepairAction
             return;
         }
 
-        if (item.Durability == item.GetMaximumDurabilityOfOnePiece())
+        if ((byte)item.Durability == item.GetMaximumDurabilityOfOnePiece())
         {
             return;
         }
