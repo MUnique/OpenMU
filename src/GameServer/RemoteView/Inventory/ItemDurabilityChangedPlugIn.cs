@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
@@ -13,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IItemDurabilityChangedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ItemDurabilityChangedPlugIn", "The default implementation of the IItemDurabilityChangedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn(nameof(ItemDurabilityChangedPlugIn), "The default implementation of the IItemDurabilityChangedPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("f121286f-2e43-4a66-8f34-5dbe69304e1e")]
 public class ItemDurabilityChangedPlugIn : IItemDurabilityChangedPlugIn
 {
@@ -28,6 +29,6 @@ public class ItemDurabilityChangedPlugIn : IItemDurabilityChangedPlugIn
     /// <inheritdoc/>
     public void ItemDurabilityChanged(Item item, bool afterConsumption)
     {
-        this._player.Connection?.SendItemDurabilityChanged(item.ItemSlot, item.Durability, afterConsumption);
+        this._player.Connection?.SendItemDurabilityChanged(item.ItemSlot, item.Durability(), afterConsumption);
     }
 }

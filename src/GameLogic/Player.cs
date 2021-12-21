@@ -414,6 +414,7 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
         }
 
         this.Hit(hitInfo, attacker, skill?.Skill);
+        this.DecreaseItemDurabilityAfterHit(hitInfo);
 
         (attacker as Player)?.AfterHitTarget();
     }
@@ -424,6 +425,7 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
     public void AfterHitTarget()
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
+        this.DecreaseWeaponDurabilityAfterHit();
     }
 
     /// <inheritdoc/>
@@ -1450,7 +1452,7 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
         this.Attributes.GetOrCreateAttribute(Stats.TransformationSkin).ValueChanged += (a, b) => this.OnTransformationSkinChanged();
 
         var ammoAttribute = this.Attributes.GetOrCreateAttribute(Stats.AmmunitionAmount);
-        this.Attributes[Stats.AmmunitionAmount] = this.GetAmmunitionItem()?.Durability ?? 0;
+        this.Attributes[Stats.AmmunitionAmount] = (float)(this.GetAmmunitionItem()?.Durability ?? 0);
         ammoAttribute.ValueChanged += (a, b) => this.OnAmmunitionAmountChanged();
 
         this.ClientReadyAfterMapChange();
@@ -1530,6 +1532,56 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
         this.Attributes[Stats.CurrentAbility] = Math.Min(this.Attributes[Stats.CurrentAbility], this.Attributes[Stats.MaximumAbility]);
         this.ViewPlugIns.GetPlugIn<IUpdateMaximumManaPlugIn>()?.UpdateMaximumMana();
         this.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
+    }
+
+    private void DecreaseItemDurabilityAfterHit(HitInfo hitInfo)
+    {
+        var randomArmorItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsDefensiveItem).SelectRandom();
+        if (randomArmorItem is { })
+        {
+            this.DecreaseDefenseItemDurability(randomArmorItem, hitInfo);
+        }
+
+        if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is { } pet)
+        {
+            this.DecreaseDefenseItemDurability(pet, hitInfo);
+        }
+    }
+
+    private void DecreaseDefenseItemDurability(Item targetItem, HitInfo hitInfo)
+    {
+        var itemDurationIncrease = targetItem.IsPet() ? this.Attributes?[Stats.PetDurationIncrease] : this.Attributes?[Stats.ItemDurationIncrease];
+        if (itemDurationIncrease == 0)
+        {
+            itemDurationIncrease = 1;
+        }
+
+        var damageDivisor = targetItem.IsPet() ? this.GameContext.Configuration.DamagePerOnePetDurability : this.GameContext.Configuration.DamagePerOneItemDurability;
+        if (itemDurationIncrease.HasValue)
+        {
+            damageDivisor /= (double)itemDurationIncrease;
+        }
+
+        var decrement = hitInfo.HealthDamage / damageDivisor;
+        if (targetItem.DecreaseDurability(decrement))
+        {
+            this.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(targetItem, false);
+        }
+    }
+
+    private void DecreaseWeaponDurabilityAfterHit()
+    {
+        var targetItem = this.Inventory?.GetRandomOffensiveItem();
+        if (targetItem is null)
+        {
+            return;
+        }
+
+        var decrement = 1.0 / this.GameContext.Configuration.HitsPerOneItemDurability;
+        if (targetItem.DecreaseDurability(decrement))
+        {
+            this.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(targetItem, false);
+        }
     }
 
     private sealed class TemporaryItemStorage : ItemStorage

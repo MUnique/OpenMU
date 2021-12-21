@@ -64,7 +64,7 @@ public class ItemPriceCalculator
 
                 if (item.Durability > 0)
                 {
-                    gold = baseprice * item.Durability / item.Definition?.Durability ?? 1;
+                    gold = baseprice * item.Durability() / item.Definition?.Durability ?? 1;
                 }
 
                 return gold;
@@ -86,17 +86,17 @@ public class ItemPriceCalculator
 
                 if (item.Durability > 0)
                 {
-                    gold = baseprice * item.Durability / item.Definition?.Durability ?? 1;
+                    gold = baseprice * item.Durability() / item.Definition?.Durability ?? 1;
                 }
 
                 return gold;
             }
         },
-        { (int)SpecialItems.Bless, item => 9000000 },
-        { (int)SpecialItems.Soul, item => 6000000 },
-        { (int)SpecialItems.Chaos, item => 810000 },
-        { (int)SpecialItems.Life, item => 45000000 },
-        { (int)SpecialItems.Creation, item => 36000000 },
+        { (int)SpecialItems.Bless, _ => 9000000 },
+        { (int)SpecialItems.Soul, _ => 6000000 },
+        { (int)SpecialItems.Chaos, _ => 810000 },
+        { (int)SpecialItems.Life, _ => 45000000 },
+        { (int)SpecialItems.Creation, _ => 36000000 },
         { (int)SpecialItems.PackedBless, item => (item.Level + 1) * 9000000 * 10 },
         { (int)SpecialItems.PackedSoul, item => (item.Level + 1) * 6000000 * 10 },
         { (int)SpecialItems.PackedLife, item => (item.Level + 1) * 45000000 * 10 },
@@ -107,26 +107,26 @@ public class ItemPriceCalculator
         { (int)SpecialItems.PackedChaos, item => (item.Level + 1) * 810000 * 10 },
         { (int)SpecialItems.PackedLowerRefineStone, item => (item.Level + 1) * 186000 * 10 },
         { (int)SpecialItems.PackedHigherRefineStone, item => (item.Level + 1) * 186000 * 10 },
-        { (int)SpecialItems.Fruits, item => 33000000 },
+        { (int)SpecialItems.Fruits, _ => 33000000 },
         { (int)SpecialItems.LochFeather, item => item.Level == 1 ? 7500000 : 180000 },
-        { (int)SpecialItems.JewelGuardian, item => 60000000 },
-        { (int)SpecialItems.SiegePotion, item => item.Durability * (item.Level == 0 ? 900000 : 450000) },
+        { (int)SpecialItems.JewelGuardian, _ => 60000000 },
+        { (int)SpecialItems.SiegePotion, item => item.Durability() * (item.Level == 0 ? 900000 : 450000) },
         { (int)SpecialItems.OrderGuardianLifeStone, item => item.Level == 1 ? 2400000 : 0 },
         { (int)SpecialItems.ContractSummon, item => item.Level == 0 ? 1500000 : item.Level == 1 ? 1200000 : 0 },
-        { (int)SpecialItems.SplinterOfArmor, item => item.Durability * 150 },
-        { (int)SpecialItems.BlessOfGuardian, item => item.Durability * 300 },
-        { (int)SpecialItems.ClawOfBeast, item => item.Durability * 3000 },
-        { (int)SpecialItems.FragmentOfHorn, item => 30000 },
-        { (int)SpecialItems.BrokenHorn, item => 90000 },
-        { (int)SpecialItems.HornFenrir, item => 150000 },
-        { (int)SpecialItems.SmallSdPotion, item => item.Durability * 2000 },
-        { (int)SpecialItems.SdPotion, item => item.Durability * 4000 },
-        { (int)SpecialItems.LargeSdPotion, item => item.Durability * 6000 },
-        { (int)SpecialItems.LargeHealPotion, item => item.Durability * 1500 * (item.Level + 1) },
-        { (int)SpecialItems.LargeManaPotion, item => item.Durability * 1500 * (item.Level + 1) },
-        { (int)SpecialItems.SmallComplexPotion, item => item.Durability * 2500 },
-        { (int)SpecialItems.ComplexPotion, item => item.Durability * 5000 },
-        { (int)SpecialItems.LargeComplexPotion, item => item.Durability * 7500 },
+        { (int)SpecialItems.SplinterOfArmor, item => item.Durability() * 150 },
+        { (int)SpecialItems.BlessOfGuardian, item => item.Durability() * 300 },
+        { (int)SpecialItems.ClawOfBeast, item => item.Durability() * 3000 },
+        { (int)SpecialItems.FragmentOfHorn, _ => 30000 },
+        { (int)SpecialItems.BrokenHorn, _ => 90000 },
+        { (int)SpecialItems.HornFenrir, _ => 150000 },
+        { (int)SpecialItems.SmallSdPotion, item => item.Durability() * 2000 },
+        { (int)SpecialItems.SdPotion, item => item.Durability() * 4000 },
+        { (int)SpecialItems.LargeSdPotion, item => item.Durability() * 6000 },
+        { (int)SpecialItems.LargeHealPotion, item => item.Durability() * 1500 * (item.Level + 1) },
+        { (int)SpecialItems.LargeManaPotion, item => item.Durability() * 1500 * (item.Level + 1) },
+        { (int)SpecialItems.SmallComplexPotion, item => item.Durability() * 2500 },
+        { (int)SpecialItems.ComplexPotion, item => item.Durability() * 5000 },
+        { (int)SpecialItems.LargeComplexPotion, item => item.Durability() * 7500 },
         {
             (int)SpecialItems.Dinorant, item =>
             {
@@ -140,9 +140,9 @@ public class ItemPriceCalculator
         { (int)SpecialItems.DevilEye, item => item.Level == 1 ? 15000 : item.Level == 2 ? 21000 : (item.Level - 1) * 15000 },
         { (int)SpecialItems.DevilKey, item => item.Level == 1 ? 15000 : item.Level == 2 ? 21000 : (item.Level - 1) * 15000 },
         { (int)SpecialItems.DevilInvitation, item => item.Level == 1 ? 60000 : item.Level == 2 ? 84000 : (item.Level - 1) * 60000 },
-        { (int)SpecialItems.RedemyOfLove, item => 900 },
-        { (int)SpecialItems.Rena, item => item.Level == 3 ? item.Durability * 3900 : 9000 },
-        { (int)SpecialItems.Ale, item => 1000 },
+        { (int)SpecialItems.RedemyOfLove, _ => 900 },
+        { (int)SpecialItems.Rena, item => item.Level == 3 ? item.Durability() * 3900 : 9000 },
+        { (int)SpecialItems.Ale, _ => 1000 },
         {
             (int)SpecialItems.InvisibleCloak, item => item.Level == 1 ? 150000 :
                 item.Level == 2 ? 660000 :
@@ -179,17 +179,17 @@ public class ItemPriceCalculator
         {
             (int)SpecialItems.IllusionSorcererCovenant, item => item.Level == 1 ? 500000 : (item.Level + 1) * 200000
         },
-        { (int)SpecialItems.ArmorGuardman, item => 5000 },
+        { (int)SpecialItems.ArmorGuardman, _ => 5000 },
         { (int)SpecialItems.WizardsRing, item => item.Level == 0 ? 30000 : 0 },
         { (int)SpecialItems.SpiritPet, item => item.Level == 0 ? 30000000 : item.Level == 1 ? 15000000 : 0 },
-        { (int)SpecialItems.LostMap, item => 600000 },
-        { (int)SpecialItems.SymbolKundun, item => 30000 * item.Durability },
-        { (int)SpecialItems.Halloween1, item => 150 * item.Durability },
-        { (int)SpecialItems.Halloween2, item => 150 * item.Durability },
-        { (int)SpecialItems.Halloween3, item => 150 * item.Durability },
-        { (int)SpecialItems.Halloween4, item => 150 * item.Durability },
-        { (int)SpecialItems.Halloween5, item => 150 * item.Durability },
-        { (int)SpecialItems.Halloween6, item => 150 * item.Durability },
+        { (int)SpecialItems.LostMap, _ => 600000 },
+        { (int)SpecialItems.SymbolKundun, item => 30000 * item.Durability() },
+        { (int)SpecialItems.Halloween1, item => 150 * item.Durability() },
+        { (int)SpecialItems.Halloween2, item => 150 * item.Durability() },
+        { (int)SpecialItems.Halloween3, item => 150 * item.Durability() },
+        { (int)SpecialItems.Halloween4, item => 150 * item.Durability() },
+        { (int)SpecialItems.Halloween5, item => 150 * item.Durability() },
+        { (int)SpecialItems.Halloween6, item => 150 * item.Durability() },
         { (int)SpecialItems.GemOfSecret, item => item.Level == 0 ? 60000 : 0 },
     };
 
@@ -299,7 +299,7 @@ public class ItemPriceCalculator
 
         float squareRootOfBasePrice = (float)Math.Sqrt(basePrice);
         float squareRootOfSquareRoot = (float)Math.Sqrt(squareRootOfBasePrice);
-        float missingDurability = 1 - ((float)item.Durability / item.GetMaximumDurabilityOfOnePiece());
+        float missingDurability = 1 - ((float)item.Durability() / item.GetMaximumDurabilityOfOnePiece());
         float repairPrice = (3.0f * squareRootOfBasePrice * squareRootOfSquareRoot * missingDurability) + 1.0f;
         if (item.Durability <= 0)
         {
@@ -326,7 +326,7 @@ public class ItemPriceCalculator
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>The buying price.</returns>
-    public long CalculateBuyingPrice(Item item) => CalculateBuyingPrice(item, item.Durability);
+    public long CalculateBuyingPrice(Item item) => CalculateBuyingPrice(item, item.Durability());
 
     private static long CalculateBuyingPrice(Item item, byte durability)
     {
@@ -362,7 +362,7 @@ public class ItemPriceCalculator
                 }
 
                 price = price / 10 * 10;
-                price *= item.Durability;
+                price *= item.Durability();
                 return price;
             }
         }

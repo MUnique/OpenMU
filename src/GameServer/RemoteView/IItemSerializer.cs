@@ -113,7 +113,7 @@ public class ItemSerializer : IItemSerializer
             }
         }
 
-        target[2] = item.Durability;
+        target[2] = item.Durability();
 
         target[3] |= GetExcellentByte(item);
 

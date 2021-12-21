@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -111,6 +112,21 @@ public class GameConfiguration
     /// Gets or sets a value indicating whether if a monster should drop or adds money to the character directly.
     /// </summary>
     public bool ShouldDropMoney { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accumulated damage which needs to be done to decrease <see cref="Item.Durability"/> of a defending item by 1.
+    /// </summary>
+    public double DamagePerOneItemDurability { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accumulated damage which needs to be done to decrease <see cref="Item.Durability"/> of a pet item by 1.
+    /// </summary>
+    public double DamagePerOnePetDurability { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of hits which needs to be done to decrease the <see cref="Item.Durability"/> of an offensive item by 1.
+    /// </summary>
+    public double HitsPerOneItemDurability { get; set; }
 
     /// <summary>
     /// Gets or sets the possible jewel mixes.
