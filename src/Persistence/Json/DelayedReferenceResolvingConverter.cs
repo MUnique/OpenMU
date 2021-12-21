@@ -71,16 +71,36 @@ public class DelayedReferenceResolvingConverter : JsonConverter
         var resolvedObject = serializer.ReferenceResolver?.ResolveReference(serializer.Context, id);
         if (resolvedObject is null)
         {
-            var property = this._currentlyPopulating?.GetType().GetProperty(reader.Path);
-            if (property != null)
+            var isCollection = reader.Path.EndsWith("]");
+            var path = reader.Path;
+            if (isCollection)
             {
-                var currentParent = this._currentlyPopulating;
-                this._delayedReferenceResolveActions += () =>
-                {
-                    var resolved = serializer.ReferenceResolver?.ResolveReference(serializer.Context, id);
-                    property.SetValue(currentParent, resolved);
-                };
+                path = path.Substring(0, path.IndexOf('['));
             }
+
+            var property = this._currentlyPopulating?.GetType().GetProperty(path);
+            if (property == null)
+            {
+                return resolvedObject;
+            }
+
+            var currentParent = this._currentlyPopulating;
+            this._delayedReferenceResolveActions += () =>
+            {
+                var resolved = serializer.ReferenceResolver?.ResolveReference(serializer.Context, id);
+                if (isCollection)
+                {
+                    if (property.GetValue(currentParent) is { } collection
+                        && collection.GetType().GetMethod("Add") is { } addMethod)
+                    {
+                        addMethod.Invoke(collection, new [] { resolved });
+                    }
+                }
+                else
+                {
+                    property.SetValue(currentParent, resolved);
+                }
+            };
         }
 
         return resolvedObject;
