@@ -228,6 +228,9 @@ public static class ItemExtensions
                 break;
             case 2 when pendant is { }: result = pendant;
                 break;
+            default:
+                // will never happen
+                break;
         }
 
         return result;
