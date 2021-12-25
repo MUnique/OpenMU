@@ -60,13 +60,13 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
             var itemCount = foundItems.Sum(i => i.IsStackable() ? i.Durability : 1);
             if (itemCount < requiredItem.MinimumAmount)
             {
-                player.Logger.LogWarning("LackingMixItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
+                player.Logger.LogWarning("LackingMixItems: Suspicious action for player with name: {0}, could be hack attempt. Missing item(s): {1}", player.Name, requiredItem);
                 return CraftingResult.LackingMixItems;
             }
 
             if (itemCount > requiredItem.MaximumAmount && requiredItem.MaximumAmount > 0)
             {
-                player.Logger.LogWarning("TooManyItems: Suspicious action for player with name: {0}, could be hack attempt.", player.Name);
+                player.Logger.LogWarning("TooManyItems: Suspicious action for player with name: {0}, could be hack attempt. ItemCount: {1}, Required: {2}", player.Name, itemCount, requiredItem);
                 return CraftingResult.TooManyItems;
             }
 
