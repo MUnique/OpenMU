@@ -58,7 +58,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
             return result;
         }
 
-        throw new InvalidDataException($"The object of {nameof(T)} with the specified id {id} could not be found in the game configuration");
+        throw new InvalidDataException($"The object of {typeof(T).Name} with the specified id {id} could not be found in the game configuration");
     }
 
     /// <inheritdoc />
