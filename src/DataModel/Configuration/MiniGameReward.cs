@@ -33,4 +33,23 @@ public class MiniGameReward
     /// Gets or sets the <see cref="DropItemGroup"/> of this reward, if <see cref="RewardType"/> is <see cref="MiniGameRewardType.Item"/>.
     /// </summary>
     public virtual DropItemGroup? ItemReward { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var result = new StringBuilder();
+        if (this.Rank.HasValue)
+        {
+            result.Append("Rank ").Append(this.Rank.Value).Append(": ");
+        }
+
+        result.Append(this.RewardType.ToString()).Append(" ").Append(this.RewardAmount);
+
+        if (this.ItemReward != null)
+        {
+            result.Append(" ").Append(this.ItemReward.Description);
+        }
+
+        return result.ToString();
+    }
 }
