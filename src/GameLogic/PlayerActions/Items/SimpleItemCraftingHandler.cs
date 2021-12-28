@@ -54,7 +54,7 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
         successRate = this._settings.SuccessPercent;
         items = new List<CraftingRequiredItemLink>(this._settings.RequiredItems.Count);
         var storage = player.TemporaryStorage?.Items.ToList() ?? new List<Item>();
-        foreach (var requiredItem in this._settings.RequiredItems)
+        foreach (var requiredItem in this._settings.RequiredItems.OrderByDescending(i => i.MinimumAmount))
         {
             var foundItems = storage.Where(item => this.RequiredItemMatches(item, requiredItem)).ToList();
             var itemCount = foundItems.Sum(i => i.IsStackable() ? i.Durability : 1);
