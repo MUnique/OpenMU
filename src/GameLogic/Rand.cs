@@ -42,6 +42,16 @@ public static class Rand
     /// <returns>Random boolean value.</returns>
     public static bool NextRandomBool(int percent)
     {
+        if (percent == 0)
+        {
+            return false;
+        }
+
+        if (percent == 100)
+        {
+            return true;
+        }
+
         int a = RandomInstance.Next(0, 100);
         return a <= percent;
     }
