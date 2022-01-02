@@ -49,7 +49,7 @@ docker-compose.
 #### Windows
 
 ```cmd
-dotnet dev-certs https -ep %USERPROFILE%\.aspnet\https\aspnetapp.pfx -p { password here }
+dotnet dev-certs https -ep $env:USERPROFILE.aspnet\https\aspnetapp.pfx -p { password here }
 dotnet dev-certs https --trust
 setx CERTIFICATE_PASSWORD "{ password here }"
 ```
