@@ -315,6 +315,7 @@ public static class ItemExtensions
         item.ItemOptions
             .Where(option => option.ItemOption?.OptionType is not null && option.ItemOption.OptionType.IsVisible)
             .Select(option => option.ItemOption!.OptionType!)
+            .Distinct()
             .ForEach(appearance.VisibleOptions.Add);
         return appearance;
     }
@@ -331,7 +332,7 @@ public static class ItemExtensions
         persistent.ItemSlot = itemAppearance.ItemSlot;
         persistent.Definition = itemAppearance.Definition;
         persistent.Level = itemAppearance.Level;
-        itemAppearance.VisibleOptions.ForEach(o => persistent.VisibleOptions.Add(o));
+        itemAppearance.VisibleOptions.Distinct().ForEach(o => persistent.VisibleOptions.Add(o));
         return persistent;
     }
 
