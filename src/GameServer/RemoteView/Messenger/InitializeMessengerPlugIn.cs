@@ -39,24 +39,27 @@ public class InitializeMessengerPlugIn : IInitializeMessengerPlugIn
         var friends = friendServer.GetFriendList(this._player.SelectedCharacter.Id);
         var friendList = friends as ICollection<string> ?? friends.ToList();
 
-        using var writer = connection.StartSafeWrite(MessengerInitialization.HeaderType, MessengerInitialization.GetRequiredSize(friendList.Count));
-        var message = new MessengerInitialization(writer.Span)
+        using (var writer = connection.StartSafeWrite(MessengerInitialization.HeaderType, MessengerInitialization.GetRequiredSize(friendList.Count)))
         {
-            FriendCount = (byte)friendList.Count,
-            LetterCount = (byte)this._player.SelectedCharacter.Letters.Count,
-            MaximumLetterCount = (byte)maxLetters,
-        };
+            var message = new MessengerInitialization(writer.Span)
+            {
+                FriendCount = (byte)friendList.Count,
+                LetterCount = (byte)this._player.SelectedCharacter.Letters.Count,
+                MaximumLetterCount = (byte)maxLetters,
+            };
 
-        int i = 0;
-        foreach (var friend in friendList)
-        {
-            var friendBlock = message[i];
-            friendBlock.Name = friend;
-            friendBlock.ServerId = (byte)SpecialServerId.Offline;
-            i++;
+            int i = 0;
+            foreach (var friend in friendList)
+            {
+                var friendBlock = message[i];
+                friendBlock.Name = friend;
+                friendBlock.ServerId = (byte)SpecialServerId.Offline;
+                i++;
+            }
+
+            writer.Commit();
         }
 
-        writer.Commit();
         foreach (var requesterName in friendServer.GetOpenFriendRequests(this._player.SelectedCharacter.Id))
         {
             this._player.ViewPlugIns.GetPlugIn<IShowFriendRequestPlugIn>()?.ShowFriendRequest(requesterName);
