@@ -10,7 +10,7 @@ General requirements:
 
 * Knowledge or way to start a game client, connecting to the server (I wont
     provide that, but there is a ClientLauncher project) :)
-
+  * Client binaries :[Client 1.04d ENG - Season 6 Episode 3](https://mega.nz/#!a0AS0J6B) (key: !L6xziQ6NQIhTu_4iEScWbLi2jWZWzCiTJvoFz89KaHI )
   * Launcher binaries: [MUnique.OpenMU.ClientLauncher.v0.4.0.zip](https://github.com/MUnique/OpenMU/releases/download/v0.4.0/MUnique.OpenMU.ClientLauncher.v0.4.0.zip)
 
 This guide describes two ways of starting the server. Use Docker, if you just
