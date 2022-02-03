@@ -1,0 +1,11 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: login-state
+spec:
+  type: state.postgresql
+  version: v1
+  metadata:
+  - name: connectionString
+    # todo: use another user than postgres
+    value: "host=database user=postgres password=admin port=5432 connect_timeout=10 database=openmu-login-state"

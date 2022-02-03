@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.GuildServer;
+
 namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
@@ -16,6 +18,8 @@ using MUnique.OpenMU.Persistence.InMemory;
 /// </summary>
 public class GuildTestBase
 {
+    protected const string GuildName = "Foobar";
+
     /// <summary>
     /// Gets or sets the first game server.
     /// </summary>
@@ -58,9 +62,10 @@ public class GuildTestBase
 
         this.GuildMaster = this.GetGuildMaster();
         this.GameServers = new Dictionary<int, IGameServer> { { 0, this.GameServer0.Object }, { 1, this.GameServer1.Object } };
-        this.GuildServer = new OpenMU.GuildServer.GuildServer(this.GameServers, this.PersistenceContextProvider, new NullLogger<GuildServer.GuildServer>());
-        var guildStatus = this.GuildServer.CreateGuild("Foobar", this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0);
-        this.GuildServer.GuildMemberLeftGame(guildStatus!.GuildId, this.GuildMaster.Id, 0);
+        this.GuildServer = new OpenMU.GuildServer.GuildServer(new GuildChangeToGameServerPublisher(this.GameServers), this.PersistenceContextProvider, new NullLogger<GuildServer.GuildServer>());
+        this.GuildServer.CreateGuild(GuildName, this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0);
+        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
+        this.GuildServer.GuildMemberLeftGame(guildId, this.GuildMaster.Id, 0);
     }
 
     private Character GetGuildMaster()

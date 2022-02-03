@@ -15,8 +15,7 @@ using log4net.Config;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.AdminPanel;
-using MUnique.OpenMU.AdminPanel.Services;
+using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -210,13 +209,12 @@ internal sealed class Program : IDisposable
             {
                 if (this.IsAdminPanelEnabled(args))
                 {
-                    c.AddSingleton<IServerConfigurationChangeListener, ServerConfigurationChangeListener>()
-                        .AddSingleton<IPlugInConfigurationChangeListener, PlugInConfigurationChangeListener>()
-                        .AddHostedService<AdminPanel>()
+                    c.AddHostedService<AdminPanel>()
                         .AddSingleton(new AdminPanelSettings(this.DetermineAdminPort(args)));
                 }
 
                 c.AddSingleton(this._servers)
+                    .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
                     .AddSingleton(s => s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<ChatServerDefinition>().First() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
                     .AddSingleton(s => s.GetService<ChatServerDefinition>()?.ConvertToSettings() ?? throw new Exception($"{nameof(ChatServerSettings)} not registered."))
                     .AddIpResolver(args)
@@ -231,6 +229,8 @@ internal sealed class Program : IDisposable
                     .AddSingleton<ConnectServerContainer>()
                     .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
                     .AddSingleton<GameServerContainer>()
+                    .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
+                    .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
                     .AddSingleton<PlugInManager>()
                     .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
                     .AddHostedService(provider => provider.GetService<IChatServer>())
@@ -321,7 +321,7 @@ internal sealed class Program : IDisposable
 
     private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
     {
-        var contextProvider = new PersistenceContextProvider(loggerFactory);
+        var contextProvider = new PersistenceContextProvider(loggerFactory, null);
         if (reinit || !contextProvider.DatabaseExists())
         {
             Log.Info("The database is getting (re-)initialized...");

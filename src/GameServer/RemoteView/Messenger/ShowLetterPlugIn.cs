@@ -48,6 +48,7 @@ public class ShowLetterPlugIn : IShowLetterPlugIn
             Message = letter.Message,
         };
 
+        // TODO: Somewhere is the GM-Sign defined.
         if (letter.SenderAppearance is not null)
         {
             appearanceSerializer.WriteAppearanceData(result.SenderAppearance, letter.SenderAppearance, false);

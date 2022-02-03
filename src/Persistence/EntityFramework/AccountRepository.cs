@@ -33,11 +33,15 @@ internal class AccountRepository : CachingGenericRepository<Account>
         context.Context.Database.OpenConnection();
         try
         {
-            var objectLoader = new AccountJsonObjectLoader();
-            var account = objectLoader.LoadObject<Account>(id, context.Context);
-            if (account != null && !(context.Context.Entry(account) is { } entry && entry.State != EntityState.Detached))
+            var account = context.Context.ChangeTracker.Entries<Account>().FirstOrDefault(a => a.Entity.Id == id)?.Entity;
+            if (account is null)
             {
-                context.Context.Attach(account);
+                var objectLoader = new AccountJsonObjectLoader();
+                account = objectLoader.LoadObject<Account>(id, context.Context);
+                if (account != null && !(context.Context.Entry(account) is { } entry && entry.State != EntityState.Detached))
+                {
+                    context.Context.Attach(account);
+                }
             }
 
             return account;

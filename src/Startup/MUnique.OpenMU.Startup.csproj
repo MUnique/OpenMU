@@ -34,8 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.13" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+    <PackageReference Include="log4net" Version="2.0.14" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -44,7 +44,8 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\AdminPanel\MUnique.OpenMU.AdminPanel.csproj" />
+    <ProjectReference Include="..\Web\AdminPanel\MUnique.OpenMU.Web.AdminPanel.csproj" />
+    <ProjectReference Include="..\Web\PublicApi\MUnique.OpenMU.Web.PublicApi.csproj" />
     <ProjectReference Include="..\ChatServer\MUnique.OpenMU.ChatServer.csproj" />
     <ProjectReference Include="..\ConnectServer\MUnique.OpenMU.ConnectServer.csproj" />
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
@@ -58,8 +59,6 @@
     <ProjectReference Include="..\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />
     <ProjectReference Include="..\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj" />
-    <ProjectReference Include="..\PublicApi\MUnique.OpenMU.PublicApi.csproj" />
-    
   </ItemGroup>
 
 

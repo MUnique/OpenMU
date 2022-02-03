@@ -86,6 +86,8 @@ internal class ServerListItem
         }
     }
 
+    public int MaximumConnections { get; set; }
+
     /// <inheritdoc/>
     public override string ToString()
     {

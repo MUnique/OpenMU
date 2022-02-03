@@ -11,6 +11,11 @@ namespace MUnique.OpenMU.Interfaces;
 public enum GuildPosition : byte
 {
     /// <summary>
+    /// Undefined position, not a guild member.
+    /// </summary>
+    Undefined,
+
+    /// <summary>
     /// A normal guild member.
     /// </summary>
     NormalMember,

@@ -25,21 +25,21 @@ public class GuildServer : IGuildServer
 
     private readonly ILogger<GuildServer> _logger;
 
-    private readonly IDictionary<int, IGameServer> _gameServers;
     private readonly IDictionary<uint, GuildContainer> _guildDictionary;
     private readonly IDictionary<Guid, uint> _guildIdMapping;
     private readonly IdGenerator _idGenerator;
+    private readonly IGuildChangePublisher _changePublisher;
     private readonly IPersistenceContextProvider _persistenceContextProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildServer" /> class.
     /// </summary>
-    /// <param name="gameServers">The game servers.</param>
+    /// <param name="changePublisher">The change publisher.</param>
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
     /// <param name="logger">The logger.</param>
-    public GuildServer(IDictionary<int, IGameServer> gameServers, IPersistenceContextProvider persistenceContextProvider, ILogger<GuildServer> logger)
+    public GuildServer(IGuildChangePublisher changePublisher, IPersistenceContextProvider persistenceContextProvider, ILogger<GuildServer> logger)
     {
-        this._gameServers = gameServers;
+        this._changePublisher = changePublisher;
         this._persistenceContextProvider = persistenceContextProvider;
         this._logger = logger;
         this._guildDictionary = new ConcurrentDictionary<uint, GuildContainer>();
@@ -48,26 +48,6 @@ public class GuildServer : IGuildServer
             ReUseSetting = IdGenerator.ReUsePolicy.ReUseWhenExceeded,
         };
         this._guildIdMapping = new ConcurrentDictionary<Guid, uint>();
-    }
-
-    /// <inheritdoc/>
-    public void GuildMessage(uint guildId, string sender, string message)
-    {
-        // TODO: threadsafe?
-        foreach (var gameServer in this._gameServers.Values)
-        {
-            gameServer.GuildChatMessage(guildId, sender, message);
-        }
-    }
-
-    /// <inheritdoc/>
-    public void AllianceMessage(uint guildId, string sender, string message)
-    {
-        // TODO: threadsafe?
-        foreach (var gameServer in this._gameServers.Values)
-        {
-            gameServer.AllianceChatMessage(guildId, sender, message);
-        }
     }
 
     /// <inheritdoc/>
@@ -108,7 +88,7 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc/>
-    public GuildMemberStatus? CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
+    public bool CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
     {
         var context = this._persistenceContextProvider.CreateNewGuildContext();
 
@@ -126,14 +106,16 @@ public class GuildServer : IGuildServer
             var container = this.CreateGuildContainer(guild, context);
             container.SetServerId(masterId, serverId);
             container.Members[masterId].PlayerName = masterName;
-            return new GuildMemberStatus(container.Id, GuildPosition.GuildMaster);
+            var status = new GuildMemberStatus(container.Id, GuildPosition.GuildMaster);
+            this._changePublisher.AssignGuildToPlayer(serverId, masterName, status);
+            return true;
         }
 
-        return null;
+        return false;
     }
 
     /// <inheritdoc/>
-    public GuildMemberStatus? CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId)
+    public void CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId)
     {
         try
         {
@@ -142,7 +124,7 @@ public class GuildServer : IGuildServer
                 if (guild.Members.ContainsKey(characterId))
                 {
                     this._logger.LogWarning("Guildmember already exists: {0}", characterName);
-                    return null;
+                    return;
                 }
 
                 var guildMember = guild.DatabaseContext.CreateNew<GuildMember>();
@@ -153,7 +135,7 @@ public class GuildServer : IGuildServer
 
                 guild.DatabaseContext.SaveChanges();
                 guild.Members.Add(characterId, new GuildListEntry { PlayerName = characterName, PlayerPosition = guildMember.Status, ServerId = serverId });
-                return new GuildMemberStatus(guildId, guildMember.Status);
+                this._changePublisher.AssignGuildToPlayer(serverId, characterName, new GuildMemberStatus(guildId, guildMember.Status));
             }
         }
         catch (Exception ex)
@@ -161,8 +143,6 @@ public class GuildServer : IGuildServer
             // Rollback?
             this._logger.LogError(ex, "Error when creating a guild member.");
         }
-
-        return null;
     }
 
     /// <inheritdoc/>
@@ -189,17 +169,16 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public GuildMemberStatus? PlayerEnteredGame(Guid characterId, string characterName, byte serverId)
+    public void PlayerEnteredGame(Guid characterId, string characterName, byte serverId)
     {
         using var tempContext = this._persistenceContextProvider.CreateNewGuildContext();
         var guildMember = tempContext.GetById<GuildMember>(characterId); // we use the same id for Character.Id and GuildMemberInfo.Id
         if (guildMember != null)
         {
             var guildId = this.GuildMemberEnterGame(guildMember.GuildId, guildMember.Id, serverId);
-            return new GuildMemberStatus(guildId, guildMember.Status);
+            var status = new GuildMemberStatus(guildId, guildMember.Status);
+            this._changePublisher.AssignGuildToPlayer(serverId, characterName, status);
         }
-
-        return null;
     }
 
     /// <inheritdoc/>
@@ -258,18 +237,15 @@ public class GuildServer : IGuildServer
             guildContainer.DatabaseContext.SaveChanges();
         }
 
-        if (this._gameServers.TryGetValue(member.ServerId, out var gameServer))
-        {
-            gameServer.GuildPlayerKicked(playerName);
-        }
+        this._changePublisher.GuildPlayerKicked(playerName);
     }
 
     /// <inheritdoc />
-    public GuildPosition? GetGuildPosition(Guid characterId)
+    public GuildPosition GetGuildPosition(Guid characterId)
     {
         using var tempContext = this._persistenceContextProvider.CreateNewGuildContext();
         var guildMember = tempContext.GetById<GuildMember>(characterId); // we use the same id for Character.Id and GuildMemberInfo.Id
-        return guildMember?.Status;
+        return guildMember?.Status ?? GuildPosition.Undefined;
     }
 
     /// <summary>
@@ -287,10 +263,7 @@ public class GuildServer : IGuildServer
         guildContainer.DatabaseContext.SaveChanges();
         this.RemoveGuildContainer(guildContainer);
 
-        foreach (var gameServer in this._gameServers.Values)
-        {
-            gameServer.GuildDeleted(guildContainer.Id);
-        }
+        this._changePublisher.GuildDeleted(guildContainer.Id);
 
         // TODO: Inform gameServers that guildwar/hostility ended
     }

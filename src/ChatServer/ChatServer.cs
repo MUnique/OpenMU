@@ -140,7 +140,7 @@ public sealed class ChatServer : IChatServer, IDisposable
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        // this.Start();
+        this.Start();
         return Task.CompletedTask;
     }
 

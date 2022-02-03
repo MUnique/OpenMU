@@ -25,7 +25,7 @@ public class CachingRepositoryManager : RepositoryManager
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
     public CachingRepositoryManager(ILoggerFactory loggerFactory)
-        : base(loggerFactory)
+        : base(loggerFactory, null)
     {
         this._loggerFactory = loggerFactory;
     }

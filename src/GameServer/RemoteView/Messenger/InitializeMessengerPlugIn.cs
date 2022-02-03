@@ -27,7 +27,7 @@ public class InitializeMessengerPlugIn : IInitializeMessengerPlugIn
     public InitializeMessengerPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void InitializeMessenger(int maxLetters)
+    public void InitializeMessenger(MessengerInitializationData data, int maxLetters)
     {
         var connection = this._player.Connection;
         if (connection is null || this._player.SelectedCharacter is null)
@@ -35,9 +35,7 @@ public class InitializeMessengerPlugIn : IInitializeMessengerPlugIn
             return;
         }
 
-        var friendServer = this._player.GameServerContext.FriendServer;
-        var friends = friendServer.GetFriendList(this._player.SelectedCharacter.Id);
-        var friendList = friends as ICollection<string> ?? friends.ToList();
+        var friendList = data.Friends;
 
         using (var writer = connection.StartSafeWrite(MessengerInitialization.HeaderType, MessengerInitialization.GetRequiredSize(friendList.Count)))
         {
@@ -60,7 +58,7 @@ public class InitializeMessengerPlugIn : IInitializeMessengerPlugIn
             writer.Commit();
         }
 
-        foreach (var requesterName in friendServer.GetOpenFriendRequests(this._player.SelectedCharacter.Id))
+        foreach (var requesterName in data.OpenFriendRequests)
         {
             this._player.ViewPlugIns.GetPlugIn<IShowFriendRequestPlugIn>()?.ShowFriendRequest(requesterName);
         }

@@ -106,8 +106,9 @@ public class ChatMessageAction
             {
                 if (sender.GuildStatus != null)
                 {
-                    var guildServer = (sender.GameContext as IGameServerContext)?.GuildServer;
-                    guildServer?.AllianceMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    // TODO: Use DI to get the IEventPublisher
+                    var publisher = (sender.GameContext as IGameServerContext)?.EventPublisher;
+                    publisher?.AllianceMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
                 }
 
                 break;
@@ -117,8 +118,8 @@ public class ChatMessageAction
             {
                 if (sender.GuildStatus != null)
                 {
-                    var guildServer = (sender.GameContext as IGameServerContext)?.GuildServer;
-                    guildServer?.GuildMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    var publisher = (sender.GameContext as IGameServerContext)?.EventPublisher;
+                    publisher?.GuildMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
                 }
 
                 break;

@@ -15,7 +15,7 @@ public class StateMachine
     /// <summary>
     /// The lock object for state transitions.
     /// </summary>
-    private readonly object _lockObject = new ();
+    private readonly SemaphoreSlim _lockObject = new (1);
 
     /// <summary>
     /// A cancel event args object, which is getting reused.
@@ -70,7 +70,8 @@ public class StateMachine
             return false;
         }
 
-        lock (this._lockObject)
+        this._lockObject.Wait();
+        try
         {
             if (this.CurrentState.PossibleTransitions.Contains(nextState) && this.OnStateChanging(nextState))
             {
@@ -78,6 +79,10 @@ public class StateMachine
                 this.OnStateChanged();
                 return true;
             }
+        }
+        finally
+        {
+            this._lockObject.Release();
         }
 
         return false;
@@ -137,7 +142,7 @@ public class StateMachine
         /// <summary>
         /// The lock object of the state machine.
         /// </summary>
-        private readonly object _lockObject;
+        private readonly SemaphoreSlim _lockObject;
 
         /// <summary>
         /// The action which gets executed when the state change is completed.
@@ -149,9 +154,9 @@ public class StateMachine
         /// </summary>
         /// <param name="lockObject">The lock object of the state machine.</param>
         /// <param name="finishAction">The action which should get executed when the state change is completed.</param>
-        public StateChangeContext(object lockObject, Action finishAction)
+        public StateChangeContext(SemaphoreSlim lockObject, Action finishAction)
         {
-            Monitor.Enter(lockObject);
+            lockObject.Wait();
             this._lockObject = lockObject;
             this._finishAction = finishAction;
         }
@@ -173,7 +178,7 @@ public class StateMachine
             }
             finally
             {
-                Monitor.Exit(this._lockObject);
+                this._lockObject.Release(1);
             }
         }
     }

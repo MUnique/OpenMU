@@ -44,6 +44,7 @@ public enum DatabaseRole
 
 /// <summary>
 /// The database connection configurator which loads the configuration from a file.
+/// TODO: Make class non-static, introduce interface, implement something which uses the dapr secrets api
 /// </summary>
 public static class ConnectionConfigurator
 {

@@ -1,0 +1,50 @@
+version: '3.4'
+
+services:
+  database:
+    ports:
+      - "5433:5432"
+
+  gameServer1:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "81:80"
+
+  connectServer:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+  loginServer:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+  friendServer:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+  guildServer:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+  chatServer:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+  setup:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # ASPNETCORE_Kestrel__Certificates__Default__Password: foobar
+      # ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  adminPanel:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # ASPNETCORE_Kestrel__Certificates__Default__Password: foobar
+      # ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+    ports:
+      - "80:80"
+    # volumes:
+    #   - ~/.aspnet/https:/https:ro

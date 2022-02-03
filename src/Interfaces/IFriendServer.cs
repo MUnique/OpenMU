@@ -41,12 +41,19 @@ public interface IFriendServer
     /// <param name="accepted">Indicating whether the request got accepted.</param>
     void FriendResponse(string characterName, string friendName, bool accepted);
 
-    /// <summary>
-    /// Gets the friend list of a character.
-    /// </summary>
-    /// <param name="characterId">Id of the character.</param>
-    /// <returns>The friend list of a character.</returns>
-    IEnumerable<string> GetFriendList(Guid characterId);
+    ///// <summary>
+    ///// Gets the friend list of a character.
+    ///// </summary>
+    ///// <param name="characterId">Id of the character.</param>
+    ///// <returns>The friend list of a character.</returns>
+    //IEnumerable<string> GetFriendList(Guid characterId);
+
+    void PlayerEnteredGame(byte serverId, Guid characterId, string characterName);
+
+    void PlayerLeftGame(Guid characterId, string characterName);
+
+    void SetPlayerVisibilityState(byte serverId, Guid characterId, string characterName, bool isVisible);
+
 
     /// <summary>
     /// Sets the online state of a character.
@@ -54,7 +61,7 @@ public interface IFriendServer
     /// <param name="characterId">Id of the character.</param>
     /// <param name="characterName">Name of the character.</param>
     /// <param name="serverId">The server identifier.</param>
-    void SetOnlineState(Guid characterId, string characterName, int serverId);
+    //void SetOnlineState(Guid characterId, string characterName, int serverId);
 
     /// <summary>
     /// Sends a friend request to the friend, and adds a new friend view item to the players friend list.
@@ -76,7 +83,7 @@ public interface IFriendServer
     /// </summary>
     /// <param name="characterId">Character id.</param>
     /// <returns>The character names of all open friend requests.</returns>
-    IEnumerable<string> GetOpenFriendRequests(Guid characterId);
+    //IEnumerable<string> GetOpenFriendRequests(Guid characterId);
 
     /// <summary>
     /// Creates a new chat room.

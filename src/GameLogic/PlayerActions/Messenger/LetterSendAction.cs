@@ -68,17 +68,7 @@ public class LetterSendAction
         }
 
         // Try to forward it to the player, if he is online
-        var receiverPlayer = player.GameContext.GetPlayerByCharacterName(receiver);
-        if (receiverPlayer != null)
-        {
-            receiverPlayer.PersistenceContext.Attach(letter);
-            receiverPlayer.SelectedCharacter!.Letters.Add(letter);
-            receiverPlayer.ViewPlugIns.GetPlugIn<IAddToLetterListPlugIn>()?.AddToLetterList(letter, (ushort)(receiverPlayer.SelectedCharacter.Letters.Count - 1), true);
-        }
-        else
-        {
-            (player.GameContext as IGameServerContext)?.FriendServer?.ForwardLetter(letter);
-        }
+        (player.GameContext as IGameServerContext)?.FriendServer.ForwardLetter(letter);
     }
 
     private LetterHeader CreateLetter(IContext context, Player player, string receiver, string message, string title, byte rotation, byte animation)

@@ -29,12 +29,11 @@ public class ConnectServerFactory
     /// </summary>
     /// <param name="settings">The settings.</param>
     /// <param name="clientVersion">The client version.</param>
-    /// <param name="configurationId">The configuration identifier.</param>
     /// <returns>
     /// The new connect server instance.
     /// </returns>
-    public OpenMU.Interfaces.IConnectServer CreateConnectServer(IConnectServerSettings settings, ClientVersion clientVersion, Guid configurationId)
+    public OpenMU.Interfaces.IConnectServer CreateConnectServer(IConnectServerSettings settings)
     {
-        return new ConnectServer(settings, clientVersion, configurationId, this._loggerFactory);
+        return new ConnectServer(settings, this._loggerFactory);
     }
 }

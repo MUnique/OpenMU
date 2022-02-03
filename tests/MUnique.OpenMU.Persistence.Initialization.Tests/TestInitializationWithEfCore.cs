@@ -21,9 +21,9 @@ internal class TestInitializationWithEfCore
     [Ignore("This is not a real test which should run automatically.")]
     public void SetupDatabaseAndTestLoadingData()
     {
-        var manager = new PersistenceContextProvider(new NullLoggerFactory());
+        var manager = new PersistenceContextProvider(new NullLoggerFactory(), null);
         manager.ReCreateDatabase();
-        this.TestDataInitialization(new PersistenceContextProvider(new NullLoggerFactory()));
+        this.TestDataInitialization(new PersistenceContextProvider(new NullLoggerFactory(), null));
     }
 
     /// <summary>

@@ -15,33 +15,32 @@ using MUnique.OpenMU.Network.PlugIns;
 /// <summary>
 /// The connect server.
 /// </summary>
-internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
+public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
+    private readonly ServerList _serverList;
     private ServerState _serverState;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectServer" /> class.
     /// </summary>
     /// <param name="connectServerSettings">The settings.</param>
-    /// <param name="clientVersion">The client version.</param>
-    /// <param name="configurationId">The configuration identifier.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public ConnectServer(IConnectServerSettings connectServerSettings, ClientVersion clientVersion, Guid configurationId, ILoggerFactory loggerFactory)
+    public ConnectServer(IConnectServerSettings connectServerSettings, ILoggerFactory loggerFactory)
     {
         this._loggerFactory = loggerFactory;
-        this.ClientVersion = clientVersion;
-        this.ConfigurationId = configurationId;
         this.Settings = connectServerSettings;
+        this.ClientVersion = new ClientVersion(this.Settings.Client.Season, this.Settings.Client.Episode, ClientLanguage.Invariant);
+        this.ConfigurationId = this.Settings.ConfigurationId;
 
         this._logger = this._loggerFactory.CreateLogger<ConnectServer>();
 
         this.ConnectInfos = new Dictionary<ushort, byte[]>();
-        this.ServerList = new ServerList(this.ClientVersion);
+        this._serverList = new ServerList(this.ClientVersion);
 
         this.ClientListener = new ClientListener(this, loggerFactory);
-        this.ClientListener.ConnectedClientsChanged += (sender, args) =>
+        this.ClientListener.ConnectedClientsChanged += (_, _) =>
         {
             this.RaisePropertyChanged(nameof(this.CurrentConnections));
         };
@@ -81,7 +80,7 @@ internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     public IDictionary<ushort, byte[]> ConnectInfos { get; }
 
     /// <inheritdoc/>
-    public ServerList ServerList { get; }
+    ServerList IConnectServer.ServerList => _serverList;
 
     /// <inheritdoc cref="IConnectServer"/>
     public IConnectServerSettings Settings { get; }
@@ -92,7 +91,7 @@ internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     /// <summary>
     /// Gets the client listener.
     /// </summary>
-    public ClientListener ClientListener { get; }
+    internal ClientListener ClientListener { get; }
 
     /// <summary>
     /// Gets the maximum allowed connections.
@@ -104,13 +103,13 @@ internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     /// </summary>
     public int CurrentConnections => this.ClientListener.Clients.Count;
 
-    /// <inheritdoc />
-    public ICollection<(ushort, IPEndPoint)> GameServerEndPoints => this.ServerList.Servers.Select(s => (s.ServerId, s.EndPoint)).ToList();
+    ///// <inheritdoc />
+    ////public ICollection<(ushort, IPEndPoint)> GameServerEndPoints => this.ServerList.Servers.Select(s => (s.ServerId, s.EndPoint)).ToList();
 
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        // this.Start();
+        this.Start();
         return Task.CompletedTask;
     }
 
@@ -124,6 +123,11 @@ internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     /// <inheritdoc/>
     public void Start()
     {
+        if (this.ServerState != ServerState.Stopped)
+        {
+            return;
+        }
+
         this._logger.LogInformation("Begin starting");
         var oldState = this.ServerState;
         this.ServerState = OpenMU.Interfaces.ServerState.Starting;
@@ -152,25 +156,28 @@ internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     }
 
     /// <inheritdoc/>
-    public void RegisterGameServer(IGameServerInfo gameServer, IPEndPoint publicEndPoint)
+    public void RegisterGameServer(ServerInfo gameServer, IPEndPoint publicEndPoint)
     {
         this._logger.LogInformation("GameServer {0} is registering with endpoint {1}", gameServer, publicEndPoint);
         try
         {
-            var serverListItem = new ServerListItem(this.ServerList)
+            if (this.ConnectInfos.ContainsKey(gameServer.Id))
+            {
+                this._logger.LogInformation("GameServer {0} was already registered and needs to be removed before...", gameServer);
+                this.UnregisterGameServer(gameServer.Id);
+            }
+
+            var serverListItem = new ServerListItem(this._serverList)
             {
                 ServerId = gameServer.Id,
                 EndPoint = publicEndPoint,
-                ServerLoad = (byte)(gameServer.OnlinePlayerCount * 100f / gameServer.MaximumPlayers),
+                ServerLoad = (byte)(gameServer.CurrentConnections * 100f / gameServer.MaximumConnections),
+                MaximumConnections = gameServer.MaximumConnections,
             };
-            if (gameServer is INotifyPropertyChanged notifier)
-            {
-                notifier.PropertyChanged += this.HandleServerPropertyChanged;
-            }
 
             this.ConnectInfos.Add(serverListItem.ServerId, serverListItem.ConnectInfo);
-            this.ServerList.Servers.Add(serverListItem);
-            this.ServerList.InvalidateCache();
+            this._serverList.Servers.Add(serverListItem);
+            this._serverList.InvalidateCache();
         }
         catch (Exception ex)
         {
@@ -182,23 +189,30 @@ internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     }
 
     /// <inheritdoc/>
-    public void UnregisterGameServer(IGameServerInfo gameServer)
+    public void UnregisterGameServer(ushort gameServerId)
     {
-        this._logger.LogInformation("GameServer {0} is unregistering", gameServer);
-        var serverListItem = this.ServerList.Servers.FirstOrDefault(s => s.ServerId == gameServer.Id);
+        this._logger.LogInformation("GameServer {0} is unregistering", gameServerId);
+        var serverListItem = this._serverList.Servers.FirstOrDefault(s => s.ServerId == gameServerId);
         if (serverListItem != null)
         {
             this.ConnectInfos.Remove(serverListItem.ServerId);
-            this.ServerList.Servers.Remove(serverListItem);
-            this.ServerList.InvalidateCache();
+            this._serverList.Servers.Remove(serverListItem);
+            this._serverList.InvalidateCache();
         }
 
-        if (gameServer is INotifyPropertyChanged notifier)
+        this._logger.LogInformation("GameServer {0} has unregistered", gameServerId);
+    }
+
+    /// <inheritdoc />
+    public void CurrentConnectionsChanged(ushort serverId, int currentConnections)
+    {
+        var serverListItem = this._serverList.Servers.FirstOrDefault(s => s.ServerId == serverId);
+        if (serverListItem is null)
         {
-            notifier.PropertyChanged -= this.HandleServerPropertyChanged;
+            return;
         }
 
-        this._logger.LogInformation("GameServer {0} has unregistered", gameServer);
+        serverListItem.ServerLoad = (byte)(currentConnections * 100f / serverListItem.MaximumConnections);
     }
 
     private void CreatePlugins()
@@ -209,27 +223,6 @@ internal class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
         this.ClientListener.ClientSocketAcceptPlugins.Add(clientCountPlugin);
         this.ClientListener.ClientSocketDisconnectPlugins.Add(clientCountPlugin);
         this._logger.LogDebug("Finished creating plugins");
-    }
-
-    private void HandleServerPropertyChanged(object? sender, PropertyChangedEventArgs args)
-    {
-        if (args.PropertyName != nameof(IGameServerInfo.OnlinePlayerCount))
-        {
-            return;
-        }
-
-        if (sender is not IGameServerInfo server)
-        {
-            return;
-        }
-
-        var serverListItem = this.ServerList.Servers.FirstOrDefault(s => s.ServerId == server.Id);
-        if (serverListItem is null)
-        {
-            return;
-        }
-
-        serverListItem.ServerLoad = (byte)(server.OnlinePlayerCount * 100f / server.MaximumPlayers);
     }
 
     /// <summary>

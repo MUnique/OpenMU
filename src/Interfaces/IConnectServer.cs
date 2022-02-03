@@ -12,5 +12,5 @@ public interface IConnectServer : IManageableServer, IGameServerStateObserver
     /// <summary>
     /// Gets the settings.
     /// </summary>
-    IConnectServerSettings Settings { get; }
+    // IConnectServerSettings Settings { get; }
 }

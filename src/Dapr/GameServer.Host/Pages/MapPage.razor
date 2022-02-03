@@ -1,0 +1,25 @@
+﻿@page "/map/{mapId:int}"
+
+@using MUnique.OpenMU.Web.Map.Components
+@using MUnique.OpenMU.Web.Map
+
+@if (this.GameServer is not null)
+{
+    <Map ServerId="@GameServer.Id" MapId="@MapId"></Map>
+}
+
+@code {
+    internal const string LiveMapRoute = "map/";
+
+    /// <summary>
+    /// Gets or sets the server id on which the map is hosted.
+    /// </summary>
+    [Inject]
+    public IObservableGameServer? GameServer { get; set; }
+
+    /// <summary>
+    /// Gets or sets the map id.
+    /// </summary>
+    [Parameter]
+    public int MapId { get; set; }
+}

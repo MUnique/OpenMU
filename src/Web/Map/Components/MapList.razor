@@ -1,0 +1,86 @@
+﻿@using System.ComponentModel
+@using Microsoft.Extensions.Logging
+@using MUnique.OpenMU.Interfaces
+
+@implements IDisposable
+@inject IJSRuntime _jsRuntime;
+@inject ILogger<MapList> _logger;
+
+@if (this.Maps == null)
+{
+    <span>Initializing...</span>
+}
+else if (Maps.Count == 0)
+{
+    <span>No game maps hosted. They are created as soon as a player enters a map.</span>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <td class="col-sm-10">Map Name</td>
+                <td class="col-sm-1">Players</td>
+                <td>Spectate</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var map in this.Maps)
+            {
+                <tr>
+                    <td>@map.MapName</td>
+                    <td>@map.PlayerCount</td>
+                    <td>
+                        <NavLink href="@($"{this.LiveMapRoute}{map.MapNumber}")">
+                            <span class="oi oi-map" aria-hidden="true"></span>
+                        </NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the game server of the maps which are shown in this component.
+    /// </summary>
+    [Parameter]
+    public IObservableGameServer GameServer { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the route to the live map, where the map id just has to be appended.
+    /// </summary>
+    [CascadingParameter]
+    public string LiveMapRoute { get; set; } = string.Empty;
+
+    private IList<IGameMapInfo>? Maps => this.GameServer?.Maps;
+
+    /// <inheritdoc />
+    public void Dispose() => this.GameServer.PropertyChanged -= this.OnServerInfoChanged;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.GameServer.PropertyChanged += this.OnServerInfoChanged;
+    }
+
+    private async void OnServerInfoChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        try
+        {
+            if (e.PropertyName != nameof(IObservableGameServer.Maps))
+            {
+                return;
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogDebug(ex, "Error occurred in handling ServerInfo.PropertyChanged");
+        }
+    }
+}

@@ -37,6 +37,11 @@ public interface IGameServerContext : IGameContext
     IFriendServer FriendServer { get; }
 
     /// <summary>
+    /// Gets the message publisher.
+    /// </summary>
+    IEventPublisher EventPublisher { get; }
+
+    /// <summary>
     /// Gets the server configuration.
     /// </summary>
     GameServerConfiguration ServerConfiguration { get; }

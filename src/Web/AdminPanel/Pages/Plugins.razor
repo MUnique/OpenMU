@@ -1,0 +1,74 @@
+﻿@page "/plugins"
+@using MUnique.OpenMU.Web.AdminPanel.Models;
+@using MUnique.OpenMU.Web.AdminPanel.Services
+
+@inject PlugInController _plugInController;
+
+<h1>Plugins</h1>
+
+<div>
+    <DataTable TItem=@PlugInConfigurationViewItem>
+        <TableHeader>
+            <th class="col-1">Extension Point</th>
+            <th class="col-1">Plugin Name</th>
+            <th class="col-1">Plugin Type</th>
+            <th class="col-1">Action</th>
+        </TableHeader>
+        <FilterHeader>
+            <th><PlugInExtensionPointSelection SelectedPointId="@this._plugInController.PointFilter" ExtensionPoints="@this._plugInController.ExtensionPoints" OnSelectionChanged="@this.OnPlugInPointSelected" /></th>
+            <th><input type="search" placeholder="Search" @bind="@this._plugInController.NameFilter" @bind:event="oninput"/></th>
+            <th><input type="search" placeholder="Search" @bind="@this._plugInController.TypeFilter" @bind:event="oninput"/></th>
+            <th></th>
+        </FilterHeader>
+        <ItemTemplate Context="item">
+            <td title=@item.PlugInPointDescription>@item.PlugInPointName</td>
+            <td title=@item.PlugInDescription>
+                <MarkedText Marked=@this._plugInController.NameFilter Text=@item.PlugInName />
+            </td>
+            <td title=@item.TypeId>
+                <MarkedText Marked=@this._plugInController.TypeFilter Text=@item.TypeName />
+            </td>
+            <td>
+                @if (item.IsActive)
+                {
+                    <Button class="btn-warning" @onclick="() => this._plugInController.Deactivate(item)">Deactivate</Button>
+                }
+                else
+                {
+                    <Button class="btn-success" @onclick="() => this._plugInController.Activate(item)">Activate</Button>
+                }
+
+                @if (item.ConfigurationType is { })
+                {
+                    <Button class="btn-secondary" @onclick="() => this._plugInController.ShowPlugInConfig(item)"><span class="oi oi-cog" aria-hidden="true"></span></Button>
+                }
+            </td>
+        </ItemTemplate>
+        <TableFooter>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </TableFooter>
+    </DataTable>
+</div>
+
+@code {
+    
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this._plugInController.DataChanged += (s, e) => this.StateHasChanged();
+    }
+
+    private void OnPlugInPointSelected(ChangeEventArgs args)
+    {
+        if (args.Value is string guidString
+            && Guid.TryParse(guidString, out var result))
+        {
+            this._plugInController.PointFilter = result;
+        }
+    }
+}

@@ -25,7 +25,7 @@ public class GuildRequestAction
             return;
         }
 
-        if (player.GuildStatus != null)
+        if (player.GuildStatus is not null)
         {
             player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
             return;

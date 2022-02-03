@@ -30,6 +30,7 @@ public sealed class GameServerContainer : IHostedService, IDisposable
     private readonly IIpAddressResolver _ipResolver;
     private readonly PlugInManager _plugInManager;
     private readonly IDictionary<int, IGameServer> _gameServers;
+    private readonly IEventPublisher _eventPublisher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerContainer" /> class.
@@ -68,6 +69,7 @@ public sealed class GameServerContainer : IHostedService, IDisposable
         this._plugInManager = plugInManager;
 
         this._logger = this._loggerFactory.CreateLogger<GameServerContainer>();
+        this._eventPublisher = new InMemoryEventPublisher(this._gameServers, this._friendServer, this._guildServer);
     }
 
     /// <inheritdoc />
@@ -77,10 +79,10 @@ public sealed class GameServerContainer : IHostedService, IDisposable
         foreach (var gameServerDefinition in persistenceContext.Get<GameServerDefinition>())
         {
             using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
-            var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager);
+            var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager);
             foreach (var endpoint in gameServerDefinition.Endpoints)
             {
-                gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.ServerInfo, gameServer.Context, this._connectServerContainer.GetObserver(endpoint.Client!), this._ipResolver, this._loggerFactory));
+                gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.CreateServerInfo(), gameServer.Context, this._connectServerContainer.GetObserver(endpoint.Client!), this._ipResolver, this._loggerFactory));
             }
 
             this._servers.Add(gameServer);

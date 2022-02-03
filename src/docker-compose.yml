@@ -1,0 +1,251 @@
+version: '3.4'
+
+volumes:
+  dbdata:
+
+services:
+  dapr-placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+
+  #redis-pub: 
+  #  image: redis
+  #  restart: always
+  #  environment:
+  #    ALLOW_EMPTY_PASSWORD: "yes"
+  #  ports:
+  #    - "50100:50001"
+
+  pubsub:
+    image: rabbitmq:3-management-alpine
+    restart: always
+    ports:
+      - "5672"
+      - "50100:50001"
+
+  database:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: openmu
+      POSTGRES_USER: postgres
+    ports:
+      - "5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data #store data on volume
+
+  zipkin:
+    image: openzipkin/zipkin
+    restart: always
+    ports:
+      - "9411:9411"
+
+  gameServer1:
+    image: ${DOCKER_REGISTRY-}openmu-gs
+    build:
+      context: .
+      dockerfile: Dapr/GameServer.Host/Dockerfile
+    ports:
+      - "80"
+      - "50001:50001"
+      - "55901:55901"
+    environment:
+      DB_HOST: database
+      GS_ID: 0
+    depends_on:
+      - connectServer-dapr
+      - loginServer-dapr
+      - friendServer-dapr
+      - pubsub
+      - zipkin
+      - database
+
+  gameServer1-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "gameServer1", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - gameServer1
+    network_mode: "service:gameServer1"
+    volumes:
+      - "./Dapr/components/:/components"
+
+  connectServer:
+    image: ${DOCKER_REGISTRY-}openmu-cs
+    build:
+      context: .
+      dockerfile: Dapr/ConnectServer.Host/Dockerfile
+    ports:
+      - "50010:50001"
+      - "44405:44405"
+    environment:
+      DB_HOST: database
+    depends_on:
+      - pubsub
+      - zipkin
+      - database
+
+  connectServer-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "connectServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - connectServer
+    network_mode: "service:connectServer"
+    volumes:
+      - "./Dapr/components/:/components"
+
+  loginServer:
+    image: ${DOCKER_REGISTRY-}openmu-login
+    build:
+      context: .
+      dockerfile: Dapr/LoginServer.Host/Dockerfile
+    ports:
+      - "50011:50001"
+    depends_on:
+      - zipkin
+      - database
+
+  loginServer-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "loginServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - loginServer
+    network_mode: "service:loginServer"
+    volumes:
+      - "./Dapr/components/:/components"
+
+  friendServer:
+    image: ${DOCKER_REGISTRY-}openmu-friends
+    build:
+      context: .
+      dockerfile: Dapr/FriendServer.Host/Dockerfile
+    environment:
+      DB_HOST: database
+    ports:
+      - "50012:50001"
+    depends_on:
+      - chatServer-dapr
+      - database
+      - zipkin
+
+  friendServer-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "friendServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - friendServer
+    network_mode: "service:friendServer"
+    volumes:
+      - "./Dapr/components/:/components"
+  
+  guildServer:
+    image: ${DOCKER_REGISTRY-}openmu-guilds
+    build:
+      context: .
+      dockerfile: Dapr/GuildServer.Host/Dockerfile
+    environment:
+      DB_HOST: database
+    ports:
+      - "50013:50001"
+    depends_on:
+      - database
+      - zipkin
+
+  guildServer-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "guildServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - guildServer
+    network_mode: "service:guildServer"
+    volumes:
+      - "./Dapr/components/:/components"
+
+  chatServer:
+    image: ${DOCKER_REGISTRY-}openmu-chat
+    build:
+      context: .
+      dockerfile: Dapr/ChatServer.Host/Dockerfile
+    environment:
+      DB_HOST: database
+    ports:
+      - "55980:55980"
+      - "50014:50001"
+    depends_on:
+      - database
+      - zipkin
+
+  chatServer-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "chatServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - chatServer
+    network_mode: "service:chatServer"
+    volumes:
+      - "./Dapr/components/:/components"
+  
+  setup:
+    image: ${DOCKER_REGISTRY-}openmu-setup
+    build:
+      context: .
+      dockerfile: Setup/MUnique.OpenMU.Setup/Dockerfile
+    ports:
+      - "80"
+    environment:
+      ASPNETCORE_URLS: http://+:80
+      DB_HOST: database
+    depends_on:
+      - zipkin
+      - database
+
+  setup-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "setup", "-app-port", "80",
+            "-components-path", "/components",
+            "-config", "/components/config.yaml",
+            "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - setup
+    network_mode: "service:setup"
+
+  adminPanel:
+    image: ${DOCKER_REGISTRY-}openmu-admin
+    build:
+      context: .
+      dockerfile: Dapr/AdminPanel.Host/Dockerfile
+    depends_on:
+      - database
+    ports:
+      - "80"
+    environment:
+      ASPNETCORE_URLS: http://+:80
+      DB_HOST: database
+
+  adminPanel-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "adminPanel", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+
+    depends_on:
+      - adminPanel
+    network_mode: "service:adminPanel"
+    volumes:
+      - "./Dapr/components/:/components"

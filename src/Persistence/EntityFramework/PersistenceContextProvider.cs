@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
@@ -14,14 +16,17 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 public class PersistenceContextProvider : IPersistenceContextProvider
 {
     private readonly ILoggerFactory _loggerFactory;
+    private readonly IConfigurationChangePublisher? _changePublisher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PersistenceContextProvider" /> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
-    public PersistenceContextProvider(ILoggerFactory loggerFactory)
+    /// <param name="changePublisher">The change publisher.</param>
+    public PersistenceContextProvider(ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
     {
         this._loggerFactory = loggerFactory;
+        this._changePublisher = changePublisher;
         this.CachingRepositoryManager = new CachingRepositoryManager(loggerFactory);
         this.CachingRepositoryManager.RegisterRepositories();
     }
@@ -56,6 +61,25 @@ public class PersistenceContextProvider : IPersistenceContextProvider
     }
 
     /// <summary>
+    /// Waits until all database updates are applied.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
+    public async Task WaitForUpdatedDatabase(CancellationToken cancellationToken = default)
+    {
+        while (!this.DatabaseExists()
+               || !this.IsDatabaseUpToDate())
+        {
+            await Task.Delay(3000, cancellationToken);
+        }
+
+        await using var installationContext = new EntityDataContext();
+        while (!await installationContext.Set<GameConfiguration>().AnyAsync(cancellationToken))
+        {
+            await Task.Delay(3000, cancellationToken);
+        }
+    }
+
+    /// <summary>
     /// Determines if the database exists already, by checking if any migration has been applied.
     /// </summary>
     /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
@@ -66,12 +90,27 @@ public class PersistenceContextProvider : IPersistenceContextProvider
     }
 
     /// <summary>
+    /// Determines whether this instance can connect to the database.
+    /// </summary>
+    /// <returns>
+    ///   <c>true</c> if this instance can connect to the database; otherwise, <c>false</c>.
+    /// </returns>
+    public bool CanConnectToDatabase()
+    {
+        using var installationContext = new EntityDataContext();
+        return installationContext.Database.CanConnect();
+    }
+
+    /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
     public void ReCreateDatabase()
     {
-        using var installationContext = new EntityDataContext();
-        installationContext.Database.EnsureDeleted();
+        using (var installationContext = new EntityDataContext())
+        {
+            installationContext.Database.EnsureDeleted();
+        }
+
         this.ApplyAllPendingUpdates();
     }
 
@@ -120,6 +159,6 @@ public class PersistenceContextProvider : IPersistenceContextProvider
     /// <inheritdoc />
     public IContext CreateNewTypedContext<T>()
     {
-        return new EntityFrameworkContext(new TypedContext<T>(), this._loggerFactory);
+        return new EntityFrameworkContext(new TypedContext<T>(), this._loggerFactory, this._changePublisher);
     }
 }

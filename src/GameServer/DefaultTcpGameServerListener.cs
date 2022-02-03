@@ -24,7 +24,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
     private readonly ILogger<DefaultTcpGameServerListener> _logger;
 
     private readonly GameServerEndpoint _endPoint;
-    private readonly IGameServerInfo _gameServerInfo;
+    private readonly ServerInfo _gameServerInfo;
 
     private readonly IGameServerContext _gameContext;
 
@@ -42,7 +42,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
     /// <param name="stateObserver">The connect server.</param>
     /// <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public DefaultTcpGameServerListener(GameServerEndpoint endPoint, IGameServerInfo gameServerInfo, IGameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver, ILoggerFactory loggerFactory)
+    public DefaultTcpGameServerListener(GameServerEndpoint endPoint, ServerInfo gameServerInfo, IGameServerContext gameContext, IGameServerStateObserver stateObserver, IIpAddressResolver addressResolver, ILoggerFactory loggerFactory)
     {
         this._endPoint = endPoint;
         this._gameServerInfo = gameServerInfo;
@@ -96,7 +96,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
     public void Stop()
     {
         var port = this._endPoint.NetworkPort;
-        this._stateObserver.UnregisterGameServer(this._gameServerInfo);
+        this._stateObserver.UnregisterGameServer(this._gameServerInfo.Id);
         this._logger.LogInformation($"Stopping listener on port {port}.");
         if (this._listener is null || !this._listener.IsBound)
         {

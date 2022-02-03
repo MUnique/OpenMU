@@ -12,7 +12,7 @@ using MUnique.OpenMU.Persistence.Initialization.Version075.TestAccounts;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Data initialization plugin for Version 0.75.
+/// Data initialization plugin for Version 0.95d.
 /// </summary>
 [Guid("D24791DC-5808-42A9-AFEA-7C398C0D8C84")]
 [PlugIn("Version 0.95d Initialization", "Provides initial data for Version 0.95d")]
@@ -32,6 +32,9 @@ public class DataInitialization : DataInitializationBase
     /// Gets the identifier, by which the initialization is selected.
     /// </summary>
     public static string Id => "0.95d";
+
+    /// <inheritdoc />
+    public override string Caption => "0.95d";
 
     /// <inheritdoc />
     public override string Key => Id;

@@ -1,0 +1,57 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "connectServer": "StartDebugging",
+        "connectServer-dapr": "StartWithoutDebugging",
+        "dapr-placement": "StartWithoutDebugging",
+        "database": "StartWithoutDebugging",
+        "gameServer1": "StartDebugging",
+        "gameServer1-dapr": "StartWithoutDebugging",
+        "pubsub": "StartWithoutDebugging",
+        "setup": "DoNotStart",
+        "setup-dapr": "DoNotStart",
+        "friendServer": "StartDebugging",
+        "friendServer-dapr": "StartWithoutDebugging",
+        "loginServer": "StartDebugging",
+        "loginServer-dapr": "StartWithoutDebugging",
+        "guildServer": "StartDebugging",
+        "guildServer-dapr": "StartWithoutDebugging",
+        "chatServer": "StartDebugging",
+        "chatServer-dapr": "StartWithoutDebugging",
+        "adminPanel": "StartDebugging",
+        "adminPanel-dapr": "StartWithoutDebugging"
+      }
+    },
+    "Setup": {
+      "commandName": "DockerCompose",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "setup",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "connectServer": "DoNotStart",
+        "connectServer-dapr": "DoNotStart",
+        "dapr-placement": "StartWithoutDebugging",
+        "database": "StartWithoutDebugging",
+        "gameServer1": "DoNotStart",
+        "gameServer1-dapr": "DoNotStart",
+        "pubsub": "DoNotStart",
+        "setup": "StartDebugging",
+        "setup-dapr": "StartWithoutDebugging",
+        "friendServer": "DoNotStart",
+        "friendServer-dapr": "DoNotStart",
+        "loginServer": "DoNotStart",
+        "loginServer-dapr": "DoNotStart",
+        "guildServer": "DoNotStart",
+        "guildServer-dapr": "DoNotStart",
+        "chatServer": "DoNotStart",
+        "chatServer-dapr": "DoNotStart",
+        "adminPanel": "DoNotStart",
+        "adminPanel-dapr": "DoNotStart"
+      }
+    }
+  }
+}

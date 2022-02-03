@@ -1,0 +1,30 @@
+﻿@page "/"
+
+<PageTitle>OpenMU Setup</PageTitle>
+
+@if (this.ShowInstall)
+{
+    <Install InstallationFinished="() => this.ShowInstall = false" />
+}
+else if (!this.SetupService.CanConnectToDatabase)
+{
+    <p>Status: <span class="badge bg-danger">Can't connect to the database.</span></p>
+}
+else if (!this.SetupService.IsInstalled)
+{
+    <p>Status: <span class="badge bg-warning text-dark">Not installed</span></p>
+
+    <button class="btn btn-primary" @onclick="this.OnInstallClick">Install</button>
+}
+else if (this.SetupService.IsUpdateRequired)
+{
+    <p>Status: <span class="badge bg-warning text-dark">Update required</span></p>
+
+    <button class="btn btn-primary" @onclick="this.OnUpdateClickAsync">Update</button>
+}
+else
+{
+    <p>Status: <span class="badge bg-success">Up-to-date</span></p>
+
+    <button class="btn bg-warning text-dark" @onclick="this.OnReInstallClick">Re-install</button>
+}

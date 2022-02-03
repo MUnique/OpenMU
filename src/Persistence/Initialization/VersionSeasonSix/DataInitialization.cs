@@ -36,6 +36,9 @@ public class DataInitialization : DataInitializationBase
     /// <inheritdoc />
     public override string Key => Id;
 
+    /// <inheritdoc />
+    public override string Caption => "1.04d - Season 6 Episode 3";
+
     /// <inheritdoc/>
     protected override IInitializer TestAccountsInitializer => new TestAccountsInitialization(this.Context, this.GameConfiguration);
 

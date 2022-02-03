@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Network;
 
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
@@ -17,9 +19,15 @@ using Pipelines.Sockets.Unofficial;
 /// <seealso cref="MUnique.OpenMU.Network.PacketPipeReaderBase" />
 public sealed class Connection : PacketPipeReaderBase, IConnection
 {
+    private static readonly ActivitySource ActivitySource = new(typeof(Connection).FullName ?? nameof(Connection));
+    private static readonly Meter ConnectionMeter = new Meter("Connection");
+    private static readonly Counter<long> IncomingBytesCounter = ConnectionMeter.CreateCounter<long>("IncomingBytes", "bytes");
+    private static readonly Counter<long> OutgoingBytesCounter = ConnectionMeter.CreateCounter<long>("OutgoingBytes", "bytes");
+
     private readonly IPipelinedEncryptor? _encryptionPipe;
     private readonly ILogger<Connection> _logger;
     private readonly EndPoint? _remoteEndPoint;
+
     private IDuplexPipe? _duplexPipe;
     private bool _disconnected;
     private PipeWriter? _outputWriter;
@@ -39,8 +47,6 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this.Source = decryptionPipe?.Reader ?? this._duplexPipe!.Input;
         this._remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
         this.OutputLock = new SemaphoreSlim(1);
-
-        _ = Task.Run(this.FlushLoopAsync);
     }
 
     /// <inheritdoc />
@@ -56,7 +62,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public EndPoint? EndPoint => this._remoteEndPoint;
 
     /// <inheritdoc />
-    public PipeWriter Output => this._outputWriter ??= this._encryptionPipe?.Writer ?? this._duplexPipe!.Output;
+    public PipeWriter Output => this._outputWriter ??= new AutoFlushPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, this._logger, OutgoingBytesCounter);
 
     /// <inheritdoc />
     public SemaphoreSlim OutputLock { get; }
@@ -138,38 +144,21 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// <returns>The async task.</returns>
     protected override Task ReadPacket(ReadOnlySequence<byte> packet)
     {
-        this.PacketReceived?.Invoke(this, packet);
-        return Task.CompletedTask;
-    }
+        IncomingBytesCounter.Add(packet.Length);
 
-    private async Task FlushLoopAsync()
-    {
-        while (!this._disconnected)
+        using var activity = ActivitySource.CreateActivity("Read Packet", ActivityKind.Server);
+        activity?.SetTag("remoteEndPoint", this._remoteEndPoint)
+                .SetTag("rawPacket", packet)
+                .Start();
+        try
         {
-            try
-            {
-                if ((!this.Output.CanGetUnflushedBytes || this.Output.UnflushedBytes > 0)
-                    && await this.OutputLock.WaitAsync(10).ConfigureAwait(false))
-                {
-                    try
-                    {
-                        if (!this.Output.CanGetUnflushedBytes || this.Output.UnflushedBytes > 0)
-                        {
-                            await this.Output.FlushAsync().ConfigureAwait(false);
-                        }
-                    }
-                    finally
-                    {
-                        this.OutputLock.Release();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                this._logger.LogError(ex, "Unexpected error in flush loop");
-            }
-
-            await Task.Delay(10).ConfigureAwait(false);
+            this.PacketReceived?.Invoke(this, packet);
         }
+        finally
+        {
+            activity?.Stop();
+        }
+
+        return Task.CompletedTask;
     }
 }

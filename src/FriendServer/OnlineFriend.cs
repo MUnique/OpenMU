@@ -12,7 +12,7 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFriend>, IDisposable
 {
-    private readonly IGameServer _gameServer;
+    private readonly IFriendNotifier _gameServer;
 
     /// <summary>
     /// The subscribers which want to know state changes of this instance.
@@ -36,18 +36,13 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     /// </summary>
     /// <param name="gameServer">The game server.</param>
     /// <param name="playerName">Name of the player.</param>
-    public OnlineFriend(IGameServer gameServer, string playerName)
+    public OnlineFriend(IFriendNotifier gameServer, string playerName)
     {
         this._gameServer = gameServer;
         this.PlayerName = playerName;
         this._subscribers = new HashSet<IObserver<OnlineFriend>>();
         this._subscriptions = new List<Unsubscriber>();
     }
-
-    /// <summary>
-    /// Gets the game server this instance is online.
-    /// </summary>
-    public IGameServer GameServer => this._gameServer;
 
     /// <summary>
     /// Gets the name of the player.
@@ -58,6 +53,11 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     /// Gets or sets the server identifier.
     /// </summary>
     public int ServerId { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating this friend is invisible or offline.
+    /// </summary>
+    public bool IsInvisibleOrOffline => this.ServerId == FriendServer.InvisibleServerId || this.ServerId == FriendServer.OfflineServerId;
 
     /// <summary>
     /// Gets the subscribers which want to know when the online state of the friend changes.
@@ -118,7 +118,7 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     public void OnNext(OnlineFriend value)
     {
         // Send update to this player
-        this._gameServer.FriendOnlineStateChanged(this.PlayerName, value.PlayerName, value.ServerId == FriendServer.InvisibleServerId ? FriendServer.OfflineServerId : value.ServerId);
+        this._gameServer.FriendOnlineStateChanged(this.ServerId, this.PlayerName, value.PlayerName, value.ServerId == FriendServer.InvisibleServerId ? FriendServer.OfflineServerId : value.ServerId);
     }
 
     /// <summary>
@@ -169,7 +169,7 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     public void RemoveSubscriber(OnlineFriend friend)
     {
         this.Unsubscribe(friend);
-        friend.GameServer.FriendOnlineStateChanged(friend.PlayerName, this.PlayerName, FriendServer.OfflineServerId);
+        this._gameServer.FriendOnlineStateChanged(friend.ServerId, friend.PlayerName, this.PlayerName, FriendServer.OfflineServerId);
     }
 
     /// <inheritdoc/>

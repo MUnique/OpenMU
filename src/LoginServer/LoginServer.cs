@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.LoginServer;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// The login server which keeps track of connected accounts.
+/// The login server which keeps track of connected accounts in-memory.
 /// </summary>
 public class LoginServer : ILoginServer
 {
@@ -16,19 +16,19 @@ public class LoginServer : ILoginServer
     private readonly object _syncRoot = new ();
 
     /// <inheritdoc/>
-    public bool TryLogin(string accountName, byte serverId)
+    public Task<bool> TryLogin(string accountName, byte serverId)
     {
         lock (this._syncRoot)
         {
             if (this._connectedAccounts.ContainsKey(accountName))
             {
-                return false;
+                return Task.FromResult(false);
             }
 
             this._connectedAccounts.Add(accountName, serverId);
         }
 
-        return true;
+        return Task.FromResult(true);
     }
 
     /// <inheritdoc/>

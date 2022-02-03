@@ -36,7 +36,7 @@ public class GuildActionTest : GuildTestBase
         this._guildMasterPlayer = TestHelper.CreatePlayer(gameServerContext);
         this._guildMasterPlayer.SelectedCharacter!.Id = this.GuildMaster.Id;
         this._guildMasterPlayer.SelectedCharacter.Name = this.GuildMaster.Name;
-        this._guildMasterPlayer.GuildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, 0);
+        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, 0);
         this._guildMasterPlayer.Attributes![Stats.Level] = 100;
         this._player = TestHelper.CreatePlayer(gameServerContext);
         this._player.CurrentMap!.Add(this._guildMasterPlayer);
@@ -135,9 +135,11 @@ public class GuildActionTest : GuildTestBase
         var gameConfiguration = new GameConfiguration();
         gameConfiguration.Maps.Add(new GameMapDefinition());
         var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance);
+        
         var gameServer = new GameServerContext(
             new GameServerDefinition { GameConfiguration = gameConfiguration, ServerConfiguration = new DataModel.Configuration.GameServerConfiguration() },
             this.GuildServer,
+            new Mock<IEventPublisher>().Object,
             new Mock<ILoginServer>().Object,
             new Mock<IFriendServer>().Object,
             new InMemoryPersistenceContextProvider(),

@@ -47,25 +47,24 @@ public class ConnectServerContainer : IHostedService, IEnumerable<IConnectServer
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
         foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
         {
-            var clientVersion = new ClientVersion(connectServerDefinition.Client!.Season, connectServerDefinition.Client.Episode, connectServerDefinition.Client.Language);
-            var connectServer = this._connectServerFactory.CreateConnectServer(connectServerDefinition, clientVersion, connectServerDefinition.GetId());
+            var connectServer = this._connectServerFactory.CreateConnectServer(connectServerDefinition);
             this._servers.Add(connectServer);
             this._connectServers.Add(connectServer);
-
-            if (this._observers.TryGetValue(connectServerDefinition.Client, out var observer))
+            var client = connectServerDefinition.Client!;
+            if (this._observers.TryGetValue(client, out var observer))
             {
-                this._logger.LogWarning($"Multiple connect servers for game client '{connectServerDefinition.Client.Description}' configured. Only one per client makes sense.");
+                this._logger.LogWarning($"Multiple connect servers for game client '{client.Description}' configured. Only one per client makes sense.");
                 if (observer is not MulticastConnectionServerStateObserver)
                 {
                     var multicastObserver = new MulticastConnectionServerStateObserver();
                     multicastObserver.AddObserver(observer);
                     multicastObserver.AddObserver(connectServer);
-                    this._observers[connectServerDefinition.Client] = multicastObserver;
+                    this._observers[client] = multicastObserver;
                 }
             }
             else
             {
-                this._observers[connectServerDefinition.Client] = connectServer;
+                this._observers[client] = connectServer;
             }
         }
 

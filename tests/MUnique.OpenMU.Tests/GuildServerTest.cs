@@ -13,30 +13,17 @@ using MUnique.OpenMU.Interfaces;
 public class GuildServerTest : GuildTestBase
 {
     /// <summary>
-    /// Tests if guild chat messages get forwarded to all servers.
-    /// </summary>
-    [Test]
-    public void GuildChatForwarding()
-    {
-        const string sender = "Sender";
-        const string message = "The Message";
-
-        this.GuildServer.GuildMessage(1, sender, message);
-        this.GameServer0.Verify(g => g.GuildChatMessage(1, sender, message), Times.Once);
-        this.GameServer1.Verify(g => g.GuildChatMessage(1, sender, message), Times.Once);
-    }
-
-    /// <summary>
     /// Tests if the entrance of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]
     public void GuildMemberEnterGame()
     {
         const byte serverId = 1;
-        var guildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-        var guildMaster = this.GuildServer.GetGuildList(guildStatus!.GuildId).First();
+        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
+        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
+        var guildMaster = this.GuildServer.GetGuildList(guildId).First();
         Assert.That(guildMaster.ServerId, Is.EqualTo(serverId));
-        Assert.That(guildStatus, Is.Not.Null);
+        this.GameServer1.Verify(g => g.AssignGuildToPlayer(this.GuildMaster.Name, It.Is<GuildMemberStatus>(s => s.GuildId == guildId && s.Position == GuildPosition.GuildMaster)));
     }
 
     /// <summary>
@@ -46,9 +33,10 @@ public class GuildServerTest : GuildTestBase
     public void LastGuildMemberLeaveGame()
     {
         const byte serverId = 1;
-        var guildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-        this.GuildServer.GuildMemberLeftGame(guildStatus!.GuildId, this.GuildMaster.Id, serverId);
-        var guildList = this.GuildServer.GetGuildList(guildStatus.GuildId); // guild id is invalid now
+        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
+        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
+        this.GuildServer.GuildMemberLeftGame(guildId, this.GuildMaster.Id, serverId);
+        var guildList = this.GuildServer.GetGuildList(guildId); // guild id is invalid now
         Assert.That(guildList, Is.Empty);
     }
 
@@ -60,11 +48,12 @@ public class GuildServerTest : GuildTestBase
     {
         const byte serverId = 1;
 
-        var guildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
+        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
+        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
 
-        this.GuildServer.CreateGuildMember(guildStatus!.GuildId, Guid.Empty, "TestMember", GuildPosition.NormalMember, serverId);
-        this.GuildServer.GuildMemberLeftGame(guildStatus.GuildId, this.GuildMaster.Id, serverId);
-        var guildMaster = this.GuildServer.GetGuildList(guildStatus.GuildId).First(m => m.PlayerPosition == GuildPosition.GuildMaster);
+        this.GuildServer.CreateGuildMember(guildId, Guid.Empty, "TestMember", GuildPosition.NormalMember, serverId);
+        this.GuildServer.GuildMemberLeftGame(guildId, this.GuildMaster.Id, serverId);
+        var guildMaster = this.GuildServer.GetGuildList(guildId).First(m => m.PlayerPosition == GuildPosition.GuildMaster);
         Assert.That(guildMaster.ServerId, Is.EqualTo(OpenMU.GuildServer.GuildServer.OfflineServerId));
     }
 
@@ -75,9 +64,10 @@ public class GuildServerTest : GuildTestBase
     public void GuildPlayerKickDeletesGuild()
     {
         const byte serverId = 1;
-        var guildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-        this.GuildServer.KickMember(guildStatus!.GuildId, this.GuildMaster.Name);
-        this.GameServer1.Verify(g => g.GuildDeleted(guildStatus.GuildId), Times.Once);
+        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
+        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
+        this.GuildServer.KickMember(guildId, this.GuildMaster.Name);
+        this.GameServer1.Verify(g => g.GuildDeleted(guildId), Times.Once);
     }
 
     /// <summary>
@@ -88,9 +78,10 @@ public class GuildServerTest : GuildTestBase
     {
         const byte serverId = 1;
         const string testMemberName = "TestMember";
-        var guildStatus = this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-        this.GuildServer.CreateGuildMember(guildStatus!.GuildId, Guid.Empty, testMemberName, GuildPosition.NormalMember, serverId);
-        this.GuildServer.KickMember(guildStatus.GuildId, testMemberName);
+        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
+        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
+        this.GuildServer.CreateGuildMember(guildId, Guid.Empty, testMemberName, GuildPosition.NormalMember, serverId);
+        this.GuildServer.KickMember(guildId, testMemberName);
         this.GameServer1.Verify(g => g.GuildPlayerKicked(testMemberName), Times.Once);
     }
 }
