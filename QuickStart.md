@@ -8,10 +8,11 @@ General requirements:
   * 44405 (connect server)
   * 55980 (chat server)
 
-* Knowledge or way to start a game client, connecting to the server (I wont
-    provide that, but there is a ClientLauncher project) :)
+* A game client (check our Discord FAQs)
+* Knowledge or way to start the game client, so that it connects to the server. Our Launcher will do that.
 
   * Launcher binaries: [MUnique.OpenMU.ClientLauncher.v0.4.0.zip](https://github.com/MUnique/OpenMU/releases/download/v0.4.0/MUnique.OpenMU.ClientLauncher.v0.4.0.zip)
+  * If your server and client runs on your local host, use any IP of 127.x.x.x, except 127.0.0.1, because this one is blocked by the client. For example, you could use 127.127.127.127
 
 This guide describes two ways of starting the server. Use Docker, if you just
 want to play around. If you want to develop or debug the server, choose the
