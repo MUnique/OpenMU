@@ -56,7 +56,7 @@ public class Startup
 
         services.AddBlazoredModal();
 
-        services.AddSingleton<ServerService>();
+        // TODO services.AddSingleton<ServerService>();
 
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);

@@ -1,7 +1,8 @@
 ﻿@using MUnique.OpenMU.Web.AdminPanel.Services
 @using MUnique.OpenMU.Interfaces
+@using System.ComponentModel
 
-@inject ServerService _serverService
+@implements IDisposable
 
 <tr class="info">
     <td colspan="5">
@@ -10,17 +11,41 @@
 </tr>
 
 @code {
-    private IList<IManageableServer>? _servers;
 
-    /// <inheritdoc />
-    protected override void OnInitialized()
+    [Parameter]
+    public IList<IManageableServer> Servers { get; set; } = null!;
+
+    
+    public void Dispose()
     {
-        base.OnInitialized();
-        _servers = this._serverService.Servers;
+        foreach (var server in this.Servers)
+        {
+            server.PropertyChanged -= this.OnServerPropertyChanged;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        foreach (var server in this.Servers)
+        {
+            server.PropertyChanged += this.OnServerPropertyChanged;
+        }
+    }
+
+
+    private void OnServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        this.InvokeAsync(() => this.StateHasChanged());
     }
 
     private int GetPlayerCount()
     {
-        return this._servers?.Where(s => s.Id < 0x10000).Sum(s => s.CurrentConnections) ?? 0;
+        return this.Servers?
+            .Where(s => s.Id < 0x10000
+                    && s.ServerState != ServerState.Timeout)
+            .Sum(s => s.CurrentConnections) ?? 0;
     }
+
+
 }

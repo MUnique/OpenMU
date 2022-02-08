@@ -16,35 +16,6 @@ public class GameServerController : ControllerBase
         this._gameServer = gameServer;
     }
 
-    /*
-    public Guid ConfigurationId { get; }
-    public string Description { get; }
-    public ServerType Type { get; }
-    public ServerState ServerState { get; }
-    public int MaximumConnections { get; }
-    public int CurrentConnections { get; }
-    */
-    //[HttpPost(nameof(IGameServer.Start))]
-    //public void Start()
-    //{
-    //    if (this._gameServer.ServerState == ServerState.Stopped)
-    //    {
-    //        this._gameServer.Start();
-    //    }
-    //}
-
-    //[HttpPost(nameof(IGameServer.Shutdown))]
-    //public void Shutdown()
-    //{
-    //    if (this._gameServer.ServerState == ServerState.Started)
-    //    {
-    //        this._gameServer.Shutdown();
-    //    }
-    //}
-
-    // public IGameServerInfo ServerInfo { get; }
-    
-
     [HttpPost(nameof(IGameServer.GuildChatMessage))]
     [Topic("pubsub", nameof(IGameServer.GuildChatMessage))]
     public void GuildChatMessage([FromBody] GuildMessageArguments data)
@@ -92,12 +63,6 @@ public class GameServerController : ControllerBase
         this._gameServer.InitializeMessenger(initializationData);
     }
 
-    //[HttpPost(nameof(IGameServer.IsPlayerOnline))]
-    //public bool IsPlayerOnline([FromBody] string playerName)
-    //{
-    //    return this._gameServer.IsPlayerOnline(playerName);
-    //}
-
     [HttpPost(nameof(IGameServer.SendGlobalMessage))]
     public void SendGlobalMessage([FromBody] MessageArguments data)
     {
@@ -133,16 +98,4 @@ public class GameServerController : ControllerBase
     {
         return this._gameServer.BanPlayer(playerName);
     }
-
-    //[HttpPost]
-    //public void RegisterMapObserver(ushort mapId, object worldObserver)
-    //{
-    //    throw new NotImplementedException();
-    //}
-
-    //[HttpPost("unregister-observer")]
-    //public void UnregisterMapObserver(ushort mapId, ushort worldObserverId)
-    //{
-    //    throw new NotImplementedException();
-    //}
 }

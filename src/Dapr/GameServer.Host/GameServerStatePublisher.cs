@@ -96,7 +96,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
         stopWatch.Start();
         var publicEndPointString = publicEndPoint.ToString();
         var arguments = new GameServerHeartbeatArguments(serverInfo, publicEndPointString, stopWatch.Elapsed);
-        
+
         while (!cancellationToken.IsCancellationRequested)
         {
             serverInfo.CurrentConnections = this._currentConnections;
@@ -108,7 +108,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
             }
             catch (Exception ex)
             {
-                this._logger.LogDebug(ex, "Error when publishing game server heartbeat");   
+                this._logger.LogDebug(ex, "Error when publishing game server heartbeat");
             }
 
             Thread.Sleep(5000);

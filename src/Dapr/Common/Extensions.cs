@@ -54,6 +54,24 @@ public static class Extensions
             (TTarget)s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<TActual>().First(predicate ?? (_ => true))!);
     }
 
+    public static IServiceCollection AddManageableServerRegistry(this IServiceCollection services)
+    {
+        services.AddSingleton<ManagableServerRegistry>()
+            .AddSingleton<IServerProvider>(s => s.GetService<ManagableServerRegistry>()!)
+            .AddControllers().AddApplicationPart(typeof(ServerStateController).Assembly);
+        return services;
+    }
+
+    public static IServiceCollection PublishManageableServer<TServer>(this IServiceCollection services)
+        where TServer : IManageableServer
+    {
+        services.AddSingleton<IManageableServer>(s => s.GetService<TServer>()!)
+            .AddHostedService<ManagableServerStatePublisher>()
+            .AddControllers().AddApplicationPart(typeof(ManageableServerController).Assembly);
+
+        return services;
+    }
+
     public static WebApplication BuildAndConfigure(this WebApplicationBuilder builder, bool addBlazor = false)
     {
         var app = builder.Build();

@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapr.Client" Version="1.5.0" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -33,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
   </ItemGroup>
 

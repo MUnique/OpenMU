@@ -53,6 +53,7 @@ services:
     environment:
       DB_HOST: database
       GS_ID: 0
+      APPID: gameServer1
     depends_on:
       - connectServer-dapr
       - loginServer-dapr
@@ -83,6 +84,7 @@ services:
       - "44405:44405"
     environment:
       DB_HOST: database
+      APPID: connectServer
     depends_on:
       - pubsub
       - zipkin
@@ -181,6 +183,7 @@ services:
       dockerfile: Dapr/ChatServer.Host/Dockerfile
     environment:
       DB_HOST: database
+      APPID: chatServer
     ports:
       - "55980:55980"
       - "50014:50001"

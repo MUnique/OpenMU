@@ -1,8 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-// Console.WriteLine("Hello, World!");
-
-using System.Net;
-using Microsoft.AspNetCore.Hosting;
+﻿using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -36,7 +32,9 @@ services.AddSingleton<GameServer>()
     .AddPeristenceProvider()
     .AddPlugInManager()
     .AddCustomIpResover(new IPAddress(0x7F7F7F7F)) // TODO: by config
-    .AddHostedService<GameServerHostedServiceWrapper>();
+    .AddHostedService<GameServerHostedServiceWrapper>()
+    .PublishManageableServer<IGameServer>();
+
 builder.AddMapApp();
 
 var app = builder.BuildAndConfigure(true);

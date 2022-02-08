@@ -20,6 +20,8 @@ services.AddSingleton<IChatServer, ChatServer>()
 
 services.AddHostedService(p => (ChatServer)p.GetService<IChatServer>()!);
 
+services.PublishManageableServer<IChatServer>();
+
 var app = builder.BuildAndConfigure();
 await app.WaitForUpdatedDatabase();
 app.Run();

@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.ConnectServer.Host;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Dapr.Common;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 var builder = DaprService.CreateBuilder("ConnectServer", args);
 
@@ -15,7 +14,8 @@ services.AddSingleton<ConnectServer>()
     .AddSingleton<IConnectServer>(s => s.GetService<ConnectServer>()!)
     .AddPeristenceProvider()
     .AddPersistentSingleton<IConnectServerSettings, ConnectServerDefinition>()
-    .AddHostedService<ConnectServerHostedServiceWrapper>();
+    .AddHostedService<ConnectServerHostedServiceWrapper>()
+    .PublishManageableServer<IConnectServer>();
 
 var app = builder.BuildAndConfigure();
 await app.WaitForUpdatedDatabase();

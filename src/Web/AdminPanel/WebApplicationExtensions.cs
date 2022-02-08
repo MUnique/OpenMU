@@ -31,7 +31,7 @@ public static class WebApplicationExtensions
 
         services.AddBlazoredModal();
 
-        services.AddSingleton<ServerService>();
+        // services.AddSingleton<ServerService>();
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
 
         services.AddScoped<AccountService>();

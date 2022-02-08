@@ -101,15 +101,15 @@
         this.StateHasChanged();
     }
 
-    private void OnActionClick(MouseEventArgs eventArgs)
+    private Task OnActionClick(MouseEventArgs eventArgs)
     {
         if (this.Server.ServerState == ServerState.Started)
         {
-            this.Server.Shutdown();
+            return this.Server.StopAsync(default);
         }
         else
         {
-            this.Server.Start();
+            return this.Server.StartAsync(default);
         }
     }
 
@@ -138,6 +138,8 @@
                 return "Started";
             case ServerState.Stopping:
                 return "Stopping ...";
+            case ServerState.Timeout:
+                return "Timeout";
         }
 
         return string.Empty;
