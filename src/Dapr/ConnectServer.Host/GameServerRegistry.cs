@@ -14,10 +14,9 @@ public sealed class GameServerRegistry : IDisposable
     private readonly Dictionary<ushort, DateTime> _entries = new();
     private readonly SemaphoreSlim _semaphore = new (1);
 
-
     public GameServerRegistry(IConnectServer connectServer, ILogger<GameServerRegistry> logger)
     {
-        _connectServer = connectServer;
+        this._connectServer = connectServer;
         this._logger = logger;
 
         Task.Run(async () =>
@@ -87,6 +86,8 @@ public sealed class GameServerRegistry : IDisposable
                 {
                     this._entries.Remove(serverId, out _);
                 }
+
+                tempRemoved.Clear();
             }
             finally
             {
