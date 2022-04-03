@@ -850,6 +850,9 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
             this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
             this.SetReclaimableAttributesToMaximum();
             this.Logger.LogDebug("Character {0} leveled up to {1}", this.SelectedCharacter.Name, this.Attributes[Stats.Level]);
+
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterLevelUpPlugIn>()?.CharacterLeveledUp(this);
+
             this.ViewPlugIns.GetPlugIn<IUpdateLevelPlugIn>()?.UpdateLevel();
             this.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IShowEffectPlugIn>()?.ShowEffect(this, IShowEffectPlugIn.EffectType.LevelUp), true);
         }
