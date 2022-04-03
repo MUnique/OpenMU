@@ -17,5 +17,7 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include=".htpasswd" />
+    <None Include="nginx.conf" />
   </ItemGroup>
 </Project>

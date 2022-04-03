@@ -9,7 +9,15 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="~/" />
+    @if (Environment.GetEnvironmentVariable("PATH_BASE") is { } pathBase && !string.IsNullOrWhiteSpace(pathBase))
+    {
+        <base href="@pathBase" />
+    }
+    else
+    {
+        <base href="~/" />
+    }
+    
     <link href="_content/Blazored.Typeahead/blazored-typeahead.css" rel="stylesheet" />
     <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
     @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)

@@ -7,7 +7,9 @@
     <td>
         @if (this.Server.Type == ServerType.GameServer)
         {
-            <!-- TODO: Link to server monitoring page ? -->
+            // Link to a reverse proxied server page
+            // Take a look at the nginx.conf
+            <a href="/gameServer/@(this.Server.Id + 1)/" target="_blank"><span class="oi oi-map"></span></a>
         }
     </td>
     <td>

@@ -9,7 +9,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="~/" />
+
+    @if (Environment.GetEnvironmentVariable("PATH_BASE") is { } pathBase && !string.IsNullOrWhiteSpace(pathBase))
+    {
+        <base href="@pathBase" />
+    }
+    else
+    {
+        <base href="~/" />
+    }
+
     @foreach (var stylesheetSrc in Web.Map.Exports.Stylesheets)
     {
         <link href="@stylesheetSrc" rel="stylesheet" />

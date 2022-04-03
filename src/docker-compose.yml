@@ -4,6 +4,20 @@ volumes:
   dbdata:
 
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_container
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./.htpasswd:/etc/nginx/.htpasswd
+    depends_on:
+      - adminPanel
+      - gameServer1
+      - zipkin
+
   dapr-placement:
     image: "daprio/dapr"
     command: ["./placement", "-port", "50006"]
@@ -54,6 +68,7 @@ services:
       DB_HOST: database
       GS_ID: 0
       APPID: gameServer1
+      PATH_BASE: /gameServer/1/
     depends_on:
       - connectServer-dapr
       - loginServer-dapr
@@ -239,6 +254,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:80
       DB_HOST: database
+      PATH_BASE: /admin/
 
   adminPanel-dapr:
     image: "daprio/daprd:latest"

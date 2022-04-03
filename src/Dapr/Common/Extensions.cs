@@ -74,8 +74,18 @@ public static class Extensions
 
     public static WebApplication BuildAndConfigure(this WebApplicationBuilder builder, bool addBlazor = false)
     {
+        var pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
+        var useReverseProxy = !string.IsNullOrWhiteSpace(pathBase);
+
         var app = builder.Build();
         app.ConfigureDaprService(addBlazor);
+
+        if (useReverseProxy)
+        {
+            app.UsePathBase(pathBase!.TrimEnd('/'));
+            app.UseStaticFiles();
+        }
+
         return app;
     }
 
@@ -104,7 +114,18 @@ public static class Extensions
 
         if (addBlazor)
         {
-            app.MapBlazorHub();
+            var pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
+            var useReverseProxy = !string.IsNullOrWhiteSpace(pathBase);
+
+            if (useReverseProxy)
+            {
+                app.MapBlazorHub(pathBase! + "_blazor");
+            }
+            else
+            {
+                app.MapBlazorHub();
+            }
+
             // app.MapRazorPages();
             app.MapFallbackToPage("/_Host");
         }
