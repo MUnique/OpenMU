@@ -26,6 +26,20 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
     private readonly Walker _walker;
     private readonly IEventStateProvider? _eventStateProvider;
 
+    /// <summary>
+    /// The power up element of the monsters skill.
+    /// It is a "cached" element which will be created on demand and can be applied multiple times.
+    /// </summary>
+    private readonly IElement? _skillPowerUp;
+
+    /// <summary>
+    /// The duration of the <see cref="_skillPowerUp"/>.
+    /// </summary>
+    /// <remarks>
+    /// It is an IElement, because the duration can be dependent from the player attributes.
+    /// </remarks>
+    private readonly IElement? _skillPowerUpDuration;
+
     private Timer? _respawnTimer;
     private int _health;
     private bool _isCalculatingPath;
@@ -51,6 +65,9 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
         this._intelligence = npcIntelligence;
         this._plugInManager = plugInManager;
         this._eventStateProvider = eventStateProvider;
+
+        (this._skillPowerUp, this._skillPowerUpDuration) = this.CreateMagicEffectPowerUp();
+
         this._intelligence.Npc = this;
         this._intelligence.Start();
     }
@@ -147,6 +164,8 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
         this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowMonsterAttackAnimation(this, target, this.GetDirectionTo(target)), true);
         if (this.Definition.AttackSkill is { } attackSkill)
         {
+            target.TryApplyElementalEffects(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration);
+
             this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, target, attackSkill, true), true);
         }
     }
@@ -488,5 +507,30 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
         {
             return false;
         }
+    }
+
+    /// <summary>
+    /// Creates the magic effect power up for the given skill of a monster.
+    /// </summary>
+    private (IElement? PowerUp, IElement? Duration) CreateMagicEffectPowerUp()
+    {
+        var skill = this.Definition.AttackSkill;
+        if (skill?.MagicEffectDef is null)
+        {
+            return (null, null);
+        }
+
+        if (skill.MagicEffectDef.PowerUpDefinition?.Boost is null)
+        {
+            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefintion.");
+        }
+
+        if (skill.MagicEffectDef.PowerUpDefinition.Duration is null)
+        {
+            throw new InvalidOperationException($"PowerUpDefinition {skill.MagicEffectDef.PowerUpDefinition.GetId()} no Duration.");
+        }
+
+        var powerUpDef = skill.MagicEffectDef.PowerUpDefinition;
+        return (this.Attributes!.CreateElement(powerUpDef.Boost), this.Attributes!.CreateElement(powerUpDef.Duration));
     }
 }

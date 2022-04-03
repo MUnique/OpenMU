@@ -146,11 +146,7 @@ public static class AttackableExtensions
             player.CreateMagicEffectPowerUp(skillEntry);
         }
 
-        var magicEffect = skillEntry.Skill!.MagicEffectDef?.PowerUpDefinition!.TargetAttribute == Stats.IsPoisoned
-            ? new PoisonMagicEffect(skillEntry.BuffPowerUp!, skillEntry.Skill!.MagicEffectDef!, TimeSpan.FromSeconds(skillEntry.PowerUpDuration!.Value), player, target)
-            : new MagicEffect(skillEntry.BuffPowerUp!, skillEntry.Skill!.MagicEffectDef!, TimeSpan.FromSeconds(skillEntry.PowerUpDuration!.Value));
-
-        target.MagicEffectList.AddEffect(magicEffect);
+        target.ApplyMagicEffect(player, skillEntry.Skill!.MagicEffectDef!, skillEntry.BuffPowerUp!, skillEntry.PowerUpDuration!);
     }
 
     /// <summary>
@@ -215,6 +211,52 @@ public static class AttackableExtensions
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
             target.ApplyMagicEffect(player, skillEntry);
+            applied = true;
+        }
+
+        if (modifier == Stats.LightningResistance)
+        {
+            target.MoveRandomly();
+            applied = true;
+        }
+
+        return applied;
+    }
+
+    /// <summary>
+    /// Applies the elemental effects of a players skill to the target.
+    /// </summary>
+    /// <param name="target">The target.</param>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="skill">The skill.</param>
+    /// <param name="powerUp">The power up.</param>
+    /// <param name="duration">The duration.</param>
+    /// <returns>
+    /// The success of the appliance.
+    /// </returns>
+    public static bool TryApplyElementalEffects(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration)
+    {
+        var modifier = skill.ElementalModifierTarget;
+        if (modifier is null)
+        {
+            return false;
+        }
+
+        var resistance = target.Attributes[modifier];
+        if (resistance >= 1.0f || !Rand.NextRandomBool(1.0f - resistance))
+        {
+            return false;
+        }
+
+        var applied = false;
+
+        if (skill.MagicEffectDef is { } effectDefinition
+            && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
+            && powerUp is not null
+            && duration is not null)
+        {
+            // power-up is the wrong term here... it's more like a power-down ;-)
+            target.ApplyMagicEffect(attacker, effectDefinition, powerUp, duration);
             applied = true;
         }
 
@@ -452,5 +494,22 @@ public static class AttackableExtensions
                 // the skill has some other damage type defined which is not applicable to this calculation
                 break;
         }
+    }
+
+    /// <summary>
+    /// Applies the magic effect of the attackers skill to the target.
+    /// </summary>
+    /// <param name="target">The target.</param>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="magicEffectDefinition">The magic effect definition.</param>
+    /// <param name="powerUp">The power up of the effect.</param>
+    /// <param name="duration">The duration of the effect.</param>
+    private static void ApplyMagicEffect(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement powerUp, IElement duration)
+    {
+        var magicEffect = magicEffectDefinition.PowerUpDefinition!.TargetAttribute == Stats.IsPoisoned
+            ? new PoisonMagicEffect(powerUp, magicEffectDefinition, TimeSpan.FromSeconds(duration.Value), attacker, target)
+            : new MagicEffect(powerUp, magicEffectDefinition, TimeSpan.FromSeconds(duration!.Value));
+
+        target.MagicEffectList.AddEffect(magicEffect);
     }
 }
