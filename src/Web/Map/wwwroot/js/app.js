@@ -324,7 +324,7 @@ System.register("Attackable", ["three", "tween"], function (exports_5, context_5
             }(THREE.Mesh));
             exports_5("Attackable", Attackable);
             ;
-            new THREE.TextureLoader().load('/img/attackable_alphamap.png', function (t) {
+            new THREE.TextureLoader().load('img/attackable_alphamap.png', function (t) {
                 exports_5("attackableAlphaMapTexture", attackableAlphaMapTexture = t);
             });
         }
@@ -484,7 +484,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     var planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments), new THREE.ShaderMaterial(TerrainShader_1.terrainShader));
                     _this.add(planeMesh);
                     var textureLoader = new THREE.TextureLoader();
-                    textureLoader.load('terrain/' + serverId + '/' + mapId, function (texture) {
+                    textureLoader.load('terrain/' + mapId, function (texture) {
                         texture.magFilter = THREE.NearestFilter;
                         TerrainShader_1.terrainShader.uniforms.tColor.value = texture;
                     });

@@ -78,13 +78,15 @@ public static class Extensions
         var useReverseProxy = !string.IsNullOrWhiteSpace(pathBase);
 
         var app = builder.Build();
-        app.ConfigureDaprService(addBlazor);
 
         if (useReverseProxy)
         {
             app.UsePathBase(pathBase!.TrimEnd('/'));
-            app.UseStaticFiles();
+            app.UseForwardedHeaders();
+
         }
+
+        app.ConfigureDaprService(addBlazor);
 
         return app;
     }
@@ -106,29 +108,13 @@ public static class Extensions
 
             app.UseStaticFiles();
             app.UseRouting();
+            app.MapBlazorHub();
+            app.MapFallbackToPage("/_Host");
         }
 
         app.UseCloudEvents();
         app.MapControllers();
         app.MapSubscribeHandler();
-
-        if (addBlazor)
-        {
-            var pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
-            var useReverseProxy = !string.IsNullOrWhiteSpace(pathBase);
-
-            if (useReverseProxy)
-            {
-                app.MapBlazorHub(pathBase! + "_blazor");
-            }
-            else
-            {
-                app.MapBlazorHub();
-            }
-
-            // app.MapRazorPages();
-            app.MapFallbackToPage("/_Host");
-        }
 
         return app;
     }

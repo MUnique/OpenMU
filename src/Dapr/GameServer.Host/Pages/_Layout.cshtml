@@ -1,5 +1,6 @@
 ﻿@namespace MUnique.OpenMU.GameServer.Host.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.WebUtilities
 @using MUnique.OpenMU.Web.Map;
 
@@ -10,24 +11,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    @if (Environment.GetEnvironmentVariable("PATH_BASE") is { } pathBase && !string.IsNullOrWhiteSpace(pathBase))
-    {
-        <base href="@pathBase" />
-    }
-    else
-    {
-        <base href="~/" />
-    }
+    <base href="~/" />
 
     @foreach (var stylesheetSrc in Web.Map.Exports.Stylesheets)
     {
         <link href="@stylesheetSrc" rel="stylesheet" />
     }
 
-    <!--component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" /-->
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
-    <app>@RenderBody()</app>
+    @RenderBody()
 
     <div id="blazor-error-ui">
         <environment include="Staging,Production">

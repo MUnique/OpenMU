@@ -42,7 +42,7 @@ export class World extends THREE.Object3D {
         this.add(planeMesh);
 
         const textureLoader = new THREE.TextureLoader();
-        textureLoader.load('terrain/' + serverId + '/' + mapId, (texture: THREE.Texture) => {
+        textureLoader.load('terrain/' + mapId, (texture: THREE.Texture) => {
             texture.magFilter = THREE.NearestFilter;
             terrainShader.uniforms.tColor.value = texture;
         });
