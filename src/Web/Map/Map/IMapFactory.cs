@@ -15,7 +15,7 @@ public interface IMapFactory
     /// <param name="serverId">The server identifier.</param>
     /// <param name="mapId">The map identifier.</param>
     /// <returns>A disposable map controller.</returns>
-    ValueTask<IMapController> CreateMap(int serverId, int mapId);
+    ValueTask<IMapController> CreateMap(int serverId, Guid mapId);
 
     /// <summary>
     /// Gets the map identifier which is used to identify the container DOM-Element.
@@ -23,5 +23,5 @@ public interface IMapFactory
     /// <param name="serverId">The server identifier.</param>
     /// <param name="mapId">The map identifier.</param>
     /// <returns>The map identifier which is used to identify the container DOM-Element.</returns>
-    string GetMapContainerIdentifier(int serverId, int mapId);
+    string GetMapContainerIdentifier(int serverId, Guid mapId);
 }

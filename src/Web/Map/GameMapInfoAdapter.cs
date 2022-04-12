@@ -40,6 +40,9 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <inheritdoc/>
+    public Guid Id => this._map.Id;
+
+    /// <inheritdoc/>
     public short MapNumber => this._map.Definition.Number;
 
     /// <inheritdoc/>

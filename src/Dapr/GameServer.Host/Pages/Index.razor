@@ -7,19 +7,21 @@
 @inject IObservableGameServer _gameServer;
 @inject IGameServerContext _gameServerContext;
 
-<h1>OpenMU GameServer</h1>
-
 <p>
-    <!-- TODO: Move into component -->
-    <div class="card shadow rounded" style="width: 18rem;">
-        <div class="card-body">
-            <h5 class="card-title">Stats</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Game Server Id: @this._gameServer.Id</h6>
-            <p class="card-text">Online Players: @_gameServerContext.PlayerCount / @_gameServerContext.ServerConfiguration.MaximumPlayers</p>
-            <p class="card-text">Hosted Maps: @_gameServer.Maps.Count</p>
-            <p class="card-text">Experience Rate: @_gameServerContext.ExperienceRate</p>
-        </div>
-    </div>
+    <h3>
+        <span class="badge badge-secondary">
+            GameServer Id: <span class="badge badge-light">@this._gameServer.Id</span>
+        </span>
+        <span class="badge badge-primary">
+            Players: <span class="badge badge-light">@_gameServerContext.PlayerCount / @_gameServerContext.ServerConfiguration.MaximumPlayers</span>
+        </span>
+        <span class="badge badge-primary">
+            Hosted Maps: <span class="badge badge-light">@_gameServer.Maps.Count</span>
+        </span>
+        <span class="badge badge-primary">
+            Experience Rate: <span class="badge badge-light">@_gameServerContext.ExperienceRate</span>
+        </span>
+    </h3>
 </p>
 
 <p>

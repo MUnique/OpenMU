@@ -14,13 +14,12 @@ using MUnique.OpenMU.GameLogic;
 public class ObservableGameServerAdapter : IObservableGameServer
 {
     private readonly IGameServerContext _gameContext;
-    private IList<IGameMapInfo> _gameMapInfos;
+    private readonly IList<IGameMapInfo> _gameMapInfos;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableGameServerAdapter"/> class.
     /// </summary>
     /// <param name="gameContext">The game server context.</param>
-    /// <param name="configuration">The configuration.</param>
     public ObservableGameServerAdapter(IGameServerContext gameContext)
     {
         this._gameContext = gameContext;
@@ -39,9 +38,9 @@ public class ObservableGameServerAdapter : IObservableGameServer
     public IList<IGameMapInfo> Maps => this._gameMapInfos;
 
     /// <inheritdoc/>
-    public void RegisterMapObserver(ushort mapId, ILocateable worldObserver)
+    public void RegisterMapObserver(Guid mapId, ILocateable worldObserver)
     {
-        var map = this._gameContext.GetMap(mapId);
+        var map = this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId);
         if (map != null)
         {
             map.Add(worldObserver);
@@ -54,9 +53,10 @@ public class ObservableGameServerAdapter : IObservableGameServer
     }
 
     /// <inheritdoc/>
-    public void UnregisterMapObserver(ushort mapId, ushort worldObserverId)
+    public void UnregisterMapObserver(Guid mapId, ushort worldObserverId)
     {
-        if (this._gameContext.GetMap(mapId) is { } map && map.GetObject(worldObserverId) is { } observer)
+        if (this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId) is { } map
+            && map.GetObject(worldObserverId) is { } observer)
         {
             map.Remove(observer);
         }
@@ -79,8 +79,7 @@ public class ObservableGameServerAdapter : IObservableGameServer
 
     private void OnGameMapRemoved(object? sender, GameMap gameMap)
     {
-        // TODO: Consider private maps (e.g. devil square)
-        if (this._gameMapInfos.FirstOrDefault(i => i.MapNumber == gameMap.MapId) is not { } map)
+        if (this._gameMapInfos.FirstOrDefault(i => i.Id == gameMap.Id) is not { } map)
         {
             return;
         }
@@ -93,8 +92,7 @@ public class ObservableGameServerAdapter : IObservableGameServer
 
     private void OnGameMapCreated(object? sender, GameMap gameMap)
     {
-        // TODO: Consider private maps (e.g. devil square)
-        if (this._gameMapInfos.FirstOrDefault(i => i.MapNumber == gameMap.MapId) is not null)
+        if (this._gameMapInfos.FirstOrDefault(i => i.Id == gameMap.Id) is not null)
         {
             // we already know this map - should never happen.
             return;

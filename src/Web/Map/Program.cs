@@ -38,12 +38,12 @@ public class Program
 
         public IList<IGameMapInfo> Maps { get; } = new List<IGameMapInfo>();
 
-        public void RegisterMapObserver(ushort mapId, ILocateable worldObserver)
+        public void RegisterMapObserver(Guid mapId, ILocateable worldObserver)
         {
             throw new NotImplementedException();
         }
 
-        public void UnregisterMapObserver(ushort mapId, ushort worldObserverId)
+        public void UnregisterMapObserver(Guid mapId, ushort worldObserverId)
         {
             throw new NotImplementedException();
         }

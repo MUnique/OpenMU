@@ -88,7 +88,7 @@ public class GameContext : Disposable, IGameContext
     /// <summary>
     /// Gets the initialized maps which are hosted on this context.
     /// </summary>
-    public IEnumerable<GameMap> Maps => this._mapList.Values;
+    public IEnumerable<GameMap> Maps => this._mapList.Values.Concat(this._miniGames.Values.Select(g => g.Map));
 
     /// <inheritdoc/>
     public GameConfiguration Configuration { get; }

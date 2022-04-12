@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 /// <summary>
 /// Controller for all map related functions.
 /// </summary>
-[Route("[controller]")]
+[Route("/[controller]")]
 [ApiController]
 public class TerrainController : Controller
 {
@@ -31,16 +31,15 @@ public class TerrainController : Controller
     /// <summary>
     /// Renders and returns the terrain of the specified server and map identifier.
     /// </summary>
-    /// <param name="serverId">The server identifier.</param>
     /// <param name="mapId">The map identifier.</param>
     /// <returns>The rendered terrain.</returns>
-    [HttpGet("{serverId}/{mapId}")]
-    public async Task<IActionResult> Terrain(int serverId, int mapId)
+    [HttpGet("{mapId}")]
+    public async Task<IActionResult> Terrain(Guid mapId)
     {
-        var map = this._gameServer.Maps.FirstOrDefault(m => m.MapNumber == mapId);
+        var map = this._gameServer.Maps.FirstOrDefault(m => m.Id == mapId);
         if (map is null)
         {
-            this._logger.LogWarning($"requested map not available. map number: {mapId}; server id: {serverId}");
+            this._logger.LogWarning($"requested map not available. map id: {mapId}");
             return this.NotFound();
         }
 

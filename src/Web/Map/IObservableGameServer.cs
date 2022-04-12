@@ -20,22 +20,26 @@ namespace MUnique.OpenMU.Web.Map
         /// </summary>
         /// <param name="mapId">The id of the map.</param>
         /// <param name="worldObserver">The world observer.</param>
-        void RegisterMapObserver(ushort mapId, ILocateable worldObserver);
+        void RegisterMapObserver(Guid mapId, ILocateable worldObserver);
 
         /// <summary>
         /// Unregisters the map observer.
         /// </summary>
         /// <param name="mapId">The map identifier.</param>
         /// <param name="worldObserverId">The world observer identifier.</param>
-        void UnregisterMapObserver(ushort mapId, ushort worldObserverId);
+        void UnregisterMapObserver(Guid mapId, ushort worldObserverId);
     }
-
 
     /// <summary>
     /// Information about a concrete instance of a game map.
     /// </summary>
     public interface IGameMapInfo : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Gets the unique map identifier.
+        /// </summary>
+        Guid Id { get; }
+
         /// <summary>
         /// Gets the map number.
         /// </summary>

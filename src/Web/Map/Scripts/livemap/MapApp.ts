@@ -22,7 +22,7 @@ export class MapApp {
     constructor(
         stats: Stats,
         serverId: number,
-        mapId: number,
+        mapId: string,
         mapContainer: HTMLElement,
         onPickObjectHandler: (data: ObjectData) => void) {
         this.stats = stats;

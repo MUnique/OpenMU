@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Web.Map.Map;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Class which manages the creation of the map which is implemented in javascript.
@@ -14,8 +13,6 @@ using MUnique.OpenMU.Interfaces;
 public sealed class JavascriptMapFactory : IMapFactory
 {
     private readonly IJSRuntime _jsRuntime;
-
-    // TODO: Replace IGameServer by special interface which offers map observer registration.
     private readonly IObservableGameServer _gameServer;
     private readonly ILoggerFactory _loggerFactory;
 
@@ -35,7 +32,7 @@ public sealed class JavascriptMapFactory : IMapFactory
     }
 
     /// <inheritdoc />
-    public async ValueTask<IMapController> CreateMap(int serverId, int mapId)
+    public async ValueTask<IMapController> CreateMap(int serverId, Guid mapId)
     {
         MapController? mapController = null;
         try
@@ -44,7 +41,7 @@ public sealed class JavascriptMapFactory : IMapFactory
             await this._jsRuntime.InvokeVoidAsync("CreateMap", serverId, mapId, this.GetMapContainerIdentifier(serverId, mapId), appId);
             var gameServer = this._gameServer;
             mapController = new MapController(this._jsRuntime, this._loggerFactory, appId, gameServer, mapId);
-            gameServer.RegisterMapObserver((ushort)mapId, mapController);
+            gameServer.RegisterMapObserver(mapId, mapController);
         }
         catch
         {
@@ -60,7 +57,7 @@ public sealed class JavascriptMapFactory : IMapFactory
     }
 
     /// <inheritdoc />
-    public string GetMapContainerIdentifier(int serverId, int mapId) => $"map_{serverId}_{mapId}";
+    public string GetMapContainerIdentifier(int serverId, Guid mapId) => $"map_{serverId}_{mapId:N}";
 
-    private string GenerateMapAppIdentifier(int serverId, int mapId) => $"map_{serverId}_{mapId}_app{this._mapCount++}";
+    private string GenerateMapAppIdentifier(int serverId, Guid mapId) => $"map_{serverId}_{mapId:N}_app{this._mapCount++}";
 }

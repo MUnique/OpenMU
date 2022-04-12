@@ -23,9 +23,9 @@ export class World extends THREE.Object3D {
      * the WorldUpdater which uses SignalRto talk with the server.
      * @constructor
      * @param {number} serverId - the id of the server where the map is hosted
-     * @param {number} mapId - the id of the map
+     * @param {number} mapId - the id of the map, GUID
      */
-    constructor(serverId: number, mapId: number) {
+    constructor(serverId: number, mapId: string) {
         super();
         this.objects = {};
 

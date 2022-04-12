@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Web.Map.ViewPlugIns;
-
 namespace MUnique.OpenMU.Web.Map.Map;
 
 using System.Threading;
@@ -14,6 +12,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Web.Map.ViewPlugIns;
 
 /// <summary>
 /// Controller which contains the logic for the shown game map.
@@ -22,7 +21,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
 {
     private readonly string _identifier;
     private readonly IObservableGameServer _gameServer;
-    private readonly int _mapNumber;
+    private readonly Guid _mapId;
     private readonly IJSRuntime _jsRuntime;
     private readonly ObserverToWorldViewAdapter _adapterToWorldView;
     private readonly CancellationTokenSource _disposeCts = new ();
@@ -34,14 +33,14 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="mapIdentifier">The map identifier.</param>
     /// <param name="gameServer">The game server.</param>
-    /// <param name="mapNumber">The map number.</param>
-    public MapController(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string mapIdentifier, IObservableGameServer gameServer, int mapNumber)
+    /// <param name="mapId">The map id.</param>
+    public MapController(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string mapIdentifier, IObservableGameServer gameServer, Guid mapId)
     {
         this._jsRuntime = jsRuntime;
 
         this._identifier = mapIdentifier;
         this._gameServer = gameServer;
-        this._mapNumber = mapNumber;
+        this._mapId = mapId;
         this._adapterToWorldView = new ObserverToWorldViewAdapter(this, byte.MaxValue);
 
         var viewPlugIns = new CustomPlugInContainer<IViewPlugIn>();
@@ -110,7 +109,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     public async ValueTask DisposeAsync()
     {
         this._disposeCts.Cancel();
-        this._gameServer.UnregisterMapObserver((ushort)this._mapNumber, this.Id);
+        this._gameServer.UnregisterMapObserver(this._mapId, this.Id);
         this._adapterToWorldView.Dispose();
         try
         {
