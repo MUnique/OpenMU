@@ -3,6 +3,7 @@
 // </copyright>
 
 using Microsoft.AspNetCore.Hosting;
+using Serilog;
 
 namespace MUnique.OpenMU.Dapr.Common;
 
@@ -50,6 +51,8 @@ public static class DaprService
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = serviceName, Version = "v1" });
         });
+
+        builder.UseLoki(serviceName);
 
         return builder;
     }

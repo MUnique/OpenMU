@@ -17,6 +17,68 @@ services:
       - adminPanel
       - gameServer1
       - zipkin
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    depends_on:
+      - loki
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+          - name: Loki
+            type: loki
+            access: proxy
+            url: http://loki:3100
+            #jsonData:
+            #  httpHeaderName1: "X-Scope-OrgID"
+            #secureJsonData:
+            #  httpHeaderValue1: "tenant1"
+        EOF
+        /run.sh
+    ports:
+      - "3000:3000"
+
+  loki:
+    image: grafana/loki:2.5.0
+    container_name: loki
+    command: "-config.file=/etc/loki/config.yaml -target=all"
+    ports:
+      - "3100:3100"
+      - 7946
+      - 9095
+    volumes:
+      - ./loki-config.yaml:/etc/loki/config.yaml
+    depends_on:
+      - minio
+
+  minio:
+    image: minio/minio
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /data/loki-data && \
+        mkdir -p /data/loki-ruler && \
+        minio server /data
+    environment:
+      - MINIO_ACCESS_KEY=loki
+      - MINIO_SECRET_KEY=supersecret
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+      - MINIO_UPDATE=off
+    ports:
+      - 9000
+    volumes:
+      - ./.data/minio:/data
 
   dapr-placement:
     image: "daprio/dapr"

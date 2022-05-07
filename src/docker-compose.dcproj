@@ -18,6 +18,7 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
     <None Include=".htpasswd" />
+    <None Include="loki-config.yaml" />
     <None Include="nginx.conf" />
   </ItemGroup>
 </Project>

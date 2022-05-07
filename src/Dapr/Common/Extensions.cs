@@ -1,9 +1,15 @@
 ﻿namespace MUnique.OpenMU.Dapr.Common;
 
 using System.Net;
+
+using Serilog.Debugging;
+using Serilog.Filters;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
@@ -70,6 +76,31 @@ public static class Extensions
             .AddControllers().AddApplicationPart(typeof(ManageableServerController).Assembly);
 
         return services;
+    }
+
+    public static WebApplicationBuilder UseLoki(this WebApplicationBuilder builder, string serviceName)
+    {
+        // We just want to transmit some static labels, as suggested in the best practice in the Loki documentation
+        var includeLabels = new[] { "Account", "Character", "Connection", "ServiceName", "SourceContext" };
+
+        var logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .Enrich.WithProperty("ServiceName", serviceName)
+            .Enrich.FromLogContext()
+            .WriteTo
+            .GrafanaLoki(
+                uri: "http://loki:3100",
+                filtrationLabels: includeLabels,
+                filtrationMode: LokiLabelFiltrationMode.Include)
+            .Filter.ByExcluding(Matching.FromSource("Microsoft")) // We don't want all of the ASP.NET logging, because that really keeps loki pretty busy
+            .CreateLogger();
+
+        SelfLog.Enable(Console.Error);
+
+        builder.Host.ConfigureLogging((_, loggingBuilder) => loggingBuilder.ClearProviders());
+        builder.Host.UseSerilog(logger);
+        builder.Host.ConfigureLogging((_, loggingBuilder) => loggingBuilder.AddConsole());
+        return builder;
     }
 
     public static WebApplication BuildAndConfigure(this WebApplicationBuilder builder, bool addBlazor = false)
