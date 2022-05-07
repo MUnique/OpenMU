@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("A456F032-CE7D-4EA5-8EB2-96C2B04C70D1")]
 [PlugIn("Guild battle soccer chat command", "Handles the chat command '/battlesoccer <guildname>'. Sends a request to the guild master of the requested guild.")]
-[ChatCommandHelp(Command, typeof(GuildWarChatCommandArgs), CharacterStatus.Normal)]
+[ChatCommandHelp(Command, "Sends a battle soccer request to the guild master of the requested guild.", typeof(GuildWarChatCommandArgs), CharacterStatus.Normal)]
 public class GuildBattleSoccerChatCommandPlugIn : ChatCommandPlugInBase<GuildWarChatCommandArgs>
 {
     private const string Command = "/battlesoccer";

@@ -11,8 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// The help command which shows the usage of a command.
 /// </summary>
 [Guid("EFE9399A-9A14-4B94-BBC1-20718584C4C2")]
-[PlugIn("Help command", "List all the commands.")]
-[ChatCommandHelp(Command, typeof(Arguments))]
+[PlugIn("Help command", "Handles the /help <command> chat command. Shows information about the requested command.")]
+[ChatCommandHelp(Command, "Shows information about the requested command.", typeof(Arguments))]
 public class HelpCommand : IChatCommandPlugIn
 {
     private const string Command = "/help";

@@ -13,8 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles move commands.
 /// </summary>
 [Guid("4564AE2B-4819-4155-B5B2-FE2ED0CF7A7F")]
-[PlugIn("Move chat command", "Handles the chat command '/move <target> <mapIdOrName?> <x?> <y?>'. Move the character to the specified destination.")]
-[ChatCommandHelp(Command, typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
+[PlugIn("Move chat command", "Handles the chat command '/move <target> <mapIdOrName?> <x?> <y?>'. Moves the character to the specified destination.")]
+[ChatCommandHelp(Command, "Moves the character to the specified destination.", typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
 public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
 {
     private const string Command = "/move";

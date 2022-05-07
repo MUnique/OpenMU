@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("F23262E6-0D7C-4B9C-8CD5-7E44AF4EE469")]
 [PlugIn("Guild disconnect chat command", "Handles the chat command '/guilddisconnect <guild>'. Disconnect the guild members.")]
-[ChatCommandHelp(Command, typeof(GuildDisconnectChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, "Disconnects the members of a guild.", typeof(GuildDisconnectChatCommandArgs), CharacterStatus.GameMaster)]
 public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisconnectChatCommandArgs>
 {
     private const string Command = "/guilddisconnect";

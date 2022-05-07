@@ -11,14 +11,13 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 [AttributeUsage(AttributeTargets.Class)]
 public class ChatCommandHelpAttribute : Attribute
 {
-    private readonly Type? _argumentsType;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatCommandHelpAttribute" /> class.
     /// </summary>
     /// <param name="command">The command.</param>
-    public ChatCommandHelpAttribute(string command)
-        : this(command, CharacterStatus.Normal)
+    /// <param name="description">The description of the command.</param>
+    public ChatCommandHelpAttribute(string command, string description)
+        : this(command, description, CharacterStatus.Normal)
     {
     }
 
@@ -26,9 +25,10 @@ public class ChatCommandHelpAttribute : Attribute
     /// Initializes a new instance of the <see cref="ChatCommandHelpAttribute" /> class.
     /// </summary>
     /// <param name="command">The command.</param>
+    /// <param name="description">The description of the command.</param>
     /// <param name="minimumCharacterStatus">The minimum character status.</param>
-    public ChatCommandHelpAttribute(string command, CharacterStatus minimumCharacterStatus)
-        : this(command, null, minimumCharacterStatus)
+    public ChatCommandHelpAttribute(string command, string description, CharacterStatus minimumCharacterStatus)
+        : this(command, description, null, minimumCharacterStatus)
     {
     }
 
@@ -36,9 +36,10 @@ public class ChatCommandHelpAttribute : Attribute
     /// Initializes a new instance of the <see cref="ChatCommandHelpAttribute" /> class.
     /// </summary>
     /// <param name="command">The command.</param>
+    /// <param name="description">The description of the command.</param>
     /// <param name="argumentsType">Type of the arguments.</param>
-    public ChatCommandHelpAttribute(string command, Type? argumentsType)
-        : this(command, argumentsType, CharacterStatus.Normal)
+    public ChatCommandHelpAttribute(string command, string description, Type? argumentsType)
+        : this(command, description, argumentsType, CharacterStatus.Normal)
     {
     }
 
@@ -46,13 +47,16 @@ public class ChatCommandHelpAttribute : Attribute
     /// Initializes a new instance of the <see cref="ChatCommandHelpAttribute" /> class.
     /// </summary>
     /// <param name="command">The command.</param>
+    /// <param name="description">The description of the command.</param>
     /// <param name="argumentsType">Type of the arguments.</param>
     /// <param name="minimumCharacterStatus">The minimum character status.</param>
-    public ChatCommandHelpAttribute(string command, Type? argumentsType, CharacterStatus minimumCharacterStatus)
+    public ChatCommandHelpAttribute(string command, string description, Type? argumentsType, CharacterStatus minimumCharacterStatus)
     {
         this.Command = command;
-        this._argumentsType = argumentsType;
+        this.Description = description;
+        this.ArgumentsType = argumentsType;
         this.MinimumCharacterStatus = minimumCharacterStatus;
+
     }
 
     /// <summary>
@@ -61,12 +65,22 @@ public class ChatCommandHelpAttribute : Attribute
     public string Command { get; }
 
     /// <summary>
+    /// Gets the description of the command.
+    /// </summary>
+    public string Description { get; }
+
+    /// <summary>
     /// Gets the minimum character status.
     /// </summary>
     public CharacterStatus MinimumCharacterStatus { get; }
 
     /// <summary>
+    /// Gets the type of the arguments of the chat command.
+    /// </summary>
+    public Type? ArgumentsType { get; }
+
+    /// <summary>
     /// Gets the usage text for the chat command.
     /// </summary>
-    public string Usage => this._argumentsType is null ? this.Command : CommandExtensions.CreateUsage(this._argumentsType, this.Command);
+    public string Usage => this.ArgumentsType is null ? this.Command : CommandExtensions.CreateUsage(this.ArgumentsType, this.Command);
 }

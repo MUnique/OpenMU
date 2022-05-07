@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
 [Guid("ABFE2440-E765-4F17-A588-BD9AE3799887")]
 [PlugIn("Item chat command", "Handles the chat command '/item <group> <number> <lvl?> <exc?> <sk?> <lu?> <opt?> <anc?> <ancBonuslvl?>'. Drops a specific item next to the character.")]
-[ChatCommandHelp(Command, typeof(ItemChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, "Drops a specific item next to the character.", typeof(ItemChatCommandArgs), CharacterStatus.GameMaster)]
 public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
 {
     private const string Command = "/item";

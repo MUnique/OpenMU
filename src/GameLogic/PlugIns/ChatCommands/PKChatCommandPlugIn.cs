@@ -13,8 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles pk commands.
 /// </summary>
 [Guid("30B7EFF0-33EE-4136-BEB0-BE503B748DC6")]
-[PlugIn("PK chat command", "Handles the chat command '/pk <char> <pk_lvl> <pk_count>'. Sets PK Level and Count for a character.")]
-[ChatCommandHelp(Command, typeof(PkChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn("PK chat command", "Handles the chat command '/pk <char> <pk_lvl> <pk_count>'. Sets player kill level and count of a character.")]
+[ChatCommandHelp(Command, "Sets player kill level and count of a character.", typeof(PkChatCommandArgs), CharacterStatus.GameMaster)]
 public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
 {
     private const string Command = "/pk";

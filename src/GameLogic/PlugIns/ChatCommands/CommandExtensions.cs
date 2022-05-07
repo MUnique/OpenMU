@@ -73,29 +73,55 @@ public static class CommandExtensions
     /// </returns>
     public static string CreateUsage(Type argumentsType, string commandName)
     {
-        var properties = argumentsType.GetProperties();
         var stringBuilder = new StringBuilder();
 
         stringBuilder.Append($"{commandName} ");
-
-        foreach (var property in properties)
+        foreach (var parameter in GetParameters(argumentsType).ToList())
         {
-            if (property.GetCustomAttribute<ValidValuesAttribute>() is { } validValuesAttribute)
+            if (!string.IsNullOrWhiteSpace(parameter.ValidValues))
             {
-                stringBuilder.Append($"{{{string.Join('|', validValuesAttribute.ValidValues)}}}");
+                stringBuilder.Append($"{{{parameter.Name}:{parameter.ValidValues}}}");
+            }
+            else if (parameter.Type == nameof(String))
+            {
+                stringBuilder.Append($"{{{parameter.Name}}}");
             }
             else
             {
-                stringBuilder.Append($"{{{property.GetName()}|{property.PropertyType.Name}}}");
+                stringBuilder.Append($"{{{parameter.Name}:{parameter.Type}}}");
             }
 
-            if (property != properties.Last())
-            {
-                stringBuilder.Append(" ");
-            }
+            stringBuilder.Append(" ");
         }
 
+        stringBuilder.ToString().TrimEnd(' ');
+
         return stringBuilder.ToString();
+    }
+
+    public static IEnumerable<(string Name, string Type, string ValidValues)> GetParameters(Type argumentsType)
+    {
+        var properties = argumentsType.GetProperties().Where(p => p.CanWrite);
+        foreach (var property in properties)
+        {
+            string validValues = string.Empty;
+
+            if (property.GetCustomAttribute<ValidValuesAttribute>() is { } validValuesAttribute)
+            {
+                validValues = string.Join('|', validValuesAttribute.ValidValues);
+            }
+            else if (property.PropertyType == typeof(bool))
+            {
+                validValues = "0|1";
+            }
+            else if (property.PropertyType == typeof(byte) || property.PropertyType == typeof(ushort) || property.PropertyType == typeof(uint))
+            {
+                // todo: ranges in ParameterAttribute
+                //validValues = "";
+            }
+
+            yield return (property.Name, property.PropertyType.Name, validValues);
+        }
     }
 
     /// <summary>
