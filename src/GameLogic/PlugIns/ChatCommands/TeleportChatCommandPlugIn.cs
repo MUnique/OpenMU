@@ -12,8 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles teleport commands.
 /// </summary>
 [Guid("ABFE2440-E765-4F17-A588-BD9AE3799886")]
-[PlugIn("Teleport chat command", "Handles the chat command '/teleport <x> <y>'. Teleports the game master to the specified coordinate.")]
-[ChatCommandHelp(Command, typeof(CoordinatesCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn("Teleport chat command", "Handles the chat command '/teleport <x> <y>'. Teleports the game master to the specified coordinates.")]
+[ChatCommandHelp(Command, "Teleports the game master to the specified coordinates.", typeof(CoordinatesCommandArgs), CharacterStatus.GameMaster)]
 public class TeleportChatCommandPlugIn : ChatCommandPlugInBase<CoordinatesCommandArgs>
 {
     private const string Command = "/teleport";

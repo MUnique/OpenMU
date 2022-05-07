@@ -13,8 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles pk clear commands.
 /// </summary>
 [Guid("EB97A8F6-F6BD-460A-BCBE-253BF679361A")]
-[PlugIn("PK clear chat command", "Handles the chat command '/pkclear <char>'. Clears a character murders.")]
-[ChatCommandHelp(Command, typeof(PkClearChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn("PK clear chat command", "Handles the chat command '/pkclear <char>'. Clears the player kill count.")]
+[ChatCommandHelp(Command, "Clears the player kill count.", typeof(PkClearChatCommandArgs), CharacterStatus.GameMaster)]
 public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommandArgs>
 {
     private const string Command = "/pkclear";
@@ -37,9 +37,9 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
 
         if (!targetPlayer.Name.Equals(gameMaster.Name))
         {
-            this.ShowMessageTo(targetPlayer, $"Your murders have been cleaned by the game master.");
+            this.ShowMessageTo(targetPlayer, $"Your player kills have been cleaned by the game master.");
         }
 
-        this.ShowMessageTo(gameMaster, $"[{this.Key}] {targetPlayer.Name} murders have been cleaned.");
+        this.ShowMessageTo(gameMaster, $"[{this.Key}] {targetPlayer.Name} kills have been cleaned.");
     }
 }

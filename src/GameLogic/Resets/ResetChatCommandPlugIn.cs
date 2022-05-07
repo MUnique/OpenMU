@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
 [Guid("90B35404-AADE-4F22-B5D2-4CD59B8BB4C8")]
 [PlugIn("Reset chat command", "Handles the chat command '/reset'.")]
-[ChatCommandHelp(Command, null)]
+[ChatCommandHelp(Command, "Does a character reset, if available.", null)]
 public class ResetChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/reset";
