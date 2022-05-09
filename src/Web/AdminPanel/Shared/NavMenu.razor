@@ -50,13 +50,11 @@
                 </NavLink>
             </li>
             <li>
-                <NavLink href="log">
-                    <span class="oi oi-list" aria-hidden="true"></span> Log 
-                    @if (!_navigationManager.Uri.EndsWith("/log"))
-                    {
-                        <LogNotifications/>
-                    }
-                </NavLink>
+                <!-- todo: conditionally? -->
+                <a href="/grafana/explore?orgId=1&left=%7B%22datasource%22:%22Loki%22,%22queries%22:%5B%7B%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
+                   target="_blank">
+                    <span class="oi oi-list" aria-hidden="true"></span> Log
+                </a>
             </li>
         </ul>
     </div>

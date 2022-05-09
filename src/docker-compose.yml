@@ -23,8 +23,18 @@ services:
     container_name: grafana
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_PROXY_ENABLED=true
+      - GF_AUTH_PROXY_HEADER_NAME=X-WEBAUTH-USER
+      - GF_AUTH_PROXY_HEADER_PROPERTY=username
+      - GF_AUTH_AUTO_ASSIGN_ORG=true
+      - GF_AUTH_AUTO_ASSIGN_ORG_ROLE=Admin
+
+      - GF_SERVER_DOMAIN=localhost
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SERVER_ROOT_URL=http://localhost/grafana/
+      # - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/
     depends_on:
       - loki
     entrypoint:
@@ -46,7 +56,7 @@ services:
         EOF
         /run.sh
     ports:
-      - "3000:3000"
+      - 3000
 
   loki:
     image: grafana/loki:2.5.0
