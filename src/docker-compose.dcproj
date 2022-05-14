@@ -18,6 +18,8 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
     <None Include=".htpasswd" />
+    <None Include="grafana.ini" />
+    <None Include="grafana_datasources.yaml" />
     <None Include="loki-config.yaml" />
     <None Include="nginx.conf" />
     <None Include="prometheus.yml" />
