@@ -2,7 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
 using Serilog;
 
 namespace MUnique.OpenMU.Dapr.Common;
@@ -37,7 +40,6 @@ public static class DaprService
         services.AddControllers();
         services.AddDaprClient();
 
-        services.AddOpenTelemetryMetrics();
         services.AddOpenTelemetryTracing(b => b
             .SetResourceBuilder(ResourceBuilder
                 .CreateDefault()

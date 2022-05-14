@@ -20,5 +20,6 @@
     <None Include=".htpasswd" />
     <None Include="loki-config.yaml" />
     <None Include="nginx.conf" />
+    <None Include="prometheus.yml" />
   </ItemGroup>
 </Project>

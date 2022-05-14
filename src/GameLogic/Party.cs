@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Diagnostics.Metrics;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
@@ -14,6 +15,10 @@ using MUnique.OpenMU.GameLogic.Views.Party;
 /// </summary>
 public sealed class Party : Disposable
 {
+    private static readonly Meter Meter = new(MeterName);
+
+    private static readonly Counter<int> PartyCount = Meter.CreateCounter<int>("PartyCount");
+
     private readonly ILogger<Party> _logger;
 
     private readonly Timer _healthUpdate;
@@ -21,6 +26,11 @@ public sealed class Party : Disposable
     private readonly byte _maxPartySize;
 
     private readonly List<Player> _distributionList;
+
+    /// <summary>
+    /// Gets the name of the meter of this class.
+    /// </summary>
+    internal static string MeterName => typeof(Party).FullName ?? nameof(Party);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Party" /> class.
@@ -39,6 +49,7 @@ public sealed class Party : Disposable
         var updateInterval = new TimeSpan(0, 0, 0, 0, 500);
         this._healthUpdate = new Timer(this.HealthUpdate_Elapsed, null, updateInterval, updateInterval);
         this.Add(partyMaster);
+        PartyCount.Add(1);
     }
 
     /// <summary>
@@ -188,6 +199,7 @@ public sealed class Party : Disposable
         }
 
         this._healthUpdate.Dispose();
+        PartyCount.Add(-1);
     }
 
     private int InternalDistributeExperienceAfterKill(IAttackable killedObject, IObservable killer)

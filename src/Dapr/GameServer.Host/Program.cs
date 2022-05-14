@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer.Host;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.ServerClients;
 using MUnique.OpenMU.Web.Map;
 using GameServer = MUnique.OpenMU.GameServer.GameServer;
@@ -36,6 +38,11 @@ services.AddSingleton<GameServer>()
     .PublishManageableServer<IGameServer>();
 
 builder.AddMapApp();
+
+var metricsRegistry = new MetricsRegistry();
+metricsRegistry.AddNetworkMeters();
+metricsRegistry.AddMeters(MUnique.OpenMU.GameLogic.Metrics.Meters);
+builder.AddOpenTelemetryMetrics(metricsRegistry);
 
 var app = builder.BuildAndConfigure(true);
 

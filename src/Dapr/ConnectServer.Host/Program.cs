@@ -17,6 +17,10 @@ services.AddSingleton<ConnectServer>()
     .AddHostedService<ConnectServerHostedServiceWrapper>()
     .PublishManageableServer<IConnectServer>();
 
+var metricsRegistry = new MetricsRegistry();
+metricsRegistry.AddNetworkMeters();
+builder.AddOpenTelemetryMetrics(metricsRegistry);
+
 var app = builder.BuildAndConfigure();
 await app.WaitForUpdatedDatabase();
 

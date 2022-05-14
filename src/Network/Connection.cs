@@ -12,6 +12,7 @@ using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Pipelines.Sockets.Unofficial;
+using MUnique.OpenMU.Network.SimpleModulus;
 
 /// <summary>
 /// A connection which works on <see cref="IDuplexPipe"/>.
@@ -20,9 +21,11 @@ using Pipelines.Sockets.Unofficial;
 public sealed class Connection : PacketPipeReaderBase, IConnection
 {
     private static readonly ActivitySource ActivitySource = new(typeof(Connection).FullName ?? nameof(Connection));
-    private static readonly Meter ConnectionMeter = new Meter("Connection");
+    private static readonly Meter ConnectionMeter = new (MeterName);
     private static readonly Counter<long> IncomingBytesCounter = ConnectionMeter.CreateCounter<long>("IncomingBytes", "bytes");
     private static readonly Counter<long> OutgoingBytesCounter = ConnectionMeter.CreateCounter<long>("OutgoingBytes", "bytes");
+    private static readonly Counter<long> InvalidBlocksCounter = ConnectionMeter.CreateCounter<long>("InvalidBlocks");
+    private static readonly Counter<long> ConnectionCounter = ConnectionMeter.CreateCounter<long>("ConnectionCount");
 
     private readonly IPipelinedEncryptor? _encryptionPipe;
     private readonly ILogger<Connection> _logger;
@@ -68,6 +71,11 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public SemaphoreSlim OutputLock { get; }
 
     /// <summary>
+    /// Gets the name of the meter.
+    /// </summary>
+    internal static string MeterName => typeof(Connection).FullName ?? nameof(Connection);
+
+    /// <summary>
     /// Gets the socket connection, if the <see cref="_duplexPipe"/> is an instance of <see cref="SocketConnection"/>. Otherwise, it returns null.
     /// </summary>
     private SocketConnection? SocketConnection => this._duplexPipe as SocketConnection;
@@ -80,6 +88,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     {
         try
         {
+            ConnectionCounter.Add(1);
             await this.ReadSource().ConfigureAwait(false);
         }
         catch (Exception e)
@@ -101,6 +110,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
             return;
         }
 
+        ConnectionCounter.Add(-1);
         this._logger.LogDebug("Disconnecting...");
         if (this._duplexPipe is not null)
         {
@@ -128,6 +138,11 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     protected override void OnComplete(Exception? exception)
     {
         using var scope = this._logger.BeginScope(this._remoteEndPoint);
+        if (exception is InvalidBlockChecksumException)
+        {
+            InvalidBlocksCounter.Add(1, new KeyValuePair<string, object?>("RemoteEndPoint", this._remoteEndPoint));
+        }
+
         if (exception != null)
         {
             this._logger.LogError(exception, "Connection will be disconnected, because of an exception");

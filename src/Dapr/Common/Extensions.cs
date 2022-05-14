@@ -1,6 +1,11 @@
-﻿namespace MUnique.OpenMU.Dapr.Common;
+﻿// <copyright file="Extensions.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Dapr.Common;
 
 using System.Net;
+using System.Reflection;
 
 using Serilog.Debugging;
 using Serilog.Filters;
@@ -15,6 +20,7 @@ using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.PlugIns;
+using OpenTelemetry.Metrics;
 
 public static class Extensions
 {
@@ -100,6 +106,30 @@ public static class Extensions
         builder.Host.ConfigureLogging((_, loggingBuilder) => loggingBuilder.ClearProviders());
         builder.Host.UseSerilog(logger);
         builder.Host.ConfigureLogging((_, loggingBuilder) => loggingBuilder.AddConsole());
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddOpenTelemetryMetrics(this WebApplicationBuilder builder, MetricsRegistry registry)
+    {
+        var meters = registry.Meters.ToArray();
+        if (meters.Length == 0)
+        {
+            return builder;
+        }
+
+        builder.Services.AddOpenTelemetryMetrics(opt =>
+            opt
+                .AddMeter(meters)
+                .AddPrometheusExporter(p =>
+                {
+                    p.StartHttpListener = true;
+
+                    // Workaround, see https://github.com/open-telemetry/opentelemetry-dotnet/issues/2840#issuecomment-1072977042
+                    p.GetType()
+                        ?.GetField("httpListenerPrefixes", BindingFlags.NonPublic | BindingFlags.Instance)
+                        ?.SetValue(p, new[] { "http://*:9464" });
+                }));
+
         return builder;
     }
 

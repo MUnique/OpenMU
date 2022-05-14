@@ -2,6 +2,7 @@ version: '3.4'
 
 volumes:
   dbdata:
+  prometheus-data:
 
 services:
   nginx:
@@ -57,6 +58,15 @@ services:
         /run.sh
     ports:
       - 3000
+
+  prometheus:
+    image: prom/prometheus:v2.21.0
+    ports:
+      - 9000:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
 
   loki:
     image: grafana/loki:2.5.0
@@ -140,6 +150,7 @@ services:
     ports:
       - "50010:50001"
       - "44405:44405"
+      - "9464" # Prometheus
     environment:
       DB_HOST: database
       APPID: connectServer
@@ -169,6 +180,7 @@ services:
       dockerfile: Dapr/LoginServer.Host/Dockerfile
     ports:
       - "50011:50001"
+      - "9464" # Prometheus
     depends_on:
       - zipkin
       - database
@@ -196,6 +208,7 @@ services:
       DB_HOST: database
     ports:
       - "50012:50001"
+      - "9464" # Prometheus
     depends_on:
       - chatServer-dapr
       - database
@@ -224,6 +237,7 @@ services:
       DB_HOST: database
     ports:
       - "50013:50001"
+      - "9464" # Prometheus
     depends_on:
       - database
       - zipkin
@@ -253,6 +267,7 @@ services:
     ports:
       - "55980:55980"
       - "50014:50001"
+      - "9464" # Prometheus
     depends_on:
       - database
       - zipkin
@@ -278,6 +293,7 @@ services:
       dockerfile: Setup/MUnique.OpenMU.Setup/Dockerfile
     ports:
       - "80"
+      - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:80
       DB_HOST: database
@@ -306,6 +322,7 @@ services:
       - database
     ports:
       - "80"
+      - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:80
       DB_HOST: database
@@ -335,6 +352,7 @@ services:
       - "80"
       - "50001:50001"
       - "55901:55901"
+      - "9464" # Prometheus
     environment:
       DB_HOST: database
       GS_ID: 0

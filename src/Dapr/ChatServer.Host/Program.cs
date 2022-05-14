@@ -22,6 +22,10 @@ services.AddHostedService(p => (ChatServer)p.GetService<IChatServer>()!);
 
 services.PublishManageableServer<IChatServer>();
 
+var metricsRegistry = new MetricsRegistry();
+metricsRegistry.AddNetworkMeters();
+builder.AddOpenTelemetryMetrics(metricsRegistry);
+
 var app = builder.BuildAndConfigure();
 await app.WaitForUpdatedDatabase();
 app.Run();

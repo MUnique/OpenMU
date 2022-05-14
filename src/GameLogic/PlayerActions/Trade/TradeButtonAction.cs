@@ -100,6 +100,7 @@ public class TradeButtonAction : BaseTradeAction
             this.ResetTradeState(trader);
             this.CallPlugIn(traderItems, trader, tradingPartner);
             this.CallPlugIn(tradePartnerItems, tradingPartner, trader);
+            FinishedTrades.Add(1);
             return TradeResult.Success;
         }
         catch (Exception exception)
