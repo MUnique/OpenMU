@@ -177,6 +177,8 @@ public static class Extensions
         app.MapControllers();
         app.MapSubscribeHandler();
 
+        ConnectionConfigurator.Initialize(app.Services.GetService<IDatabaseConnectionSettingProvider>() ?? new ConfigFileDatabaseConnectionStringProvider());
+
         return app;
     }
 

@@ -198,6 +198,8 @@ internal sealed class Program : IDisposable
         _ = DataInitialization.Id;
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
+        ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+
         var host = Host.CreateDefaultBuilder()
             .ConfigureLogging(configureLogging =>
             {

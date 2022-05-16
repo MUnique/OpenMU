@@ -2,17 +2,14 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
-using OpenTelemetry;
-using OpenTelemetry.Metrics;
-using Serilog;
+using MUnique.OpenMU.Persistence.EntityFramework;
 
 namespace MUnique.OpenMU.Dapr.Common;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Hosting;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -53,6 +50,8 @@ public static class DaprService
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = serviceName, Version = "v1" });
         });
+
+        services.AddSingleton<IDatabaseConnectionSettingProvider, SecretStoreDatabaseConnectionSettingsProvider>();
 
         builder.UseLoki(serviceName);
 

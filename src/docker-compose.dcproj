@@ -10,8 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="Dapr\components\config.yaml" />
+    <None Include="Dapr\components\localSecretStore.yaml" />
     <None Include="Dapr\components\login-state.yaml" />
     <None Include="Dapr\components\pubsub.yaml" />
+    <None Include="Dapr\components\secrets.json" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>

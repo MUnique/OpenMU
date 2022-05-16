@@ -124,7 +124,6 @@ services:
       - "44405:44405"
       - "9464" # Prometheus
     environment:
-      DB_HOST: database
       APPID: connectServer
     depends_on:
       - pubsub
@@ -176,8 +175,6 @@ services:
     build:
       context: .
       dockerfile: Dapr/FriendServer.Host/Dockerfile
-    environment:
-      DB_HOST: database
     ports:
       - "50012:50001"
       - "9464" # Prometheus
@@ -205,8 +202,6 @@ services:
     build:
       context: .
       dockerfile: Dapr/GuildServer.Host/Dockerfile
-    environment:
-      DB_HOST: database
     ports:
       - "50013:50001"
       - "9464" # Prometheus
@@ -234,7 +229,6 @@ services:
       context: .
       dockerfile: Dapr/ChatServer.Host/Dockerfile
     environment:
-      DB_HOST: database
       APPID: chatServer
     ports:
       - "55980:55980"
@@ -268,7 +262,6 @@ services:
       - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:80
-      DB_HOST: database
     depends_on:
       - zipkin
       - database
@@ -297,7 +290,6 @@ services:
       - "9464" # Prometheus
     environment:
       ASPNETCORE_URLS: http://+:80
-      DB_HOST: database
       PATH_BASE: /admin/
 
   adminPanel-dapr:
@@ -326,7 +318,6 @@ services:
       - "55901:55901"
       - "9464" # Prometheus
     environment:
-      DB_HOST: database
       GS_ID: 0
       APPID: gameServer1
       PATH_BASE: /gameServer/1/
