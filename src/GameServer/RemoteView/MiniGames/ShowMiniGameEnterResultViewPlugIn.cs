@@ -35,6 +35,8 @@ public class ShowMiniGameEnterResultViewPlugIn : IShowMiniGameEnterResultPlugIn
                 this._player.Connection?.SendDevilSquareEnterResult(enterResult.ToDevilSquareEnterResult());
                 break;
             case MiniGameType.BloodCastle:
+                this._player.Connection?.SendBloodCastleEnterResult(enterResult.ToBloodCastleEnterResult());
+                break;
             case MiniGameType.ChaosCastle:
                 throw new NotImplementedException();
             case MiniGameType.Undefined:

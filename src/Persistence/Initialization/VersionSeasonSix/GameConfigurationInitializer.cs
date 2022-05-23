@@ -120,6 +120,7 @@ public class GameConfigurationInitializer : InitializerBase
         new Quest(this.Context, this.GameConfiguration).Initialize();
         new Quests(this.Context, this.GameConfiguration).Initialize();
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
+        new BloodCastleInitializer(this.Context, this.GameConfiguration).Initialize();
         //// TODO: ItemSetGroups
     }
 

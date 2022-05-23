@@ -85,6 +85,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 233;
             def.Designation = "Messenger of Arch.";
+            def.NpcWindow = NpcWindow.BloodCastle;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             this.GameConfiguration.Monsters.Add(def);
         }
