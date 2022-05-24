@@ -42,5 +42,5 @@ Defines the attribute which should be set/unset.
 |-------|------|-------------|
 | 1 | Safezone | The coordinate is a safezone. |
 | 4 | Blocked | The coordinate is blocked and can't be passed by a character. |
-| 4 | BlockedByTrap | The coordinate is blocked by a trap and can't be passed by a character. |
+| 8 | BlockedByTrap | The coordinate is blocked by a trap and can't be passed by a character. |
 | 16 | BlockedByImperialGate | The coordinate is blocked by a imperial battle gate and can't be passed by a character. |

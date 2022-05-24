@@ -10650,7 +10650,7 @@ public readonly ref struct ChangeTerrainAttributes
         /// <summary>
         /// The coordinate is blocked by a trap and can't be passed by a character.
         /// </summary>
-            BlockedByTrap = 4,
+            BlockedByTrap = 8,
 
         /// <summary>
         /// The coordinate is blocked by a imperial battle gate and can't be passed by a character.

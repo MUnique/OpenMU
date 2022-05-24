@@ -4026,7 +4026,7 @@
             <EnumValue>
               <Name>BlockedByTrap</Name>
               <Description>The coordinate is blocked by a trap and can't be passed by a character.</Description>
-              <Value>4</Value>
+              <Value>8</Value>
             </EnumValue>
             <EnumValue>
               <Name>BlockedByImperialGate</Name>
