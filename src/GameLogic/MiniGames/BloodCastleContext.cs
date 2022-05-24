@@ -46,6 +46,14 @@ public sealed class BloodCastleContext : MiniGameContext
         foreach (var player in players)
         {
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
+
+            var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
+            {
+                (13, 15, 2, 8),
+            };
+
+            player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
+                .ChangeAttributes(false, TerrainAttributeType.Blocked, false, areas);
         }
 
         base.OnGameStart(players);
