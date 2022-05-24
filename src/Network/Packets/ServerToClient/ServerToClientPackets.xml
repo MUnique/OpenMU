@@ -4011,7 +4011,7 @@
       <Enums>
         <Enum>
           <Name>TerrainAttributeType</Name>
-          <Description>Defines the attribute which should be set/unset.</Description>
+          <Description>Defines the attribute which should be set/unset. It's a Flags enumeration.</Description>
           <Values>
             <EnumValue>
               <Name>Safezone</Name>
@@ -4019,18 +4019,23 @@
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
+              <Name>Character</Name>
+              <Description>The coordinate is occupied by a character.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
               <Name>Blocked</Name>
               <Description>The coordinate is blocked and can't be passed by a character.</Description>
               <Value>4</Value>
             </EnumValue>
             <EnumValue>
-              <Name>BlockedByTrap</Name>
-              <Description>The coordinate is blocked by a trap and can't be passed by a character.</Description>
+              <Name>NoGround</Name>
+              <Description>The coordinate is blocked, because there is no ground and can't be passed by a character.</Description>
               <Value>8</Value>
             </EnumValue>
             <EnumValue>
-              <Name>BlockedByImperialGate</Name>
-              <Description>The coordinate is blocked by a imperial battle gate and can't be passed by a character.</Description>
+              <Name>Water</Name>
+              <Description>The coordinate is blocked by water and can't be passed by a character.</Description>
               <Value>16</Value>
             </EnumValue>
           </Values>

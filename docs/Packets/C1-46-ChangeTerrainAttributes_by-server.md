@@ -36,11 +36,12 @@ Length: 4 Bytes
 
 ### TerrainAttributeType Enum
 
-Defines the attribute which should be set/unset.
+Defines the attribute which should be set/unset. It's a Flags enumeration.
 
 | Value | Name | Description |
 |-------|------|-------------|
 | 1 | Safezone | The coordinate is a safezone. |
+| 2 | Character | The coordinate is occupied by a character. |
 | 4 | Blocked | The coordinate is blocked and can't be passed by a character. |
-| 8 | BlockedByTrap | The coordinate is blocked by a trap and can't be passed by a character. |
-| 16 | BlockedByImperialGate | The coordinate is blocked by a imperial battle gate and can't be passed by a character. |
+| 8 | NoGround | The coordinate is blocked, because there is no ground and can't be passed by a character. |
+| 16 | Water | The coordinate is blocked by water and can't be passed by a character. |

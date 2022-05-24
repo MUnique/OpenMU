@@ -10633,7 +10633,7 @@ public readonly ref struct EffectId
 public readonly ref struct ChangeTerrainAttributes
 {
     /// <summary>
-    /// Defines the attribute which should be set/unset.
+    /// Defines the attribute which should be set/unset. It's a Flags enumeration.
     /// </summary>
     public enum TerrainAttributeType
     {
@@ -10643,19 +10643,24 @@ public readonly ref struct ChangeTerrainAttributes
             Safezone = 1,
 
         /// <summary>
+        /// The coordinate is occupied by a character.
+        /// </summary>
+            Character = 2,
+
+        /// <summary>
         /// The coordinate is blocked and can't be passed by a character.
         /// </summary>
             Blocked = 4,
 
         /// <summary>
-        /// The coordinate is blocked by a trap and can't be passed by a character.
+        /// The coordinate is blocked, because there is no ground and can't be passed by a character.
         /// </summary>
-            BlockedByTrap = 8,
+            NoGround = 8,
 
         /// <summary>
-        /// The coordinate is blocked by a imperial battle gate and can't be passed by a character.
+        /// The coordinate is blocked by water and can't be passed by a character.
         /// </summary>
-            BlockedByImperialGate = 16,
+            Water = 16,
     }
 
     private readonly Span<byte> _data;
