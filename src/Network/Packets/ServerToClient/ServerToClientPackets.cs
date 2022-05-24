@@ -10627,6 +10627,205 @@ public readonly ref struct EffectId
 
 
 /// <summary>
+/// Is sent by the server when: The server wants to alter the terrain attributes of a map at runtime.
+/// Causes reaction on client side: The client updates the terrain attributes on its side.
+/// </summary>
+public readonly ref struct ChangeTerrainAttributes
+{
+    /// <summary>
+    /// Defines the attribute which should be set/unset.
+    /// </summary>
+    public enum TerrainAttributeType
+    {
+        /// <summary>
+        /// The coordinate is a safezone.
+        /// </summary>
+            Safezone = 1,
+
+        /// <summary>
+        /// The coordinate is blocked and can't be passed by a character.
+        /// </summary>
+            Blocked = 4,
+
+        /// <summary>
+        /// The coordinate is blocked by a trap and can't be passed by a character.
+        /// </summary>
+            BlockedByTrap = 4,
+
+        /// <summary>
+        /// The coordinate is blocked by a imperial battle gate and can't be passed by a character.
+        /// </summary>
+            BlockedByImperialGate = 16,
+    }
+
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChangeTerrainAttributes"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChangeTerrainAttributes(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChangeTerrainAttributes"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChangeTerrainAttributes(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            this.Type = false;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x46;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public bool Type
+    {
+        get => this._data[3..].GetBoolean();
+        set => this._data[3..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the attribute.
+    /// </summary>
+    public ChangeTerrainAttributes.TerrainAttributeType Attribute
+    {
+        get => (TerrainAttributeType)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the set attribute.
+    /// </summary>
+    public bool SetAttribute
+    {
+        get => this._data[5..].GetBoolean();
+        set => this._data[5..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the area count.
+    /// </summary>
+    public byte AreaCount
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="TerrainArea"/> of the specified index.
+    /// </summary>
+        public TerrainArea this[int index] => new (this._data[(7 + index * TerrainArea.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChangeTerrainAttributes"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChangeTerrainAttributes(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChangeTerrainAttributes"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ChangeTerrainAttributes packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="TerrainArea"/>.
+    /// </summary>
+    /// <param name="areasCount">The count of <see cref="TerrainArea"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int areasCount) => areasCount * TerrainArea.Length + 7;
+
+
+/// <summary>
+/// Defines the area which should be changed..
+/// </summary>
+public readonly ref struct TerrainArea
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TerrainArea"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public TerrainArea(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets or sets the start x.
+    /// </summary>
+    public byte StartX
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the start y.
+    /// </summary>
+    public byte StartY
+    {
+        get => this._data[1];
+        set => this._data[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the end x.
+    /// </summary>
+    public byte EndX
+    {
+        get => this._data[2];
+        set => this._data[2] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the end y.
+    /// </summary>
+    public byte EndY
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: After a player achieved or lost something.
 /// Causes reaction on client side: An effect is shown for the affected player.
 /// </summary>
