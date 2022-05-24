@@ -22,6 +22,9 @@ internal abstract class BloodCastleBase : BaseMapInitializer
     }
 
     /// <inheritdoc/>
+    protected override byte SafezoneMapNumber => Lorencia.Number;
+
+    /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
         yield return this.CreateMonsterSpawn(this.NpcDictionary[131], 014, 075, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Castle Gate
