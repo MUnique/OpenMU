@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Dapr.Common;
 
 using global::Dapr.Client;
 using Microsoft.EntityFrameworkCore;
+using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.Persistence.EntityFramework;
 
 /// <summary>
@@ -16,6 +17,7 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
 {
     private const string SecretStoreName = "secrets";
     private readonly DaprClient _daprClient;
+    private readonly Dictionary<string, ConnectionSetting> _connectionSettings = new(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SecretStoreDatabaseConnectionSettingsProvider"/> class.
@@ -24,6 +26,20 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
     public SecretStoreDatabaseConnectionSettingsProvider(DaprClient daprClient)
     {
         this._daprClient = daprClient;
+
+        var secrets = this._daprClient.GetBulkSecretAsync(SecretStoreName).WaitAndUnwrapException();
+        foreach (var secret in secrets.Where(kvp => string.Equals(kvp.Key.Split(':')[0], "connectionStrings", StringComparison.InvariantCultureIgnoreCase)))
+        {
+            var contextTypeName = secret.Value.Keys.First().Split(':').Last();
+            var setting = new ConnectionSetting
+            {
+                ContextTypeName = contextTypeName,
+                ConnectionString = secret.Value.Values.First()!,
+                DatabaseEngine = DatabaseEngine.Npgsql,
+            };
+
+            this._connectionSettings.Add(contextTypeName, setting);
+        }
     }
 
     /// <inheritdoc />
@@ -36,15 +52,11 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
     /// <inheritdoc />
     public ConnectionSetting GetConnectionSetting(Type contextType)
     {
-        // not optimal ... how about loading them all at once
-        var secret = this._daprClient.GetSecretAsync(SecretStoreName, $"connectionStrings:{contextType.FullName}").GetAwaiter().GetResult();
-        var result = new ConnectionSetting
+        if (this._connectionSettings.TryGetValue(contextType.FullName ?? contextType.Name, out var result))
         {
-            ContextTypeName = contextType.FullName,
-            ConnectionString = secret.Values.First(),
-            DatabaseEngine = DatabaseEngine.Npgsql,
-        };
+            return result;
+        }
 
-        return result;
+        throw new InvalidOperationException($"No connection string for type '{contextType.FullName}' stored in the secret store.");
     }
 }
