@@ -13,8 +13,7 @@ public class AutoFlushPipeWriter : PipeWriter
     private readonly PipeWriter _target;
     private readonly ILogger _logger;
     private readonly Counter<long> _writeCounter;
-
-    private readonly SemaphoreSlim _flushLock;
+    private readonly SemaphoreSlim _outputLock;
 
     private int _isMarkedForFlushing;
 
@@ -22,14 +21,15 @@ public class AutoFlushPipeWriter : PipeWriter
     /// Initializes a new instance of the <see cref="AutoFlushPipeWriter"/> class.
     /// </summary>
     /// <param name="target">The target <see cref="PipeWriter"/>.</param>
+    /// <param name="outputLock">The semaphore which is used to synchronize flushing with writing to the pipe.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="writeCounter">A counter for the written bytes.</param>
-    public AutoFlushPipeWriter(PipeWriter target, ILogger logger, Counter<long> writeCounter)
+    public AutoFlushPipeWriter(PipeWriter target, SemaphoreSlim outputLock, ILogger logger, Counter<long> writeCounter)
     {
         this._target = target;
         this._logger = logger;
         this._writeCounter = writeCounter;
-        this._flushLock = new (1);
+        this._outputLock = outputLock;
     }
 
     /// <inheritdoc />
@@ -81,7 +81,7 @@ public class AutoFlushPipeWriter : PipeWriter
         // We wait 10 milliseconds, maybe there will be more bytes to be flushed.
         await Task.Delay(10);
 
-        if (!await this._flushLock.WaitAsync(10))
+        if (!await this._outputLock.WaitAsync(10))
         {
             return;
         }
@@ -97,7 +97,7 @@ public class AutoFlushPipeWriter : PipeWriter
         finally
         {
             this._isMarkedForFlushing = 0;
-            this._flushLock.Release();
+            this._outputLock.Release();
         }
     }
 }

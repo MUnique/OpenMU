@@ -65,7 +65,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public EndPoint? EndPoint => this._remoteEndPoint;
 
     /// <inheritdoc />
-    public PipeWriter Output => this._outputWriter ??= new AutoFlushPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, this._logger, OutgoingBytesCounter);
+    public PipeWriter Output => this._outputWriter ??= new AutoFlushPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, this.OutputLock, this._logger, OutgoingBytesCounter);
 
     /// <inheritdoc />
     public SemaphoreSlim OutputLock { get; }
