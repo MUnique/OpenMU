@@ -69,8 +69,7 @@ public static class Extensions
     public static IServiceCollection AddManageableServerRegistry(this IServiceCollection services)
     {
         services.AddSingleton<ManagableServerRegistry>()
-            .AddSingleton<IServerProvider>(s => s.GetService<ManagableServerRegistry>()!)
-            .AddControllers().AddApplicationPart(typeof(ServerStateController).Assembly);
+            .AddSingleton<IServerProvider>(s => s.GetService<ManagableServerRegistry>()!);
         return services;
     }
 

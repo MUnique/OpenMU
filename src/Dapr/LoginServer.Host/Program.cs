@@ -10,8 +10,7 @@ var builder = DaprService.CreateBuilder("LoginServer", args);
 builder.Services
     .AddSingleton<PersistentLoginServer>()
     .AddHostedService<LoginStateCleanup>()
-    .AddSingleton<GameServerRegistry>()
-    .AddManageableServerRegistry(); // todo: remove this line; somehow it picks up the ServerStateController, which is not used by the login server.
+    .AddSingleton<GameServerRegistry>();
 
 var app = builder.BuildAndConfigure();
 
