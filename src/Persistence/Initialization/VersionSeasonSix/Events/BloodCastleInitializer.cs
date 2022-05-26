@@ -12,26 +12,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class BloodCastleInitializer : InitializerBase
 {
     /// <summary>
-    /// The <see cref="MiniGameSpawnWave.WaveNumber"/> for the first wave.
-    /// </summary>
-    internal const int FirstWaveNumber = 1;
-
-    /// <summary>
-    /// The <see cref="MiniGameSpawnWave.WaveNumber"/> for the second wave.
-    /// </summary>
-    internal const int SecondWaveNumber = 2;
-
-    /// <summary>
-    /// The <see cref="MiniGameSpawnWave.WaveNumber"/> for the third wave.
-    /// </summary>
-    internal const int ThirdWaveNumber = 3;
-
-    /// <summary>
-    /// The <see cref="MiniGameSpawnWave.WaveNumber"/> for the boss wave.
-    /// </summary>
-    internal const int BossWaveNumber = 10;
-
-    /// <summary>
     /// Gets the rewards based on game level and rank.
     /// </summary>
     private static readonly List<(int GameLevel, int Rank, int Experience, int Money)> RewardTable = new ()
@@ -161,11 +141,10 @@ internal class BloodCastleInitializer : InitializerBase
         bloodCastle.TicketItem = this.GameConfiguration.Items.Single(item => item.Group == 13 && item.Number == 18);
         bloodCastle.TicketItemLevel = level;
         bloodCastle.GameLevel = level;
-        bloodCastle.MapCreationPolicy = MiniGameMapCreationPolicy.OnePerParty;
+        bloodCastle.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
         bloodCastle.SaveRankingStatistics = true;
 
         this.CreateRewards(level, bloodCastle);
-        this.CreateWaves(bloodCastle);
 
         return bloodCastle;
     }
@@ -188,39 +167,5 @@ internal class BloodCastleInitializer : InitializerBase
             moneyReward.RewardAmount = rewardTableEntry.Money;
             bloodCastle.Rewards.Add(moneyReward);
         }
-    }
-
-    private void CreateWaves(MiniGameDefinition bloodCastle)
-    {
-        var firstWave = this.Context.CreateNew<MiniGameSpawnWave>();
-        firstWave.WaveNumber = FirstWaveNumber;
-        firstWave.Description = $"The first wave of blood castle {bloodCastle.GameLevel}";
-        firstWave.StartTime = TimeSpan.Zero;
-        firstWave.EndTime = TimeSpan.FromMinutes(7);
-        bloodCastle.SpawnWaves.Add(firstWave);
-
-        var secondWave = this.Context.CreateNew<MiniGameSpawnWave>();
-        secondWave.WaveNumber = SecondWaveNumber;
-        secondWave.Description = $"The second wave of blood castle {bloodCastle.GameLevel}";
-        secondWave.Message = "Lets continue with some stronger enemies ...";
-        secondWave.StartTime = TimeSpan.FromMinutes(5);
-        secondWave.EndTime = TimeSpan.FromMinutes(14);
-        bloodCastle.SpawnWaves.Add(secondWave);
-
-        var thirdWave = this.Context.CreateNew<MiniGameSpawnWave>();
-        thirdWave.WaveNumber = ThirdWaveNumber;
-        thirdWave.Description = $"The third wave of blood castle {bloodCastle.GameLevel}";
-        thirdWave.Message = "Still alive? I have more for you.";
-        thirdWave.StartTime = TimeSpan.FromMinutes(12);
-        thirdWave.EndTime = TimeSpan.FromMinutes(20);
-        bloodCastle.SpawnWaves.Add(thirdWave);
-
-        var bossWave = this.Context.CreateNew<MiniGameSpawnWave>();
-        bossWave.WaveNumber = BossWaveNumber;
-        bossWave.Description = $"The boss wave of blood castle {bloodCastle.GameLevel}";
-        bossWave.Message = "Beware of the bosses! You have 5 minutes left.";
-        bossWave.StartTime = TimeSpan.FromMinutes(15);
-        bossWave.EndTime = TimeSpan.FromMinutes(20);
-        bloodCastle.SpawnWaves.Add(bossWave);
     }
 }

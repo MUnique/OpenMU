@@ -198,6 +198,11 @@ public class MapInitializer : IMapInitializer
             this._logger.LogDebug("Creating soccer ball {spawn}", spawnArea);
             npc = new SoccerBall(spawnArea, monsterDef, createdMap);
         }
+        else if (monsterDef.ObjectKind == NpcObjectKind.Destructible)
+        {
+            this._logger.LogDebug("Creating destructible {spawn}", spawnArea);
+            npc = new Destructible(spawnArea, monsterDef, createdMap);
+        }
         else
         {
             this._logger.LogDebug("Creating npc {spawn}", spawnArea);

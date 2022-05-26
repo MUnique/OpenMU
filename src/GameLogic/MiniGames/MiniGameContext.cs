@@ -72,6 +72,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// </summary>
     public MiniGameState State { get; private set; }
 
+    /// <summary>
+    /// Gets a value indicating whether the next state is playing.
+    /// </summary>
+    public bool IsPlayingNext { get; private set; }
+
     /// <inheritdoc />
     public bool IsEventRunning => this.State == MiniGameState.Playing;
 
@@ -185,6 +190,16 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <param name="sender">The sender (monster) of the event.</param>
     /// <param name="e">The event parameters.</param>
     protected virtual void OnMonsterDied(object? sender, DeathInformation e)
+    {
+        // can be overwritten
+    }
+
+    /// <summary>
+    /// Will be called when a destructible of the game has been destroyed.
+    /// </summary>
+    /// <param name="sender">The sender (destructible) of the event.</param>
+    /// <param name="e">The event parameters.</param>
+    protected virtual void OnDestructibleDied(object? sender, DestructibleDeathInformation e)
     {
         // can be overwritten
     }
@@ -364,8 +379,10 @@ public class MiniGameContext : Disposable, IEventStateProvider
                 return;
             }
 
+            this.IsPlayingNext = true;
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
             await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+            this.IsPlayingNext = false;
 
             await this.StartAsync().ConfigureAwait(false);
 
@@ -481,6 +498,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
         if (args.Object is Monster monster)
         {
             monster.Died += this.OnMonsterDied;
+        }
+
+        if (args.Object is Destructible destructible)
+        {
+            destructible.Died += this.OnDestructibleDied;
         }
     }
 

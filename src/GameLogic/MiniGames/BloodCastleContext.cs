@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames;
 
+using MUnique.OpenMU.GameLogic.Views.Character;
 using Nito.Disposables.Internals;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -17,6 +18,9 @@ public sealed class BloodCastleContext : MiniGameContext
 
     private IReadOnlyCollection<(string Name, int Score, int BonusMoney, int BonusExp)>? _highScoreTable;
 
+    private bool _rewarded;
+    private int _monsterDiedCount;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleContext"/> class.
     /// </summary>
@@ -29,6 +33,45 @@ public sealed class BloodCastleContext : MiniGameContext
     {
     }
 
+    /// <summary>
+    /// Player interact with Archangel.
+    /// </summary>
+    /// <param name="player">The player who talks to Archangel.</param>
+    public void TalkToNpcArchangel(Player player)
+    {
+        if (this._rewarded)
+        {
+            player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x2E);
+        }
+        else if (this.IsPlayingNext || this.State == MiniGameState.Playing)
+        {
+            player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x18);
+        }
+        else
+        {
+            player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x16);
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnDestructibleDied(object? sender, DestructibleDeathInformation e)
+    {
+        base.OnDestructibleDied(sender, e);
+
+        switch (e.ObjectNumber)
+        {
+            case 131:
+                _ = this.ForEachPlayerAsync(player => this.DoorToggle(player));
+                break;
+
+            case 132:
+                break;
+
+            default:
+                break;
+        }
+    }
+
     /// <inheritdoc />
     protected override void OnMonsterDied(object? sender, DeathInformation e)
     {
@@ -37,6 +80,13 @@ public sealed class BloodCastleContext : MiniGameContext
         if (this._gameStates.TryGetValue(e.KillerName, out var state))
         {
             state.AddScore(this.Definition.GameLevel);
+        }
+
+        this._monsterDiedCount++;
+
+        if (this._monsterDiedCount == 50)
+        {
+            _ = this.ForEachPlayerAsync(player => this.BridgeToggle(player));
         }
     }
 
@@ -47,13 +97,7 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
 
-            var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
-            {
-                (13, 15, 2, 8),
-            };
-
-            player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
-                .ChangeAttributes(false, TerrainAttributeType.Blocked, false, areas);
+            this.EntranceToggle(player);
         }
 
         base.OnGameStart(players);
@@ -96,6 +140,41 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             player.ViewPlugIns.GetPlugIn<IMiniGameScoreTableViewPlugin>()?.ShowScoreTable((byte)state.Rank, table);
         }
+    }
+
+    private void EntranceToggle(Player player)
+    {
+        var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
+        {
+            (13, 15, 15, 23),
+        };
+
+        player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
+            .ChangeAttributes(false, TerrainAttributeType.Blocked, true, areas);
+    }
+
+    private void BridgeToggle(Player player)
+    {
+        var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
+        {
+            (13, 70, 15, 75),
+        };
+
+        player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
+            .ChangeAttributes(false, TerrainAttributeType.NoGround, true, areas);
+    }
+
+    private void DoorToggle(Player player)
+    {
+        var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
+        {
+            (13, 70, 15, 80),
+            (11, 80, 25, 89),
+            (08, 80, 10, 83),
+        };
+
+        player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
+            .ChangeAttributes(false, TerrainAttributeType.Blocked, true, areas);
     }
 
     private sealed class PlayerGameState
