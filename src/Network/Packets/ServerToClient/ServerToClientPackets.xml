@@ -3943,6 +3943,107 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>46</Code>
+      <Name>ChangeTerrainAttributes</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server wants to alter the terrain attributes of a map at runtime.</SentWhen>
+      <CausedReaction>The client updates the terrain attributes on its side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Type</Name>
+          <DefaultValue>false</DefaultValue>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>TerrainAttributeType</TypeName>
+          <Name>Attribute</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Boolean</Type>
+          <Name>SetAttribute</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>AreaCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>TerrainArea</TypeName>
+          <Name>Areas</Name>
+          <ItemCountField>AreaCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>TerrainArea</Name>
+          <Description>Defines the area which should be changed.</Description>
+          <Length>4</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>StartX</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>Byte</Type>
+              <Name>StartY</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>EndX</Name>
+            </Field>
+            <Field>
+              <Index>3</Index>
+              <Type>Byte</Type>
+              <Name>EndY</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+      <Enums>
+        <Enum>
+          <Name>TerrainAttributeType</Name>
+          <Description>Defines the attribute which should be set/unset. It's a Flags enumeration.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Safezone</Name>
+              <Description>The coordinate is a safezone.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Character</Name>
+              <Description>The coordinate is occupied by a character.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Blocked</Name>
+              <Description>The coordinate is blocked and can't be passed by a character.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NoGround</Name>
+              <Description>The coordinate is blocked, because there is no ground and can't be passed by a character.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Water</Name>
+              <Description>The coordinate is blocked by water and can't be passed by a character.</Description>
+              <Value>16</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>48</Code>
       <Name>ShowEffect</Name>
       <Length>6</Length>

@@ -78,6 +78,7 @@
   * [C1 44 - PartyHealthUpdate (by server)](C1-44-PartyHealthUpdate_by-server.md)
   * [C2 45 - AddTransformedCharactersToScope075 (by server)](C2-45-AddTransformedCharactersToScope075_by-server.md)
   * [C2 45 - AddTransformedCharactersToScope (by server)](C2-45-AddTransformedCharactersToScope_by-server.md)
+  * [C1 46 - ChangeTerrainAttributes (by server)](C1-46-ChangeTerrainAttributes_by-server.md)
   * [C1 48 - ShowEffect (by server)](C1-48-ShowEffect_by-server.md)
   * [C1 50 - GuildJoinRequest (by server)](C1-50-GuildJoinRequest_by-server.md)
   * [C1 51 - GuildJoinResponse (by server)](C1-51-GuildJoinResponse_by-server.md)
