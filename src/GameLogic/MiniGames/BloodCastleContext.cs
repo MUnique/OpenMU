@@ -68,9 +68,12 @@ public sealed class BloodCastleContext : MiniGameContext
 
             case 132:
                 var killer = this._gameContext.GetPlayerByCharacterName(e.KillerName)!;
-                var items = this._gameContext.Configuration.Items
-                    .Where(i => i.Number == 19 && i.Group == 0).ToList();
-                var item = this._gameContext.DropGenerator.GenerateRandomItem(items)!;
+                var itemDefinition = this._gameContext.Configuration.Items
+                    .Where(i => i.Number == 19 && i.Group == 13).First();
+                var item = new TemporaryItem
+                {
+                    Definition = itemDefinition
+                };
                 var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
                 var dropCoordinates = this.Map.Terrain.GetRandomCoordinate(killer.Position, 4);
                 var droppedItem = new DroppedItem(item, dropCoordinates, this.Map, null, owners);
