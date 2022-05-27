@@ -16,6 +16,7 @@ public sealed class BloodCastleContext : MiniGameContext
 {
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
 
+    private readonly IGameContext _gameContext;
     private IReadOnlyCollection<(string Name, int Score, int BonusMoney, int BonusExp)>? _highScoreTable;
 
     private bool _rewarded;
@@ -31,6 +32,7 @@ public sealed class BloodCastleContext : MiniGameContext
     public BloodCastleContext(MiniGameMapKey key, MiniGameDefinition definition, IGameContext gameContext, IMapInitializer mapInitializer)
         : base(key, definition, gameContext, mapInitializer)
     {
+        this._gameContext = gameContext;
     }
 
     /// <summary>
@@ -65,6 +67,14 @@ public sealed class BloodCastleContext : MiniGameContext
                 break;
 
             case 132:
+                var killer = this._gameContext.GetPlayerByCharacterName(e.KillerName)!;
+                var items = this._gameContext.Configuration.Items
+                    .Where(i => i.Number == 19 && i.Group == 0).ToList();
+                var item = this._gameContext.DropGenerator.GenerateRandomItem(items)!;
+                var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
+                var dropCoordinates = this.Map.Terrain.GetRandomCoordinate(killer.Position, 4);
+                var droppedItem = new DroppedItem(item, dropCoordinates, this.Map, null, owners);
+                this.Map.Add(droppedItem);
                 break;
 
             default:

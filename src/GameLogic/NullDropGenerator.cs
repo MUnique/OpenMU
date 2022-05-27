@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
+
 /// <summary>
 /// A drop generator which generates nothing.
 /// </summary>
@@ -41,6 +43,12 @@ public class NullDropGenerator : IDropGenerator
     {
         droppedMoney = null;
         dropEffect = ItemDropEffect.Undefined;
+        return null;
+    }
+
+    /// <inheritdoc />
+    public Item? GenerateRandomItem(ICollection<ItemDefinition>? possibleItems)
+    {
         return null;
     }
 }

@@ -303,7 +303,7 @@ public class DefaultDropGenerator : IDropGenerator
         return true;
     }
 
-    private Item? GenerateRandomItem(ICollection<ItemDefinition>? possibleItems)
+    public Item? GenerateRandomItem(ICollection<ItemDefinition>? possibleItems)
     {
         if (possibleItems is null || !possibleItems.Any())
         {

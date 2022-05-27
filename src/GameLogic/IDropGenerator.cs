@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
+
 /// <summary>
 /// The interface for a drop generator.
 /// </summary>
@@ -36,4 +38,11 @@ public interface IDropGenerator
     /// <param name="droppedMoney">The dropped money, if available.</param>
     /// <returns>The generated item or <see langword="null"/>.</returns>
     Item? GenerateItemDrop(IEnumerable<DropItemGroup> groups, out ItemDropEffect? dropEffect, out uint? droppedMoney);
+
+    /// <summary>
+    /// Generates an item based on a <see cref="ItemDefinition"/>s.
+    /// </summary>
+    /// <param name="possibleItems">The <see cref="ItemDefinition"/>s which define which items are possible.</param>
+    /// <returns>The generated item or <see langword="null"/>.</returns>
+    Item? GenerateRandomItem(ICollection<ItemDefinition>? possibleItems);
 }
