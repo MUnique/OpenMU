@@ -16,7 +16,7 @@ using System.Threading;
 public sealed class BloodCastleContext : MiniGameContext
 {
     private readonly IGameContext _gameContext;
-    private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new();
+    private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
 
     private IReadOnlyCollection<(string Name, int Score, int BonusMoney, int BonusExp)>? _highScoreTable;
 
