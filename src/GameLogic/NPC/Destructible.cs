@@ -8,15 +8,15 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
-using MUnique.OpenMU.Persistence;
 using System.Threading;
 
 /// <summary>
 /// The implementation of a destructible, which can attack players.
 /// </summary>
-public sealed class Destructible : NonPlayerCharacter, IDestructible
+public sealed class Destructible : NonPlayerCharacter, IAttackable
 {
     private int _health;
 
@@ -31,11 +31,6 @@ public sealed class Destructible : NonPlayerCharacter, IDestructible
     {
         this.Attributes = new DestructibleAttributeHolder(this);
     }
-
-    /// <summary>
-    /// Occurs when this instance died.
-    /// </summary>
-    public event EventHandler<DestructibleDeathInformation>? Died;
 
     /// <summary>
     /// Gets or sets the current health.
@@ -67,9 +62,6 @@ public sealed class Destructible : NonPlayerCharacter, IDestructible
 
     /// <inheritdoc/>
     public DeathInformation? LastDeath { get; private set; }
-
-    /// <inheritdoc/>
-    public DestructibleDeathInformation? DestructibleLastDeath { get; private set; }
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -132,9 +124,7 @@ public sealed class Destructible : NonPlayerCharacter, IDestructible
 
         if (killed)
         {
-            this.DestructibleLastDeath = new DestructibleDeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0, this.Definition.Number);
             this.OnDeath(attacker);
-            this.Died?.Invoke(this, this.DestructibleLastDeath);
         }
     }
 
@@ -160,6 +150,8 @@ public sealed class Destructible : NonPlayerCharacter, IDestructible
 
     private void OnDeath(IAttacker attacker)
     {
+        this.MiniGameEvent(attacker);
+
         this.ObserverLock.EnterWriteLock();
         try
         {
@@ -182,6 +174,15 @@ public sealed class Destructible : NonPlayerCharacter, IDestructible
         }
 
         this.RemoveFromMapAndDispose();
+    }
+
+    private void MiniGameEvent(IAttacker attacker)
+    {
+        var player = attacker as Player;
+        if (player?.CurrentMiniGame is BloodCastleContext bloodCastle)
+        {
+            bloodCastle.OnDestructibleDied(player, this);
+        }
     }
 
     private void RemoveFromMapAndDispose()

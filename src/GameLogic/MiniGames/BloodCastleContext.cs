@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames;
 
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using Nito.Disposables.Internals;
 using System.Collections.Concurrent;
@@ -14,11 +15,13 @@ using System.Threading;
 /// </summary>
 public sealed class BloodCastleContext : MiniGameContext
 {
-    private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
+    private readonly IGameContext _gameContext;
+    private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new();
 
     private IReadOnlyCollection<(string Name, int Score, int BonusMoney, int BonusExp)>? _highScoreTable;
 
-    private bool _rewarded;
+    private ushort _winnerId;
+    private ushort _itemOwner;
     private int _monsterDiedCount;
 
     /// <summary>
@@ -31,6 +34,7 @@ public sealed class BloodCastleContext : MiniGameContext
     public BloodCastleContext(MiniGameMapKey key, MiniGameDefinition definition, IGameContext gameContext, IMapInitializer mapInitializer)
         : base(key, definition, gameContext, mapInitializer)
     {
+        this._gameContext = gameContext;
     }
 
     /// <summary>
@@ -39,32 +43,39 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <param name="player">The player who talks to Archangel.</param>
     public void TalkToNpcArchangel(Player player)
     {
-        if (this._rewarded)
+        if (this._winnerId > 0)
         {
             player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x2E);
+            return;
         }
-        else if (this.IsPlayingNext || this.State == MiniGameState.Playing)
+
+        if (this.State != MiniGameState.Playing)
         {
             player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x18);
+            return;
         }
-        else
-        {
-            player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x16);
-        }
+
+        var item = player.Inventory?.Items.FirstOrDefault(item => item.Definition?.Group == 13 && item.Definition.Number == 19);
     }
 
-    /// <inheritdoc/>
-    protected override void OnDestructibleDied(object? sender, DestructibleDeathInformation e)
+    /// <summary>
+    /// Do something when a destructible of the game has been died.
+    /// </summary>
+    /// <param name="attacker">The player which killed destructible.</param>
+    /// <param name="destructible">The destructible was killed by player.</param>
+    public void OnDestructibleDied(Player attacker, Destructible destructible)
     {
-        base.OnDestructibleDied(sender, e);
-
-        switch (e.ObjectNumber)
+        switch (destructible.Definition.Number)
         {
             case 131:
                 _ = this.ForEachPlayerAsync(player => this.DoorToggle(player));
                 break;
 
             case 132:
+                var item = this._gameContext.PersistenceContextProvider.CreateNewContext().CreateNew<Item>();
+                item.Definition = this._gameContext.Configuration.Items.FirstOrDefault(def => def.Group == 13 && def.Number == 19);
+                var droppedItem = new DroppedItem(item, new Pathfinding.Point(14, 95), this.Map, attacker);
+                this.Map.Add(droppedItem);
                 break;
 
             default:
