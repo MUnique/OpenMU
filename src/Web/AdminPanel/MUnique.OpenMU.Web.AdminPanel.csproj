@@ -65,6 +65,7 @@
     <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
     <ProjectReference Include="..\..\Persistence\MUnique.OpenMU.Persistence.csproj" />
+    <ProjectReference Include="..\Map\MUnique.OpenMU.Web.Map.csproj" />
   </ItemGroup>
 
   <ItemGroup>

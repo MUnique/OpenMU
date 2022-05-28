@@ -6,12 +6,12 @@
 
 <div class="livemap">
     <LiveMap
-        Id="@this.MapFactory.GetMapContainerIdentifier(this.ServerId, this.MapId)"
-        MapController="@this._lazyController" />
+        Id="@this.MapFactory.GetMapContainerIdentifier(this.Server.Id, this.MapId)"
+        MapController="@this._lazyController"/>
     @if (this._controller is { })
     {
         <div class="livemap-players">
-            <div><MapPlayerList MapController="@this._controller" /></div>
+            <div><MapPlayerList MapController="@this._controller"/></div>
             <!-- TODO -->
             <div id="selected_info" style="padding-left: 8px; position: absolute; bottom: 0; display: none">
                 <p>Name: <span id="objectData_name"></span>, ID: <span id="objectData_id"></span>, Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</p>
@@ -29,10 +29,10 @@
     IMapFactory MapFactory { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the server id on which the map is hosted.
+    /// Gets or sets the server on which the map is hosted.
     /// </summary>
     [Parameter]
-    public int ServerId { get; set; }
+    public IObservableGameServer Server { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the map id.
@@ -49,7 +49,7 @@
     {
         _lazyController = new AsyncLazy<IMapController>(async () =>
         {
-            this._controller = await this.MapFactory.CreateMap(this.ServerId, this.MapId);
+            this._controller = await this.MapFactory.CreateMap(this.Server, this.MapId);
             await this.InvokeAsync(this.StateHasChanged);
             return this._controller;
         });

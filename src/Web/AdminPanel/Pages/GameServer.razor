@@ -1,0 +1,41 @@
+﻿@page "/gameServer/{gameServerNumber:int}/"
+
+@using MUnique.OpenMU.Web.Map.Components
+@using MUnique.OpenMU.Web.Map
+@using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.GameLogic
+
+@if (this._gameServer is not null)
+{
+    <CascadingValue Value="@_liveMapRoute" Name="LiveMapRoute">
+    <CascadingValue Value="@_gameServer">
+        <MapCards GameServer="@_gameServer"></MapCards>
+    </CascadingValue>
+    </CascadingValue>
+}
+
+@code {
+    private string _liveMapRoute = string.Empty;
+
+    private IObservableGameServer? _gameServer;
+
+    /// <summary>
+    /// Gets or sets the server id on which the map is hosted.
+    /// </summary>
+    [Inject]
+    public IList<IManageableServer> Servers { get; set; } = null!;
+
+    [Parameter]
+    public int GameServerNumber { get; set; }
+
+    /// <inheritdoc />
+    protected override Task OnInitializedAsync()
+    {
+        
+        var gameServer = this.Servers.OfType<IGameServer>().First(gs => gs.Id == this.GameServerNumber - 1);
+        var context = (gameServer as IGameServerContextProvider)?.Context ?? throw new InvalidOperationException("This map page just works in a All-In-One deployment.");
+        this._gameServer = new ObservableGameServerAdapter(context);
+        this._liveMapRoute = $"gameServer/{this.GameServerNumber}/map/";
+        return base.OnInitializedAsync();
+    }
+}

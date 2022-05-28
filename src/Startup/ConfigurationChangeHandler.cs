@@ -14,17 +14,17 @@ using MUnique.OpenMU.PlugIns;
 public class ConfigurationChangeHandler : IConfigurationChangePublisher
 {
     private readonly PlugInManager _plugInManager;
-    private readonly IConnectServer _connectServer;
+    private readonly ConnectServerContainer _connectServerContainer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigurationChangeHandler"/> class.
     /// </summary>
     /// <param name="plugInManager">The plug in manager.</param>
-    /// <param name="connectServer">The connect server.</param>
-    public ConfigurationChangeHandler(PlugInManager plugInManager, IConnectServer connectServer)
+    /// <param name="connectServerContainer">The connect server.</param>
+    public ConfigurationChangeHandler(PlugInManager plugInManager, ConnectServerContainer connectServerContainer)
     {
         this._plugInManager = plugInManager;
-        this._connectServer = connectServer;
+        this._connectServerContainer = connectServerContainer;
     }
 
     /// <inheritdoc />
@@ -63,13 +63,15 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
 
     private void OnConnectServerDefinitionChanged(Guid id, ConnectServerDefinition connectServerDefinition)
     {
-        if (this._connectServer.ServerState == ServerState.Started)
+        foreach (var connectServer in this._connectServerContainer)
         {
-            this._connectServer.Shutdown();
+            if (connectServer.ServerState == ServerState.Started)
+            {
+                connectServer.Shutdown();
 
-            //// todo: is applying new settings required?
-
-            this._connectServer.Start();
+                //// todo: is applying new settings required?
+                connectServer.Start();
+            }
         }
     }
 

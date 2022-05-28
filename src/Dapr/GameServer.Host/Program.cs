@@ -2,10 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer.Host;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.ServerClients;
 using MUnique.OpenMU.Web.Map;
 using GameServer = MUnique.OpenMU.GameServer.GameServer;
@@ -22,6 +20,7 @@ var builder = DaprService.CreateBuilder(serviceName, args);
 var services = builder.Services;
 services.AddSingleton<GameServer>()
     .AddSingleton<IGameServer>(s => s.GetService<GameServer>()!)
+    .AddSingleton<IList<IManageableServer>>(s => new List<IManageableServer>() { s.GetService<GameServer>()! })
     .AddSingleton(s => s.GetService<GameServer>()!.Context)
     .AddSingleton<IGameServerStateObserver, GameServerStatePublisher>()
     .AddSingleton<ILoginServer, LoginServer>()

@@ -484,7 +484,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     var planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments), new THREE.ShaderMaterial(TerrainShader_1.terrainShader));
                     _this.add(planeMesh);
                     var textureLoader = new THREE.TextureLoader();
-                    textureLoader.load('terrain/' + mapId, function (texture) {
+                    textureLoader.load('terrain/' + serverId + '/' + mapId, function (texture) {
                         texture.magFilter = THREE.NearestFilter;
                         TerrainShader_1.terrainShader.uniforms.tColor.value = texture;
                     });

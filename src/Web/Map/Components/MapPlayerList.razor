@@ -11,7 +11,9 @@
     </tr>
     </thead>
     <tbody>
-        @foreach (var player in this.MapController.Objects.Values.OfType<Player>()) // todo: not using the Player class, introduce an interface!
+        @foreach (var player in this.MapController.Objects.Values.OfType<Player>()) // todo: this leads to problems, because the list may have changed during enumeration.
+                                                                                    // additionally, ObjectsChanged also fires when monsters have changed (e.g. by being killed),
+                                                                                    // so we do a lot of unneeded iterations here.
         {
             <tr>
                 <td>@player.Name</td>

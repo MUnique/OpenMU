@@ -23,7 +23,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The game server to which game clients can connect.
 /// </summary>
-public sealed class GameServer : IGameServer, IDisposable
+public sealed class GameServer : IGameServer, IDisposable, IGameServerContextProvider
 {
     private readonly ILogger<GameServer> _logger;
 

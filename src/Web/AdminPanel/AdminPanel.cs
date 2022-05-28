@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
-
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.Threading;
@@ -14,12 +12,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Map.Map;
 using SixLabors.ImageSharp;
 using SixLabors.Memory;
 
 /// <summary>
 /// The admin panel host class which provides a web server over ASP.NET Core Kestrel.
 /// </summary>
+/// <remarks>
+/// This class is only used when running as all-in-one deployment.
+/// </remarks>
 public sealed class AdminPanel : IHostedService, IDisposable
 {
     private readonly IList<IManageableServer> _servers;
@@ -60,9 +62,11 @@ public sealed class AdminPanel : IHostedService, IDisposable
             .ConfigureServices(serviceCollection =>
             {
                 serviceCollection.AddSingleton(this._servers);
+                serviceCollection.AddSingleton<IServerProvider, LocalServerProvider>();
                 serviceCollection.AddSingleton(this._persistenceContextProvider);
                 serviceCollection.AddSingleton(this._changePublisher);
-                serviceCollection.AddSingleton(this._loggerFactory);
+                serviceCollection.AddSingleton(this._loggerFactory); 
+                serviceCollection.AddScoped<IMapFactory, JavascriptMapFactory>();
                 serviceCollection.AddBlazoredModal();
             })
             .ConfigureWebHostDefaults(webBuilder =>

@@ -12,10 +12,10 @@ public interface IMapFactory
     /// <summary>
     /// Creates the map for the specified server and map identifiers.
     /// </summary>
-    /// <param name="serverId">The server identifier.</param>
+    /// <param name="server">The server.</param>
     /// <param name="mapId">The map identifier.</param>
     /// <returns>A disposable map controller.</returns>
-    ValueTask<IMapController> CreateMap(int serverId, Guid mapId);
+    ValueTask<IMapController> CreateMap(IObservableGameServer server, Guid mapId);
 
     /// <summary>
     /// Gets the map identifier which is used to identify the container DOM-Element.
