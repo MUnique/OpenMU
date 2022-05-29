@@ -145,7 +145,14 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
 
         if (exception != null)
         {
-            this._logger.LogError(exception, "Connection will be disconnected, because of an exception");
+            if (exception is ConnectionResetException)
+            {
+                this._logger.LogInformation(exception, "Connection was closed.");
+            }
+            else
+            {
+                this._logger.LogError(exception, "Connection will be disconnected, because of an exception");
+            }
         }
 
         this.Output.Complete(exception);
