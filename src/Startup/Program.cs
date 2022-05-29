@@ -7,14 +7,13 @@ namespace MUnique.OpenMU.Startup;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading;
-using apache.log4net.Extensions.Logging;
-using log4net;
-using log4net.Config;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Debugging;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
@@ -32,7 +31,7 @@ using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
-using MUnique.OpenMU.PublicApi;
+using MUnique.OpenMU.Web.PublicApi;
 using Nito.AsyncEx.Synchronous;
 
 /// <summary>
@@ -40,13 +39,29 @@ using Nito.AsyncEx.Synchronous;
 /// </summary>
 internal sealed class Program : IDisposable
 {
-    private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + typeof(Program).GetTypeInfo().Namespace + ".exe.log4net.xml";
-    private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
     private static bool _confirmExit;
     private readonly IDictionary<int, IGameServer> _gameServers = new Dictionary<int, IGameServer>();
     private readonly IList<IManageableServer> _servers = new List<IManageableServer>();
+    private readonly Serilog.ILogger _logger;
 
     private IHost? _serverHost;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Program"/> class.
+    /// </summary>
+    public Program()
+    {
+        SelfLog.Enable(Console.Error);
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true, true)
+            .Build();
+
+        this._logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+    }
 
     /// <summary>
     /// The main method.
@@ -54,8 +69,6 @@ internal sealed class Program : IDisposable
     /// <param name="args">The command line args.</param>
     public static async Task Main(string[] args)
     {
-        var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-        XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
         using var exitCts = new CancellationTokenSource();
         var exitToken = exitCts.Token;
         var isDaemonMode = args.Contains("-daemon");
@@ -82,7 +95,7 @@ internal sealed class Program : IDisposable
             if (!exitToken.IsCancellationRequested)
             {
                 exitCts.Cancel();
-                Log.Warn("KILL");
+                Debug.WriteLine("KILL");
             }
         };
 
@@ -107,7 +120,7 @@ internal sealed class Program : IDisposable
     /// <param name="args">The command line args.</param>
     public async Task Initialize(string[] args)
     {
-        Log.Info("Creating host...");
+        this._logger.Information("Creating host...");
         this._serverHost = await this.CreateHost(args).ConfigureAwait(false);
 
         if (args.Contains("-autostart") || !this.IsAdminPanelEnabled(args))
@@ -201,12 +214,7 @@ internal sealed class Program : IDisposable
         ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
 
         var host = Host.CreateDefaultBuilder()
-            .ConfigureLogging(configureLogging =>
-            {
-                configureLogging.ClearProviders();
-                var settings = new Log4NetSettings { ConfigFile = Log4NetConfigFilePath, Watch = true };
-                configureLogging.AddLog4Net(settings);
-            })
+            .UseSerilog(this._logger)
             .ConfigureServices(c =>
             {
                 if (this.IsAdminPanelEnabled(args))
@@ -245,7 +253,7 @@ internal sealed class Program : IDisposable
                 }
             })
             .Build();
-        Log.Info("Host created");
+        this._logger.Information("Host created");
         if (host.Services.GetService<ILoggerFactory>() is { } loggerFactory)
         {
             NpgsqlLoggingProvider.Initialize(loggerFactory);
@@ -253,12 +261,12 @@ internal sealed class Program : IDisposable
 
         this._servers.Add(host.Services.GetService<IChatServer>() ?? throw new Exception($"{nameof(IChatServer)} not registered."));
         this.LoadGameClientDefinitions(host.Services.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."));
-        Log.Info("Starting host...");
+        this._logger.Information("Starting host...");
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         await host.StartAsync();
         stopwatch.Stop();
-        Log.Info($"Host started, elapsed time: {stopwatch.Elapsed}");
+        this._logger.Information($"Host started, elapsed time: {stopwatch.Elapsed}");
         return host;
     }
 
@@ -326,10 +334,10 @@ internal sealed class Program : IDisposable
         var contextProvider = new PersistenceContextProvider(loggerFactory, null);
         if (reinit || !contextProvider.DatabaseExists())
         {
-            Log.Info("The database is getting (re-)initialized...");
+            this._logger.Information("The database is getting (re-)initialized...");
             contextProvider.ReCreateDatabase();
             this.InitializeData(version, loggerFactory, contextProvider);
-            Log.Info("...initialization finished.");
+            this._logger.Information("...initialization finished.");
         }
         else if (!contextProvider.IsDatabaseUpToDate())
         {

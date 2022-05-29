@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.PublicApi;
+namespace MUnique.OpenMU.Web.PublicApi;
 
 using MUnique.OpenMU.Interfaces;
 
@@ -18,6 +18,6 @@ public static class Program
     /// <returns>The async task.</returns>
     public static Task Main(string[] args)
     {
-        return ApiHost.RunAsync(new List<IGameServer>(), new List<IConnectServer>(), null);
+        return ApiHost.RunAsync(new List<IGameServer>(), new List<IConnectServer>());
     }
 }

@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.PublicApi;
+namespace MUnique.OpenMU.Web.PublicApi;
 
 using System.Threading;
-using apache.log4net.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -45,24 +44,12 @@ public class ApiHost : IHostedService, IDisposable
     /// <param name="gameServers">The game servers.</param>
     /// <param name="connectServers">The connect servers.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="loggingConfigurationPath">The logging configuration path.</param>
     /// <returns>
     /// The created host.
     /// </returns>
-    public static IHost BuildHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, ILoggerFactory loggerFactory, string? loggingConfigurationPath)
+    public static IHost BuildHost(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, ILoggerFactory loggerFactory)
     {
         var builder = Host.CreateDefaultBuilder();
-        if (!string.IsNullOrEmpty(loggingConfigurationPath))
-        {
-            builder.ConfigureLogging(configureLogging =>
-            {
-                configureLogging.ClearProviders();
-                var settings = new Log4NetSettings { ConfigFile = loggingConfigurationPath, Watch = true };
-
-                configureLogging.AddLog4Net(settings);
-            });
-        }
-
         return builder
             .ConfigureServices(s =>
             {
@@ -84,10 +71,9 @@ public class ApiHost : IHostedService, IDisposable
     /// </summary>
     /// <param name="gameServers">The game servers.</param>
     /// <param name="connectServers">The connect servers.</param>
-    /// <param name="loggingConfigurationPath">The path to the logging configuration.</param>
-    public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers, string? loggingConfigurationPath)
+    public static Task RunAsync(ICollection<IGameServer> gameServers, IEnumerable<IConnectServer> connectServers)
     {
-        return BuildHost(gameServers, connectServers, new NullLoggerFactory(), loggingConfigurationPath).StartAsync();
+        return BuildHost(gameServers, connectServers, new NullLoggerFactory()).StartAsync();
     }
 
     /// <inheritdoc />
@@ -95,7 +81,7 @@ public class ApiHost : IHostedService, IDisposable
     {
         try
         {
-            this._host = BuildHost(this._gameServers, this._connectServers, this._loggerFactory, null);
+            this._host = BuildHost(this._gameServers, this._connectServers, this._loggerFactory);
             this._logger.LogInformation("Starting API...");
             await this._host.StartAsync(cancellationToken);
             this._logger.LogInformation("Started API");
