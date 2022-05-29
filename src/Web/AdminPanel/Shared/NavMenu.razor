@@ -49,27 +49,35 @@
                     <span class="oi oi-puzzle-piece" aria-hidden="true"></span> Plugins
                 </NavLink>
             </li>
-            <li>
-                <!-- todo: conditionally? -->
-                <a href="/grafana/explore?orgId=1&left=%7B%22datasource%22:%22Loki%22,%22queries%22:%5B%7B%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
-                   target="_blank">
-                    <span class="oi oi-list" aria-hidden="true"></span> Log
-                </a>
-            </li>
-            <li>
-                <!-- todo: conditionally? -->
-                <a href="/grafana/dashboards"
-                   target="_blank">
-                    <span class="oi oi-bar-chart" aria-hidden="true"></span> Metrics
-                </a>
-            </li>
-            <li>
-                <!-- todo: conditionally? -->
-                <a href="/zipkin/"
-                   target="_blank">
-                    <span class="oi oi-fork" aria-hidden="true"></span> Tracing
-                </a>
-            </li>
+            @if (AdminPanel.IsHostingEmbedded)
+            {
+                <li>
+                    <NavLink href="logfiles">
+                        <span class="oi oi-list" aria-hidden="true"></span> Log Files
+                    </NavLink>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a href="/grafana/explore?orgId=1&left=%7B%22datasource%22:%22Loki%22,%22queries%22:%5B%7B%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
+                       target="_blank">
+                        <span class="oi oi-list" aria-hidden="true"></span> Log
+                    </a>
+                </li>
+                <li>
+                    <a href="/grafana/dashboards"
+                       target="_blank">
+                        <span class="oi oi-bar-chart" aria-hidden="true"></span> Metrics
+                    </a>
+                </li>
+                <li>
+                    <a href="/zipkin/"
+                       target="_blank">
+                        <span class="oi oi-fork" aria-hidden="true"></span> Tracing
+                    </a>
+                </li>
+            }
         </ul>
     </div>
 </nav>

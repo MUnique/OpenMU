@@ -50,11 +50,17 @@ public sealed class AdminPanel : IHostedService, IDisposable
         this._logger = this._loggerFactory.CreateLogger<AdminPanel>();
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the hosting of the admin panel is embedded into an all-in-one deployment.
+    /// </summary>
+    public static bool IsHostingEmbedded { get; private set; }
+
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         this._logger.LogInformation($"Start initializing admin panel for port {this._settings.Port}.");
         Configuration.Default.MemoryAllocator = ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
+        IsHostingEmbedded = true;
 
         // you might need to allow it first with netsh:
         // netsh http add urlacl http://+:1234/ user=[Username]

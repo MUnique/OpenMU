@@ -4,11 +4,13 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel;
 
+using System.IO;
 using Blazored.Modal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
@@ -19,6 +21,9 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// <summary>
 /// The startup class for the blazor app.
 /// </summary>
+/// <remarks>
+/// This class is only used when running as all-in-one deployment.
+/// </remarks>
 public class Startup
 {
     /// <summary>
@@ -55,18 +60,11 @@ public class Startup
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
 
         services.AddBlazoredModal();
-
-        // TODO services.AddSingleton<ServerService>();
-
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
 
         services.AddScoped<PlugInController>();
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
-        //services.AddScoped<ISupportPlugInConfigurationChangedNotification>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
-        //services.AddScoped<PlugInConfigurationChangeForwarder>();
-        //services.AddSingleton<LogService>();
-        //services.AddScoped<LogController>();
 
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
 
@@ -107,6 +105,11 @@ public class Startup
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "logs")),
+            RequestPath = "/logs",
+        });
 
         app.UseRouting();
 
@@ -115,8 +118,6 @@ public class Startup
             endpoints.MapBlazorHub();
             endpoints.MapControllers();
             endpoints.MapFallbackToPage("/_Host");
-
-            // endpoints.MapHub<LogHub>("/signalr/hubs/logHub");
         });
     }
 }
