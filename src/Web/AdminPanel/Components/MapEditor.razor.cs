@@ -53,8 +53,7 @@ public partial class MapEditor : IDisposable
     [Inject]
     private NavigationManager NavigationManager { get; set; } = null!;
 
-    [Inject]
-    private GameConfiguration GameConfiguration { get; set; } = null!;
+    private List<GameMapDefinition> Maps { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the javascript runtime.
@@ -84,6 +83,7 @@ public partial class MapEditor : IDisposable
     {
         base.OnInitialized();
         this.NotificationService.PropertyChanged += this.OnPropertyChanged;
+        this.Maps = this.PersistenceContext.Get<GameMapDefinition>().OrderBy(c => c.Number).ToList();
     }
 
     /// <inheritdoc />

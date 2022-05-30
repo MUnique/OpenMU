@@ -9,7 +9,7 @@
 <div class="map-select">
     <label for="mapSelect">Selected Map:</label>
     <select title="Map" @onchange=this.OnMapSelected id="mapSelect" autocomplete="off">
-        @foreach (var map in this.GameConfiguration.Maps.OrderBy(c => c.Number))
+        @foreach (var map in this.Maps)
         {
             <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>Map: @map.ToString()</option>
         }

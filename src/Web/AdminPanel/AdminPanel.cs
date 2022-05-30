@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Map.Map;
 using SixLabors.ImageSharp;
 using SixLabors.Memory;
@@ -25,10 +27,12 @@ using SixLabors.Memory;
 public sealed class AdminPanel : IHostedService, IDisposable
 {
     private readonly IList<IManageableServer> _servers;
-    private readonly IPersistenceContextProvider _persistenceContextProvider;
+    private readonly IMigratableDatabaseContextProvider _persistenceContextProvider;
     private readonly IConfigurationChangePublisher _changePublisher;
     private readonly ILoggerFactory _loggerFactory;
     private readonly AdminPanelSettings _settings;
+    private readonly PlugInManager _plugInManager;
+    private readonly SetupService _setupService;
     private readonly ILogger<AdminPanel> _logger;
     private IHost? _host;
 
@@ -40,13 +44,17 @@ public sealed class AdminPanel : IHostedService, IDisposable
     /// <param name="changePublisher">The change listener.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="settings">The admin panel settings.</param>
-    public AdminPanel(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, IConfigurationChangePublisher changePublisher, ILoggerFactory loggerFactory, AdminPanelSettings settings)
+    /// <param name="plugInManager">The plug in manager.</param>
+    /// <param name="setupService">The setup service.</param>
+    public AdminPanel(IList<IManageableServer> servers, IMigratableDatabaseContextProvider persistenceContextProvider, IConfigurationChangePublisher changePublisher, ILoggerFactory loggerFactory, AdminPanelSettings settings, PlugInManager plugInManager, SetupService setupService)
     {
         this._servers = servers;
         this._persistenceContextProvider = persistenceContextProvider;
         this._changePublisher = changePublisher;
         this._loggerFactory = loggerFactory;
         this._settings = settings;
+        this._plugInManager = plugInManager;
+        this._setupService = setupService;
         this._logger = this._loggerFactory.CreateLogger<AdminPanel>();
     }
 
@@ -68,10 +76,13 @@ public sealed class AdminPanel : IHostedService, IDisposable
             .ConfigureServices(serviceCollection =>
             {
                 serviceCollection.AddSingleton(this._servers);
+                serviceCollection.AddSingleton(this._setupService);
                 serviceCollection.AddSingleton<IServerProvider, LocalServerProvider>();
                 serviceCollection.AddSingleton(this._persistenceContextProvider);
+                serviceCollection.AddSingleton<IPersistenceContextProvider>(this._persistenceContextProvider);
                 serviceCollection.AddSingleton(this._changePublisher);
-                serviceCollection.AddSingleton(this._loggerFactory); 
+                serviceCollection.AddSingleton(this._loggerFactory);
+                serviceCollection.AddSingleton(this._plugInManager);
                 serviceCollection.AddScoped<IMapFactory, JavascriptMapFactory>();
                 serviceCollection.AddBlazoredModal();
             })

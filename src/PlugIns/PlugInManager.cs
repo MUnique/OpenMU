@@ -36,7 +36,8 @@ public class PlugInManager
         this._serviceContainer = new ServiceContainer(serviceProvider);
         this._serviceContainer.AddService(typeof(PlugInManager), this);
         this._serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
-        if (configurations?.Any() ?? false)
+
+        if (configurations is not null)
         {
             this.DiscoverAndRegisterPlugIns();
             var loadedAssemblies = new HashSet<string>();

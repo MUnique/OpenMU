@@ -250,32 +250,7 @@ services:
     network_mode: "service:chatServer"
     volumes:
       - "./Dapr/components/:/components"
-  
-  setup:
-    image: ${DOCKER_REGISTRY-}openmu-setup
-    container_name: setup
-    build:
-      context: .
-      dockerfile: Setup/MUnique.OpenMU.Setup/Dockerfile
-    ports:
-      - "80"
-      - "9464" # Prometheus
-    environment:
-      ASPNETCORE_URLS: http://+:80
-    depends_on:
-      - zipkin
-      - database
 
-  setup-dapr:
-    image: "daprio/daprd:latest"
-    container_name: setup_dapr
-    command: [ "./daprd", "-app-id", "setup", "-app-port", "80",
-            "-components-path", "/components",
-            "-config", "/components/config.yaml",
-            "-placement-host-address", "dapr-placement:50006"  ]
-    depends_on:
-      - setup
-    network_mode: "service:setup"
 
   adminPanel:
     image: ${DOCKER_REGISTRY-}openmu-admin

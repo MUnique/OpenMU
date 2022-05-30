@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// <summary>
 /// The persistence context provider for the persistence implemented with entity framework core.
 /// </summary>
-public class PersistenceContextProvider : IPersistenceContextProvider
+public class PersistenceContextProvider : IMigratableDatabaseContextProvider
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly IConfigurationChangePublisher? _changePublisher;
@@ -37,7 +37,7 @@ public class PersistenceContextProvider : IPersistenceContextProvider
     /// <value>
     /// The repository manager.
     /// </value>
-    internal CachingRepositoryManager CachingRepositoryManager { get; }
+    internal CachingRepositoryManager CachingRepositoryManager { get; private set; }
 
     /// <summary>
     /// Determines whether the database schema is up to date.
@@ -112,6 +112,10 @@ public class PersistenceContextProvider : IPersistenceContextProvider
         }
 
         this.ApplyAllPendingUpdates();
+
+        // We create a new repository manager, so that the previously loaded data is not effective anymore.
+        this.CachingRepositoryManager = new CachingRepositoryManager(this._loggerFactory);
+        this.CachingRepositoryManager.RegisterRepositories();
     }
 
     /// <inheritdoc />

@@ -58,8 +58,8 @@ internal class Program
             configuration.Endpoints.Add(new ChatServerEndpoint { ClientVersion = ConfigurableNetworkEncryptionPlugIn.Version, NetworkPort = chatServerListenerPort });
             var pluginManager = new PlugInManager(null, loggerFactory, serviceContainer);
             pluginManager.DiscoverAndRegisterPlugInsOf<INetworkEncryptionFactoryPlugIn>();
-            var chatServer = new ChatServer(configuration, addressResolver, loggerFactory, pluginManager);
-
+            var chatServer = new ChatServer(addressResolver, loggerFactory, pluginManager);
+            chatServer.Initialize(configuration);
             chatServer.Start();
             var exDbClient = new ExDbClient(exDbHost, exDbPort, chatServer, chatServerListenerPort, loggerFactory);
             _logger.LogInformation("ChatServer started and ready");

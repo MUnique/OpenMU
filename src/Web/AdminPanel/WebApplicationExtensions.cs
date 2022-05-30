@@ -1,15 +1,16 @@
-﻿using Blazored.Modal;
+﻿namespace MUnique.OpenMU.Web.AdminPanel;
+
+using Blazored.Modal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
-
-namespace MUnique.OpenMU.Web.AdminPanel;
 
 public static class WebApplicationExtensions
 {
@@ -21,6 +22,9 @@ public static class WebApplicationExtensions
     /// <returns>The web application builder.</returns>
     public static WebApplicationBuilder AddAdminPanel(this WebApplicationBuilder builder)
     {
+        // Ensure that DataInitialization plugins will get collected - for the setup functionality.
+        _ = DataInitialization.Id;
+
         builder.Services.AddRazorPages();
         builder.Services.AddServerSideBlazor();
 
@@ -33,6 +37,7 @@ public static class WebApplicationExtensions
 
         // services.AddSingleton<ServerService>();
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
+        services.AddSingleton<SetupService>();
 
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);

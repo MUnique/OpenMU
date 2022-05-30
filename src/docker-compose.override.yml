@@ -31,14 +31,6 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
-  setup:
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      # ASPNETCORE_Kestrel__Certificates__Default__Password: foobar
-      # ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
-    volumes:
-      - ~/.aspnet/https:/https:ro
-
   adminPanel:
     environment:
       ASPNETCORE_ENVIRONMENT: Development

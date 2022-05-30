@@ -1,0 +1,35 @@
+﻿@page "/setup"
+
+@if (this.ShowInstall)
+{
+    <Install InstallationFinished="() => this.ShowInstall = false" />
+}
+else if (!this.SetupService.CanConnectToDatabase)
+{
+    <p>Database status: <span class="badge bg-danger">Can't connect to the database.</span></p>
+}
+else if (!this.SetupService.IsInstalled)
+{
+    <p>Database status: <span class="badge bg-warning text-dark">Not created</span></p>
+
+    <button class="btn btn-primary" @onclick="this.OnInstallClick">Create</button>
+}
+else if (this.SetupService.IsUpdateRequired)
+{
+    <p>Database status: <span class="badge bg-warning text-dark">Update required</span></p>
+    <button class="btn btn-primary" @onclick="this.OnUpdateClickAsync">Update</button>
+}
+else
+{
+    <p>Database status: <span class="badge bg-success">Up-to-date</span></p>
+    @if (!this.SetupService.IsDataInitialized)
+    {
+        <p>Initialized game version: <span class="badge bg-warning text-dark">No initialized data found!</span></p>
+    }
+    else
+    {
+        <p>Initialized game version: <span class="badge bg-success">@this.SetupService.CurrentGameClientVersion</span></p>
+    }
+
+    <button class="btn bg-warning text-dark" @onclick="this.OnReInstallClickAsync">Re-install</button>
+}

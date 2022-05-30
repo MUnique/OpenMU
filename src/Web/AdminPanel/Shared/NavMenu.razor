@@ -1,9 +1,6 @@
 ﻿@using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Persistence;
 
-@inject NavigationManager _navigationManager
-@inject GameConfiguration _gameConfiguration
-
 <nav>
     <div>
         <a href="">OpenMU</a>
@@ -15,40 +12,55 @@
     <!-- Hiding it programmatically is not a good idea here, because we want to hide it based on the width of the device/window. -->
     <div class="@NavMenuCssClass">
         <ul>
-
-            <li>
-                <NavLink href="" Match="NavLinkMatch.All">
-                    <span class="oi oi-home" aria-hidden="true"></span> Home
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="servers">
-                    <span class="oi oi-project" aria-hidden="true"></span> Servers
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="accounts">
-                    <span class="oi oi-list" aria-hidden="true"></span> Accounts
-                </NavLink>
-            </li>
-            @if (this._gameConfiguration != null)
+            @if (this.OnlyShowSetup)
             {
-            <li>
-                <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this._gameConfiguration.GetId())">
-                    <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="@("map-editor/" + this._gameConfiguration.Maps.OrderBy(c => c.Number).First().GetId())">
-                    <span class="oi oi-globe" aria-hidden="true"></span> Map Editor
-                </NavLink>
-            </li>
+                <li>
+                    <NavLink href="setup">
+                        <span class="oi oi-cog" aria-hidden="true"></span> Setup
+                    </NavLink>
+                </li>
             }
-            <li>
-                <NavLink href="plugins">
-                    <span class="oi oi-puzzle-piece" aria-hidden="true"></span> Plugins
-                </NavLink>
-            </li>
+            else
+            {
+                <li>
+                    <NavLink href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink href="servers">
+                        <span class="oi oi-project" aria-hidden="true"></span> Servers
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink href="accounts">
+                        <span class="oi oi-list" aria-hidden="true"></span> Accounts
+                    </NavLink>
+                </li>
+                @if (this.GameConfiguration != null)
+                {
+                    <li>
+                        <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this.GameConfiguration.GetId())">
+                            <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink href="@("map-editor/" + this.GameConfiguration.Maps.OrderBy(c => c.Number).First().GetId())">
+                            <span class="oi oi-globe" aria-hidden="true"></span> Map Editor
+                        </NavLink>
+                    </li>
+                }
+                <li>
+                    <NavLink href="plugins">
+                        <span class="oi oi-puzzle-piece" aria-hidden="true"></span> Plugins
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink href="setup">
+                        <span class="oi oi-cog" aria-hidden="true"></span> Setup
+                    </NavLink>
+                </li>
+            }
             @if (AdminPanel.IsHostingEmbedded)
             {
                 <li>
@@ -81,21 +93,3 @@
         </ul>
     </div>
 </nav>
-
-
-
-@code {
-    private bool _collapseNavMenu = true;
-
-    /// <summary>
-    /// Returns the class for the entries of the navigation menu.
-    /// "collapse" is a class of bootstrap which hides it.
-    /// In our css we also define to show it anyway, if the width sufficient.
-    /// </summary>
-    private string NavMenuCssClass => _collapseNavMenu ? "collapse" : string.Empty;
-
-    private void ToggleNavMenu()
-    {
-        _collapseNavMenu = !_collapseNavMenu;
-    }
-}

@@ -36,8 +36,9 @@ public static class Extensions
         }
 
         return services
-            .AddSingleton<IPersistenceContextProvider, PersistenceContextProvider>()
-            .AddSingleton(s => (PersistenceContextProvider)s.GetService<IPersistenceContextProvider>()!);
+            .AddSingleton<IMigratableDatabaseContextProvider, PersistenceContextProvider>()
+            .AddSingleton(s => (PersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
+            .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!);
     }
 
     public static IServiceCollection AddPlugInManager(this IServiceCollection services)
@@ -143,7 +144,6 @@ public static class Extensions
         {
             app.UsePathBase(pathBase!.TrimEnd('/'));
             app.UseForwardedHeaders();
-
         }
 
         app.ConfigureDaprService(addBlazor);

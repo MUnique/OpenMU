@@ -1,7 +1,6 @@
 ﻿// <copyright file="ConnectServerContainer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
-
 namespace MUnique.OpenMU.Startup;
 
 using System.Collections;
@@ -11,13 +10,13 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// A container which keeps all <see cref="Interfaces.IConnectServer"/>s in one <see cref="IHostedService"/>.
 /// </summary>
-public class ConnectServerContainer : IHostedService, IEnumerable<IConnectServer>
+public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectServer>
 {
     private readonly IList<IManageableServer> _servers;
     private readonly IPersistenceContextProvider _persistenceContextProvider;
@@ -33,7 +32,9 @@ public class ConnectServerContainer : IHostedService, IEnumerable<IConnectServer
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="connectServerFactory">The connect server factory.</param>
-    public ConnectServerContainer(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, ILogger<ConnectServerContainer> logger, ConnectServerFactory connectServerFactory)
+    /// <param name="setupService">The setup service.</param>
+    public ConnectServerContainer(IList<IManageableServer> servers, IPersistenceContextProvider persistenceContextProvider, ILogger<ConnectServerContainer> logger, ConnectServerFactory connectServerFactory, SetupService setupService)
+        : base(setupService, logger)
     {
         this._servers = servers;
         this._persistenceContextProvider = persistenceContextProvider;
@@ -42,7 +43,7 @@ public class ConnectServerContainer : IHostedService, IEnumerable<IConnectServer
     }
 
     /// <inheritdoc />
-    public Task StartAsync(CancellationToken cancellationToken)
+    protected override Task StartAsyncCore(CancellationToken cancellationToken)
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
         foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
@@ -53,14 +54,15 @@ public class ConnectServerContainer : IHostedService, IEnumerable<IConnectServer
             var client = connectServerDefinition.Client!;
             if (this._observers.TryGetValue(client, out var observer))
             {
-                this._logger.LogWarning($"Multiple connect servers for game client '{client.Description}' configured. Only one per client makes sense.");
-                if (observer is not MulticastConnectionServerStateObserver)
+                // this._logger.LogWarning($"Multiple connect servers for game client '{client.Description}' configured. Only one per client makes sense.");
+                if (observer is not MulticastConnectionServerStateObserver multicastObserver)
                 {
-                    var multicastObserver = new MulticastConnectionServerStateObserver();
+                    multicastObserver = new MulticastConnectionServerStateObserver();
                     multicastObserver.AddObserver(observer);
-                    multicastObserver.AddObserver(connectServer);
                     this._observers[client] = multicastObserver;
                 }
+
+                multicastObserver.AddObserver(connectServer);
             }
             else
             {
@@ -72,12 +74,15 @@ public class ConnectServerContainer : IHostedService, IEnumerable<IConnectServer
     }
 
     /// <inheritdoc />
-    public async Task StopAsync(CancellationToken cancellationToken)
+    protected override async Task StopAsyncCore(CancellationToken cancellationToken)
     {
         foreach (var connectServer in this._connectServers)
         {
             await connectServer.StopAsync(cancellationToken);
+            this._servers.Remove(connectServer);
         }
+
+        this._connectServers.Clear();
     }
 
     /// <summary>
@@ -87,7 +92,15 @@ public class ConnectServerContainer : IHostedService, IEnumerable<IConnectServer
     /// <returns>The observer for the client.</returns>
     public IGameServerStateObserver GetObserver(GameClientDefinition gameClient)
     {
-        return this._observers[gameClient];
+        if (!this._observers.TryGetValue(gameClient, out var observer))
+        {
+            // In this case, most probably the game server gets started before the connection server.
+            // As a workaround, we just create a new multicast observer, on which the connect server will be added later.
+            observer = new MulticastConnectionServerStateObserver();
+            this._observers[gameClient] = observer;
+        }
+
+        return observer;
     }
 
     /// <inheritdoc />

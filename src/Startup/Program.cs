@@ -15,16 +15,14 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Debugging;
 using MUnique.OpenMU.Web.AdminPanel;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.FriendServer;
-using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.LoginServer;
 using MUnique.OpenMU.Network;
-using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.Initialization;
@@ -188,22 +186,6 @@ internal sealed class Program : IDisposable
         }
     }
 
-    private void LoadGameClientDefinitions(IContext persistenceContext)
-    {
-        var versions = persistenceContext.Get<GameClientDefinition>().ToList();
-        foreach (var gameClientDefinition in versions)
-        {
-            ClientVersionResolver.Register(
-                gameClientDefinition.Version,
-                new ClientVersion(gameClientDefinition.Season, gameClientDefinition.Episode, gameClientDefinition.Language));
-        }
-
-        if (versions.FirstOrDefault() is { } firstVersion)
-        {
-            ClientVersionResolver.DefaultVersion = ClientVersionResolver.Resolve(firstVersion.Version);
-        }
-    }
-
     private async Task<IHost> CreateHost(string[] args)
     {
         // Ensure GameLogic and GameServer Assemblies are loaded
@@ -225,27 +207,28 @@ internal sealed class Program : IDisposable
 
                 c.AddSingleton(this._servers)
                     .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
-                    .AddSingleton(s => s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<ChatServerDefinition>().First() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
-                    .AddSingleton(s => s.GetService<ChatServerDefinition>()?.ConvertToSettings() ?? throw new Exception($"{nameof(ChatServerSettings)} not registered."))
                     .AddIpResolver(args)
                     .AddSingleton(this._gameServers)
                     .AddSingleton(this._gameServers.Values)
                     .AddSingleton(s => this.DeterminePersistenceContextProvider(args, s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered.")))
+                    .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
                     .AddSingleton<ILoginServer, LoginServer>()
                     .AddSingleton<IGuildServer, GuildServer>()
                     .AddSingleton<IFriendServer, FriendServer>()
-                    .AddSingleton<IChatServer, ChatServer>()
+                    .AddSingleton<ChatServer>()
+                    .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
                     .AddSingleton<ConnectServerFactory>()
                     .AddSingleton<ConnectServerContainer>()
+                    .AddSingleton<SetupService>()
                     .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
-                    .AddSingleton<GameServerContainer>()
+                    //.AddSingleton<GameServerContainer>()
                     .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
                     .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
                     .AddSingleton<PlugInManager>()
                     .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
-                    .AddHostedService(provider => provider.GetService<IChatServer>())
-                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>())
-                    .AddHostedService(provider => provider.GetService<GameServerContainer>());
+                    .AddHostedService<ChatServerContainer>()
+                    .AddHostedService<GameServerContainer>()
+                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>());
 
                 if (this.IsApiEnabled(args))
                 {
@@ -259,8 +242,6 @@ internal sealed class Program : IDisposable
             NpgsqlLoggingProvider.Initialize(loggerFactory);
         }
 
-        this._servers.Add(host.Services.GetService<IChatServer>() ?? throw new Exception($"{nameof(IChatServer)} not registered."));
-        this.LoadGameClientDefinitions(host.Services.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."));
         this._logger.Information("Starting host...");
         var stopwatch = new Stopwatch();
         stopwatch.Start();
@@ -311,11 +292,11 @@ internal sealed class Program : IDisposable
         return parameter.Substring(parameter.IndexOf(':') + 1);
     }
 
-    private IPersistenceContextProvider DeterminePersistenceContextProvider(string[] args, ILoggerFactory loggerFactory)
+    private IMigratableDatabaseContextProvider DeterminePersistenceContextProvider(string[] args, ILoggerFactory loggerFactory)
     {
         var version = this.GetVersionParameter(args);
 
-        IPersistenceContextProvider contextProvider;
+        IMigratableDatabaseContextProvider contextProvider;
         if (args.Contains("-demo"))
         {
             contextProvider = new InMemoryPersistenceContextProvider();
@@ -329,7 +310,7 @@ internal sealed class Program : IDisposable
         return contextProvider;
     }
 
-    private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
+    private IMigratableDatabaseContextProvider PrepareRepositoryManager(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
     {
         var contextProvider = new PersistenceContextProvider(loggerFactory, null);
         if (reinit || !contextProvider.DatabaseExists())

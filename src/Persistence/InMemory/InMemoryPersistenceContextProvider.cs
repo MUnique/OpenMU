@@ -4,13 +4,15 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.Threading;
+
 /// <summary>
 /// A context provider which uses in-memory repositories to hold its data, e.g. for testing or demo purposes.
 /// Changes in one context directly have effect in other contexts! Calling SaveChanges or not doesn't matter.
 /// </summary>
-public class InMemoryPersistenceContextProvider : IPersistenceContextProvider
+public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProvider
 {
-    private readonly InMemoryRepositoryManager _repositoryManager = new ();
+    private InMemoryRepositoryManager _repositoryManager = new ();
 
     /// <inheritdoc/>
     public IContext CreateNewContext()
@@ -58,5 +60,40 @@ public class InMemoryPersistenceContextProvider : IPersistenceContextProvider
     public IContext CreateNewTypedContext<T>()
     {
         return new InMemoryContext(this._repositoryManager);
+    }
+
+    /// <inheritdoc />
+    public bool DatabaseExists()
+    {
+        return true;
+    }
+
+    /// <inheritdoc />
+    public bool IsDatabaseUpToDate()
+    {
+        return true;
+    }
+
+    /// <inheritdoc />
+    public void ApplyAllPendingUpdates()
+    {
+    }
+
+    /// <inheritdoc />
+    public Task WaitForUpdatedDatabase(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public bool CanConnectToDatabase()
+    {
+        return true;
+    }
+
+    /// <inheritdoc />
+    public void ReCreateDatabase()
+    {
+        this._repositoryManager = new();
     }
 }

@@ -74,7 +74,7 @@ public class Startup
         {
             var contextProvider = provider.GetService<IPersistenceContextProvider>();
             using var initialContext = contextProvider!.CreateNewConfigurationContext();
-            return initialContext.Get<GameConfiguration>().First();
+            return initialContext.Get<GameConfiguration>().FirstOrDefault()!; // yes, we might get null here - it's intended.
         });
 
         services.AddTransient(provider =>

@@ -9,7 +9,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Description of IPersistenceContextProvider.
+/// Provider for persistence contexts.
 /// </summary>
 public interface IPersistenceContextProvider
 {

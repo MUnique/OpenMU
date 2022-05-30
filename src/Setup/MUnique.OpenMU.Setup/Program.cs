@@ -15,9 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<SetupService>()
-    .AddSingleton<IPersistenceContextProvider, PersistenceContextProvider>()
-    .AddSingleton(s => (PersistenceContextProvider)s.GetService<IPersistenceContextProvider>()!)
+builder.Services//.AddSingleton<SetupService>()
+    .AddSingleton<IMigratableDatabaseContextProvider, PersistenceContextProvider>()
+    .AddSingleton(s => (PersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
+    .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
     .AddSingleton(s =>
     {
         var plugInManager = new PlugInManager(null, s.GetService<ILoggerFactory>()!, s);
