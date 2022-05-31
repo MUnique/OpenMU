@@ -22548,8 +22548,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint TotalScore
     {
-        get => ReadUInt32BigEndian(this._data[19..]);
-        set => WriteUInt32BigEndian(this._data[19..], value);
+        get => ReadUInt32BigEndian(this._data[17..]);
+        set => WriteUInt32BigEndian(this._data[17..], value);
     }
 
     /// <summary>
