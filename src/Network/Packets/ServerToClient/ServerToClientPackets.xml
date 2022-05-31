@@ -8052,7 +8052,7 @@
           <Length>10</Length>
         </Field>
         <Field>
-          <Index>19</Index>
+          <Index>17</Index>
           <Type>IntegerBigEndian</Type>
           <Name>TotalScore</Name>
         </Field>

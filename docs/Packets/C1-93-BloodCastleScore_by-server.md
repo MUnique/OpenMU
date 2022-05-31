@@ -18,6 +18,6 @@ The score is shown at the client.
 | 3 | 1 | Boolean |  | Success |
 | 4 | 1 | Byte | 0xFF | Type |
 | 5 | 10 | String |  | PlayerName |
-| 19 | 4 | IntegerBigEndian |  | TotalScore |
+| 17 | 4 | IntegerBigEndian |  | TotalScore |
 | 21 | 4 | IntegerBigEndian |  | BonusExperience |
 | 25 | 4 | IntegerBigEndian |  | BonusMoney |
