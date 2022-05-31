@@ -22400,7 +22400,7 @@ public readonly ref struct BloodCastleScore
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 29;
+    public static int Length => 27;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -22439,8 +22439,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint TotalScore
     {
-        get => ReadUInt32LittleEndian(this._data[17..]);
-        set => WriteUInt32LittleEndian(this._data[17..], value);
+        get => ReadUInt32LittleEndian(this._data[15..]);
+        set => WriteUInt32LittleEndian(this._data[15..], value);
     }
 
     /// <summary>
@@ -22448,8 +22448,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint BonusExperience
     {
-        get => ReadUInt32LittleEndian(this._data[21..]);
-        set => WriteUInt32LittleEndian(this._data[21..], value);
+        get => ReadUInt32LittleEndian(this._data[19..]);
+        set => WriteUInt32LittleEndian(this._data[19..], value);
     }
 
     /// <summary>
@@ -22457,8 +22457,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint BonusMoney
     {
-        get => ReadUInt32LittleEndian(this._data[25..]);
-        set => WriteUInt32LittleEndian(this._data[25..], value);
+        get => ReadUInt32LittleEndian(this._data[23..]);
+        set => WriteUInt32LittleEndian(this._data[23..], value);
     }
 
     /// <summary>
