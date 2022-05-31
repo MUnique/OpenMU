@@ -22554,8 +22554,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint TotalScore
     {
-        get => ReadUInt32LittleEndian(this._data[17..]);
-        set => WriteUInt32LittleEndian(this._data[17..], value);
+        get => ReadUInt32BigEndian(this._data[19..]);
+        set => WriteUInt32BigEndian(this._data[19..], value);
     }
 
     /// <summary>
@@ -22563,8 +22563,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint BonusExperience
     {
-        get => ReadUInt32LittleEndian(this._data[21..]);
-        set => WriteUInt32LittleEndian(this._data[21..], value);
+        get => ReadUInt32BigEndian(this._data[21..]);
+        set => WriteUInt32BigEndian(this._data[21..], value);
     }
 
     /// <summary>
@@ -22572,8 +22572,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint BonusMoney
     {
-        get => ReadUInt32LittleEndian(this._data[25..]);
-        set => WriteUInt32LittleEndian(this._data[25..], value);
+        get => ReadUInt32BigEndian(this._data[25..]);
+        set => WriteUInt32BigEndian(this._data[25..], value);
     }
 
     /// <summary>

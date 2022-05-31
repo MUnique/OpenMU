@@ -8050,18 +8050,18 @@
           <Name>PlayerName</Name>
         </Field>
         <Field>
-          <Index>17</Index>
-          <Type>IntegerLittleEndian</Type>
+          <Index>19</Index>
+          <Type>IntegerBigEndian</Type>
           <Name>TotalScore</Name>
         </Field>
         <Field>
           <Index>21</Index>
-          <Type>IntegerLittleEndian</Type>
+          <Type>IntegerBigEndian</Type>
           <Name>BonusExperience</Name>
         </Field>
         <Field>
           <Index>25</Index>
-          <Type>IntegerLittleEndian</Type>
+          <Type>IntegerBigEndian</Type>
           <Name>BonusMoney</Name>
         </Field>
       </Fields>
