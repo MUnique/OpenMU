@@ -18,11 +18,11 @@ public sealed class BloodCastleContext : MiniGameContext
     private readonly IGameContext _gameContext;
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
 
-    private IReadOnlyCollection<(string Name, int Score, int BonusMoney, int BonusExp)>? _highScoreTable;
+    private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
 
-    private ushort _winnerId;
-    private ushort _itemOwner;
     private int _monsterDiedCount;
+
+    private Player? _winner;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleContext"/> class.
@@ -43,7 +43,7 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <param name="player">The player who talks to Archangel.</param>
     public void TalkToNpcArchangel(Player player)
     {
-        if (this._winnerId > 0)
+        if (this._winner is not null)
         {
             player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x2E);
             return;
@@ -56,6 +56,19 @@ public sealed class BloodCastleContext : MiniGameContext
         }
 
         var item = player.Inventory?.Items.FirstOrDefault(item => item.Definition?.Group == 13 && item.Definition.Number == 19);
+
+        if (item is null)
+        {
+            player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x18);
+            return;
+        }
+
+        this._winner = player;
+
+        player.Inventory!.RemoveItem(item);
+        player.PersistenceContext.Delete(item);
+        player.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(item.ItemSlot);
+        player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x17);
     }
 
     /// <summary>
@@ -123,7 +136,7 @@ public sealed class BloodCastleContext : MiniGameContext
             .OrderBy(state => state.Score)
             .ToList();
 
-        var scoreList = new List<(string Name, int Score, int BonusMoney, int BonusExp)>();
+        var scoreList = new List<(string Name, int Score, int BonusExp, int BonusMoney)>();
         int rank = 0;
         foreach (var state in sortedFinishers)
         {
@@ -133,8 +146,8 @@ public sealed class BloodCastleContext : MiniGameContext
             scoreList.Add((
                 state.Player.Name,
                 state.Score,
-                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Money && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0,
-                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0));
+                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0,
+                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Money && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0));
         }
 
         this._highScoreTable = scoreList.AsReadOnly();
@@ -146,10 +159,10 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override void ShowScore(Player player)
     {
-        if (this._highScoreTable is { } table
-            && this._gameStates.TryGetValue(player.Name, out var state))
+        if (this._highScoreTable is { } table)
         {
-            player.ViewPlugIns.GetPlugIn<IMiniGameScoreTableViewPlugin>()?.ShowScoreTable((byte)state.Rank, table);
+            var (name, score, bonusMoney, bonusExp) = table.First(t => t.Name == player.Name);
+            player.ViewPlugIns.GetPlugIn<IBloodCastleScoreTableViewPlugin>()?.ShowScoreTable(true, name, score, bonusExp, bonusMoney);
         }
     }
 
