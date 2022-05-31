@@ -22465,6 +22465,137 @@ public readonly ref struct ResultItem
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 0;
 }
 }
+
+
+/// <summary>
+/// Is sent by the server when: The blood castle mini game ended and the score of the player is sent to the player.
+/// Causes reaction on client side: The score is shown at the client.
+/// </summary>
+public readonly ref struct BloodCastleScore
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleScore"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public BloodCastleScore(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleScore"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private BloodCastleScore(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            this.Type = 0xFF;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x93;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 29;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the success.
+    /// </summary>
+    public bool Success
+    {
+        get => this._data[3..].GetBoolean();
+        set => this._data[3..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public byte Type
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the player name.
+    /// </summary>
+    public string PlayerName
+    {
+        get => this._data.ExtractString(5, this._data.Length - 5, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the total score.
+    /// </summary>
+    public uint TotalScore
+    {
+        get => ReadUInt32LittleEndian(this._data[17..]);
+        set => WriteUInt32LittleEndian(this._data[17..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the bonus experience.
+    /// </summary>
+    public uint BonusExperience
+    {
+        get => ReadUInt32LittleEndian(this._data[21..]);
+        set => WriteUInt32LittleEndian(this._data[21..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the bonus money.
+    /// </summary>
+    public uint BonusMoney
+    {
+        get => ReadUInt32LittleEndian(this._data[25..]);
+        set => WriteUInt32LittleEndian(this._data[25..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="BloodCastleScore"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator BloodCastleScore(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="BloodCastleScore"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(BloodCastleScore packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="content">The content of the variable 'PlayerName' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 5;
+}
     /// <summary>
     /// Defines the type of the mini game.
     /// </summary>

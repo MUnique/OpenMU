@@ -1704,6 +1704,19 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Starts a safe write of a <see cref="BloodCastleScore" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: The blood castle mini game ended and the score of the player is sent to the player.
+    /// Causes reaction on client side: The score is shown at the client.
+    /// </remarks>
+    public static BloodCastleScoreThreadSafeWriter StartWriteBloodCastleScore(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
     /// Sends a <see cref="GameServerEntered" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -4670,6 +4683,33 @@ public static class ConnectionExtensions
         using var writer = connection.StartWriteUpdateMiniGameState();
         var packet = writer.Packet;
         packet.State = @state;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="BloodCastleScore" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="success">The success.</param>
+    /// <param name="playerName">The player name.</param>
+    /// <param name="totalScore">The total score.</param>
+    /// <param name="bonusExperience">The bonus experience.</param>
+    /// <param name="bonusMoney">The bonus money.</param>
+    /// <param name="type">The type.</param>
+    /// <remarks>
+    /// Is sent by the server when: The blood castle mini game ended and the score of the player is sent to the player.
+    /// Causes reaction on client side: The score is shown at the client.
+    /// </remarks>
+    public static void SendBloodCastleScore(this IConnection connection, bool @success, string @playerName, uint @totalScore, uint @bonusExperience, uint @bonusMoney, byte @type = 0xFF)
+    {
+        using var writer = connection.StartWriteBloodCastleScore();
+        var packet = writer.Packet;
+        packet.Success = @success;
+        packet.Type = @type;
+        packet.PlayerName = @playerName;
+        packet.TotalScore = @totalScore;
+        packet.BonusExperience = @bonusExperience;
+        packet.BonusMoney = @bonusMoney;
         writer.Commit();
     }}
 /// <summary>
@@ -11369,6 +11409,58 @@ public readonly ref struct UpdateMiniGameStateThreadSafeWriter
     public void Commit()
     {
         this.connection.Output.AdvanceSafely(UpdateMiniGameState.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="BloodCastleScore"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct BloodCastleScoreThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleScoreThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public BloodCastleScoreThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new BloodCastleScore(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(BloodCastleScore.Length)[..BloodCastleScore.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public BloodCastleScore Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="BloodCastleScore" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(BloodCastleScore.Length);
     }
 
     /// <summary>
