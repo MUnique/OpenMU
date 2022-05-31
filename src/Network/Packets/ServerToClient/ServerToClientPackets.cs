@@ -22427,8 +22427,8 @@ public readonly ref struct ResultItem
     /// </summary>
     public string PlayerName
     {
-        get => this._data.ExtractString(0, this._data.Length - 0, System.Text.Encoding.UTF8);
-        set => this._data.Slice(0).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(0, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(0, 10).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -22457,12 +22457,6 @@ public readonly ref struct ResultItem
         get => ReadUInt32LittleEndian(this._data[20..]);
         set => WriteUInt32LittleEndian(this._data[20..], value);
     }
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="content">The content of the variable 'PlayerName' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 0;
 }
 }
 
@@ -22545,8 +22539,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public string PlayerName
     {
-        get => this._data.ExtractString(5, this._data.Length - 5, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(5, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -22589,12 +22583,6 @@ public readonly ref struct BloodCastleScore
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(BloodCastleScore packet) => packet._data; 
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="content">The content of the variable 'PlayerName' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 5;
 }
     /// <summary>
     /// Defines the type of the mini game.

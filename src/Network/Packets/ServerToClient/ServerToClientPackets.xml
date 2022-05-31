@@ -8004,6 +8004,7 @@
               <Index>0</Index>
               <Type>String</Type>
               <Name>PlayerName</Name>
+              <Length>10</Length>
             </Field>
             <Field>
               <Index>12</Index>
@@ -8048,6 +8049,7 @@
           <Index>5</Index>
           <Type>String</Type>
           <Name>PlayerName</Name>
+          <Length>10</Length>
         </Field>
         <Field>
           <Index>19</Index>
