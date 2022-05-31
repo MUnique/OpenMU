@@ -8028,7 +8028,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>93</Code>
       <Name>BloodCastleScore</Name>
-      <Length>27</Length>
+      <Length>29</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The blood castle mini game ended and the score of the player is sent to the player.</SentWhen>
       <CausedReaction>The score is shown at the client.</CausedReaction>
@@ -8050,18 +8050,18 @@
           <Name>PlayerName</Name>
         </Field>
         <Field>
-          <Index>15</Index>
-          <Type>IntegerLittleEndian</Type>
+          <Index>19</Index>
+          <Type>IntegerBigEndian</Type>
           <Name>TotalScore</Name>
         </Field>
         <Field>
-          <Index>19</Index>
-          <Type>IntegerLittleEndian</Type>
+          <Index>21</Index>
+          <Type>IntegerBigEndian</Type>
           <Name>BonusExperience</Name>
         </Field>
         <Field>
-          <Index>23</Index>
-          <Type>IntegerLittleEndian</Type>
+          <Index>25</Index>
+          <Type>IntegerBigEndian</Type>
           <Name>BonusMoney</Name>
         </Field>
       </Fields>
