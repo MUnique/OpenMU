@@ -34,8 +34,7 @@ public class ChangeTerrainAttributesViewPlugIn : IChangeTerrainAttributesViewPlu
             return;
         }
 
-        const int maxAreas = 10;
-        using var writer = this._player.Connection.StartSafeWrite(0xC1, ChangeTerrainAttributes.GetRequiredSize(Math.Min(maxAreas, areas.Count)));
+        using var writer = this._player.Connection.StartSafeWrite(0xC1, ChangeTerrainAttributes.GetRequiredSize(areas.Count));
         var message = new ChangeTerrainAttributes(writer.Span)
         {
             Type = type,
@@ -45,7 +44,7 @@ public class ChangeTerrainAttributesViewPlugIn : IChangeTerrainAttributesViewPlu
         };
 
         var i = 0;
-        foreach (var (startX, startY, endX, endY) in areas.Take(maxAreas))
+        foreach (var (startX, startY, endX, endY) in areas)
         {
             var item = message[i];
             item.StartX = startX;

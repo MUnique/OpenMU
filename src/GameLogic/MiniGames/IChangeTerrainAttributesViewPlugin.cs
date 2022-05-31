@@ -14,7 +14,7 @@ public interface IChangeTerrainAttributesViewPlugin : IViewPlugIn
     /// <summary>
     /// Updates the terrain attributes.
     /// </summary>
-    /// <param name="type">It's always 0</param>
+    /// <param name="type">It's always 0.</param>
     /// <param name="attribute">The type of terrain attribute.</param>
     /// <param name="setAttribute">Specifies, if the attribute should be set (true), or removed (false).</param>
     /// <param name="areas">The areas of terrain.</param>
