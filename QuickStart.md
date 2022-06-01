@@ -112,6 +112,8 @@ Requirements:
   * [.NET Core SDK SDK 6.0.100](https://dotnet.microsoft.com/download/dotnet/6.0)
     (it should be included in Visual Studio 17.0)
 
+  * [Saxon HE 9.9.1.6](https://sourceforge.net/projects/saxon/files/Saxon-HE/9.9/SaxonHE9-9-1-6N-setup.exe/download) installed
+
   * This repository cloned
 
 If you have that, you'll need to do:
