@@ -8053,20 +8053,75 @@
         </Field>
         <Field>
           <Index>17</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>TotalScore</Name>
         </Field>
         <Field>
           <Index>21</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>BonusExperience</Name>
         </Field>
         <Field>
           <Index>25</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>BonusMoney</Name>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>9A</Code>
+      <Name>BloodCastleEnterResult</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to enter the blood castle mini game through the Archangel Messenger NPC.</SentWhen>
+      <CausedReaction>In case it failed, it shows the corresponding error message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>EnterResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EnterResult</Name>
+          <Description>Defines the result of the enter request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The event has been entered.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>Entering the event failed, e.g. by missing event ticket or level range.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotOpen</Name>
+              <Description>Entering the event failed, because it's not opened.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooHigh</Name>
+              <Description>Entering the event failed, because the character level is too high for the requested event level.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooLow</Name>
+              <Description>Entering the event failed, because the character level is too low for the requested event level.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Full</Name>
+              <Description>Entering the event failed, because it's full.</Description>
+              <Value>5</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
   </Packets>
   <Enums>

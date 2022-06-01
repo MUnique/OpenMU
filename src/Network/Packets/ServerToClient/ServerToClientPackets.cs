@@ -21942,121 +21942,6 @@ public readonly ref struct DevilSquareEnterResult
 
 
 /// <summary>
-/// Is sent by the server when: The player requested to enter the blood castle mini game through the Messenger of Arch NPC.
-/// Causes reaction on client side: In case it failed, it shows the corresponding error message.
-/// </summary>
-public readonly ref struct BloodCastleEnterResult
-{
-    /// <summary>
-    /// Defines the result of the enter request.
-    /// </summary>
-    public enum EnterResult
-    {
-        /// <summary>
-        /// The event has been entered.
-        /// </summary>
-        Success = 0,
-
-        /// <summary>
-        /// Entering the event failed, e.g. by missing event ticket or level range.
-        /// </summary>
-        Failed = 1,
-
-        /// <summary>
-        /// Entering the event failed, because it's not opened.
-        /// </summary>
-        NotOpen = 2,
-
-        /// <summary>
-        /// Entering the event failed, because the character level is too high for the requested event level.
-        /// </summary>
-        CharacterLevelTooHigh = 3,
-
-        /// <summary>
-        /// Entering the event failed, because the character level is too low for the requested event level.
-        /// </summary>
-        CharacterLevelTooLow = 4,
-
-        /// <summary>
-        /// Entering the event failed, because it's full.
-        /// </summary>
-        Full = 5,
-    }
-
-    private readonly Span<byte> _data;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BloodCastleEnterResult"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    public BloodCastleEnterResult(Span<byte> data)
-        : this(data, true)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BloodCastleEnterResult"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private BloodCastleEnterResult(Span<byte> data, bool initialize)
-    {
-        this._data = data;
-        if (initialize)
-        {
-            var header = this.Header;
-            header.Type = HeaderType;
-            header.Code = Code;
-            header.Length = (byte)Math.Min(data.Length, Length);
-        }
-    }
-
-    /// <summary>
-    /// Gets the header type of this data packet.
-    /// </summary>
-    public static byte HeaderType => 0xC1;
-
-    /// <summary>
-    /// Gets the operation code of this data packet.
-    /// </summary>
-    public static byte Code => 0x9A;
-
-    /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 4;
-
-    /// <summary>
-    /// Gets the header of this packet.
-    /// </summary>
-    public C1Header Header => new(this._data);
-
-    /// <summary>
-    /// Gets or sets the result.
-    /// </summary>
-    public BloodCastleEnterResult.EnterResult Result
-    {
-        get => (EnterResult)this._data[3];
-        set => this._data[3] = (byte)value;
-    }
-
-    /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="BloodCastleEnterResult"/>.
-    /// </summary>
-    /// <param name="packet">The packet as span.</param>
-    /// <returns>The packet as struct.</returns>
-    public static implicit operator BloodCastleEnterResult(Span<byte> packet) => new(packet, false);
-
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="BloodCastleEnterResult"/> to a Span of bytes.
-    /// </summary>
-    /// <param name="packet">The packet as struct.</param>
-    /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(BloodCastleEnterResult packet) => packet._data;
-}
-
-
-/// <summary>
 /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
 /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
 /// </summary>
@@ -22548,8 +22433,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint TotalScore
     {
-        get => ReadUInt32BigEndian(this._data[17..]);
-        set => WriteUInt32BigEndian(this._data[17..], value);
+        get => ReadUInt32LittleEndian(this._data[17..]);
+        set => WriteUInt32LittleEndian(this._data[17..], value);
     }
 
     /// <summary>
@@ -22557,8 +22442,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint BonusExperience
     {
-        get => ReadUInt32BigEndian(this._data[21..]);
-        set => WriteUInt32BigEndian(this._data[21..], value);
+        get => ReadUInt32LittleEndian(this._data[21..]);
+        set => WriteUInt32LittleEndian(this._data[21..], value);
     }
 
     /// <summary>
@@ -22566,8 +22451,8 @@ public readonly ref struct BloodCastleScore
     /// </summary>
     public uint BonusMoney
     {
-        get => ReadUInt32BigEndian(this._data[25..]);
-        set => WriteUInt32BigEndian(this._data[25..], value);
+        get => ReadUInt32LittleEndian(this._data[25..]);
+        set => WriteUInt32LittleEndian(this._data[25..], value);
     }
 
     /// <summary>
@@ -22583,6 +22468,121 @@ public readonly ref struct BloodCastleScore
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(BloodCastleScore packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player requested to enter the blood castle mini game through the Archangel Messenger NPC.
+/// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+/// </summary>
+public readonly ref struct BloodCastleEnterResult
+{
+    /// <summary>
+    /// Defines the result of the enter request.
+    /// </summary>
+    public enum EnterResult
+    {
+        /// <summary>
+        /// The event has been entered.
+        /// </summary>
+            Success = 0,
+
+        /// <summary>
+        /// Entering the event failed, e.g. by missing event ticket or level range.
+        /// </summary>
+            Failed = 1,
+
+        /// <summary>
+        /// Entering the event failed, because it's not opened.
+        /// </summary>
+            NotOpen = 2,
+
+        /// <summary>
+        /// Entering the event failed, because the character level is too high for the requested event level.
+        /// </summary>
+            CharacterLevelTooHigh = 3,
+
+        /// <summary>
+        /// Entering the event failed, because the character level is too low for the requested event level.
+        /// </summary>
+            CharacterLevelTooLow = 4,
+
+        /// <summary>
+        /// Entering the event failed, because it's full.
+        /// </summary>
+            Full = 5,
+    }
+
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleEnterResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public BloodCastleEnterResult(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleEnterResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private BloodCastleEnterResult(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x9A;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public BloodCastleEnterResult.EnterResult Result
+    {
+        get => (EnterResult)this._data[3];
+        set => this._data[3] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="BloodCastleEnterResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator BloodCastleEnterResult(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="BloodCastleEnterResult"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(BloodCastleEnterResult packet) => packet._data; 
 }
     /// <summary>
     /// Defines the type of the mini game.

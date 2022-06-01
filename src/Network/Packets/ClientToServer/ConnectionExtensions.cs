@@ -1236,19 +1236,6 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Starts a safe write of a <see cref="BloodCastleEnterRequest" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <remarks>
-    /// Is sent by the client when: The player requests to enter the blood castle through the Messenger of Arch NPC.
-    /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x9A) back to the client. If it was successful, the character gets moved to the event map.
-    /// </remarks>
-    public static BloodCastleEnterRequestThreadSafeWriter StartWriteBloodCastleEnterRequest(this IConnection connection)
-    {
-        return new(connection);
-    }
-
-    /// <summary>
     /// Starts a safe write of a <see cref="RequestEventRemainingTime" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1257,6 +1244,19 @@ public static class ConnectionExtensions
     /// Causes reaction on server side: The remaining time is sent back to the client.
     /// </remarks>
     public static RequestEventRemainingTimeThreadSafeWriter StartWriteRequestEventRemainingTime(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="BloodCastleEnterRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to enter the blood castle through the Archangel Messenger NPC.
+    /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x9A) back to the client. If it was successful, the character gets moved to the event map.
+    /// </remarks>
+    public static BloodCastleEnterRequestThreadSafeWriter StartWriteBloodCastleEnterRequest(this IConnection connection)
     {
         return new (connection);
     }
@@ -3115,25 +3115,6 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="BloodCastleEnterRequest" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <param name="castleLevel">The level of the blood castle, minus 1.</param>
-    /// <param name="ticketItemInventoryIndex">The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</param>
-    /// <remarks>
-    /// Is sent by the client when: The player requests to enter the blood castle through the Messenger of Arch NPC.
-    /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x9A) back to the client. If it was successful, the character gets moved to the event map.
-    /// </remarks>
-    public static void SendBloodCastleEnterRequest(this IConnection connection, byte @castleLevel, byte @ticketItemInventoryIndex)
-    {
-        using var writer = connection.StartWriteBloodCastleEnterRequest();
-        var packet = writer.Packet;
-        packet.CastleLevel = @castleLevel;
-        packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
-        writer.Commit();
-    }
-
-    /// <summary>
     /// Sends a <see cref="RequestEventRemainingTime" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -3149,6 +3130,25 @@ public static class ConnectionExtensions
         var packet = writer.Packet;
         packet.EventType = @eventType;
         packet.EventLevel = @eventLevel;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="BloodCastleEnterRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="castleLevel">The level of the battle square.</param>
+    /// <param name="ticketItemInventoryIndex">The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to enter the blood castle through the Archangel Messenger NPC.
+    /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x9A) back to the client. If it was successful, the character gets moved to the event map.
+    /// </remarks>
+    public static void SendBloodCastleEnterRequest(this IConnection connection, byte @castleLevel, byte @ticketItemInventoryIndex)
+    {
+        using var writer = connection.StartWriteBloodCastleEnterRequest();
+        var packet = writer.Packet;
+        packet.CastleLevel = @castleLevel;
+        packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
         writer.Commit();
     }}
 /// <summary>
@@ -7988,58 +7988,6 @@ public readonly ref struct DevilSquareEnterRequestThreadSafeWriter
 }
       
 /// <summary>
-/// A helper struct to write a <see cref="BloodCastleEnterRequest"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct BloodCastleEnterRequestThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BloodCastleEnterRequestThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public BloodCastleEnterRequestThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new BloodCastleEnterRequest(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(BloodCastleEnterRequest.Length)[..BloodCastleEnterRequest.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public BloodCastleEnterRequest Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="BloodCastleEnterRequest" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(BloodCastleEnterRequest.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      
-/// <summary>
 /// A helper struct to write a <see cref="RequestEventRemainingTime"/> safely to a <see cref="IConnection.Output" />.
 /// </summary>
 public readonly ref struct RequestEventRemainingTimeThreadSafeWriter
@@ -8080,6 +8028,58 @@ public readonly ref struct RequestEventRemainingTimeThreadSafeWriter
     public void Commit()
     {
         this.connection.Output.AdvanceSafely(RequestEventRemainingTime.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="BloodCastleEnterRequest"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct BloodCastleEnterRequestThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleEnterRequestThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public BloodCastleEnterRequestThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new BloodCastleEnterRequest(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(BloodCastleEnterRequest.Length)[..BloodCastleEnterRequest.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public BloodCastleEnterRequest Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="BloodCastleEnterRequest" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(BloodCastleEnterRequest.Length);
     }
 
     /// <summary>

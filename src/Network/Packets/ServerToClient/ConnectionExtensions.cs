@@ -1665,19 +1665,6 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Starts a safe write of a <see cref="BloodCastleEnterResult" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <remarks>
-    /// Is sent by the server when: The player requested to enter the blood castle mini game through the Messenger of Arch NPC.
-    /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
-    /// </remarks>
-    public static BloodCastleEnterResultThreadSafeWriter StartWriteBloodCastleEnterResult(this IConnection connection)
-    {
-        return new(connection);
-    }
-
-    /// <summary>
     /// Starts a safe write of a <see cref="MiniGameOpeningState" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1712,6 +1699,19 @@ public static class ConnectionExtensions
     /// Causes reaction on client side: The score is shown at the client.
     /// </remarks>
     public static BloodCastleScoreThreadSafeWriter StartWriteBloodCastleScore(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
+    /// Starts a safe write of a <see cref="BloodCastleEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the blood castle mini game through the Archangel Messenger NPC.
+    /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+    /// </remarks>
+    public static BloodCastleEnterResultThreadSafeWriter StartWriteBloodCastleEnterResult(this IConnection connection)
     {
         return new (connection);
     }
@@ -4630,23 +4630,6 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="BloodCastleEnterResult" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <param name="result">The result.</param>
-    /// <remarks>
-    /// Is sent by the server when: The player requested to enter the blood castle mini game through the Messenger of Arch NPC.
-    /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
-    /// </remarks>
-    public static void SendBloodCastleEnterResult(this IConnection connection, BloodCastleEnterResult.EnterResult @result)
-    {
-        using var writer = connection.StartWriteBloodCastleEnterResult();
-        var packet = writer.Packet;
-        packet.Result = @result;
-        writer.Commit();
-    }
-
-    /// <summary>
     /// Sends a <see cref="MiniGameOpeningState" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -4710,6 +4693,23 @@ public static class ConnectionExtensions
         packet.TotalScore = @totalScore;
         packet.BonusExperience = @bonusExperience;
         packet.BonusMoney = @bonusMoney;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="BloodCastleEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the blood castle mini game through the Archangel Messenger NPC.
+    /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+    /// </remarks>
+    public static void SendBloodCastleEnterResult(this IConnection connection, BloodCastleEnterResult.EnterResult @result)
+    {
+        using var writer = connection.StartWriteBloodCastleEnterResult();
+        var packet = writer.Packet;
+        packet.Result = @result;
         writer.Commit();
     }}
 /// <summary>
@@ -11265,58 +11265,6 @@ public readonly ref struct DevilSquareEnterResultThreadSafeWriter
 }
       
 /// <summary>
-/// A helper struct to write a <see cref="BloodCastleEnterResult"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct BloodCastleEnterResultThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BloodCastleEnterResultThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public BloodCastleEnterResultThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new BloodCastleEnterResult(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(BloodCastleEnterResult.Length)[..BloodCastleEnterResult.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public BloodCastleEnterResult Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="BloodCastleEnterResult" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(BloodCastleEnterResult.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      
-/// <summary>
 /// A helper struct to write a <see cref="MiniGameOpeningState"/> safely to a <see cref="IConnection.Output" />.
 /// </summary>
 public readonly ref struct MiniGameOpeningStateThreadSafeWriter
@@ -11461,6 +11409,58 @@ public readonly ref struct BloodCastleScoreThreadSafeWriter
     public void Commit()
     {
         this.connection.Output.AdvanceSafely(BloodCastleScore.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="BloodCastleEnterResult"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct BloodCastleEnterResultThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleEnterResultThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public BloodCastleEnterResultThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new BloodCastleEnterResult(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(BloodCastleEnterResult.Length)[..BloodCastleEnterResult.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public BloodCastleEnterResult Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="BloodCastleEnterResult" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(BloodCastleEnterResult.Length);
     }
 
     /// <summary>

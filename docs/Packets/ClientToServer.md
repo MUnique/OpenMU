@@ -64,6 +64,7 @@
   * [C1 8E 02 - WarpCommandRequest (by client)](C1-8E-02-WarpCommandRequest_by-client.md)
   * [C1 90 - DevilSquareEnterRequest (by client)](C1-90-DevilSquareEnterRequest_by-client.md)
   * [C1 91 - RequestEventRemainingTime (by client)](C1-91-RequestEventRemainingTime_by-client.md)
+  * [C1 9A - BloodCastleEnterRequest (by client)](C1-9A-BloodCastleEnterRequest_by-client.md)
   * [C1 A0 - LegacyQuestStateRequest (by client)](C1-A0-LegacyQuestStateRequest_by-client.md)
   * [C1 A2 - LegacyQuestStateSetRequest (by client)](C1-A2-LegacyQuestStateSetRequest_by-client.md)
   * [C1 A7 - PetCommandRequest (by client)](C1-A7-PetCommandRequest_by-client.md)
