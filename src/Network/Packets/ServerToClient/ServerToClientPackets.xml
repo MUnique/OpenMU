@@ -8123,6 +8123,47 @@
         </Enum>
       </Enums>
     </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>9B</Code>
+      <Name>BloodCastleState</Name>
+      <Length>13</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of a blood castle event is about to change.</SentWhen>
+      <CausedReaction>The client side shows a message about the changing state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>State</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RemainSecond</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaxMonster</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CurMonster</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemOwner</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>ItemLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

@@ -1717,6 +1717,19 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Starts a safe write of a <see cref="BloodCastleState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of a blood castle event is about to change.
+    /// Causes reaction on client side: The client side shows a message about the changing state.
+    /// </remarks>
+    public static BloodCastleStateThreadSafeWriter StartWriteBloodCastleState(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
     /// Sends a <see cref="GameServerEntered" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -4710,6 +4723,33 @@ public static class ConnectionExtensions
         using var writer = connection.StartWriteBloodCastleEnterResult();
         var packet = writer.Packet;
         packet.Result = @result;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="BloodCastleState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="remainSecond">The remain second.</param>
+    /// <param name="maxMonster">The max monster.</param>
+    /// <param name="curMonster">The cur monster.</param>
+    /// <param name="itemOwner">The item owner.</param>
+    /// <param name="itemLevel">The item level.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of a blood castle event is about to change.
+    /// Causes reaction on client side: The client side shows a message about the changing state.
+    /// </remarks>
+    public static void SendBloodCastleState(this IConnection connection, byte @state, ushort @remainSecond, ushort @maxMonster, ushort @curMonster, ushort @itemOwner, byte @itemLevel)
+    {
+        using var writer = connection.StartWriteBloodCastleState();
+        var packet = writer.Packet;
+        packet.State = @state;
+        packet.RemainSecond = @remainSecond;
+        packet.MaxMonster = @maxMonster;
+        packet.CurMonster = @curMonster;
+        packet.ItemOwner = @itemOwner;
+        packet.ItemLevel = @itemLevel;
         writer.Commit();
     }}
 /// <summary>
@@ -11461,6 +11501,58 @@ public readonly ref struct BloodCastleEnterResultThreadSafeWriter
     public void Commit()
     {
         this.connection.Output.AdvanceSafely(BloodCastleEnterResult.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="BloodCastleState"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct BloodCastleStateThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleStateThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public BloodCastleStateThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new BloodCastleState(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(BloodCastleState.Length)[..BloodCastleState.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public BloodCastleState Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="BloodCastleState" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(BloodCastleState.Length);
     }
 
     /// <summary>
