@@ -28,7 +28,7 @@ internal abstract class BloodCastleBase : BaseMapInitializer
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
         yield return this.CreateMonsterSpawn(this.NpcDictionary[131], 014, 075, Direction.SouthWest, SpawnTrigger.AutomaticDuringEvent); // Castle Gate
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[132], 014, 095, Direction.SouthWest, SpawnTrigger.AutomaticDuringEvent); // Statue of Saint
+        // yield return this.CreateMonsterSpawn(this.NpcDictionary[132], 014, 095, Direction.SouthWest, SpawnTrigger.AutomaticDuringEvent); // Statue of Saint
         yield return this.CreateMonsterSpawn(this.NpcDictionary[232], 010, 009, Direction.SouthWest, SpawnTrigger.Automatic); // Archangel
     }
 }

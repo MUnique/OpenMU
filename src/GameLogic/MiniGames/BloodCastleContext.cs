@@ -6,25 +6,24 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Persistence;
 using Nito.Disposables.Internals;
 using System.Collections.Concurrent;
 using System.Threading;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// The context of a blood castle game.
 /// </summary>
 public sealed class BloodCastleContext : MiniGameContext
 {
-    private readonly IContext _persistenceContext;
     private readonly IGameContext _gameContext;
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
 
     private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
 
-    private int _monsterKilled;
-    private bool _isGateDestroyed;
-    private bool _isStatueSpawned;
+    private uint _monsterKilled;
+    private bool _gateDestroyed;
+    private bool _statueSpawned;
 
     private Player? _winner;
 
@@ -39,7 +38,6 @@ public sealed class BloodCastleContext : MiniGameContext
         : base(key, definition, gameContext, mapInitializer)
     {
         this._gameContext = gameContext;
-        this._persistenceContext = gameContext.PersistenceContextProvider.CreateNewContext();
     }
 
     /// <summary>
@@ -83,24 +81,24 @@ public sealed class BloodCastleContext : MiniGameContext
         var attacker = state.Player;
 
         var destructible = sender as Destructible;
-        switch (destructible!.Definition.Number)
+        if (destructible is null)
         {
-            case 131:
-                this._monsterKilled = 0;
-                this._isGateDestroyed = true;
-                _ = this.ForEachPlayerAsync(player => this.GateToggle(player));
-                break;
+            return;
+        }
 
-            case 132:
-                this._isStatueSpawned = true;
-                var item = this._gameContext.PersistenceContextProvider.CreateNewContext().CreateNew<Item>();
-                item.Definition = this._gameContext.Configuration.Items.FirstOrDefault(def => def.Group == 13 && def.Number == 19);
-                var droppedItem = new DroppedItem(item, new Pathfinding.Point(14, 95), this.Map, attacker);
-                this.Map.Add(droppedItem);
-                break;
+        if (destructible.Definition.Number == 131)
+        {
+            this._gateDestroyed = true;
+            this._monsterKilled = 0;
+            _ = this.ForEachPlayerAsync(player => this.GateToggle(player));
+        }
 
-            default:
-                break;
+        if (destructible.Definition.Number == 132)
+        {
+            var item = new Item();
+            item.Definition = this._gameContext.Configuration.Items.FirstOrDefault(def => def.Group == 13 && def.Number == 19);
+            var droppedItem = new DroppedItem(item, new Point(14, 95), this.Map, attacker);
+            this.Map.Add(droppedItem);
         }
     }
 
@@ -113,38 +111,29 @@ public sealed class BloodCastleContext : MiniGameContext
         }
 
         var monster = sender as Monster;
+        if (monster is null)
+        {
+            return;
+        }
 
-        if (this._monsterKilled < 40 && !this._isGateDestroyed)
+        if (this._monsterKilled < 40 && !this._gateDestroyed)
         {
             this._monsterKilled++;
         }
 
-        if (new[] { 089, 095, 112, 118, 124, 130, 143, 433 }.Contains(monster!.Definition.Number))
-        {
-            this._monsterKilled++;
-        }
-
-        if (this._monsterKilled == 50 && !this._isGateDestroyed)
+        if (this._monsterKilled == 40 && !this._gateDestroyed)
         {
             _ = this.ForEachPlayerAsync(player => this.BridgeToggle(player));
         }
 
-        if (this._monsterKilled == 2 && !this._isStatueSpawned)
+        if (new[] { 089, 095, 112, 118, 124, 130, 143, 433 }.Contains(monster.Definition.Number))
         {
-            var statue = this._persistenceContext.CreateNew<Destructible>();
-            statue.Definition = this._gameContext.Configuration.Monsters.First(m => m.Number == 132);
-            
-            var area = this._persistenceContext.CreateNew<MonsterSpawnArea>();
-            area.GameMap = this.Map.Definition;
-            area.MonsterDefinition = this._gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == 132);
-            area.Quantity = 1;
-            area.Direction = Direction.SouthWest;
-            area.SpawnTrigger = SpawnTrigger.Automatic;
-            area.X1 = 14;
-            area.X2 = 14;
-            area.Y1 = 95;
-            area.Y2 = 95;
-            area.WaveNumber = 0;
+            this._monsterKilled++;
+        }
+
+        if (this._monsterKilled == 2 && !this._statueSpawned)
+        {
+            this.SpawnStatue();
         }
     }
 
@@ -200,10 +189,6 @@ public sealed class BloodCastleContext : MiniGameContext
         }
     }
 
-    private void UpdateState(byte state)
-    {
-    }
-
     private void EntranceToggle(Player player)
     {
         var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
@@ -237,6 +222,34 @@ public sealed class BloodCastleContext : MiniGameContext
 
         player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
             .ChangeAttributes(false, TerrainAttributeType.Blocked, true, areas);
+    }
+
+    private void SpawnStatue()
+    {
+        // Statue of Saint
+        var monsterDef = this._gameContext.Configuration.Monsters.First(m => m.Number == 132);
+        if (monsterDef is null)
+        {
+            return;
+        }
+
+        var position = new Pathfinding.Point(014, 095);
+        var area = new MonsterSpawnArea
+        {
+            GameMap = this.Map.Definition,
+            MonsterDefinition = monsterDef,
+            SpawnTrigger = SpawnTrigger.OnceAtWaveStart,
+            Direction = Direction.SouthWest,
+            Quantity = 1,
+            X1 = position.X,
+            X2 = position.X,
+            Y1 = position.Y,
+            Y2 = position.Y,
+        };
+
+        var statue = new Destructible(area, monsterDef, this.Map);
+        statue.Initialize();
+        this.Map.Add(statue);
     }
 
     private sealed class PlayerGameState
