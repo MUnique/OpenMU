@@ -8,9 +8,9 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Persistence;
 using System.Threading;
 
 /// <summary>
@@ -31,6 +31,11 @@ public sealed class Destructible : NonPlayerCharacter, IAttackable
     {
         this.Attributes = new DestructibleAttributeHolder(this);
     }
+
+    /// <summary>
+    /// Occurs when this instance died.
+    /// </summary>
+    public event EventHandler<DeathInformation>? Died;
 
     /// <summary>
     /// Gets or sets the current health.
@@ -124,7 +129,9 @@ public sealed class Destructible : NonPlayerCharacter, IAttackable
 
         if (killed)
         {
+            this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
             this.OnDeath(attacker);
+            this.Died?.Invoke(this, this.LastDeath);
         }
     }
 
@@ -150,8 +157,6 @@ public sealed class Destructible : NonPlayerCharacter, IAttackable
 
     private void OnDeath(IAttacker attacker)
     {
-        this.MiniGameEvent(attacker);
-
         this.ObserverLock.EnterWriteLock();
         try
         {
@@ -174,15 +179,6 @@ public sealed class Destructible : NonPlayerCharacter, IAttackable
         }
 
         this.RemoveFromMapAndDispose();
-    }
-
-    private void MiniGameEvent(IAttacker attacker)
-    {
-        var player = attacker as Player;
-        if (player?.CurrentMiniGame is BloodCastleContext bloodCastle)
-        {
-            bloodCastle.OnDestructibleDied(player, this);
-        }
     }
 
     private void RemoveFromMapAndDispose()

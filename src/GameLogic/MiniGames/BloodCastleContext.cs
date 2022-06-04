@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Persistence;
 using Nito.Disposables.Internals;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -15,12 +16,15 @@ using System.Threading;
 /// </summary>
 public sealed class BloodCastleContext : MiniGameContext
 {
+    private readonly IContext _persistenceContext;
     private readonly IGameContext _gameContext;
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
 
     private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
 
-    private int _monsterDiedCount;
+    private int _monsterKilled;
+    private bool _isGateDestroyed;
+    private bool _isStatueSpawned;
 
     private Player? _winner;
 
@@ -35,6 +39,7 @@ public sealed class BloodCastleContext : MiniGameContext
         : base(key, definition, gameContext, mapInitializer)
     {
         this._gameContext = gameContext;
+        this._persistenceContext = gameContext.PersistenceContextProvider.CreateNewContext();
     }
 
     /// <summary>
@@ -71,20 +76,23 @@ public sealed class BloodCastleContext : MiniGameContext
         player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x17);
     }
 
-    /// <summary>
-    /// Do something when a destructible of the game has been died.
-    /// </summary>
-    /// <param name="attacker">The player which killed destructible.</param>
-    /// <param name="destructible">The destructible was killed by player.</param>
-    public void OnDestructibleDied(Player attacker, Destructible destructible)
+    /// <inheritdoc />
+    protected override void OnDestructibleDied(object? sender, DeathInformation e)
     {
-        switch (destructible.Definition.Number)
+        var state = this._gameStates.FirstOrDefault(s => s.Key == e.KillerName).Value;
+        var attacker = state.Player;
+
+        var destructible = sender as Destructible;
+        switch (destructible!.Definition.Number)
         {
             case 131:
-                _ = this.ForEachPlayerAsync(player => this.DoorToggle(player));
+                this._monsterKilled = 0;
+                this._isGateDestroyed = true;
+                _ = this.ForEachPlayerAsync(player => this.GateToggle(player));
                 break;
 
             case 132:
+                this._isStatueSpawned = true;
                 var item = this._gameContext.PersistenceContextProvider.CreateNewContext().CreateNew<Item>();
                 item.Definition = this._gameContext.Configuration.Items.FirstOrDefault(def => def.Group == 13 && def.Number == 19);
                 var droppedItem = new DroppedItem(item, new Pathfinding.Point(14, 95), this.Map, attacker);
@@ -99,18 +107,44 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override void OnMonsterDied(object? sender, DeathInformation e)
     {
-        base.OnMonsterDied(sender, e);
-
         if (this._gameStates.TryGetValue(e.KillerName, out var state))
         {
             state.AddScore(this.Definition.GameLevel);
         }
 
-        this._monsterDiedCount++;
+        var monster = sender as Monster;
 
-        if (this._monsterDiedCount == 50)
+        if (this._monsterKilled < 40 && !this._isGateDestroyed)
+        {
+            this._monsterKilled++;
+        }
+
+        if (new[] { 089, 095, 112, 118, 124, 130, 143, 433 }.Contains(monster!.Definition.Number))
+        {
+            this._monsterKilled++;
+        }
+
+        if (this._monsterKilled == 50 && !this._isGateDestroyed)
         {
             _ = this.ForEachPlayerAsync(player => this.BridgeToggle(player));
+        }
+
+        if (this._monsterKilled == 2 && !this._isStatueSpawned)
+        {
+            var statue = this._persistenceContext.CreateNew<Destructible>();
+            statue.Definition = this._gameContext.Configuration.Monsters.First(m => m.Number == 132);
+            
+            var area = this._persistenceContext.CreateNew<MonsterSpawnArea>();
+            area.GameMap = this.Map.Definition;
+            area.MonsterDefinition = this._gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == 132);
+            area.Quantity = 1;
+            area.Direction = Direction.SouthWest;
+            area.SpawnTrigger = SpawnTrigger.Automatic;
+            area.X1 = 14;
+            area.X2 = 14;
+            area.Y1 = 95;
+            area.Y2 = 95;
+            area.WaveNumber = 0;
         }
     }
 
@@ -166,6 +200,10 @@ public sealed class BloodCastleContext : MiniGameContext
         }
     }
 
+    private void UpdateState(byte state)
+    {
+    }
+
     private void EntranceToggle(Player player)
     {
         var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
@@ -188,11 +226,11 @@ public sealed class BloodCastleContext : MiniGameContext
             .ChangeAttributes(false, TerrainAttributeType.NoGround, true, areas);
     }
 
-    private void DoorToggle(Player player)
+    private void GateToggle(Player player)
     {
         var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
         {
-            (13, 70, 15, 80),
+            (13, 75, 15, 80),
             (11, 80, 25, 89),
             (08, 80, 10, 83),
         };

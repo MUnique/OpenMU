@@ -194,7 +194,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// </summary>
     /// <param name="sender">The sender (destructible) of the event.</param>
     /// <param name="e">The event parameters.</param>
-    protected virtual void OnDestructibleDied(object? sender, DestructibleDeathInformation e)
+    protected virtual void OnDestructibleDied(object? sender, DeathInformation e)
     {
         // can be overwritten
     }
@@ -491,6 +491,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
         if (args.Object is Monster monster)
         {
             monster.Died += this.OnMonsterDied;
+        }
+
+        if (args.Object is Destructible destructible)
+        {
+            destructible.Died += OnDestructibleDied;
         }
     }
 
