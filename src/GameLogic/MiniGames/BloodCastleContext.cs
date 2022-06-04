@@ -6,10 +6,10 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Pathfinding;
 using Nito.Disposables.Internals;
 using System.Collections.Concurrent;
 using System.Threading;
-using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// The context of a blood castle game.
@@ -88,7 +88,7 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             this._gateDestroyed = true;
             this._monsterKilled = 0;
-            _ = this.ForEachPlayerAsync(player => this.GateToggle(player));
+            this.GateToggle(true);
         }
 
         if (destructible.Definition.Number == 132)
@@ -126,14 +126,15 @@ public sealed class BloodCastleContext : MiniGameContext
 
             if (this._monsterKilled == 40)
             {
-                _ = this.ForEachPlayerAsync(player => this.BridgeToggle(player));
-                this._bridgeToggled = true;
+                this.BridgeToggle(true);
             }
         }
 
         if (!this._statueSpawned && this._gateDestroyed)
         {
-            if (this._monsterKilled < 2 && new[] { 089, 095, 112, 118, 124, 130, 143, 433 }.Contains(monster.Definition.Number))
+            var monsterNumbers = new[] { 089, 095, 112, 118, 124, 130, 143, 433 };
+
+            if (this._monsterKilled < 2 && monsterNumbers.Contains(monster.Definition.Number))
             {
                 this._monsterKilled++;
             }
@@ -152,10 +153,9 @@ public sealed class BloodCastleContext : MiniGameContext
         foreach (var player in players)
         {
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
-
-            this.EntranceToggle(player);
         }
 
+        this.EntranceToggle(true);
         base.OnGameStart(players);
     }
 
@@ -198,39 +198,39 @@ public sealed class BloodCastleContext : MiniGameContext
         }
     }
 
-    private void EntranceToggle(Player player)
+    private void EntranceToggle(bool value)
     {
         var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
         {
             (13, 15, 15, 23),
         };
 
-        player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
-            .ChangeAttributes(false, TerrainAttributeType.Blocked, true, areas);
+        this.UpdateWalkMapClient(areas, TerrainAttributeType.Blocked, value);
+        this.UpdateWalkMapServer(areas, value);
     }
 
-    private void BridgeToggle(Player player)
+    private void BridgeToggle(bool value)
     {
         var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
         {
             (13, 70, 15, 75),
         };
 
-        player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
-            .ChangeAttributes(false, TerrainAttributeType.NoGround, true, areas);
+        this.UpdateWalkMapClient(areas, TerrainAttributeType.NoGround, value);
+        this.UpdateWalkMapServer(areas, value);
     }
 
-    private void GateToggle(Player player)
+    private void GateToggle(bool value)
     {
         var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
         {
-            (13, 75, 15, 80),
+            (13, 76, 15, 79),
             (11, 80, 25, 89),
             (08, 80, 10, 83),
         };
 
-        player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
-            .ChangeAttributes(false, TerrainAttributeType.Blocked, true, areas);
+        this.UpdateWalkMapClient(areas, TerrainAttributeType.Blocked, value);
+        this.UpdateWalkMapServer(areas, value);
     }
 
     private void SpawnStatue()
@@ -259,6 +259,34 @@ public sealed class BloodCastleContext : MiniGameContext
         var statue = new Destructible(area, monsterDef, this.Map);
         statue.Initialize();
         this.Map.Add(statue);
+    }
+
+    private void UpdateWalkMapServer(
+        List<(byte startX, byte startY, byte endX, byte endY)> areas,
+        bool value)
+    {
+        foreach (var (startX, startY, endX, endY) in areas)
+        {
+            for (int x = startX; x <= endX; x++)
+            {
+                for (int y = startY; y <= endY; y++)
+                {
+                    this.Map.Terrain.WalkMap[x, y] = value;
+                }
+            }
+        }
+    }
+
+    private void UpdateWalkMapClient(
+        List<(byte startX, byte startY, byte endX, byte endY)> areas,
+        TerrainAttributeType type,
+        bool value)
+    {
+        _ = this.ForEachPlayerAsync(player =>
+        {
+            player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
+                .ChangeAttributes(false, type, value, areas);
+        });
     }
 
     private sealed class PlayerGameState
