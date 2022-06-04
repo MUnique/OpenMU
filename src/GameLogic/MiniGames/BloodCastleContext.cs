@@ -24,6 +24,7 @@ public sealed class BloodCastleContext : MiniGameContext
     private uint _monsterKilled;
     private bool _gateDestroyed;
     private bool _statueSpawned;
+    private bool _bridgeToggled;
 
     private Player? _winner;
 
@@ -77,9 +78,6 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override void OnDestructibleDied(object? sender, DeathInformation e)
     {
-        var state = this._gameStates.FirstOrDefault(s => s.Key == e.KillerName).Value;
-        var attacker = state.Player;
-
         var destructible = sender as Destructible;
         if (destructible is null)
         {
@@ -95,10 +93,13 @@ public sealed class BloodCastleContext : MiniGameContext
 
         if (destructible.Definition.Number == 132)
         {
-            var item = new Item();
+            using var context = this._gameContext.PersistenceContextProvider.CreateNewContext();
+            var item = context.CreateNew<Item>();
             item.Definition = this._gameContext.Configuration.Items.FirstOrDefault(def => def.Group == 13 && def.Number == 19);
-            var droppedItem = new DroppedItem(item, new Point(14, 95), this.Map, attacker);
-            this.Map.Add(droppedItem);
+
+            var dropper = this._gameStates.FirstOrDefault(s => s.Key == e.KillerName).Value.Player;
+            var dropped = new DroppedItem(item, new Point(14, 95), this.Map, dropper);
+            this.Map.Add(dropped);
         }
     }
 
@@ -116,24 +117,32 @@ public sealed class BloodCastleContext : MiniGameContext
             return;
         }
 
-        if (this._monsterKilled < 40 && !this._gateDestroyed)
+        if (!this._bridgeToggled)
         {
-            this._monsterKilled++;
+            if (this._monsterKilled < 40)
+            {
+                this._monsterKilled++;
+            }
+
+            if (this._monsterKilled == 40)
+            {
+                _ = this.ForEachPlayerAsync(player => this.BridgeToggle(player));
+                this._bridgeToggled = true;
+            }
         }
 
-        if (this._monsterKilled == 40 && !this._gateDestroyed)
+        if (!this._statueSpawned && this._gateDestroyed)
         {
-            _ = this.ForEachPlayerAsync(player => this.BridgeToggle(player));
-        }
+            if (this._monsterKilled < 2 && new[] { 089, 095, 112, 118, 124, 130, 143, 433 }.Contains(monster.Definition.Number))
+            {
+                this._monsterKilled++;
+            }
 
-        if (new[] { 089, 095, 112, 118, 124, 130, 143, 433 }.Contains(monster.Definition.Number))
-        {
-            this._monsterKilled++;
-        }
-
-        if (this._monsterKilled == 2 && !this._statueSpawned)
-        {
-            this.SpawnStatue();
+            if (this._monsterKilled == 2)
+            {
+                this.SpawnStatue();
+                this._statueSpawned = true;
+            }
         }
     }
 
@@ -227,18 +236,18 @@ public sealed class BloodCastleContext : MiniGameContext
     private void SpawnStatue()
     {
         // Statue of Saint
-        var monsterDef = this._gameContext.Configuration.Monsters.First(m => m.Number == 132);
+        var monsterDef = this._gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == 132);
         if (monsterDef is null)
         {
             return;
         }
 
-        var position = new Pathfinding.Point(014, 095);
+        var position = new Point(014, 095);
         var area = new MonsterSpawnArea
         {
             GameMap = this.Map.Definition,
             MonsterDefinition = monsterDef,
-            SpawnTrigger = SpawnTrigger.OnceAtWaveStart,
+            SpawnTrigger = SpawnTrigger.Automatic,
             Direction = Direction.SouthWest,
             Quantity = 1,
             X1 = position.X,
