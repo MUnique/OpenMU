@@ -112,6 +112,11 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             _ = this.ForEachPlayerAsync(player => this.BridgeToggle(player));
         }
+
+        if (this._monsterDiedCount == 100)
+        {
+            _ = this.ForEachPlayerAsync(player => this.SpawnStatue(player));
+        }
     }
 
     /// <inheritdoc />
@@ -199,6 +204,32 @@ public sealed class BloodCastleContext : MiniGameContext
 
         player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
             .ChangeAttributes(false, TerrainAttributeType.Blocked, true, areas);
+    }
+
+    private void SpawnStatue(Player player)
+    {
+        // Statue of Saint
+        var monsterDef = this._gameContext.Configuration.Monsters.First(m => m.Number == 132);
+        if (monsterDef is null) {
+            return;
+        }
+        var position = new Pathfinding.Point(014, 095);
+        var gameMap = this.Map;
+        var area = new MonsterSpawnArea
+        {
+            GameMap = gameMap.Definition,
+            MonsterDefinition = monsterDef,
+            SpawnTrigger = SpawnTrigger.OnceAtWaveStart,
+            Direction=Direction.SouthWest,
+            Quantity = 1,
+            X1 = position.X,
+            X2 = position.X,
+            Y1 = position.Y,
+            Y2 = position.Y,
+        };
+        var statue = new Destructible(area, monsterDef, gameMap);
+        statue.Initialize();
+        gameMap.Add(statue);
     }
 
     private sealed class PlayerGameState
