@@ -71,20 +71,6 @@ public class GuildServerController : ControllerBase
         this._guildServer.GuildMemberLeftGame(data.GuildId, data.CharacterId, data.ServerId);
     }
 
-    //// TODO PubSub?
-    //[HttpPost(nameof(IGuildServer.PlayerEnteredGame))]
-    //public GuildMemberStatus? PlayerEnteredGame([FromBody] PlayerEnteredGameArguments data)
-    //{
-    //    return this._guildServer.PlayerEnteredGame(data.CharacterId, data.CharacterName, data.ServerId);
-    //}
-
-    //// TODO PubSub?
-    //[HttpPost(nameof(IGuildServer.GuildMemberLeftGame))]
-    //public void GuildMemberLeftGame([FromBody] GuildPlayerLeftGameArguments data)
-    //{
-    //    this._guildServer.GuildMemberLeftGame(data.GuildId, data.GuildMemberId, data.ServerId);
-    //}
-
     [HttpPost(nameof(IGuildServer.GetGuildList))]
     public IEnumerable<GuildListEntry> GetGuildList([FromBody] uint guildId)
     {
