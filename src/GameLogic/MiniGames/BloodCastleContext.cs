@@ -417,7 +417,7 @@ public sealed class BloodCastleContext : MiniGameContext
                         this._remainTime,
                         this._maxMonster,
                         this._curMonster,
-                        this._questItemOwner?.Id ?? -1,
+                        this._questItemOwner?.Id ?? 65535,
                         this._questItem?.Level ?? 255);
             });
         }
@@ -429,7 +429,7 @@ public sealed class BloodCastleContext : MiniGameContext
                     this._remainTime,
                     this._maxMonster,
                     this._curMonster,
-                    this._questItemOwner?.Id ?? -1,
+                    this._questItemOwner?.Id ?? 65535,
                     this._questItem?.Level ?? 255);
         }
     }
