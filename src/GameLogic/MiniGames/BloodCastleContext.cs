@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
@@ -110,6 +111,12 @@ public sealed class BloodCastleContext : MiniGameContext
             this._curMonster = 0;
             this._maxMonster = this._gameStates.Count * 2;
             this.GateToggle(true);
+
+            this.ForEachPlayerAsync(player =>
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
+                    .ShowMessage(e.KillerName + " has demolished the Castle Gate!", Interfaces.MessageType.GoldenCenter);
+            }).ConfigureAwait(false);
         }
 
         if (destructible.Definition.Number == 132)
@@ -123,6 +130,12 @@ public sealed class BloodCastleContext : MiniGameContext
             this.Map.Add(dropped);
 
             this._questItem = item;
+
+            this.ForEachPlayerAsync(player =>
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
+                    .ShowMessage(e.KillerName + " has destroyed the stone Statue!", Interfaces.MessageType.GoldenCenter);
+            }).ConfigureAwait(false);
         }
     }
 
@@ -166,6 +179,12 @@ public sealed class BloodCastleContext : MiniGameContext
             {
                 this.SpawnStatue();
                 this._statueSpawned = true;
+
+                this.ForEachPlayerAsync(player =>
+                {
+                    player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
+                        .ShowMessage("Kundun minions have been subdued! Destroy the Crystal Statue!", Interfaces.MessageType.GoldenCenter);
+                }).ConfigureAwait(false);
             }
         }
     }
@@ -173,7 +192,7 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc/>
     protected override void OnPlayerPickedUpItem(object? sender, ILocateable e)
     {
-        var player = sender as Player;
+        var picker = sender as Player;
 
         switch (e)
         {
@@ -181,7 +200,13 @@ public sealed class BloodCastleContext : MiniGameContext
                 var itemDef = droppedItem.Item.Definition;
                 if (itemDef?.Group == 13 && itemDef.Number == 19)
                 {
-                    this._questItemOwner = player;
+                    this._questItemOwner = picker;
+
+                    this.ForEachPlayerAsync(player =>
+                    {
+                        player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
+                            .ShowMessage(picker!.Name + " has acquired the " + itemDef.Name, Interfaces.MessageType.GoldenCenter);
+                    }).ConfigureAwait(false);
                 }
 
                 break;
@@ -387,13 +412,25 @@ public sealed class BloodCastleContext : MiniGameContext
             await this.ForEachPlayerAsync(player =>
             {
                 player.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
-                    .UpdateState(state, this._remainTime, this._maxMonster, this._curMonster, this._questItemOwner?.Id ?? -1, this._questItem?.Level ?? 255);
+                    .UpdateState(
+                        state,
+                        this._remainTime,
+                        this._maxMonster,
+                        this._curMonster,
+                        this._questItemOwner?.Id ?? -1,
+                        this._questItem?.Level ?? 255);
             });
         }
         else
         {
             player.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
-                .UpdateState(state, this._remainTime, this._maxMonster, this._curMonster, this._questItemOwner?.Id ?? -1, this._questItem?.Level ?? 255);
+                .UpdateState(
+                    state,
+                    this._remainTime,
+                    this._maxMonster,
+                    this._curMonster,
+                    this._questItemOwner?.Id ?? -1,
+                    this._questItem?.Level ?? 255);
         }
     }
 
