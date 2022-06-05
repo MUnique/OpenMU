@@ -65,19 +65,13 @@ public sealed class BloodCastleContext : MiniGameContext
             return;
         }
 
-        var item = player.Inventory!.Items.FirstOrDefault(item => item.Definition?.Group == 13 && item.Definition.Number == 19);
-
-        if (item is null)
+        if (!this.TryRemoveQuestItemFromPlayer(player))
         {
             player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x18);
             return;
         }
 
         this._winner = player;
-
-        player.Inventory.RemoveItem(item);
-        player.PersistenceContext.Delete(item);
-        player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(item.ItemSlot);
         player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x17);
     }
 
@@ -88,11 +82,11 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             if (this.IsEventRunning)
             {
-                this.DropQuestItemFromPlayer(player);
+                this.TryDropQuestItemFromPlayer(player);
             }
             else
             {
-                this.RemoveQuestItemFromPlayer(player);
+                this.TryRemoveQuestItemFromPlayer(player);
             }
 
             this.UpdateState(2, player).ConfigureAwait(false);
@@ -127,6 +121,8 @@ public sealed class BloodCastleContext : MiniGameContext
             var dropper = this._gameStates.FirstOrDefault(s => s.Key == e.KillerName).Value.Player;
             var dropped = new DroppedItem(item, new Point(14, 95), this.Map, dropper);
             this.Map.Add(dropped);
+
+            this._questItem = item;
         }
     }
 
@@ -174,6 +170,27 @@ public sealed class BloodCastleContext : MiniGameContext
         }
     }
 
+    /// <inheritdoc/>
+    protected override void OnPlayerPickedUpItem(object? sender, ILocateable e)
+    {
+        var player = sender as Player;
+
+        switch (e)
+        {
+            case DroppedItem droppedItem:
+                var itemDef = droppedItem.Item.Definition;
+                if (itemDef?.Group == 13 && itemDef.Number == 19)
+                {
+                    this._questItemOwner = player;
+                }
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
     /// <inheritdoc />
     protected override void OnGameStart(ICollection<Player> players)
     {
@@ -211,6 +228,8 @@ public sealed class BloodCastleContext : MiniGameContext
                 state.Score,
                 this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0,
                 this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Money && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0));
+
+            this.TryRemoveQuestItemFromPlayer(state.Player);
         }
 
         this._highScoreTable = scoreList.AsReadOnly();
@@ -368,41 +387,51 @@ public sealed class BloodCastleContext : MiniGameContext
             await this.ForEachPlayerAsync(player =>
             {
                 player.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
-                    .UpdateState(state, this._remainTime, this._maxMonster, this._curMonster, this._winner?.Id ?? -1, this._questItem?.Level ?? 1);
+                    .UpdateState(state, this._remainTime, this._maxMonster, this._curMonster, this._questItemOwner?.Id ?? -1, this._questItem?.Level ?? 255);
             });
         }
         else
         {
             player.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
-                .UpdateState(state, this._remainTime, this._maxMonster, this._curMonster, this._winner?.Id ?? -1, this._questItem?.Level ?? 1);
+                .UpdateState(state, this._remainTime, this._maxMonster, this._curMonster, this._questItemOwner?.Id ?? -1, this._questItem?.Level ?? 255);
         }
     }
 
-    private void RemoveQuestItemFromPlayer(Player player)
+    private bool TryRemoveQuestItemFromPlayer(Player player)
     {
         var item = player.Inventory!.Items.FirstOrDefault(item => item.Definition?.Group == 13 && item.Definition.Number == 19);
         if (item is null)
         {
-            return;
+            return false;
         }
 
         player.Inventory.RemoveItem(item);
         player.PersistenceContext.Delete(item);
         player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(item.ItemSlot);
+
+        this._questItem = null;
+        this._questItemOwner = null;
+
+        return true;
     }
 
-    private void DropQuestItemFromPlayer(Player player)
+    private bool TryDropQuestItemFromPlayer(Player player)
     {
         var item = player.Inventory!.Items.FirstOrDefault(item => item.Definition?.Group == 13 && item.Definition.Number == 19);
         if (item is null)
         {
-            return;
+            return false;
         }
 
         var dropped = new DroppedItem(item, player.Position, this.Map, player);
         this.Map.Add(dropped);
         player.Inventory.RemoveItem(item);
         player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(item.ItemSlot, true);
+
+        this._questItem = item;
+        this._questItemOwner = null;
+
+        return true;
     }
 
     private sealed class PlayerGameState

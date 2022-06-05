@@ -111,6 +111,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
 
         player.CurrentMiniGame = this;
+        player.PlayerPickedUpItem += this.OnPlayerPickedUpItem;
         enterResult = EnterResult.Success;
         return true;
     }
@@ -195,6 +196,16 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <param name="sender">The sender (destructible) of the event.</param>
     /// <param name="e">The event parameters.</param>
     protected virtual void OnDestructibleDied(object? sender, DeathInformation e)
+    {
+        // can be overwritten
+    }
+
+    /// <summary>
+    /// Will be called when an item has been picked up by player.
+    /// </summary>
+    /// <param name="sender">The sender (player) of the event.</param>
+    /// <param name="e">The event parameters.</param>
+    protected virtual void OnPlayerPickedUpItem(object? sender, ILocateable e)
     {
         // can be overwritten
     }
