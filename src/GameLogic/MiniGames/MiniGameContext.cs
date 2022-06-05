@@ -221,6 +221,57 @@ public class MiniGameContext : Disposable, IEventStateProvider
     }
 
     /// <summary>
+    /// Will be called when an object has been ended to map.
+    /// </summary>
+    /// <param name="sender">The sender of the event.</param>
+    /// <param name="args">The event parameters.</param>
+    protected virtual void OnObjectAddedToMap(object? sender, (GameMap Map, ILocateable Object) args)
+    {
+        this._gameContext.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>()?.ObjectAddedToMap(args.Map, args.Object);
+        if (args.Object is Monster monster)
+        {
+            monster.Died += this.OnMonsterDied;
+        }
+
+        if (args.Object is Destructible destructible)
+        {
+            destructible.Died += this.OnDestructibleDied;
+        }
+    }
+
+    /// <summary>
+    /// Will be called when an object has been removed from map.
+    /// </summary>
+    /// <param name="sender">The sender of the event.</param>
+    /// <param name="args">The event parameters.</param>
+    protected virtual void OnObjectRemovedFromMap(object? sender, (GameMap Map, ILocateable Object) args)
+    {
+        this._gameContext.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>()?.ObjectRemovedFromMap(args.Map, args.Object);
+        if (args.Object is not Player player)
+        {
+            return;
+        }
+
+        player.CurrentMiniGame = null;
+        bool cantGameProceed;
+        this._enterLock.Wait();
+        try
+        {
+            this._enteredPlayers.Remove(player);
+            cantGameProceed = this._enteredPlayers.Count == 0 && this.State != MiniGameState.Open;
+        }
+        finally
+        {
+            this._enterLock.Release();
+        }
+
+        if (cantGameProceed)
+        {
+            this._gameEndedCts.Cancel();
+        }
+    }
+
+    /// <summary>
     /// Gives the rewards to the player.
     /// </summary>
     /// <param name="player">The player who should receive the rewards.</param>
@@ -483,47 +534,6 @@ public class MiniGameContext : Disposable, IEventStateProvider
         map.ObjectRemoved += this.OnObjectRemovedFromMap;
         map.ObjectAdded += this.OnObjectAddedToMap;
         return map;
-    }
-
-    private void OnObjectAddedToMap(object? sender, (GameMap Map, ILocateable Object) args)
-    {
-        this._gameContext.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>()?.ObjectAddedToMap(args.Map, args.Object);
-        if (args.Object is Monster monster)
-        {
-            monster.Died += this.OnMonsterDied;
-        }
-
-        if (args.Object is Destructible destructible)
-        {
-            destructible.Died += OnDestructibleDied;
-        }
-    }
-
-    private void OnObjectRemovedFromMap(object? sender, (GameMap Map, ILocateable Object) args)
-    {
-        this._gameContext.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>()?.ObjectRemovedFromMap(args.Map, args.Object);
-        if (args.Object is not Player player)
-        {
-            return;
-        }
-
-        player.CurrentMiniGame = null;
-        bool cantGameProceed;
-        this._enterLock.Wait();
-        try
-        {
-            this._enteredPlayers.Remove(player);
-            cantGameProceed = this._enteredPlayers.Count == 0 && this.State != MiniGameState.Open;
-        }
-        finally
-        {
-            this._enterLock.Release();
-        }
-
-        if (cantGameProceed)
-        {
-            this._gameEndedCts.Cancel();
-        }
     }
 
     private async ValueTask ShutdownGameAsync()

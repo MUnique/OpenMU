@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
 using Nito.Disposables.Internals;
 using System.Collections.Concurrent;
@@ -21,12 +22,17 @@ public sealed class BloodCastleContext : MiniGameContext
 
     private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
 
-    private uint _monsterKilled;
+    private int _maxMonster;
+    private int _curMonster;
+    private int _remainTime;
+
     private bool _gateDestroyed;
     private bool _statueSpawned;
     private bool _bridgeToggled;
 
     private Player? _winner;
+    private Player? _questItemOwner;
+    private Item? _questItem;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleContext"/> class.
@@ -53,13 +59,13 @@ public sealed class BloodCastleContext : MiniGameContext
             return;
         }
 
-        if (this.State != MiniGameState.Playing)
+        if (!this.IsEventRunning)
         {
             player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x18);
             return;
         }
 
-        var item = player.Inventory?.Items.FirstOrDefault(item => item.Definition?.Group == 13 && item.Definition.Number == 19);
+        var item = player.Inventory!.Items.FirstOrDefault(item => item.Definition?.Group == 13 && item.Definition.Number == 19);
 
         if (item is null)
         {
@@ -69,10 +75,30 @@ public sealed class BloodCastleContext : MiniGameContext
 
         this._winner = player;
 
-        player.Inventory!.RemoveItem(item);
+        player.Inventory.RemoveItem(item);
         player.PersistenceContext.Delete(item);
-        player.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(item.ItemSlot);
+        player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(item.ItemSlot);
         player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x17);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnObjectRemovedFromMap(object? sender, (GameMap Map, ILocateable Object) args)
+    {
+        if (args.Object is Player player)
+        {
+            if (this.IsEventRunning)
+            {
+                this.DropQuestItemFromPlayer(player);
+            }
+            else
+            {
+                this.RemoveQuestItemFromPlayer(player);
+            }
+
+            this.UpdateState(2, player).ConfigureAwait(false);
+        }
+
+        base.OnObjectRemovedFromMap(sender, args);
     }
 
     /// <inheritdoc />
@@ -87,7 +113,8 @@ public sealed class BloodCastleContext : MiniGameContext
         if (destructible.Definition.Number == 131)
         {
             this._gateDestroyed = true;
-            this._monsterKilled = 0;
+            this._curMonster = 0;
+            this._maxMonster = this._gameStates.Count * 2;
             this.GateToggle(true);
         }
 
@@ -119,12 +146,12 @@ public sealed class BloodCastleContext : MiniGameContext
 
         if (!this._bridgeToggled)
         {
-            if (this._monsterKilled < 40)
+            if (this._curMonster < this._maxMonster)
             {
-                this._monsterKilled++;
+                this._curMonster++;
             }
 
-            if (this._monsterKilled == 40)
+            if (this._curMonster == this._maxMonster)
             {
                 this.BridgeToggle(true);
             }
@@ -134,12 +161,12 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             var monsterNumbers = new[] { 089, 095, 112, 118, 124, 130, 143, 433 };
 
-            if (this._monsterKilled < 2 && monsterNumbers.Contains(monster.Definition.Number))
+            if (this._curMonster < this._maxMonster && monsterNumbers.Contains(monster.Definition.Number))
             {
-                this._monsterKilled++;
+                this._curMonster++;
             }
 
-            if (this._monsterKilled == 2)
+            if (this._curMonster == this._maxMonster)
             {
                 this.SpawnStatue();
                 this._statueSpawned = true;
@@ -155,13 +182,17 @@ public sealed class BloodCastleContext : MiniGameContext
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
         }
 
+        this._maxMonster = this._gameStates.Count * 40;
         this.EntranceToggle(true);
+        this.ShowRemainTime().ConfigureAwait(false);
         base.OnGameStart(players);
     }
 
     /// <inheritdoc />
     protected override void GameEnded(ICollection<Player> finishers)
     {
+        this.UpdateState(2).ConfigureAwait(false);
+
         var sortedFinishers = finishers
             .Select(f => this._gameStates[f.Name])
             .WhereNotNull()
@@ -211,6 +242,8 @@ public sealed class BloodCastleContext : MiniGameContext
 
     private void BridgeToggle(bool value)
     {
+        this._bridgeToggled = value;
+
         var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
         {
             (13, 70, 15, 75),
@@ -282,11 +315,94 @@ public sealed class BloodCastleContext : MiniGameContext
         TerrainAttributeType type,
         bool value)
     {
-        _ = this.ForEachPlayerAsync(player =>
+        this.ForEachPlayerAsync(player =>
         {
             player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
                 .ChangeAttributes(false, type, value, areas);
-        });
+        }).ConfigureAwait(false);
+    }
+
+    private async ValueTask ShowRemainTime()
+    {
+        try
+        {
+            var startTime = DateTimeOffset.Now;
+
+            while (this.IsEventRunning)
+            {
+                var duration = (int)this.Definition.GameDuration.TotalSeconds;
+                var usedTime = (int)(DateTimeOffset.Now - startTime).TotalSeconds;
+                this._remainTime = duration - usedTime;
+
+                if (this._remainTime == duration)
+                {
+                    await this.UpdateState(0).ConfigureAwait(false);
+                }
+
+                if (this._remainTime < duration && !this._gateDestroyed)
+                {
+                    await this.UpdateState(1).ConfigureAwait(false);
+                }
+
+                if (this._remainTime < duration && this._gateDestroyed)
+                {
+                    await this.UpdateState(4).ConfigureAwait(false);
+                }
+
+                await Task.Delay(1000).ConfigureAwait(false);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Unexpected error during update blood castle state: {0}", ex.Message);
+        }
+    }
+
+    private async ValueTask UpdateState(byte state, Player? player = null)
+    {
+        if (player is null)
+        {
+            await this.ForEachPlayerAsync(player =>
+            {
+                player.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
+                    .UpdateState(state, this._remainTime, this._maxMonster, this._curMonster, this._winner?.Id ?? -1, this._questItem?.Level ?? 1);
+            });
+        }
+        else
+        {
+            player.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
+                .UpdateState(state, this._remainTime, this._maxMonster, this._curMonster, this._winner?.Id ?? -1, this._questItem?.Level ?? 1);
+        }
+    }
+
+    private void RemoveQuestItemFromPlayer(Player player)
+    {
+        var item = player.Inventory!.Items.FirstOrDefault(item => item.Definition?.Group == 13 && item.Definition.Number == 19);
+        if (item is null)
+        {
+            return;
+        }
+
+        player.Inventory.RemoveItem(item);
+        player.PersistenceContext.Delete(item);
+        player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(item.ItemSlot);
+    }
+
+    private void DropQuestItemFromPlayer(Player player)
+    {
+        var item = player.Inventory!.Items.FirstOrDefault(item => item.Definition?.Group == 13 && item.Definition.Number == 19);
+        if (item is null)
+        {
+            return;
+        }
+
+        var dropped = new DroppedItem(item, player.Position, this.Map, player);
+        this.Map.Add(dropped);
+        player.Inventory.RemoveItem(item);
+        player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(item.ItemSlot, true);
     }
 
     private sealed class PlayerGameState
