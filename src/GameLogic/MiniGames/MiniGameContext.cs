@@ -457,10 +457,9 @@ public class MiniGameContext : Disposable, IEventStateProvider
                 // Event finished before the gameDuration timeout
             }
 
+            await this.StopAsync().ConfigureAwait(false);
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
             await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
-
-            await this.StopAsync().ConfigureAwait(false);
 
             await Task.Delay(exitDuration, this._gameEndedCts.Token).ConfigureAwait(false);
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
