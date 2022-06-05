@@ -283,6 +283,14 @@ public class MiniGameContext : Disposable, IEventStateProvider
     }
 
     /// <summary>
+    /// Finishes the event.
+    /// </summary>
+    protected virtual void FinishEvent()
+    {
+        this._gameEndedCts.Cancel();
+    }
+
+    /// <summary>
     /// Gives the rewards to the player.
     /// </summary>
     /// <param name="player">The player who should receive the rewards.</param>
@@ -441,7 +449,14 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
             await this.StartAsync().ConfigureAwait(false);
 
-            await Task.Delay(gameDuration, this._gameEndedCts.Token).ConfigureAwait(false);
+            try {
+                await Task.Delay(gameDuration, this._gameEndedCts.Token).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException)
+            {
+                // Event finished before the gameDuration timeout
+            }
+
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
             await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
 
@@ -455,10 +470,6 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
         catch (TaskCanceledException)
         {
-            await this.StopAsync().ConfigureAwait(false);
-            await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-            await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
-            await this.ShutdownGameAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -505,11 +516,6 @@ public class MiniGameContext : Disposable, IEventStateProvider
     private ValueTask ShowMessageAsync(string message)
     {
         return this.ForEachPlayerAsync(player => player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.GoldenCenter));
-    }
-
-    public void FinishEvent()
-    {
-        this._gameEndedCts.Cancel();
     }
 
     private async ValueTask StopAsync()
