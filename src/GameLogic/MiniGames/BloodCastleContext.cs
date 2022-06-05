@@ -74,6 +74,7 @@ public sealed class BloodCastleContext : MiniGameContext
 
         this._winner = player;
         player.ViewPlugIns.GetPlugIn<IShowDialogPlugIn>()?.ShowDialog(1, 0x17);
+        this.FinishEvent();
     }
 
     /// <inheritdoc/>

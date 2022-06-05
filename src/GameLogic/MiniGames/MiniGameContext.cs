@@ -455,6 +455,10 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
         catch (TaskCanceledException)
         {
+            await this.StopAsync().ConfigureAwait(false);
+            await this.ShowCountdownMessageAsync().ConfigureAwait(false);
+            await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+            await this.ShutdownGameAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -501,6 +505,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     private ValueTask ShowMessageAsync(string message)
     {
         return this.ForEachPlayerAsync(player => player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.GoldenCenter));
+    }
+
+    public void FinishEvent()
+    {
+        this._gameEndedCts.Cancel();
     }
 
     private async ValueTask StopAsync()
