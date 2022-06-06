@@ -8,50 +8,33 @@ using Dapr.Client;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 
+/// <summary>
+/// Implementation of an <see cref="IGuildServer"/> which accesses the guild server remotely over Dapr.
+/// </summary>
 public class GuildServer : IGuildServer
 {
     private readonly DaprClient _daprClient;
     private readonly ILogger<GuildServer> _logger;
     private readonly string _targetAppId;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuildServer"/> class.
+    /// </summary>
+    /// <param name="daprClient">The dapr client.</param>
+    /// <param name="logger">The logger.</param>
     public GuildServer(DaprClient daprClient, ILogger<GuildServer> logger)
     {
-        _daprClient = daprClient;
-        _logger = logger;
+        this._daprClient = daprClient;
+        this._logger = logger;
         this._targetAppId = "guildServer";
     }
 
-    public void GuildMessage(uint guildId, string sender, string message)
-    {
-        try
-        {
-            this._daprClient.PublishEventAsync("pubsub", nameof(GuildMessage), new GuildMessageArguments(guildId, sender, message));
-            // this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(GuildMessage), new GuildMessageArguments(guildId, sender, message));
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Unexpected error when sending a guild message.");
-        }
-    }
-
-    public void AllianceMessage(uint guildId, string sender, string message)
-    {
-        try
-        {
-            this._daprClient.PublishEventAsync("pubsub", nameof(AllianceMessage), new GuildMessageArguments(guildId, sender, message));
-            // this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(AllianceMessage), new GuildMessageArguments(guildId, sender, message));
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Unexpected error when sending an alliance guild message.");
-        }
-    }
-
+    /// <inheritdoc />
     public bool GuildExists(string guildName)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(GuildExists), guildName).Result;
+            return this._daprClient.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.GuildExists), guildName).Result;
         }
         catch (Exception ex)
         {
@@ -60,11 +43,12 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc />
     public Guild? GetGuild(uint guildId)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<uint, Guild?>(this._targetAppId, nameof(GetGuild), guildId).Result;
+            return this._daprClient.InvokeMethodAsync<uint, Guild?>(this._targetAppId, nameof(this.GetGuild), guildId).Result;
         }
         catch (Exception ex)
         {
@@ -73,11 +57,12 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc />
     public uint GetGuildIdByName(string guildName)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<string, uint>(this._targetAppId, nameof(GetGuildIdByName), guildName).Result;
+            return this._daprClient.InvokeMethodAsync<string, uint>(this._targetAppId, nameof(this.GetGuildIdByName), guildName).Result;
         }
         catch (Exception ex)
         {
@@ -86,11 +71,12 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc />
     public bool CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<GuildCreationArguments, bool>(this._targetAppId, nameof(CreateGuild), new GuildCreationArguments(name, masterName, masterId, logo, serverId)).GetAwaiter().GetResult();
+            return this._daprClient.InvokeMethodAsync<GuildCreationArguments, bool>(this._targetAppId, nameof(this.CreateGuild), new GuildCreationArguments(name, masterName, masterId, logo, serverId)).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
@@ -99,11 +85,12 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc />
     public void CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(CreateGuildMember), new GuildMemberCreationArguments(guildId, characterId, characterName, role, serverId));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateGuildMember), new GuildMemberCreationArguments(guildId, characterId, characterName, role, serverId));
         }
         catch (Exception ex)
         {
@@ -111,11 +98,12 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc />
     public void ChangeGuildMemberPosition(uint guildId, Guid characterId, GuildPosition role)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(ChangeGuildMemberPosition), new GuildMemberRoleChangeArguments(guildId, characterId, role));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.ChangeGuildMemberPosition), new GuildMemberRoleChangeArguments(guildId, characterId, role));
         }
         catch (Exception ex)
         {
@@ -123,37 +111,42 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc />
     public void PlayerEnteredGame(Guid characterId, string characterName, byte serverId)
     {
-        // it's usually never called in this implementation. todo: check if it can be removed
+        // Handled by EventPublisher, through pub/sub component.
+        /*
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(PlayerEnteredGame), new PlayerEnteredGameArguments(characterId, characterName, serverId));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.PlayerEnteredGame), new PlayerEnteredGameArguments(characterId, characterName, serverId));
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when sending a PlayerEnteredGame.");
-        }
+        }*/
     }
 
+    /// <inheritdoc />
     public void GuildMemberLeftGame(uint guildId, Guid guildMemberId, byte serverId)
     {
-        // it's usually never called in this implementation. todo: check if it can be removed
+        // Handled by EventPublisher, through pub/sub component.
+        /*
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(GuildMemberLeftGame), new GuildPlayerLeftGameArguments(guildId, guildMemberId, serverId));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.GuildMemberLeftGame), new GuildPlayerLeftGameArguments(guildId, guildMemberId, serverId));
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when sending a GuildMemberLeftGame.");
-        }
+        }*/
     }
 
+    /// <inheritdoc />
     public IEnumerable<GuildListEntry> GetGuildList(uint guildId)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<uint, IEnumerable<GuildListEntry>>(this._targetAppId, nameof(GetGuildList), guildId).Result;
+            return this._daprClient.InvokeMethodAsync<uint, IEnumerable<GuildListEntry>>(this._targetAppId, nameof(this.GetGuildList), guildId).Result;
         }
         catch (Exception ex)
         {
@@ -162,11 +155,12 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc />
     public void KickMember(uint guildId, string playerName)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(KickMember), new GuildMemberArguments(guildId, playerName));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.KickMember), new GuildMemberArguments(guildId, playerName));
         }
         catch (Exception ex)
         {
@@ -174,11 +168,12 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc />
     public GuildPosition GetGuildPosition(Guid characterId)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<Guid, GuildPosition>(this._targetAppId, nameof(GetGuildPosition), characterId).Result;
+            return this._daprClient.InvokeMethodAsync<Guid, GuildPosition>(this._targetAppId, nameof(this.GetGuildPosition), characterId).Result;
         }
         catch (Exception ex)
         {
@@ -187,11 +182,12 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc />
     public void IncreaseGuildScore(uint guildId)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(IncreaseGuildScore), guildId);
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.IncreaseGuildScore), guildId);
         }
         catch (Exception ex)
         {

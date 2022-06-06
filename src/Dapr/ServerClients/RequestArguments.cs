@@ -4,4 +4,7 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// Common arguments for a request of a player to another player.
+/// </summary>
 public record RequestArguments(string Requester, string Receiver);

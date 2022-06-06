@@ -1,12 +1,19 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// <copyright file="GameServerInitializer.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.Host;
+
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 
-namespace MUnique.OpenMU.GameServer.Host;
-
+/// <summary>
+/// Initialization of a <see cref="GameServer"/> which is executed before starting it.
+/// </summary>
 public class GameServerInitializer
 {
     private readonly GameServer _gameServer;
@@ -16,6 +23,15 @@ public class GameServerInitializer
     private readonly IGameServerStateObserver _stateObserver;
     private readonly IPersistenceContextProvider _contextProvider;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameServerInitializer"/> class.
+    /// </summary>
+    /// <param name="gameServer">The game server.</param>
+    /// <param name="definition">The definition.</param>
+    /// <param name="ipResolver">The ip resolver.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <param name="stateObserver">The state observer.</param>
+    /// <param name="contextProvider">The context provider.</param>
     public GameServerInitializer(GameServer gameServer, GameServerDefinition definition, IIpAddressResolver ipResolver, ILoggerFactory loggerFactory, IGameServerStateObserver stateObserver, IPersistenceContextProvider contextProvider)
     {
         this._gameServer = gameServer;
@@ -26,9 +42,12 @@ public class GameServerInitializer
         this._contextProvider = contextProvider;
     }
 
+    /// <summary>
+    /// Initializes the game server.
+    /// </summary>
     public void Initialize()
     {
-        foreach (var endpoint in _definition.Endpoints)
+        foreach (var endpoint in this._definition.Endpoints)
         {
             this._gameServer.AddListener(new DefaultTcpGameServerListener(
                 endpoint,

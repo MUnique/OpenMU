@@ -4,4 +4,7 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// The arguments for a friend response.
+/// </summary>
 public record FriendResponseArguments(string CharacterName, string FriendName, bool Accepted);

@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.ConnectServer;
 
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Network.PlugIns;
 
 /// <summary>
 /// The connect server factory.
@@ -28,7 +27,6 @@ public class ConnectServerFactory
     /// Creates a new connect server instance.
     /// </summary>
     /// <param name="settings">The settings.</param>
-    /// <param name="clientVersion">The client version.</param>
     /// <returns>
     /// The new connect server instance.
     /// </returns>

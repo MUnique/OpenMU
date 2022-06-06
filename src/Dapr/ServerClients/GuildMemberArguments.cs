@@ -4,4 +4,7 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// Arguments for a guild member action.
+/// </summary>
 public record GuildMemberArguments(uint GuildId, string PlayerName);

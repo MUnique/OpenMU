@@ -78,7 +78,18 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
     }
 
     /// <inheritdoc />
+    public void Dispose()
+    {
+        foreach (var gameServer in this._gameServers.Values)
+        {
+            (gameServer as IDisposable)?.Dispose();
+        }
+    }
+
+    /// <inheritdoc />
+#pragma warning disable CS1998
     protected override async Task StartAsyncCore(CancellationToken cancellationToken)
+#pragma warning restore CS1998
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
         this.LoadGameClientDefinitions(persistenceContext);
@@ -122,15 +133,6 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
         if (versions.FirstOrDefault() is { } firstVersion)
         {
             ClientVersionResolver.DefaultVersion = ClientVersionResolver.Resolve(firstVersion.Version);
-        }
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        foreach (var gameServer in this._gameServers.Values)
-        {
-            (gameServer as IDisposable)?.Dispose();
         }
     }
 }

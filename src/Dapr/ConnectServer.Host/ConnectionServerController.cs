@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// API Controller which receives messages from other services.
+/// </summary>
 [ApiController]
 [Route("")]
 public class ConnectServerController : ControllerBase
@@ -17,12 +20,21 @@ public class ConnectServerController : ControllerBase
     private readonly GameServerRegistry _registry;
     private readonly ILogger<ConnectServerController> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConnectServerController"/> class.
+    /// </summary>
+    /// <param name="registry">The registry.</param>
+    /// <param name="logger">The logger.</param>
     public ConnectServerController(GameServerRegistry registry, ILogger<ConnectServerController> logger)
     {
         this._registry = registry;
-        _logger = logger;
+        this._logger = logger;
     }
 
+    /// <summary>
+    /// Handles the game server heartbeat.
+    /// </summary>
+    /// <param name="data">The data.</param>
     [HttpPost("GameServerHeartbeat")]
     [Topic("pubsub", "GameServerHeartbeat")]
     public async Task GameServerHeartbeat([FromBody] GameServerHeartbeatArguments data)

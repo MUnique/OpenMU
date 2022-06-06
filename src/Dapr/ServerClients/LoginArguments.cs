@@ -4,4 +4,7 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// Arguments for an account login.
+/// </summary>
 public record LoginArguments(string AccountName, byte ServerId);

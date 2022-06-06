@@ -8,12 +8,20 @@ using Microsoft.Extensions.Logging;
 using Dapr.Client;
 using MUnique.OpenMU.Interfaces;
 
+/// <summary>
+/// Implementation of an <see cref="IFriendServer"/> which accesses another friend server remotely over Dapr.
+/// </summary>
 public class FriendServer : IFriendServer
 {
     private readonly DaprClient _daprClient;
     private readonly ILogger<FriendServer> _logger;
     private readonly string _targetAppId;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FriendServer"/> class.
+    /// </summary>
+    /// <param name="daprClient">The dapr client.</param>
+    /// <param name="logger">The logger.</param>
     public FriendServer(DaprClient daprClient, ILogger<FriendServer> logger)
     {
         this._daprClient = daprClient;
@@ -27,7 +35,6 @@ public class FriendServer : IFriendServer
         try
         {
             this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceived), letter);
-            //this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(ForwardLetter), letter);
         }
         catch (Exception ex)
         {
@@ -40,40 +47,11 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(FriendResponse), new FriendResponseArguments(characterName, friendName, accepted));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.FriendResponse), new FriendResponseArguments(characterName, friendName, accepted));
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when sending a friend response.");
-        }
-        
-    }
-
-    /// <inheritdoc />
-    public IEnumerable<string> GetFriendList(Guid characterId)
-    {
-        try
-        {
-            return this._daprClient.InvokeMethodAsync<Guid, IEnumerable<string>>(this._targetAppId, nameof(GetFriendList), characterId).Result;
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Unexpected error when retrieving the friend list.");
-            return Enumerable.Empty<string>();
-        }
-    }
-
-    /// <inheritdoc />
-    public IEnumerable<string> GetOpenFriendRequests(Guid characterId)
-    {
-        try
-        {
-            return this._daprClient.InvokeMethodAsync<Guid, IEnumerable<string>>(this._targetAppId, nameof(GetOpenFriendRequests), characterId).Result;
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Unexpected error when retrieving the open friend requests.");
-            return Enumerable.Empty<string>();
         }
     }
 
@@ -94,7 +72,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(SetPlayerVisibilityState), new PlayerFriendOnlineStateArguments(characterId, characterName, serverId, isVisible));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.SetPlayerVisibilityState), new PlayerFriendOnlineStateArguments(characterId, characterName, serverId, isVisible));
         }
         catch (Exception ex)
         {
@@ -107,7 +85,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(FriendRequest), new RequestArguments(playerName, friendName)).Result;
+            return this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(this.FriendRequest), new RequestArguments(playerName, friendName)).Result;
         }
         catch (Exception ex)
         {
@@ -121,7 +99,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(DeleteFriend), new RequestArguments(name, friendName));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.DeleteFriend), new RequestArguments(name, friendName));
         }
         catch (Exception ex)
         {
@@ -134,7 +112,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(CreateChatRoom), new RequestArguments(playerName, friendName));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateChatRoom), new RequestArguments(playerName, friendName));
         }
         catch (Exception ex)
         {
@@ -147,7 +125,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<ChatRoomInvitationArguments, bool>(this._targetAppId, nameof(InviteFriendToChatRoom), new ChatRoomInvitationArguments(selectedCharacterName, friendName, roomNumber)).Result;
+            return this._daprClient.InvokeMethodAsync<ChatRoomInvitationArguments, bool>(this._targetAppId, nameof(this.InviteFriendToChatRoom), new ChatRoomInvitationArguments(selectedCharacterName, friendName, roomNumber)).Result;
         }
         catch (Exception ex)
         {

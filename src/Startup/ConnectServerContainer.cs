@@ -42,49 +42,6 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
         this._logger = logger;
     }
 
-    /// <inheritdoc />
-    protected override Task StartAsyncCore(CancellationToken cancellationToken)
-    {
-        using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
-        foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
-        {
-            var connectServer = this._connectServerFactory.CreateConnectServer(connectServerDefinition);
-            this._servers.Add(connectServer);
-            this._connectServers.Add(connectServer);
-            var client = connectServerDefinition.Client!;
-            if (this._observers.TryGetValue(client, out var observer))
-            {
-                // this._logger.LogWarning($"Multiple connect servers for game client '{client.Description}' configured. Only one per client makes sense.");
-                if (observer is not MulticastConnectionServerStateObserver multicastObserver)
-                {
-                    multicastObserver = new MulticastConnectionServerStateObserver();
-                    multicastObserver.AddObserver(observer);
-                    this._observers[client] = multicastObserver;
-                }
-
-                multicastObserver.AddObserver(connectServer);
-            }
-            else
-            {
-                this._observers[client] = connectServer;
-            }
-        }
-
-        return Task.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    protected override async Task StopAsyncCore(CancellationToken cancellationToken)
-    {
-        foreach (var connectServer in this._connectServers)
-        {
-            await connectServer.StopAsync(cancellationToken);
-            this._servers.Remove(connectServer);
-        }
-
-        this._connectServers.Clear();
-    }
-
     /// <summary>
     /// Gets the observer.
     /// </summary>
@@ -113,5 +70,47 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
     IEnumerator IEnumerable.GetEnumerator()
     {
         return this.GetEnumerator();
+    }
+
+    /// <inheritdoc />
+    protected override Task StartAsyncCore(CancellationToken cancellationToken)
+    {
+        using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
+        foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
+        {
+            var connectServer = this._connectServerFactory.CreateConnectServer(connectServerDefinition);
+            this._servers.Add(connectServer);
+            this._connectServers.Add(connectServer);
+            var client = connectServerDefinition.Client!;
+            if (this._observers.TryGetValue(client, out var observer))
+            {
+                if (observer is not MulticastConnectionServerStateObserver multicastObserver)
+                {
+                    multicastObserver = new MulticastConnectionServerStateObserver();
+                    multicastObserver.AddObserver(observer);
+                    this._observers[client] = multicastObserver;
+                }
+
+                multicastObserver.AddObserver(connectServer);
+            }
+            else
+            {
+                this._observers[client] = connectServer;
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    protected override async Task StopAsyncCore(CancellationToken cancellationToken)
+    {
+        foreach (var connectServer in this._connectServers)
+        {
+            await connectServer.StopAsync(cancellationToken);
+            this._servers.Remove(connectServer);
+        }
+
+        this._connectServers.Clear();
     }
 }

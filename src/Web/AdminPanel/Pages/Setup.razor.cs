@@ -7,17 +7,32 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
+using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
+/// <summary>
+/// The set up page.
+/// </summary>
 public partial class Setup
 {
+    /// <summary>
+    /// Gets or sets a value indicating whether to show the <see cref="Install"/> component.
+    /// </summary>
     public bool ShowInstall { get; set; }
 
-    [Inject] public SetupService SetupService { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the setup service.
+    /// </summary>
+    [Inject]
+    public SetupService SetupService { get; set; } = null!;
 
-    [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the javascript runtime.
+    /// </summary>
+    [Inject]
+    public IJSRuntime JsRuntime { get; set; } = null!;
 
-    public Task OnUpdateClickAsync()
+    private Task OnUpdateClickAsync()
     {
         return this.SetupService.InstallUpdatesAsync(default);
     }
@@ -34,5 +49,4 @@ public partial class Setup
             this.ShowInstall = true;
         }
     }
-
 }

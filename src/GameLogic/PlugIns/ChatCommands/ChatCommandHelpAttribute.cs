@@ -56,7 +56,6 @@ public class ChatCommandHelpAttribute : Attribute
         this.Description = description;
         this.ArgumentsType = argumentsType;
         this.MinimumCharacterStatus = minimumCharacterStatus;
-
     }
 
     /// <summary>

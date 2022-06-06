@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.Web.AdminPanel;
+﻿// <copyright file="WebApplicationExtensions.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Web.AdminPanel;
 
 using Blazored.Modal;
 using Microsoft.AspNetCore.Builder;
@@ -8,10 +12,12 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
-using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
+/// <summary>
+/// Extensions for the <see cref="WebApplicationBuilder"/>.
+/// </summary>
 public static class WebApplicationExtensions
 {
     /// <summary>

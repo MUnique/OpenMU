@@ -4,4 +4,7 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// The arguments for a friend online state change.
+/// </summary>
 public record FriendOnlineStateChangedArguments(string Player, string Friend, int ServerId);

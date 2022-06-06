@@ -4,4 +4,7 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// Arguments for a guild creation.
+/// </summary>
 public record GuildCreationArguments(string Name, string MasterName, Guid MasterId, byte[] Logo, byte ServerId);

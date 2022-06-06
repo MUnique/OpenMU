@@ -1,10 +1,18 @@
-﻿using System.Net;
+﻿// <copyright file="GameServerRegistry.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.ConnectServer.Host;
+
+using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 
-namespace MUnique.OpenMU.ConnectServer.Host;
-
+/// <summary>
+/// A registry which keeps track of available <see cref="IGameServer"/>s.
+/// </summary>
+/// <seealso cref="System.IDisposable" />
 public sealed class GameServerRegistry : IDisposable
 {
     private readonly TimeSpan _timeout = TimeSpan.FromSeconds(10);
@@ -12,8 +20,13 @@ public sealed class GameServerRegistry : IDisposable
     private readonly IConnectServer _connectServer;
     private readonly ILogger<GameServerRegistry> _logger;
     private readonly Dictionary<ushort, DateTime> _entries = new();
-    private readonly SemaphoreSlim _semaphore = new (1);
+    private readonly SemaphoreSlim _semaphore = new(1);
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameServerRegistry"/> class.
+    /// </summary>
+    /// <param name="connectServer">The connect server.</param>
+    /// <param name="logger">The logger.</param>
     public GameServerRegistry(IConnectServer connectServer, ILogger<GameServerRegistry> logger)
     {
         this._connectServer = connectServer;
@@ -32,6 +45,7 @@ public sealed class GameServerRegistry : IDisposable
         });
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         this._disposeCts.Cancel();
@@ -39,6 +53,11 @@ public sealed class GameServerRegistry : IDisposable
         this._semaphore.Dispose();
     }
 
+    /// <summary>
+    /// Updates the registration.
+    /// </summary>
+    /// <param name="serverInfo">The server information.</param>
+    /// <param name="publicEndPoint">The public end point.</param>
     public async Task UpdateRegistrationAsync(ServerInfo serverInfo, IPEndPoint publicEndPoint)
     {
         await this._semaphore.WaitAsync();

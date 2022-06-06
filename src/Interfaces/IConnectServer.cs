@@ -9,8 +9,4 @@ namespace MUnique.OpenMU.Interfaces;
 /// </summary>
 public interface IConnectServer : IManageableServer, IGameServerStateObserver
 {
-    /// <summary>
-    /// Gets the settings.
-    /// </summary>
-    // IConnectServerSettings Settings { get; }
 }

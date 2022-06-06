@@ -59,7 +59,7 @@ public partial class Install
     /// <summary>
     /// Starts the installation.
     /// </summary>
-    public async Task StartInstallation()
+    private async Task StartInstallation()
     {
         var task = Task.Run(() =>
         {

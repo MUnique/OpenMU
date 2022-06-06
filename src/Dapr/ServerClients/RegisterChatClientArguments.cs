@@ -4,4 +4,7 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// Arguments for a chat client registration.
+/// </summary>
 public record RegisterChatClientArguments(ushort RoomId, string ClientName);

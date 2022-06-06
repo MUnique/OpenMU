@@ -62,8 +62,6 @@ public sealed class ChatServer : IChatServer, IDisposable
     /// <inheritdoc/>
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private ChatServerSettings Settings => this._settings ?? throw new InvalidOperationException("The server was not initialized before");
-
     /// <inheritdoc/>
     public string Description => this._settings?.Description ?? string.Empty;
 
@@ -102,6 +100,8 @@ public sealed class ChatServer : IChatServer, IDisposable
     /// <returns>The ip address of the server.</returns>
     public string IpAddress => this._publicIp ??= this._addressResolver.ResolveIPv4().ToString();
 
+    private ChatServerSettings Settings => this._settings ?? throw new InvalidOperationException("The server was not initialized before");
+
     /// <inheritdoc/>
     public ChatServerAuthenticationInfo RegisterClient(ushort roomId, string clientName)
     {
@@ -139,7 +139,11 @@ public sealed class ChatServer : IChatServer, IDisposable
         return Task.CompletedTask;
     }
 
-
+    /// <summary>
+    /// Initializes the server with the specified settings.
+    /// </summary>
+    /// <param name="settings">The settings.</param>
+    /// <exception cref="System.InvalidOperationException">Can only initialize when server is stopped.</exception>
     public void Initialize(ChatServerSettings settings)
     {
         if (this.ServerState != ServerState.Stopped)
@@ -148,8 +152,6 @@ public sealed class ChatServer : IChatServer, IDisposable
         }
 
         this._settings = settings;
-        
-        
     }
 
     private void CreateCleanupTimers()
@@ -206,7 +208,7 @@ public sealed class ChatServer : IChatServer, IDisposable
             }
 
             this.CreateCleanupTimers();
-            
+
             this.ServerState = OpenMU.Interfaces.ServerState.Started;
         }
         catch (Exception ex)

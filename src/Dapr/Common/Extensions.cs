@@ -22,8 +22,17 @@ using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.PlugIns;
 using OpenTelemetry.Metrics;
 
+/// <summary>
+/// Common extensions for the building of daprized services.
+/// </summary>
 public static class Extensions
 {
+    /// <summary>
+    /// Adds the <see cref="PersistenceContextProvider"/>.
+    /// </summary>
+    /// <param name="services">The services.</param>
+    /// <param name="publishConfigChanges">If set to <c>true</c>, configuration changes are published to other Dapr services.</param>
+    /// <returns>The services.</returns>
     public static IServiceCollection AddPeristenceProvider(this IServiceCollection services, bool publishConfigChanges = false)
     {
         if (publishConfigChanges)
@@ -41,6 +50,11 @@ public static class Extensions
             .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!);
     }
 
+    /// <summary>
+    /// Adds the plug in manager.
+    /// </summary>
+    /// <param name="services">The services.</param>
+    /// <returns>The services.</returns>
     public static IServiceCollection AddPlugInManager(this IServiceCollection services)
     {
         return services
@@ -48,17 +62,38 @@ public static class Extensions
             .AddSingleton<PlugInManager>();
     }
 
+    /// <summary>
+    /// Adds the <see cref="CustomIpResolver"/> with the specified address.
+    /// </summary>
+    /// <param name="services">The services.</param>
+    /// <param name="address">The address.</param>
+    /// <returns>The services.</returns>
     public static IServiceCollection AddCustomIpResover(this IServiceCollection services, IPAddress address)
     {
         return services.AddSingleton<IIpAddressResolver>(s => new CustomIpResolver(address));
     }
 
+    /// <summary>
+    /// Adds a persistent object as singleton to the services.
+    /// </summary>
+    /// <typeparam name="T">The base type of the persistent object.</typeparam>
+    /// <param name="services">The services.</param>
+    /// <param name="predicate">The predicate to select actual object.</param>
+    /// <returns>The services.</returns>
     public static IServiceCollection AddPersistentSingleton<T>(this IServiceCollection services, Func<T, bool>? predicate = null)
         where T : class
     {
         return services.AddPersistentSingleton<T, T>(predicate);
     }
 
+    /// <summary>
+    /// Adds the persistent object as singleton to the services.
+    /// </summary>
+    /// <typeparam name="TTarget">The target, exposed type of the persistent object, usually an interface.</typeparam>
+    /// <typeparam name="TActual">The actual base type of the persistent object.</typeparam>
+    /// <param name="services">The services.</param>
+    /// <param name="predicate">The predicate.</param>
+    /// <returns>The services.</returns>
     public static IServiceCollection AddPersistentSingleton<TTarget, TActual>(this IServiceCollection services, Func<TActual, bool>? predicate = null)
         where TActual : class, TTarget
         where TTarget : class
@@ -67,6 +102,11 @@ public static class Extensions
             (TTarget)s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<TActual>().First(predicate ?? (_ => true))!);
     }
 
+    /// <summary>
+    /// Adds the <see cref="ManagableServerRegistry"/> to the services.
+    /// </summary>
+    /// <param name="services">The services.</param>
+    /// <returns>The services.</returns>
     public static IServiceCollection AddManageableServerRegistry(this IServiceCollection services)
     {
         services.AddSingleton<ManagableServerRegistry>()
@@ -74,6 +114,12 @@ public static class Extensions
         return services;
     }
 
+    /// <summary>
+    /// Publishes the server to other daprized services by registering a <see cref="ManagableServerStatePublisher"/>.
+    /// </summary>
+    /// <typeparam name="TServer">The type of the server.</typeparam>
+    /// <param name="services">The services.</param>
+    /// <returns>The services.</returns>
     public static IServiceCollection PublishManageableServer<TServer>(this IServiceCollection services)
         where TServer : IManageableServer
     {
@@ -84,6 +130,12 @@ public static class Extensions
         return services;
     }
 
+    /// <summary>
+    /// Configures the usage of logging to loki.
+    /// </summary>
+    /// <param name="builder">The web application builder.</param>
+    /// <param name="serviceName">Name of the service.</param>
+    /// <returns>The web application builder.</returns>
     public static WebApplicationBuilder UseLoki(this WebApplicationBuilder builder, string serviceName)
     {
         // We just want to transmit some static labels, as suggested in the best practice in the Loki documentation
@@ -109,6 +161,12 @@ public static class Extensions
         return builder;
     }
 
+    /// <summary>
+    /// Adds the open telemetry metrics.
+    /// </summary>
+    /// <param name="builder">The web application builder.</param>
+    /// <param name="registry">The registry.</param>
+    /// <returns>The web application builder.</returns>
     public static WebApplicationBuilder AddOpenTelemetryMetrics(this WebApplicationBuilder builder, MetricsRegistry registry)
     {
         var meters = registry.Meters.ToArray();
@@ -133,6 +191,12 @@ public static class Extensions
         return builder;
     }
 
+    /// <summary>
+    /// Builds and configures the web application.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <param name="addBlazor">If set to <c>true</c>, it configures the application to provide a blazor server app.</param>
+    /// <returns>The built and configured web application.</returns>
     public static WebApplication BuildAndConfigure(this WebApplicationBuilder builder, bool addBlazor = false)
     {
         var pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
@@ -151,6 +215,12 @@ public static class Extensions
         return app;
     }
 
+    /// <summary>
+    /// Configures the web application as dapr service.
+    /// </summary>
+    /// <param name="app">The application.</param>
+    /// <param name="addBlazor">If set to <c>true</c>, it configures the application to provide a blazor server app.</param>
+    /// <returns>The configured web application.</returns>
     public static WebApplication ConfigureDaprService(this WebApplication app, bool addBlazor = false)
     {
         if (app.Environment.IsDevelopment())
@@ -181,6 +251,10 @@ public static class Extensions
         return app;
     }
 
+    /// <summary>
+    /// Waits for the completion of outstanding database updates.
+    /// </summary>
+    /// <param name="app">The application.</param>
     public static Task WaitForUpdatedDatabase(this WebApplication app)
     {
         return app.Services.GetService<PersistenceContextProvider>()!.WaitForUpdatedDatabase();

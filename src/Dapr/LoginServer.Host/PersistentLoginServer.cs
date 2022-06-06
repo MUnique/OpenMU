@@ -1,11 +1,16 @@
-﻿using System.Text.Json;
-using Dapr.Client;
-using Google.Protobuf;
-using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.Interfaces;
+﻿// <copyright file="PersistentLoginServer.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 namespace MUnique.OpenMU.LoginServer.Host;
 
+using global::Dapr.Client;
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// An implementation of a <see cref="ILoginServer"/> which persists the login state in a dapr state store.
+/// </summary>
 public sealed class PersistentLoginServer : ILoginServer
 {
     private const string StoreName = "login-state";
@@ -16,12 +21,21 @@ public sealed class PersistentLoginServer : ILoginServer
 
     private readonly DaprClient _daprClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PersistentLoginServer"/> class.
+    /// </summary>
+    /// <param name="logger">The logger.</param>
+    /// <param name="daprClient">The dapr client.</param>
     public PersistentLoginServer(ILogger<PersistentLoginServer> logger, DaprClient daprClient)
     {
-        _logger = logger;
-        _daprClient = daprClient;
+        this._logger = logger;
+        this._daprClient = daprClient;
     }
 
+    /// <summary>
+    /// Removes the server.
+    /// </summary>
+    /// <param name="serverId">The server identifier.</param>
     public async Task RemoveServerAsync(byte serverId)
     {
         var indexName = $"serverindex-{serverId}";
@@ -33,7 +47,7 @@ public sealed class PersistentLoginServer : ILoginServer
 
         foreach (var accountName in serverIndex)
         {
-            await SetAccountOffline(accountName);
+            await this.SetAccountOfflineAsync(accountName);
         }
 
         serverIndex.Clear();
@@ -44,7 +58,8 @@ public sealed class PersistentLoginServer : ILoginServer
             await this.RemoveServerAsync(serverId);
         }
     }
-    
+
+    /// <inheritdoc />
     public async Task<bool> TryLogin(string accountName, byte serverId)
     {
         try
@@ -62,7 +77,7 @@ public sealed class PersistentLoginServer : ILoginServer
                 await this._daprClient.SaveStateAsync<int?>(StoreName, accountName, OfflineServerId, new StateOptions { Concurrency = ConcurrencyMode.FirstWrite, Consistency = ConsistencyMode.Strong });
                 return await this.TryLogin(accountName, serverId);
             }
-            
+
             var success = await this._daprClient.TrySaveStateAsync(StoreName, accountName, serverId, eTag);
             await this.AddToIndexAsync(accountName, serverId);
             return success;
@@ -74,14 +89,15 @@ public sealed class PersistentLoginServer : ILoginServer
         }
     }
 
+    /// <inheritdoc />
     public void LogOff(string accountName, byte serverId)
     {
         Task.Run(async () =>
         {
             try
             {
-                await SetAccountOffline(accountName);
-                await RemoveFromIndexAsync(accountName, serverId);
+                await this.SetAccountOfflineAsync(accountName);
+                await this.RemoveFromIndexAsync(accountName, serverId);
             }
             catch (Exception ex)
             {
@@ -131,7 +147,7 @@ public sealed class PersistentLoginServer : ILoginServer
         }
     }
 
-    private async Task SetAccountOffline(string accountName)
+    private async Task SetAccountOfflineAsync(string accountName)
     {
         try
         {
@@ -141,11 +157,5 @@ public sealed class PersistentLoginServer : ILoginServer
         {
             this._logger.LogError(ex, "Couldn't get/set logged-out state for account {0}", accountName);
         }
-    }
-
-    public static ByteString ToJsonByteString<T>(T data, JsonSerializerOptions options)
-    {
-        var bytes = JsonSerializer.SerializeToUtf8Bytes(data, options);
-        return ByteString.CopyFrom(bytes);
     }
 }

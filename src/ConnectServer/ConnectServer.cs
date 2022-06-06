@@ -89,11 +89,6 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     public ClientVersion ClientVersion { get; }
 
     /// <summary>
-    /// Gets the client listener.
-    /// </summary>
-    internal ClientListener ClientListener { get; }
-
-    /// <summary>
     /// Gets the maximum allowed connections.
     /// </summary>
     public int MaximumConnections => this.Settings.MaxConnections;
@@ -103,8 +98,10 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     /// </summary>
     public int CurrentConnections => this.ClientListener.Clients.Count;
 
-    ///// <inheritdoc />
-    ////public ICollection<(ushort, IPEndPoint)> GameServerEndPoints => this.ServerList.Servers.Select(s => (s.ServerId, s.EndPoint)).ToList();
+    /// <summary>
+    /// Gets the client listener.
+    /// </summary>
+    internal ClientListener ClientListener { get; }
 
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)

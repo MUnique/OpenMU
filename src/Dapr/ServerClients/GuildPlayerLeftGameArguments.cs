@@ -4,4 +4,7 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// Arguments for a notification about a game-leaving guild member.
+/// </summary>
 public record GuildPlayerLeftGameArguments(uint GuildId, Guid GuildMemberId, byte ServerId);

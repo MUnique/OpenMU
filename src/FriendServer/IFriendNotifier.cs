@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// TODO: Think about better naming.
+/// Interface for a class which notifies a player about changes in the friend system.
 /// </summary>
 public interface IFriendNotifier
 {

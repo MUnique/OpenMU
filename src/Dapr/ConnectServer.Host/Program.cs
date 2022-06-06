@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿// <copyright file="Program.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.ConnectServer.Host;
 using MUnique.OpenMU.Dapr.Common;

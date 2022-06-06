@@ -2,14 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GameLogic;
-
 namespace MUnique.OpenMU.Web.Map;
 
 using System.ComponentModel;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MUnique.OpenMU.GameLogic;
 
 /// <summary>
 /// The class of the entry point.
@@ -32,22 +30,30 @@ public class Program
         host.Run();
     }
 
+    /// <summary>
+    /// An implementation of <see cref="IObservableGameServer"/> which does nothing.
+    /// </summary>
     private class NullGameServer : IObservableGameServer
     {
+        /// <inheritdoc />
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <inheritdoc />
         public int Id { get; }
 
+        /// <inheritdoc />
         public IList<IGameMapInfo> Maps { get; } = new List<IGameMapInfo>();
 
+        /// <inheritdoc />
         public void RegisterMapObserver(Guid mapId, ILocateable worldObserver)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void UnregisterMapObserver(Guid mapId, ushort worldObserverId)
         {
             throw new NotImplementedException();
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }
