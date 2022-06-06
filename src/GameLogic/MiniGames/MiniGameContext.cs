@@ -283,6 +283,14 @@ public class MiniGameContext : Disposable, IEventStateProvider
     }
 
     /// <summary>
+    /// Finishes the event.
+    /// </summary>
+    protected virtual void FinishEvent()
+    {
+        this._gameEndedCts.Cancel();
+    }
+
+    /// <summary>
     /// Gives the rewards to the player.
     /// </summary>
     /// <param name="player">The player who should receive the rewards.</param>
@@ -441,11 +449,17 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
             await this.StartAsync().ConfigureAwait(false);
 
-            await Task.Delay(gameDuration, this._gameEndedCts.Token).ConfigureAwait(false);
-            await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-            await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+            try {
+                await Task.Delay(gameDuration, this._gameEndedCts.Token).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException)
+            {
+                // Event finished before the gameDuration timeout
+            }
 
             await this.StopAsync().ConfigureAwait(false);
+            await this.ShowCountdownMessageAsync().ConfigureAwait(false);
+            await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
 
             await Task.Delay(exitDuration, this._gameEndedCts.Token).ConfigureAwait(false);
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
