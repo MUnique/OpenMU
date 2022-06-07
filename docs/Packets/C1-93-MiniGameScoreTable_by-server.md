@@ -27,7 +27,7 @@ Length: 24 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 |  | String |  | PlayerName |
+| 0 | 10 | String |  | PlayerName |
 | 12 | 4 | IntegerLittleEndian |  | TotalScore |
 | 16 | 4 | IntegerLittleEndian |  | BonusExperience |
 | 20 | 4 | IntegerLittleEndian |  | BonusMoney |
