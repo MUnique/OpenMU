@@ -24,7 +24,6 @@ You can start the server with the following parameters:
 | -deamon     | Deactivates handling of console inputs |
 | -adminport:[1 to 65535] | Defines the tcp port which should be used for the admin panel. Default: 1234 |
 | -adminpanel:[enabled\|disabled] | Defines if the admin panel is available. If disabled, *-autostart* is applied automatically. Default: enabled |
-| -api:[enabled\|disabled] | Defines if the public api is available. Default: enabled |
 
 ### -resolveIP
 

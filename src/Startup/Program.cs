@@ -29,7 +29,6 @@ using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
-using MUnique.OpenMU.Web.PublicApi;
 using Nito.AsyncEx.Synchronous;
 
 /// <summary>
@@ -229,11 +228,6 @@ internal sealed class Program : IDisposable
                     .AddHostedService<ChatServerContainer>()
                     .AddHostedService<GameServerContainer>()
                     .AddHostedService(provider => provider.GetService<ConnectServerContainer>());
-
-                if (this.IsApiEnabled(args))
-                {
-                    c.AddHostedService<ApiHost>();
-                }
             })
             .Build();
         this._logger.Information("Host created");
@@ -267,8 +261,6 @@ internal sealed class Program : IDisposable
     }
 
     private bool IsAdminPanelEnabled(string[] args) => this.IsFeatureEnabled("adminpanel", args);
-
-    private bool IsApiEnabled(string[] args) => this.IsFeatureEnabled("api", args);
 
     private bool IsFeatureEnabled(string featureName, string[] args)
     {
