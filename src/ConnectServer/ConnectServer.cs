@@ -80,7 +80,7 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     public IDictionary<ushort, byte[]> ConnectInfos { get; }
 
     /// <inheritdoc/>
-    ServerList IConnectServer.ServerList => _serverList;
+    ServerList IConnectServer.ServerList => this._serverList;
 
     /// <inheritdoc cref="IConnectServer"/>
     public IConnectServerSettings Settings { get; }
@@ -97,6 +97,16 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     /// Gets the current connection count.
     /// </summary>
     public int CurrentConnections => this.ClientListener.Clients.Count;
+
+    /// <summary>
+    /// Gets the current game server connection count.
+    /// </summary>
+    public int CurrentGameServerConnections => this._serverList.Servers.Sum(s => s.CurrentConnections);
+
+    /// <summary>
+    /// Gets the registered game servers.
+    /// </summary>
+    public IEnumerable<IGameServerEntry> RegisteredGameServers => this._serverList.Servers;
 
     /// <summary>
     /// Gets the client listener.
@@ -168,8 +178,8 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
             {
                 ServerId = gameServer.Id,
                 EndPoint = publicEndPoint,
-                ServerLoad = (byte)(gameServer.CurrentConnections * 100f / gameServer.MaximumConnections),
                 MaximumConnections = gameServer.MaximumConnections,
+                CurrentConnections = gameServer.CurrentConnections,
             };
 
             this.ConnectInfos.Add(serverListItem.ServerId, serverListItem.ConnectInfo);
@@ -209,7 +219,7 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
             return;
         }
 
-        serverListItem.ServerLoad = (byte)(currentConnections * 100f / serverListItem.MaximumConnections);
+        serverListItem.CurrentConnections = currentConnections;
     }
 
     private void CreatePlugins()

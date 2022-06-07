@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿// <copyright file="Program.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -32,7 +35,7 @@ services.AddSingleton<GameServer>()
     .AddPersistentSingleton<GameServerDefinition>(def => def.ServerID == gameServerId)
     .AddPeristenceProvider()
     .AddPlugInManager()
-    .AddCustomIpResover(new IPAddress(0x7F7F7F7F)) // TODO: by config
+    .AddIpResolver()
     .AddHostedService<GameServerHostedServiceWrapper>()
     .PublishManageableServer<IGameServer>();
 

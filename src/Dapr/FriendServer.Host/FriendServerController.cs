@@ -112,7 +112,7 @@ public class FriendServerController : ControllerBase
     /// Invites a friend to an existing chat room.
     /// </summary>
     /// <param name="data">The data.</param>
-    /// <returns></returns>
+    /// <returns>The success of the invitation.</returns>
     [HttpPost(nameof(IFriendServer.InviteFriendToChatRoom))]
     public bool InviteFriendToChatRoom([FromBody] ChatRoomInvitationArguments data)
     {

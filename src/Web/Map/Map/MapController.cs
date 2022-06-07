@@ -24,7 +24,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     private readonly Guid _mapId;
     private readonly IJSRuntime _jsRuntime;
     private readonly ObserverToWorldViewAdapter _adapterToWorldView;
-    private readonly CancellationTokenSource _disposeCts = new ();
+    private readonly CancellationTokenSource _disposeCts = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MapController" /> class.

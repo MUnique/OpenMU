@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Persistence.EntityFramework;
-
 namespace MUnique.OpenMU.Dapr.Common;
 
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Hosting;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using MUnique.OpenMU.Persistence.EntityFramework;
 
 /// <summary>
 /// Helper class to create an <see cref="WebApplicationBuilder"/> which predefined common

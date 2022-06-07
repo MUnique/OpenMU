@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.Web.AdminPanel.Shared;
 
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// Navigation menu of the admin panel.
@@ -18,16 +17,18 @@ public partial class NavMenu
 {
     private bool _collapseNavMenu = true;
 
-    [Inject] private IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
+    [Inject]
+    private IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
 
-    [Inject] private SetupService SetupService { get; set; } = null!;
+    [Inject]
+    private SetupService SetupService { get; set; } = null!;
 
     private GameConfiguration? GameConfiguration { get; set; }
 
     private bool OnlyShowSetup { get; set; }
 
     /// <summary>
-    /// Returns the class for the entries of the navigation menu.
+    /// Gets the class for the entries of the navigation menu.
     /// "collapse" is a class of bootstrap which hides it.
     /// In our css we also define to show it anyway, if the width sufficient.
     /// </summary>

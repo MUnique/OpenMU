@@ -1,10 +1,13 @@
-﻿using System.Net;
+﻿// <copyright file="Program.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
 using Microsoft.Extensions.DependencyInjection;
 
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ChatServer.Host;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Dapr.Common;
+using MUnique.OpenMU.DataModel.Configuration;
 
 var builder = DaprService.CreateBuilder("ChatServer", args);
 
@@ -13,7 +16,7 @@ var services = builder.Services;
 services.AddSingleton<ChatServer>()
     .AddPeristenceProvider() // todo: Config API instead of using persistence?
     .AddPlugInManager()
-    .AddCustomIpResover(new IPAddress(0x7F7F7F7F)) // todo; based on config?
+    .AddIpResolver()
     .AddPersistentSingleton<ChatServerDefinition>();
 
 services.AddHostedService(p =>

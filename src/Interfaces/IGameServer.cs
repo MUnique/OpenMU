@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections.Immutable;
-
 namespace MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -97,8 +95,6 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     /// <param name="message">The message.</param>
     /// <param name="messageType">Type of the message.</param>
     void SendGlobalMessage(string message, MessageType messageType);
-
-
 
     /// <summary>
     /// Disconnects the player from the game.

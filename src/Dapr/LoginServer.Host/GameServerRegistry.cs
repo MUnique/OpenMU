@@ -1,8 +1,16 @@
-﻿using System.Threading;
-using Microsoft.Extensions.Logging;
+﻿// <copyright file="GameServerRegistry.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 namespace MUnique.OpenMU.LoginServer.Host;
 
+using System.Threading;
+using Microsoft.Extensions.Logging;
+
+/// <summary>
+/// The registry for game servers.
+/// </summary>
+/// <seealso cref="System.IDisposable" />
 public sealed class GameServerRegistry : IDisposable
 {
     private readonly TimeSpan _timeout = TimeSpan.FromSeconds(20);
@@ -12,6 +20,10 @@ public sealed class GameServerRegistry : IDisposable
     private readonly Dictionary<ushort, DateTime> _entries = new();
     private readonly SemaphoreSlim _semaphore = new(1);
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameServerRegistry"/> class.
+    /// </summary>
+    /// <param name="logger">The logger.</param>
     public GameServerRegistry(ILogger<GameServerRegistry> logger)
     {
         this._logger = logger;
@@ -29,20 +41,35 @@ public sealed class GameServerRegistry : IDisposable
         });
     }
 
+    /// <summary>
+    /// Occurs when a game server was added to the registry.
+    /// </summary>
     public event EventHandler<ushort>? GameServerAdded;
 
+    /// <summary>
+    /// Occurs when a new (=freshly started) game server was added to the registry.
+    /// </summary>
     public event EventHandler<ushort>? NewGameServerAdded;
 
+    /// <summary>
+    /// Occurs when a game server was removed from the registry.
+    /// </summary>
     public event EventHandler<ushort>? GameServerRemoved;
 
+    /// <inheritdoc />
     public void Dispose()
     {
         this._disposeCts.Cancel();
         this._disposeCts.Dispose();
         this._semaphore.Dispose();
     }
-    
-    public async Task UpdateRegistrationAsync(ushort gameServerId, TimeSpan uptime)
+
+    /// <summary>
+    /// Updates the registration of the game server.
+    /// </summary>
+    /// <param name="gameServerId">The game server identifier.</param>
+    /// <param name="upTime">The up-time of the server.</param>
+    public async Task UpdateRegistrationAsync(ushort gameServerId, TimeSpan upTime)
     {
         await this._semaphore.WaitAsync();
         try
@@ -50,7 +77,7 @@ public sealed class GameServerRegistry : IDisposable
             var timestamp = DateTime.UtcNow;
             if (this._entries.TryAdd(gameServerId, timestamp))
             {
-                if (uptime <= this._newServerUptimeLimit)
+                if (upTime <= this._newServerUptimeLimit)
                 {
                     this.NewGameServerAdded?.Invoke(this, gameServerId);
                 }

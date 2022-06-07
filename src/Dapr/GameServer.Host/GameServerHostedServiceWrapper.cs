@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameServer.Host;
 using System.Threading;
 using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// A wrapper which takes a <see cref="Interfaces.IGameServer"/> and wraps it as <see cref="IHostedService"/>,

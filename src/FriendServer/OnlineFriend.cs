@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.FriendServer;
 
 using System.Threading;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Represents an online friend who can observe his other friends, and be subscribed by other friends.
@@ -55,7 +54,7 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     public int ServerId { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating this friend is invisible or offline.
+    /// Gets a value indicating this friend is invisible or offline.
     /// </summary>
     public bool IsInvisibleOrOffline => this.ServerId == FriendServer.InvisibleServerId || this.ServerId == FriendServer.OfflineServerId;
 

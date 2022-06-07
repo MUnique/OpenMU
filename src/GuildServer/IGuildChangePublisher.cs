@@ -1,7 +1,14 @@
-﻿using MUnique.OpenMU.Interfaces;
+﻿// <copyright file="IGuildChangePublisher.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 namespace MUnique.OpenMU.GuildServer;
 
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// Interface for a publisher of guild related events.
+/// </summary>
 public interface IGuildChangePublisher
 {
     /// <summary>
@@ -16,5 +23,11 @@ public interface IGuildChangePublisher
     /// <param name="guildId">The guild identifier.</param>
     void GuildDeleted(uint guildId);
 
+    /// <summary>
+    /// Assigns a guild to a player.
+    /// </summary>
+    /// <param name="serverId">The server identifier.</param>
+    /// <param name="characterName">Name of the character.</param>
+    /// <param name="status">The status.</param>
     void AssignGuildToPlayer(byte serverId, string characterName, GuildMemberStatus status);
 }

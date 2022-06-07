@@ -16,7 +16,7 @@ public interface IFriendSystemSubscriber
     /// </summary>
     /// <param name="letter">The letter header.</param>
     void LetterReceived(LetterHeader letter);
-    
+
     /// <summary>
     /// Notifies the server that a player made a friend request to another player, which is online on this server.
     /// </summary>

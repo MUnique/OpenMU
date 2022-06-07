@@ -22,18 +22,12 @@ internal class ServerList
     {
         this._clientVersion = clientVersion;
         this.Servers = new SortedSet<ServerListItem>(new ServerListItemComparer());
-        this.ConnectInfos = new Dictionary<ushort, byte[]>();
     }
 
     /// <summary>
     /// Gets or sets the currently available servers.
     /// </summary>
     public ICollection<ServerListItem> Servers { get; set; }
-
-    /// <summary>
-    /// Gets or sets the cached connection infos.
-    /// </summary>
-    public IDictionary<ushort, byte[]> ConnectInfos { get; set; }
 
     /// <summary>
     /// Gets the cache of the available servers.
@@ -65,7 +59,7 @@ internal class ServerList
             {
                 var serverBlock = response[i];
                 serverBlock.ServerId = (byte)server.ServerId;
-                serverBlock.LoadPercentage = server.ServerLoad;
+                serverBlock.LoadPercentage = server.ServerLoadPercentage;
                 i++;
             }
         }
@@ -81,7 +75,7 @@ internal class ServerList
             {
                 var serverBlock = response[i];
                 serverBlock.ServerId = server.ServerId;
-                serverBlock.LoadPercentage = server.ServerLoad;
+                serverBlock.LoadPercentage = server.ServerLoadPercentage;
                 i++;
             }
         }

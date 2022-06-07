@@ -141,7 +141,12 @@ public class DefaultTcpGameServerListener : IGameServerListener
         this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));
 
         var remotePlayer = new RemotePlayer(this._gameContext, connection, this.ClientVersion);
-        connection.Disconnected += (_, _) => remotePlayer.Disconnect();
+        connection.Disconnected += (_, _) =>
+        {
+            remotePlayer.Disconnect();
+            this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.PlayerCount);
+        };
+
         this.OnPlayerConnected(remotePlayer);
 
         // we don't want to await the call.
@@ -159,6 +164,8 @@ public class DefaultTcpGameServerListener : IGameServerListener
         {
             this.Log(l => l.LogError($"Event {nameof(this.PlayerConnected)} was not handled."));
         }
+
+        this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.PlayerCount);
     }
 
     private void Log(Action<ILogger<DefaultTcpGameServerListener>> logAction)

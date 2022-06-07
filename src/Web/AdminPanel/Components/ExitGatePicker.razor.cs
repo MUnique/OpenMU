@@ -84,7 +84,8 @@ public partial class ExitGatePicker
 
     private string GetSizeAndPositionStyle(Gate gate)
     {
-        return string.Format("width: {0}px; height: {1}px; top: {2}px; left:{3}px;",
+        return string.Format(
+            "width: {0}px; height: {1}px; top: {2}px; left:{3}px;",
             (this._scale * (1 + gate.Y2 - gate.Y1)).ToString(CultureInfo.InvariantCulture),
             (this._scale * (1 + gate.X2 - gate.X1)).ToString(CultureInfo.InvariantCulture),
             (this._scale * gate.X1).ToString(CultureInfo.InvariantCulture),

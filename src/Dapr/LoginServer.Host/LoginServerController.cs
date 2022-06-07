@@ -1,14 +1,18 @@
-﻿using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using Dapr;
+﻿// <copyright file="LoginServerController.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 namespace MUnique.OpenMU.LoginServer.Host;
 
+using global::Dapr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ServerClients;
 
+/// <summary>
+/// The API controller for the login server.
+/// </summary>
 [ApiController]
 [Route("")]
 public class LoginServerController : ControllerBase
@@ -19,13 +23,24 @@ public class LoginServerController : ControllerBase
 
     private readonly GameServerRegistry _registry;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoginServerController"/> class.
+    /// </summary>
+    /// <param name="loginServer">The login server.</param>
+    /// <param name="logger">The logger.</param>
+    /// <param name="registry">The registry.</param>
     public LoginServerController(PersistentLoginServer loginServer, ILogger<LoginServerController> logger, GameServerRegistry registry)
     {
         this._loginServer = loginServer;
         this._logger = logger;
-        _registry = registry;
+        this._registry = registry;
     }
 
+    /// <summary>
+    /// Tries to login the account on the specified server.
+    /// </summary>
+    /// <param name="data">The login data.</param>
+    /// <returns>The success.</returns>
     [HttpPost(nameof(TryLogin))]
     public async Task<bool> TryLogin([FromBody] LoginArguments data)
     {
@@ -40,6 +55,10 @@ public class LoginServerController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Logs the account off from the specified server.
+    /// </summary>
+    /// <param name="data">The login data.</param>
     [HttpPost(nameof(LogOff))]
     public void LogOff([FromBody] LoginArguments data)
     {
@@ -53,6 +72,10 @@ public class LoginServerController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Handles the game server heartbeat by updating the registry.
+    /// </summary>
+    /// <param name="data">The game server heartbeat arguments.</param>
     [HttpPost("GameServerHeartbeat")]
     [Topic("pubsub", "GameServerHeartbeat")]
     public Task GameServerHeartbeatAsync([FromBody] GameServerHeartbeatArguments data)

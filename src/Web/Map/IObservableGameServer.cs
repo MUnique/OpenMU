@@ -85,11 +85,6 @@ public interface IGameMapInfo : INotifyPropertyChanged
 public interface IPlayerInfo
 {
     /// <summary>
-    /// Gets the host adress.
-    /// </summary>
-    string HostAdress { get; }
-
-    /// <summary>
     /// Gets the name of the character.
     /// </summary>
     string CharacterName { get; }

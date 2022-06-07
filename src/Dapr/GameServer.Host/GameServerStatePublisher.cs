@@ -1,7 +1,10 @@
-﻿using System.Diagnostics;
+﻿// <copyright file="GameServerStatePublisher.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 namespace MUnique.OpenMU.GameServer.Host;
 
+using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using global::Dapr.Client;
@@ -10,6 +13,10 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ServerClients;
 using Nito.AsyncEx.Synchronous;
 
+/// <summary>
+/// Implementation of <see cref="IGameServerStateObserver"/> which publishes the state
+/// by sending a heartbeat to a Dapr pub/sub component.
+/// </summary>
 public sealed class GameServerStatePublisher : IGameServerStateObserver, IDisposable
 {
     private const string PubSubName = "pubsub";
@@ -22,14 +29,19 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
 
     private CancellationTokenSource? _heartbeatCancellationTokenSource;
     private Thread? _heartbeatThread;
-    
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameServerStatePublisher"/> class.
+    /// </summary>
+    /// <param name="daprClient">The dapr client.</param>
+    /// <param name="logger">The logger.</param>
     public GameServerStatePublisher(DaprClient daprClient, ILogger<GameServerStatePublisher> logger)
     {
-        _daprClient = daprClient;
-        _logger = logger;
+        this._daprClient = daprClient;
+        this._logger = logger;
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         this._heartbeatCancellationTokenSource?.Cancel();
@@ -37,6 +49,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
         this._heartbeatThread = null;
     }
 
+    /// <inheritdoc />
     public void RegisterGameServer(ServerInfo serverInfo, IPEndPoint publicEndPoint)
     {
         this._heartbeatCancellationTokenSource?.Cancel(false);
@@ -47,7 +60,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
         try
         {
             this._logger.LogInformation("Starting heartbeat thread ...");
-            this._heartbeatThread = new (
+            this._heartbeatThread = new(
                 () =>
                 {
                     try
@@ -60,7 +73,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
                     }
                 })
             {
-                Name = "Heartbeat"
+                Name = "Heartbeat",
             };
             this._heartbeatThread.Start();
 
@@ -72,6 +85,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
         }
     }
 
+    /// <inheritdoc />
     public void UnregisterGameServer(ushort serverId)
     {
         this._logger.LogInformation("Stopping heartbeat thread");
@@ -79,6 +93,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
         this._heartbeatThread = null;
     }
 
+    /// <inheritdoc />
     public void CurrentConnectionsChanged(ushort serverId, int currentConnections)
     {
         this._currentConnections = currentConnections;

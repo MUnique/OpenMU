@@ -175,7 +175,8 @@ public partial class MapEditor : IDisposable
 
     private string GetSizeAndPositionStyle(Gate gate)
     {
-        return string.Format("width: {0}px; height: {1}px; top: {2}px; left:{3}px;",
+        return string.Format(
+            "width: {0}px; height: {1}px; top: {2}px; left:{3}px;",
             (this._scale * (1 + gate.Y2 - gate.Y1)).ToString(CultureInfo.InvariantCulture),
             (this._scale * (1 + gate.X2 - gate.X1)).ToString(CultureInfo.InvariantCulture),
             (this._scale * gate.X1).ToString(CultureInfo.InvariantCulture),
@@ -198,8 +199,8 @@ public partial class MapEditor : IDisposable
         var width = objScale * this._scale * (1 + spawn.Y2 - spawn.Y1);
         var height = objScale * this._scale * (1 + spawn.X2 - spawn.X1);
         var xyOffset = (objScale - 1.0f) * this._scale;
-        var top = this._scale * spawn.X1 - xyOffset;
-        var left = this._scale * spawn.Y1 - xyOffset;
+        var top = (this._scale * spawn.X1) - xyOffset;
+        var left = (this._scale * spawn.Y1) - xyOffset;
         result.Append($"width: {width.ToString(CultureInfo.InvariantCulture)}px;")
             .Append($"height: {height.ToString(CultureInfo.InvariantCulture)}px;")
             .Append($"top: {top.ToString(CultureInfo.InvariantCulture)}px;")

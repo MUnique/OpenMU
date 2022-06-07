@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿// <copyright file="Program.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
-using MUnique.OpenMU.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.FriendServer.Host;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ServerClients;
 using FriendServer = MUnique.OpenMU.FriendServer.FriendServer;
 

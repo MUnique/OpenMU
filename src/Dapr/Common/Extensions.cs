@@ -68,9 +68,52 @@ public static class Extensions
     /// <param name="services">The services.</param>
     /// <param name="address">The address.</param>
     /// <returns>The services.</returns>
-    public static IServiceCollection AddCustomIpResover(this IServiceCollection services, IPAddress address)
+    public static IServiceCollection AddCustomIpResolver(this IServiceCollection services, IPAddress address)
     {
         return services.AddSingleton<IIpAddressResolver>(s => new CustomIpResolver(address));
+    }
+
+    /// <summary>
+    /// Adds a <see cref="IIpAddressResolver"/> depending on the environment.
+    /// In a development environment, a <see cref="LoopbackIpResolver"/> is added.
+    /// In a production environment, a <see cref="PublicIpResolver"/> is added.
+    /// </summary>
+    /// <param name="services">The services.</param>
+    /// <returns>The services.</returns>
+    public static IServiceCollection AddIpResolver(this IServiceCollection services)
+    {
+        if (Environment.GetEnvironmentVariable("RESOLVE_IP") is { } resolveIp)
+        {
+            if (IPAddress.TryParse(resolveIp, out var customIp))
+            {
+                return services.AddSingleton<IIpAddressResolver>(_ => new CustomIpResolver(customIp));
+            }
+
+            if (resolveIp == "local")
+            {
+                return services.AddSingleton<IIpAddressResolver, LocalIpResolver>();
+            }
+
+            if (resolveIp == "public")
+            {
+                return services.AddSingleton<IIpAddressResolver, PublicIpResolver>();
+            }
+
+            if (resolveIp == "loopback")
+            {
+                return services.AddSingleton<IIpAddressResolver, LoopbackIpResolver>();
+            }
+        }
+
+        var isDevelopmentEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+        if (isDevelopmentEnvironment)
+        {
+            // During development, we use a loopback IP (127.127.127.127).
+            return services.AddSingleton<IIpAddressResolver, LoopbackIpResolver>();
+        }
+
+        // In production our systems should expose itself with their corresponding public IPs.
+        return services.AddSingleton<IIpAddressResolver, PublicIpResolver>();
     }
 
     /// <summary>

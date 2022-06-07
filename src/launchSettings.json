@@ -20,7 +20,13 @@
         "chatServer": "StartDebugging",
         "chatServer-dapr": "StartWithoutDebugging",
         "adminPanel": "StartDebugging",
-        "adminPanel-dapr": "StartWithoutDebugging"
+        "adminPanel-dapr": "StartWithoutDebugging",
+        "grafana": "StartWithoutDebugging",
+        "loki": "StartWithoutDebugging",
+        "minio": "StartWithoutDebugging",
+        "nginx": "StartWithoutDebugging",
+        "prometheus": "StartWithoutDebugging",
+        "zipkin": "StartWithoutDebugging"
       }
     }
   }

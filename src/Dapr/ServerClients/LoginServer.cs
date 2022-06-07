@@ -8,12 +8,20 @@ using Microsoft.Extensions.Logging;
 using Dapr.Client;
 using MUnique.OpenMU.Interfaces;
 
+/// <summary>
+/// Implementation of an <see cref="ILoginServer"/> which accesses the login server remotely over Dapr.
+/// </summary>
 public class LoginServer : ILoginServer
 {
     private readonly DaprClient _daprClient;
     private readonly ILogger<LoginServer> _logger;
     private readonly string _targetAppId;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoginServer"/> class.
+    /// </summary>
+    /// <param name="daprClient">The dapr client.</param>
+    /// <param name="logger">The logger.</param>
     public LoginServer(DaprClient daprClient, ILogger<LoginServer> logger)
     {
         this._daprClient = daprClient;
@@ -21,6 +29,7 @@ public class LoginServer : ILoginServer
         this._targetAppId = "loginServer";
     }
 
+    /// <inheritdoc />
     public async Task<bool> TryLogin(string accountName, byte serverId)
     {
         try
@@ -34,6 +43,7 @@ public class LoginServer : ILoginServer
         }
     }
 
+    /// <inheritdoc />
     public void LogOff(string accountName, byte serverId)
     {
         try

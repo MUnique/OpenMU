@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.ConnectServer.Host;
 
 using System.Threading;
 using Microsoft.Extensions.Hosting;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// A wrapper which takes a <see cref="Interfaces.IConnectServer"/> and wraps it as <see cref="IHostedService"/>,

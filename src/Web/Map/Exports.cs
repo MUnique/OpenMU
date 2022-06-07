@@ -19,7 +19,7 @@ public static class Exports
     /// <summary>
     /// Gets the scripts.
     /// </summary>
-    public static ImmutableList<string> Scripts { get; } = new []
+    public static ImmutableList<string> Scripts { get; } = new[]
     {
         $"{Prefix}/js/system-production.js",
         $"{Prefix}/js/map.js",
@@ -39,7 +39,7 @@ public static class Exports
     /// <summary>
     /// Gets the stylesheets.
     /// </summary>
-    public static ImmutableList<string> Stylesheets { get; } = new []
+    public static ImmutableList<string> Stylesheets { get; } = new[]
     {
         $"{Prefix}/css/site.css",
     }.ToImmutableList();

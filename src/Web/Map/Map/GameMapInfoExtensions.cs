@@ -13,9 +13,9 @@ using SixLabors.ImageSharp;
 /// </summary>
 public static class GameMapInfoExtensions
 {
-    private static readonly ConcurrentDictionary<short, string> CachedMapTerrainsBase64 = new ();
+    private static readonly ConcurrentDictionary<short, string> CachedMapTerrainsBase64 = new();
 
-    private static readonly ConcurrentDictionary<short, byte[]> CachedMapTerrainsPng = new ();
+    private static readonly ConcurrentDictionary<short, byte[]> CachedMapTerrainsPng = new();
 
     /// <summary>
     /// Gets the terrain stream of the map image.

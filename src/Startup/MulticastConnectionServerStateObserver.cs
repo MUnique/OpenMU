@@ -16,9 +16,6 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
 {
     private readonly IList<IGameServerStateObserver> _observers = new List<IGameServerStateObserver>();
 
-    ///// <inheritdoc />
-    // public ICollection<(ushort Id, IPEndPoint Endpoint)> GameServerEndPoints => this._observers.SelectMany(o => o.GameServerEndPoints).Distinct().ToList();
-
     /// <summary>
     /// Adds the observer which wants to get notified about changes.
     /// </summary>

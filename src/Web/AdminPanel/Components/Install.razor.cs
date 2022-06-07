@@ -47,7 +47,8 @@ public partial class Install
     /// <summary>
     /// Gets or sets the setup service.
     /// </summary>
-    [Inject] public SetupService SetupService { get; set; } = null!;
+    [Inject]
+    public SetupService SetupService { get; set; } = null!;
 
     /// <inheritdoc />
     protected override void OnParametersSet()
@@ -80,6 +81,7 @@ public partial class Install
             await this.InstallationFinished.InvokeAsync();
         }
     }
+
     private void OnSelectVersion(string key)
     {
         this.SelectedVersion = this.SetupService.Versions.First(v => v.Key == key);
@@ -93,6 +95,7 @@ public partial class Install
             this.GameServerCount = count;
         }
     }
+
     private void OnTestAccountsChange(ChangeEventArgs obj)
     {
         if (obj.Value is bool value)

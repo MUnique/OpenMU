@@ -29,7 +29,7 @@ public class FriendNotifier : IFriendNotifier
         var appIds = new Dictionary<int, string>();
         for (int i = 0; i < 100; i++)
         {
-            appIds.Add(i, $"gameServer{i+1}");
+            appIds.Add(i, $"gameServer{i + 1}");
         }
 
         this._appIds = new ReadOnlyDictionary<int, string>(appIds);

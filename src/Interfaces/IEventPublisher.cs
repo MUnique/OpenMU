@@ -1,5 +1,13 @@
-﻿namespace MUnique.OpenMU.Interfaces;
+﻿// <copyright file="IEventPublisher.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
+namespace MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// Interface for a publisher of events which happen on the game server
+/// and might have multiple interested subscribers/services.
+/// </summary>
 public interface IEventPublisher
 {
     /// <summary>

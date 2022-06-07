@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic;
 internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
 {
     private readonly GameMap _map;
-    private readonly ConcurrentDictionary<Player, IPlayerInfo> _players = new ();
+    private readonly ConcurrentDictionary<Player, IPlayerInfo> _players = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameMapInfoAdapter"/> class.
@@ -93,20 +93,6 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
         public PlayerInfo(Player player)
         {
             this._player = player;
-        }
-
-        public string HostAdress
-        {
-            get
-            {
-                //var remotePlayer = this._player as RemotePlayer;
-                //if (remotePlayer?.Connection?.ToString() is { } address)
-                //{
-                //    return address;
-                //}
-
-                return "N/A";
-            }
         }
 
         public string CharacterName

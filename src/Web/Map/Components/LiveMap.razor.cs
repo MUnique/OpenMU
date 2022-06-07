@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.Web.Map.Components;
+﻿// <copyright file="LiveMap.razor.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Web.Map.Components;
 
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.Web.Map.Map;

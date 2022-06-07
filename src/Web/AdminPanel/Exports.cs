@@ -23,7 +23,7 @@ public static class Exports
     /// <summary>
     /// Gets the scripts.
     /// </summary>
-    public static ImmutableList<string> Scripts { get; } = new []
+    public static ImmutableList<string> Scripts { get; } = new[]
     {
         "_content/Blazored.Typeahead/blazored-typeahead.js",
         "_content/Blazored.Modal/blazored.modal.js",
@@ -40,7 +40,7 @@ public static class Exports
     /// <summary>
     /// Gets the stylesheets.
     /// </summary>
-    public static ImmutableList<string> Stylesheets { get; } = new []
+    public static ImmutableList<string> Stylesheets { get; } = new[]
     {
         "_content/Blazored.Typeahead/blazored-typeahead.css",
         "_content/Blazored.Modal/blazored-modal.css",

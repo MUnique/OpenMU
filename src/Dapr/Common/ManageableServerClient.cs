@@ -11,7 +11,6 @@ using global::Dapr.Client;
 using MUnique.OpenMU.Interfaces;
 using Nito.AsyncEx.Synchronous;
 
-
 /// <summary>
 /// A client to control a <seealso cref="IManageableServer"/>.
 /// </summary>

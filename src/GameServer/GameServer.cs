@@ -434,21 +434,6 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         }
     }
 
-    //private void SetOfflineAtFriendServer(Player player)
-    //{
-    //    try
-    //    {
-    //        if (player.SelectedCharacter != null)
-    //        {
-    //            this.Context.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, (byte)SpecialServerId.Offline);
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        this._logger.LogError($"Couldn't set offline state at friend server. Player: {this}", ex);
-    //    }
-    //}
-
     private void SaveSessionOfPlayer(Player player)
     {
         try

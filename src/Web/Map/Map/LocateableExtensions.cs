@@ -18,7 +18,7 @@ public static class LocateableExtensions
     /// <returns>The created map object.</returns>
     public static MapObject CreateMapObject(this ILocateable locateable)
     {
-        return new ()
+        return new()
         {
             Direction = (locateable as IRotatable)?.Rotation ?? default,
             Id = locateable.Id,

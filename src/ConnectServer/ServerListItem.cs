@@ -10,11 +10,12 @@ using MUnique.OpenMU.Network.Packets.ConnectServer;
 /// <summary>
 /// A list item of an available server.
 /// </summary>
-internal class ServerListItem
+internal class ServerListItem : IGameServerEntry
 {
     private readonly ServerList _owner;
 
-    private byte _serverLoad;
+    private byte _serverLoadPercentage;
+    private int _currentConnections;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerListItem"/> class.
@@ -46,13 +47,13 @@ internal class ServerListItem
     /// <summary>
     /// Gets or sets the server load (usage rate).
     /// </summary>
-    public byte ServerLoad
+    public byte ServerLoadPercentage
     {
-        get => this._serverLoad;
+        get => this._serverLoadPercentage;
 
-        set
+        private set
         {
-            this._serverLoad = value;
+            this._serverLoadPercentage = value;
             var cache = this._owner.Cache;
             if (cache != null && this.LoadIndex != -1)
             {
@@ -86,11 +87,27 @@ internal class ServerListItem
         }
     }
 
+    /// <summary>
+    /// Gets or sets the maximum connection count.
+    /// </summary>
     public int MaximumConnections { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current connection count.
+    /// </summary>
+    public int CurrentConnections
+    {
+        get => this._currentConnections;
+        set
+        {
+            this._currentConnections = value;
+            this.ServerLoadPercentage = (byte)(this._currentConnections * 100f / this.MaximumConnections);
+        }
+    }
 
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"ServerId={this.ServerId}, ServerLoad={this.ServerLoad}";
+        return $"ServerId={this.ServerId}, ServerLoadPercentage={this.ServerLoadPercentage}";
     }
 }

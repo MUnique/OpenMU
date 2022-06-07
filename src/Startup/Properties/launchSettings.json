@@ -2,7 +2,7 @@
   "profiles": {
     "MUnique.OpenMU.Startup": {
       "commandName": "Project",
-      "commandLineArgs": "-autostart -resolveIp:local -reinit --demo",
+      "commandLineArgs": "-autostart -resolveIp:local --demo",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
