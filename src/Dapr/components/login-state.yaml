@@ -7,5 +7,6 @@ spec:
   version: v1
   metadata:
   - name: connectionString
-    # todo: use another user than postgres
-    value: "host=database user=postgres password=admin port=5432 connect_timeout=10 database=openmu-login-state"
+    secretKeyRef: connectionStrings:state-store
+auth:
+  secretStore: secrets
