@@ -91,7 +91,7 @@ public sealed class BloodCastleContext : MiniGameContext
                 this.TryRemoveQuestItemFromPlayer(player);
             }
 
-            this.UpdateState(2, player).ConfigureAwait(false);
+            this.UpdateState(2, player);
         }
 
         base.OnObjectRemovedFromMap(sender, args);
@@ -234,7 +234,7 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override void GameEnded(ICollection<Player> finishers)
     {
-        this.UpdateState(2).ConfigureAwait(false);
+        this.UpdateState(2);
 
         var sortedFinishers = finishers
             .Select(f => this._gameStates[f.Name])
@@ -371,31 +371,31 @@ public sealed class BloodCastleContext : MiniGameContext
     {
         try
         {
-            var startTime = DateTimeOffset.Now;
+            var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+            var duration = (int)this.Definition.GameDuration.TotalSeconds;
+            this._remainTime = duration;
 
-            while (this.IsEventRunning)
+            while (this.IsEventRunning && this._remainTime >= 0 && await timer.WaitForNextTickAsync())
             {
-                var duration = (int)this.Definition.GameDuration.TotalSeconds;
-                var usedTime = (int)(DateTimeOffset.Now - startTime).TotalSeconds;
-                this._remainTime = duration - usedTime;
-
                 if (this._remainTime == duration)
                 {
-                    await this.UpdateState(0).ConfigureAwait(false);
+                    this.UpdateState(0);
                 }
 
                 if (this._remainTime < duration && !this._gateDestroyed)
                 {
-                    await this.UpdateState(1).ConfigureAwait(false);
+                    this.UpdateState(1);
                 }
 
                 if (this._remainTime < duration && this._gateDestroyed)
                 {
-                    await this.UpdateState(4).ConfigureAwait(false);
+                    this.UpdateState(4);
                 }
 
-                await Task.Delay(1000).ConfigureAwait(false);
+                this._remainTime--;
             }
+
+            timer.Dispose();
         }
         catch (TaskCanceledException)
         {
@@ -406,11 +406,11 @@ public sealed class BloodCastleContext : MiniGameContext
         }
     }
 
-    private async ValueTask UpdateState(byte state, Player? player = null)
+    private void UpdateState(byte state, Player? player = null)
     {
         if (player is null)
         {
-            await this.ForEachPlayerAsync(player =>
+            this.ForEachPlayerAsync(player =>
             {
                 player.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
                     .UpdateState(
@@ -420,7 +420,7 @@ public sealed class BloodCastleContext : MiniGameContext
                         this._curMonster,
                         this._questItemOwner?.Id ?? 65535,
                         this._questItem?.Level ?? 255);
-            });
+            }).ConfigureAwait(false);
         }
         else
         {
