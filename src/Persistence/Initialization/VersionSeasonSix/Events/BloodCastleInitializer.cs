@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
 /// The initializer for the blood castle event.
@@ -151,6 +152,16 @@ internal class BloodCastleInitializer : InitializerBase
 
     private void CreateRewards(byte level, MiniGameDefinition bloodCastle)
     {
+        var possibleItems = new List<ItemDefinition>();
+        possibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
+        possibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
+        var rewardDropItemGroup = this.Context.CreateNew<DropItemGroup>();
+        foreach (var item in possibleItems)
+        {
+            rewardDropItemGroup.PossibleItems.Add(item);
+        }
+        this.GameConfiguration.DropItemGroups.Add(rewardDropItemGroup);
+
         for (int rank = 1; rank <= 4; rank++)
         {
             var rewardTableEntry = RewardTable.First(tuple => tuple.Rank == rank && tuple.GameLevel == level);
@@ -166,6 +177,13 @@ internal class BloodCastleInitializer : InitializerBase
             moneyReward.Rank = rank;
             moneyReward.RewardAmount = rewardTableEntry.Money;
             bloodCastle.Rewards.Add(moneyReward);
+
+            var itemReward = this.Context.CreateNew<MiniGameReward>();
+            itemReward.ItemReward = rewardDropItemGroup;
+            itemReward.RewardType = MiniGameRewardType.ItemDrop;
+            itemReward.Rank = rank;
+            itemReward.RewardAmount = rank;
+            bloodCastle.Rewards.Add(itemReward);
         }
     }
 }

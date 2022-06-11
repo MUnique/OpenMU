@@ -357,6 +357,9 @@ public class MiniGameContext : Disposable, IEventStateProvider
             case MiniGameRewardType.Item:
                 this.GiveItemReward(player, reward);
                 break;
+            case MiniGameRewardType.ItemDrop:
+                this.GiveItemReward(player, reward, true);
+                break;
             case MiniGameRewardType.Undefined:
                 this.Logger.LogWarning($"Undefined reward type in {reward.GetId()}");
                 break;
@@ -366,7 +369,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
     }
 
-    private void GiveItemReward(Player player, MiniGameReward reward)
+    private void GiveItemReward(Player player, MiniGameReward reward, bool drop = false)
     {
         if (reward.ItemReward is null)
         {
@@ -381,10 +384,13 @@ public class MiniGameContext : Disposable, IEventStateProvider
             return;
         }
 
-        if (!player.Inventory?.AddItem(item) ?? false)
+        for (int i = 1; i <= reward.RewardAmount; i++)
         {
+            var droppedItem = new DroppedItem(item, player.RandomPosition, this.Map, player, player.GetAsEnumerable());
+            var shouldDrop = drop || !(player.Inventory?.AddItem(item) ?? false);
+            if (!shouldDrop) continue;
             this.Logger.LogInformation($"Reward {item} for {player} has been dropped by players coordinates {player.Position}.");
-            this.Map.Add(new DroppedItem(item, player.Position, this.Map, player, player.GetAsEnumerable()));
+            this.Map.Add(droppedItem);
         }
     }
 

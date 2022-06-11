@@ -28,4 +28,9 @@ public enum MiniGameRewardType
     /// The reward is an item.
     /// </summary>
     Item,
+
+    /// <summary>
+    /// The reward is an item to be dropped.
+    /// </summary>
+    ItemDrop,
 }

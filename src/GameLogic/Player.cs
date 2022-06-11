@@ -311,6 +311,16 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
         }
     }
 
+    /// <summary>
+    /// Gets or sets Position with a randomized shim.
+    /// </summary>
+    public Point RandomPosition
+    {
+        get => this._currentMap!.Terrain.GetRandomCoordinate(this.Position, 1);
+
+        set => this.Position = this._currentMap!.Terrain.GetRandomCoordinate(value, 1);
+    }
+
     /// <inheritdoc/>
     public uint MaximumHealth => (uint)(this.Attributes?[Stats.MaximumHealth] ?? 0);
 
