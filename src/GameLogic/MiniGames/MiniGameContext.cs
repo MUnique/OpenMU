@@ -455,26 +455,26 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
             await this.StartAsync().ConfigureAwait(false);
 
-            try {
+            try
+            {
                 await Task.Delay(gameDuration, this._gameEndedCts.Token).ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
-                // Event finished before the gameDuration timeout
+                this.Logger.LogInformation("Finishing event earlier");
             }
 
             await this.StopAsync().ConfigureAwait(false);
+            await Task.Delay(exitDuration).ConfigureAwait(false);
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
             await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
 
-            await Task.Delay(exitDuration, this._gameEndedCts.Token).ConfigureAwait(false);
-            await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-            await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
-
+            this.Logger.LogInformation("Shutting down event");
             await this.ShutdownGameAsync().ConfigureAwait(false);
         }
-        catch (TaskCanceledException)
+        catch (TaskCanceledException ex)
         {
+            this.Logger.LogDebug(ex, "Received TaskCanceledException: {0}", ex.Message);
         }
         catch (Exception ex)
         {

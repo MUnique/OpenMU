@@ -135,7 +135,7 @@ internal class BloodCastleInitializer : InitializerBase
         bloodCastle.Description = $"Event definition for blood castle event, level {level}.";
         bloodCastle.EnterDuration = TimeSpan.FromMinutes(1);
         bloodCastle.GameDuration = TimeSpan.FromMinutes(20);
-        bloodCastle.ExitDuration = TimeSpan.FromMinutes(3);
+        bloodCastle.ExitDuration = TimeSpan.FromMinutes(1);
         bloodCastle.MaximumPlayerCount = 5;
         bloodCastle.Entrance = this.GameConfiguration.Maps.First(m => m.Number == mapNumber).ExitGates.Single();
         bloodCastle.Type = MiniGameType.BloodCastle;
