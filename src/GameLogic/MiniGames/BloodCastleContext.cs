@@ -225,7 +225,7 @@ public sealed class BloodCastleContext : MiniGameContext
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
         }
 
-        this._maxMonster = this._gameStates.Count * 40;
+        this._maxMonster = this._gameStates.Count * 10;
         this.EntranceToggle(true);
         this.ShowRemainTime().ConfigureAwait(false);
         base.OnGameStart(players);
@@ -234,6 +234,7 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override void GameEnded(ICollection<Player> finishers)
     {
+        this._remainTime = 0;
         this.UpdateState(2);
 
         var sortedFinishers = finishers
