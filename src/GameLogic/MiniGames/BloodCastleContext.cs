@@ -280,6 +280,8 @@ public sealed class BloodCastleContext : MiniGameContext
         var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
         {
             (13, 15, 15, 23),
+            (11, 78, 25, 89),
+            (08, 78, 10, 83),
         };
 
         this.UpdateWalkMapClient(areas, TerrainAttributeType.Blocked, value);
@@ -304,8 +306,6 @@ public sealed class BloodCastleContext : MiniGameContext
         var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
         {
             (13, 76, 15, 79),
-            (11, 80, 25, 89),
-            (08, 80, 10, 83),
         };
 
         this.UpdateWalkMapClient(areas, TerrainAttributeType.Blocked, value);
