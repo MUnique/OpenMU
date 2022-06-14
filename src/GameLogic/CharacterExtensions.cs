@@ -55,6 +55,18 @@ public static class CharacterExtensions
         return ancientSets.Any(set => set.Items.All(setItem => equippedAncientSetItems.Any(i => i.Item == setItem.ItemDefinition && i.Set == set)));
     }
 
+    /// <summary>
+    /// Determines whether the character is able to increase StatAttributes.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    /// <returns>
+    ///   <c>true</c> if the character can increase StatAttributes; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool CanIncreaseStats(this Character character)
+    {
+        return character.CharacterStatus == CharacterStatus.GameMaster || character.LevelUpPoints > 0;
+    }
+
     private static IEnumerable<ushort> GetFruitPoints(int divisor)
     {
         var current = 2;

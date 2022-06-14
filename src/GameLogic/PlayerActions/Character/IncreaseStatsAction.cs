@@ -24,18 +24,31 @@ public class IncreaseStatsAction
             throw new InvalidOperationException("No character selected");
         }
 
-        if (player.SelectedCharacter.LevelUpPoints > 0)
+        var selectedCharacter = player.SelectedCharacter;
+        if (!selectedCharacter.CanIncreaseStats())
         {
-            var attributeDef = player.SelectedCharacter.CharacterClass?.StatAttributes.FirstOrDefault(a => a.Attribute == statAttributeDefinition);
-            if (attributeDef is { IncreasableByPlayer: true })
-            {
-                player.Attributes![attributeDef.Attribute]++;
-                player.SelectedCharacter.LevelUpPoints--;
-                player.ViewPlugIns.GetPlugIn<IStatIncreaseResultPlugIn>()?.StatIncreaseResult(statAttributeDefinition, true);
-                return;
-            }
+            this.PublishIncreaseResult(player, statAttributeDefinition, false);
+            return;
         }
 
-        player.ViewPlugIns.GetPlugIn<IStatIncreaseResultPlugIn>()?.StatIncreaseResult(statAttributeDefinition, false);
+        var attributeDef = selectedCharacter.CharacterClass?.GetStatAttribute(statAttributeDefinition);
+        if (attributeDef is { IncreasableByPlayer: true })
+        {
+            player.Attributes![attributeDef.Attribute]++;
+            if (selectedCharacter.LevelUpPoints > 0)
+            {
+                selectedCharacter.LevelUpPoints--;
+            }
+
+            this.PublishIncreaseResult(player, statAttributeDefinition, true);
+            return;
+        }
+
+        this.PublishIncreaseResult(player, statAttributeDefinition, false);
+    }
+
+    private void PublishIncreaseResult(Player player, AttributeDefinition statAttributeDefinition, bool success)
+    {
+        player.ViewPlugIns.GetPlugIn<IStatIncreaseResultPlugIn>()?.StatIncreaseResult(statAttributeDefinition, success);
     }
 }
