@@ -441,7 +441,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         try
         {
             var enterDuration = this.Definition.EnterDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
-            var gameDuration = this.Definition.GameDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
+            var gameDuration = this.Definition.GameDuration.AtLeast(countdownMessageDuration);
             var exitDuration = this.Definition.ExitDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
 
             await Task.Delay(enterDuration, this._gameEndedCts.Token).ConfigureAwait(false);
@@ -455,6 +455,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
             await this.StartAsync().ConfigureAwait(false);
 
+            bool timeout = true;
             try
             {
                 await Task.Delay(gameDuration, this._gameEndedCts.Token).ConfigureAwait(false);
@@ -462,6 +463,12 @@ public class MiniGameContext : Disposable, IEventStateProvider
             catch (TaskCanceledException)
             {
                 this.Logger.LogInformation("Finishing event earlier");
+                timeout = false;
+            }
+
+            if (timeout)
+            {
+                throw new Exception("MiniGameTimeout");
             }
 
             await this.StopAsync().ConfigureAwait(false);
