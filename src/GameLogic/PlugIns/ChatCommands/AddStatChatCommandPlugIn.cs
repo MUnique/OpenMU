@@ -42,9 +42,10 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
 
             var arguments = command.ParseArguments<Arguments>();
             var attribute = this.GetAttribute(player, arguments.StatType);
+            var selectedCharacter = player.SelectedCharacter;
             for (var i = 0; i < arguments.Amount; i++)
             {
-                if (player.SelectedCharacter?.LevelUpPoints <= 0)
+                if (!selectedCharacter.CanIncreaseStats())
                 {
                     player.ShowMessage("Cancelled adding points. No more points available.");
                     break;
