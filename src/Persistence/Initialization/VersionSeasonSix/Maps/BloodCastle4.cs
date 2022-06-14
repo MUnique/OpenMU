@@ -104,7 +104,7 @@ internal class BloodCastle4 : BloodCastleBase
         yield return this.CreateMonsterSpawn(this.NpcDictionary[116], 015, 050, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 4
         yield return this.CreateMonsterSpawn(this.NpcDictionary[116], 015, 066, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 4
         yield return this.CreateMonsterSpawn(this.NpcDictionary[116], 014, 056, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[116], 014, 070, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 4
+        yield return this.CreateMonsterSpawn(this.NpcDictionary[116], 014, 069, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 4
         yield return this.CreateMonsterSpawn(this.NpcDictionary[116], 013, 048, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 4
         yield return this.CreateMonsterSpawn(this.NpcDictionary[116], 013, 063, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 4
 
