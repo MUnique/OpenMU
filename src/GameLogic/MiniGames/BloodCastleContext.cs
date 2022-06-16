@@ -68,6 +68,8 @@ public sealed class BloodCastleContext : MiniGameContext
 
     private int PlayerCount => this._gameStates.Count;
 
+    private bool EndedSuccessfully => this.State == MiniGameState.Ended && this._winner is not null;
+
     /// <summary>
     /// Player interact with Archangel.
     /// </summary>
@@ -244,7 +246,12 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             rank++;
             state.Rank = rank;
-            this.GiveRewards(state.Player, rank);
+
+            if (this.EndedSuccessfully)
+            {
+                this.GiveRewards(state.Player, rank);
+            }
+
             scoreList.Add((
                 state.Player.Name,
                 state.Score,
@@ -265,8 +272,9 @@ public sealed class BloodCastleContext : MiniGameContext
     {
         if (this._highScoreTable is { } table)
         {
+            var isSuccessful = this._winner is not null;
             var (name, score, bonusMoney, bonusExp) = table.First(t => t.Name == player.Name);
-            player.ViewPlugIns.GetPlugIn<IBloodCastleScoreTableViewPlugin>()?.ShowScoreTable(true, name, score, bonusExp, bonusMoney);
+            player.ViewPlugIns.GetPlugIn<IBloodCastleScoreTableViewPlugin>()?.ShowScoreTable(isSuccessful, name, score, bonusExp, bonusMoney);
         }
     }
 
