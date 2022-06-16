@@ -81,6 +81,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     protected ILogger Logger { get; }
 
     /// <summary>
+    /// Gets the <see cref="CancellationToken"/> which is cancelled when the game ends.
+    /// </summary>
+    protected CancellationToken GameEndedToken => this._gameEndedCts.Token;
+
+    /// <summary>
     /// Tries to enter the mini game. It will fail, if it's full, of if it's not in an open state.
     /// </summary>
     /// <param name="player">The player which tries to enter.</param>
@@ -536,6 +541,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         try
         {
             this.State = MiniGameState.Ended;
+            this._gameEndedCts.Cancel();
         }
         finally
         {

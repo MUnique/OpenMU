@@ -4740,7 +4740,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: The state of a blood castle event is about to change.
     /// Causes reaction on client side: The client side shows a message about the changing state.
     /// </remarks>
-    public static void SendBloodCastleState(this IConnection connection, byte @state, ushort @remainSecond, ushort @maxMonster, ushort @curMonster, ushort @itemOwner, byte @itemLevel)
+    public static void SendBloodCastleState(this IConnection connection, BloodCastleState.Status @state, ushort @remainSecond, ushort @maxMonster, ushort @curMonster, ushort @itemOwner, byte @itemLevel)
     {
         using var writer = connection.StartWriteBloodCastleState();
         var packet = writer.Packet;

@@ -8134,7 +8134,8 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>Status</TypeName>
           <Name>State</Name>
         </Field>
         <Field>
@@ -8155,7 +8156,7 @@
         <Field>
           <Index>10</Index>
           <Type>ShortLittleEndian</Type>
-          <Name>ItemOwner</Name>
+          <Name>ItemOwnerId</Name>
         </Field>
         <Field>
           <Index>12</Index>
@@ -8163,6 +8164,34 @@
           <Name>ItemLevel</Name>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>Status</Name>
+          <Description>Defines the status of the event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Started</Name>
+              <Description>The event has just started and is running.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GateNotDestroyed</Name>
+              <Description>The event is running, but the gate is not destroyed.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ended</Name>
+              <Description>The event has ended.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GateDestroyed</Name>
+              <Description>The event is running and the gate is destroyed.</Description>
+              <Value>4</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
   </Packets>
   <Enums>

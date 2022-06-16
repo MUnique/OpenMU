@@ -3,8 +3,10 @@
 // </copyright>
 
 namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
-
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 using System.Runtime.InteropServices;
@@ -25,8 +27,26 @@ public class BloodCastleStateViewPlugIn : IBloodCastleStateViewPlugin
     public BloodCastleStateViewPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void UpdateState(byte state, int remainSecond, int maxMonster, int curMonster, int itemOwner, byte itemLevel)
+    public void UpdateState(BloodCastleStatus status, TimeSpan remainingTime, int maxMonster, int curMonster, IIdentifiable? questItemOwner, Item? questItem)
     {
-        this._player.Connection?.SendBloodCastleState(state, (ushort)remainSecond, (ushort)maxMonster, (ushort)curMonster, (ushort)itemOwner, itemLevel);
+        this._player.Connection?.SendBloodCastleState(
+            Convert(status),
+            (ushort)remainingTime.TotalSeconds,
+            (ushort)maxMonster,
+            (ushort)curMonster,
+            questItemOwner?.GetId(this._player) ?? 0xFF,
+            (byte)((questItem?.Level + 1) ?? 0xFF));
+    }
+
+    private static BloodCastleState.Status Convert(BloodCastleStatus status)
+    {
+        return status switch
+        {
+            BloodCastleStatus.Ended => BloodCastleState.Status.Ended,
+            BloodCastleStatus.GateDestroyed => BloodCastleState.Status.GateDestroyed,
+            BloodCastleStatus.GateNotDestroyed => BloodCastleState.Status.GateNotDestroyed,
+            BloodCastleStatus.Started => BloodCastleState.Status.Started,
+            _ => throw new ArgumentException($"Unknown blood castle status {status}")
+        };
     }
 }
