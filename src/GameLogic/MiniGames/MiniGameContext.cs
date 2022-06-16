@@ -460,20 +460,13 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
             await this.StartAsync().ConfigureAwait(false);
 
-            bool timeout = true;
             try
             {
                 await Task.Delay(gameDuration, this._gameEndedCts.Token).ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
-                this.Logger.LogInformation("Finishing event earlier");
-                timeout = false;
-            }
-
-            if (timeout)
-            {
-                throw new Exception("MiniGameTimeout");
+                this.Logger.LogInformation("Finished event earlier");
             }
 
             await this.StopAsync().ConfigureAwait(false);
