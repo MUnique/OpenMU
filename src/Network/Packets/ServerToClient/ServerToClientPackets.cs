@@ -22703,9 +22703,9 @@ public readonly ref struct BloodCastleState
     }
 
     /// <summary>
-    /// Gets or sets the item owner.
+    /// Gets or sets the item owner id.
     /// </summary>
-    public ushort ItemOwner
+    public ushort ItemOwnerId
     {
         get => ReadUInt16LittleEndian(this._data[10..]);
         set => WriteUInt16LittleEndian(this._data[10..], value);

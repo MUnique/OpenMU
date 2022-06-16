@@ -4734,13 +4734,13 @@ public static class ConnectionExtensions
     /// <param name="remainSecond">The remain second.</param>
     /// <param name="maxMonster">The max monster.</param>
     /// <param name="curMonster">The cur monster.</param>
-    /// <param name="itemOwner">The item owner.</param>
+    /// <param name="itemOwnerId">The item owner id.</param>
     /// <param name="itemLevel">The item level.</param>
     /// <remarks>
     /// Is sent by the server when: The state of a blood castle event is about to change.
     /// Causes reaction on client side: The client side shows a message about the changing state.
     /// </remarks>
-    public static void SendBloodCastleState(this IConnection connection, BloodCastleState.Status @state, ushort @remainSecond, ushort @maxMonster, ushort @curMonster, ushort @itemOwner, byte @itemLevel)
+    public static void SendBloodCastleState(this IConnection connection, BloodCastleState.Status @state, ushort @remainSecond, ushort @maxMonster, ushort @curMonster, ushort @itemOwnerId, byte @itemLevel)
     {
         using var writer = connection.StartWriteBloodCastleState();
         var packet = writer.Packet;
@@ -4748,7 +4748,7 @@ public static class ConnectionExtensions
         packet.RemainSecond = @remainSecond;
         packet.MaxMonster = @maxMonster;
         packet.CurMonster = @curMonster;
-        packet.ItemOwner = @itemOwner;
+        packet.ItemOwnerId = @itemOwnerId;
         packet.ItemLevel = @itemLevel;
         writer.Commit();
     }}
