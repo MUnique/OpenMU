@@ -22592,6 +22592,32 @@ public readonly ref struct BloodCastleEnterResult
 /// </summary>
 public readonly ref struct BloodCastleState
 {
+    /// <summary>
+    /// Defines the status of the event.
+    /// </summary>
+    public enum Status
+    {
+        /// <summary>
+        /// The event has just started and is running.
+        /// </summary>
+            Started = 0,
+
+        /// <summary>
+        /// The event is running, but the gate is not destroyed.
+        /// </summary>
+            GateNotDestroyed = 1,
+
+        /// <summary>
+        /// The event has ended.
+        /// </summary>
+            Ended = 2,
+
+        /// <summary>
+        /// The event is running and the gate is destroyed.
+        /// </summary>
+            GateDestroyed = 4,
+    }
+
     private readonly Span<byte> _data;
 
     /// <summary>
@@ -22643,10 +22669,10 @@ public readonly ref struct BloodCastleState
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public byte State
+    public BloodCastleState.Status State
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => (Status)this._data[3];
+        set => this._data[3] = (byte)value;
     }
 
     /// <summary>
@@ -22677,9 +22703,9 @@ public readonly ref struct BloodCastleState
     }
 
     /// <summary>
-    /// Gets or sets the item owner.
+    /// Gets or sets the item owner id.
     /// </summary>
-    public ushort ItemOwner
+    public ushort ItemOwnerId
     {
         get => ReadUInt16LittleEndian(this._data[10..]);
         set => WriteUInt16LittleEndian(this._data[10..], value);
