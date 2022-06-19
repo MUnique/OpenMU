@@ -6828,8 +6828,8 @@ public readonly ref struct GuildCreateRequest
     /// </summary>
     public string GuildName
     {
-        get => this._data.ExtractString(4, 9, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 9).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(4, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 8).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>

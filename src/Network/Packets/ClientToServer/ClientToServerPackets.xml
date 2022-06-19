@@ -1840,7 +1840,7 @@
           <Index>4</Index>
           <Type>String</Type>
           <Name>GuildName</Name>
-          <Length>9</Length>
+          <Length>8</Length>
         </Field>
         <Field>
           <Index>12</Index>
