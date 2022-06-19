@@ -129,41 +129,4 @@ internal class Ancient : AccountInitializerBase
         this.AddTestJewelsAndPotions(character.Inventory);
         return character;
     }
-
-    private Item CreateFullAncient(byte itemSlot, ItemGroups group, byte number, byte level, string ancientName)
-    {
-        var ancient = this.Context.CreateNew<Item>();
-        ancient.Definition = this.GameConfiguration.Items.First(def => def.Group == (int)group && def.Number == number);
-        ancient.Durability = ancient.Definition.Durability;
-        ancient.ItemSlot = itemSlot;
-        ancient.Level = level;
-        ancient.HasSkill = ancient.Definition.Skill is { };
-        var optionLink = this.Context.CreateNew<ItemOptionLink>();
-        optionLink.ItemOption = ancient.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-            .First(o => o.OptionType == ItemOptionTypes.Option);
-        optionLink.Level = optionLink.ItemOption.LevelDependentOptions.Max(o => o.Level);
-        ancient.ItemOptions.Add(optionLink);
-
-        if (ancient.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                .FirstOrDefault(o => o.OptionType == ItemOptionTypes.Luck) is { } luckOption)
-        {
-            var luck = this.Context.CreateNew<ItemOptionLink>();
-            luck.ItemOption = luckOption;
-            ancient.ItemOptions.Add(luck);
-        }
-
-        var set = ancient.Definition.PossibleItemSetGroups.First(a => a.Name == ancientName);
-        var itemOfSet = set.Items.First(i => i.ItemDefinition == ancient.Definition);
-        if (itemOfSet.BonusOption is { })
-        {
-            var ancientBonus = this.Context.CreateNew<ItemOptionLink>();
-            ancientBonus.ItemOption = itemOfSet.BonusOption;
-            ancientBonus.Level = 2;
-            ancient.ItemOptions.Add(ancientBonus);
-        }
-
-        ancient.ItemSetGroups.Add(set);
-
-        return ancient;
-    }
 }
