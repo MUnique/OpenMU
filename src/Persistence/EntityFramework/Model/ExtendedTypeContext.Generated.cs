@@ -58,11 +58,11 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot>();
-        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameChangeEvent>();
-        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameTerrainChange>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameReward>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameTerrainChange>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea>();
