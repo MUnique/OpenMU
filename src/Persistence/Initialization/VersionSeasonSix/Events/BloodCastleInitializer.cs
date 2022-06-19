@@ -309,7 +309,7 @@ internal class BloodCastleInitializer : InitializerBase
         spawnStatueEvent.SpawnArea.Y1 = StatusOfSaintSpawnPoint.Y;
         spawnStatueEvent.SpawnArea.Y2 = StatusOfSaintSpawnPoint.Y;
         spawnStatueEvent.SpawnArea.GameMap = bloodCastle.Entrance!.Map;
-        spawnStatueEvent.SpawnArea.SpawnTrigger = SpawnTrigger.OnceAtEventStart;
+        spawnStatueEvent.SpawnArea.SpawnTrigger = SpawnTrigger.OnceAtWaveStart;
     }
 
     private void CreateRewards(byte level, MiniGameDefinition bloodCastle)
