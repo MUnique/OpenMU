@@ -1975,35 +1975,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MiniGameReward",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ItemRewardId = table.Column<Guid>(type: "uuid", nullable: true),
-                    MiniGameDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Rank = table.Column<int>(type: "integer", nullable: true),
-                    RewardType = table.Column<int>(type: "integer", nullable: false),
-                    RewardAmount = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MiniGameReward", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MiniGameReward_DropItemGroup_ItemRewardId",
-                        column: x => x.ItemRewardId,
-                        principalSchema: "config",
-                        principalTable: "DropItemGroup",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_MiniGameReward_MiniGameDefinition_MiniGameDefinitionId",
-                        column: x => x.MiniGameDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "MiniGameDefinition",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MiniGameSpawnWave",
                 schema: "config",
                 columns: table => new
@@ -2330,6 +2301,43 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.SkillId,
                         principalSchema: "config",
                         principalTable: "Skill",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MiniGameReward",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemRewardId = table.Column<Guid>(type: "uuid", nullable: true),
+                    RequiredKillId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MiniGameDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Rank = table.Column<int>(type: "integer", nullable: true),
+                    RewardType = table.Column<int>(type: "integer", nullable: false),
+                    RewardAmount = table.Column<int>(type: "integer", nullable: false),
+                    RequiredSuccess = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MiniGameReward", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MiniGameReward_DropItemGroup_ItemRewardId",
+                        column: x => x.ItemRewardId,
+                        principalSchema: "config",
+                        principalTable: "DropItemGroup",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MiniGameReward_MiniGameDefinition_MiniGameDefinitionId",
+                        column: x => x.MiniGameDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "MiniGameDefinition",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MiniGameReward_MonsterDefinition_RequiredKillId",
+                        column: x => x.RequiredKillId,
+                        principalSchema: "config",
+                        principalTable: "MonsterDefinition",
                         principalColumn: "Id");
                 });
 
@@ -3297,6 +3305,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "MiniGameReward",
                 column: "MiniGameDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MiniGameReward_RequiredKillId",
+                schema: "config",
+                table: "MiniGameReward",
+                column: "RequiredKillId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MiniGameSpawnWave_MiniGameDefinitionId",

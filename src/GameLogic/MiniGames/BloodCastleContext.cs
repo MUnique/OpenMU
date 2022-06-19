@@ -17,6 +17,37 @@ using Nito.Disposables.Internals;
 /// <summary>
 /// The context of a blood castle game.
 /// </summary>
+/// <remarks>
+/// A blood castle event works like that:
+///   First, a player or his party (and probably another party), maximum 10 players, enter the blood castle.
+///   The game has several states:
+///   * After the event starts, first a certain amount of monsters have to be killed, so that a bridge appears on the way to the castle gate.
+///   * The castle gate has to be destroyed
+///   * Some stronger monsters wait after the castle gate. A certain amount of "Spirit Sorcerer" have to be killed.
+///   * The statue appears, which needs to be killed.
+///   * The statue drops an archangel weapon as quest item. This item has to be brought back to the archangel NPC.
+/// The game has a time limit of usually 15 or 20 minutes.
+/// After the time is up, or the quest item has been brought back, the players get some rewards:
+/// 
+/// Experience:
+///   1. For each remaining second, a bonus experience is given as experience.
+///   2. The player or party which destroyed the gate, gets extra experience. Dead party members get the half of the exp as bonus.
+///   3. For killing the statue, the player/party gets a bonus experience.
+///   4. For finishing the quest, the player/party gets a bonus experience.
+///   5. To all previous exp rewards, bonuses from seals, maps etc. are applied.
+/// Money:
+///   According to the reward table - fixed values per blood castle level, depending if the player was in the winning party, or not.
+///   The winner/winners party get roughly the double money value.
+/// Score:
+///   a) If the event was won by any participant, depending on the individual success state of a player,
+///      it will get a different score rewarded. A player is categorized into these 5 states:
+///      - unfinished event
+///      - died during event
+///      - winner
+///      - member of winners party
+///      - member of winners party, but died during event.
+///   b) If the event wasn't won by any participant, players are getting a score penalty of 300.
+/// </remarks>
 public sealed class BloodCastleContext : MiniGameContext
 {
     private const short CastleGateNumber = 131;
@@ -66,9 +97,13 @@ public sealed class BloodCastleContext : MiniGameContext
                                  ?? throw new InvalidOperationException($"The required statue definition (Number {StatueOfSaintNumber}) is not defined in the game configuration.");
     }
 
-    private int PlayerCount => this._gameStates.Count;
+    /// <inheritdoc />
+    protected override Player? Winner => this._winner;
 
-    private bool EndedSuccessfully => this.State == MiniGameState.Ended && this._winner is not null;
+    /// <inheritdoc />
+    protected override TimeSpan RemainingTime => this._remainingTime;
+
+    private int PlayerCount => this._gameStates.Count;
 
     /// <summary>
     /// Player interact with Archangel.
@@ -126,6 +161,7 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override void OnDestructibleDied(object? sender, DeathInformation e)
     {
+        base.OnDestructibleDied(sender, e);
         var destructible = sender as Destructible;
         if (destructible is null)
         {
@@ -137,11 +173,13 @@ public sealed class BloodCastleContext : MiniGameContext
             case CastleGateNumber:
                 this.OnCastleGateKilled(e);
                 break;
+
             case StatueOfSaintNumber:
             {
                 this.OnStatueKilled(e, destructible);
                 break;
             }
+
             default:
                 throw new NotImplementedException($"Unknown destructible was killed: {destructible}");
         }
@@ -150,6 +188,7 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override void OnMonsterDied(object? sender, DeathInformation e)
     {
+        base.OnMonsterDied(sender, e);
         if (this._gameStates.TryGetValue(e.KillerName, out var state))
         {
             state.AddScore(this.Definition.GameLevel);
@@ -231,7 +270,6 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override void GameEnded(ICollection<Player> finishers)
     {
-        this._remainingTime = TimeSpan.Zero;
         this.UpdateState(BloodCastleStatus.Ended);
 
         var sortedFinishers = finishers
@@ -246,17 +284,14 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             rank++;
             state.Rank = rank;
-
-            if (this.EndedSuccessfully)
-            {
-                this.GiveRewards(state.Player, rank);
-            }
+            var (bonusScore, givenMoney) = this.GiveRewardsAndGetBonusScore(state.Player, rank);
+            state.AddScore(bonusScore);
 
             scoreList.Add((
                 state.Player.Name,
                 state.Score,
                 this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0,
-                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Money && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0));
+                givenMoney));
 
             this.TryRemoveQuestItemFromPlayer(state.Player);
         }
@@ -433,34 +468,21 @@ public sealed class BloodCastleContext : MiniGameContext
         }
     }
 
-    private void UpdateState(BloodCastleStatus status, Player? player = null)
+    private void UpdateState(BloodCastleStatus status)
     {
-        if (player is null)
-        {
-            _ = Task.Run(() =>
-                this.ForEachPlayerAsync(p =>
-                {
-                    p.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
-                        .UpdateState(
-                            status,
-                            this._remainingTime,
-                            this._requiredMonsterKills,
-                            this._currentMonsterKills,
-                            this._questItemOwner,
-                            this._questItem);
-                }));
-        }
-        else
-        {
-            player.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
-                .UpdateState(
-                    status,
-                    this._remainingTime,
-                    this._requiredMonsterKills,
-                    this._currentMonsterKills,
-                    this._questItemOwner,
-                    this._questItem);
-        }
+        _ = Task.Run(() => this.ForEachPlayerAsync(player => this.UpdateState(status, player)));
+    }
+
+    private void UpdateState(BloodCastleStatus status, Player player)
+    {
+        player.ViewPlugIns.GetPlugIn<IBloodCastleStateViewPlugin>()?
+            .UpdateState(
+                status,
+                this._remainingTime,
+                this._requiredMonsterKills,
+                this._currentMonsterKills,
+                this._questItemOwner,
+                this._questItem);
     }
 
     private bool TryRemoveQuestItemFromPlayer(Player player)

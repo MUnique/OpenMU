@@ -2151,6 +2151,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int?>("Rank")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("RequiredKillId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RequiredSuccess")
+                        .HasColumnType("integer");
+
                     b.Property<int>("RewardAmount")
                         .HasColumnType("integer");
 
@@ -2162,6 +2168,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("ItemRewardId");
 
                     b.HasIndex("MiniGameDefinitionId");
+
+                    b.HasIndex("RequiredKillId");
 
                     b.ToTable("MiniGameReward", "config");
                 });
@@ -3831,7 +3839,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany("RawRewards")
                         .HasForeignKey("MiniGameDefinitionId");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawRequiredKill")
+                        .WithMany()
+                        .HasForeignKey("RequiredKillId");
+
                     b.Navigation("RawItemReward");
+
+                    b.Navigation("RawRequiredKill");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameSpawnWave", b =>

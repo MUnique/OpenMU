@@ -67,11 +67,12 @@ public sealed class DevilSquareContext : MiniGameContext
         {
             rank++;
             state.Rank = rank;
-            this.GiveRewards(state.Player, rank);
+            var (bonusScore, givenMoney) = this.GiveRewardsAndGetBonusScore(state.Player, rank);
+            state.AddScore(bonusScore);
             scoreList.Add((
                 state.Player.Name,
                 state.Score,
-                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Money && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0,
+                givenMoney,
                 this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0));
         }
 
