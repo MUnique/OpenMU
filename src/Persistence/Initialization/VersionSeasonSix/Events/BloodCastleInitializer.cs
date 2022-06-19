@@ -5,12 +5,20 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// The initializer for the blood castle event.
 /// </summary>
 internal class BloodCastleInitializer : InitializerBase
 {
+    private const short CastleGateNumber = 131;
+    private const short StatueOfSaintNumber = 132;
+
+    private const short RequiredKillsBeforeBridgePerPlayer = 40;
+    private const short RequiredKillsAfterGatePerPlayer = 2;
+    private static readonly Point StatusOfSaintSpawnPoint = new(14, 95);
+
     /// <summary>
     /// The score penalty which gets applied when the event wasn't won by any participating player.
     /// </summary>
@@ -116,6 +124,12 @@ internal class BloodCastleInitializer : InitializerBase
     };
 
     /// <summary>
+    /// A set of monster ids which should count as kill after the gate has been destroyed.
+    /// These are all for "Spirit Sorcerer" monsters, for the different levels of blood castle.
+    /// </summary>
+    private static readonly short[] SpiritSorcererPerCastleLevel = { -1, 89, 95, 112, 118, 124, 130, 143, 433 };
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleInitializer" /> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -203,8 +217,99 @@ internal class BloodCastleInitializer : InitializerBase
         bloodCastle.SaveRankingStatistics = true;
 
         this.CreateRewards(level, bloodCastle);
+        this.CreateEvents(level, bloodCastle);
 
         return bloodCastle;
+    }
+
+    private void CreateEvents(byte level, MiniGameDefinition bloodCastle)
+    {
+        var entranceToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
+        bloodCastle.ChangeEvents.Add(entranceToggleEvent);
+        entranceToggleEvent.Index = 0;
+        entranceToggleEvent.Description = "Entrance Toggle Event";
+        var entranceToggleArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        entranceToggleEvent.TerrainChanges.Add(entranceToggleArea);
+        entranceToggleArea.StartX = 13;
+        entranceToggleArea.StartY = 15;
+        entranceToggleArea.EndX = 15;
+        entranceToggleArea.EndY = 23;
+        entranceToggleArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        entranceToggleArea.TerrainAttribute = TerrainAttributeType.Blocked;
+
+        // The next two areas are already unlocked because of the monster spawns.
+        var behindGateArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        entranceToggleEvent.TerrainChanges.Add(behindGateArea);
+        behindGateArea.StartX = 11;
+        behindGateArea.StartY = 78;
+        behindGateArea.EndX = 25;
+        behindGateArea.EndY = 89;
+        behindGateArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        behindGateArea.TerrainAttribute = TerrainAttributeType.Blocked;
+
+        var altarArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        entranceToggleEvent.TerrainChanges.Add(altarArea);
+        altarArea.StartX = 8;
+        altarArea.StartY = 78;
+        altarArea.EndX = 11;
+        altarArea.EndY = 83;
+        altarArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        altarArea.TerrainAttribute = TerrainAttributeType.Blocked;
+
+        var bridgeToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
+        bloodCastle.ChangeEvents.Add(bridgeToggleEvent);
+        bridgeToggleEvent.Index = 1;
+        bridgeToggleEvent.Description = "Bridge Toggle Event";
+        bridgeToggleEvent.Message = "Enough monster kills, now destroy the Castle Gate!";
+        bridgeToggleEvent.Target = KillTarget.AnyMonster;
+        bridgeToggleEvent.NumberOfKills = RequiredKillsBeforeBridgePerPlayer;
+        bridgeToggleEvent.MultiplyKillsByPlayers = true;
+        var bridgeToggleArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        bridgeToggleEvent.TerrainChanges.Add(bridgeToggleArea);
+        bridgeToggleArea.StartX = 13;
+        bridgeToggleArea.StartY = 70;
+        bridgeToggleArea.EndX = 15;
+        bridgeToggleArea.EndY = 75;
+        bridgeToggleArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        bridgeToggleArea.TerrainAttribute = TerrainAttributeType.NoGround;
+
+        var gateToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
+        bloodCastle.ChangeEvents.Add(gateToggleEvent);
+        gateToggleEvent.Index = 2;
+        gateToggleEvent.Description = "Gate Toggle Event";
+        gateToggleEvent.Target = KillTarget.Specific;
+        gateToggleEvent.TargetDefinition = this.GameConfiguration.Monsters.First(m => m.Number == CastleGateNumber);
+        gateToggleEvent.NumberOfKills = 1;
+        gateToggleEvent.Message = "{0} has demolished the Castle Gate!";
+        var gateToggleArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        gateToggleEvent.TerrainChanges.Add(gateToggleArea);
+        gateToggleArea.StartX = 13;
+        gateToggleArea.StartY = 76;
+        gateToggleArea.EndX = 15;
+        gateToggleArea.EndY = 79;
+        gateToggleArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        gateToggleArea.TerrainAttribute = TerrainAttributeType.Blocked;
+
+        var spawnStatueEvent = this.Context.CreateNew<MiniGameChangeEvent>();
+        bloodCastle.ChangeEvents.Add(spawnStatueEvent);
+        spawnStatueEvent.Index = 3;
+        spawnStatueEvent.Description = "Statue Spawn Event";
+        spawnStatueEvent.Message = "Kundun minions have been subdued! Destroy the Crystal Statue!";
+        spawnStatueEvent.Target = KillTarget.Specific;
+        spawnStatueEvent.TargetDefinition = this.GameConfiguration.Monsters.First(m => m.Number == SpiritSorcererPerCastleLevel[level]);
+        spawnStatueEvent.NumberOfKills = RequiredKillsAfterGatePerPlayer;
+        spawnStatueEvent.MultiplyKillsByPlayers = true;
+
+        spawnStatueEvent.SpawnArea = this.Context.CreateNew<MonsterSpawnArea>();
+        spawnStatueEvent.SpawnArea.MonsterDefinition = this.GameConfiguration.Monsters.First(m => m.Number == StatueOfSaintNumber);
+        spawnStatueEvent.SpawnArea.Direction = Direction.SouthWest;
+        spawnStatueEvent.SpawnArea.Quantity = 1;
+        spawnStatueEvent.SpawnArea.X1 = StatusOfSaintSpawnPoint.X;
+        spawnStatueEvent.SpawnArea.X2 = StatusOfSaintSpawnPoint.X;
+        spawnStatueEvent.SpawnArea.Y1 = StatusOfSaintSpawnPoint.Y;
+        spawnStatueEvent.SpawnArea.Y2 = StatusOfSaintSpawnPoint.Y;
+        spawnStatueEvent.SpawnArea.GameMap = bloodCastle.Entrance!.Map;
+        spawnStatueEvent.SpawnArea.SpawnTrigger = SpawnTrigger.OnceAtEventStart;
     }
 
     private void CreateRewards(byte level, MiniGameDefinition bloodCastle)
@@ -253,6 +358,7 @@ internal class BloodCastleInitializer : InitializerBase
 
         var itemReward = this.Context.CreateNew<MiniGameReward>();
         itemReward.ItemReward = rewardDropItemGroup;
+        itemReward.RewardAmount = 1;
         itemReward.RewardType = MiniGameRewardType.ItemDrop;
         itemReward.RequiredSuccess = MiniGameSuccessFlags.WinnerOrInWinningParty | MiniGameSuccessFlags.Alive;
         bloodCastle.Rewards.Add(itemReward);

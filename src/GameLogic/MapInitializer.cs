@@ -91,7 +91,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this.InitializeNpc(createdMap, spawnArea);
+                this.InitializeSpawn(createdMap, spawnArea);
             }
         }
 
@@ -119,7 +119,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this.InitializeNpc(createdMap, spawnArea, eventStateProvider);
+                this.InitializeSpawn(createdMap, spawnArea, eventStateProvider);
             }
         }
 
@@ -144,39 +144,15 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this.InitializeNpc(createdMap, spawnArea, eventStateProvider);
+                this.InitializeSpawn(createdMap, spawnArea, eventStateProvider);
             }
         }
 
         this._logger.LogDebug("Finished creating event monster instances for map {createdMap}", createdMap);
     }
 
-    /// <summary>
-    /// Gets the map definition by searching for it at the <see cref="GameConfiguration"/>.
-    /// </summary>
-    /// <param name="mapNumber">The map number.</param>
-    /// <returns>The game map definition.</returns>
-    protected virtual GameMapDefinition? GetMapDefinition(ushort mapNumber)
-    {
-        return this._configuration.Maps.FirstOrDefault(m => m.Number == mapNumber);
-    }
-
-    /// <summary>
-    /// Creates the game map instance with the specified definition.
-    /// </summary>
-    /// <param name="definition">The definition.</param>
-    /// <returns>
-    /// The created game map instance.
-    /// </returns>
-    protected virtual GameMap InternalCreateGameMap(GameMapDefinition definition)
-    {
-        this._logger.LogDebug("Creating GameMap {0}", definition);
-        return definition.BattleZone?.Type == BattleType.Soccer
-            ? new SoccerGameMap(definition, this.ItemDropDuration, this.ChunkSize)
-            : new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
-    }
-
-    private void InitializeNpc(GameMap createdMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null)
+    /// <inheritdoc />
+    public void InitializeSpawn(GameMap createdMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null)
     {
         var monsterDef = spawnArea.MonsterDefinition!;
         NonPlayerCharacter npc;
@@ -219,6 +195,31 @@ public class MapInitializer : IMapInitializer
             this._logger.LogError(ex, $"Object {spawnArea} couldn't be initialized.", spawnArea);
             npc.Dispose();
         }
+    }
+
+    /// <summary>
+    /// Gets the map definition by searching for it at the <see cref="GameConfiguration"/>.
+    /// </summary>
+    /// <param name="mapNumber">The map number.</param>
+    /// <returns>The game map definition.</returns>
+    protected virtual GameMapDefinition? GetMapDefinition(ushort mapNumber)
+    {
+        return this._configuration.Maps.FirstOrDefault(m => m.Number == mapNumber);
+    }
+
+    /// <summary>
+    /// Creates the game map instance with the specified definition.
+    /// </summary>
+    /// <param name="definition">The definition.</param>
+    /// <returns>
+    /// The created game map instance.
+    /// </returns>
+    protected virtual GameMap InternalCreateGameMap(GameMapDefinition definition)
+    {
+        this._logger.LogDebug("Creating GameMap {0}", definition);
+        return definition.BattleZone?.Type == BattleType.Soccer
+            ? new SoccerGameMap(definition, this.ItemDropDuration, this.ChunkSize)
+            : new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
     }
 
     private INpcIntelligence? TryCreateConfiguredNpcIntelligence(MonsterDefinition monsterDefinition, GameMap createdMap)

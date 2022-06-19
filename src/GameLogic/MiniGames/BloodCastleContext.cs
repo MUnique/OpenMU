@@ -11,7 +11,6 @@ using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
-using MUnique.OpenMU.Pathfinding;
 using Nito.Disposables.Internals;
 
 /// <summary>
@@ -50,32 +49,17 @@ using Nito.Disposables.Internals;
 /// </remarks>
 public sealed class BloodCastleContext : MiniGameContext
 {
+
     private const short CastleGateNumber = 131;
     private const short StatueOfSaintNumber = 132;
-    private const short RequiredKillsBeforeBridgePerPlayer = 10;
-    private const short RequiredKillsAfterGatePerPlayer = 2;
-
-    private static readonly Point StatusOfSaintSpawnPoint = new (14, 95);
-
-    /// <summary>
-    /// A set of monster ids which should count as kill after the gate has been destroyed.
-    /// These are all for "Spirit Sorcerer" monsters, for the different levels of blood castle.
-    /// </summary>
-    private static readonly HashSet<short> CountableMonstersAfterGate = new () { 89, 95, 112, 118, 124, 130, 143, 433 };
 
     private readonly ItemDefinition _questItemDefinition;
-    private readonly MonsterDefinition _statueDefinition;
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
 
     private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
-
-    private int _requiredMonsterKills;
-    private int _currentMonsterKills;
     private TimeSpan _remainingTime;
 
     private bool _gateDestroyed;
-    private bool _statueSpawned;
-    private bool _bridgeToggled;
 
     private Player? _winner;
     private Player? _questItemOwner;
@@ -93,8 +77,6 @@ public sealed class BloodCastleContext : MiniGameContext
     {
         this._questItemDefinition = gameContext.Configuration.Items.FirstOrDefault(def => def.IsArchangelQuestItem())
                                     ?? throw new InvalidOperationException("The required quest item is not defined in the game configuration.");
-        this._statueDefinition = gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == StatueOfSaintNumber)
-                                 ?? throw new InvalidOperationException($"The required statue definition (Number {StatueOfSaintNumber}) is not defined in the game configuration.");
     }
 
     /// <inheritdoc />
@@ -102,8 +84,6 @@ public sealed class BloodCastleContext : MiniGameContext
 
     /// <inheritdoc />
     protected override TimeSpan RemainingTime => this._remainingTime;
-
-    private int PlayerCount => this._gameStates.Count;
 
     /// <summary>
     /// Player interact with Archangel.
@@ -168,71 +148,13 @@ public sealed class BloodCastleContext : MiniGameContext
             return;
         }
 
-        switch (destructible.Definition.Number)
+        if (destructible.Definition.Number == StatueOfSaintNumber)
         {
-            case CastleGateNumber:
-                this.OnCastleGateKilled(e);
-                break;
-
-            case StatueOfSaintNumber:
-            {
-                this.OnStatueKilled(e, destructible);
-                break;
-            }
-
-            default:
-                throw new NotImplementedException($"Unknown destructible was killed: {destructible}");
+            this.OnStatueKilled(e, destructible);
         }
-    }
-
-    /// <inheritdoc />
-    protected override void OnMonsterDied(object? sender, DeathInformation e)
-    {
-        base.OnMonsterDied(sender, e);
-        if (this._gameStates.TryGetValue(e.KillerName, out var state))
+        else if (destructible.Definition.Number == CastleGateNumber)
         {
-            state.AddScore(this.Definition.GameLevel);
-        }
-
-        var monster = sender as Monster;
-        if (monster is null)
-        {
-            return;
-        }
-
-        if (!this._bridgeToggled)
-        {
-            if (this._currentMonsterKills < this._requiredMonsterKills)
-            {
-                this._currentMonsterKills++;
-            }
-
-            if (this._currentMonsterKills >= this._requiredMonsterKills)
-            {
-                this.BridgeToggle(true);
-            }
-
-            return;
-        }
-
-        if (!this._statueSpawned && this._gateDestroyed)
-        {
-            if (this._currentMonsterKills < this._requiredMonsterKills && CountableMonstersAfterGate.Contains(monster.Definition.Number))
-            {
-                this._currentMonsterKills++;
-            }
-
-            if (this._currentMonsterKills >= this._requiredMonsterKills)
-            {
-                this.SpawnStatue();
-                this._statueSpawned = true;
-
-                _ = Task.Run(() => this.ForEachPlayerAsync(player =>
-                {
-                    player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
-                        .ShowMessage("Kundun minions have been subdued! Destroy the Crystal Statue!", Interfaces.MessageType.GoldenCenter);
-                }));
-            }
+            this._gateDestroyed = true;
         }
     }
 
@@ -259,9 +181,6 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
         }
-
-        this._requiredMonsterKills = this.PlayerCount * RequiredKillsBeforeBridgePerPlayer;
-        this.EntranceToggle(true);
 
         _ = Task.Run(async () => await this.ShowRemainingTimeLoopAsync(this.GameEndedToken), this.GameEndedToken);
         base.OnGameStart(players);
@@ -315,6 +234,7 @@ public sealed class BloodCastleContext : MiniGameContext
 
     private void OnStatueKilled(DeathInformation e, Destructible destructible)
     {
+        // TODO: Can dropping be replaced by setting the drop in the MonsterDefinition of the statue?
         var item = new TemporaryItem
         {
             Definition = this._questItemDefinition,
@@ -329,107 +249,8 @@ public sealed class BloodCastleContext : MiniGameContext
         this.ForEachPlayerAsync(player =>
         {
             player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
-                .ShowMessage(e.KillerName + " has destroyed the stone Statue!", Interfaces.MessageType.GoldenCenter);
+                .ShowMessage(e.KillerName + " has destroyed the Crystal Statue!", Interfaces.MessageType.GoldenCenter);
         }).ConfigureAwait(false);
-    }
-
-    private void OnCastleGateKilled(DeathInformation e)
-    {
-        this._gateDestroyed = true;
-        this._currentMonsterKills = 0;
-        this._requiredMonsterKills = this.PlayerCount * RequiredKillsAfterGatePerPlayer;
-        this.GateToggle(true);
-
-        this.ForEachPlayerAsync(player =>
-        {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
-                .ShowMessage(e.KillerName + " has demolished the Castle Gate!", Interfaces.MessageType.GoldenCenter);
-        }).ConfigureAwait(false);
-    }
-
-    private void EntranceToggle(bool value)
-    {
-        var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
-        {
-            (13, 15, 15, 23),
-            (11, 78, 25, 89),
-            (08, 78, 10, 83),
-        };
-
-        this.UpdateWalkMapClient(areas, TerrainAttributeType.Blocked, value);
-        this.UpdateWalkMapServer(areas, value);
-    }
-
-    private void BridgeToggle(bool value)
-    {
-        this._bridgeToggled = value;
-
-        var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
-        {
-            (13, 70, 15, 75),
-        };
-
-        this.UpdateWalkMapClient(areas, TerrainAttributeType.NoGround, value);
-        this.UpdateWalkMapServer(areas, value);
-    }
-
-    private void GateToggle(bool value)
-    {
-        var areas = new List<(byte startX, byte startY, byte endX, byte endY)>
-        {
-            (13, 76, 15, 79),
-        };
-
-        this.UpdateWalkMapClient(areas, TerrainAttributeType.Blocked, value);
-        this.UpdateWalkMapServer(areas, value);
-    }
-
-    private void SpawnStatue()
-    {
-        var area = new MonsterSpawnArea
-        {
-            GameMap = this.Map.Definition,
-            MonsterDefinition = this._statueDefinition,
-            SpawnTrigger = SpawnTrigger.OnceAtWaveStart,
-            Direction = Direction.SouthWest,
-            Quantity = 1,
-            X1 = StatusOfSaintSpawnPoint.X,
-            X2 = StatusOfSaintSpawnPoint.X,
-            Y1 = StatusOfSaintSpawnPoint.Y,
-            Y2 = StatusOfSaintSpawnPoint.Y,
-        };
-
-        var statue = new Destructible(area, this._statueDefinition, this.Map);
-        statue.Initialize();
-        this.Map.Add(statue);
-    }
-
-    private void UpdateWalkMapServer(
-        List<(byte startX, byte startY, byte endX, byte endY)> areas,
-        bool value)
-    {
-        foreach (var (startX, startY, endX, endY) in areas)
-        {
-            for (int x = startX; x <= endX; x++)
-            {
-                for (int y = startY; y <= endY; y++)
-                {
-                    this.Map.Terrain.WalkMap[x, y] = value;
-                }
-            }
-        }
-    }
-
-    private void UpdateWalkMapClient(
-        List<(byte startX, byte startY, byte endX, byte endY)> areas,
-        TerrainAttributeType type,
-        bool value)
-    {
-        Task.Run(() => this.ForEachPlayerAsync(player =>
-        {
-            player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
-                .ChangeAttributes(false, type, value, areas);
-        }));
     }
 
     private async ValueTask ShowRemainingTimeLoopAsync(CancellationToken cancellationToken)
@@ -459,7 +280,7 @@ public sealed class BloodCastleContext : MiniGameContext
                 this._remainingTime = this._remainingTime.Subtract(timerInterval);
             }
         }
-        catch (TaskCanceledException)
+        catch (OperationCanceledException)
         {
         }
         catch (Exception ex)
@@ -479,8 +300,8 @@ public sealed class BloodCastleContext : MiniGameContext
             .UpdateState(
                 status,
                 this._remainingTime,
-                this._requiredMonsterKills,
-                this._currentMonsterKills,
+                this.NextEvent?.RequiredKills ?? 0,
+                this.NextEvent?.ActualKills ?? 0,
                 this._questItemOwner,
                 this._questItem);
     }

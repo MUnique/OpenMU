@@ -143,6 +143,12 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition, MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition>()
             .Include<MiniGameDefinition, BasicModel.MiniGameDefinition>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MiniGameChangeEvent, MUnique.OpenMU.DataModel.Configuration.MiniGameChangeEvent>()
+            .Include<MiniGameChangeEvent, BasicModel.MiniGameChangeEvent>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MiniGameTerrainChange, MUnique.OpenMU.DataModel.Configuration.MiniGameTerrainChange>()
+            .Include<MiniGameTerrainChange, BasicModel.MiniGameTerrainChange>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.MiniGameReward, MUnique.OpenMU.DataModel.Configuration.MiniGameReward>()
             .Include<MiniGameReward, BasicModel.MiniGameReward>();
 

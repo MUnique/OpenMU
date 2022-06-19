@@ -2473,6 +2473,46 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MiniGameChangeEvent",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TargetDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SpawnAreaId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MiniGameDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Index = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    Target = table.Column<int>(type: "integer", nullable: false),
+                    MinimumTargetLevel = table.Column<short>(type: "smallint", nullable: true),
+                    NumberOfKills = table.Column<short>(type: "smallint", nullable: false),
+                    MultiplyKillsByPlayers = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MiniGameChangeEvent", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MiniGameChangeEvent_MiniGameDefinition_MiniGameDefinitionId",
+                        column: x => x.MiniGameDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "MiniGameDefinition",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MiniGameChangeEvent_MonsterDefinition_TargetDefinitionId",
+                        column: x => x.TargetDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "MonsterDefinition",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MiniGameChangeEvent_MonsterSpawnArea_SpawnAreaId",
+                        column: x => x.SpawnAreaId,
+                        principalSchema: "config",
+                        principalTable: "MonsterSpawnArea",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "QuestItemRequirement",
                 schema: "config",
                 columns: table => new
@@ -2565,6 +2605,31 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.QuestDefinitionId,
                         principalSchema: "config",
                         principalTable: "QuestDefinition",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MiniGameTerrainChange",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MiniGameChangeEventId = table.Column<Guid>(type: "uuid", nullable: true),
+                    TerrainAttribute = table.Column<int>(type: "integer", nullable: false),
+                    SetTerrainAttribute = table.Column<bool>(type: "boolean", nullable: false),
+                    StartX = table.Column<byte>(type: "smallint", nullable: false),
+                    StartY = table.Column<byte>(type: "smallint", nullable: false),
+                    EndX = table.Column<byte>(type: "smallint", nullable: false),
+                    EndY = table.Column<byte>(type: "smallint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MiniGameTerrainChange", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MiniGameTerrainChange_MiniGameChangeEvent_MiniGameChangeEve~",
+                        column: x => x.MiniGameChangeEventId,
+                        principalSchema: "config",
+                        principalTable: "MiniGameChangeEvent",
                         principalColumn: "Id");
                 });
 
@@ -3265,6 +3330,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "GameConfigurationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MiniGameChangeEvent_MiniGameDefinitionId",
+                schema: "config",
+                table: "MiniGameChangeEvent",
+                column: "MiniGameDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MiniGameChangeEvent_SpawnAreaId",
+                schema: "config",
+                table: "MiniGameChangeEvent",
+                column: "SpawnAreaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MiniGameChangeEvent_TargetDefinitionId",
+                schema: "config",
+                table: "MiniGameChangeEvent",
+                column: "TargetDefinitionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MiniGameDefinition_EntranceId",
                 schema: "config",
                 table: "MiniGameDefinition",
@@ -3317,6 +3400,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "MiniGameSpawnWave",
                 column: "MiniGameDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MiniGameTerrainChange_MiniGameChangeEventId",
+                schema: "config",
+                table: "MiniGameTerrainChange",
+                column: "MiniGameChangeEventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MonsterAttribute_AttributeDefinitionId",
@@ -3866,15 +3955,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
+                name: "MiniGameTerrainChange",
+                schema: "config");
+
+            migrationBuilder.DropTable(
                 name: "MonsterAttribute",
                 schema: "config");
 
             migrationBuilder.DropTable(
                 name: "MonsterDefinitionDropItemGroup",
-                schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "MonsterSpawnArea",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -3958,7 +4047,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "MiniGameDefinition",
+                name: "MiniGameChangeEvent",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -4006,7 +4095,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "ExitGate",
+                name: "MiniGameDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "MonsterSpawnArea",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -4015,6 +4108,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "QuestDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ExitGate",
                 schema: "config");
 
             migrationBuilder.DropTable(
