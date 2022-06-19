@@ -13,47 +13,47 @@ public enum MiniGameSuccessFlags
     /// <summary>
     /// No defined flag.
     /// </summary>
-    None,
+    None = 0,
 
     /// <summary>
     /// The player submitted the required quest item to the NPC.
     /// </summary>
-    Winner,
+    Winner = 1,
 
     /// <summary>
     /// The player is part of the party of a player classified as <see cref="Winner"/>.
     /// </summary>
-    WinningParty,
+    WinningParty = 1 << 1,
 
     /// <summary>
     /// The player is the winner or in the party of a player classified as <see cref="Winner"/>.
     /// </summary>
-    WinnerOrInWinningParty,
+    WinnerOrInWinningParty = 1 << 2,
 
     /// <summary>
     /// The player is not the winner and not in the winners party.
     /// </summary>
-    Loser,
+    Loser = 1 << 3,
 
     /// <summary>
     /// The player managed to stay alive until the end.
     /// </summary>
-    Alive,
+    Alive = 1 << 4,
 
     /// <summary>
     /// The player died during the game.
     /// </summary>
-    Dead,
+    Dead = 1 << 5,
 
     /// <summary>
     /// A winner exists in the game.
     /// </summary>
-    WinnerExists,
+    WinnerExists = 1 << 6,
 
     /// <summary>
     /// A winner doesn't exist in the game.
     /// </summary>
-    WinnerNotExists,
+    WinnerNotExists = 1 << 7,
 }
 
 /// <summary>
