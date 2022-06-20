@@ -192,21 +192,17 @@ public sealed class Party : Disposable
 
     private int InternalDistributeExperienceAfterKill(IAttackable killedObject, IObservable killer)
     {
-        if (killedObject is IObservable observable)
+        killer.ObserverLock.EnterReadLock();
+        try
         {
-            observable.ObserverLock.EnterReadLock();
-            try
-            {
-                this._distributionList.AddRange(this.PartyList.OfType<Player>().Where(p => observable.Observers.Contains(p)));
-            }
-            finally
-            {
-                observable.ObserverLock.ExitReadLock();
-            }
+            // All players in the range of the player are getting experience.
+            // This might not be like in the original server, where observing the killed monster counts,
+            // but at this stage, the monster already has cleared his observers.
+            this._distributionList.AddRange(this.PartyList.OfType<Player>().Where(p => p == killer || killer.Observers.Contains(p)));
         }
-        else
+        finally
         {
-            this._distributionList.AddRange(this.PartyList.OfType<Player>());
+            killer.ObserverLock.ExitReadLock();
         }
 
         var count = this._distributionList.Count;
