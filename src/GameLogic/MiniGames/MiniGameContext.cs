@@ -806,7 +806,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
             foreach (var group in groupedChanges)
             {
                 player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
-                    .ChangeAttributes(false, group.Key.TerrainAttribute, group.Key.SetTerrainAttribute, group.Areas);
+                    .ChangeAttributes(group.Key.TerrainAttribute, group.Key.SetTerrainAttribute, group.Areas);
             }
         }));
     }

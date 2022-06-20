@@ -10726,9 +10726,9 @@ public readonly ref struct ChangeTerrainAttributes
     }
 
     /// <summary>
-    /// Gets or sets the set attribute.
+    /// Gets or sets when this is true, the attribute is removed on the client side. If it's false, then the attribute is added.
     /// </summary>
-    public bool SetAttribute
+    public bool RemoveAttribute
     {
         get => this._data[5..].GetBoolean();
         set => this._data[5..].SetBoolean(value);

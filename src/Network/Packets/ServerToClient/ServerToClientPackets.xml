@@ -3964,7 +3964,8 @@
         <Field>
           <Index>5</Index>
           <Type>Boolean</Type>
-          <Name>SetAttribute</Name>
+          <Name>RemoveAttribute</Name>
+          <Description>When this is true, the attribute is removed on the client side. If it's false, then the attribute is added.</Description>
         </Field>
         <Field>
           <Index>6</Index>

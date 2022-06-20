@@ -235,7 +235,7 @@ internal class BloodCastleInitializer : InitializerBase
         entranceToggleArea.StartY = 15;
         entranceToggleArea.EndX = 15;
         entranceToggleArea.EndY = 23;
-        entranceToggleArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        entranceToggleArea.SetTerrainAttribute = false;
         entranceToggleArea.TerrainAttribute = TerrainAttributeType.Blocked;
 
         // The next two areas are already unlocked because of the monster spawns.
@@ -245,7 +245,7 @@ internal class BloodCastleInitializer : InitializerBase
         behindGateArea.StartY = 78;
         behindGateArea.EndX = 25;
         behindGateArea.EndY = 89;
-        behindGateArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        behindGateArea.SetTerrainAttribute = false;
         behindGateArea.TerrainAttribute = TerrainAttributeType.Blocked;
 
         var altarArea = this.Context.CreateNew<MiniGameTerrainChange>();
@@ -254,7 +254,7 @@ internal class BloodCastleInitializer : InitializerBase
         altarArea.StartY = 78;
         altarArea.EndX = 11;
         altarArea.EndY = 83;
-        altarArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        altarArea.SetTerrainAttribute = false;
         altarArea.TerrainAttribute = TerrainAttributeType.Blocked;
 
         var bridgeToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
@@ -271,7 +271,7 @@ internal class BloodCastleInitializer : InitializerBase
         bridgeToggleArea.StartY = 70;
         bridgeToggleArea.EndX = 15;
         bridgeToggleArea.EndY = 75;
-        bridgeToggleArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        bridgeToggleArea.SetTerrainAttribute = false;
         bridgeToggleArea.TerrainAttribute = TerrainAttributeType.NoGround;
 
         var gateToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
@@ -288,7 +288,7 @@ internal class BloodCastleInitializer : InitializerBase
         gateToggleArea.StartY = 76;
         gateToggleArea.EndX = 15;
         gateToggleArea.EndY = 79;
-        gateToggleArea.SetTerrainAttribute = true; // todo: shouldn't be this false?
+        gateToggleArea.SetTerrainAttribute = false;
         gateToggleArea.TerrainAttribute = TerrainAttributeType.Blocked;
 
         var spawnStatueEvent = this.Context.CreateNew<MiniGameChangeEvent>();
