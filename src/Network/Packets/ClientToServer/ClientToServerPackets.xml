@@ -1384,7 +1384,7 @@
           <Name>Rotation</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>10</Index>
           <Type>ShortBigEndian</Type>
           <Name>ExtraTargetId</Name>
         </Field>
