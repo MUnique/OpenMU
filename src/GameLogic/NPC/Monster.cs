@@ -4,11 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.NPC;
 
-using System.Diagnostics;
-using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
@@ -17,14 +14,11 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The implementation of a monster, which can attack players.
 /// </summary>
-public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISupportWalk, IMovable
+public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISupportWalk, IMovable
 {
-    private readonly IDropGenerator _dropGenerator;
     private readonly object _moveLock = new ();
     private readonly INpcIntelligence _intelligence;
-    private readonly PlugInManager _plugInManager;
     private readonly Walker _walker;
-    private readonly IEventStateProvider? _eventStateProvider;
 
     /// <summary>
     /// The power up element of the monsters skill.
@@ -40,8 +34,6 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
     /// </remarks>
     private readonly IElement? _skillPowerUpDuration;
 
-    private Timer? _respawnTimer;
-    private int _health;
     private bool _isCalculatingPath;
     private PathFinder? _pathFinder;
 
@@ -56,29 +48,16 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="eventStateProvider">The event state provider.</param>
     public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager, IEventStateProvider? eventStateProvider = null)
-        : base(spawnInfo, stats, map)
+        : base(spawnInfo, stats, map, eventStateProvider, dropGenerator, plugInManager)
     {
-        this._dropGenerator = dropGenerator;
-        this.Attributes = new MonsterAttributeHolder(this);
-        this.MagicEffectList = new MagicEffectsList(this);
         this._walker = new Walker(this, () => this.StepDelay);
         this._intelligence = npcIntelligence;
-        this._plugInManager = plugInManager;
-        this._eventStateProvider = eventStateProvider;
 
         (this._skillPowerUp, this._skillPowerUpDuration) = this.CreateMagicEffectPowerUp();
 
         this._intelligence.Npc = this;
         this._intelligence.Start();
     }
-
-    /// <summary>
-    /// Occurs when this instance died.
-    /// </summary>
-    public event EventHandler<DeathInformation>? Died;
-
-    /// <inheritdoc/>
-    public MagicEffectsList MagicEffectList { get; }
 
     /// <summary>
     /// Gets a value indicating whether this <see cref="Monster"/> is walking.
@@ -89,70 +68,15 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
     public bool IsWalking => this.WalkTarget != default;
 
     /// <summary>
-    /// Gets a value indicating whether this <see cref="IAttackable" /> is currently teleporting and can't be directly targeted.
-    /// It can still receive damage, if the teleport target coordinates are within an target skill area for area attacks.
-    /// </summary>
-    /// <value>
-    ///   <c>true</c> if teleporting; otherwise, <c>false</c>.
-    /// </value>
-    /// <remarks>Teleporting for monsters oor npcs is not implemented yet.</remarks>
-    public bool IsTeleporting => false;
-
-    /// <inheritdoc/>
-    public override Point Position
-    {
-        get => base.Position;
-        set
-        {
-            if (base.Position != value)
-            {
-                base.Position = value;
-                this._plugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the current health.
-    /// </summary>
-    public int Health
-    {
-        get => Math.Max(this._health, 0);
-        set => this._health = value;
-    }
-
-    /// <summary>
     /// Gets the target by which this instance was summoned by.
     /// </summary>
     public Player? SummonedBy => (this._intelligence as SummonedMonsterIntelligence)?.Owner;
-
-    /// <inheritdoc/>
-    public bool IsAlive { get; set; }
-
-    /// <inheritdoc/>
-    public DeathInformation? LastDeath { get; private set; }
-
-    /// <inheritdoc cref="IAttackable" />
-    public IAttributeSystem Attributes { get; }
 
     /// <inheritdoc/>
     public Point WalkTarget => this._walker.CurrentTarget;
 
     /// <inheritdoc/>
     public TimeSpan StepDelay => this.Definition.MoveDelay;
-
-    private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
-                                  || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringEvent && (this._eventStateProvider?.IsEventRunning ?? false))
-                                  || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this._eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
-
-    /// <inheritdoc/>
-    public override void Initialize()
-    {
-        base.Initialize();
-        this._respawnTimer?.Dispose();
-        this.Health = (int)this.Attributes[Stats.MaximumHealth];
-        this.IsAlive = true;
-    }
 
     /// <summary>
     /// Attacks the specified target.
@@ -245,25 +169,13 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
     public int GetSteps(Span<WalkingStep> steps) => this._walker.GetSteps(steps);
 
     /// <inheritdoc />
-    public void AttackBy(IAttacker attacker, SkillEntry? skill)
-    {
-        var hitInfo = attacker.CalculateDamage(this, skill);
-        this.Hit(hitInfo, attacker, skill?.Skill);
-        if (hitInfo.HealthDamage > 0)
-        {
-            attacker.ApplyAmmunitionConsumption(hitInfo);
-            (attacker as Player)?.AfterHitTarget();
-        }
-    }
-
-    /// <inheritdoc />
-    public void ReflectDamage(IAttacker reflector, uint damage)
+    public override void ReflectDamage(IAttacker reflector, uint damage)
     {
         this.Hit(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector, null);
     }
 
     /// <inheritdoc />
-    public void ApplyPoisonDamage(IAttacker initialAttacker, uint damage)
+    public override void ApplyPoisonDamage(IAttacker initialAttacker, uint damage)
     {
         this.Hit(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
     }
@@ -301,10 +213,8 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
     {
         if (managed)
         {
-            this._respawnTimer?.Dispose();
             this._walker.Dispose();
             (this._intelligence as IDisposable)?.Dispose();
-            this.IsAlive = false;
         }
 
         base.Dispose(managed);
@@ -321,6 +231,37 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
         this.CurrentMap.Move(this, target, this._moveLock, type);
     }
 
+    /// <inheritdoc />
+    protected override void OnRemoveFromMap()
+    {
+        base.OnRemoveFromMap();
+        if (this._intelligence is SummonedMonsterIntelligence summonedMonsterIntelligence)
+        {
+            summonedMonsterIntelligence.Owner.SummonDied();
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void RegisterHit(IAttacker attacker)
+    {
+        base.RegisterHit(attacker);
+        this._intelligence.RegisterHit(attacker);
+    }
+
+    /// <inheritdoc />
+    protected override Player? GetHitNotificationTarget(IAttacker attacker)
+    {
+        return base.GetHitNotificationTarget(attacker)
+               ?? (attacker as Monster)?.SummonedBy ?? this.SummonedBy;
+    }
+
+    /// <inheritdoc />
+    protected override void OnDeath(IAttacker attacker)
+    {
+        this._walker.Stop();
+        base.OnDeath(attacker);
+    }
+
     private static WalkingStep GetStep(PathResultNode node)
     {
         return new ()
@@ -329,184 +270,6 @@ public sealed class Monster : NonPlayerCharacter, IAttackable, IAttacker, ISuppo
             From = node.PreviousPoint,
             To = new Point(node.X, node.Y),
         };
-    }
-
-    private void HandleMoneyDrop(uint amount, Player killer)
-    {
-        // We don't drop money in Devil Square, etc.
-        var shouldDropMoney = killer.GameContext.Configuration.ShouldDropMoney && killer.CurrentMiniGame is null;
-        if (!shouldDropMoney)
-        {
-            var party = killer.Party;
-            if (party is null)
-            {
-                killer.TryAddMoney((int)amount);
-            }
-            else
-            {
-                party.DistributeMoneyAfterKill(this, killer, amount);
-            }
-
-            return;
-        }
-
-        var droppedMoney = new DroppedMoney((uint)(amount * killer.Attributes![Stats.MoneyAmountRate]), this.Position, this.CurrentMap);
-        this.CurrentMap.Add(droppedMoney);
-    }
-
-    private void DropItem(int exp, Player killer)
-    {
-        var generatedItems = this._dropGenerator.GenerateItemDrops(this.Definition, exp, killer, out var droppedMoney);
-        if (droppedMoney > 0)
-        {
-            this.HandleMoneyDrop(droppedMoney.Value, killer);
-        }
-
-        var firstItem = !droppedMoney.HasValue;
-        foreach (var item in generatedItems)
-        {
-            Point dropCoordinates;
-            if (firstItem)
-            {
-                dropCoordinates = this.Position;
-                firstItem = false;
-            }
-            else
-            {
-                dropCoordinates = this.CurrentMap.Terrain.GetRandomCoordinate(this.Position, 4);
-            }
-
-            var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
-            var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, null, owners);
-            this.CurrentMap.Add(droppedItem);
-        }
-    }
-
-    private void OnDeath(IAttacker attacker)
-    {
-        this._walker.Stop();
-        if (this.ShouldRespawn)
-        {
-            this._respawnTimer = new Timer(_ => this.Respawn(), null, (int)this.Definition.RespawnDelay.TotalMilliseconds, System.Threading.Timeout.Infinite);
-        }
-
-        this.ObserverLock.EnterWriteLock();
-        try
-        {
-            foreach (IWorldObserver o in this.Observers)
-            {
-                o.ViewPlugIns.GetPlugIn<IObjectGotKilledPlugIn>()?.ObjectGotKilled(this, attacker);
-            }
-
-            this.Observers.Clear();
-        }
-        finally
-        {
-            this.ObserverLock.ExitWriteLock();
-        }
-
-        var player = attacker as Player ?? (attacker as Monster)?.SummonedBy;
-        if (player is { })
-        {
-            int exp = player.Party?.DistributeExperienceAfterKill(this, player) ?? player.AddExpAfterKill(this);
-            this.DropItem(exp, player);
-            if (attacker == player)
-            {
-                player.AfterKilledMonster();
-            }
-
-            player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, attacker);
-            if (player.SelectedCharacter!.State > HeroState.Normal)
-            {
-                player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
-            }
-        }
-
-        if (!this.ShouldRespawn)
-        {
-            this.RemoveFromMapAndDispose();
-        }
-    }
-
-    private void RemoveFromMapAndDispose()
-    {
-        this.CurrentMap.Remove(this);
-        this.Dispose();
-        if (this._intelligence is SummonedMonsterIntelligence summonedMonsterIntelligence)
-        {
-            summonedMonsterIntelligence.Owner.SummonDied();
-        }
-    }
-
-    /// <summary>
-    /// Respawns this instance on the map.
-    /// </summary>
-    private void Respawn()
-    {
-        try
-        {
-            if (!this.ShouldRespawn)
-            {
-                this.RemoveFromMapAndDispose();
-                return;
-            }
-
-            this.Initialize();
-            this.CurrentMap.Respawn(this);
-        }
-        catch (Exception ex)
-        {
-            Debug.Fail(ex.Message, ex.StackTrace);
-        }
-    }
-
-    private void Hit(HitInfo hitInfo, IAttacker attacker, Skill? skill)
-    {
-        if (!this.IsAlive)
-        {
-            return;
-        }
-
-        var killed = this.TryHit(hitInfo.HealthDamage + hitInfo.ShieldDamage, attacker);
-
-        var player = attacker as Player ?? (attacker as Monster)?.SummonedBy ?? this.SummonedBy;
-        if (player is not null)
-        {
-            player.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
-            player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
-        }
-
-        if (killed)
-        {
-            this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
-            this.OnDeath(attacker);
-            this.Died?.Invoke(this, this.LastDeath);
-        }
-    }
-
-    private bool TryHit(uint damage, IAttacker attacker)
-    {
-        if (damage > 0)
-        {
-            this._intelligence.RegisterHit(attacker);
-        }
-
-        if (damage >= this.Health)
-        {
-            this.IsAlive = false;
-            this.Health = 0;
-            return true;
-        }
-
-        try
-        {
-            Interlocked.Add(ref this._health, -(int)damage);
-            return false;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     /// <summary>

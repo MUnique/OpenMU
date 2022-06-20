@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
 /// The initializer for the blood castle event.
@@ -17,7 +18,7 @@ internal class BloodCastleInitializer : InitializerBase
 
     private const short RequiredKillsBeforeBridgePerPlayer = 40;
     private const short RequiredKillsAfterGatePerPlayer = 2;
-    private static readonly Point StatusOfSaintSpawnPoint = new(14, 95);
+    private static readonly Point StatusOfSaintSpawnPoint = new (14, 95);
 
     /// <summary>
     /// The score penalty which gets applied when the event wasn't won by any participating player.
@@ -302,13 +303,13 @@ internal class BloodCastleInitializer : InitializerBase
 
         spawnStatueEvent.SpawnArea = this.Context.CreateNew<MonsterSpawnArea>();
         spawnStatueEvent.SpawnArea.MonsterDefinition = this.GameConfiguration.Monsters.First(m => m.Number == StatueOfSaintNumber);
+        spawnStatueEvent.SpawnArea.MaximumHealthOverride = BloodCastleBase.CrystalStatueHealthPerLevel[level];
         spawnStatueEvent.SpawnArea.Direction = Direction.SouthWest;
         spawnStatueEvent.SpawnArea.Quantity = 1;
         spawnStatueEvent.SpawnArea.X1 = StatusOfSaintSpawnPoint.X;
         spawnStatueEvent.SpawnArea.X2 = StatusOfSaintSpawnPoint.X;
         spawnStatueEvent.SpawnArea.Y1 = StatusOfSaintSpawnPoint.Y;
         spawnStatueEvent.SpawnArea.Y2 = StatusOfSaintSpawnPoint.Y;
-        spawnStatueEvent.SpawnArea.GameMap = bloodCastle.Entrance!.Map;
         spawnStatueEvent.SpawnArea.SpawnTrigger = SpawnTrigger.OnceAtWaveStart;
     }
 

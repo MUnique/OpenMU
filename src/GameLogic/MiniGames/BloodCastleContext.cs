@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using System.Collections.Concurrent;
 using System.Threading;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
@@ -49,11 +48,9 @@ using Nito.Disposables.Internals;
 /// </remarks>
 public sealed class BloodCastleContext : MiniGameContext
 {
-
     private const short CastleGateNumber = 131;
     private const short StatueOfSaintNumber = 132;
 
-    private readonly ItemDefinition _questItemDefinition;
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
 
     private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
@@ -75,8 +72,6 @@ public sealed class BloodCastleContext : MiniGameContext
     public BloodCastleContext(MiniGameMapKey key, MiniGameDefinition definition, IGameContext gameContext, IMapInitializer mapInitializer)
         : base(key, definition, gameContext, mapInitializer)
     {
-        this._questItemDefinition = gameContext.Configuration.Items.FirstOrDefault(def => def.IsArchangelQuestItem())
-                                    ?? throw new InvalidOperationException("The required quest item is not defined in the game configuration.");
     }
 
     /// <inheritdoc />
@@ -150,7 +145,11 @@ public sealed class BloodCastleContext : MiniGameContext
 
         if (destructible.Definition.Number == StatueOfSaintNumber)
         {
-            this.OnStatueKilled(e, destructible);
+            this.ForEachPlayerAsync(player =>
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
+                    .ShowMessage(e.KillerName + " has destroyed the Crystal Statue!", Interfaces.MessageType.GoldenCenter);
+            }).ConfigureAwait(false);
         }
         else if (destructible.Definition.Number == CastleGateNumber)
         {
@@ -232,25 +231,14 @@ public sealed class BloodCastleContext : MiniGameContext
         }
     }
 
-    private void OnStatueKilled(DeathInformation e, Destructible destructible)
+    /// <inheritdoc />
+    protected override void OnItemDroppedOnMap(DroppedItem item)
     {
-        // TODO: Can dropping be replaced by setting the drop in the MonsterDefinition of the statue?
-        var item = new TemporaryItem
+        base.OnItemDroppedOnMap(item);
+        if (item.Item.Definition.IsArchangelQuestItem())
         {
-            Definition = this._questItemDefinition,
-        };
-
-        var dropper = this._gameStates.FirstOrDefault(s => s.Key == e.KillerName).Value.Player;
-        var dropped = new DroppedItem(item, destructible.Position, this.Map, dropper);
-        this.Map.Add(dropped);
-
-        this._questItem = item;
-
-        this.ForEachPlayerAsync(player =>
-        {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
-                .ShowMessage(e.KillerName + " has destroyed the Crystal Statue!", Interfaces.MessageType.GoldenCenter);
-        }).ConfigureAwait(false);
+            this._questItem = item.Item;
+        }
     }
 
     private async ValueTask ShowRemainingTimeLoopAsync(CancellationToken cancellationToken)
@@ -323,11 +311,11 @@ public sealed class BloodCastleContext : MiniGameContext
         return true;
     }
 
-    private bool TryDropQuestItemFromPlayer(Player player)
+    private void TryDropQuestItemFromPlayer(Player player)
     {
         if (!player.TryGetQuestItem(out var item))
         {
-            return false;
+            return;
         }
 
         var dropped = new DroppedItem(item, player.Position, this.Map, player);
@@ -335,10 +323,7 @@ public sealed class BloodCastleContext : MiniGameContext
         player.Inventory!.RemoveItem(item);
         player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(item.ItemSlot, true);
 
-        this._questItem = item;
         this._questItemOwner = null;
-
-        return true;
     }
 
     private sealed class PlayerGameState

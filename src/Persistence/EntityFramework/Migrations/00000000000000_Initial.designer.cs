@@ -2403,6 +2403,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("GameMapId")
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("MaximumHealthOverride")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("MonsterDefinitionId")
                         .HasColumnType("uuid");
 

@@ -177,7 +177,7 @@ public class MapInitializer : IMapInitializer
         else if (monsterDef.ObjectKind == NpcObjectKind.Destructible)
         {
             this._logger.LogDebug("Creating destructible {spawn}", spawnArea);
-            npc = new Destructible(spawnArea, monsterDef, createdMap);
+            npc = new Destructible(spawnArea, monsterDef, createdMap, eventStateProvider, this._dropGenerator, this.PlugInManager!);
         }
         else
         {

@@ -2410,7 +2410,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Direction = table.Column<int>(type: "integer", nullable: false),
                     Quantity = table.Column<short>(type: "smallint", nullable: false),
                     SpawnTrigger = table.Column<int>(type: "integer", nullable: false),
-                    WaveNumber = table.Column<byte>(type: "smallint", nullable: false)
+                    WaveNumber = table.Column<byte>(type: "smallint", nullable: false),
+                    MaximumHealthOverride = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {

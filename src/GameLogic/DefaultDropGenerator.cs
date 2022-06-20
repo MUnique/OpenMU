@@ -54,8 +54,10 @@ public class DefaultDropGenerator : IDropGenerator
                                                    .Select(i => i.DropItemGroup!)
                                                ?? Enumerable.Empty<DropItemGroup>())
                           ?? Enumerable.Empty<DropItemGroup>();
-        var dropGroups =
-            CombineDropGroups(
+        var dropGroups = 
+            monster.ObjectKind == NpcObjectKind.Destructible
+                ? (IEnumerable<DropItemGroup>)monster.DropItemGroups
+                : CombineDropGroups(
                     monster.DropItemGroups,
                     character.DropItemGroups,
                     map.DropItemGroups,

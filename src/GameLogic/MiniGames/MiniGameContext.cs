@@ -232,14 +232,10 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <param name="e">The event parameters.</param>
     protected virtual void OnMonsterDied(object? sender, DeathInformation e)
     {
-        if (sender is NonPlayerCharacter npc)
+        if (sender is AttackableNpcBase npc)
         {
             this._rewardRelatedKills.TryUpdate(npc.Definition, true, false);
-        }
-
-        if (sender is IAttackable attackable)
-        {
-            this.CheckKillForEventChanges(attackable);
+            this.CheckKillForEventChanges(npc);
         }
     }
 
@@ -250,14 +246,10 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <param name="e">The event parameters.</param>
     protected virtual void OnDestructibleDied(object? sender, DeathInformation e)
     {
-        if (sender is NonPlayerCharacter npc)
+        if (sender is AttackableNpcBase npc)
         {
             this._rewardRelatedKills.TryUpdate(npc.Definition, true, false);
-        }
-
-        if (sender is IAttackable attackable)
-        {
-            this.CheckKillForEventChanges(attackable);
+            this.CheckKillForEventChanges(npc);
         }
     }
 
@@ -293,6 +285,15 @@ public class MiniGameContext : Disposable, IEventStateProvider
     }
 
     /// <summary>
+    /// Called when an item was dropped on the map.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    protected virtual void OnItemDroppedOnMap(DroppedItem item)
+    {
+        // can be overwritten
+    }
+
+    /// <summary>
     /// Will be called when an object has been ended to map.
     /// </summary>
     /// <param name="sender">The sender of the event.</param>
@@ -308,6 +309,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
         if (args.Object is Destructible destructible)
         {
             destructible.Died += this.OnDestructibleDied;
+        }
+
+        if (args.Object is DroppedItem item)
+        {
+            this.OnItemDroppedOnMap(item);
         }
     }
 
@@ -775,11 +781,12 @@ public class MiniGameContext : Disposable, IEventStateProvider
             var isSafezone = change.TerrainAttribute is TerrainAttributeType.Safezone;
             var map = isSafezone ? this.Map.Terrain.SafezoneMap : this.Map.Terrain.WalkMap;
 
-            for (int x = change.StartX; x <= change.EndX; x++)
+            for (var x = change.StartX; x <= change.EndX; x++)
             {
-                for (int y = change.StartY; y <= change.EndY; y++)
+                for (var y = change.StartY; y <= change.EndY; y++)
                 {
                     map[x, y] = change.SetTerrainAttribute;
+                    this.Map.Terrain.UpdateAiGridValue(x, y);
                 }
             }
         }
@@ -837,7 +844,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
 
         if (definition.Target == KillTarget.Specific
-            && (killedObject is not NonPlayerCharacter npc || npc.Definition != definition.TargetDefinition))
+            && (killedObject is not NonPlayerCharacter npc || npc.Definition.Number != definition.TargetDefinition?.Number))
         {
             return false;
         }

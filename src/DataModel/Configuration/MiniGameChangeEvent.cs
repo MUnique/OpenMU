@@ -77,13 +77,13 @@ public class MiniGameChangeEvent
     public virtual MonsterDefinition? TargetDefinition { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional spawns which will appear when the players reached the goal.
+    /// Gets or sets the optional spawns which will appear when the players reach the goal.
     /// </summary>
     [MemberOfAggregate]
     public virtual MonsterSpawnArea? SpawnArea { get; set; }
 
     /// <summary>
-    /// Gets or sets the changes which will be applied to the terrain when the player reached the goal.
+    /// Gets or sets the changes which will be applied to the terrain when the player reach the goal.
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<MiniGameTerrainChange> TerrainChanges { get; protected set; } = null!;

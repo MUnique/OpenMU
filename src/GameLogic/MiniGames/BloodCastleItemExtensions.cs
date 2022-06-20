@@ -21,7 +21,7 @@ public static class BloodCastleItemExtensions
     /// <returns>
     ///   <c>true</c> if the specified item definition is the archangel quest item; otherwise, <c>false</c>.
     /// </returns>
-    public static bool IsArchangelQuestItem(this ItemDefinition itemDefinition)
+    public static bool IsArchangelQuestItem(this ItemDefinition? itemDefinition)
     {
         return itemDefinition?.Group == ArchangelQuestItemId.Group && itemDefinition.Number == ArchangelQuestItemId.Number;
     }
