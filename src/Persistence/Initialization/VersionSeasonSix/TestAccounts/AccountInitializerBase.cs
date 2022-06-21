@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Persistence.Initialization.Items;
+
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.TestAccounts;
 
 using MUnique.OpenMU.AttributeSystem;
@@ -63,6 +65,7 @@ internal abstract class AccountInitializerBase : InitializerBase
         account.LoginName = this.AccountName;
         account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(this.AccountName);
         account.Vault = this.Context.CreateNew<ItemStorage>();
+        this.AddVaultItems(account);
 
         if (this.CreateKnight() is { } knight)
         {
@@ -616,5 +619,84 @@ internal abstract class AccountInitializerBase : InitializerBase
         jewel.Durability = 1;
         jewel.ItemSlot = itemSlot;
         return jewel;
+    }
+
+    private Item CreateBloodCastleTicket(byte itemSlot, byte level)
+    {
+        var ticket = this.Context.CreateNew<Item>();
+        ticket.Definition = this.GameConfiguration.Items.FirstOrDefault(def => def.Group == 13 && def.Number == 18);
+        ticket.Durability = 1;
+        ticket.ItemSlot = itemSlot;
+        ticket.Level = level;
+        return ticket;
+    }
+
+    private Item CreateDevilSquareTicket(byte itemSlot, byte level)
+    {
+        var ticket = this.Context.CreateNew<Item>();
+        ticket.Definition = this.GameConfiguration.Items.FirstOrDefault(def => def.Group == 14 && def.Number == 19);
+        ticket.Durability = 1;
+        ticket.ItemSlot = itemSlot;
+        ticket.Level = level;
+        return ticket;
+    }
+
+    private void AddVaultItems(Account account)
+    {
+        var vault = account.Vault ??= this.Context.CreateNew<ItemStorage>();
+        vault.Items.Add(this.CreateBloodCastleTicket(0, 8));
+        vault.Items.Add(this.CreateBloodCastleTicket(2, 8));
+        vault.Items.Add(this.CreateBloodCastleTicket(4, 8));
+        vault.Items.Add(this.CreateBloodCastleTicket(6, 8));
+        vault.Items.Add(this.CreateBloodCastleTicket(16, 6));
+        vault.Items.Add(this.CreateBloodCastleTicket(18, 6));
+        vault.Items.Add(this.CreateBloodCastleTicket(20, 6));
+        vault.Items.Add(this.CreateBloodCastleTicket(22, 6));
+
+        vault.Items.Add(this.CreateDevilSquareTicket(32, 8));
+        vault.Items.Add(this.CreateDevilSquareTicket(33, 8));
+        vault.Items.Add(this.CreateDevilSquareTicket(34, 8));
+        vault.Items.Add(this.CreateDevilSquareTicket(35, 8));
+        vault.Items.Add(this.CreateDevilSquareTicket(36, 6));
+        vault.Items.Add(this.CreateDevilSquareTicket(37, 6));
+        vault.Items.Add(this.CreateDevilSquareTicket(38, 6));
+        vault.Items.Add(this.CreateDevilSquareTicket(39, 6));
+    }
+
+    protected Item CreateFullAncient(byte itemSlot, ItemGroups group, byte number, byte level, string ancientName)
+    {
+        var ancient = this.Context.CreateNew<Item>();
+        ancient.Definition = this.GameConfiguration.Items.First(def => def.Group == (int)group && def.Number == number);
+        ancient.Durability = ancient.Definition.Durability;
+        ancient.ItemSlot = itemSlot;
+        ancient.Level = level;
+        ancient.HasSkill = ancient.Definition.Skill is { };
+        var optionLink = this.Context.CreateNew<ItemOptionLink>();
+        optionLink.ItemOption = ancient.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+            .First(o => o.OptionType == ItemOptionTypes.Option);
+        optionLink.Level = optionLink.ItemOption.LevelDependentOptions.Max(o => o.Level);
+        ancient.ItemOptions.Add(optionLink);
+
+        if (ancient.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                .FirstOrDefault(o => o.OptionType == ItemOptionTypes.Luck) is { } luckOption)
+        {
+            var luck = this.Context.CreateNew<ItemOptionLink>();
+            luck.ItemOption = luckOption;
+            ancient.ItemOptions.Add(luck);
+        }
+
+        var set = ancient.Definition.PossibleItemSetGroups.First(a => a.Name == ancientName);
+        var itemOfSet = set.Items.First(i => i.ItemDefinition == ancient.Definition);
+        if (itemOfSet.BonusOption is { })
+        {
+            var ancientBonus = this.Context.CreateNew<ItemOptionLink>();
+            ancientBonus.ItemOption = itemOfSet.BonusOption;
+            ancientBonus.Level = 2;
+            ancient.ItemOptions.Add(ancientBonus);
+        }
+
+        ancient.ItemSetGroups.Add(set);
+
+        return ancient;
     }
 }

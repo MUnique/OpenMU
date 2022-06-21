@@ -28,7 +28,7 @@ internal class BloodCastle2 : BloodCastleBase
     protected override byte MapNumber => 12;
 
     /// <inheritdoc/>
-    protected override string MapName => "Blood Castle 2";
+    protected override int CastleLevel => 2;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()

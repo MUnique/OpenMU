@@ -54,6 +54,32 @@ internal partial class MiniGameReward : MUnique.OpenMU.DataModel.Configuration.M
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="RequiredKill"/>.
+    /// </summary>
+    public Guid? RequiredKillId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="RequiredKill" />.
+    /// </summary>
+    [ForeignKey(nameof(RequiredKillId))]
+    public MonsterDefinition RawRequiredKill
+    {
+        get => base.RequiredKill as MonsterDefinition;
+        set => base.RequiredKill = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition RequiredKill
+    {
+        get => base.RequiredKill;set
+        {
+            base.RequiredKill = value;
+            this.RequiredKillId = this.RawRequiredKill?.Id;
+        }
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

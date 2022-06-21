@@ -91,7 +91,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this.InitializeNpc(createdMap, spawnArea);
+                this.InitializeSpawn(createdMap, spawnArea);
             }
         }
 
@@ -119,7 +119,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this.InitializeNpc(createdMap, spawnArea, eventStateProvider);
+                this.InitializeSpawn(createdMap, spawnArea, eventStateProvider);
             }
         }
 
@@ -144,11 +144,57 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this.InitializeNpc(createdMap, spawnArea, eventStateProvider);
+                this.InitializeSpawn(createdMap, spawnArea, eventStateProvider);
             }
         }
 
         this._logger.LogDebug("Finished creating event monster instances for map {createdMap}", createdMap);
+    }
+
+    /// <inheritdoc />
+    public void InitializeSpawn(GameMap createdMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null)
+    {
+        var monsterDef = spawnArea.MonsterDefinition!;
+        NonPlayerCharacter npc;
+
+        var intelligence = this.TryCreateConfiguredNpcIntelligence(monsterDef, createdMap);
+
+        if (monsterDef.ObjectKind == NpcObjectKind.Monster)
+        {
+            this._logger.LogDebug("Creating monster {spawn}", spawnArea);
+            npc = new Monster(spawnArea, monsterDef, createdMap, this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager!, eventStateProvider);
+        }
+        else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
+        {
+            this._logger.LogDebug("Creating trap {spawn}", spawnArea);
+            npc = new Trap(spawnArea, monsterDef, createdMap, intelligence ?? new RandomAttackInRangeTrapIntelligence(createdMap));
+        }
+        else if (monsterDef.ObjectKind == NpcObjectKind.SoccerBall)
+        {
+            this._logger.LogDebug("Creating soccer ball {spawn}", spawnArea);
+            npc = new SoccerBall(spawnArea, monsterDef, createdMap);
+        }
+        else if (monsterDef.ObjectKind == NpcObjectKind.Destructible)
+        {
+            this._logger.LogDebug("Creating destructible {spawn}", spawnArea);
+            npc = new Destructible(spawnArea, monsterDef, createdMap, eventStateProvider, this._dropGenerator, this.PlugInManager!);
+        }
+        else
+        {
+            this._logger.LogDebug("Creating npc {spawn}", spawnArea);
+            npc = new NonPlayerCharacter(spawnArea, monsterDef, createdMap);
+        }
+
+        try
+        {
+            npc.Initialize();
+            createdMap.Add(npc);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, $"Object {spawnArea} couldn't be initialized.", spawnArea);
+            npc.Dispose();
+        }
     }
 
     /// <summary>
@@ -174,51 +220,6 @@ public class MapInitializer : IMapInitializer
         return definition.BattleZone?.Type == BattleType.Soccer
             ? new SoccerGameMap(definition, this.ItemDropDuration, this.ChunkSize)
             : new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
-    }
-
-    private void InitializeNpc(GameMap createdMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null)
-    {
-        var monsterDef = spawnArea.MonsterDefinition!;
-        NonPlayerCharacter npc;
-
-        var intelligence = this.TryCreateConfiguredNpcIntelligence(monsterDef, createdMap);
-
-        if (monsterDef.ObjectKind == NpcObjectKind.Monster)
-        {
-            this._logger.LogDebug("Creating monster {spawn}", spawnArea);
-            npc = new Monster(spawnArea, monsterDef, createdMap, this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager!, eventStateProvider);
-        }
-        else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
-        {
-            this._logger.LogDebug("Creating trap {spawn}", spawnArea);
-            npc = new Trap(spawnArea, monsterDef, createdMap, intelligence ?? new RandomAttackInRangeTrapIntelligence(createdMap));
-        }
-        else if (monsterDef.ObjectKind == NpcObjectKind.SoccerBall)
-        {
-            this._logger.LogDebug("Creating soccer ball {spawn}", spawnArea);
-            npc = new SoccerBall(spawnArea, monsterDef, createdMap);
-        }
-        else if (monsterDef.ObjectKind == NpcObjectKind.Destructible)
-        {
-            this._logger.LogDebug("Creating destructible {spawn}", spawnArea);
-            npc = new Destructible(spawnArea, monsterDef, createdMap);
-        }
-        else
-        {
-            this._logger.LogDebug("Creating npc {spawn}", spawnArea);
-            npc = new NonPlayerCharacter(spawnArea, monsterDef, createdMap);
-        }
-
-        try
-        {
-            npc.Initialize();
-            createdMap.Add(npc);
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, $"Object {spawnArea} couldn't be initialized.", spawnArea);
-            npc.Dispose();
-        }
     }
 
     private INpcIntelligence? TryCreateConfiguredNpcIntelligence(MonsterDefinition monsterDefinition, GameMap createdMap)

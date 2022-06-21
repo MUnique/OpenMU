@@ -5,58 +5,130 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
 /// The initializer for the blood castle event.
 /// </summary>
 internal class BloodCastleInitializer : InitializerBase
 {
+    private const short CastleGateNumber = 131;
+    private const short StatueOfSaintNumber = 132;
+
+    private const short RequiredKillsBeforeBridgePerPlayer = 40;
+    private const short RequiredKillsAfterGatePerPlayer = 2;
+    private static readonly Point StatusOfSaintSpawnPoint = new (14, 95);
+
     /// <summary>
-    /// Gets the rewards based on game level and rank.
+    /// The score penalty which gets applied when the event wasn't won by any participating player.
     /// </summary>
-    private static readonly List<(int GameLevel, int Rank, int Experience, int Money)> RewardTable = new ()
+    private const int ScorePenaltyAtLoss = -300;
+
+    /// <summary>
+    /// Gets the rewards based on game level and rank, in case the event was won (even by another player).
+    /// </summary>
+    private static readonly List<(int GameLevel, (int Gate, int Statue, int Success) ExperiencePerGoal, int ExperiencePerRemainingSecond, (int Winners, int Losers) Money)> RewardTable = new()
     {
-        (1, 1, 6000, 30000),
-        (1, 2, 4000, 25000),
-        (1, 3, 2000, 20000),
-        (1, 4, 1000, 15000),
-
-        (2, 1, 8000, 40000),
-        (2, 2, 6000, 35000),
-        (2, 3, 4000, 30000),
-        (2, 4, 2000, 25000),
-
-        (3, 1, 10000, 50000),
-        (3, 2, 8000, 45000),
-        (3, 3, 6000, 40000),
-        (3, 4, 4000, 35000),
-
-        (4, 1, 20000, 60000),
-        (4, 2, 10000, 55000),
-        (4, 3, 8000, 50000),
-        (4, 4, 6000, 45000),
-
-        (5, 1, 22000, 70000),
-        (5, 2, 20000, 65000),
-        (5, 3, 10000, 60000),
-        (5, 4, 8000, 55000),
-
-        (6, 1, 24000, 80000),
-        (6, 2, 22000, 75000),
-        (6, 3, 20000, 70000),
-        (6, 4, 10000, 65000),
-
-        (7, 1, 26000, 150000),
-        (7, 2, 24000, 140000),
-        (7, 3, 22000, 120000),
-        (7, 4, 20000, 90000),
-
-        (8, 1, 26000, 150000),
-        (8, 2, 24000, 140000),
-        (8, 3, 22000, 120000),
-        (8, 4, 20000, 90000),
+        (1, (20000, 20000, 5000), 160, (20000, 10000)),
+        (2, (50000, 50000, 10000), 180, (50000, 25000)),
+        (3, (80000, 80000, 15000), 200, (100000, 50000)),
+        (4, (90000, 90000, 20000), 220, (150000, 80000)),
+        (5, (100000, 100000, 25000), 240, (200000, 100000)),
+        (6, (110000, 110000, 30000), 260, (250000, 120000)),
+        (7, (120000, 120000, 35000), 280, (250000, 120000)),
+        (8, (130000, 130000, 40000), 300, (250000, 120000)),
     };
+
+    private static readonly Dictionary<int, List<(MiniGameSuccessFlags Success, int Score)>> ScoreTableWithWinner = new ()
+    {
+        {
+            1, new ()
+            {
+                (MiniGameSuccessFlags.Alive, 600),
+                (MiniGameSuccessFlags.Dead, 300),
+                (MiniGameSuccessFlags.Winner, 400),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Alive, 200),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Dead, 100),
+            }
+        },
+        {
+            2, new ()
+            {
+                (MiniGameSuccessFlags.Alive, 600),
+                (MiniGameSuccessFlags.Dead, 300),
+                (MiniGameSuccessFlags.Winner, 400),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Alive, 200),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Dead, 100),
+            }
+        },
+        {
+            3, new ()
+            {
+                (MiniGameSuccessFlags.Alive, 600),
+                (MiniGameSuccessFlags.Dead, 300),
+                (MiniGameSuccessFlags.Winner, 405),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Alive, 200),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Dead, 100),
+            }
+        },
+        {
+            4, new ()
+            {
+                (MiniGameSuccessFlags.Alive, 600),
+                (MiniGameSuccessFlags.Dead, 300),
+                (MiniGameSuccessFlags.Winner, 405),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Alive, 200),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Dead, 100),
+            }
+        },
+        {
+            5, new ()
+            {
+                (MiniGameSuccessFlags.Alive, 600),
+                (MiniGameSuccessFlags.Dead, 300),
+                (MiniGameSuccessFlags.Winner, 405),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Alive, 200),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Dead, 100),
+            }
+        },
+        {
+            6, new ()
+            {
+                (MiniGameSuccessFlags.Alive, 600),
+                (MiniGameSuccessFlags.Dead, 300),
+                (MiniGameSuccessFlags.Winner, 405),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Alive, 200),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Dead, 100),
+            }
+        },
+        {
+            7, new ()
+            {
+                (MiniGameSuccessFlags.Alive, 600),
+                (MiniGameSuccessFlags.Dead, 300),
+                (MiniGameSuccessFlags.Winner, 405),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Alive, 200),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Dead, 100),
+            }
+        },
+        {
+            8, new ()
+            {
+                (MiniGameSuccessFlags.Alive, 600),
+                (MiniGameSuccessFlags.Dead, 300),
+                (MiniGameSuccessFlags.Winner, 405),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Alive, 200),
+                (MiniGameSuccessFlags.WinningParty | MiniGameSuccessFlags.Dead, 100),
+            }
+        },
+    };
+
+    /// <summary>
+    /// A set of monster ids which should count as kill after the gate has been destroyed.
+    /// These are all for "Spirit Sorcerer" monsters, for the different levels of blood castle.
+    /// </summary>
+    private static readonly short[] SpiritSorcererPerCastleLevel = { -1, 89, 95, 112, 118, 124, 130, 143, 433 };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleInitializer" /> class.
@@ -146,44 +218,168 @@ internal class BloodCastleInitializer : InitializerBase
         bloodCastle.SaveRankingStatistics = true;
 
         this.CreateRewards(level, bloodCastle);
+        this.CreateEvents(level, bloodCastle);
 
         return bloodCastle;
     }
 
+    private void CreateEvents(byte level, MiniGameDefinition bloodCastle)
+    {
+        var entranceToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
+        bloodCastle.ChangeEvents.Add(entranceToggleEvent);
+        entranceToggleEvent.Index = 0;
+        entranceToggleEvent.Description = "Entrance Toggle Event";
+        var entranceToggleArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        entranceToggleEvent.TerrainChanges.Add(entranceToggleArea);
+        entranceToggleArea.StartX = 13;
+        entranceToggleArea.StartY = 15;
+        entranceToggleArea.EndX = 15;
+        entranceToggleArea.EndY = 23;
+        entranceToggleArea.SetTerrainAttribute = false;
+        entranceToggleArea.TerrainAttribute = TerrainAttributeType.Blocked;
+
+        // The next two areas are already unlocked because of the monster spawns.
+        var behindGateArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        entranceToggleEvent.TerrainChanges.Add(behindGateArea);
+        behindGateArea.StartX = 11;
+        behindGateArea.StartY = 78;
+        behindGateArea.EndX = 25;
+        behindGateArea.EndY = 89;
+        behindGateArea.SetTerrainAttribute = false;
+        behindGateArea.TerrainAttribute = TerrainAttributeType.Blocked;
+
+        var altarArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        entranceToggleEvent.TerrainChanges.Add(altarArea);
+        altarArea.StartX = 8;
+        altarArea.StartY = 78;
+        altarArea.EndX = 11;
+        altarArea.EndY = 83;
+        altarArea.SetTerrainAttribute = false;
+        altarArea.TerrainAttribute = TerrainAttributeType.Blocked;
+
+        var bridgeToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
+        bloodCastle.ChangeEvents.Add(bridgeToggleEvent);
+        bridgeToggleEvent.Index = 1;
+        bridgeToggleEvent.Description = "Bridge Toggle Event";
+        bridgeToggleEvent.Message = "Enough monster kills, now destroy the Castle Gate!";
+        bridgeToggleEvent.Target = KillTarget.AnyMonster;
+        bridgeToggleEvent.NumberOfKills = RequiredKillsBeforeBridgePerPlayer;
+        bridgeToggleEvent.MultiplyKillsByPlayers = true;
+        var bridgeToggleArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        bridgeToggleEvent.TerrainChanges.Add(bridgeToggleArea);
+        bridgeToggleArea.StartX = 13;
+        bridgeToggleArea.StartY = 70;
+        bridgeToggleArea.EndX = 15;
+        bridgeToggleArea.EndY = 75;
+        bridgeToggleArea.SetTerrainAttribute = false;
+        bridgeToggleArea.TerrainAttribute = TerrainAttributeType.NoGround;
+
+        var gateToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
+        bloodCastle.ChangeEvents.Add(gateToggleEvent);
+        gateToggleEvent.Index = 2;
+        gateToggleEvent.Description = "Gate Toggle Event";
+        gateToggleEvent.Target = KillTarget.Specific;
+        gateToggleEvent.TargetDefinition = this.GameConfiguration.Monsters.First(m => m.Number == CastleGateNumber);
+        gateToggleEvent.NumberOfKills = 1;
+        gateToggleEvent.Message = "{0} has demolished the Castle Gate!";
+        var gateToggleArea = this.Context.CreateNew<MiniGameTerrainChange>();
+        gateToggleEvent.TerrainChanges.Add(gateToggleArea);
+        gateToggleArea.StartX = 13;
+        gateToggleArea.StartY = 76;
+        gateToggleArea.EndX = 15;
+        gateToggleArea.EndY = 79;
+        gateToggleArea.SetTerrainAttribute = false;
+        gateToggleArea.TerrainAttribute = TerrainAttributeType.Blocked;
+
+        var spawnStatueEvent = this.Context.CreateNew<MiniGameChangeEvent>();
+        bloodCastle.ChangeEvents.Add(spawnStatueEvent);
+        spawnStatueEvent.Index = 3;
+        spawnStatueEvent.Description = "Statue Spawn Event";
+        spawnStatueEvent.Message = "Kundun minions have been subdued! Destroy the Crystal Statue!";
+        spawnStatueEvent.Target = KillTarget.Specific;
+        spawnStatueEvent.TargetDefinition = this.GameConfiguration.Monsters.First(m => m.Number == SpiritSorcererPerCastleLevel[level]);
+        spawnStatueEvent.NumberOfKills = RequiredKillsAfterGatePerPlayer;
+        spawnStatueEvent.MultiplyKillsByPlayers = true;
+
+        spawnStatueEvent.SpawnArea = this.Context.CreateNew<MonsterSpawnArea>();
+        spawnStatueEvent.SpawnArea.MonsterDefinition = this.GameConfiguration.Monsters.First(m => m.Number == StatueOfSaintNumber);
+        spawnStatueEvent.SpawnArea.MaximumHealthOverride = BloodCastleBase.CrystalStatueHealthPerLevel[level];
+        spawnStatueEvent.SpawnArea.Direction = Direction.SouthWest;
+        spawnStatueEvent.SpawnArea.Quantity = 1;
+        spawnStatueEvent.SpawnArea.X1 = StatusOfSaintSpawnPoint.X;
+        spawnStatueEvent.SpawnArea.X2 = StatusOfSaintSpawnPoint.X;
+        spawnStatueEvent.SpawnArea.Y1 = StatusOfSaintSpawnPoint.Y;
+        spawnStatueEvent.SpawnArea.Y2 = StatusOfSaintSpawnPoint.Y;
+        spawnStatueEvent.SpawnArea.SpawnTrigger = SpawnTrigger.OnceAtWaveStart;
+    }
+
     private void CreateRewards(byte level, MiniGameDefinition bloodCastle)
     {
-        var possibleItems = new List<ItemDefinition>();
-        possibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
-        possibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
         var rewardDropItemGroup = this.Context.CreateNew<DropItemGroup>();
-        foreach (var item in possibleItems)
-        {
-            rewardDropItemGroup.PossibleItems.Add(item);
-        }
+        rewardDropItemGroup.Description = $"Rewarded items for Blood Castle {level}";
+        rewardDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
         this.GameConfiguration.DropItemGroups.Add(rewardDropItemGroup);
 
-        for (int rank = 1; rank <= 4; rank++)
+        var rewardTableEntry = RewardTable.First(tuple => tuple.GameLevel == level);
+
+        var gateExpReward = this.Context.CreateNew<MiniGameReward>();
+        gateExpReward.RewardType = MiniGameRewardType.Experience;
+        gateExpReward.RewardAmount = rewardTableEntry.ExperiencePerGoal.Gate;
+        gateExpReward.RequiredKill = this.GameConfiguration.Monsters.First(m => m.Number == 131);
+        bloodCastle.Rewards.Add(gateExpReward);
+
+        var statueExpReward = this.Context.CreateNew<MiniGameReward>();
+        statueExpReward.RewardType = MiniGameRewardType.Experience;
+        statueExpReward.RewardAmount = rewardTableEntry.ExperiencePerGoal.Statue;
+        statueExpReward.RequiredKill = this.GameConfiguration.Monsters.First(m => m.Number == 132);
+        bloodCastle.Rewards.Add(statueExpReward);
+
+        var successExpReward = this.Context.CreateNew<MiniGameReward>();
+        successExpReward.RewardType = MiniGameRewardType.Experience;
+        successExpReward.RewardAmount = rewardTableEntry.ExperiencePerGoal.Success;
+        successExpReward.RequiredSuccess = MiniGameSuccessFlags.WinnerOrInWinningParty;
+        bloodCastle.Rewards.Add(successExpReward);
+
+        var remainingSecondsExpReward = this.Context.CreateNew<MiniGameReward>();
+        remainingSecondsExpReward.RewardType = MiniGameRewardType.ExperiencePerRemainingSeconds;
+        remainingSecondsExpReward.RewardAmount = rewardTableEntry.ExperiencePerRemainingSecond;
+        bloodCastle.Rewards.Add(remainingSecondsExpReward);
+
+        var winnersMoneyReward = this.Context.CreateNew<MiniGameReward>();
+        winnersMoneyReward.RewardType = MiniGameRewardType.Money;
+        winnersMoneyReward.RewardAmount = rewardTableEntry.Money.Winners;
+        winnersMoneyReward.RequiredSuccess = MiniGameSuccessFlags.WinnerOrInWinningParty;
+        bloodCastle.Rewards.Add(winnersMoneyReward);
+
+        var losersMoneyReward = this.Context.CreateNew<MiniGameReward>();
+        losersMoneyReward.RewardType = MiniGameRewardType.Money;
+        losersMoneyReward.RewardAmount = rewardTableEntry.Money.Losers;
+        losersMoneyReward.RequiredSuccess = MiniGameSuccessFlags.Loser;
+        bloodCastle.Rewards.Add(losersMoneyReward);
+
+        var itemReward = this.Context.CreateNew<MiniGameReward>();
+        itemReward.ItemReward = rewardDropItemGroup;
+        itemReward.RewardAmount = 1;
+        itemReward.RewardType = MiniGameRewardType.ItemDrop;
+        itemReward.RequiredSuccess = MiniGameSuccessFlags.WinnerOrInWinningParty | MiniGameSuccessFlags.Alive;
+        bloodCastle.Rewards.Add(itemReward);
+
+        if (ScoreTableWithWinner.TryGetValue(level, out var scoreTableEntry))
         {
-            var rewardTableEntry = RewardTable.First(tuple => tuple.Rank == rank && tuple.GameLevel == level);
-
-            var expReward = this.Context.CreateNew<MiniGameReward>();
-            expReward.RewardType = MiniGameRewardType.Experience;
-            expReward.Rank = rank;
-            expReward.RewardAmount = rewardTableEntry.Experience;
-            bloodCastle.Rewards.Add(expReward);
-
-            var moneyReward = this.Context.CreateNew<MiniGameReward>();
-            moneyReward.RewardType = MiniGameRewardType.Money;
-            moneyReward.Rank = rank;
-            moneyReward.RewardAmount = rewardTableEntry.Money;
-            bloodCastle.Rewards.Add(moneyReward);
-
-            var itemReward = this.Context.CreateNew<MiniGameReward>();
-            itemReward.ItemReward = rewardDropItemGroup;
-            itemReward.RewardType = MiniGameRewardType.ItemDrop;
-            itemReward.Rank = rank;
-            itemReward.RewardAmount = rank;
-            bloodCastle.Rewards.Add(itemReward);
+            foreach (var s in scoreTableEntry)
+            {
+                var scoreReward = this.Context.CreateNew<MiniGameReward>();
+                scoreReward.RequiredSuccess = s.Success | MiniGameSuccessFlags.WinnerExists;
+                scoreReward.RewardAmount = s.Score;
+                scoreReward.RewardType = MiniGameRewardType.Score;
+                bloodCastle.Rewards.Add(scoreReward);
+            }
         }
+
+        var scoreRewardLosing = this.Context.CreateNew<MiniGameReward>();
+        scoreRewardLosing.RequiredSuccess = MiniGameSuccessFlags.WinnerNotExists;
+        scoreRewardLosing.RewardAmount = ScorePenaltyAtLoss;
+        scoreRewardLosing.RewardType = MiniGameRewardType.Score;
+        bloodCastle.Rewards.Add(scoreRewardLosing);
     }
 }

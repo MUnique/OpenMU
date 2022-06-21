@@ -25,6 +25,13 @@ public enum MiniGameRewardType
     Experience,
 
     /// <summary>
+    /// The reward is experience which is added to the character of the player,
+    /// which is calculated based on the remaining seconds.
+    /// Reward Value = <see cref="MiniGameReward.RewardAmount"/> * Remaining Seconds.
+    /// </summary>
+    ExperiencePerRemainingSeconds,
+
+    /// <summary>
     /// The reward is an item.
     /// </summary>
     Item,
@@ -33,4 +40,9 @@ public enum MiniGameRewardType
     /// The reward is an item to be dropped.
     /// </summary>
     ItemDrop,
+
+    /// <summary>
+    /// The reward is a score for the mini game.
+    /// </summary>
+    Score,
 }

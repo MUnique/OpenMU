@@ -27,7 +27,7 @@ public class ChangeTerrainAttributesViewPlugIn : IChangeTerrainAttributesViewPlu
     public ChangeTerrainAttributesViewPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ChangeAttributes(bool type, TerrainAttributeType attribute, bool setAttribute, IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> areas)
+    public void ChangeAttributes(TerrainAttributeType attribute, bool setAttribute, IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> areas)
     {
         if (this._player.Connection is null)
         {
@@ -37,9 +37,8 @@ public class ChangeTerrainAttributesViewPlugIn : IChangeTerrainAttributesViewPlu
         using var writer = this._player.Connection.StartSafeWrite(0xC1, ChangeTerrainAttributes.GetRequiredSize(areas.Count));
         var message = new ChangeTerrainAttributes(writer.Span)
         {
-            Type = type,
             Attribute = Convert(attribute),
-            SetAttribute = setAttribute,
+            RemoveAttribute = !setAttribute,
             AreaCount = (byte)areas.Count,
         };
 

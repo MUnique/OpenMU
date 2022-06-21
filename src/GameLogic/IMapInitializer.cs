@@ -31,6 +31,14 @@ public interface IMapInitializer
     void InitializeState(GameMap createdMap);
 
     /// <summary>
+    /// Initializes the spawn on the map.
+    /// </summary>
+    /// <param name="gameMap">The game map on which the spawn should be initialized.</param>
+    /// <param name="spawnArea">The spawn area.</param>
+    /// <param name="eventStateProvider">The event state provider.</param>
+    void InitializeSpawn(GameMap gameMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null);
+
+    /// <summary>
     /// Initializes the event NPCs of the previously created game map.
     /// </summary>
     /// <param name="createdMap">The created map.</param>

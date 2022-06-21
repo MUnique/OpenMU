@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Runtime.CompilerServices;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -83,6 +84,17 @@ public class GameMapTerrain
     }
 
     /// <summary>
+    /// Updates the ai grid value at the specified coordinate.
+    /// </summary>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UpdateAiGridValue(byte x, byte y)
+    {
+        this.AIgrid[x, y] = Convert.ToByte(this.WalkMap[x, y] && !this.SafezoneMap[x, y]);
+    }
+
+    /// <summary>
     /// Reads the terrain data from a stream.
     /// </summary>
     /// <param name="data">The data.</param>
@@ -95,7 +107,7 @@ public class GameMapTerrain
             byte value = data[i];
             this.WalkMap[x, y] = value == 0 || value == 1;
             this.SafezoneMap[x, y] = value == 1;
-            this.AIgrid[x, y] = Convert.ToByte(this.WalkMap[x, y] && !this.SafezoneMap[x, y]);
+            this.UpdateAiGridValue(x, y);
         }
     }
 }

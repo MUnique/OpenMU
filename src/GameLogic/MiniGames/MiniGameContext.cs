@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames;
 
+using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Statistics;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
@@ -25,10 +27,12 @@ public class MiniGameContext : Disposable, IEventStateProvider
     private readonly SemaphoreSlim _enterLock = new (1);
 
     private readonly HashSet<Player> _enteredPlayers = new ();
+    private readonly ConcurrentDictionary<MonsterDefinition, bool> _rewardRelatedKills;
 
     private readonly CancellationTokenSource _gameEndedCts = new ();
 
     private readonly HashSet<byte> _currentSpawnWaves = new ();
+    private readonly List<ChangeEventContext> _remainingEvents = new ();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MiniGameContext"/> class.
@@ -46,6 +50,12 @@ public class MiniGameContext : Disposable, IEventStateProvider
         this.Logger = this._gameContext.LoggerFactory.CreateLogger(this.GetType());
 
         this.Map = this.CreateMap();
+
+        this._rewardRelatedKills = new (
+            this.Definition.Rewards
+                .Where(r => r.RequiredKill is not null)
+                .Select(r => new KeyValuePair<MonsterDefinition, bool>(r.RequiredKill!, false))
+                .Distinct());
 
         this.State = MiniGameState.Open;
 
@@ -76,6 +86,16 @@ public class MiniGameContext : Disposable, IEventStateProvider
     public bool IsEventRunning => this.State == MiniGameState.Playing;
 
     /// <summary>
+    /// Gets the remaining time of the event, in case it has been finished by the player earlier than the timeout.
+    /// </summary>
+    protected virtual TimeSpan RemainingTime => TimeSpan.Zero;
+
+    /// <summary>
+    /// Gets a value indicating whether a winner is existing.
+    /// </summary>
+    protected virtual Player? Winner => null;
+
+    /// <summary>
     /// Gets the logger for this instance.
     /// </summary>
     protected ILogger Logger { get; }
@@ -84,6 +104,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// Gets the <see cref="CancellationToken"/> which is cancelled when the game ends.
     /// </summary>
     protected CancellationToken GameEndedToken => this._gameEndedCts.Token;
+
+    /// <summary>
+    /// Gets the next event which targets should be fulfilled by the players.
+    /// </summary>
+    protected ChangeEventContext? NextEvent { get; private set; }
 
     /// <summary>
     /// Tries to enter the mini game. It will fail, if it's full, of if it's not in an open state.
@@ -117,6 +142,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
         player.CurrentMiniGame = this;
         player.PlayerPickedUpItem += this.OnPlayerPickedUpItem;
+
         enterResult = EnterResult.Success;
         return true;
     }
@@ -182,7 +208,21 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <param name="players">The player which started with the game.</param>
     protected virtual void OnGameStart(ICollection<Player> players)
     {
-        // can be overwritten
+        var startEvents = this.Definition.ChangeEvents
+            .OrderBy(e => e.Index)
+            .TakeWhile(e => e.NumberOfKills == 0)
+            .ToList();
+
+        foreach (var changeEvent in startEvents)
+        {
+            this.ApplyChangeEvent(changeEvent);
+        }
+
+        this._remainingEvents.AddRange(
+            this.Definition.ChangeEvents
+                .Except(startEvents)
+                .Select(e => new ChangeEventContext(e, this._enteredPlayers.Count)));
+        this.UpdateNextEvent();
     }
 
     /// <summary>
@@ -192,7 +232,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <param name="e">The event parameters.</param>
     protected virtual void OnMonsterDied(object? sender, DeathInformation e)
     {
-        // can be overwritten
+        if (sender is AttackableNpcBase npc)
+        {
+            this._rewardRelatedKills.TryUpdate(npc.Definition, true, false);
+            this.CheckKillForEventChanges(npc);
+        }
     }
 
     /// <summary>
@@ -202,7 +246,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <param name="e">The event parameters.</param>
     protected virtual void OnDestructibleDied(object? sender, DeathInformation e)
     {
-        // can be overwritten
+        if (sender is AttackableNpcBase npc)
+        {
+            this._rewardRelatedKills.TryUpdate(npc.Definition, true, false);
+            this.CheckKillForEventChanges(npc);
+        }
     }
 
     /// <summary>
@@ -237,6 +285,15 @@ public class MiniGameContext : Disposable, IEventStateProvider
     }
 
     /// <summary>
+    /// Called when an item was dropped on the map.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    protected virtual void OnItemDroppedOnMap(DroppedItem item)
+    {
+        // can be overwritten
+    }
+
+    /// <summary>
     /// Will be called when an object has been ended to map.
     /// </summary>
     /// <param name="sender">The sender of the event.</param>
@@ -252,6 +309,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
         if (args.Object is Destructible destructible)
         {
             destructible.Died += this.OnDestructibleDied;
+        }
+
+        if (args.Object is DroppedItem item)
+        {
+            this.OnItemDroppedOnMap(item);
         }
     }
 
@@ -285,6 +347,10 @@ public class MiniGameContext : Disposable, IEventStateProvider
         {
             this._gameEndedCts.Cancel();
         }
+        else
+        {
+            this.CheckKillForEventChanges(player);
+        }
     }
 
     /// <summary>
@@ -300,13 +366,20 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// </summary>
     /// <param name="player">The player who should receive the rewards.</param>
     /// <param name="rank">The rank of the player in the current game.</param>
-    protected void GiveRewards(Player player, int rank)
+    /// <returns>The bonus score and the given money.</returns>
+    protected (int BonusScore, int GivenMoney) GiveRewardsAndGetBonusScore(Player player, int rank)
     {
-        var rewards = this.Definition.Rewards.Where(r => r.Rank is null || r.Rank == rank);
+        int bonusScore = 0;
+        int givenMoney = 0;
+        var rewards = this.Definition.Rewards.Where(r => this.DoesRewardApply(player, rank, r));
         foreach (var reward in rewards)
         {
-            this.GiveReward(player, reward);
+            var result = this.GiveReward(player, reward);
+            bonusScore += result.BonusScore;
+            givenMoney += result.GivenMoney;
         }
+
+        return (bonusScore, givenMoney);
     }
 
     /// <summary>
@@ -345,12 +418,20 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
     }
 
-    private void GiveReward(Player player, MiniGameReward reward)
+    private (int BonusScore, int GivenMoney) GiveReward(Player player, MiniGameReward reward)
     {
         switch (reward.RewardType)
         {
             case MiniGameRewardType.Experience:
                 player.AddExperience(reward.RewardAmount, null);
+                break;
+            case MiniGameRewardType.ExperiencePerRemainingSeconds:
+                var seconds = (int)this.RemainingTime.TotalSeconds;
+                if (seconds > 0)
+                {
+                    player.AddExperience(seconds * reward.RewardAmount, null);
+                }
+
                 break;
             case MiniGameRewardType.Money:
                 if (!player.TryAddMoney(reward.RewardAmount))
@@ -358,13 +439,15 @@ public class MiniGameContext : Disposable, IEventStateProvider
                     player.ShowMessage("Couldn't add reward money, inventory is full.");
                 }
 
-                break;
+                return (0, reward.RewardAmount);
             case MiniGameRewardType.Item:
                 this.GiveItemReward(player, reward);
                 break;
             case MiniGameRewardType.ItemDrop:
                 this.GiveItemReward(player, reward, true);
                 break;
+            case MiniGameRewardType.Score:
+                return (reward.RewardAmount, 0);
             case MiniGameRewardType.Undefined:
                 this.Logger.LogWarning($"Undefined reward type in {reward.GetId()}");
                 break;
@@ -372,6 +455,8 @@ public class MiniGameContext : Disposable, IEventStateProvider
                 this.Logger.LogError($"Reward type {reward.RewardType} in {reward.GetId()} is not implemented!");
                 throw new NotImplementedException($"Reward type {reward.RewardType} is not implemented");
         }
+
+        return (0, 0);
     }
 
     private void GiveItemReward(Player player, MiniGameReward reward, bool drop = false)
@@ -382,20 +467,22 @@ public class MiniGameContext : Disposable, IEventStateProvider
             return;
         }
 
-        var item = this._gameContext.DropGenerator.GenerateItemDrop(reward.ItemReward);
-        if (item is null)
+        for (int i = 0; i < reward.RewardAmount; i++)
         {
-            this.Logger.LogInformation($"No item has been generated by reward {reward.GetId()} for player {player}.");
-            return;
-        }
+            var item = this._gameContext.DropGenerator.GenerateItemDrop(reward.ItemReward);
+            if (item is null)
+            {
+                this.Logger.LogInformation($"No item has been generated by reward {reward.GetId()} for player {player}.");
+                return;
+            }
 
-        for (int i = 1; i <= reward.RewardAmount; i++)
-        {
             var droppedItem = new DroppedItem(item, player.RandomPosition, this.Map, player, player.GetAsEnumerable());
             var shouldDrop = drop || !(player.Inventory?.AddItem(item) ?? false);
-            if (!shouldDrop) continue;
-            this.Logger.LogInformation($"Reward {item} for {player} has been dropped by players coordinates {player.Position}.");
-            this.Map.Add(droppedItem);
+            if (shouldDrop)
+            {
+                this.Logger.LogInformation($"Reward {item} for {player} has been dropped by players coordinates {player.Position}.");
+                this.Map.Add(droppedItem);
+            }
         }
     }
 
@@ -597,6 +684,224 @@ public class MiniGameContext : Disposable, IEventStateProvider
         foreach (var player in players)
         {
             player.WarpToSafezone();
+        }
+    }
+
+    private bool DoesRewardApply(Player player, int playerRank, MiniGameReward reward)
+    {
+        if (reward.Rank is not null && reward.Rank != playerRank)
+        {
+            return false;
+        }
+
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Alive) && (!player.IsAlive || player.CurrentMap != this.Map))
+        {
+            return false;
+        }
+
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Dead) && (player.IsAlive && player.CurrentMap == this.Map))
+        {
+            return false;
+        }
+
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinnerExists) && this.Winner is null)
+        {
+            return false;
+        }
+
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinnerNotExists) && this.Winner is not null)
+        {
+            return false;
+        }
+
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Winner) && this.Winner != player)
+        {
+            return false;
+        }
+
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.Loser)
+            && (this.Winner == player || (player.Party == this.Winner?.Party && player.Party is not null)))
+        {
+            return false;
+        }
+
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinningParty)
+            && (this.Winner?.Party is null || this.Winner.Party != player.Party))
+        {
+            return false;
+        }
+
+        if (reward.RequiredSuccess.HasFlag(MiniGameSuccessFlags.WinnerOrInWinningParty)
+            && (this.Winner?.Party is null || this.Winner.Party != player.Party)
+            && this.Winner != player)
+        {
+            return false;
+        }
+
+        if (reward.RequiredKill is { } requiredKill
+            && (!this._rewardRelatedKills.TryGetValue(requiredKill, out var killed)
+                || !killed))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ApplyChangeEvent(MiniGameChangeEvent changeEvent, string? triggeredBy = null)
+    {
+        if (changeEvent.TerrainChanges.Any())
+        {
+            this.UpdateClientTerrain(changeEvent.TerrainChanges);
+            this.UpdateServerTerrain(changeEvent.TerrainChanges);
+        }
+
+        if (changeEvent.SpawnArea is { } spawnArea)
+        {
+            for (int i = 0; i < spawnArea.Quantity; i++)
+            {
+                this._mapInitializer.InitializeSpawn(this.Map, spawnArea, this);
+            }
+        }
+
+        if (changeEvent.Message is { } message)
+        {
+            _ = Task.Run(() => this.ForEachPlayerAsync(player =>
+            {
+                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?
+                    .ShowMessage(string.Format(message, triggeredBy), Interfaces.MessageType.GoldenCenter);
+            }));
+        }
+    }
+
+    private void UpdateServerTerrain(ICollection<MiniGameTerrainChange> changes)
+    {
+        foreach (var change in changes)
+        {
+            var isSafezone = change.TerrainAttribute is TerrainAttributeType.Safezone;
+            var map = isSafezone ? this.Map.Terrain.SafezoneMap : this.Map.Terrain.WalkMap;
+
+            for (var x = change.StartX; x <= change.EndX; x++)
+            {
+                for (var y = change.StartY; y <= change.EndY; y++)
+                {
+                    map[x, y] = change.SetTerrainAttribute;
+                    this.Map.Terrain.UpdateAiGridValue(x, y);
+                }
+            }
+        }
+    }
+
+    private void UpdateClientTerrain(ICollection<MiniGameTerrainChange> changes)
+    {
+        var groupedChanges = changes
+            .GroupBy(
+                c => (c.SetTerrainAttribute, c.TerrainAttribute),
+                c => (c.StartX, c.StartY, c.EndX, c.EndY))
+            .Select(g => (g.Key, Areas: g.ToList()))
+            .ToList();
+
+        Task.Run(() => this.ForEachPlayerAsync(player =>
+        {
+            foreach (var group in groupedChanges)
+            {
+                player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
+                    .ChangeAttributes(group.Key.TerrainAttribute, group.Key.SetTerrainAttribute, group.Areas);
+            }
+        }));
+    }
+
+    private void CheckKillForEventChanges(IAttackable killedObject)
+    {
+        if (this.NextEvent is not { } nextEvent)
+        {
+            return;
+        }
+
+        if (this.IsKillValid(killedObject, nextEvent.Definition) && nextEvent.RegisterKill())
+        {
+            this._remainingEvents.Remove(nextEvent);
+            this.UpdateNextEvent();
+            this.ApplyChangeEvent(nextEvent.Definition, killedObject.LastDeath?.KillerName);
+        }
+    }
+
+    private void UpdateNextEvent()
+    {
+        this.NextEvent = this._remainingEvents.MinBy(e => e.Definition.Index);
+    }
+
+    private bool IsKillValid(IAttackable killedObject, MiniGameChangeEvent definition)
+    {
+        if (definition.MinimumTargetLevel.HasValue && killedObject.Attributes[Stats.Level] < definition.MinimumTargetLevel)
+        {
+            return false;
+        }
+
+        if (definition.Target == KillTarget.AnyMonster && killedObject is not Monster)
+        {
+            return false;
+        }
+
+        if (definition.Target == KillTarget.Specific
+            && (killedObject is not NonPlayerCharacter npc || npc.Definition.Number != definition.TargetDefinition?.Number))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// The context of the <see cref="MiniGameChangeEvent"/>.
+    /// </summary>
+    protected class ChangeEventContext
+    {
+        private int _actualKills;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChangeEventContext"/> class.
+        /// </summary>
+        /// <param name="definition">The definition.</param>
+        /// <param name="playerCount">The player count.</param>
+        public ChangeEventContext(MiniGameChangeEvent definition, int playerCount)
+        {
+            this.Definition = definition;
+            this.RequiredKills = definition.NumberOfKills;
+            if (this.Definition.MultiplyKillsByPlayers)
+            {
+                this.RequiredKills *= playerCount;
+            }
+        }
+
+        /// <summary>
+        /// Gets the definition of the change event.
+        /// </summary>
+        public MiniGameChangeEvent Definition { get; }
+
+        /// <summary>
+        /// Gets the required kills.
+        /// </summary>
+        public int RequiredKills { get; }
+
+        /// <summary>
+        /// Gets the actual kills.
+        /// </summary>
+        public int ActualKills => this._actualKills;
+
+        /// <summary>
+        /// Registers a kill and returns if the target has been achieved.
+        /// </summary>
+        /// <returns>True, if the target has been achieved just right now.</returns>
+        public bool RegisterKill()
+        {
+            if (this._actualKills == this.RequiredKills)
+            {
+                // Already achieved.
+                return false;
+            }
+
+            return Interlocked.Increment(ref this._actualKills) == this.RequiredKills;
         }
     }
 }

@@ -2027,6 +2027,53 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("MasterSkillRoot", "config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameChangeEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("MiniGameDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<short?>("MinimumTargetLevel")
+                        .HasColumnType("smallint");
+
+                    b.Property<bool>("MultiplyKillsByPlayers")
+                        .HasColumnType("boolean");
+
+                    b.Property<short>("NumberOfKills")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid?>("SpawnAreaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Target")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TargetDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MiniGameDefinitionId");
+
+                    b.HasIndex("SpawnAreaId");
+
+                    b.HasIndex("TargetDefinitionId");
+
+                    b.ToTable("MiniGameChangeEvent", "config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2151,6 +2198,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int?>("Rank")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("RequiredKillId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RequiredSuccess")
+                        .HasColumnType("integer");
+
                     b.Property<int>("RewardAmount")
                         .HasColumnType("integer");
 
@@ -2162,6 +2215,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("ItemRewardId");
 
                     b.HasIndex("MiniGameDefinitionId");
+
+                    b.HasIndex("RequiredKillId");
 
                     b.ToTable("MiniGameReward", "config");
                 });
@@ -2195,6 +2250,40 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("MiniGameDefinitionId");
 
                     b.ToTable("MiniGameSpawnWave", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameTerrainChange", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<byte>("EndX")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("EndY")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid?>("MiniGameChangeEventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("SetTerrainAttribute")
+                        .HasColumnType("boolean");
+
+                    b.Property<byte>("StartX")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("StartY")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("TerrainAttribute")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MiniGameChangeEventId");
+
+                    b.ToTable("MiniGameTerrainChange", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterAttribute", b =>
@@ -2313,6 +2402,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("GameMapId")
                         .HasColumnType("uuid");
+
+                    b.Property<int?>("MaximumHealthOverride")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("MonsterDefinitionId")
                         .HasColumnType("uuid");
@@ -3787,6 +3879,25 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("GameConfigurationId");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameChangeEvent", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", null)
+                        .WithMany("RawChangeEvents")
+                        .HasForeignKey("MiniGameDefinitionId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterSpawnArea", "RawSpawnArea")
+                        .WithMany()
+                        .HasForeignKey("SpawnAreaId");
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawTargetDefinition")
+                        .WithMany()
+                        .HasForeignKey("TargetDefinitionId");
+
+                    b.Navigation("RawSpawnArea");
+
+                    b.Navigation("RawTargetDefinition");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ExitGate", "RawEntrance")
@@ -3831,7 +3942,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany("RawRewards")
                         .HasForeignKey("MiniGameDefinitionId");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", "RawRequiredKill")
+                        .WithMany()
+                        .HasForeignKey("RequiredKillId");
+
                     b.Navigation("RawItemReward");
+
+                    b.Navigation("RawRequiredKill");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameSpawnWave", b =>
@@ -3839,6 +3956,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", null)
                         .WithMany("RawSpawnWaves")
                         .HasForeignKey("MiniGameDefinitionId");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameTerrainChange", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameChangeEvent", null)
+                        .WithMany("RawTerrainChanges")
+                        .HasForeignKey("MiniGameChangeEventId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterAttribute", b =>
@@ -4325,8 +4449,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("JoinedRequiredMasterSkills");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameChangeEvent", b =>
+                {
+                    b.Navigation("RawTerrainChanges");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", b =>
                 {
+                    b.Navigation("RawChangeEvents");
+
                     b.Navigation("RawRewards");
 
                     b.Navigation("RawSpawnWaves");
