@@ -19,5 +19,5 @@ It's forwarded to all surrounding players, so that the animation is visible. In 
 | 5 | 1 | Byte |  | TargetX |
 | 6 | 1 | Byte |  | TargetY |
 | 7 | 1 | Byte |  | Rotation |
-| 9 | 2 | ShortBigEndian |  | ExtraTargetId |
+| 10 | 2 | ShortBigEndian |  | ExtraTargetId |
 | 12 | 1 | Byte |  | AnimationCounter; Animation counter which acts as a reference to the previously sent Area Skill Animation packet. |
