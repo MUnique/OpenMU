@@ -16,7 +16,11 @@
                        placeholder="Search ..."
                        id="@this.FieldIdentifier.FieldName">
         <SelectedTemplate Context="item">
-            @if (typeof(TObject).Namespace?.StartsWith(nameof(MUnique)) ?? false)
+            @if (item is null)
+            {
+                @string.Empty;
+            }
+            else if (typeof(TObject).Namespace?.StartsWith(nameof(MUnique)) ?? false)
             {
                 <NavLink href="@("edit/" + typeof(TObject).FullName + "/" + item.GetId())">@item.GetName()</NavLink>
             }

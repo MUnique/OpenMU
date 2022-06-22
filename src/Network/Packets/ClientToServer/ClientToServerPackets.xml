@@ -1384,7 +1384,7 @@
           <Name>Rotation</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>10</Index>
           <Type>ShortBigEndian</Type>
           <Name>ExtraTargetId</Name>
         </Field>
@@ -1840,7 +1840,7 @@
           <Index>4</Index>
           <Type>String</Type>
           <Name>GuildName</Name>
-          <Length>9</Length>
+          <Length>8</Length>
         </Field>
         <Field>
           <Index>12</Index>
@@ -2505,6 +2505,29 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>EventLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>9A</Code>
+      <Name>BloodCastleEnterRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player requests to enter the blood castle through the Archangel Messenger NPC.</SentWhen>
+      <CausedReaction>The server checks if the player can enter the event and sends a response (Code 0x9A) back to the client. If it was successful, the character gets moved to the event map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>CastleLevel</Name>
+          <Description>The level of the battle square.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TicketItemInventoryIndex</Name>
+          <Description>The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</Description>
         </Field>
       </Fields>
     </Packet>

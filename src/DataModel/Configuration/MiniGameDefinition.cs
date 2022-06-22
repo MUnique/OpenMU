@@ -118,4 +118,10 @@ public class MiniGameDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<MiniGameSpawnWave> SpawnWaves { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the mini game change events.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<MiniGameChangeEvent> ChangeEvents { get; protected set; } = null!;
 }

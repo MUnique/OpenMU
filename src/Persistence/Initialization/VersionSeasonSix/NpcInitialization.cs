@@ -4,7 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -76,7 +79,6 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 232;
             def.Designation = "Archangel";
-            def.NpcWindow = NpcWindow.BloodCastle;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             this.GameConfiguration.Monsters.Add(def);
         }
@@ -85,6 +87,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 233;
             def.Designation = "Messenger of Arch.";
+            def.NpcWindow = NpcWindow.BloodCastle;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             this.GameConfiguration.Monsters.Add(def);
         }
@@ -734,7 +737,12 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 131;
             def.Designation = "Castle Gate";
-            def.ObjectKind = NpcObjectKind.Gate;
+            def.ObjectKind = NpcObjectKind.Destructible;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.MaximumHealth, 5000000 },
+            };
+            def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -742,15 +750,33 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 132;
             def.Designation = "Statue of Saint";
-            def.ObjectKind = NpcObjectKind.Statue;
+            def.ObjectKind = NpcObjectKind.Destructible;
+            def.NumberOfMaximumItemDrops = 1;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.MaximumHealth, 5000000 },
+            };
+            def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             this.GameConfiguration.Monsters.Add(def);
+            var questItemDrop = this.Context.CreateNew<DropItemGroup>();
+            questItemDrop.Chance = 1;
+            questItemDrop.Description = "Archangel Weapon (Blood Castle)";
+            questItemDrop.Monster = def;
+            questItemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.IsArchangelQuestItem()));
+            def.DropItemGroups.Add(questItemDrop);
+            this.GameConfiguration.DropItemGroups.Add(questItemDrop);
         }
 
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 133;
             def.Designation = "Statue of Saint";
-            def.ObjectKind = NpcObjectKind.Statue;
+            def.ObjectKind = NpcObjectKind.Destructible;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.MaximumHealth, 5000000 },
+            };
+            def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -758,7 +784,12 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 134;
             def.Designation = "Statue of Saint";
-            def.ObjectKind = NpcObjectKind.Statue;
+            def.ObjectKind = NpcObjectKind.Destructible;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.MaximumHealth, 5000000 },
+            };
+            def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             this.GameConfiguration.Monsters.Add(def);
         }
 

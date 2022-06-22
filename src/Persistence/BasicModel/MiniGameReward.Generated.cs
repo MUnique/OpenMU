@@ -45,6 +45,26 @@ public partial class MiniGameReward : MUnique.OpenMU.DataModel.Configuration.Min
         set => base.ItemReward = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="RequiredKill" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("requiredKill")]
+    [System.Text.Json.Serialization.JsonPropertyName("requiredKill")]
+    public MonsterDefinition RawRequiredKill
+    {
+        get => base.RequiredKill as MonsterDefinition;
+        set => base.RequiredKill = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition RequiredKill
+    {
+        get => base.RequiredKill;
+        set => base.RequiredKill = value;
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

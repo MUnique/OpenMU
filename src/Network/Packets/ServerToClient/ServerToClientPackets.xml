@@ -3964,7 +3964,8 @@
         <Field>
           <Index>5</Index>
           <Type>Boolean</Type>
-          <Name>SetAttribute</Name>
+          <Name>RemoveAttribute</Name>
+          <Description>When this is true, the attribute is removed on the client side. If it's false, then the attribute is added.</Description>
         </Field>
         <Field>
           <Index>6</Index>
@@ -8053,20 +8054,145 @@
         </Field>
         <Field>
           <Index>17</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>TotalScore</Name>
         </Field>
         <Field>
           <Index>21</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>BonusExperience</Name>
         </Field>
         <Field>
           <Index>25</Index>
-          <Type>IntegerBigEndian</Type>
+          <Type>IntegerLittleEndian</Type>
           <Name>BonusMoney</Name>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>9A</Code>
+      <Name>BloodCastleEnterResult</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player requested to enter the blood castle mini game through the Archangel Messenger NPC.</SentWhen>
+      <CausedReaction>In case it failed, it shows the corresponding error message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>EnterResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EnterResult</Name>
+          <Description>Defines the result of the enter request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The event has been entered.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>Entering the event failed, e.g. by missing event ticket or level range.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotOpen</Name>
+              <Description>Entering the event failed, because it's not opened.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooHigh</Name>
+              <Description>Entering the event failed, because the character level is too high for the requested event level.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>CharacterLevelTooLow</Name>
+              <Description>Entering the event failed, because the character level is too low for the requested event level.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Full</Name>
+              <Description>Entering the event failed, because it's full.</Description>
+              <Value>5</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>9B</Code>
+      <Name>BloodCastleState</Name>
+      <Length>13</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of a blood castle event is about to change.</SentWhen>
+      <CausedReaction>The client side shows a message about the changing state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>Status</TypeName>
+          <Name>State</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RemainSecond</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaxMonster</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CurMonster</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemOwnerId</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>ItemLevel</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>Status</Name>
+          <Description>Defines the status of the event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Started</Name>
+              <Description>The event has just started and is running.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GateNotDestroyed</Name>
+              <Description>The event is running, but the gate is not destroyed.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ended</Name>
+              <Description>The event has ended.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GateDestroyed</Name>
+              <Description>The event is running and the gate is destroyed.</Description>
+              <Value>4</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
   </Packets>
   <Enums>

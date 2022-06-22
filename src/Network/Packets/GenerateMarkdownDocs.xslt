@@ -5,10 +5,9 @@
 
   <xsl:output method="text" />
   <xsl:variable name="newline">
-    <xsl:text xml:space="preserve">
-</xsl:text>
+    <xsl:text>&#xD;&#xA;</xsl:text>
   </xsl:variable>
-
+  
   <xsl:template match="d:PacketDefinitions">
     <xsl:variable name="xmlFileName" select="tokenize((tokenize(document-uri(/), '/')[position() = last()]), '[.]')[1]" />
     <xsl:text expand-text="yes"># {$xmlFileName}</xsl:text>

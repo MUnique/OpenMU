@@ -86,6 +86,11 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
     /// </summary>
     public event EventHandler? PlayerLeftWorld;
 
+    /// <summary>
+    /// Occurs when the player picked up an item.
+    /// </summary>
+    public event EventHandler<ILocateable>? PlayerPickedUpItem;
+
     /// <inheritdoc />
     ILogger ILoggerOwner.Logger => this.Logger;
 
@@ -306,6 +311,16 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
         }
     }
 
+    /// <summary>
+    /// Gets or sets Position with a randomized shim.
+    /// </summary>
+    public Point RandomPosition
+    {
+        get => this._currentMap!.Terrain.GetRandomCoordinate(this.Position, 1);
+
+        set => this.Position = this._currentMap!.Terrain.GetRandomCoordinate(value, 1);
+    }
+
     /// <inheritdoc/>
     public uint MaximumHealth => (uint)(this.Attributes?[Stats.MaximumHealth] ?? 0);
 
@@ -381,6 +396,15 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
     /// Gets or sets the mini game, which the player has currently entered.
     /// </summary>
     public MiniGameContext? CurrentMiniGame { get; set; }
+
+    /// <summary>
+    /// Will be called when an item has been picked up by player.
+    /// </summary>
+    /// <param name="item">The item, which the player has picked up.</param>
+    public void OnPickedUpItem(ILocateable item)
+    {
+        this.PlayerPickedUpItem?.Invoke(this, item);
+    }
 
     /// <inheritdoc/>
     public void AttackBy(IAttacker attacker, SkillEntry? skill)

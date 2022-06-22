@@ -37,7 +37,7 @@ internal class Level300 : AccountInitializerBase
         character.LevelUpPoints -= 1100; // for the added strength and agility
 
         character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 12, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Great Lord Scepter+13+16+L+ExcDmg
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 26, 7, Stats.MaximumHealth, 13, 4, true)); // Exc Ada Helm+13+16+L
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 26, 7, Stats.MaximumHealth, 13, 4, true)); // Exc Ada Helm+13+16+L
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 26, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Exc Ada Armor+13+16+L
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 26, 9, Stats.MoneyAmountRate, 13, 4, true)); // Exc Ada Pants+13+16+L
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 26, 10, Stats.MaximumMana, 13, 4, true)); // Exc Ada Gloves+13+16+L

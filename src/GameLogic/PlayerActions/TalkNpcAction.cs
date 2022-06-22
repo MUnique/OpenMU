@@ -4,10 +4,12 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
+using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.GameLogic.Views.Quest;
@@ -72,7 +74,15 @@ public class TalkNpcAction
                 player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>()?.PlayerTalksToNpc(player, player.OpenedNpc, eventArgs);
                 if (!eventArgs.HasBeenHandled)
                 {
-                    player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
+                    if (player.CurrentMiniGame is BloodCastleContext bloodCastle && player.OpenedNpc.Definition.Number == 232)
+                    {
+                        bloodCastle.TalkToNpcArchangel(player);
+                    }
+                    else
+                    {
+                        player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal);
+                    }
+
                     player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
                 }
                 else if (!eventArgs.LeavesDialogOpen)

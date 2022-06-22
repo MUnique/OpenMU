@@ -30,4 +30,23 @@ public static class Extensions
             _ => DevilSquareEnterResult.EnterResult.Failed
         };
     }
+
+    /// <summary>
+    /// Converts the <see cref="EnterResult"/> to the corresponding <see cref="BloodCastleEnterResult.EnterResult"/>.
+    /// </summary>
+    /// <param name="enterResult">The enter result.</param>
+    /// <returns>The converted result.</returns>
+    public static BloodCastleEnterResult.EnterResult ToBloodCastleEnterResult(this EnterResult enterResult)
+    {
+        return enterResult switch
+        {
+            EnterResult.Success => BloodCastleEnterResult.EnterResult.Success,
+            EnterResult.Failed => BloodCastleEnterResult.EnterResult.Failed,
+            EnterResult.NotOpen => BloodCastleEnterResult.EnterResult.NotOpen,
+            EnterResult.Full => BloodCastleEnterResult.EnterResult.Full,
+            EnterResult.CharacterLevelTooLow => BloodCastleEnterResult.EnterResult.CharacterLevelTooLow,
+            EnterResult.CharacterLevelTooHigh => BloodCastleEnterResult.EnterResult.CharacterLevelTooHigh,
+            _ => BloodCastleEnterResult.EnterResult.Failed
+        };
+    }
 }

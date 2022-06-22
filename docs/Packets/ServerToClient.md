@@ -109,6 +109,8 @@
   * [C1 92 - UpdateMiniGameState (by server)](C1-92-UpdateMiniGameState_by-server.md)
   * [C1 93 - MiniGameScoreTable (by server)](C1-93-MiniGameScoreTable_by-server.md)
   * [C1 93 - BloodCastleScore (by server)](C1-93-BloodCastleScore_by-server.md)
+  * [C1 9A - BloodCastleEnterResult (by server)](C1-9A-BloodCastleEnterResult_by-server.md)
+  * [C1 9B - BloodCastleState (by server)](C1-9B-BloodCastleState_by-server.md)
   * [C1 A0 - LegacyQuestStateList (by server)](C1-A0-LegacyQuestStateList_by-server.md)
   * [C1 A1 - LegacyQuestStateDialog (by server)](C1-A1-LegacyQuestStateDialog_by-server.md)
   * [C1 A2 - LegacySetQuestStateResponse (by server)](C1-A2-LegacySetQuestStateResponse_by-server.md)

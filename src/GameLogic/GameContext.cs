@@ -200,6 +200,9 @@ public class GameContext : Disposable, IGameContext
                 case MiniGameType.DevilSquare:
                     miniGameContext = new DevilSquareContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
                     break;
+                case MiniGameType.BloodCastle:
+                    miniGameContext = new BloodCastleContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
+                    break;
                 default:
                     miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
                     break;

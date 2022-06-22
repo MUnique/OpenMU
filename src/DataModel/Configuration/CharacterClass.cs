@@ -91,4 +91,14 @@ public class CharacterClass
     /// Gets or sets the home map.
     /// </summary>
     public virtual GameMapDefinition? HomeMap { get; set; }
+
+    /// <summary>
+    /// Gets StatAttributeDefinition corresponding to AttributeDefinition.
+    /// </summary>
+    /// <param name="attributeDefinition">The attribute.</param>
+    /// <returns>The corresponding StatAttributeDefinition.</returns>
+    public StatAttributeDefinition? GetStatAttribute(AttributeDefinition attributeDefinition)
+    {
+        return this.StatAttributes.FirstOrDefault(a => a.Attribute == attributeDefinition);
+    }
 }

@@ -49,7 +49,7 @@ public class Storage : IStorage
             {
                 if (!this.AddItemInternal((byte)(item.ItemSlot - slotOffset), item))
                 {
-                    throw new ArgumentException("item did not fit into the storage");
+                    throw new ArgumentException($"'{item}' did not fit into the storage at slot {item.ItemSlot}.");
                 }
             });
     }

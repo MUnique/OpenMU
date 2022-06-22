@@ -47,6 +47,15 @@ internal partial class MiniGameDefinition : MUnique.OpenMU.DataModel.Configurati
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave> SpawnWaves => base.SpawnWaves ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave, MiniGameSpawnWave>(this.RawSpawnWaves);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="ChangeEvents" />.
+    /// </summary>
+    public ICollection<MiniGameChangeEvent> RawChangeEvents { get; } = new EntityFramework.List<MiniGameChangeEvent>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameChangeEvent> ChangeEvents => base.ChangeEvents ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameChangeEvent, MiniGameChangeEvent>(this.RawChangeEvents);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="Entrance"/>.
     /// </summary>
     public Guid? EntranceId { get; set; }
