@@ -9492,6 +9492,94 @@ public readonly ref struct RequestEventRemainingTime
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(RequestEventRemainingTime packet) => packet._data; 
 }
+
+
+/// <summary>
+/// Is sent by the client when: The player requests to enter the blood castle through the Archangel Messenger NPC.
+/// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x9A) back to the client. If it was successful, the character gets moved to the event map.
+/// </summary>
+public readonly ref struct BloodCastleEnterRequest
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleEnterRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public BloodCastleEnterRequest(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BloodCastleEnterRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private BloodCastleEnterRequest(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x9A;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the level of the battle square.
+    /// </summary>
+    public byte CastleLevel
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...
+    /// </summary>
+    public byte TicketItemInventoryIndex
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="BloodCastleEnterRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator BloodCastleEnterRequest(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="BloodCastleEnterRequest"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(BloodCastleEnterRequest packet) => packet._data; 
+}
     /// <summary>
     /// The state of the trade button.
     /// </summary>

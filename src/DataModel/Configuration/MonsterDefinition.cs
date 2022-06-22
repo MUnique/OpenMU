@@ -204,6 +204,11 @@ public enum NpcObjectKind
     /// The npc is a soccer ball.
     /// </summary>
     SoccerBall,
+
+    /// <summary>
+    /// The npc is a destructible.
+    /// </summary>
+    Destructible,
 }
 
 /// <summary>

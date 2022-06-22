@@ -12,8 +12,8 @@ using MUnique.OpenMU.GameLogic.NPC;
 /// </summary>
 public class MonsterAttributeHolder : IAttributeSystem
 {
-    private static readonly IDictionary<AttributeDefinition, Func<Monster, float>> StatMapping =
-        new Dictionary<AttributeDefinition, Func<Monster, float>>
+    private static readonly IDictionary<AttributeDefinition, Func<AttackableNpcBase, float>> StatMapping =
+        new Dictionary<AttributeDefinition, Func<AttackableNpcBase, float>>
         {
             { Stats.CurrentHealth, m => m.Health },
             { Stats.DefensePvm, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) },
@@ -23,15 +23,15 @@ public class MonsterAttributeHolder : IAttributeSystem
             { Stats.ShieldBypassChance, m => 1.0f },
         };
 
-    private static readonly IDictionary<AttributeDefinition, Action<Monster, float>> SetterMapping =
-        new Dictionary<AttributeDefinition, Action<Monster, float>>
+    private static readonly IDictionary<AttributeDefinition, Action<AttackableNpcBase, float>> SetterMapping =
+        new Dictionary<AttributeDefinition, Action<AttackableNpcBase, float>>
         {
             { Stats.CurrentHealth, (m, v) => m.Health = (int)v },
         };
 
     private static readonly IDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new Dictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>>();
 
-    private readonly Monster _monster;
+    private readonly AttackableNpcBase _monster;
 
     private readonly IDictionary<AttributeDefinition, float> _statAttributes;
 
@@ -47,7 +47,7 @@ public class MonsterAttributeHolder : IAttributeSystem
     /// Initializes a new instance of the <see cref="MonsterAttributeHolder"/> class.
     /// </summary>
     /// <param name="monster">The monster.</param>
-    public MonsterAttributeHolder(Monster monster)
+    public MonsterAttributeHolder(AttackableNpcBase monster)
     {
         this._monster = monster;
         this._statAttributes = GetStatAttributeOfMonster(monster.Definition);

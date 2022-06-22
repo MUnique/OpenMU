@@ -369,6 +369,11 @@ public enum PacketType : byte
     DevilSquareRemainingTime = 0x91,
 
     /// <summary>
+    /// A BloodCastleEnter packet.
+    /// </summary>
+    BloodCastleEnter = 0x9A,
+
+    /// <summary>
     /// A RegEventChip packet.
     /// </summary>
     RegEventChip = 0x95,

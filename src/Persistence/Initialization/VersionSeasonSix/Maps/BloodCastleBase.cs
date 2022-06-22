@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal abstract class BloodCastleBase : BaseMapInitializer
 {
     /// <summary>
+    /// The castle door health per castle level.
+    /// </summary>
+    public static readonly int[] CastleDoorHealthPerLevel = { 0, 150000, 205000, 260000, 325000, 400000, 480000, 565000, 650000 };
+
+    /// <summary>
+    /// The crystal statue health per castle level.
+    /// </summary>
+    public static readonly int[] CrystalStatueHealthPerLevel = { 0, 65000, 105000, 145000, 185000, 225000, 265000, 305000, 345000 };
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleBase"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,10 +32,21 @@ internal abstract class BloodCastleBase : BaseMapInitializer
     }
 
     /// <inheritdoc/>
+    protected override byte SafezoneMapNumber => Lorencia.Number;
+
+    /// <inheritdoc />
+    protected override string MapName => $"Blood Castle {this.CastleLevel}";
+
+    /// <summary>
+    /// Gets the castle level.
+    /// </summary>
+    protected abstract int CastleLevel { get; }
+
+    /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[131], 014, 075, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Castle Gate
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[132], 014, 095, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Statue of Saint
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[232], 010, 009, Direction.SouthWest, SpawnTrigger.AutomaticDuringEvent); // Archangel
+        var castleDoor = this.CreateMonsterSpawn(this.NpcDictionary[131], 014, 075, Direction.SouthWest, SpawnTrigger.OnceAtEventStart); // Castle Gate
+        castleDoor.MaximumHealthOverride = CastleDoorHealthPerLevel[this.CastleLevel];
+        yield return this.CreateMonsterSpawn(this.NpcDictionary[232], 010, 009, Direction.SouthWest, SpawnTrigger.Automatic); // Archangel
     }
 }

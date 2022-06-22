@@ -17,7 +17,7 @@ The client updates the terrain attributes on its side.
 | 2 | 1 |    Byte   | 0x46  | Packet header - packet type identifier |
 | 3 | 1 | Boolean | false | Type |
 | 4 | 1 | TerrainAttributeType |  | Attribute |
-| 5 | 1 | Boolean |  | SetAttribute |
+| 5 | 1 | Boolean |  | RemoveAttribute; When this is true, the attribute is removed on the client side. If it's false, then the attribute is added. |
 | 6 | 1 | Byte |  | AreaCount |
 | 7 | TerrainArea.Length * AreaCount | Array of TerrainArea |  | Areas |
 

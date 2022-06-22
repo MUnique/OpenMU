@@ -28,7 +28,7 @@ internal class BloodCastle3 : BloodCastleBase
     protected override byte MapNumber => 13;
 
     /// <inheritdoc/>
-    protected override string MapName => "Blood Castle 3";
+    protected override int CastleLevel => 3;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
@@ -104,7 +104,7 @@ internal class BloodCastle3 : BloodCastleBase
         yield return this.CreateMonsterSpawn(this.NpcDictionary[099], 015, 050, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 3
         yield return this.CreateMonsterSpawn(this.NpcDictionary[099], 015, 066, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 3
         yield return this.CreateMonsterSpawn(this.NpcDictionary[099], 014, 056, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 3
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[099], 014, 070, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 3
+        yield return this.CreateMonsterSpawn(this.NpcDictionary[099], 014, 069, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 3
         yield return this.CreateMonsterSpawn(this.NpcDictionary[099], 013, 048, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 3
         yield return this.CreateMonsterSpawn(this.NpcDictionary[099], 013, 063, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Giant Ogre 3
 

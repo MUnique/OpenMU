@@ -99,6 +99,12 @@ public class MonsterSpawnArea
     /// </summary>
     public byte WaveNumber { get; set; }
 
+    /// <summary>
+    /// Gets or sets the maximum health (override) just for this spawn area.
+    /// If <c>null</c>, the default health of the <see cref="MonsterDefinition"/> applies.
+    /// </summary>
+    public int? MaximumHealthOverride { get; set; }
+
     /// <inheritdoc/>
     public override string ToString()
     {

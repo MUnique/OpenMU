@@ -55,6 +55,11 @@ public class PickupItemAction
                 player.ViewPlugIns.GetPlugIn<IItemPickUpFailedPlugIn>()?.ItemPickUpFailed(ItemPickFailReason.General);
                 break;
         }
+
+        if (droppedLocateable is not null)
+        {
+            player.OnPickedUpItem(droppedLocateable);
+        }
     }
 
     private bool CanPickup(Player player, ILocateable droppedLocateable)
