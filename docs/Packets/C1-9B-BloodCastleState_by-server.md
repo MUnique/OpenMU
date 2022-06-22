@@ -19,7 +19,7 @@ The client side shows a message about the changing state.
 | 4 | 2 | ShortLittleEndian |  | RemainSecond |
 | 6 | 2 | ShortLittleEndian |  | MaxMonster |
 | 8 | 2 | ShortLittleEndian |  | CurMonster |
-| 10 | 2 | ShortLittleEndian |  | ItemOwner |
+| 10 | 2 | ShortLittleEndian |  | ItemOwnerId |
 | 12 | 1 | Byte |  | ItemLevel |
 
 ### Status Enum
