@@ -155,6 +155,10 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             this._gateDestroyed = true;
         }
+        else
+        {
+            // we don't have others, so nothing to do
+        }
     }
 
     /// <inheritdoc/>
@@ -270,6 +274,7 @@ public sealed class BloodCastleContext : MiniGameContext
         }
         catch (OperationCanceledException)
         {
+            // Expected exception when the game ends before running into the timeout.
         }
         catch (Exception ex)
         {

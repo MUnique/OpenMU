@@ -225,7 +225,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <param name="attacker">The attacker.</param>
     protected virtual void RegisterHit(IAttacker attacker)
     {
-        // can be overwritten;
+        // can be overwritten
     }
 
     private bool TryHit(uint damage, IAttacker attacker)
