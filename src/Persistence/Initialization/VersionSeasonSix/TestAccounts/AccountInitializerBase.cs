@@ -372,7 +372,7 @@ internal abstract class AccountInitializerBase : InitializerBase
     protected void AddPets(ItemStorage inventory)
     {
         inventory.Items.Add(this.CreatePet(62, 0)); // Guardian Angel
-        inventory.Items.Add(this.CreatePet(67, 1)); // Imp
+        inventory.Items.Add(this.CreatePet(60, 1)); // Imp
         inventory.Items.Add(this.CreatePet(70, 2)); // Uniria
         inventory.Items.Add(this.CreatePet(59, 3)); // Dinorant
     }

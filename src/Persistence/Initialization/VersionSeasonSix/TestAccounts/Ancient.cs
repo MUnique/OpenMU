@@ -99,8 +99,8 @@ internal class Ancient : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.PendantSlot, ItemGroups.Misc1, 28, 0, "Gywen")); // Gywen Pendant of Ability
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 3, 13)); // Wings of Spirits +13
         character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.BlueFenrir));
+
         this.AddTestJewelsAndPotions(character.Inventory);
-        this.AddElfItems(character.Inventory);
         return character;
     }
 

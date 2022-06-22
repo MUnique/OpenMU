@@ -298,8 +298,8 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// <param name="inventory">The inventory.</param>
     protected void AddPets(ItemStorage inventory)
     {
-        inventory.Items.Add(this.CreatePet(62, 0)); // Guardian Angel
-        inventory.Items.Add(this.CreatePet(67, 1)); // Imp
+        inventory.Items.Add(this.CreatePet(12, 0)); // Guardian Angel
+        inventory.Items.Add(this.CreatePet(62, 1)); // Imp
         inventory.Items.Add(this.CreatePet(70, 2)); // Uniria
     }
 

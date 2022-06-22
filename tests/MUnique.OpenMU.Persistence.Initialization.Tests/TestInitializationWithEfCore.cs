@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.InMemory;
 
@@ -43,7 +45,8 @@ internal class TestInitializationWithEfCore
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
-        dataInitialization.CreateInitialData(1, false);
+        dataInitialization.CreateInitialData(1, true);
+        this.TestIfItemsFitIntoInventories(contextProvider);
     }
 
     /// <summary>
@@ -55,6 +58,7 @@ internal class TestInitializationWithEfCore
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new Version075.DataInitialization(contextProvider, new NullLoggerFactory());
         dataInitialization.CreateInitialData(1, true);
+        this.TestIfItemsFitIntoInventories(contextProvider);
     }
 
     /// <summary>
@@ -66,6 +70,7 @@ internal class TestInitializationWithEfCore
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new Version095d.DataInitialization(contextProvider, new NullLoggerFactory());
         dataInitialization.CreateInitialData(1, true);
+        this.TestIfItemsFitIntoInventories(contextProvider);
     }
 
     private void TestDataInitialization(IPersistenceContextProvider contextProvider)
@@ -83,5 +88,30 @@ internal class TestInitializationWithEfCore
         var account1 = accountContext.GetAccountByLoginName("test1", "test1");
         Assert.That(account1, Is.Not.Null);
         Assert.That(account1!.LoginName, Is.EqualTo("test1"));
+    }
+
+    private void TestIfItemsFitIntoInventories(IPersistenceContextProvider contextProvider)
+    {
+        using var configContext = contextProvider.CreateNewConfigurationContext();
+        var config = configContext.Get<GameConfiguration>().First();
+
+        using var context = contextProvider.CreateNewPlayerContext(config);
+        var characters = context.GetAccountsOrderedByLoginName(0, 100).SelectMany(a => a.Characters).ToList();
+        Assert.That(characters, Is.Not.Empty);
+        byte inventorySize = (byte)(InventoryConstants.EquippableSlotsCount + 64);
+        foreach (var character in characters)
+        {
+            try
+            {
+                var storage = character.Inventory!;
+                var inventory = new Storage(inventorySize, InventoryConstants.EquippableSlotsCount, 0, storage);
+                Assert.That(inventory.Items.Count(), Is.EqualTo(storage.Items.Count));
+            }
+            catch (Exception ex)
+            {
+                Assert.Warn($"{ex.Message} Character: {character.Name}");
+            }
+            
+        }
     }
 }

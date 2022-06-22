@@ -109,9 +109,9 @@ internal class QuestBase : AccountInitializerBase
 
         character.Inventory.Items.Add(this.CreateJewel(47, Items.Quest.ScrollOfEmperorNumber));
         character.Inventory.Items.Add(this.CreateJewel(48, Items.Quest.TearOfElfNumber));
-        character.Inventory.Items.Add(this.CreateOrb(67, 8)); // Healing Orb
-        character.Inventory.Items.Add(this.CreateOrb(75, 9)); // Defense Orb
-        character.Inventory.Items.Add(this.CreateOrb(68, 10)); // Damage Orb
+        character.Inventory.Items.Add(this.CreateOrb(68, 8)); // Healing Orb
+        character.Inventory.Items.Add(this.CreateOrb(69, 9)); // Defense Orb
+        character.Inventory.Items.Add(this.CreateOrb(70, 10)); // Damage Orb
         this.AddElfItems(character.Inventory);
         return character;
     }

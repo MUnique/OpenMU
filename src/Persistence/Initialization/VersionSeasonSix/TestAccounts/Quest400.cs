@@ -27,9 +27,9 @@ internal class Quest400 : Quest220
     protected override Character CreateCharacter(string name, CharacterClassNumber characterClass, int level, byte slot)
     {
         var character = base.CreateCharacter(name, characterClass, level, slot);
-        character.Inventory!.Items.Add(this.CreateJewel(52, Items.Quest.FeatherOfDarkPhoenixNumber));
-        character.Inventory.Items.Add(this.CreateJewel(53, Items.Quest.FlameOfDeathBeamKnightNumber));
-        character.Inventory.Items.Add(this.CreateJewel(55, Items.Quest.HornOfHellMaineNumber));
+        character.Inventory!.Items.Add(this.CreateJewel(65, Items.Quest.FeatherOfDarkPhoenixNumber));
+        character.Inventory.Items.Add(this.CreateJewel(66, Items.Quest.FlameOfDeathBeamKnightNumber));
+        character.Inventory.Items.Add(this.CreateJewel(67, Items.Quest.HornOfHellMaineNumber));
         return character;
     }
 }
