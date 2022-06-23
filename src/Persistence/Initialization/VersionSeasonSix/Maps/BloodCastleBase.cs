@@ -47,6 +47,7 @@ internal abstract class BloodCastleBase : BaseMapInitializer
     {
         var castleDoor = this.CreateMonsterSpawn(this.NpcDictionary[131], 014, 075, Direction.SouthWest, SpawnTrigger.OnceAtEventStart); // Castle Gate
         castleDoor.MaximumHealthOverride = CastleDoorHealthPerLevel[this.CastleLevel];
+        yield return castleDoor;
         yield return this.CreateMonsterSpawn(this.NpcDictionary[232], 010, 009, Direction.SouthWest, SpawnTrigger.Automatic); // Archangel
     }
 }
