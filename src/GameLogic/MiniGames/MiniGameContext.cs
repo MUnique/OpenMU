@@ -785,7 +785,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
             {
                 for (var y = change.StartY; y <= change.EndY; y++)
                 {
-                    map[x, y] = change.SetTerrainAttribute;
+                    map[x, y] = isSafezone ? change.SetTerrainAttribute : !change.SetTerrainAttribute;
                     this.Map.Terrain.UpdateAiGridValue(x, y);
                 }
             }
