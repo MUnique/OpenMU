@@ -8,6 +8,7 @@ using System.Net;
 using System.Reflection;
 
 using Serilog.Debugging;
+using Serilog.Events;
 using Serilog.Filters;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
@@ -193,14 +194,15 @@ public static class Extensions
                 uri: "http://loki:3100",
                 filtrationLabels: includeLabels,
                 filtrationMode: LokiLabelFiltrationMode.Include)
-            .Filter.ByExcluding(Matching.FromSource("Microsoft")) // We don't want all of the ASP.NET logging, because that really keeps loki pretty busy
+            .WriteTo
+            .Console(LogEventLevel.Information)
+            .Filter.ByExcluding(Matching.FromSource("Microsoft")) // We don't want all of the ASP.NET logging, because that really keeps loki and the console pretty busy
             .CreateLogger();
 
         SelfLog.Enable(Console.Error);
 
         builder.Host.ConfigureLogging((_, loggingBuilder) => loggingBuilder.ClearProviders());
         builder.Host.UseSerilog(logger);
-        builder.Host.ConfigureLogging((_, loggingBuilder) => loggingBuilder.AddConsole());
         return builder;
     }
 
