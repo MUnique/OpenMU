@@ -23,6 +23,9 @@ public partial class NavMenu
     [Inject]
     private SetupService SetupService { get; set; } = null!;
 
+    [Inject]
+    private IUserService UserService { get; set; } = null!;
+
     private GameConfiguration? GameConfiguration { get; set; }
 
     private bool OnlyShowSetup { get; set; }

@@ -29,6 +29,8 @@ services:
       DB_HOST: database
       # ASPNETCORE_URLS: http://+:1234
     working_dir: /app/
+    volumes:
+      - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
       - database
 

@@ -61,6 +61,14 @@
                     </NavLink>
                 </li>
             }
+            @if (UserService.IsAvailable)
+            {
+                <li>
+                    <NavLink href="users">
+                        <span class="oi oi-key" aria-hidden="true"></span> Users
+                    </NavLink>
+                </li>
+            }
             @if (AdminPanelEnvironment.IsHostingEmbedded)
             {
                 <li>

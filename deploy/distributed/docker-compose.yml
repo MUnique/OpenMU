@@ -267,6 +267,8 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:80
       PATH_BASE: /admin/
+    volumes:
+      - ./.htpasswd:/etc/nginx/.htpasswd
 
   adminPanel-dapr:
     image: "daprio/daprd:latest"
