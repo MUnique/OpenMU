@@ -59,7 +59,6 @@ public abstract class UserServiceBase : IUserService
         if (!result.Cancelled)
         {
             await this.CreateUserAsync(userParameters.LoginName, userParameters.Password);
-            this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
