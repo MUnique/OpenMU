@@ -8,14 +8,19 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using Serilog;
 using Serilog.Debugging;
+using SixLabors.ImageSharp;
+using SixLabors.Memory;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.FriendServer;
@@ -29,7 +34,6 @@ using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
-using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// The startup class for an all-in-one game server.
@@ -66,6 +70,7 @@ internal sealed class Program : IDisposable
     /// <param name="args">The command line args.</param>
     public static async Task Main(string[] args)
     {
+        Configuration.Default.MemoryAllocator = ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
         using var exitCts = new CancellationTokenSource();
         var exitToken = exitCts.Token;
         var isDaemonMode = args.Contains("-daemon");
@@ -192,18 +197,20 @@ internal sealed class Program : IDisposable
         _ = DataInitialization.Id;
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
+        var addAdminPanel = this.IsAdminPanelEnabled(args);
         ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        var builder = WebApplication.CreateBuilder(args);
 
-        var host = Host.CreateDefaultBuilder()
-            .UseSerilog(this._logger)
+        // builder.WebHost.UseUrls($"http://*:80");
+        builder.Host.UseSerilog(this._logger);
+        if (addAdminPanel)
+        {
+            builder.AddAdminPanel();
+        }
+
+        builder.Host
             .ConfigureServices(c =>
             {
-                if (this.IsAdminPanelEnabled(args))
-                {
-                    c.AddHostedService<AdminPanel>()
-                        .AddSingleton(new AdminPanelSettings(this.DetermineAdminPort(args)));
-                }
-
                 c.AddSingleton(this._servers)
                     .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
                     .AddIpResolver(args)
@@ -218,22 +225,30 @@ internal sealed class Program : IDisposable
                     .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
                     .AddSingleton<ConnectServerFactory>()
                     .AddSingleton<ConnectServerContainer>()
+                    .AddScoped<IMapFactory, JavascriptMapFactory>()
                     .AddSingleton<SetupService>()
                     .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
-                    //.AddSingleton<GameServerContainer>()
                     .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
                     .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
                     .AddSingleton<PlugInManager>()
+                    .AddSingleton<IServerProvider, LocalServerProvider>()
                     .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
                     .AddHostedService<ChatServerContainer>()
                     .AddHostedService<GameServerContainer>()
                     .AddHostedService(provider => provider.GetService<ConnectServerContainer>());
-            })
-            .Build();
+
+            });
+        var host = builder.Build();
+
         this._logger.Information("Host created");
         if (host.Services.GetService<ILoggerFactory>() is { } loggerFactory)
         {
             NpgsqlLoggingProvider.Initialize(loggerFactory);
+        }
+
+        if (addAdminPanel)
+        {
+            host.ConfigureAdminPanel();
         }
 
         this._logger.Information("Starting host...");
@@ -244,8 +259,6 @@ internal sealed class Program : IDisposable
         this._logger.Information($"Host started, elapsed time: {stopwatch.Elapsed}");
         return host;
     }
-
-    private ushort DetermineAdminPort(string[] args) => this.DetermineUshort("adminport", args, 1234);
 
     private ushort DetermineUshort(string parameterName, string[] args, ushort defaultValue)
     {

@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel;
 
+using System.IO;
 using Blazored.Modal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
@@ -56,7 +59,7 @@ public static class WebApplicationExtensions
         {
             var contextProvider = provider.GetService<IPersistenceContextProvider>();
             using var initialContext = contextProvider!.CreateNewConfigurationContext();
-            return initialContext.Get<GameConfiguration>().First();
+            return initialContext.Get<GameConfiguration>()?.FirstOrDefault()!;
         });
 
         services.AddTransient(provider =>
@@ -67,5 +70,35 @@ public static class WebApplicationExtensions
 
         StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
         return builder;
+    }
+
+    /// <summary>
+    /// Configures the admin panel.
+    /// </summary>
+    /// <param name="app">The application.</param>
+    /// <returns>The configured web application.</returns>
+    public static WebApplication ConfigureAdminPanel(this WebApplication app)
+    {
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Error");
+        }
+
+        app.UseStaticFiles();
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "logs")),
+            RequestPath = "/logs",
+        });
+
+        app.UseRouting();
+        app.MapBlazorHub();
+        app.MapFallbackToPage("/_Host");
+
+        app.MapControllers();
+
+        AdminPanelEnvironment.IsHostingEmbedded = true;
+
+        return app;
     }
 }

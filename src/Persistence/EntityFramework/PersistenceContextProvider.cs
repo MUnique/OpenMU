@@ -47,8 +47,15 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// </returns>
     public bool IsDatabaseUpToDate()
     {
-        using var installationContext = new EntityDataContext();
-        return !installationContext.Database.GetPendingMigrations().Any();
+        try
+        {
+            using var installationContext = new EntityDataContext();
+            return !installationContext.Database.GetPendingMigrations().Any();
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -72,10 +79,29 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
             await Task.Delay(3000, cancellationToken);
         }
 
-        await using var installationContext = new EntityDataContext();
-        while (!await installationContext.Set<GameConfiguration>().AnyAsync(cancellationToken))
+        while (!await this.ConfigurationExistsAsync(cancellationToken))
         {
             await Task.Delay(3000, cancellationToken);
+        }
+
+        await Task.Delay(5000, cancellationToken);
+    }
+
+    /// <summary>
+    /// Determines if a <see cref="GameConfiguration"/> exists on the database.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>True</c>, if a <see cref="GameConfiguration"/> exists; Otherwise, <c>false</c>.</returns>
+    public async Task<bool> ConfigurationExistsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await using var installationContext = new EntityDataContext();
+            return await installationContext.Set<GameConfiguration>().AnyAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            return false;
         }
     }
 
@@ -85,8 +111,15 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
     public bool DatabaseExists()
     {
-        using var installationContext = new EntityDataContext();
-        return installationContext.Database.GetAppliedMigrations().Any();
+        try
+        {
+            using var installationContext = new EntityDataContext();
+            return installationContext.Database.GetAppliedMigrations().Any();
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>

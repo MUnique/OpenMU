@@ -4,6 +4,10 @@ services:
   database:
     ports:
       - "5433:5432"
+      
+  redis-state:
+    ports:
+      - "6379:6379"
 
   gameServer1:
     environment:
@@ -36,7 +40,5 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       # ASPNETCORE_Kestrel__Certificates__Default__Password: foobar
       # ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
-    # ports:
-    #   - "80:80"
     # volumes:
     #   - ~/.aspnet/https:/https:ro

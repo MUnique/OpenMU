@@ -6,14 +6,14 @@
     <ProjectGuid>0dfecd55-7aa2-4263-b6fd-ec1c4e6a59b3</ProjectGuid>
     <DockerLaunchAction>None</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
-    <DockerServiceName>gameServer1</DockerServiceName>
   </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
-    <None Include="Dapr\components\config.yaml" />
-    <None Include="Dapr\components\localSecretStore.yaml" />
-    <None Include="Dapr\components\login-state.yaml" />
-    <None Include="Dapr\components\pubsub.yaml" />
-    <None Include="Dapr\components\secrets.json" />
+    <None Include="dapr-components\config.yaml" />
+    <None Include="dapr-components\localSecretStore.yaml" />
+    <None Include="dapr-components\login-state.yaml" />
+    <None Include="dapr-components\pubsub.yaml" />
+    <None Include="dapr-components\secrets.json" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>

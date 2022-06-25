@@ -151,7 +151,13 @@ public sealed class PersistentLoginServer : ILoginServer
     {
         try
         {
-            await this._daprClient.SaveStateAsync<int?>(StoreName, accountName, OfflineServerId);
+            var (currentServerId, eTag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong);
+            if (currentServerId == OfflineServerId)
+            {
+                return;
+            }
+
+            await this._daprClient.TrySaveStateAsync<int?>(StoreName, accountName, OfflineServerId, eTag);
         }
         catch (Exception ex)
         {

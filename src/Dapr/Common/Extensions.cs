@@ -6,22 +6,24 @@ namespace MUnique.OpenMU.Dapr.Common;
 
 using System.Net;
 using System.Reflection;
-
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Npgsql;
+using OpenTelemetry.Metrics;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Filters;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.PlugIns;
-using OpenTelemetry.Metrics;
+
 
 /// <summary>
 /// Common extensions for the building of daprized services.
@@ -59,7 +61,18 @@ public static class Extensions
     public static IServiceCollection AddPlugInManager(this IServiceCollection services)
     {
         return services
-            .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
+            .AddSingleton<ICollection<PlugInConfiguration>>(s =>
+            {
+                try
+                {
+                    return s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+                }
+                catch (PostgresException)
+                {
+                    // If we can't load it yet, because the database is not initialized, we just return an empty list.
+                    return new List<PlugInConfiguration>();
+                }
+            })
             .AddSingleton<PlugInManager>();
     }
 

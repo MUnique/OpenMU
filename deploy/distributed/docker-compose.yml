@@ -3,6 +3,7 @@ version: '3.4'
 volumes:
   dbdata:
   prometheus-data:
+  minio-data:
 
 services:
   nginx:
@@ -18,7 +19,7 @@ services:
       - adminPanel
       - gameServer1
       - zipkin
-  
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -70,20 +71,20 @@ services:
     ports:
       - 9000
     volumes:
-      - ./.data/minio:/data
+      - minio-data:/data
+
+  redis-state:
+    image: redis
+    restart: always
+    ports:
+      - 6379
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
 
   dapr-placement:
     image: "daprio/dapr"
     container_name: dapr_placement
     command: ["./placement", "-port", "50006"]
-
-  #redis-pub: 
-  #  image: redis
-  #  restart: always
-  #  environment:
-  #    ALLOW_EMPTY_PASSWORD: "yes"
-  #  ports:
-  #    - "50100:50001"
 
   pubsub:
     image: rabbitmq:3-management-alpine
@@ -117,7 +118,7 @@ services:
     image: ${DOCKER_REGISTRY-}openmu-cs
     container_name: connectServer
     build:
-      context: .
+      context: ../../src
       dockerfile: Dapr/ConnectServer.Host/Dockerfile
     ports:
       - "50010:50001"
@@ -141,13 +142,13 @@ services:
       - connectServer
     network_mode: "service:connectServer"
     volumes:
-      - "./Dapr/components/:/components"
+      - "./dapr-components/:/components"
 
   loginServer:
     image: ${DOCKER_REGISTRY-}openmu-login
     container_name: loginServer
     build:
-      context: .
+      context: ../../src
       dockerfile: Dapr/LoginServer.Host/Dockerfile
     ports:
       - "50011:50001"
@@ -167,13 +168,13 @@ services:
       - loginServer
     network_mode: "service:loginServer"
     volumes:
-      - "./Dapr/components/:/components"
+      - "./dapr-components/:/components"
 
   friendServer:
     image: ${DOCKER_REGISTRY-}openmu-friends
     container_name: friendServer
     build:
-      context: .
+      context: ../../src
       dockerfile: Dapr/FriendServer.Host/Dockerfile
     ports:
       - "50012:50001"
@@ -194,13 +195,13 @@ services:
       - friendServer
     network_mode: "service:friendServer"
     volumes:
-      - "./Dapr/components/:/components"
+      - "./dapr-components/:/components"
   
   guildServer:
     image: ${DOCKER_REGISTRY-}openmu-guilds
     container_name: guildServer
     build:
-      context: .
+      context: ../../src
       dockerfile: Dapr/GuildServer.Host/Dockerfile
     ports:
       - "50013:50001"
@@ -220,13 +221,13 @@ services:
       - guildServer
     network_mode: "service:guildServer"
     volumes:
-      - "./Dapr/components/:/components"
+      - "./dapr-components/:/components"
 
   chatServer:
     image: ${DOCKER_REGISTRY-}openmu-chat
     container_name: chatServer
     build:
-      context: .
+      context: ../../src
       dockerfile: Dapr/ChatServer.Host/Dockerfile
     environment:
       APPID: chatServer
@@ -249,14 +250,14 @@ services:
       - chatServer
     network_mode: "service:chatServer"
     volumes:
-      - "./Dapr/components/:/components"
+      - "./dapr-components/:/components"
 
 
   adminPanel:
     image: ${DOCKER_REGISTRY-}openmu-admin
     container_name: adminPanel
     build:
-      context: .
+      context: ../../src
       dockerfile: Dapr/AdminPanel.Host/Dockerfile
     depends_on:
       - database
@@ -279,13 +280,13 @@ services:
       - adminPanel
     network_mode: "service:adminPanel"
     volumes:
-      - "./Dapr/components/:/components"
+      - "./dapr-components/:/components"
 
   gameServer1:
     image: ${DOCKER_REGISTRY-}openmu-gs
-    container_name: gameserver1
+    container_name: gameServer1
     build:
-      context: .
+      context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "80"
@@ -316,4 +317,5 @@ services:
       - gameServer1
     network_mode: "service:gameServer1"
     volumes:
-      - "./Dapr/components/:/components"
+      - "./dapr-components/:/components"
+

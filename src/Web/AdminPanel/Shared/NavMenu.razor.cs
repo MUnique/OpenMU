@@ -54,8 +54,16 @@ public partial class NavMenu
 
     private void LoadGameConfiguration()
     {
-        using var context = this.PersistenceContextProvider.CreateNewConfigurationContext();
-        this.GameConfiguration = context.Get<GameConfiguration>().FirstOrDefault();
+        try
+        {
+            using var context = this.PersistenceContextProvider.CreateNewConfigurationContext();
+            this.GameConfiguration = context.Get<GameConfiguration>().FirstOrDefault();
+        }
+        catch
+        {
+            this.GameConfiguration = null;
+        }
+
         this.OnlyShowSetup = this.GameConfiguration is null;
     }
 

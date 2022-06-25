@@ -6,7 +6,9 @@
 }
 else if (!this.SetupService.CanConnectToDatabase)
 {
-    <p>Database status: <span class="badge bg-danger">Can't connect to the database.</span></p>
+    <p>Database status: <span class="badge bg-danger">Can't connect to the database. Probably not created yet.</span></p>
+
+    <button class="btn btn-primary" @onclick="this.OnInstallClick">Create</button>
 }
 else if (!this.SetupService.IsInstalled)
 {
