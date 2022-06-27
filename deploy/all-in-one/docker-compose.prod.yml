@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  openmu-startup:
+    restart: "unless-stopped"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+  database:
+    restart: "unless-stopped"
+
+  nginx:
+    restart: "unless-stopped"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./.htpasswd:/etc/nginx/.htpasswd
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw

@@ -5,13 +5,14 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Components;
 
 using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// The component which allows to initialize the database.
 /// </summary>
-public partial class Install
+public sealed partial class Install
 {
     /// <summary>
     /// Gets or sets the selected version.
@@ -38,6 +39,8 @@ public partial class Install
     /// </summary>
     public bool IsInstalled { get; private set; }
 
+    private int CurrentConnections => this.ServerProvider.Servers.Where(s => s.ServerState != ServerState.Timeout).Sum(s => s.CurrentConnections);
+
     /// <summary>
     /// Gets or sets the installation finished callback.
     /// </summary>
@@ -49,6 +52,12 @@ public partial class Install
     /// </summary>
     [Inject]
     public SetupService SetupService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the server provider.
+    /// </summary>
+    [Inject]
+    public IServerProvider ServerProvider { get; set; } = null!;
 
     /// <inheritdoc />
     protected override void OnParametersSet()
@@ -78,7 +87,6 @@ public partial class Install
         {
             this.IsInstalled = true;
             this.IsInstalling = false;
-            await this.InstallationFinished.InvokeAsync();
         }
     }
 

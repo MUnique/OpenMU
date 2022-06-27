@@ -13,12 +13,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf
       - ./.htpasswd:/etc/nginx/.htpasswd
-    depends_on:
-      - adminPanel
-      - gameServer1
-      - zipkin
 
   grafana:
     image: grafana/grafana:latest
@@ -105,7 +101,7 @@ services:
     ports:
       - "5432"
     volumes:
-      - dbdata:/var/lib/postgresql/data #store data on volume
+      - dbdata:/var/lib/postgresql/data
 
   zipkin:
     image: openzipkin/zipkin
@@ -115,11 +111,8 @@ services:
       - "9411:9411"
 
   connectServer:
-    image: ${DOCKER_REGISTRY-}openmu-cs
+    image: munique/openmu-connect
     container_name: connectServer
-    build:
-      context: ../../src
-      dockerfile: Dapr/ConnectServer.Host/Dockerfile
     ports:
       - "50010:50001"
       - "44405:44405"
@@ -145,11 +138,8 @@ services:
       - "./dapr-components/:/components"
 
   loginServer:
-    image: ${DOCKER_REGISTRY-}openmu-login
+    image: munique/openmu-login
     container_name: loginServer
-    build:
-      context: ../../src
-      dockerfile: Dapr/LoginServer.Host/Dockerfile
     ports:
       - "50011:50001"
       - "9464" # Prometheus
@@ -171,11 +161,8 @@ services:
       - "./dapr-components/:/components"
 
   friendServer:
-    image: ${DOCKER_REGISTRY-}openmu-friends
+    image: munique/openmu-friend
     container_name: friendServer
-    build:
-      context: ../../src
-      dockerfile: Dapr/FriendServer.Host/Dockerfile
     ports:
       - "50012:50001"
       - "9464" # Prometheus
@@ -198,11 +185,8 @@ services:
       - "./dapr-components/:/components"
   
   guildServer:
-    image: ${DOCKER_REGISTRY-}openmu-guilds
+    image: munique/openmu-guild
     container_name: guildServer
-    build:
-      context: ../../src
-      dockerfile: Dapr/GuildServer.Host/Dockerfile
     ports:
       - "50013:50001"
       - "9464" # Prometheus
@@ -224,11 +208,8 @@ services:
       - "./dapr-components/:/components"
 
   chatServer:
-    image: ${DOCKER_REGISTRY-}openmu-chat
+    image: munique/openmu-chat
     container_name: chatServer
-    build:
-      context: ../../src
-      dockerfile: Dapr/ChatServer.Host/Dockerfile
     environment:
       APPID: chatServer
     ports:
@@ -254,11 +235,8 @@ services:
 
 
   adminPanel:
-    image: ${DOCKER_REGISTRY-}openmu-admin
+    image: munique/openmu-admin
     container_name: adminPanel
-    build:
-      context: ../../src
-      dockerfile: Dapr/AdminPanel.Host/Dockerfile
     depends_on:
       - database
     ports:
@@ -284,9 +262,9 @@ services:
     volumes:
       - "./dapr-components/:/components"
 
-  gameServer1:
-    image: ${DOCKER_REGISTRY-}openmu-gs
-    container_name: gameServer1
+  gameServer0:
+    image: munique/openmu-game
+    container_name: gameServer0
     build:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
@@ -297,6 +275,43 @@ services:
       - "9464" # Prometheus
     environment:
       GS_ID: 0
+      APPID: gameServer0
+      PATH_BASE: /gameServer/0/
+    depends_on:
+      - connectServer-dapr
+      - loginServer-dapr
+      - friendServer-dapr
+      - pubsub
+      - zipkin
+      - database
+      - loki
+
+  gameServer0-dapr:
+    image: "daprio/daprd:latest"
+    container_name: gameserver0_dapr
+    command: [ "./daprd", "-app-id", "gameServer0", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - gameServer0
+    network_mode: "service:gameServer0"
+    volumes:
+      - "./dapr-components/:/components"
+  
+  gameServer1:
+    image: munique/openmu-game
+    container_name: gameServer1
+    build:
+      context: ../../src
+      dockerfile: Dapr/GameServer.Host/Dockerfile
+    ports:
+      - "80"
+      - "50001:50001"
+      - "55902:55902"
+      - "9464" # Prometheus
+    environment:
+      GS_ID: 1
       APPID: gameServer1
       PATH_BASE: /gameServer/1/
     depends_on:
@@ -320,4 +335,3 @@ services:
     network_mode: "service:gameServer1"
     volumes:
       - "./dapr-components/:/components"
-

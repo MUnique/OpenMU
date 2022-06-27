@@ -11,10 +11,22 @@ else if (this.IsInstalling)
 else if (this.IsInstalled)
 {
     <p>Finished! Have fun :)</p>
-    <p>Please restart the admin panel / server.</p>
+    if (!AdminPanelEnvironment.IsHostingEmbedded)
+    {
+        <p>Please restart the connect and game server containers.</p>
+    }
+
+    <button class="btn btn-primary" @onclick="async () => await this.InstallationFinished.InvokeAsync()">OK</button>
 }
 else
 {
+    if (this.CurrentConnections > 0)
+    {
+        <div class="alert alert-danger" role="alert">
+            First, close all connections to the server.
+        </div>
+    }
+
     <p>
         <h2>Select the game version</h2>
 
@@ -46,7 +58,14 @@ else
     </p>
 
     <p>
-        <button class="btn btn-primary" @onclick="this.StartInstallation">Start install</button>
+        @if (this.CurrentConnections == 0)
+        {
+            <button class="btn btn-primary" @onclick="this.StartInstallation">Start install</button>
+        }
+        else
+        {
+            <button class="btn btn-primary disabled">Start install</button>
+        }
     </p>
 }
 

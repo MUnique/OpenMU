@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.ServerClients;
 
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using Dapr.Client;
 using MUnique.OpenMU.Interfaces;
 
@@ -34,7 +35,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceived), letter);
+            this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceived), letter).WaitAndUnwrapException();
         }
         catch (Exception ex)
         {
@@ -47,7 +48,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.FriendResponse), new FriendResponseArguments(characterName, friendName, accepted));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.FriendResponse), new FriendResponseArguments(characterName, friendName, accepted)).WaitAndUnwrapException();
         }
         catch (Exception ex)
         {
@@ -72,7 +73,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.SetPlayerVisibilityState), new PlayerFriendOnlineStateArguments(characterId, characterName, serverId, isVisible));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.SetPlayerVisibilityState), new PlayerFriendOnlineStateArguments(characterId, characterName, serverId, isVisible)).WaitAndUnwrapException();
         }
         catch (Exception ex)
         {
@@ -85,7 +86,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(this.FriendRequest), new RequestArguments(playerName, friendName)).Result;
+            return this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(this.FriendRequest), new RequestArguments(playerName, friendName)).WaitAndUnwrapException();
         }
         catch (Exception ex)
         {
@@ -99,7 +100,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.DeleteFriend), new RequestArguments(name, friendName));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.DeleteFriend), new RequestArguments(name, friendName)).WaitAndUnwrapException();
         }
         catch (Exception ex)
         {
@@ -112,7 +113,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateChatRoom), new RequestArguments(playerName, friendName));
+            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateChatRoom), new RequestArguments(playerName, friendName)).WaitAndUnwrapException();
         }
         catch (Exception ex)
         {

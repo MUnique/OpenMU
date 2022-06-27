@@ -1,0 +1,77 @@
+version: '3.4'
+
+services:
+  nginx:
+    restart: "unless-stopped"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./.htpasswd:/etc/nginx/.htpasswd
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+
+  grafana:
+    restart: "unless-stopped"
+  prometheus:
+    restart: "unless-stopped"
+  loki:
+    restart: "unless-stopped"
+  minio:
+    restart: "unless-stopped"
+  redis-state:
+    restart: "unless-stopped"
+  dapr-placement:
+    restart: "unless-stopped"
+  pubsub:
+    restart: "unless-stopped"
+  database:
+    restart: "unless-stopped"
+  zipkin:
+    restart: "unless-stopped"
+
+  connectServer:
+    restart: "unless-stopped"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+  loginServer:
+    restart: "unless-stopped"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+  friendServer:
+    restart: "unless-stopped"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+  guildServer:
+    restart: "unless-stopped"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+  chatServer:
+    restart: "unless-stopped"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+  adminPanel:
+    restart: "unless-stopped"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+  
+  gameServer0:
+    restart: "unless-stopped"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+  gameServer1:
+    restart: "unless-stopped"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production

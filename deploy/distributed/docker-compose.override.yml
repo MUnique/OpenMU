@@ -8,37 +8,57 @@ services:
   redis-state:
     ports:
       - "6379:6379"
-
-  gameServer1:
+  
+  gameServer0:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
       - "81:80"
 
+  gameServer1:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "82:80"
+
   connectServer:
+    build:
+      context: ../../src
+      dockerfile: Dapr/ConnectServer.Host/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
   loginServer:
+    build:
+      context: ../../src
+      dockerfile: Dapr/LoginServer.Host/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
   friendServer:
+    build:
+      context: ../../src
+      dockerfile: Dapr/FriendServer.Host/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
   guildServer:
+    build:
+      context: ../../src
+      dockerfile: Dapr/GuildServer.Host/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
   chatServer:
+    build:
+      context: ../../src
+      dockerfile: Dapr/ChatServer.Host/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
   adminPanel:
+    build:
+      context: ../../src
+      dockerfile: Dapr/AdminPanel.Host/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      # ASPNETCORE_Kestrel__Certificates__Default__Password: foobar
-      # ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
-    # volumes:
-    #   - ~/.aspnet/https:/https:ro

@@ -4,7 +4,6 @@ services:
   nginx:
     image: nginx:alpine
     container_name: nginx
-    restart: always
     ports:
       - "80:80"
     volumes:
@@ -14,10 +13,8 @@ services:
       - openmu-startup
 
   openmu-startup:
-    image: ${DOCKER_REGISTRY-}openmu
+    image: munique/openmu
     container_name: openmu-startup
-    restart: unless-stopped
-    tty: true
     ports:
       - "80"
       - "55901:55901"
@@ -27,7 +24,6 @@ services:
       - "55980:55980"
     environment:
       DB_HOST: database
-      # ASPNETCORE_URLS: http://+:1234
     working_dir: /app/
     volumes:
       - ./.htpasswd:/etc/nginx/.htpasswd
@@ -36,7 +32,6 @@ services:
 
   database:
     image: postgres
-    restart: always
     container_name: database
     environment:
       POSTGRES_PASSWORD: admin

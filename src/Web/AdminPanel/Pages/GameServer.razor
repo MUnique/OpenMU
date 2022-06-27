@@ -1,4 +1,4 @@
-﻿@page "/gameServer/{gameServerNumber:int}/"
+﻿@page "/gameServer/{gameServerId:int}/"
 
 @using MUnique.OpenMU.Web.Map.Components
 @using MUnique.OpenMU.Web.Map
@@ -25,17 +25,20 @@
     [Inject]
     public IList<IManageableServer> Servers { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the 0-based game server id/index.
+    /// </summary>
     [Parameter]
-    public int GameServerNumber { get; set; }
+    public int GameServerId { get; set; }
 
     /// <inheritdoc />
     protected override Task OnInitializedAsync()
     {
         
-        var gameServer = this.Servers.OfType<IGameServer>().First(gs => gs.Id == this.GameServerNumber - 1);
+        var gameServer = this.Servers.OfType<IGameServer>().First(gs => gs.Id == this.GameServerId);
         var context = (gameServer as IGameServerContextProvider)?.Context ?? throw new InvalidOperationException("This map page just works in a All-In-One deployment.");
         this._gameServer = new ObservableGameServerAdapter(context);
-        this._liveMapRoute = $"gameServer/{this.GameServerNumber}/map/";
+        this._liveMapRoute = $"gameServer/{this.GameServerId}/map/";
         return base.OnInitializedAsync();
     }
 }
