@@ -25,7 +25,7 @@ Navigate to the folder deploy/distributed
 
 ### Option A - for local testing
 
-> docker-compose up -d
+> docker compose up -d
 
 And that's it ;-)
 
@@ -42,7 +42,7 @@ In the nginx.prod.conf, change "example.org" to your domain name.
 
 #### Run it
 
-> docker-compose up -f docker-compose.yml docker-compose.prod.yml -d
+> docker compose up -f docker-compose.yml docker-compose.prod.yml -d
 
 #### Run certbot explicitly
 
@@ -67,3 +67,27 @@ If your containers run on docker at your local machine, you can simply go to htt
 There you'll find a setup in the navigation menu, where you can select your desired game version, number of game servers (just the data of it), and if test accounts should be created.
 
 Click on 'Install', wait a bit until the database is set up and filled with the data and voila, OpenMU is ready to use.
+
+
+## Environment variables
+
+The openmu images which are used in this docker-compose consider the following environment variables:
+
+### ASPNETCORE_ENVIRONMENT
+
+It's usually specified correctly in the docker-compose files. It has effect on the ip resolver, see below.
+
+### RESOLVE_IP
+
+Similar to the -resolveIp starting parameter of the all-in-one startup project, you're able to control the ip resolving with this variable. The defaults usually work fine here, so you should try not to set this variable.
+
+| Value | Description         |
+|-------|---------------------|
+| local | Default value in a *Development* environment. Determines a local ip. If none is found, a loopback IP is used (127.127.127.127). |
+| public | Default value in a *Production* environment. The public ip is automatically determined by an [external API](https://www.ipify.org/). |
+| loopback | Returns *127.127.127.127*, usefully only if you run your server and client on the same machine. |
+| [custom ip] | You can specify a custom ip, if needed. Example: *192.168.0.1* |
+
+### GS_ID
+
+It's usually specified correctly in the docker-compose files or each game server. Specifies the id of a game server, and is used to retrieve the GameServerConfiguration from the database.
