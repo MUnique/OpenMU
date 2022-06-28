@@ -8,10 +8,10 @@ COPY ["Dapr/LoginServer.Host/MUnique.OpenMU.LoginServer.Host.csproj", "Dapr/Logi
 RUN dotnet restore "Dapr/LoginServer.Host/MUnique.OpenMU.LoginServer.Host.csproj"
 COPY . .
 WORKDIR "/src/Dapr/LoginServer.Host"
-RUN dotnet build "MUnique.OpenMU.LoginServer.Host.csproj" -c Release -o /app/build
+RUN dotnet build "MUnique.OpenMU.LoginServer.Host.csproj" -c Release -o /app/build -p:ci=true
 
 FROM build AS publish
-RUN dotnet publish "MUnique.OpenMU.LoginServer.Host.csproj" -c Release -o /app/publish
+RUN dotnet publish "MUnique.OpenMU.LoginServer.Host.csproj" -c Release -o /app/publish -p:ci=true
 
 FROM base AS final
 WORKDIR /app

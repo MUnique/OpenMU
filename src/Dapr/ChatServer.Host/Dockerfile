@@ -9,10 +9,10 @@ COPY ["Dapr/ChatServer.Host/MUnique.OpenMU.ChatServer.Host.csproj", "Dapr/ChatSe
 RUN dotnet restore "Dapr/ChatServer.Host/MUnique.OpenMU.ChatServer.Host.csproj"
 COPY . .
 WORKDIR "/src/Dapr/ChatServer.Host"
-RUN dotnet build "MUnique.OpenMU.ChatServer.Host.csproj" -c Release -o /app/build
+RUN dotnet build "MUnique.OpenMU.ChatServer.Host.csproj" -c Release -o /app/build -p:ci=true
 
 FROM build AS publish
-RUN dotnet publish "MUnique.OpenMU.ChatServer.Host.csproj" -c Release -o /app/publish
+RUN dotnet publish "MUnique.OpenMU.ChatServer.Host.csproj" -c Release -o /app/publish -p:ci=true
 
 FROM base AS final
 WORKDIR /app

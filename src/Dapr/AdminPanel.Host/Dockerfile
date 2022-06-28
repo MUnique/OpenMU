@@ -8,10 +8,10 @@ COPY ["Dapr/AdminPanel.Host/MUnique.OpenMU.AdminPanel.Host.csproj", "Dapr/AdminP
 RUN dotnet restore "Dapr/AdminPanel.Host/MUnique.OpenMU.AdminPanel.Host.csproj"
 COPY . .
 WORKDIR "/src/Dapr/AdminPanel.Host"
-RUN dotnet build "MUnique.OpenMU.AdminPanel.Host.csproj" -c Release -o /app/build
+RUN dotnet build "MUnique.OpenMU.AdminPanel.Host.csproj" -c Release -o /app/build -p:ci=true
 
 FROM build AS publish
-RUN dotnet publish "MUnique.OpenMU.AdminPanel.Host.csproj" -c Release -o /app/publish
+RUN dotnet publish "MUnique.OpenMU.AdminPanel.Host.csproj" -c Release -o /app/publish -p:ci=true
 
 FROM base AS final
 WORKDIR /app

@@ -8,10 +8,10 @@ COPY ["Dapr/FriendServer.Host/MUnique.OpenMU.FriendServer.Host.csproj", "Dapr/Fr
 RUN dotnet restore "Dapr/FriendServer.Host/MUnique.OpenMU.FriendServer.Host.csproj"
 COPY . .
 WORKDIR "/src/Dapr/FriendServer.Host"
-RUN dotnet build "MUnique.OpenMU.FriendServer.Host.csproj" -c Release -o /app/build
+RUN dotnet build "MUnique.OpenMU.FriendServer.Host.csproj" -c Release -o /app/build -p:ci=true
 
 FROM build AS publish
-RUN dotnet publish "MUnique.OpenMU.FriendServer.Host.csproj" -c Release -o /app/publish
+RUN dotnet publish "MUnique.OpenMU.FriendServer.Host.csproj" -c Release -o /app/publish -p:ci=true
 
 FROM base AS final
 WORKDIR /app

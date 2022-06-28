@@ -13,10 +13,10 @@ COPY ["Startup/MUnique.OpenMU.Startup.csproj", "Startup/"]
 RUN dotnet restore "Startup/MUnique.OpenMU.Startup.csproj"
 COPY . .
 WORKDIR "/src/Startup"
-RUN dotnet build "MUnique.OpenMU.Startup.csproj" -c Release -o /app/build
+RUN dotnet build "MUnique.OpenMU.Startup.csproj" -c Release -o /app/build -p:ci=true
 
 FROM build AS publish
-RUN dotnet publish "MUnique.OpenMU.Startup.csproj" -c Release -o /app/publish
+RUN dotnet publish "MUnique.OpenMU.Startup.csproj" -c Release -o /app/publish -p:ci=true
 
 FROM base AS final
 WORKDIR /app
