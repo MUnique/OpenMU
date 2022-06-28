@@ -5,6 +5,7 @@ EXPOSE 55980
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
 WORKDIR /src
+COPY ["Dapr/ChatServer.Host/MUnique.OpenMU.ChatServer.Host.csproj", "Dapr/ChatServer.Host/"]
 RUN dotnet restore "Dapr/ChatServer.Host/MUnique.OpenMU.ChatServer.Host.csproj"
 COPY . .
 WORKDIR "/src/Dapr/ChatServer.Host"

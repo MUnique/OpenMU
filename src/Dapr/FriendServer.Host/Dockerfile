@@ -4,6 +4,7 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
 WORKDIR /src
+COPY ["Dapr/FriendServer.Host/MUnique.OpenMU.FriendServer.Host.csproj", "Dapr/FriendServer.Host/"]
 RUN dotnet restore "Dapr/FriendServer.Host/MUnique.OpenMU.FriendServer.Host.csproj"
 COPY . .
 WORKDIR "/src/Dapr/FriendServer.Host"

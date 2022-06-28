@@ -24,8 +24,8 @@ steps:
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
-    buildContext: 'src/Startup/'
+    Dockerfile: 'src/Startup/Dockerfile'
+    buildContext: 'src'
     repository: 'munique/openmu'
     tags: |
       $(Build.SourceBranchName)
@@ -35,7 +35,8 @@ steps:
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/src/Dapr/AdminPanel.Host/Dockerfile'
+    Dockerfile: 'src/Dapr/AdminPanel.Host/Dockerfile'
+    buildContext: 'src'
     repository: 'munique/openmu-admin'
     tags: |
       $(Build.SourceBranchName)
@@ -45,7 +46,8 @@ steps:
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/src/Dapr/ChatServer.Host/Dockerfile'
+    Dockerfile: 'src/Dapr/ChatServer.Host/Dockerfile'
+    buildContext: 'src'
     repository: 'munique/openmu-chat'
     tags: |
       $(Build.SourceBranchName)
@@ -55,7 +57,8 @@ steps:
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/src/Dapr/ConnectServer.Host/Dockerfile'
+    Dockerfile: 'src/Dapr/ConnectServer.Host/Dockerfile'
+    buildContext: 'src'
     repository: 'munique/openmu-connect'
     tags: |
       $(Build.SourceBranchName)
@@ -65,7 +68,8 @@ steps:
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/src/Dapr/FriendServer.Host/Dockerfile'
+    Dockerfile: 'src/Dapr/FriendServer.Host/Dockerfile'
+    buildContext: 'src'
     repository: 'munique/openmu-friend'
     tags: |
       $(Build.SourceBranchName)
@@ -75,7 +79,8 @@ steps:
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/src/Dapr/GameServer.Host/Dockerfile'
+    Dockerfile: 'src/Dapr/GameServer.Host/Dockerfile'
+    buildContext: 'src'
     repository: 'munique/openmu-game'
     tags: |
       $(Build.SourceBranchName)
@@ -85,7 +90,8 @@ steps:
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/src/Dapr/GuildServer.Host/Dockerfile'
+    Dockerfile: 'src/Dapr/GuildServer.Host/Dockerfile'
+    buildContext: 'src'
     repository: 'munique/openmu-guild'
     tags: |
       $(Build.SourceBranchName)
@@ -95,7 +101,8 @@ steps:
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/src/Dapr/LoginServer.Host/Dockerfile'
+    Dockerfile: 'src/Dapr/LoginServer.Host/Dockerfile'
+    buildContext: 'src'
     repository: 'munique/openmu-login'
     tags: |
       $(Build.SourceBranchName)

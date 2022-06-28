@@ -4,7 +4,7 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
 WORKDIR /src
-
+COPY ["Dapr/AdminPanel.Host/MUnique.OpenMU.AdminPanel.Host.csproj", "Dapr/AdminPanel.Host/"]
 RUN dotnet restore "Dapr/AdminPanel.Host/MUnique.OpenMU.AdminPanel.Host.csproj"
 COPY . .
 WORKDIR "/src/Dapr/AdminPanel.Host"
