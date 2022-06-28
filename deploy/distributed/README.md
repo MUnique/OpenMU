@@ -75,7 +75,6 @@ should be created.
 Click on 'Install', wait a bit until the database is set up and filled with the
 data and voila, OpenMU is ready to use.
 
-
 ## Environment variables
 
 The openmu images which are used in this docker-compose consider the following

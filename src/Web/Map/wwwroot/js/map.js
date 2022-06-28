@@ -13,7 +13,7 @@ function CreateMap(serverId, mapId, containerId, appId) {
             console.log('MapApp module resolved');
             window[appId] = new module.MapApp(stats, serverId, mapId, document.getElementById(containerId));
         });
-};
+}
 
 function DisposeMap(identifier) {
     console.debug("Disposing map; containerId: ", identifier);
@@ -22,4 +22,4 @@ function DisposeMap(identifier) {
         map.dispose();
         delete window[identifier];
     }
-};
+}

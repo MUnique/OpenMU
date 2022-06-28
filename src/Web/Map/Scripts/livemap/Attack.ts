@@ -83,4 +83,4 @@ export class Attacks extends THREE.Points {
 
         this.geometry.verticesNeedUpdate = true;
     }
-};
+}

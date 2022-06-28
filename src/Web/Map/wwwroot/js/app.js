@@ -220,7 +220,6 @@ System.register("Attack", ["three", "tween", "Queue"], function (exports_4, cont
                 return Attacks;
             }(THREE.Points));
             exports_4("Attacks", Attacks);
-            ;
         }
     };
 });
@@ -324,7 +323,7 @@ System.register("Attackable", ["three", "tween"], function (exports_5, context_5
             }(THREE.Mesh));
             exports_5("Attackable", Attackable);
             ;
-            new THREE.TextureLoader().load('img/attackable_alphamap.png', function (t) {
+            new THREE.TextureLoader().load("img/attackable_alphamap.png", function (t) {
                 exports_5("attackableAlphaMapTexture", attackableAlphaMapTexture = t);
             });
         }
@@ -484,7 +483,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     var planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments), new THREE.ShaderMaterial(TerrainShader_1.terrainShader));
                     _this.add(planeMesh);
                     var textureLoader = new THREE.TextureLoader();
-                    textureLoader.load('terrain/' + serverId + '/' + mapId, function (texture) {
+                    textureLoader.load("terrain/" + serverId + "/" + mapId, function (texture) {
                         texture.magFilter = THREE.NearestFilter;
                         TerrainShader_1.terrainShader.uniforms.tColor.value = texture;
                     });
@@ -635,7 +634,6 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 return World;
             }(THREE.Object3D));
             exports_9("World", World);
-            ;
         }
     };
 });
@@ -656,7 +654,7 @@ System.register("WorldObjectPicker", ["three"], function (exports_10, context_10
                     var raycaster = new THREE.Raycaster();
                     var mouse = new THREE.Vector2();
                     raycaster.setFromCamera(mouse, camera);
-                    worldCanvas.addEventListener('click', function (mouseEvent) {
+                    worldCanvas.addEventListener("click", function (mouseEvent) {
                         mouse.x = (mouseEvent.offsetX / worldCanvas.clientWidth) * 2 - 1;
                         mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
                         raycaster.setFromCamera(mouse, camera);
@@ -677,7 +675,6 @@ System.register("WorldObjectPicker", ["three"], function (exports_10, context_10
                 return WorldObjectPicker;
             }());
             exports_10("WorldObjectPicker", WorldObjectPicker);
-            ;
         }
     };
 });

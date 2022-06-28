@@ -42,7 +42,7 @@ export class World extends THREE.Object3D {
         this.add(planeMesh);
 
         const textureLoader = new THREE.TextureLoader();
-        textureLoader.load('terrain/' + serverId + '/' + mapId, (texture: THREE.Texture) => {
+        textureLoader.load("terrain/" + serverId + "/" + mapId, (texture: THREE.Texture) => {
             texture.magFilter = THREE.NearestFilter;
             terrainShader.uniforms.tColor.value = texture;
         });
@@ -66,7 +66,7 @@ export class World extends THREE.Object3D {
         if (obj === undefined || obj === null) {
             const waitTimeMs = 50;
             while (attackableAlphaMapTexture === undefined) {
-                await new Promise(resolve => setTimeout(resolve, waitTimeMs));
+                await new Promise((resolve) => setTimeout(resolve, waitTimeMs));
             }
 
             console.debug("Adding npc", npcData);
@@ -82,7 +82,7 @@ export class World extends THREE.Object3D {
         if (obj === undefined || obj === null) {
             const waitTimeMs = 50;
             while (attackableAlphaMapTexture === undefined) {
-                await new Promise(resolve => setTimeout(resolve, waitTimeMs));
+                await new Promise((resolve) => setTimeout(resolve, waitTimeMs));
             }
 
             console.debug("Adding player", playerData);
@@ -197,4 +197,4 @@ export class World extends THREE.Object3D {
         this.add(mesh);
         this.objects[mesh.data.id] = mesh;
     }
-};
+}

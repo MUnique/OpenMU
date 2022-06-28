@@ -84,7 +84,7 @@ public class NginxHtpasswdFileUserService : UserServiceBase
         for (var i = 0; i < lines.Length; i++)
         {
             var line = lines[i];
-            if (line.StartsWith(userPrefix))
+            if (line.StartsWith(userPrefix, StringComparison.InvariantCulture))
             {
                 lines[i] = this.GenerateEntry(user, newPassword);
                 await File.WriteAllLinesAsync(HtpasswdFilePath, lines);

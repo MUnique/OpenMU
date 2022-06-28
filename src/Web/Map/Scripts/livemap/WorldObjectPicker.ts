@@ -14,7 +14,7 @@ export class WorldObjectPicker {
         const mouse = new THREE.Vector2();
         raycaster.setFromCamera(mouse, camera);
 
-        worldCanvas.addEventListener('click', (mouseEvent: MouseEvent) => {
+        worldCanvas.addEventListener("click", (mouseEvent: MouseEvent) => {
             mouse.x = (mouseEvent.offsetX / worldCanvas.clientWidth) * 2 - 1;
             mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
@@ -34,4 +34,4 @@ export class WorldObjectPicker {
 
         return null;
     }
-};
+}

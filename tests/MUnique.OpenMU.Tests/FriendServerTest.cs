@@ -19,7 +19,6 @@ public sealed class FriendServerTest
 {
     private Character _player1 = null!;
     private Character _player2 = null!;
-    private IDictionary<int, IGameServer> _gameServers = null!;
     private Mock<IGameServer> _gameServer1 = null!;
     private Mock<IGameServer> _gameServer2 = null!;
     private IFriendServer _friendServer = null!;
@@ -37,13 +36,13 @@ public sealed class FriendServerTest
         this._gameServer2 = new Mock<IGameServer>();
         this._gameServer2.Setup(gs => gs.Id).Returns(2);
 
-        this._gameServers = new Dictionary<int, IGameServer>
+        var gameServers = new Dictionary<int, IGameServer>
         {
             { this._gameServer1.Object.Id, this._gameServer1.Object },
             { this._gameServer2.Object.Id, this._gameServer2.Object },
         };
         this._persistenceContextProvider = new InMemoryPersistenceContextProvider();
-        var notifier = new FriendNotifierToGameServer(this._gameServers); // todo: mock this
+        var notifier = new FriendNotifierToGameServer(gameServers); // todo: mock this
         this._friendServer = new FriendServer.FriendServer(notifier, new Mock<IChatServer>().Object, this._persistenceContextProvider);
         var context = this._persistenceContextProvider.CreateNewContext();
         this._player1 = context.CreateNew<Character>();
@@ -214,10 +213,6 @@ public sealed class FriendServerTest
     private void PlayerEnteredGame(Guid playerId, string playerName, int serverId)
     {
         this._friendServer.PlayerEnteredGame((byte)serverId, playerId, playerName);
-        //if (this._gameServers.TryGetValue((byte)serverId, out var gameServer))
-        //{
-        //    Mock.Get(gameServer).Setup(g => g.IsPlayerOnline(playerName)).Returns(serverId != FriendServer.FriendServer.OfflineServerId);
-        //}
     }
 
     private void CheckFriendItemsAfterRequest()

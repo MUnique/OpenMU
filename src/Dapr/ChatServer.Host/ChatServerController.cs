@@ -46,6 +46,7 @@ public class ChatServerController : ControllerBase
         catch (Exception ex)
         {
             this._logger.LogError(ex, $"Error during registration of {data.ClientName} for room {data.RoomId}.");
+            throw;
         }
     }
 
@@ -63,6 +64,7 @@ public class ChatServerController : ControllerBase
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error creating a new chat room.");
+            throw;
         }
     }
 }
