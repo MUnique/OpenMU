@@ -15,6 +15,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- task: PowerShell@2
+  inputs:
+    filePath: 'set-projectVersion.ps1'
 - task: Docker@2
   inputs:
    containerRegistry: 'munique docker hub'
@@ -28,7 +31,7 @@ steps:
     buildContext: 'src'
     repository: 'munique/openmu'
     tags: |
-      $(Build.SourceBranchName)
+      $(projectVersion)
       latest
 - task: Docker@2
   displayName: "Build and Push AdminPanel Image (openmu-admin)"
@@ -39,7 +42,7 @@ steps:
     buildContext: 'src'
     repository: 'munique/openmu-admin'
     tags: |
-      $(Build.SourceBranchName)
+      $(projectVersion)
       latest
 - task: Docker@2
   displayName: "Build and Push ChatServer Image"
@@ -50,7 +53,7 @@ steps:
     buildContext: 'src'
     repository: 'munique/openmu-chat'
     tags: |
-      $(Build.SourceBranchName)
+      $(projectVersion)
       latest
 - task: Docker@2
   displayName: "Build and Push ConnectServer Image (openmu-connect)"
@@ -61,7 +64,7 @@ steps:
     buildContext: 'src'
     repository: 'munique/openmu-connect'
     tags: |
-      $(Build.SourceBranchName)
+      $(projectVersion)
       latest
 - task: Docker@2
   displayName: "Build and Push FriendServer Image (openmu-friend)"
@@ -72,7 +75,7 @@ steps:
     buildContext: 'src'
     repository: 'munique/openmu-friend'
     tags: |
-      $(Build.SourceBranchName)
+      $(projectVersion)
       latest
 - task: Docker@2
   displayName: "Build and Push GameServer Image (openmu-game)"
@@ -83,7 +86,7 @@ steps:
     buildContext: 'src'
     repository: 'munique/openmu-game'
     tags: |
-      $(Build.SourceBranchName)
+      $(projectVersion)
       latest
 - task: Docker@2
   displayName: "Build and Push GuildServer Image (openmu-guild)"
@@ -94,7 +97,7 @@ steps:
     buildContext: 'src'
     repository: 'munique/openmu-guild'
     tags: |
-      $(Build.SourceBranchName)
+      $(projectVersion)
       latest
 - task: Docker@2
   displayName: "Build and Push LoginServer Image (openmu-login)"
@@ -105,5 +108,5 @@ steps:
     buildContext: 'src'
     repository: 'munique/openmu-login'
     tags: |
-      $(Build.SourceBranchName)
+      $(projectVersion)
       latest

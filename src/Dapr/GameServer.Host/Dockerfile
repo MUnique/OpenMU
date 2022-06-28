@@ -8,10 +8,10 @@ COPY ["Dapr/GameServer.Host/MUnique.OpenMU.GameServer.Host.csproj", "Dapr/GameSe
 RUN dotnet restore "Dapr/GameServer.Host/MUnique.OpenMU.GameServer.Host.csproj"
 COPY . .
 WORKDIR "/src/Dapr/GameServer.Host"
-RUN dotnet build "MUnique.OpenMU.GameServer.Host.csproj" -c Release -o /app/build
+RUN dotnet build "MUnique.OpenMU.GameServer.Host.csproj" -c Release -o /app/build  -p:ci=true
 
 FROM build AS publish
-RUN dotnet publish "MUnique.OpenMU.GameServer.Host.csproj" -c Release -o /app/publish
+RUN dotnet publish "MUnique.OpenMU.GameServer.Host.csproj" -c Release -o /app/publish  -p:ci=true
 
 FROM base AS final
 

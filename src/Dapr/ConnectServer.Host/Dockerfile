@@ -9,10 +9,10 @@ COPY ["Dapr/ConnectServer.Host/MUnique.OpenMU.ConnectServer.Host.csproj", "Dapr/
 RUN dotnet restore "Dapr/ConnectServer.Host/MUnique.OpenMU.ConnectServer.Host.csproj"
 COPY . .
 WORKDIR "/src/Dapr/ConnectServer.Host"
-RUN dotnet build "MUnique.OpenMU.ConnectServer.Host.csproj" -c Release -o /app/build
+RUN dotnet build "MUnique.OpenMU.ConnectServer.Host.csproj" -c Release -o /app/build -p:ci=true
 
 FROM build AS publish
-RUN dotnet publish "MUnique.OpenMU.ConnectServer.Host.csproj" -c Release -o /app/publish
+RUN dotnet publish "MUnique.OpenMU.ConnectServer.Host.csproj" -c Release -o /app/publish -p:ci=true
 
 FROM base AS final
 WORKDIR /app
