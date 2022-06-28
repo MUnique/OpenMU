@@ -270,7 +270,7 @@ services:
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "80"
-      - "50001:50001"
+      - "50000:50001"
       - "55901:55901"
       - "9464" # Prometheus
     environment:
