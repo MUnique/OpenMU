@@ -24,7 +24,8 @@ steps:
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/src/Startup/Dockerfile'
+    Dockerfile: '**/Dockerfile'
+    buildContext: '**/src/Startup/'
     repository: 'munique/openmu'
     tags: |
       $(Build.SourceBranchName)
