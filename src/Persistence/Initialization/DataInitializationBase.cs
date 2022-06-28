@@ -38,6 +38,9 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     /// <inheritdoc />
     public abstract string Key { get; }
 
+    /// <inheritdoc />
+    public abstract string Caption { get; }
+
     /// <summary>
     /// Gets or sets the game configuration.
     /// </summary>

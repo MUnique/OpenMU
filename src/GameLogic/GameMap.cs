@@ -38,6 +38,7 @@ public class GameMap
     /// <param name="chunkSize">Size of the chunk.</param>
     public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize)
     {
+        this.Id = Guid.NewGuid();
         this.Definition = mapDefinition;
         this.ItemDropDuration = itemDropDuration;
         this.Terrain = new GameMapTerrain(this.Definition);
@@ -83,6 +84,11 @@ public class GameMap
     /// Gets the definition of the map.
     /// </summary>
     public GameMapDefinition Definition { get; }
+
+    /// <summary>
+    /// Gets the unique identifier of this map instance.
+    /// </summary>
+    public Guid Id { get; }
 
     /// <summary>
     /// Gets the object with the specified identifier.

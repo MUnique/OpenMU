@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// A implementation of <see cref="EntityFrameworkContextBase"/> which doesn't cache and always asks the database for objects.
@@ -17,8 +18,9 @@ public class EntityFrameworkContext : EntityFrameworkContextBase
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public EntityFrameworkContext(DbContext context, ILoggerFactory loggerFactory)
-        : base(context, new RepositoryManager(loggerFactory), true)
+    /// <param name="changePublisher">The change publisher.</param>
+    public EntityFrameworkContext(DbContext context, ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
+        : base(context, new RepositoryManager(loggerFactory, changePublisher), true, changePublisher)
     {
         this.RepositoryManager.RegisterRepositories();
     }
@@ -29,8 +31,9 @@ public class EntityFrameworkContext : EntityFrameworkContextBase
     /// <param name="context">The db context.</param>
     /// <param name="repositoryManager">The repository manager.</param>
     /// <param name="isOwner">If set to <c>true</c>, this instance owns the <see cref="EntityFrameworkContextBase.Context" />. That means it will be disposed when this instance will be disposed.</param>
-    public EntityFrameworkContext(DbContext context, RepositoryManager repositoryManager, bool isOwner)
-        : base(context, repositoryManager, isOwner)
+    /// <param name="changePublisher">The change publisher.</param>
+    public EntityFrameworkContext(DbContext context, RepositoryManager repositoryManager, bool isOwner, IConfigurationChangePublisher? changePublisher)
+        : base(context, repositoryManager, isOwner, changePublisher)
     {
     }
 }

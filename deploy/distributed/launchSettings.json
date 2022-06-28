@@ -1,0 +1,33 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "connectServer": "StartDebugging",
+        "connectServer-dapr": "StartWithoutDebugging",
+        "dapr-placement": "StartWithoutDebugging",
+        "database": "StartWithoutDebugging",
+        "gameServer1": "StartDebugging",
+        "gameServer1-dapr": "StartWithoutDebugging",
+        "pubsub": "StartWithoutDebugging",
+        "friendServer": "StartDebugging",
+        "friendServer-dapr": "StartWithoutDebugging",
+        "loginServer": "StartDebugging",
+        "loginServer-dapr": "StartWithoutDebugging",
+        "guildServer": "StartDebugging",
+        "guildServer-dapr": "StartWithoutDebugging",
+        "chatServer": "StartDebugging",
+        "chatServer-dapr": "StartWithoutDebugging",
+        "adminPanel": "StartDebugging",
+        "adminPanel-dapr": "StartWithoutDebugging",
+        "grafana": "StartWithoutDebugging",
+        "loki": "StartWithoutDebugging",
+        "minio": "StartWithoutDebugging",
+        "nginx": "StartWithoutDebugging",
+        "prometheus": "StartWithoutDebugging",
+        "zipkin": "StartWithoutDebugging"
+      }
+    }
+  }
+}

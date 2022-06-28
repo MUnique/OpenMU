@@ -13,6 +13,14 @@ using MUnique.OpenMU.Interfaces;
 public class ConnectServerDefinition : IConnectServerSettings
 {
     /// <summary>
+    /// Gets or sets the id of this definition.
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <inheritdoc />
+    public Guid ConfigurationId => this.Id;
+
+    /// <summary>
     /// Gets or sets the server identifier.
     /// </summary>
     public byte ServerId { get; set; }

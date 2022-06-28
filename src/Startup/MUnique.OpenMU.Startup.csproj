@@ -1,23 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
-  </PropertyGroup>
-
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.Startup.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\bin\Release\</OutputPath>
-    <DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Startup.xml</DocumentationFile>
+    <DockerComposeProjectPath>..\..\deploy\all-in-one\docker-compose-all-in-one.dcproj</DockerComposeProjectPath>
+    <UserSecretsId>4D77CA72-8356-43AA-8689-00F2367561B2</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,17 +29,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.13" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="4.2.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.16.1" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <ProjectReference Include="..\AdminPanel\MUnique.OpenMU.AdminPanel.csproj" />
+    <ProjectReference Include="..\Web\AdminPanel\MUnique.OpenMU.Web.AdminPanel.csproj" />
     <ProjectReference Include="..\ChatServer\MUnique.OpenMU.ChatServer.csproj" />
     <ProjectReference Include="..\ConnectServer\MUnique.OpenMU.ConnectServer.csproj" />
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
@@ -58,13 +58,11 @@
     <ProjectReference Include="..\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />
     <ProjectReference Include="..\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj" />
-    <ProjectReference Include="..\PublicApi\MUnique.OpenMU.PublicApi.csproj" />
-    
   </ItemGroup>
 
 
   <ItemGroup>
-    <None Update="MUnique.OpenMU.Startup.exe.log4net.xml">
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

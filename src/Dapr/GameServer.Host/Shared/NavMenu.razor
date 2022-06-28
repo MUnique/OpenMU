@@ -1,0 +1,44 @@
+﻿@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Persistence;
+
+<nav>
+    <div>
+        <a href="">OpenMU</a>
+        <button @onclick="ToggleNavMenu">
+            <span></span>
+        </button>
+    </div>
+
+    <!-- Hiding it programmatically is not a good idea here, because we want to hide it based on the width of the device/window. -->
+    <div class="@NavMenuCssClass">
+        <ul>
+
+            <li>
+                <NavLink href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </li>
+            <li>
+                <NavLink href="maps">
+                    <span class="oi oi-project" aria-hidden="true"></span> Maps
+                </NavLink>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+@code {
+    private bool _collapseNavMenu = true;
+
+    /// <summary>
+    /// Returns the class for the entries of the navigation menu.
+    /// "collapse" is a class of bootstrap which hides it.
+    /// In our css we also define to show it anyway, if the width sufficient.
+    /// </summary>
+    private string NavMenuCssClass => _collapseNavMenu ? "collapse" : string.Empty;
+
+    private void ToggleNavMenu()
+    {
+        _collapseNavMenu = !_collapseNavMenu;
+    }
+}

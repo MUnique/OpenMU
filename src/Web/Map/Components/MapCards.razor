@@ -1,0 +1,65 @@
+﻿@using System.ComponentModel
+@using Microsoft.Extensions.Logging
+
+@implements IDisposable
+
+
+@if (this.Maps == null)
+{
+    <span>Initializing...</span>
+}
+else if (Maps.Count == 0)
+{
+    <span>No game maps hosted. They are created as soon as a player enters a map.</span>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-4">
+        @foreach (var map in this.Maps)
+        {
+            <div class="col mb-4">
+                <MapCard MapInfo="@map" />
+            </div>
+        }
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Gets or sets the game server of the maps which are shown in this component.
+    /// </summary>
+    [Parameter]
+    public IObservableGameServer GameServer { get; set; } = null!;
+
+    [Inject]
+    private ILogger<MapCards> Logger { get; set; } = null!;
+
+    private IList<IGameMapInfo>? Maps => this.GameServer?.Maps;
+
+    /// <inheritdoc />
+    public void Dispose() => this.GameServer.PropertyChanged -= this.OnServerInfoChanged;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.GameServer.PropertyChanged += this.OnServerInfoChanged;
+    }
+
+    private async void OnServerInfoChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        try
+        {
+            if (e.PropertyName != nameof(this.GameServer.Maps))
+            {
+                return;
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogDebug(ex, "Error occurred in handling IObservableGameServer.PropertyChanged");
+        }
+    }
+}

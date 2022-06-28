@@ -17,7 +17,7 @@ internal class CachingEntityFrameworkContext : EntityFrameworkContextBase
     /// <param name="context">The context.</param>
     /// <param name="repositoryManager">The repository manager.</param>
     public CachingEntityFrameworkContext(DbContext context, RepositoryManager repositoryManager)
-        : base(context, repositoryManager, true)
+        : base(context, repositoryManager, true, null)
     {
     }
 
@@ -28,7 +28,7 @@ internal class CachingEntityFrameworkContext : EntityFrameworkContextBase
     /// <param name="repositoryManager">The repository manager.</param>
     /// <param name="isOwner">if set to <c>true</c> this instance owns the <paramref name="context" />.</param>
     public CachingEntityFrameworkContext(DbContext context, RepositoryManager repositoryManager, bool isOwner)
-        : base(context, repositoryManager, isOwner)
+        : base(context, repositoryManager, isOwner, null)
     {
     }
 }

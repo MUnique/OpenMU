@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectGuid>0dfecd55-7aa2-4263-b6fd-ec1c4e6a59b3</ProjectGuid>
+    <DockerLaunchAction>None</DockerLaunchAction>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup>
+    <None Include="dapr-components\config.yaml" />
+    <None Include="dapr-components\localSecretStore.yaml" />
+    <None Include="dapr-components\login-state.yaml" />
+    <None Include="dapr-components\pubsub.yaml" />
+    <None Include="dapr-components\secrets.json" />
+    <None Include="docker-compose.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose.prod.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose.yml" />
+    <None Include=".dockerignore" />
+    <None Include=".htpasswd" />
+    <None Include="grafana.ini" />
+    <None Include="grafana_datasources.yaml" />
+    <None Include="loki-config.yaml" />
+    <None Include="nginx.prod.conf" />
+    <None Include="nginx.dev.conf" />
+    <None Include="prometheus.yml" />
+    <None Include="README.md" />
+  </ItemGroup>
+</Project>

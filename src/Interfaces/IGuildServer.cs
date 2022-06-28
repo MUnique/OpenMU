@@ -15,22 +15,6 @@ namespace MUnique.OpenMU.Interfaces;
 public interface IGuildServer
 {
     /// <summary>
-    /// Notifies the guild server that a guild message was sent and maybe needs to be forwarded to the game servers.
-    /// </summary>
-    /// <param name="guildId">The guild id.</param>
-    /// <param name="sender">The sender.</param>
-    /// <param name="message">The message.</param>
-    void GuildMessage(uint guildId, string sender, string message);
-
-    /// <summary>
-    /// Notifies the guild server that an alliance message was sent and maybe needs to be forwarded to the game servers.
-    /// </summary>
-    /// <param name="guildId">The guild id.</param>
-    /// <param name="sender">The sender.</param>
-    /// <param name="message">The message.</param>
-    void AllianceMessage(uint guildId, string sender, string message);
-
-    /// <summary>
     /// Checks if the guild with the specified name exists.
     /// </summary>
     /// <param name="guildName">Name of the guild.</param>
@@ -48,7 +32,7 @@ public interface IGuildServer
     /// Gets the guild id by the guild name.
     /// </summary>
     /// <param name="guildName">The guild name.</param>
-    /// <returns>The guild id.</returns>
+    /// <returns>The guild id. <c>0</c>, if not found.</returns>
     uint GetGuildIdByName(string guildName);
 
     /// <summary>
@@ -59,8 +43,8 @@ public interface IGuildServer
     /// <param name="masterId">The master identifier.</param>
     /// <param name="logo">The logo.</param>
     /// <param name="serverId">The identifier of the server on which the guild is getting created.</param>
-    /// <returns>The guild member status of the creator (guild master).</returns>
-    GuildMemberStatus? CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId);
+    /// <returns>A flag, indicating if the guild has been created successfully.</returns>
+    bool CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId);
 
     /// <summary>
     /// Creates the guild member and sets it online at the guild server. A separate call to <see cref="PlayerEnteredGame"/> is not required.
@@ -70,8 +54,7 @@ public interface IGuildServer
     /// <param name="characterName">The name.</param>
     /// <param name="role">The role of the member.</param>
     /// <param name="serverId">The identifier of the server on which the guild member is getting created.</param>
-    /// <returns>The created guild member info.</returns>
-    GuildMemberStatus? CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId);
+    void CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId);
 
     /// <summary>
     /// Updates the guild member position.
@@ -87,8 +70,7 @@ public interface IGuildServer
     /// <param name="characterId">The character identifier.</param>
     /// <param name="characterName">Name of the character.</param>
     /// <param name="serverId">The identifier of the server on which the guild member entered.</param>
-    /// <returns>The guild member status if it's a guild member; Otherwise, null.</returns>
-    GuildMemberStatus? PlayerEnteredGame(Guid characterId, string characterName, byte serverId);
+    void PlayerEnteredGame(Guid characterId, string characterName, byte serverId);
 
     /// <summary>
     /// Notifies the guild server that a guild member left the game.
@@ -117,7 +99,7 @@ public interface IGuildServer
     /// </summary>
     /// <param name="characterId">The character identifier.</param>
     /// <returns>The guild position.</returns>
-    GuildPosition? GetGuildPosition(Guid characterId);
+    GuildPosition GetGuildPosition(Guid characterId);
 
     /// <summary>
     /// Increases the guild score by one.

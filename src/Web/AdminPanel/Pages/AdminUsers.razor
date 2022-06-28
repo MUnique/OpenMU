@@ -1,0 +1,41 @@
+﻿@page "/users"
+@using MUnique.OpenMU.Web.AdminPanel.Services
+
+
+@inject IUserService UserService;
+
+<h1>Admin Users</h1>
+
+<div>
+    <table>
+        <thead>
+        <th class="col-10">Login Name</th>
+        <th class="col-1">Actions</th>
+        <th class="col-1"></th>
+        </thead>
+        <tbody>
+        @{ var users = this.UserService.Users; }
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>@user</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-primary" @onclick="async () => await this.UserService.ChangePasswordInModalDialogAsync(user)">Change password</button>
+                </td>
+                <td>
+                    @if (users.Count > 1)
+                    {
+                        <button type="button" class="btn btn-sm btn-danger" @onclick="async () => await this.UserService.DeleteUserAsync(user)">Delete</button>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+        
+        <tfoot>
+            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this.UserService.CreateNewInModalDialogAsync">Create User</button></td>
+            <td></td>
+            <td></td>
+        </tfoot>
+    </table>
+</div>

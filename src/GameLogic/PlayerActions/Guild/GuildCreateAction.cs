@@ -39,17 +39,14 @@ public class GuildCreateAction
             return;
         }
 
-        creator.GuildStatus = guildServer.CreateGuild(guildName, creator.SelectedCharacter!.Name, creator.SelectedCharacter.Id, guildEmblem, ((IGameServerContext)creator.GameContext).Id);
-        if (creator.GuildStatus is null)
+        if (guildServer.CreateGuild(guildName, creator.SelectedCharacter!.Name, creator.SelectedCharacter.Id, guildEmblem, ((IGameServerContext)creator.GameContext).Id))
+        {
+            creator.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()?.ShowGuildCreateResult(GuildCreateErrorDetail.None);
+            creator.Logger.LogInformation("Guild created: [{0}], Master: [{1}]", guildName, creator.SelectedCharacter.Name);
+        }
+        else
         {
             creator.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()?.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);
-            return;
         }
-
-        (creator.GameContext as IGameServerContext)?.RegisterGuildMember(creator);
-        creator.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()?.ShowGuildCreateResult(GuildCreateErrorDetail.None);
-        creator.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(creator, false), true);
-
-        creator.Logger.LogInformation("Guild created: [{0}], Master: [{1}]", guildName, creator.SelectedCharacter.Name);
     }
 }

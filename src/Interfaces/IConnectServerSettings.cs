@@ -10,6 +10,11 @@ namespace MUnique.OpenMU.Interfaces;
 public interface IConnectServerSettings
 {
     /// <summary>
+    /// Gets the identifier of the configuration on which this settings are based on.
+    /// </summary>
+    Guid ConfigurationId { get; }
+
+    /// <summary>
     /// Gets the server identifier.
     /// </summary>
     /// <remarks>Should be unique within all <see cref="IConnectServerSettings"/>.</remarks>

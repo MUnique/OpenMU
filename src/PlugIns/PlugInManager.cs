@@ -36,7 +36,8 @@ public class PlugInManager
         this._serviceContainer = new ServiceContainer(serviceProvider);
         this._serviceContainer.AddService(typeof(PlugInManager), this);
         this._serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
-        if (configurations?.Any() ?? false)
+
+        if (configurations is not null)
         {
             this.DiscoverAndRegisterPlugIns();
             var loadedAssemblies = new HashSet<string>();
@@ -246,7 +247,19 @@ public class PlugInManager
     /// </returns>
     public bool IsPlugInActive(Type plugInType)
     {
-        return this._activePlugIns.ContainsKey(plugInType.GUID);
+        return this.IsPlugInActive(plugInType.GUID);
+    }
+
+    /// <summary>
+    /// Determines whether the specified plug in type is configured as active.
+    /// </summary>
+    /// <param name="plugInTypeId">Identifier of the type of the plug in.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified plug in type is configured as active; otherwise, <c>false</c>.
+    /// </returns>
+    public bool IsPlugInActive(Guid plugInTypeId)
+    {
+        return this._activePlugIns.ContainsKey(plugInTypeId);
     }
 
     /// <summary>

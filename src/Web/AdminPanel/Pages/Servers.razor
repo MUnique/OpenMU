@@ -1,0 +1,70 @@
+﻿@page "/servers"
+@using MUnique.OpenMU.Interfaces
+@using System.ComponentModel
+
+@implements IDisposable;
+
+<h1>Servers</h1>
+
+@if (_servers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th class="col-sm-7">Server Name</th>
+                <th class="col-sm-1">Players</th>
+                <th class="col-sm-2">Current State</th>
+                <th class="col-sm-2">Action</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <TotalOnlineCounter Servers=@_servers />
+        </tfoot>
+        <tbody>
+            @foreach (var server in this._servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
+            {
+                <ServerItem Server=@server />
+            }
+        </tbody>
+    </table>
+</div>
+}
+
+@code {
+    private IList<IManageableServer>? _servers;
+
+    /// <summary>
+    /// Gets or sets the <see cref="IServerProvider"/>.
+    /// </summary>
+    [Inject]
+    public IServerProvider ServerProvider { get; set; } = null!;
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.ServerProvider.PropertyChanged -= this.OnServersChanged;
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this._servers = this.ServerProvider.Servers;
+        this.ServerProvider.PropertyChanged += this.OnServersChanged;
+    }
+
+    private void OnServersChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IServerProvider.Servers))
+        {
+            this._servers = this.ServerProvider.Servers;
+            this.InvokeAsync(this.StateHasChanged);
+        }
+    }
+}

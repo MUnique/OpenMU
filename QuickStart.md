@@ -3,7 +3,7 @@
 General requirements:
 
 * Free TCP ports:
-  * 1234 (admin panel)
+  * 80 (admin panel)
   * 55901, 55902, 55903 (game servers)
   * 44405 (connect server)
   * 55980 (chat server)
@@ -20,67 +20,19 @@ manual way.
 
 ## Docker
 
-This guide assumes you know how to use docker in general and have docker
-installed (e.g. by using Docker Desktop on Windows).
-
-### Generates certificate
-
-The project needs a certificate to run the public API.
-
-* How to create one depends on your host OS, see below.
-
-* `{ password here }` must be replaced with your certificate password.
-
-* It needs to be run once on the host. If you forgot your password, you can
-    run it again.
-
-#### Linux
-
-Build shell commands and run:
-
-```bash
-source dev.sh
-generate_certificates { password here }
-```
-
-The script generates the certificate on a dedicated docker container and
-exports the environment variable `CERTIFICATE_PASSWORD` which can be used at
-docker-compose.
-
-#### Windows
-
-```cmd
-dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\aspnetapp.pfx -p { password here }
-dotnet dev-certs https --trust
-setx CERTIFICATE_PASSWORD "{ password here }"
-```
+Please take a look at the deploy-folder of this project. There you'll find a more
+detailed guide about how to set up this project.
 
 ### Demo Mode
 
 If you just want to play around with the server, you can find the newest docker
-image on the Docker Hub: <https://hub.docker.com/r/munique/openmu>
+all-in-one image on the Docker Hub: <https://hub.docker.com/r/munique/openmu>
 
 To pull and run the latest docker image, run this command:
-> docker run --name openmu -d -p 1234:1234 -p 44405:44405 -p 55901:55901 -p 55902:55902 -p 55903:55903 -p 55980:55980 munique/openmu:latest -demo
+`docker run --name openmu -d -p 80:80 -p 44405:44405 -p 55901:55901 -p 55902:55902 -p 55903:55903 -p 55980:55980 munique/openmu:latest -demo`
 
 The last argument is there to start the server in demo mode, without a
 database. To use a postgres database, you can use docker-compose.
-
-### Docker-compose
-
-To start the server and database in one go, you can use docker-compose with our
-[docker-compose.yml](docker-compose.yml). The command is as follows when you
-are in the folder which includes the yml file:
-> docker-compose up -d --build
-
-If you want to pass additional arguments you can just call ```run``` and
-append them at the end, for example if you want to start it with the
-'-resolveIp:local' parameter:
-> docker-compose run -d munique -resolveIp:local
-
-Docker compose pulls the newest images from the docker hub, sets the network
-and disk volume up and finally starts OpenMU and the postgres database in
-separate containers.
 
 ### Environment Variables
 
@@ -92,7 +44,6 @@ postgres database connection strings.
 | DB_HOST | The hostname of the database. If the local configuration file is still configured to use 'localhost', the value of this variable replaces it |
 | DB_ADMIN_USER | The user name of the postgres admin account. If the local configuration file is still configured to use 'postgres' for the user name of the admin (first entry in the ConnectionSettings.xml), the value of this variable replaces it. |
 | DB_ADMIN_PW | The user name of the postgres admin account. If the local configuration file is still configured to use 'admin' for the user password of the admin (first entry in the ConnectionSettings.xml), the value of this variable replaces it. |
-| ASPNETCORE_Kestrel__Certificates__Default__Password | The ASP NET application certificate password. When docker-compose-dev is used, the environment variable CERTIFICATE_PASSWORD must be exported/set on the host system instead. |
 
 ## Manually
 

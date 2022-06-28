@@ -42,19 +42,31 @@ public interface IFriendServer
     void FriendResponse(string characterName, string friendName, bool accepted);
 
     /// <summary>
-    /// Gets the friend list of a character.
+    /// Is called when a player entered the game.
+    /// It will cause a response with <see cref="IFriendSystemSubscriber.InitializeMessenger"/>
+    /// and a state update for friends.
     /// </summary>
-    /// <param name="characterId">Id of the character.</param>
-    /// <returns>The friend list of a character.</returns>
-    IEnumerable<string> GetFriendList(Guid characterId);
+    /// <param name="serverId">The server identifier.</param>
+    /// <param name="characterId">The character identifier.</param>
+    /// <param name="characterName">Name of the character.</param>
+    void PlayerEnteredGame(byte serverId, Guid characterId, string characterName);
 
     /// <summary>
-    /// Sets the online state of a character.
+    /// Is called when a player leaves the game.
+    /// It will cause a state update for friends.
     /// </summary>
+    /// <param name="characterId">The character identifier.</param>
+    /// <param name="characterName">Name of the character.</param>
+    void PlayerLeftGame(Guid characterId, string characterName);
+
+    /// <summary>
+    /// Sets the online visibility state of a character.
+    /// </summary>
+    /// <param name="serverId">The server identifier.</param>
     /// <param name="characterId">Id of the character.</param>
     /// <param name="characterName">Name of the character.</param>
-    /// <param name="serverId">The server identifier.</param>
-    void SetOnlineState(Guid characterId, string characterName, int serverId);
+    /// <param name="isVisible">If set to <c>true</c>, the character is visible as online. Otherwise, it appears as offline for other players, but is still online</param>
+    void SetPlayerVisibilityState(byte serverId, Guid characterId, string characterName, bool isVisible);
 
     /// <summary>
     /// Sends a friend request to the friend, and adds a new friend view item to the players friend list.
@@ -67,16 +79,9 @@ public interface IFriendServer
     /// <summary>
     /// Deletes the friend.
     /// </summary>
-    /// <param name="name">The player who is deleting a friend from his friendlist.</param>
+    /// <param name="name">The player who is deleting a friend from his friend list.</param>
     /// <param name="friendName">Name of the friend who should be deleted.</param>
     void DeleteFriend(string name, string friendName);
-
-    /// <summary>
-    /// Returns the character names of all open friend requests.
-    /// </summary>
-    /// <param name="characterId">Character id.</param>
-    /// <returns>The character names of all open friend requests.</returns>
-    IEnumerable<string> GetOpenFriendRequests(Guid characterId);
 
     /// <summary>
     /// Creates a new chat room.

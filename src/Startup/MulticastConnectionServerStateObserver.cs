@@ -16,9 +16,6 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
 {
     private readonly IList<IGameServerStateObserver> _observers = new List<IGameServerStateObserver>();
 
-    /// <inheritdoc />
-    public ICollection<(ushort Id, IPEndPoint Endpoint)> GameServerEndPoints => this._observers.SelectMany(o => o.GameServerEndPoints).Distinct().ToList();
-
     /// <summary>
     /// Adds the observer which wants to get notified about changes.
     /// </summary>
@@ -26,7 +23,7 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
     public void AddObserver(IGameServerStateObserver observer) => this._observers.Add(observer);
 
     /// <inheritdoc />
-    public void RegisterGameServer(IGameServerInfo gameServer, IPEndPoint publicEndPoint)
+    public void RegisterGameServer(ServerInfo gameServer, IPEndPoint publicEndPoint)
     {
         for (int i = 0; i < this._observers.Count; i++)
         {
@@ -35,11 +32,20 @@ internal class MulticastConnectionServerStateObserver : IGameServerStateObserver
     }
 
     /// <inheritdoc />
-    public void UnregisterGameServer(IGameServerInfo gameServer)
+    public void UnregisterGameServer(ushort gameServerId)
     {
         for (int i = 0; i < this._observers.Count; i++)
         {
-            this._observers[i].UnregisterGameServer(gameServer);
+            this._observers[i].UnregisterGameServer(gameServerId);
+        }
+    }
+
+    /// <inheritdoc />
+    public void CurrentConnectionsChanged(ushort serverId, int currentConnections)
+    {
+        for (int i = 0; i < this._observers.Count; i++)
+        {
+            this._observers[i].CurrentConnectionsChanged(serverId, currentConnections);
         }
     }
 }

@@ -1,0 +1,51 @@
+﻿@using MUnique.OpenMU.Web.AdminPanel.Services
+@using MUnique.OpenMU.Interfaces
+@using System.ComponentModel
+
+@implements IDisposable
+
+<tr class="info">
+    <td colspan="5">
+        <span>Total Players: @this.GetPlayerCount()</span>
+    </td>
+</tr>
+
+@code {
+
+    [Parameter]
+    public IList<IManageableServer> Servers { get; set; } = null!;
+
+    
+    public void Dispose()
+    {
+        foreach (var server in this.Servers)
+        {
+            server.PropertyChanged -= this.OnServerPropertyChanged;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        foreach (var server in this.Servers)
+        {
+            server.PropertyChanged += this.OnServerPropertyChanged;
+        }
+    }
+
+
+    private void OnServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        this.InvokeAsync(() => this.StateHasChanged());
+    }
+
+    private int GetPlayerCount()
+    {
+        return this.Servers?
+            .Where(s => s.Id < 0x10000
+                    && s.ServerState != ServerState.Timeout)
+            .Sum(s => s.CurrentConnections) ?? 0;
+    }
+
+
+}

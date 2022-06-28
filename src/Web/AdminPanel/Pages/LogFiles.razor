@@ -1,0 +1,54 @@
+﻿@page "/logfiles"
+
+@using System.IO
+
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>File name</th>
+            <th>Last update</th>
+            <th>Size</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var entry in this._files.OrderByDescending(f => f.LastWriteTime))
+        {
+            <tr>
+                <td>
+                    <a href="logs/@entry.Name">@entry.Name</a>
+                </td>
+                <td>@entry.LastWriteTime</td>
+                <td>@FormatFileSize(entry.Length)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private readonly List<FileInfo> _files = new ();
+
+    /// <summary>
+    /// Initializes a new instance of class <see cref="LogFiles"/>.
+    /// </summary>
+    public LogFiles()
+    {
+        var files = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "logs"));
+        foreach (var filePath in files)
+        {
+            this._files.Add(new FileInfo(filePath));
+        }
+    }
+
+    private string FormatFileSize(long size)
+    {
+        return size switch
+        {
+            (< 1024 << 10)  => $"{Math.Round(size / 1024D, 2)} KiB",
+            (< 1024 << 20) => $"{Math.Round(size * 1D / (1024 << 10), 2)} MiB",
+            (< 1024L << 30) => $"{Math.Round(size * 1D / (1024L << 20), 2)} GiB",
+            _ => $"{size} bytes"
+            };
+    }
+}

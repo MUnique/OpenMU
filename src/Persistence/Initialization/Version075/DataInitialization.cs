@@ -37,6 +37,9 @@ public class DataInitialization : DataInitializationBase
     public override string Key => Id;
 
     /// <inheritdoc />
+    public override string Caption => "0.75";
+
+    /// <inheritdoc />
     protected override IInitializer GameConfigurationInitializer => new GameConfigurationInitializer(this.Context, this.GameConfiguration);
 
     /// <inheritdoc />

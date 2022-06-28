@@ -61,6 +61,23 @@ public class StrategyPlugInProvider<TKey, TPlugIn> : PlugInContainerBase<TPlugIn
         }
     }
 
+    /// <inheritdoc />
+    public IEnumerable<TPlugIn> AvailableStrategies
+    {
+        get
+        {
+            this.LockSlim.EnterReadLock();
+            try
+            {
+                return this._effectiveStrategies.Values.ToList();
+            }
+            finally
+            {
+                this.LockSlim.ExitReadLock();
+            }
+        }
+    }
+
     /// <summary>
     /// Tries the get the plug in with the specified key.
     /// </summary>

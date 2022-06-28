@@ -1,0 +1,42 @@
+﻿@page "/map/{mapId:guid}"
+
+@using MUnique.OpenMU.Web.Map.Components
+@using MUnique.OpenMU.Web.Map
+
+@if (this.GameServer is not null)
+{
+    <div>
+        <NavLink href="" Match="NavLinkMatch.All">
+            <!--<span class="oi oi-home" aria-hidden="true"></span>-->
+            <span>All</span>
+        </NavLink>
+        <span> / @this._map?.MapName</span>
+    </div>
+
+    <Map Server="@GameServer" MapId="@MapId"></Map>
+}
+
+@code {
+    internal const string LiveMapRoute = "map/";
+    
+    private IGameMapInfo? _map;
+
+    /// <summary>
+    /// Gets or sets the server id on which the map is hosted.
+    /// </summary>
+    [Inject]
+    public IObservableGameServer? GameServer { get; set; }
+
+    /// <summary>
+    /// Gets or sets the map id.
+    /// </summary>
+    [Parameter]
+    public Guid MapId { get; set; }
+
+    /// <inheritdoc />
+    protected override Task OnInitializedAsync()
+    {
+        this._map = this.GameServer!.Maps.First(m => m.Id == this.MapId);
+        return base.OnInitializedAsync();
+    }
+}

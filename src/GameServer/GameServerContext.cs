@@ -8,7 +8,6 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -27,6 +26,7 @@ public class GameServerContext : GameContext, IGameServerContext
     /// </summary>
     /// <param name="gameServerDefinition">The game server definition.</param>
     /// <param name="guildServer">The guild server.</param>
+    /// <param name="eventPublisher">The message publisher.</param>
     /// <param name="loginServer">The login server.</param>
     /// <param name="friendServer">The friend server.</param>
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
@@ -37,6 +37,7 @@ public class GameServerContext : GameContext, IGameServerContext
     public GameServerContext(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
+        IEventPublisher eventPublisher,
         ILoginServer loginServer,
         IFriendServer friendServer,
         IPersistenceContextProvider persistenceContextProvider,
@@ -55,6 +56,7 @@ public class GameServerContext : GameContext, IGameServerContext
         this._gameServerDefinition = gameServerDefinition;
         this.Id = gameServerDefinition.ServerID;
         this.GuildServer = guildServer;
+        this.EventPublisher = eventPublisher;
         this.LoginServer = loginServer;
         this.FriendServer = friendServer;
         this.ServerConfiguration = gameServerDefinition.ServerConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a ServerConfiguration");
@@ -69,13 +71,16 @@ public class GameServerContext : GameContext, IGameServerContext
     public byte Id { get; }
 
     /// <inheritdoc/>
-    public IGuildServer GuildServer { get; }
+    public IGuildServer GuildServer { get; } // TODO: Use DI where this is required
 
     /// <inheritdoc/>
-    public ILoginServer LoginServer { get; }
+    public IEventPublisher EventPublisher { get; } // TODO: Use DI where this is required, make this private
 
     /// <inheritdoc/>
-    public IFriendServer FriendServer { get; }
+    public ILoginServer LoginServer { get; } // TODO: Use DI where this is required
+
+    /// <inheritdoc/>
+    public IFriendServer FriendServer { get; } // TODO: Use DI where this is required
 
     /// <inheritdoc/>
     public GameServerConfiguration ServerConfiguration { get; }
@@ -182,20 +187,12 @@ public class GameServerContext : GameContext, IGameServerContext
 
     private void PlayerEnteredWorld(object? sender, EventArgs e)
     {
-        if (sender is not Player { SelectedCharacter: { } selectedCharacter } player)
+        if (sender is not Player { SelectedCharacter: { } selectedCharacter })
         {
             return;
         }
 
-        this.FriendServer.SetOnlineState(selectedCharacter.Id, selectedCharacter.Name, this.Id);
-        player.GuildStatus = this.GuildServer.PlayerEnteredGame(selectedCharacter.Id, selectedCharacter.Name, this.Id);
-        if (player.GuildStatus is null)
-        {
-            return;
-        }
-
-        player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(player, true), true);
-        this.RegisterGuildMember(player);
+        this.EventPublisher.PlayerEnteredGame(this.Id, selectedCharacter.Id, selectedCharacter.Name);
     }
 
     private void PlayerLeftWorld(object? sender, EventArgs e)
@@ -205,13 +202,13 @@ public class GameServerContext : GameContext, IGameServerContext
             return;
         }
 
-        this.FriendServer.SetOnlineState(selectedCharacter.Id, selectedCharacter.Name, 0xFF);
-        if (player.GuildStatus is not { } guildStatus)
+        this.EventPublisher.PlayerLeftGame(this.Id, selectedCharacter.Id, selectedCharacter.Name, player.GuildStatus?.GuildId ?? 0);
+
+        if (player.GuildStatus is null)
         {
             return;
         }
 
-        this.GuildServer.GuildMemberLeftGame(guildStatus.GuildId, selectedCharacter.Id, this.Id);
         this.UnregisterGuildMember(player);
         player.GuildStatus = null;
     }

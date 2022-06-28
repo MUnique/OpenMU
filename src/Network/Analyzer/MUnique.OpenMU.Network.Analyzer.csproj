@@ -42,12 +42,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DG.AdvancedDataGridView" Version="1.2.25902.3" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+    <PackageReference Include="DG.AdvancedDataGridView" Version="1.2.26428.4" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.14" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.15" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MUnique.OpenMU.Network.csproj" />

@@ -23,10 +23,6 @@ internal partial class ConnectServerDefinition : MUnique.OpenMU.DataModel.Config
 {
     
     
-    /// <summary>
-    /// Gets or sets the identifier of this instance.
-    /// </summary>
-    public Guid Id { get; set; }
     
     /// <summary>
     /// Gets or sets the identifier of <see cref="Client"/>.

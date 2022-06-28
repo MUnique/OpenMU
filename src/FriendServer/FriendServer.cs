@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.FriendServer;
 
+using System.Collections.Immutable;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 
@@ -13,19 +14,19 @@ using MUnique.OpenMU.Persistence;
 public class FriendServer : IFriendServer
 {
     private readonly IPersistenceContextProvider _persistenceContextProvider;
-
+    private readonly IFriendNotifier _friendNotifier;
     private readonly IChatServer _chatServer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FriendServer" /> class.
     /// </summary>
-    /// <param name="gameServers">The game servers.</param>
+    /// <param name="friendNotifier">The friend notifier.</param>
     /// <param name="chatServer">The chat server.</param>
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
-    public FriendServer(IDictionary<int, IGameServer> gameServers, IChatServer chatServer, IPersistenceContextProvider persistenceContextProvider)
+    public FriendServer(IFriendNotifier friendNotifier, IChatServer chatServer, IPersistenceContextProvider persistenceContextProvider)
     {
+        this._friendNotifier = friendNotifier;
         this._chatServer = chatServer;
-        this.GameServers = gameServers;
         this._persistenceContextProvider = persistenceContextProvider;
         this.OnlineFriends = new Dictionary<string, OnlineFriend>();
     }
@@ -45,18 +46,10 @@ public class FriendServer : IFriendServer
     /// </summary>
     protected IDictionary<string, OnlineFriend> OnlineFriends { get; }
 
-    /// <summary>
-    /// Gets the game servers.
-    /// </summary>
-    protected IDictionary<int, IGameServer> GameServers { get; }
-
     /// <inheritdoc/>
     public void ForwardLetter(LetterHeader letter)
     {
-        foreach (var gameServer in this.GameServers.Values)
-        {
-            gameServer.LetterReceived(letter);
-        }
+        this._friendNotifier.LetterReceived(letter);
     }
 
     /// <inheritdoc/>
@@ -80,7 +73,7 @@ public class FriendServer : IFriendServer
         if (saveSuccess && this.OnlineFriends.TryGetValue(friendName, out var onlineFriend))
         {
             // Friend is online, so we directly send him a request.
-            onlineFriend.GameServer.FriendRequest(playerName, friendName);
+            this._friendNotifier.FriendRequest(playerName, friendName, onlineFriend.ServerId);
         }
 
         return friendIsNew && saveSuccess;
@@ -146,26 +139,16 @@ public class FriendServer : IFriendServer
             return;
         }
 
-        if (!this.GameServers.TryGetValue(player.ServerId, out var gameServerOfPlayer))
-        {
-            return;
-        }
-
-        if (!this.GameServers.TryGetValue(friend.ServerId, out var gameServerOfFriend))
-        {
-            return;
-        }
-
         // TODO: Remove direct dependency to the chat server.
         //       Instead of calling the chat server directly here, we could publish a request
         //       to create the chat room to an pub/sub-system. An available chat server could then
         //       process the request and notify the corresponding game servers.
         var roomId = this._chatServer.CreateChatRoom();
         var authenticationInfoPlayer = this._chatServer.RegisterClient(roomId, playerName);
-        gameServerOfPlayer.ChatRoomCreated(authenticationInfoPlayer, friendName);
+        this._friendNotifier.ChatRoomCreated(player.ServerId, authenticationInfoPlayer, friendName);
 
         var authenticationInfoFriend = this._chatServer.RegisterClient(roomId, friendName);
-        gameServerOfFriend.ChatRoomCreated(authenticationInfoFriend, playerName);
+        this._friendNotifier.ChatRoomCreated(friend.ServerId, authenticationInfoFriend, playerName);
     }
 
     /// <inheritdoc />
@@ -186,7 +169,7 @@ public class FriendServer : IFriendServer
             return false;
         }
 
-        if (!this.GameServers.TryGetValue(friend.ServerId, out var gameServerOfFriend))
+        if (friend.IsInvisibleOrOffline)
         {
             return false;
         }
@@ -194,53 +177,67 @@ public class FriendServer : IFriendServer
         var authenticationInfoFriend = this._chatServer.RegisterClient(roomId, friendName);
         if (authenticationInfoFriend is not null)
         {
-            gameServerOfFriend.ChatRoomCreated(authenticationInfoFriend, playerName);
+            this._friendNotifier.ChatRoomCreated(friend.ServerId, authenticationInfoFriend, playerName);
             return true;
         }
 
         return false;
     }
 
-    /// <inheritdoc/>
     /// <remarks>Note, that the ServerId is not filled by this implementation. The player will receive it separately when the subscription is created.</remarks>
-    public IEnumerable<string> GetFriendList(Guid characterId)
+    /// <inheritdoc/>
+    public void PlayerEnteredGame(byte serverId, Guid characterId, string characterName)
     {
         using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
-        return context.GetFriendNames(characterId);
+        var friends = context.GetFriendNames(characterId);
+        var requesters = context.GetOpenFriendRequesterNames(characterId);
+        var initializationData = new MessengerInitializationData(
+            characterName,
+            friends.ToImmutableList(),
+            requesters.ToImmutableList());
+
+        this._friendNotifier.InitializeMessenger(serverId, initializationData);
+
+        this.SetOnlineState(characterId, characterName, serverId, context);
     }
 
     /// <inheritdoc/>
-    public void SetOnlineState(Guid characterId, string characterName, int serverId)
+    public void PlayerLeftGame(Guid characterId, string characterName)
+    {
+        this.SetOnlineState(characterId, characterName, OfflineServerId, null);
+    }
+
+    /// <inheritdoc/>
+    public void SetPlayerVisibilityState(byte serverId, Guid characterId, string characterName, bool isVisible)
+    {
+        this.SetOnlineState(characterId, characterName, isVisible ? serverId : InvisibleServerId, null);
+    }
+
+    private void SetOnlineState(Guid characterId, string characterName, int serverId, IFriendServerContext? usedContext)
     {
         if (!this.OnlineFriends.TryGetValue(characterName, out var observer))
         {
-            if (!this.GameServers.TryGetValue(serverId, out var gameServer))
+            if (serverId == InvisibleServerId || serverId == OfflineServerId)
             {
                 return;
             }
 
-            observer = new OnlineFriend(gameServer, characterName)
+            observer = new OnlineFriend(this._friendNotifier, characterName)
             {
-                ServerId = (byte)gameServer.Id,
+                ServerId = serverId,
             };
             this.OnlineFriends.Add(characterName, observer);
+            IFriendServerContext? newContext = null;
+            var context = usedContext ?? (newContext = this._persistenceContextProvider.CreateNewFriendServerContext());
 
-            using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
-            var friends = context.GetFriends(characterId);
-            foreach (var friend in friends)
+            try
             {
-                if (!friend.Accepted || friend.RequestOpen)
-                {
-                    continue;
-                }
-
-                if (this.OnlineFriends.TryGetValue(friend.FriendName, out var onlineFriend))
-                {
-                    observer.AddSubscription(onlineFriend.Subscribe(observer));
-                    onlineFriend.AddSubscription(observer.Subscribe(onlineFriend));
-
-                    observer.OnNext(onlineFriend);
-                }
+                var friends = context.GetFriends(characterId);
+                this.AddSubscriptions(observer, friends);
+            }
+            finally
+            {
+                newContext?.Dispose();
             }
         }
 
@@ -253,11 +250,23 @@ public class FriendServer : IFriendServer
         }
     }
 
-    /// <inheritdoc/>
-    public IEnumerable<string> GetOpenFriendRequests(Guid characterId)
+    private void AddSubscriptions(OnlineFriend observer, IEnumerable<FriendViewItem> friends)
     {
-        using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
-        return context.GetOpenFriendRequesterNames(characterId);
+        foreach (var friend in friends)
+        {
+            if (!friend.Accepted || friend.RequestOpen)
+            {
+                continue;
+            }
+
+            if (this.OnlineFriends.TryGetValue(friend.FriendName, out var onlineFriend))
+            {
+                observer.AddSubscription(onlineFriend.Subscribe(observer));
+                onlineFriend.AddSubscription(observer.Subscribe(onlineFriend));
+
+                observer.OnNext(onlineFriend);
+            }
+        }
     }
 
     private void AddSubscriptions(string requester, string responder)

@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+  openmu-startup:
+    image: openmu
+    build:
+      context: ../../src
+      dockerfile: Startup/Dockerfile
+    restart: "no"
+    ports:
+      - "81:80"
+
+  database:
+    ports:
+      - "5432:5432"

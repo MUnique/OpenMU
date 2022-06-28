@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.MiniGames;
@@ -20,6 +21,14 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class GameContext : Disposable, IGameContext
 {
+    private static readonly Meter Meter = new(MeterName);
+
+    private static readonly Counter<int> PlayerCounter = Meter.CreateCounter<int>("PlayerCount");
+
+    private static readonly Counter<int> MapCounter = Meter.CreateCounter<int>("MapCount");
+
+    private static readonly Counter<int> MiniGameCounter = Meter.CreateCounter<int>("MiniGameCount");
+
     private readonly Dictionary<ushort, GameMap> _mapList = new ();
 
     private readonly Dictionary<MiniGameMapKey, MiniGameContext> _miniGames = new ();
@@ -88,7 +97,7 @@ public class GameContext : Disposable, IGameContext
     /// <summary>
     /// Gets the initialized maps which are hosted on this context.
     /// </summary>
-    public IEnumerable<GameMap> Maps => this._mapList.Values;
+    public IEnumerable<GameMap> Maps => this._mapList.Values.Concat(this._miniGames.Values.Select(g => g.Map));
 
     /// <inheritdoc/>
     public GameConfiguration Configuration { get; }
@@ -118,6 +127,11 @@ public class GameContext : Disposable, IGameContext
 
     /// <inheritdoc />
     public int PlayerCount => this._playerList.Count;
+
+    /// <summary>
+    /// Sets the name of the meter of this class.
+    /// </summary>
+    internal static string MeterName => typeof(GameContext).FullName ?? nameof(GameContext);
 
     /// <inheritdoc/>
     public GameMap? GetMap(ushort mapId, bool createIfNotExists = true)
@@ -154,6 +168,7 @@ public class GameContext : Disposable, IGameContext
         // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
         this._mapInitializer.InitializeState(createdMap);
         this.GameMapCreated?.Invoke(this, createdMap);
+        MapCounter.Add(1);
 
         return createdMap;
     }
@@ -201,12 +216,14 @@ public class GameContext : Disposable, IGameContext
         // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
         this._mapInitializer.InitializeState(createdMap);
         this.GameMapCreated?.Invoke(this, createdMap);
+        MiniGameCounter.Add(1);
         return miniGameContext;
     }
 
     /// <inheritdoc />
     public void RemoveMiniGame(MiniGameContext miniGameContext)
     {
+        MiniGameCounter.Add(-1);
         miniGameContext.Dispose();
         this._miniGames.Remove(miniGameContext.Key);
     }
@@ -230,6 +247,8 @@ public class GameContext : Disposable, IGameContext
         {
             this._playerListLock.Release();
         }
+
+        PlayerCounter.Add(1);
     }
 
     /// <summary>
@@ -238,6 +257,7 @@ public class GameContext : Disposable, IGameContext
     /// <param name="player">The player.</param>
     public virtual void RemovePlayer(Player player)
     {
+        PlayerCounter.Add(-1);
         if (player.SelectedCharacter != null)
         {
             this.PlayersByCharacterName.Remove(player.SelectedCharacter.Name);

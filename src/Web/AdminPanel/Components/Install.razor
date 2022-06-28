@@ -1,0 +1,72 @@
+﻿@using Microsoft.CodeAnalysis.CSharp.Syntax
+<div>
+@if (this.SelectedVersion is null)
+{
+    <span>Loading ...</span>
+}
+else if (this.IsInstalling)
+{
+    <span>Installing, please wait ...</span>
+}
+else if (this.IsInstalled)
+{
+    <p>Finished! Have fun :)</p>
+    if (!AdminPanelEnvironment.IsHostingEmbedded)
+    {
+        <p>Please restart the connect and game server containers.</p>
+    }
+
+    <button class="btn btn-primary" @onclick="async () => await this.InstallationFinished.InvokeAsync()">OK</button>
+}
+else
+{
+    if (this.CurrentConnections > 0)
+    {
+        <div class="alert alert-danger" role="alert">
+            First, close all connections to the server.
+        </div>
+    }
+
+    <p>
+        <h2>Select the game version</h2>
+
+        <div>
+        @foreach (var initializer in this.SetupService.Versions)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="version" id="@initializer.Key" @onclick="() => this.OnSelectVersion(initializer.Key)">
+                <label class="form-check-label" for="@initializer.Key">@initializer.Caption</label>
+            </div>
+        }
+        </div>
+    </p>
+    <p>
+        <h2>How many game servers do you want?</h2>
+        <div>
+            <label for="gameServerCount" class="form-label">Game server count (@this.GameServerCount)</label>
+            <input type="range" class="form-range" min="1" max="10" value="@this.GameServerCount" id="gameServerCount" @oninput="this.OnGameServerCountChange">
+        </div>
+    </p>
+    <p>
+        <h2>Do you want test accounts?</h2>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="testAccountsCheck" @oninput="this.OnTestAccountsChange">
+            <label class="form-check-label" for="testAccountsCheck">
+                Yes, create test accounts
+            </label>
+        </div>
+    </p>
+
+    <p>
+        @if (this.CurrentConnections == 0)
+        {
+            <button class="btn btn-primary" @onclick="this.StartInstallation">Start install</button>
+        }
+        else
+        {
+            <button class="btn btn-primary disabled">Start install</button>
+        }
+    </p>
+}
+
+</div>

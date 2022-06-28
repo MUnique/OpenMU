@@ -7,47 +7,62 @@ namespace MUnique.OpenMU.Startup;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading;
-using apache.log4net.Extensions.Logging;
-using log4net;
-using log4net.Config;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.AdminPanel;
-using MUnique.OpenMU.AdminPanel.Services;
+using Nito.AsyncEx.Synchronous;
+using Serilog;
+using Serilog.Debugging;
+using SixLabors.ImageSharp;
+using SixLabors.Memory;
+using MUnique.OpenMU.Web.AdminPanel;
+using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.FriendServer;
-using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.LoginServer;
 using MUnique.OpenMU.Network;
-using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
-using MUnique.OpenMU.PublicApi;
-using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// The startup class for an all-in-one game server.
 /// </summary>
 internal sealed class Program : IDisposable
 {
-    private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + typeof(Program).GetTypeInfo().Namespace + ".exe.log4net.xml";
-    private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
     private static bool _confirmExit;
     private readonly IDictionary<int, IGameServer> _gameServers = new Dictionary<int, IGameServer>();
     private readonly IList<IManageableServer> _servers = new List<IManageableServer>();
+    private readonly Serilog.ILogger _logger;
 
     private IHost? _serverHost;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Program"/> class.
+    /// </summary>
+    public Program()
+    {
+        SelfLog.Enable(Console.Error);
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true, true)
+            .Build();
+
+        this._logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+    }
 
     /// <summary>
     /// The main method.
@@ -55,8 +70,7 @@ internal sealed class Program : IDisposable
     /// <param name="args">The command line args.</param>
     public static async Task Main(string[] args)
     {
-        var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-        XmlConfigurator.ConfigureAndWatch(logRepository, new FileInfo(Log4NetConfigFilePath));
+        Configuration.Default.MemoryAllocator = ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
         using var exitCts = new CancellationTokenSource();
         var exitToken = exitCts.Token;
         var isDaemonMode = args.Contains("-daemon");
@@ -83,7 +97,7 @@ internal sealed class Program : IDisposable
             if (!exitToken.IsCancellationRequested)
             {
                 exitCts.Cancel();
-                Log.Warn("KILL");
+                Debug.WriteLine("KILL");
             }
         };
 
@@ -108,7 +122,7 @@ internal sealed class Program : IDisposable
     /// <param name="args">The command line args.</param>
     public async Task Initialize(string[] args)
     {
-        Log.Info("Creating host...");
+        this._logger.Information("Creating host...");
         this._serverHost = await this.CreateHost(args).ConfigureAwait(false);
 
         if (args.Contains("-autostart") || !this.IsAdminPanelEnabled(args))
@@ -176,22 +190,6 @@ internal sealed class Program : IDisposable
         }
     }
 
-    private void LoadGameClientDefinitions(IContext persistenceContext)
-    {
-        var versions = persistenceContext.Get<GameClientDefinition>().ToList();
-        foreach (var gameClientDefinition in versions)
-        {
-            ClientVersionResolver.Register(
-                gameClientDefinition.Version,
-                new ClientVersion(gameClientDefinition.Season, gameClientDefinition.Episode, gameClientDefinition.Language));
-        }
-
-        if (versions.FirstOrDefault() is { } firstVersion)
-        {
-            ClientVersionResolver.DefaultVersion = ClientVersionResolver.Resolve(firstVersion.Version);
-        }
-    }
-
     private async Task<IHost> CreateHost(string[] args)
     {
         // Ensure GameLogic and GameServer Assemblies are loaded
@@ -199,68 +197,67 @@ internal sealed class Program : IDisposable
         _ = DataInitialization.Id;
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
-        var host = Host.CreateDefaultBuilder()
-            .ConfigureLogging(configureLogging =>
-            {
-                configureLogging.ClearProviders();
-                var settings = new Log4NetSettings { ConfigFile = Log4NetConfigFilePath, Watch = true };
-                configureLogging.AddLog4Net(settings);
-            })
+        var addAdminPanel = this.IsAdminPanelEnabled(args);
+        ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Host.UseSerilog(this._logger);
+        if (addAdminPanel)
+        {
+            builder.AddAdminPanel();
+        }
+
+        builder.Host
             .ConfigureServices(c =>
             {
-                if (this.IsAdminPanelEnabled(args))
-                {
-                    c.AddSingleton<IServerConfigurationChangeListener, ServerConfigurationChangeListener>()
-                        .AddSingleton<IPlugInConfigurationChangeListener, PlugInConfigurationChangeListener>()
-                        .AddHostedService<AdminPanel>()
-                        .AddSingleton(new AdminPanelSettings(this.DetermineAdminPort(args)));
-                }
-
                 c.AddSingleton(this._servers)
-                    .AddSingleton(s => s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<ChatServerDefinition>().First() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
-                    .AddSingleton(s => s.GetService<ChatServerDefinition>()?.ConvertToSettings() ?? throw new Exception($"{nameof(ChatServerSettings)} not registered."))
+                    .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
                     .AddIpResolver(args)
                     .AddSingleton(this._gameServers)
                     .AddSingleton(this._gameServers.Values)
                     .AddSingleton(s => this.DeterminePersistenceContextProvider(args, s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered.")))
+                    .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
                     .AddSingleton<ILoginServer, LoginServer>()
                     .AddSingleton<IGuildServer, GuildServer>()
                     .AddSingleton<IFriendServer, FriendServer>()
-                    .AddSingleton<IChatServer, ChatServer>()
+                    .AddSingleton<ChatServer>()
+                    .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
                     .AddSingleton<ConnectServerFactory>()
                     .AddSingleton<ConnectServerContainer>()
+                    .AddScoped<IMapFactory, JavascriptMapFactory>()
+                    .AddSingleton<SetupService>()
                     .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
-                    .AddSingleton<GameServerContainer>()
+                    .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
+                    .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
                     .AddSingleton<PlugInManager>()
+                    .AddSingleton<IServerProvider, LocalServerProvider>()
                     .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
-                    .AddHostedService(provider => provider.GetService<IChatServer>())
-                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>())
-                    .AddHostedService(provider => provider.GetService<GameServerContainer>());
+                    .AddHostedService<ChatServerContainer>()
+                    .AddHostedService<GameServerContainer>()
+                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>());
 
-                if (this.IsApiEnabled(args))
-                {
-                    c.AddHostedService<ApiHost>();
-                }
-            })
-            .Build();
-        Log.Info("Host created");
+            });
+        var host = builder.Build();
+
+        this._logger.Information("Host created");
         if (host.Services.GetService<ILoggerFactory>() is { } loggerFactory)
         {
             NpgsqlLoggingProvider.Initialize(loggerFactory);
         }
 
-        this._servers.Add(host.Services.GetService<IChatServer>() ?? throw new Exception($"{nameof(IChatServer)} not registered."));
-        this.LoadGameClientDefinitions(host.Services.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."));
-        Log.Info("Starting host...");
+        if (addAdminPanel)
+        {
+            host.ConfigureAdminPanel();
+        }
+
+        this._logger.Information("Starting host...");
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         await host.StartAsync();
         stopwatch.Stop();
-        Log.Info($"Host started, elapsed time: {stopwatch.Elapsed}");
+        this._logger.Information($"Host started, elapsed time: {stopwatch.Elapsed}");
         return host;
     }
-
-    private ushort DetermineAdminPort(string[] args) => this.DetermineUshort("adminport", args, 1234);
 
     private ushort DetermineUshort(string parameterName, string[] args, ushort defaultValue)
     {
@@ -276,8 +273,6 @@ internal sealed class Program : IDisposable
     }
 
     private bool IsAdminPanelEnabled(string[] args) => this.IsFeatureEnabled("adminpanel", args);
-
-    private bool IsApiEnabled(string[] args) => this.IsFeatureEnabled("api", args);
 
     private bool IsFeatureEnabled(string featureName, string[] args)
     {
@@ -301,11 +296,11 @@ internal sealed class Program : IDisposable
         return parameter.Substring(parameter.IndexOf(':') + 1);
     }
 
-    private IPersistenceContextProvider DeterminePersistenceContextProvider(string[] args, ILoggerFactory loggerFactory)
+    private IMigratableDatabaseContextProvider DeterminePersistenceContextProvider(string[] args, ILoggerFactory loggerFactory)
     {
         var version = this.GetVersionParameter(args);
 
-        IPersistenceContextProvider contextProvider;
+        IMigratableDatabaseContextProvider contextProvider;
         if (args.Contains("-demo"))
         {
             contextProvider = new InMemoryPersistenceContextProvider();
@@ -319,15 +314,15 @@ internal sealed class Program : IDisposable
         return contextProvider;
     }
 
-    private IPersistenceContextProvider PrepareRepositoryManager(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
+    private IMigratableDatabaseContextProvider PrepareRepositoryManager(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
     {
-        var contextProvider = new PersistenceContextProvider(loggerFactory);
+        var contextProvider = new PersistenceContextProvider(loggerFactory, null);
         if (reinit || !contextProvider.DatabaseExists())
         {
-            Log.Info("The database is getting (re-)initialized...");
+            this._logger.Information("The database is getting (re-)initialized...");
             contextProvider.ReCreateDatabase();
             this.InitializeData(version, loggerFactory, contextProvider);
-            Log.Info("...initialization finished.");
+            this._logger.Information("...initialization finished.");
         }
         else if (!contextProvider.IsDatabaseUpToDate())
         {

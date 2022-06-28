@@ -48,20 +48,32 @@ public class LoginAction
         }
         else
         {
-            using var context = player.PlayerState.TryBeginAdvanceTo(PlayerState.Authenticated);
-            if (context.Allowed && player.GameContext is IGameServerContext gameServerContext &&
-                gameServerContext.LoginServer.TryLogin(username, gameServerContext.Id))
+            Task.Run(async () =>
             {
-                player.Account = account;
-                player.Logger.LogDebug("Login successful, username: [{0}]", username);
-                player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.Ok);
-            }
-            else
-            {
-                context.Allowed = false;
-                player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()
-                    ?.ShowLoginResult(LoginResult.AccountAlreadyConnected);
-            }
+                try
+                {
+                    using var context = player.PlayerState.TryBeginAdvanceTo(PlayerState.Authenticated);
+                    if (context.Allowed && player.GameContext is IGameServerContext gameServerContext &&
+                        await gameServerContext.LoginServer.TryLogin(username, gameServerContext.Id))
+                    {
+                        player.Account = account;
+                        player.Logger.LogDebug("Login successful, username: [{0}]", username);
+                        player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.Ok);
+                    }
+                    else
+                    {
+                        context.Allowed = false;
+                        player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()
+                            ?.ShowLoginResult(LoginResult.AccountAlreadyConnected);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    player.Logger.LogError(ex, "Unexpected error during login through login server");
+                    player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()
+                        ?.ShowLoginResult(LoginResult.ConnectionError);
+                }
+            });
         }
     }
 }

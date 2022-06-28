@@ -9,8 +9,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
 /// </summary>
 public class ChangeOnlineStateAction
 {
-    private const byte InvisibleState = 0xFE;
-
     /// <summary>
     /// Sets the online state.
     /// </summary>
@@ -21,7 +19,7 @@ public class ChangeOnlineStateAction
         player.OnlineAsFriend = online;
         if (player.GameContext is IGameServerContext gameServerContext && player.SelectedCharacter is { } character)
         {
-            gameServerContext.FriendServer.SetOnlineState(character.Id, player.SelectedCharacter.Name, player.OnlineAsFriend ? gameServerContext.Id : InvisibleState);
+            gameServerContext.FriendServer.SetPlayerVisibilityState(gameServerContext.Id, character.Id, player.SelectedCharacter.Name, player.OnlineAsFriend);
         }
     }
 }

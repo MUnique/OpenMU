@@ -1,0 +1,337 @@
+version: '3.4'
+
+volumes:
+  dbdata:
+  prometheus-data:
+  minio-data:
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf
+      - ./.htpasswd:/etc/nginx/.htpasswd
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - ./grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana_datasources.yaml:/etc/grafana/provisioning/datasources/ds.yaml
+    depends_on:
+      - loki
+      - prometheus
+    ports:
+      - 3000
+
+  prometheus:
+    image: prom/prometheus:v2.21.0
+    ports:
+      - 9000:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+
+  loki:
+    image: grafana/loki:2.5.0
+    container_name: loki
+    command: "-config.file=/etc/loki/config.yaml -target=all"
+    ports:
+      - "3100:3100"
+      - 7946
+      - 9095
+    volumes:
+      - ./loki-config.yaml:/etc/loki/config.yaml
+    depends_on:
+      - minio
+
+  minio:
+    image: minio/minio
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /data/loki-data && \
+        mkdir -p /data/loki-ruler && \
+        minio server /data
+    environment:
+      - MINIO_ACCESS_KEY=loki
+      - MINIO_SECRET_KEY=supersecret
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+      - MINIO_UPDATE=off
+    ports:
+      - 9000
+    volumes:
+      - minio-data:/data
+
+  redis-state:
+    image: redis
+    restart: always
+    ports:
+      - 6379
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+
+  dapr-placement:
+    image: "daprio/dapr"
+    container_name: dapr_placement
+    command: ["./placement", "-port", "50006"]
+
+  pubsub:
+    image: rabbitmq:3-management-alpine
+    container_name: pubsub_rabbitmq
+    restart: always
+    ports:
+      - "5672"
+      - "50100:50001"
+
+  database:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: openmu
+      POSTGRES_USER: postgres
+    ports:
+      - "5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: tracing_zipkin
+    restart: always
+    ports:
+      - "9411:9411"
+
+  connectServer:
+    image: munique/openmu-connect
+    container_name: connectServer
+    ports:
+      - "50010:50001"
+      - "44405:44405"
+      - "9464" # Prometheus
+    environment:
+      APPID: connectServer
+    depends_on:
+      - pubsub
+      - zipkin
+      - database
+
+  connectServer-dapr:
+    image: "daprio/daprd:latest"
+    container_name: connectServer_dapr
+    command: [ "./daprd", "-app-id", "connectServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - connectServer
+    network_mode: "service:connectServer"
+    volumes:
+      - "./dapr-components/:/components"
+
+  loginServer:
+    image: munique/openmu-login
+    container_name: loginServer
+    ports:
+      - "50011:50001"
+      - "9464" # Prometheus
+    depends_on:
+      - zipkin
+      - database
+
+  loginServer-dapr:
+    image: "daprio/daprd:latest"
+    container_name: loginServer_dapr
+    command: [ "./daprd", "-app-id", "loginServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - loginServer
+    network_mode: "service:loginServer"
+    volumes:
+      - "./dapr-components/:/components"
+
+  friendServer:
+    image: munique/openmu-friend
+    container_name: friendServer
+    ports:
+      - "50012:50001"
+      - "9464" # Prometheus
+    depends_on:
+      - chatServer-dapr
+      - database
+      - zipkin
+
+  friendServer-dapr:
+    image: "daprio/daprd:latest"
+    container_name: friendServer_dapr
+    command: [ "./daprd", "-app-id", "friendServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - friendServer
+    network_mode: "service:friendServer"
+    volumes:
+      - "./dapr-components/:/components"
+  
+  guildServer:
+    image: munique/openmu-guild
+    container_name: guildServer
+    ports:
+      - "50013:50001"
+      - "9464" # Prometheus
+    depends_on:
+      - database
+      - zipkin
+
+  guildServer-dapr:
+    image: "daprio/daprd:latest"
+    container_name: guildServer_dapr
+    command: [ "./daprd", "-app-id", "guildServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - guildServer
+    network_mode: "service:guildServer"
+    volumes:
+      - "./dapr-components/:/components"
+
+  chatServer:
+    image: munique/openmu-chat
+    container_name: chatServer
+    environment:
+      APPID: chatServer
+    ports:
+      - "55980:55980"
+      - "50014:50001"
+      - "9464" # Prometheus
+    depends_on:
+      - database
+      - zipkin
+
+  chatServer-dapr:
+    image: "daprio/daprd:latest"
+    container_name: chatServer_dapr
+    command: [ "./daprd", "-app-id", "chatServer", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - chatServer
+    network_mode: "service:chatServer"
+    volumes:
+      - "./dapr-components/:/components"
+
+
+  adminPanel:
+    image: munique/openmu-admin
+    container_name: adminPanel
+    depends_on:
+      - database
+    ports:
+      - "80"
+      - "9464" # Prometheus
+    environment:
+      ASPNETCORE_URLS: http://+:80
+      PATH_BASE: /admin/
+    volumes:
+      - ./.htpasswd:/etc/nginx/.htpasswd
+
+  adminPanel-dapr:
+    image: "daprio/daprd:latest"
+    container_name: adminPanel_dapr
+    command: [ "./daprd", "-app-id", "adminPanel", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+
+    depends_on:
+      - adminPanel
+    network_mode: "service:adminPanel"
+    volumes:
+      - "./dapr-components/:/components"
+
+  gameServer0:
+    image: munique/openmu-game
+    container_name: gameServer0
+    build:
+      context: ../../src
+      dockerfile: Dapr/GameServer.Host/Dockerfile
+    ports:
+      - "80"
+      - "50000:50001"
+      - "55901:55901"
+      - "9464" # Prometheus
+    environment:
+      GS_ID: 0
+      APPID: gameServer0
+      PATH_BASE: /gameServer/0/
+    depends_on:
+      - connectServer-dapr
+      - loginServer-dapr
+      - friendServer-dapr
+      - pubsub
+      - zipkin
+      - database
+      - loki
+
+  gameServer0-dapr:
+    image: "daprio/daprd:latest"
+    container_name: gameserver0_dapr
+    command: [ "./daprd", "-app-id", "gameServer0", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - gameServer0
+    network_mode: "service:gameServer0"
+    volumes:
+      - "./dapr-components/:/components"
+  
+  gameServer1:
+    image: munique/openmu-game
+    container_name: gameServer1
+    build:
+      context: ../../src
+      dockerfile: Dapr/GameServer.Host/Dockerfile
+    ports:
+      - "80"
+      - "50001:50001"
+      - "55902:55902"
+      - "9464" # Prometheus
+    environment:
+      GS_ID: 1
+      APPID: gameServer1
+      PATH_BASE: /gameServer/1/
+    depends_on:
+      - connectServer-dapr
+      - loginServer-dapr
+      - friendServer-dapr
+      - pubsub
+      - zipkin
+      - database
+      - loki
+
+  gameServer1-dapr:
+    image: "daprio/daprd:latest"
+    container_name: gameserver1_dapr
+    command: [ "./daprd", "-app-id", "gameServer1", "-app-port", "80",
+                "-components-path", "/components",
+                "-config", "/components/config.yaml",
+                "-placement-host-address", "dapr-placement:50006"  ]
+    depends_on:
+      - gameServer1
+    network_mode: "service:gameServer1"
+    volumes:
+      - "./dapr-components/:/components"

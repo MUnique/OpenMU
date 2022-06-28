@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.FriendServer;
+
 namespace MUnique.OpenMU.Tests;
 
 using Moq;
@@ -17,7 +19,6 @@ public sealed class FriendServerTest
 {
     private Character _player1 = null!;
     private Character _player2 = null!;
-    private IDictionary<int, IGameServer> _gameServers = null!;
     private Mock<IGameServer> _gameServer1 = null!;
     private Mock<IGameServer> _gameServer2 = null!;
     private IFriendServer _friendServer = null!;
@@ -35,13 +36,14 @@ public sealed class FriendServerTest
         this._gameServer2 = new Mock<IGameServer>();
         this._gameServer2.Setup(gs => gs.Id).Returns(2);
 
-        this._gameServers = new Dictionary<int, IGameServer>
+        var gameServers = new Dictionary<int, IGameServer>
         {
             { this._gameServer1.Object.Id, this._gameServer1.Object },
             { this._gameServer2.Object.Id, this._gameServer2.Object },
         };
         this._persistenceContextProvider = new InMemoryPersistenceContextProvider();
-        this._friendServer = new FriendServer.FriendServer(this._gameServers, new Mock<IChatServer>().Object, this._persistenceContextProvider);
+        var notifier = new FriendNotifierToGameServer(gameServers); // todo: mock this
+        this._friendServer = new FriendServer.FriendServer(notifier, new Mock<IChatServer>().Object, this._persistenceContextProvider);
         var context = this._persistenceContextProvider.CreateNewContext();
         this._player1 = context.CreateNew<Character>();
         this._player1.Name = "player1";
@@ -56,7 +58,7 @@ public sealed class FriendServerTest
     [Test]
     public void FriendAddRequestOffline()
     {
-        this.SetPlayerOnline(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
         var added = this._friendServer.FriendRequest(this._player1.Name, this._player2.Name);
         Assert.That(added, Is.True);
         this._gameServer2.Verify(g => g.FriendRequest(this._player1.Name, this._player2.Name), Times.Never);
@@ -70,8 +72,8 @@ public sealed class FriendServerTest
     [Test]
     public void FriendAddRequestOnline()
     {
-        this.SetPlayerOnline(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        this.SetPlayerOnline(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
         var added = this._friendServer.FriendRequest(this._player1.Name, this._player2.Name);
         Assert.That(added, Is.True);
         this._gameServer2.Verify(g => g.FriendRequest(this._player1.Name, this._player2.Name), Times.Once);
@@ -85,8 +87,8 @@ public sealed class FriendServerTest
     [Test]
     public void FriendAddRequestRepeated()
     {
-        this.SetPlayerOnline(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        this.SetPlayerOnline(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
 
         var added = this._friendServer.FriendRequest(this._player1.Name, this._player2.Name);
         Assert.That(added, Is.True);
@@ -102,8 +104,8 @@ public sealed class FriendServerTest
     [Test]
     public void FriendAddRequestAccept()
     {
-        this.SetPlayerOnline(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        this.SetPlayerOnline(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
 
         this._friendServer.FriendRequest(this._player1.Name, this._player2.Name);
 
@@ -119,18 +121,12 @@ public sealed class FriendServerTest
         Assert.That(friendItem1.RequestOpen, Is.False);
         Assert.That(friendItem1.Accepted, Is.True);
 
-        var friendListItem1 = this._friendServer.GetFriendList(this._player1.Id).FirstOrDefault();
-        Assert.That(friendListItem1, Is.EqualTo(this._player2.Name));
-
         var friendItem2 = context.GetFriends(this._player2.Id).FirstOrDefault();
         Assert.That(friendItem2, Is.Not.Null);
         Assert.That(friendItem2!.CharacterName, Is.EqualTo(this._player2.Name));
         Assert.That(friendItem2.FriendName, Is.EqualTo(this._player1.Name));
         Assert.That(friendItem2.RequestOpen, Is.False);
         Assert.That(friendItem2.Accepted, Is.True);
-
-        var friendListItem2 = this._friendServer.GetFriendList(this._player2.Id).FirstOrDefault();
-        Assert.That(friendListItem2, Is.EqualTo(this._player1.Name));
     }
 
     /// <summary>
@@ -140,8 +136,8 @@ public sealed class FriendServerTest
     [Test]
     public void FriendAddRequestDecline()
     {
-        this.SetPlayerOnline(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        this.SetPlayerOnline(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
         this._friendServer.FriendRequest(this._player1.Name, this._player2.Name);
 
         this._friendServer.FriendResponse(this._player2.Name, this._player1.Name, false);
@@ -155,8 +151,6 @@ public sealed class FriendServerTest
         Assert.That(friendItem.FriendName, Is.EqualTo(this._player2.Name));
         Assert.That(friendItem.RequestOpen, Is.False);
         Assert.That(friendItem.Accepted, Is.False);
-
-        Assert.That(this._friendServer.GetFriendList(this._player2.Id), Is.Empty);
     }
 
     /// <summary>
@@ -165,16 +159,13 @@ public sealed class FriendServerTest
     [Test]
     public void FriendResponseWithoutRequest()
     {
-        this.SetPlayerOnline(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        this.SetPlayerOnline(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
 
         this._friendServer.FriendResponse(this._player2.Name, this._player1.Name, true);
 
         this._gameServer1.Verify(g => g.FriendOnlineStateChanged(this._player1.Name, this._player2.Name, this._gameServer2.Object.Id), Times.Never);
         this._gameServer2.Verify(g => g.FriendOnlineStateChanged(this._player2.Name, this._player1.Name, this._gameServer1.Object.Id), Times.Never);
-
-        Assert.That(this._friendServer.GetFriendList(this._player1.Id), Is.Empty);
-        Assert.That(this._friendServer.GetFriendList(this._player2.Id), Is.Empty);
     }
 
     /// <summary>
@@ -183,18 +174,13 @@ public sealed class FriendServerTest
     [Test]
     public void FriendDelete()
     {
-        this.SetPlayerOnline(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        this.SetPlayerOnline(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
         this._friendServer.FriendRequest(this._player1.Name, this._player2.Name);
         this._friendServer.FriendResponse(this._player2.Name, this._player1.Name, true);
-        Assert.That(this._friendServer.GetFriendList(this._player1.Id), Is.Not.Empty);
-        Assert.That(this._friendServer.GetFriendList(this._player2.Id), Is.Not.Empty);
 
         this._friendServer.DeleteFriend(this._player1.Name, this._player2.Name);
         this._gameServer2.Verify(g => g.FriendOnlineStateChanged(this._player2.Name, this._player1.Name, FriendServer.FriendServer.OfflineServerId), Times.Once);
-
-        Assert.That(this._friendServer.GetFriendList(this._player1.Id), Is.Empty);
-        Assert.That(this._friendServer.GetFriendList(this._player2.Id), Is.Not.Empty);
     }
 
     /// <summary>
@@ -206,31 +192,27 @@ public sealed class FriendServerTest
     [Test]
     public void TestOnlineList()
     {
-        this.SetPlayerOnline(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        this.SetPlayerOnline(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
         this._friendServer.FriendRequest(this._player1.Name, this._player2.Name);
         this._friendServer.FriendResponse(this._player2.Name, this._player1.Name, true);
-        this.SetPlayerOnline(this._player1.Id, this._player1.Name, FriendServer.FriendServer.OfflineServerId);
-        this.SetPlayerOnline(this._player2.Id, this._player2.Name, FriendServer.FriendServer.OfflineServerId);
+        this._friendServer.PlayerLeftGame(this._player1.Id, this._player1.Name);
+        this._friendServer.PlayerLeftGame(this._player2.Id, this._player2.Name);
 
         this._gameServer1.Invocations.Clear();
         this._gameServer2.Invocations.Clear();
 
-        this._friendServer.SetOnlineState(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        this._friendServer.SetOnlineState(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        this._friendServer.PlayerEnteredGame((byte)this._gameServer1.Object.Id, this._player1.Id, this._player1.Name);
+        this._friendServer.PlayerEnteredGame((byte)this._gameServer2.Object.Id, this._player2.Id, this._player2.Name);
         this._gameServer1.Verify(gs => gs.FriendOnlineStateChanged(this._player1.Name, this._player2.Name, this._gameServer2.Object.Id), Times.Once);
 
-        this._friendServer.SetOnlineState(this._player1.Id, this._player1.Name, FriendServer.FriendServer.OfflineServerId);
+        this._friendServer.PlayerLeftGame(this._player1.Id, this._player1.Name);
         this._gameServer2.Verify(gs => gs.FriendOnlineStateChanged(this._player2.Name, this._player1.Name, FriendServer.FriendServer.OfflineServerId), Times.Once);
     }
 
-    private void SetPlayerOnline(Guid playerId, string playerName, int serverId)
+    private void PlayerEnteredGame(Guid playerId, string playerName, int serverId)
     {
-        this._friendServer.SetOnlineState(playerId, playerName, (byte)serverId);
-        if (this._gameServers.TryGetValue((byte)serverId, out var gameServer))
-        {
-            Mock.Get(gameServer).Setup(g => g.IsPlayerOnline(playerName)).Returns(serverId != FriendServer.FriendServer.OfflineServerId);
-        }
+        this._friendServer.PlayerEnteredGame((byte)serverId, playerId, playerName);
     }
 
     private void CheckFriendItemsAfterRequest()
@@ -242,7 +224,5 @@ public sealed class FriendServerTest
         Assert.That(friendItem.FriendName, Is.EqualTo(this._player2.Name));
         Assert.That(friendItem.RequestOpen, Is.True);
         Assert.That(friendItem.Accepted, Is.False);
-
-        Assert.That(this._friendServer.GetFriendList(this._player2.Id), Is.Empty);
     }
 }

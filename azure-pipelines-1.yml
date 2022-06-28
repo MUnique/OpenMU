@@ -3,15 +3,13 @@
 trigger:
   branches:
     include:
-    - master
+    - releases/*
   paths:
     exclude:
     - docs/*
     - tests/*
 
-pr:
-- master
-- releases/*
+pr: none
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -22,11 +20,82 @@ steps:
    containerRegistry: 'munique docker hub'
    command: 'login'
 - task: Docker@2
+  displayName: "Build and Push All-In-One Image (openmu)"
   inputs:
     containerRegistry: 'munique docker hub'
     command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
+    Dockerfile: '**/src/Startup/Dockerfile'
     repository: 'munique/openmu'
     tags: |
-      $(Build.BuildId)
+      $(Build.SourceBranchName)
+      latest
+- task: Docker@2
+  displayName: "Build and Push AdminPanel Image (openmu-admin)"
+  inputs:
+    containerRegistry: 'munique docker hub'
+    command: 'buildAndPush'
+    Dockerfile: '**/src/Dapr/AdminPanel.Host/Dockerfile'
+    repository: 'munique/openmu-admin'
+    tags: |
+      $(Build.SourceBranchName)
+      latest
+- task: Docker@2
+  displayName: "Build and Push ChatServer Image"
+  inputs:
+    containerRegistry: 'munique docker hub'
+    command: 'buildAndPush'
+    Dockerfile: '**/src/Dapr/ChatServer.Host/Dockerfile'
+    repository: 'munique/openmu-chat'
+    tags: |
+      $(Build.SourceBranchName)
+      latest
+- task: Docker@2
+  displayName: "Build and Push ConnectServer Image (openmu-connect)"
+  inputs:
+    containerRegistry: 'munique docker hub'
+    command: 'buildAndPush'
+    Dockerfile: '**/src/Dapr/ConnectServer.Host/Dockerfile'
+    repository: 'munique/openmu-connect'
+    tags: |
+      $(Build.SourceBranchName)
+      latest
+- task: Docker@2
+  displayName: "Build and Push FriendServer Image (openmu-friend)"
+  inputs:
+    containerRegistry: 'munique docker hub'
+    command: 'buildAndPush'
+    Dockerfile: '**/src/Dapr/FriendServer.Host/Dockerfile'
+    repository: 'munique/openmu-friend'
+    tags: |
+      $(Build.SourceBranchName)
+      latest
+- task: Docker@2
+  displayName: "Build and Push GameServer Image (openmu-game)"
+  inputs:
+    containerRegistry: 'munique docker hub'
+    command: 'buildAndPush'
+    Dockerfile: '**/src/Dapr/GameServer.Host/Dockerfile'
+    repository: 'munique/openmu-game'
+    tags: |
+      $(Build.SourceBranchName)
+      latest
+- task: Docker@2
+  displayName: "Build and Push GuildServer Image (openmu-guild)"
+  inputs:
+    containerRegistry: 'munique docker hub'
+    command: 'buildAndPush'
+    Dockerfile: '**/src/Dapr/GuildServer.Host/Dockerfile'
+    repository: 'munique/openmu-guild'
+    tags: |
+      $(Build.SourceBranchName)
+      latest
+- task: Docker@2
+  displayName: "Build and Push LoginServer Image (openmu-login)"
+  inputs:
+    containerRegistry: 'munique docker hub'
+    command: 'buildAndPush'
+    Dockerfile: '**/src/Dapr/LoginServer.Host/Dockerfile'
+    repository: 'munique/openmu-login'
+    tags: |
+      $(Build.SourceBranchName)
       latest

@@ -1,0 +1,10 @@
+﻿<div class="card shadow rounded" style="width: 18rem;">
+    <NavLink href="@($"{this.LiveMapRoute}{this.MapInfo.Id}")">
+        <img src="@MapInfo.GetTerrainString()" class="card-img-top" alt="Terrain of @this.MapInfo.MapName">
+    </NavLink>
+    <div class="card-body">
+        <h5 class="card-title">@this.MapInfo.MapName</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Number: @this.MapInfo.MapNumber</h6>
+        <p class="card-text">Online Players: @this.MapInfo.PlayerCount</p>
+    </div>
+</div>

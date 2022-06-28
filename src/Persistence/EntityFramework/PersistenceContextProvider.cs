@@ -4,24 +4,29 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
 /// The persistence context provider for the persistence implemented with entity framework core.
 /// </summary>
-public class PersistenceContextProvider : IPersistenceContextProvider
+public class PersistenceContextProvider : IMigratableDatabaseContextProvider
 {
     private readonly ILoggerFactory _loggerFactory;
+    private readonly IConfigurationChangePublisher? _changePublisher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PersistenceContextProvider" /> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
-    public PersistenceContextProvider(ILoggerFactory loggerFactory)
+    /// <param name="changePublisher">The change publisher.</param>
+    public PersistenceContextProvider(ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
     {
         this._loggerFactory = loggerFactory;
+        this._changePublisher = changePublisher;
         this.CachingRepositoryManager = new CachingRepositoryManager(loggerFactory);
         this.CachingRepositoryManager.RegisterRepositories();
     }
@@ -32,7 +37,7 @@ public class PersistenceContextProvider : IPersistenceContextProvider
     /// <value>
     /// The repository manager.
     /// </value>
-    internal CachingRepositoryManager CachingRepositoryManager { get; }
+    internal CachingRepositoryManager CachingRepositoryManager { get; private set; }
 
     /// <summary>
     /// Determines whether the database schema is up to date.
@@ -42,8 +47,15 @@ public class PersistenceContextProvider : IPersistenceContextProvider
     /// </returns>
     public bool IsDatabaseUpToDate()
     {
-        using var installationContext = new EntityDataContext();
-        return !installationContext.Database.GetPendingMigrations().Any();
+        try
+        {
+            using var installationContext = new EntityDataContext();
+            return !installationContext.Database.GetPendingMigrations().Any();
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -56,13 +68,70 @@ public class PersistenceContextProvider : IPersistenceContextProvider
     }
 
     /// <summary>
+    /// Waits until all database updates are applied.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
+    public async Task WaitForUpdatedDatabase(CancellationToken cancellationToken = default)
+    {
+        while (!this.DatabaseExists()
+               || !this.IsDatabaseUpToDate())
+        {
+            await Task.Delay(3000, cancellationToken);
+        }
+
+        while (!await this.ConfigurationExistsAsync(cancellationToken))
+        {
+            await Task.Delay(3000, cancellationToken);
+        }
+
+        await Task.Delay(5000, cancellationToken);
+    }
+
+    /// <summary>
+    /// Determines if a <see cref="GameConfiguration"/> exists on the database.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>True</c>, if a <see cref="GameConfiguration"/> exists; Otherwise, <c>false</c>.</returns>
+    public async Task<bool> ConfigurationExistsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await using var installationContext = new EntityDataContext();
+            return await installationContext.Set<GameConfiguration>().AnyAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Determines if the database exists already, by checking if any migration has been applied.
     /// </summary>
     /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
     public bool DatabaseExists()
     {
+        try
+        {
+            using var installationContext = new EntityDataContext();
+            return installationContext.Database.GetAppliedMigrations().Any();
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Determines whether this instance can connect to the database.
+    /// </summary>
+    /// <returns>
+    ///   <c>true</c> if this instance can connect to the database; otherwise, <c>false</c>.
+    /// </returns>
+    public bool CanConnectToDatabase()
+    {
         using var installationContext = new EntityDataContext();
-        return installationContext.Database.GetAppliedMigrations().Any();
+        return installationContext.Database.CanConnect();
     }
 
     /// <summary>
@@ -70,9 +139,16 @@ public class PersistenceContextProvider : IPersistenceContextProvider
     /// </summary>
     public void ReCreateDatabase()
     {
-        using var installationContext = new EntityDataContext();
-        installationContext.Database.EnsureDeleted();
+        using (var installationContext = new EntityDataContext())
+        {
+            installationContext.Database.EnsureDeleted();
+        }
+
         this.ApplyAllPendingUpdates();
+
+        // We create a new repository manager, so that the previously loaded data is not effective anymore.
+        this.CachingRepositoryManager = new CachingRepositoryManager(this._loggerFactory);
+        this.CachingRepositoryManager.RegisterRepositories();
     }
 
     /// <inheritdoc />
@@ -120,6 +196,6 @@ public class PersistenceContextProvider : IPersistenceContextProvider
     /// <inheritdoc />
     public IContext CreateNewTypedContext<T>()
     {
-        return new EntityFrameworkContext(new TypedContext<T>(), this._loggerFactory);
+        return new EntityFrameworkContext(new TypedContext<T>(), this._loggerFactory, this._changePublisher);
     }
 }

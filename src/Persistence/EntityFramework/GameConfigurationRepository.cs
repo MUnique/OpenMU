@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -22,8 +23,9 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
     /// <param name="logger">The logger.</param>
-    public GameConfigurationRepository(RepositoryManager repositoryManager, ILogger<GameConfigurationRepository> logger)
-        : base(repositoryManager, logger)
+    /// <param name="changePublisher">The change publisher.</param>
+    public GameConfigurationRepository(RepositoryManager repositoryManager, ILogger<GameConfigurationRepository> logger, IConfigurationChangePublisher? changePublisher)
+        : base(repositoryManager, logger, changePublisher)
     {
         this._objectLoader = new GameConfigurationJsonObjectLoader();
     }

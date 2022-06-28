@@ -50,6 +50,14 @@ At the moment the persistence layer uses the [Entity Framework Core](https://git
 and [PostgreSQL](https://www.postgresql.org) as database. Additionally, it's
 also possible to start it in a non-persistent in-memory mode.
 
+The project supports distributed hosting based on Dapr. Alternatively, it can be
+hosted in one process as well.
+
+## Deployment
+
+We provide Docker images and docker-compose files for easy deployment.
+Please take a look at the deploy-folder of this project.
+
 ## Contributions
 
 Contributions are welcome if they meet the following criteria:

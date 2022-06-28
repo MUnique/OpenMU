@@ -4,10 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
-using System.IO;
 using System.Text.RegularExpressions;
-using System.Xml;
-using System.Xml.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -44,14 +41,22 @@ public enum DatabaseRole
 
 /// <summary>
 /// The database connection configurator which loads the configuration from a file.
+/// TODO: Make class non-static.
 /// </summary>
 public static class ConnectionConfigurator
 {
-    private const string DbHostVariableName = "DB_HOST";
-    private const string DbAdminUserVariableName = "DB_ADMIN_USER";
-    private const string DbAdminPasswordVariableName = "DB_ADMIN_PW";
+    private static IDatabaseConnectionSettingProvider? _provider;
 
-    private static readonly IDictionary<Type, ConnectionSetting> Settings = LoadSettings();
+    private static IDatabaseConnectionSettingProvider Provider => _provider ?? throw new InvalidOperationException("Call Initialize before.");
+
+    /// <summary>
+    /// Initializes this instance.
+    /// </summary>
+    /// <param name="provider">The <see cref="IDatabaseConnectionSettingProvider"/> which provides the required connection settings.</param>
+    public static void Initialize(IDatabaseConnectionSettingProvider provider)
+    {
+        _provider = provider;
+    }
 
     /// <summary>
     /// Gets the name of the role from the configured connection string.
@@ -60,7 +65,7 @@ public static class ConnectionConfigurator
     /// <returns>The name of the role from the configured connection string.</returns>
     public static string GetRoleName(DatabaseRole role)
     {
-        var settings = Settings[GetContextTypeOfRole(role)];
+        var settings = Provider.GetConnectionSetting(GetContextTypeOfRole(role));
         return Regex.Match(settings.ConnectionString!, "User Id=([^;]+?);").Groups[1].Value;
     }
 
@@ -71,7 +76,7 @@ public static class ConnectionConfigurator
     /// <returns>The password password of the role from the configured connection string.</returns>
     public static string GetRolePassword(DatabaseRole role)
     {
-        var settings = Settings[GetContextTypeOfRole(role)];
+        var settings = Provider.GetConnectionSetting(GetContextTypeOfRole(role));
         return Regex.Match(settings.ConnectionString!, "Password=([^;]+?);").Groups[1].Value;
     }
 
@@ -89,7 +94,7 @@ public static class ConnectionConfigurator
             type = type.GetGenericTypeDefinition();
         }
 
-        if (Settings.TryGetValue(type, out var setting))
+        if (Provider.GetConnectionSetting(type) is { } setting)
         {
             switch (setting.DatabaseEngine)
             {
@@ -114,84 +119,7 @@ public static class ConnectionConfigurator
             DatabaseRole.Configuration => typeof(ConfigurationContext),
             DatabaseRole.Guild => typeof(GuildContext),
             DatabaseRole.Friend => typeof(FriendContext),
-            _ => throw new ArgumentException($"Role {role} unknown.")
+            _ => throw new ArgumentException($"Role {role} unknown."),
         };
-    }
-
-    private static IDictionary<Type, ConnectionSetting> LoadSettings()
-    {
-        var settings = new XmlReaderSettings
-        {
-            IgnoreComments = true,
-            IgnoreProcessingInstructions = true,
-            IgnoreWhitespace = true,
-            DtdProcessing = DtdProcessing.Ignore,
-            CloseInput = true,
-            XmlResolver = null,
-        };
-        var result = new Dictionary<Type, ConnectionSetting>();
-
-        var configurationFilePath = Path.Combine(Path.GetDirectoryName(new Uri(typeof(ConnectionConfigurator).Assembly.Location!).LocalPath)!, "ConnectionSettings.xml");
-        using var xmlReader = XmlReader.Create(File.OpenRead(configurationFilePath), settings);
-        var serializer = new XmlSerializer(typeof(ConnectionSettings));
-        if (serializer.CanDeserialize(xmlReader))
-        {
-            if (serializer.Deserialize(xmlReader) is ConnectionSettings xmlSettings)
-            {
-                foreach (var setting in xmlSettings.Connections)
-                {
-                    if (setting.ContextTypeName is null)
-                    {
-                        throw new InvalidDataException("ContextTypeName is null.");
-                    }
-
-                    if (setting.ConnectionString is null)
-                    {
-                        throw new InvalidDataException("ConnectionString is null.");
-                    }
-
-                    if (Type.GetType(setting.ContextTypeName, false, true) is { } contextType)
-                    {
-                        ApplyEnvironmentVariables(setting);
-                        result.Add(contextType, setting);
-                    }
-                    else if (setting.ContextTypeName.EndsWith($".{nameof(TypedContext<object>)}"))
-                    {
-                        ApplyEnvironmentVariables(setting);
-                        result.Add(typeof(TypedContext<>), setting);
-                    }
-                    else
-                    {
-                        throw new InvalidDataException($"Unknown context type: {setting.ContextTypeName}");
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static void ApplyEnvironmentVariables(ConnectionSetting setting)
-    {
-        if (Environment.GetEnvironmentVariable(DbHostVariableName) is { } dbHost
-            && !string.IsNullOrEmpty(dbHost))
-        {
-            setting.ConnectionString = setting.ConnectionString!.Replace("Server=localhost;", $"Server={dbHost};");
-        }
-
-        if (setting.ConnectionString!.Contains("User Id=postgres;"))
-        {
-            if (Environment.GetEnvironmentVariable(DbAdminUserVariableName) is { } dbAdminUser
-                && !string.IsNullOrEmpty(dbAdminUser))
-            {
-                setting.ConnectionString = setting.ConnectionString.Replace("User Id=postgres;", $"User Id={dbAdminUser};");
-            }
-
-            if (Environment.GetEnvironmentVariable(DbAdminPasswordVariableName) is { } dbAdminPassword
-                && !string.IsNullOrEmpty(dbAdminPassword))
-            {
-                setting.ConnectionString = setting.ConnectionString.Replace("Password=admin;", $"Password={dbAdminPassword};");
-            }
-        }
     }
 }

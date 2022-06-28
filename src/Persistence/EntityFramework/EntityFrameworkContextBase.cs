@@ -8,6 +8,7 @@ using System.Collections;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using MUnique.OpenMU.DataModel.Composition;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Abstract base class for an <see cref="IContext"/> which uses an <see cref="DbContext"/>.
@@ -16,19 +17,24 @@ using MUnique.OpenMU.DataModel.Composition;
 public class EntityFrameworkContextBase : IContext
 {
     private readonly bool _isOwner;
+    private readonly IConfigurationChangePublisher? _changePublisher;
     private bool _isDisposed;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EntityFrameworkContextBase" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="EntityFrameworkContextBase" /> class.</summary>
     /// <param name="context">The db context.</param>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="isOwner">If set to <c>true</c>, this instance owns the <see cref="Context"/>. That means it will be disposed when this instance will be disposed.</param>
-    protected EntityFrameworkContextBase(DbContext context, RepositoryManager repositoryManager, bool isOwner)
+    /// <param name="isOwner">If set to <c>true</c>, this instance owns the <see cref="Context" />. That means it will be disposed when this instance will be disposed.</param>
+    /// <param name="changePublisher">The change publisher.</param>
+    protected EntityFrameworkContextBase(DbContext context, RepositoryManager repositoryManager, bool isOwner, IConfigurationChangePublisher? changePublisher)
     {
         this.Context = context;
         this.RepositoryManager = repositoryManager;
         this._isOwner = isOwner;
+        this._changePublisher = changePublisher;
+        if (this._changePublisher is { })
+        {
+            this.Context.SavedChanges += this.OnSavedChanges;
+        }
     }
 
     /// <summary>
@@ -49,7 +55,12 @@ public class EntityFrameworkContextBase : IContext
     /// <inheritdoc/>
     public bool SaveChanges()
     {
-        this.Context.SaveChanges();
+        // when we have a change publisher attached, we want to get the changed entries before accepting them.
+        // Otherwise, we can accept them.
+        var acceptChanges = this._changePublisher is null;
+
+        this.Context.SaveChanges(acceptChanges);
+
         return true;
     }
 
@@ -140,6 +151,7 @@ public class EntityFrameworkContextBase : IContext
     {
         if (dispose && this._isOwner)
         {
+            this.Context.SavedChanges -= this.OnSavedChanges;
             this.Context.Dispose();
         }
     }
@@ -164,6 +176,44 @@ public class EntityFrameworkContextBase : IContext
             {
                 action(propertyValue);
             }
+        }
+    }
+
+    private void OnSavedChanges(object? sender, SavedChangesEventArgs e)
+    {
+        try
+        {
+            if (this._changePublisher is null)
+            {
+                // should never be the case
+                return;
+            }
+
+            var changedEntries = this.Context.ChangeTracker.Entries()
+                .Where(entity => entity.State == EntityState.Unchanged
+                                && entity.Metadata.ClrType.IsConfigurationType()).ToList();
+            foreach (var entry in changedEntries)
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        this._changePublisher.ConfigurationAdded(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity);
+                        break;
+                    case EntityState.Deleted:
+                        this._changePublisher.ConfigurationRemoved(entry.Metadata.ClrType, entry.Entity.GetId());
+                        break;
+                    case EntityState.Modified:
+                        this._changePublisher.ConfigurationChanged(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity);
+                        break;
+                    default:
+                        // no change publishing required.
+                        break;
+                }
+            }
+        }
+        finally
+        {
+            this.Context.ChangeTracker.AcceptAllChanges();
         }
     }
 }

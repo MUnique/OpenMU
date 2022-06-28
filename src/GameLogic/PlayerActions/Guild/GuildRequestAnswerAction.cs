@@ -53,13 +53,7 @@ public class GuildRequestAnswerAction
 
         if (accept)
         {
-            var guildStatus = guildServer.CreateGuildMember(player.GuildStatus.GuildId, lastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id);
-            if (guildStatus is not null)
-            {
-                lastGuildRequester.GuildStatus = guildStatus;
-                (player.GameContext as IGameServerContext)?.RegisterGuildMember(lastGuildRequester);
-                lastGuildRequester.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(lastGuildRequester, false), true);
-            }
+            guildServer.CreateGuildMember(player.GuildStatus.GuildId, lastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id);
         }
 
         lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused);

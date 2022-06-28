@@ -12,7 +12,7 @@ using System.Net;
 internal class ClientConnectionCounter
 {
     private readonly IDictionary<IPAddress, int> _connections = new Dictionary<IPAddress, int>();
-    private readonly object _syncRoot = new ();
+    private readonly object _syncRoot = new();
 
     /// <summary>
     /// Gets the connection count of the specified ip address.

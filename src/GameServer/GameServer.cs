@@ -23,7 +23,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The game server to which game clients can connect.
 /// </summary>
-public sealed class GameServer : IGameServer, IDisposable
+public sealed class GameServer : IGameServer, IDisposable, IGameServerContextProvider
 {
     private readonly ILogger<GameServer> _logger;
 
@@ -38,6 +38,7 @@ public sealed class GameServer : IGameServer, IDisposable
     /// </summary>
     /// <param name="gameServerDefinition">The game server definition.</param>
     /// <param name="guildServer">The guild server.</param>
+    /// <param name="eventPublisher">The message publisher.</param>
     /// <param name="loginServer">The login server.</param>
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
     /// <param name="friendServer">The friend server.</param>
@@ -46,6 +47,7 @@ public sealed class GameServer : IGameServer, IDisposable
     public GameServer(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
+        IEventPublisher eventPublisher,
         ILoginServer loginServer,
         IPersistenceContextProvider persistenceContextProvider,
         IFriendServer friendServer,
@@ -61,7 +63,7 @@ public sealed class GameServer : IGameServer, IDisposable
             var gameConfiguration = gameServerDefinition.GameConfiguration ?? throw Error.NotInitializedProperty(gameServerDefinition, nameof(gameServerDefinition.GameConfiguration));
             var dropGenerator = new DefaultDropGenerator(gameConfiguration, Rand.GetRandomizer());
             var mapInitializer = new GameServerMapInitializer(gameServerDefinition, loggerFactory.CreateLogger<GameServerMapInitializer>(), dropGenerator);
-            this._gameContext = new GameServerContext(gameServerDefinition, guildServer, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager, dropGenerator);
+            this._gameContext = new GameServerContext(gameServerDefinition, guildServer, eventPublisher, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager, dropGenerator);
             this._gameContext.GameMapCreated += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             this._gameContext.GameMapRemoved += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             mapInitializer.PlugInManager = this._gameContext.PlugInManager;
@@ -71,8 +73,6 @@ public sealed class GameServer : IGameServer, IDisposable
             this._logger.LogCritical(ex, "Error during map initialization");
             throw;
         }
-
-        this.ServerInfo = new GameServerInfoAdapter(this, gameServerDefinition.ServerConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a ServerConfiguration"));
     }
 
     /// <inheritdoc />
@@ -112,16 +112,13 @@ public sealed class GameServer : IGameServer, IDisposable
     public ServerType Type => ServerType.GameServer;
 
     /// <inheritdoc/>
-    public int MaximumConnections => this.ServerInfo.MaximumPlayers;
+    public int MaximumConnections => this.Context.ServerConfiguration.MaximumPlayers;
 
     /// <inheritdoc/>
-    public int CurrentConnections => this.ServerInfo.OnlinePlayerCount;
+    public int CurrentConnections => this.Context.PlayerCount;
 
     /// <inheritdoc/>
     int IManageableServer.Id => this.Id;
-
-    /// <inheritdoc/>
-    public IGameServerInfo ServerInfo { get; }
 
     /// <summary>
     /// Adds the listener.
@@ -136,7 +133,11 @@ public sealed class GameServer : IGameServer, IDisposable
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        // this.Start();
+        if (this.ServerState == ServerState.Stopped)
+        {
+            this.Start();
+        }
+
         return Task.CompletedTask;
     }
 
@@ -229,14 +230,37 @@ public sealed class GameServer : IGameServer, IDisposable
             throw new InvalidOperationException("Letter ReceiverName must be provided.");
         }
 
-        var player = this._gameContext.GetPlayerByCharacterName(letter.ReceiverName);
-        if (player != null)
+        if (this._gameContext.GetPlayerByCharacterName(letter.ReceiverName) is not { } player)
         {
-            var newLetterIndex = player.SelectedCharacter!.Letters.Count;
-            player.PersistenceContext.Attach(letter);
-            player.SelectedCharacter.Letters.Add(letter);
-            player.ViewPlugIns.GetPlugIn<IAddToLetterListPlugIn>()?.AddToLetterList(letter, (ushort)newLetterIndex, true);
+            return;
         }
+
+        if (player.SelectedCharacter?.Letters.Contains(letter) ?? true)
+        {
+            // We already know this letter, so we do nothing.
+            // This usually never happens, but who knows...
+            return;
+        }
+
+        // The letter we get here might not be of the right type to be attached
+        // to the players context and letter collection.
+        // So, we simply load it from the database.
+        var loadedLetter = player.PersistenceContext.GetById<LetterHeader>(letter.Id);
+        if (loadedLetter is null)
+        {
+            // something went wrong here, this should never happen.
+            this._logger.LogError("Couldn't find letter with id {0} on the database: {1}", letter.Id, letter);
+            return;
+        }
+
+        var letterIndex = player.SelectedCharacter.Letters.IndexOf(loadedLetter);
+        if (letterIndex < 0)
+        {
+            letterIndex = player.SelectedCharacter!.Letters.Count;
+            player.SelectedCharacter.Letters.Add(loadedLetter);
+        }
+
+        player.ViewPlugIns.GetPlugIn<IAddToLetterListPlugIn>()?.AddToLetterList(letter, (ushort)letterIndex, true);
     }
 
     /// <inheritdoc/>
@@ -274,6 +298,20 @@ public sealed class GameServer : IGameServer, IDisposable
         return false;
     }
 
+    /// <inheritdoc />
+    public void AssignGuildToPlayer(string characterName, GuildMemberStatus guildStatus)
+    {
+        var player = this._gameContext.GetPlayerByCharacterName(characterName);
+        if (player is null)
+        {
+            return;
+        }
+
+        player.GuildStatus = guildStatus;
+        player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayerToGuild(player, true), true);
+        this.Context.RegisterGuildMember(player);
+    }
+
     /// <inheritdoc/>
     public void SendGlobalMessage(string message, MessageType messageType)
     {
@@ -292,6 +330,13 @@ public sealed class GameServer : IGameServer, IDisposable
     {
         var observerPlayer = this._gameContext.GetPlayerByCharacterName(player);
         observerPlayer?.ViewPlugIns.GetPlugIn<IFriendStateUpdatePlugIn>()?.FriendStateUpdate(friend, serverId);
+    }
+
+    /// <inheritdoc/>
+    public void InitializeMessenger(MessengerInitializationData initializationData)
+    {
+        var player = this._gameContext.GetPlayerByCharacterName(initializationData.PlayerName);
+        player?.ViewPlugIns.GetPlugIn<IInitializeMessengerPlugIn>()?.InitializeMessenger(initializationData, this.Context.Configuration.MaximumLetters);
     }
 
     /// <inheritdoc/>
@@ -322,34 +367,11 @@ public sealed class GameServer : IGameServer, IDisposable
         this.RemovePlayerFromGuild(player);
     }
 
-    /// <inheritdoc/>
-    public void RegisterMapObserver(ushort mapId, object worldObserver)
-    {
-        if (worldObserver is not ILocateable locateableObserver)
-        {
-            throw new ArgumentException("worldObserver needs to implement ILocateable", nameof(worldObserver));
-        }
-
-        var map = this._gameContext.GetMap(mapId);
-        if (map != null)
-        {
-            map.Add(locateableObserver);
-        }
-        else
-        {
-            var message = $"map with id {mapId} not found.";
-            throw new ArgumentException(message);
-        }
-    }
-
-    /// <inheritdoc/>
-    public void UnregisterMapObserver(ushort mapId, ushort worldObserverId)
-    {
-        if (this._gameContext.GetMap(mapId) is { } map && map.GetObject(worldObserverId) is { } observer)
-        {
-            map.Remove(observer);
-        }
-    }
+    /// <summary>
+    /// Creates an instance of <see cref="ServerInfo"/> with the data of this instance.
+    /// </summary>
+    /// <returns>The created <see cref="ServerInfo"/>.</returns>
+    public ServerInfo CreateServerInfo() => new (this.Id, this.Description, this.CurrentConnections, this.MaximumConnections);
 
     /// <inheritdoc/>
     public override string ToString()
@@ -390,7 +412,6 @@ public sealed class GameServer : IGameServer, IDisposable
 
     private void OnPlayerDisconnected(Player remotePlayer)
     {
-        this.SetOfflineAtFriendServer(remotePlayer);
         this.SaveSessionOfPlayer(remotePlayer);
         this.SetOfflineAtLoginServer(remotePlayer);
         remotePlayer.Dispose();
@@ -409,21 +430,6 @@ public sealed class GameServer : IGameServer, IDisposable
         catch (Exception ex)
         {
             this._logger.LogError($"Couldn't set offline state at login server. Player: {this}", ex);
-        }
-    }
-
-    private void SetOfflineAtFriendServer(Player player)
-    {
-        try
-        {
-            if (player.SelectedCharacter != null)
-            {
-                this.Context.FriendServer.SetOnlineState(player.SelectedCharacter.Id, player.SelectedCharacter.Name, (byte)SpecialServerId.Offline);
-            }
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError($"Couldn't set offline state at friend server. Player: {this}", ex);
         }
     }
 

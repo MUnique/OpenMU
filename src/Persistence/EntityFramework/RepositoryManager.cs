@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// A repository manager which does not use caching.
@@ -12,14 +13,17 @@ using Microsoft.Extensions.Logging;
 public class RepositoryManager : BaseRepositoryManager
 {
     private readonly ILoggerFactory _loggerFactory;
+    private readonly IConfigurationChangePublisher? _changePublisher;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RepositoryManager"/> class.
+    /// Initializes a new instance of the <see cref="RepositoryManager" /> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
-    public RepositoryManager(ILoggerFactory loggerFactory)
+    /// <param name="changePublisher">The change publisher.</param>
+    public RepositoryManager(ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
     {
         this._loggerFactory = loggerFactory;
+        this._changePublisher = changePublisher;
     }
 
     /// <summary>
@@ -32,7 +36,7 @@ public class RepositoryManager : BaseRepositoryManager
     /// </summary>
     public virtual void RegisterRepositories()
     {
-        this.RegisterRepository(new GameConfigurationRepository(this, this._loggerFactory.CreateLogger<GameConfigurationRepository>()));
+        this.RegisterRepository(new GameConfigurationRepository(this, this._loggerFactory.CreateLogger<GameConfigurationRepository>(), this._changePublisher));
         this.RegisterMissingRepositoriesAsGeneric();
     }
 
@@ -60,7 +64,7 @@ public class RepositoryManager : BaseRepositoryManager
     protected virtual IRepository CreateGenericRepository(Type entityType)
     {
         var repositoryType = typeof(GenericRepository<>).MakeGenericType(entityType);
-        return (IRepository)Activator.CreateInstance(repositoryType, this, this._loggerFactory.CreateLogger(repositoryType))!;
+        return (IRepository)Activator.CreateInstance(repositoryType, this, this._loggerFactory.CreateLogger(repositoryType), this._changePublisher)!;
     }
 
     /// <summary>

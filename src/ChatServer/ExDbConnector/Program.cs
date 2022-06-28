@@ -6,8 +6,11 @@ namespace MUnique.OpenMU.ChatServer.ExDbConnector;
 
 using System.ComponentModel.Design;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Serilog;
+using Serilog.Debugging;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
@@ -18,11 +21,6 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 internal class Program
 {
-    private static readonly string Log4NetConfigFilePath = Directory.GetCurrentDirectory() +
-                                                           Path.DirectorySeparatorChar +
-                                                           typeof(Program).Assembly.GetName().Name +
-                                                           ".exe.log4net.xml";
-
     private static ILogger<Program> _logger = NullLogger<Program>.Instance;
 
     /// <summary>
@@ -31,9 +29,19 @@ internal class Program
     /// <param name="args">The arguments. </param>
     internal static void Main(string[] args)
     {
-        // todo: create with HostBuilder
-        var loggerFactory = new NullLoggerFactory().AddLog4Net(Log4NetConfigFilePath, true);
+        SelfLog.Enable(Console.Error);
+        var logConfiguration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", false, true)
+            .Build();
+
+        var logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(logConfiguration)
+            .CreateLogger();
+
+        var loggerFactory = new LoggerFactory().AddSerilog(logger);
         _logger = loggerFactory.CreateLogger<Program>();
+
         var addressResolver = IpAddressResolverFactory.DetermineIpResolver(args, loggerFactory);
         var settings = new Settings("ChatServer.cfg");
         var serviceContainer = new ServiceContainer();
@@ -50,8 +58,8 @@ internal class Program
             configuration.Endpoints.Add(new ChatServerEndpoint { ClientVersion = ConfigurableNetworkEncryptionPlugIn.Version, NetworkPort = chatServerListenerPort });
             var pluginManager = new PlugInManager(null, loggerFactory, serviceContainer);
             pluginManager.DiscoverAndRegisterPlugInsOf<INetworkEncryptionFactoryPlugIn>();
-            var chatServer = new ChatServer(configuration, addressResolver, loggerFactory, pluginManager);
-
+            var chatServer = new ChatServer(addressResolver, loggerFactory, pluginManager);
+            chatServer.Initialize(configuration);
             chatServer.Start();
             var exDbClient = new ExDbClient(exDbHost, exDbPort, chatServer, chatServerListenerPort, loggerFactory);
             _logger.LogInformation("ChatServer started and ready");

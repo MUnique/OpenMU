@@ -20,10 +20,7 @@ using MUnique.OpenMU.Persistence.Json;
 public partial class ConnectServerDefinition : MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition, IIdentifiable, IConvertibleTo<ConnectServerDefinition>
 {
     
-    /// <summary>
-    /// Gets or sets the identifier of this instance.
-    /// </summary>
-    public Guid Id { get; set; }
+    
     
     /// <summary>
     /// Gets the raw object of <see cref="Client" />.
