@@ -1,13 +1,14 @@
 # Deployment
 
-The recommended way to deploy OpenMU is through Docker. Depending on the scale you need, we provide multiple ways to do that.
-
-This describes a deployment of a test environment. A production environment might need additional steps, such as adding a ssl certificate to nginx.
+The recommended way to deploy OpenMU is through Docker. Depending on the scale
+you need, we provide multiple ways to do that.
 
 ## All-in-one
 
-The [all-in-one deployment](/all-in-one/) is recommended, if you want to host on a small machine with a low amount of players.
-In this case, all kinds of OpenMU subsystems (ConnectServer, GameServer, LoginServer, AdminPanel, ...) are running in one process.
+The [all-in-one deployment](/all-in-one/) is recommended, if you want to host on
+a small machine with a low amount of players.
+In this case, all kinds of OpenMU subsystems (ConnectServer, GameServer, LoginServer,
+AdminPanel, ...) are running in one process.
 
 #### Pros
   * No communication overhead between subsystems, therefore slightly faster
@@ -22,7 +23,8 @@ In this case, all kinds of OpenMU subsystems (ConnectServer, GameServer, LoginSe
 
 ## Distributed
 
-It's also possible to host OpenMU in a [distributed](/distributed/) way. However, this introduces a lot more complexity.
+It's also possible to host OpenMU in a [distributed](/distributed/) way.
+However, this introduces a lot more complexity.
 The communication between the subsystems is handled with Dapr.
 
 #### Pros

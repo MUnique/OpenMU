@@ -77,6 +77,7 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     /// <inheritdoc />
     public void ApplyAllPendingUpdates()
     {
+        // we don't need to do anything.
     }
 
     /// <inheritdoc />

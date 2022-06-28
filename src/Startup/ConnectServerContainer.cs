@@ -21,7 +21,6 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
     private readonly IList<IManageableServer> _servers;
     private readonly IPersistenceContextProvider _persistenceContextProvider;
     private readonly ConnectServerFactory _connectServerFactory;
-    private readonly ILogger<ConnectServerContainer> _logger;
     private readonly IList<IConnectServer> _connectServers = new List<IConnectServer>();
     private readonly IDictionary<GameClientDefinition, IGameServerStateObserver> _observers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
 
@@ -39,7 +38,6 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
         this._servers = servers;
         this._persistenceContextProvider = persistenceContextProvider;
         this._connectServerFactory = connectServerFactory;
-        this._logger = logger;
     }
 
     /// <summary>

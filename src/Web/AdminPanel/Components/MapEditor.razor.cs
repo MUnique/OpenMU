@@ -24,9 +24,11 @@ using SixLabors.ImageSharp.PixelFormats;
 /// </summary>
 public partial class MapEditor : IDisposable
 {
-    private Image<Rgba32> _terrainImage = null!;
+    private static readonly string[] DirectionNames = Enum.GetNames<Direction>().Select(d => d.ToLowerInvariant()).ToArray();
 
-    private float _scale = 3;
+    private readonly float _scale = 3;
+
+    private Image<Rgba32> _terrainImage = null!;
 
     private object? _focusedObject;
     private Resizers.ResizerPosition? _resizerPosition;
@@ -148,6 +150,9 @@ public partial class MapEditor : IDisposable
             case MonsterSpawnArea spawn:
                 result = spawn.X1 != spawn.X2 || spawn.Y1 != spawn.Y2 ? "spawn-area" : "spawn-single";
                 break;
+            default:
+                // we have no specific css class for others
+                break;
         }
 
         if (this._focusedObject == obj)
@@ -256,6 +261,8 @@ public partial class MapEditor : IDisposable
                 case Gate gate:
                     this.OnGateResizing(gate, x, y);
                     break;
+                default:
+                    throw new NotImplementedException($"Resizing for object {this._focusedObject} not implemented.");
             }
 
             this.NotificationService.NotifyChange(this._focusedObject, null);
@@ -282,6 +289,11 @@ public partial class MapEditor : IDisposable
                 spawnArea.X2 = x;
                 spawnArea.Y1 = y;
                 break;
+            case null:
+                // do nothing.
+                break;
+            default:
+                throw new InvalidOperationException("Unknown resizer position");
         }
     }
 
@@ -305,6 +317,10 @@ public partial class MapEditor : IDisposable
                 gate.X2 = x;
                 gate.Y1 = y;
                 break;
+            case null:
+                // do nothing
+            default:
+                throw new InvalidOperationException("Unknown resizer position");
         }
     }
 
@@ -312,7 +328,7 @@ public partial class MapEditor : IDisposable
     {
         if (this._focusedObject is MonsterSpawnArea spawn)
         {
-            return spawn.Direction.ToString().ToLowerInvariant();
+            return DirectionNames[(int)spawn.Direction];
         }
 
         return null;

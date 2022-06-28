@@ -412,7 +412,6 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
     private void OnPlayerDisconnected(Player remotePlayer)
     {
-        // this.SetOfflineAtFriendServer(remotePlayer);
         this.SaveSessionOfPlayer(remotePlayer);
         this.SetOfflineAtLoginServer(remotePlayer);
         remotePlayer.Dispose();

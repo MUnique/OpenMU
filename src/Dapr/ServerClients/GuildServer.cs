@@ -115,30 +115,12 @@ public class GuildServer : IGuildServer
     public void PlayerEnteredGame(Guid characterId, string characterName, byte serverId)
     {
         // Handled by EventPublisher, through pub/sub component.
-        /*
-        try
-        {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.PlayerEnteredGame), new PlayerEnteredGameArguments(characterId, characterName, serverId));
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Unexpected error when sending a PlayerEnteredGame.");
-        }*/
     }
 
     /// <inheritdoc />
     public void GuildMemberLeftGame(uint guildId, Guid guildMemberId, byte serverId)
     {
         // Handled by EventPublisher, through pub/sub component.
-        /*
-        try
-        {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.GuildMemberLeftGame), new GuildPlayerLeftGameArguments(guildId, guildMemberId, serverId));
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Unexpected error when sending a GuildMemberLeftGame.");
-        }*/
     }
 
     /// <inheritdoc />

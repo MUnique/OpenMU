@@ -257,6 +257,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         }
         catch (TargetInvocationException ex) when (ex.InnerException is ObjectDisposedException)
         {
+            // See ObjectDisposedException.
         }
         catch (ObjectDisposedException)
         {

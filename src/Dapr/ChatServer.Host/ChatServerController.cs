@@ -39,7 +39,14 @@ public class ChatServerController : ControllerBase
     [HttpPost(nameof(IChatServer.RegisterClient))]
     public ChatServerAuthenticationInfo RegisterClient([FromBody] RegisterChatClientArguments data)
     {
-        return this._chatServer.RegisterClient(data.RoomId, data.ClientName);
+        try
+        {
+            return this._chatServer.RegisterClient(data.RoomId, data.ClientName);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, $"Error during registration of {data.ClientName} for room {data.RoomId}.");
+        }
     }
 
     /// <summary>
@@ -49,6 +56,13 @@ public class ChatServerController : ControllerBase
     [HttpPost(nameof(IChatServer.CreateChatRoom))]
     public ushort CreateChatRoom()
     {
-        return this._chatServer.CreateChatRoom();
+        try
+        {
+            return this._chatServer.CreateChatRoom();
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error creating a new chat room.");
+        }
     }
 }

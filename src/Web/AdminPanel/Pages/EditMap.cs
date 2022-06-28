@@ -130,6 +130,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         }
         catch (TargetInvocationException ex) when (ex.InnerException is ObjectDisposedException)
         {
+            // See ObjectDisposedException.
         }
         catch (ObjectDisposedException)
         {

@@ -205,6 +205,9 @@ public class EntityFrameworkContextBase : IContext
                     case EntityState.Modified:
                         this._changePublisher.ConfigurationChanged(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity);
                         break;
+                    default:
+                        // no change publishing required.
+                        break;
                 }
             }
         }

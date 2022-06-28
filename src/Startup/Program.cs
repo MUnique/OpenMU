@@ -201,7 +201,6 @@ internal sealed class Program : IDisposable
         ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
         var builder = WebApplication.CreateBuilder(args);
 
-        // builder.WebHost.UseUrls($"http://*:80");
         builder.Host.UseSerilog(this._logger);
         if (addAdminPanel)
         {

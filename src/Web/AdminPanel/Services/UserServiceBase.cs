@@ -22,7 +22,7 @@ public abstract class UserServiceBase : IUserService
     /// Initializes a new instance of the <see cref="UserServiceBase"/> class.
     /// </summary>
     /// <param name="modalService">The modal service.</param>
-    public UserServiceBase(IModalService modalService)
+    protected UserServiceBase(IModalService modalService)
     {
         this._modalService = modalService;
     }

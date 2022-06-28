@@ -2,11 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.Dapr.Common;
 
 using global::Dapr.Client;
 using Microsoft.EntityFrameworkCore;
-using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.Persistence.EntityFramework;
 
 /// <summary>
@@ -16,7 +17,6 @@ using MUnique.OpenMU.Persistence.EntityFramework;
 public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnectionSettingProvider
 {
     private const string SecretStoreName = "secrets";
-    private readonly DaprClient _daprClient;
     private readonly Dictionary<string, ConnectionSetting> _connectionSettings = new(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
@@ -25,9 +25,7 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
     /// <param name="daprClient">The dapr client.</param>
     public SecretStoreDatabaseConnectionSettingsProvider(DaprClient daprClient)
     {
-        this._daprClient = daprClient;
-
-        var secrets = this._daprClient.GetBulkSecretAsync(SecretStoreName).WaitAndUnwrapException();
+        var secrets = daprClient.GetBulkSecretAsync(SecretStoreName).WaitAndUnwrapException();
         foreach (var secret in secrets.Where(kvp => string.Equals(kvp.Key.Split(':')[0], "connectionStrings", StringComparison.InvariantCultureIgnoreCase)))
         {
             var contextTypeName = secret.Value.Keys.First().Split(':').Last();

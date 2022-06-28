@@ -183,7 +183,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
                             ?? Activator.CreateInstance(item.ConfigurationType);
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<object>.Item), configuration);
-        var options = new ModalOptions()
+        var options = new ModalOptions
         {
             DisableBackgroundCancel = true,
         };

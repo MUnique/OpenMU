@@ -135,6 +135,9 @@ EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "..\deploy\distributed\docker-compose.dcproj", "{0DFECD55-7AA2-4263-B6FD-EC1C4E6A59B3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{BA9EABE2-F32F-446D-A8AA-56866A6B6CFD}"
+	ProjectSection(SolutionItems) = preProject
+		..\deploy\README.md = ..\deploy\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "All-In-One", "All-In-One", "{565BED68-B303-4A3D-A8C0-0088D2A50C46}"
 EndProject

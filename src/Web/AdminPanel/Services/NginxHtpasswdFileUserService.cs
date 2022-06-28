@@ -52,7 +52,7 @@ public class NginxHtpasswdFileUserService : UserServiceBase
         for (var i = 0; i < lines.Length; i++)
         {
             var line = lines[i];
-            if (line.StartsWith(userPrefix))
+            if (line.StartsWith(userPrefix, StringComparison.InvariantCulture))
             {
                 lines[i] = $"# Deleted at {DateTime.UtcNow}: " + lines[i];
                 break;

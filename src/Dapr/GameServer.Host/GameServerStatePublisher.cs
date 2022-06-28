@@ -28,7 +28,6 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
     private IPEndPoint? _publicEndPoint;
 
     private CancellationTokenSource? _heartbeatCancellationTokenSource;
-    private Thread? _heartbeatThread;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerStatePublisher"/> class.
@@ -46,7 +45,6 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
     {
         this._heartbeatCancellationTokenSource?.Cancel();
         this._heartbeatCancellationTokenSource?.Dispose();
-        this._heartbeatThread = null;
     }
 
     /// <inheritdoc />
@@ -60,7 +58,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
         try
         {
             this._logger.LogInformation("Starting heartbeat thread ...");
-            this._heartbeatThread = new(
+            var heartbeatThread = new Thread(
                 () =>
                 {
                     try
@@ -75,7 +73,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
             {
                 Name = "Heartbeat",
             };
-            this._heartbeatThread.Start();
+            heartbeatThread.Start();
 
             this._logger.LogInformation("...started heartbeat thread.");
         }
@@ -90,7 +88,6 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
     {
         this._logger.LogInformation("Stopping heartbeat thread");
         this._heartbeatCancellationTokenSource?.Cancel();
-        this._heartbeatThread = null;
     }
 
     /// <inheritdoc />

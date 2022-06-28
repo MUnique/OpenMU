@@ -138,16 +138,6 @@ public class FriendServer : IFriendServer
         {
             return;
         }
-        /*
-        if (!this.GameServers.TryGetValue(player.ServerId, out var gameServerOfPlayer))
-        {
-            return;
-        }
-
-        if (!this.GameServers.TryGetValue(friend.ServerId, out var gameServerOfFriend))
-        {
-            return;
-        }*/
 
         // TODO: Remove direct dependency to the chat server.
         //       Instead of calling the chat server directly here, we could publish a request
@@ -156,11 +146,9 @@ public class FriendServer : IFriendServer
         var roomId = this._chatServer.CreateChatRoom();
         var authenticationInfoPlayer = this._chatServer.RegisterClient(roomId, playerName);
         this._friendNotifier.ChatRoomCreated(player.ServerId, authenticationInfoPlayer, friendName);
-        ////gameServerOfPlayer.ChatRoomCreated(authenticationInfoPlayer, friendName);
 
         var authenticationInfoFriend = this._chatServer.RegisterClient(roomId, friendName);
         this._friendNotifier.ChatRoomCreated(friend.ServerId, authenticationInfoFriend, playerName);
-        ////gameServerOfFriend.ChatRoomCreated(authenticationInfoFriend, playerName);
     }
 
     /// <inheritdoc />

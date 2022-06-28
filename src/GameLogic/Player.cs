@@ -1485,17 +1485,6 @@ public class Player : IBucketMapObserver, IAttackable, IAttacker, ITrader, IPart
         this.ClientReadyAfterMapChange();
 
         this.ViewPlugIns.GetPlugIn<IUpdateRotationPlugIn>()?.UpdateRotation();
-        //Task.Delay(1000).ContinueWith(_ =>
-        //{
-        //    try
-        //    {
-        //        this.ViewPlugIns.GetPlugIn<IInitializeMessengerPlugIn>()?.InitializeMessenger(this.GameContext.Configuration.MaximumLetters);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        this.Logger.LogError(ex, "Error occured when initializing the messenger.");
-        //    }
-        //});
     }
 
     private void OnTransformationSkinChanged()

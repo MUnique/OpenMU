@@ -21,7 +21,7 @@ public partial class ExitGatePicker
 {
     private const int SideLength = 256;
 
-    private float _scale = 3;
+    private readonly float _scale = 3;
 
     private Image<Rgba32> _terrainImage = null!;
     private GameMapDefinition? _map;
