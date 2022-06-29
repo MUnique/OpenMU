@@ -3,7 +3,9 @@
 trigger:
   branches:
     include:
-    - releases/*
+    - master
+  tags:
+    - ?*.?*.?*
   paths:
     exclude:
     - docs/*
