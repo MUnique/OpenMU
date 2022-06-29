@@ -5,7 +5,8 @@ trigger:
     include:
     - master
   tags:
-    - ?*.?*.?*
+    include:
+     - ?*.?*.?*
   paths:
     exclude:
     - docs/*
