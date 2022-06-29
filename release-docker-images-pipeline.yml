@@ -6,7 +6,9 @@ trigger:
     - master
   tags:
     include:
-     - ?*.?*.?*
+      - ?*.?*.?*
+    exclude:
+      - '*'
   paths:
     exclude:
     - docs/*
