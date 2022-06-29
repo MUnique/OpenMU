@@ -24,7 +24,6 @@ services:
       - "55980:55980"
     environment:
       DB_HOST: database
-      RESOLVE_IP: local
     working_dir: /app/
     volumes:
       - ./.htpasswd:/etc/nginx/.htpasswd
