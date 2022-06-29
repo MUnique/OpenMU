@@ -16,15 +16,21 @@ See [https://github.com/git-guides/install-git](https://github.com/git-guides/in
 
 `git clone https://github.com/MUnique/OpenMU.git`
 
+It will create a new folder OpenMU with the repository contents inside.
+
 ### Navigate to the docker-compose files
 
 Navigate to the folder deploy/all-in-one
 
+`cd deploy/all-in-one`
+
 ### Option A - for local testing
 
-`docker-compose up -d`
+To use the official docker image, just run:
 
-And that's it ;-)
+`docker compose up -d --no-build`
+
+And that's it. It's then available on your local computer through a loopback ip.
 
 However, if you want to make it available through the internet, you should choose
 Option B:
@@ -40,7 +46,12 @@ In the nginx.prod.conf, change "example.org" to your domain name.
 
 #### Run it
 
-`docker compose up -f docker-compose.yml docker-compose.prod.yml -d`
+`docker-compose up -f docker-compose.yml docker-compose.prod.yml -d`
+
+> Hint: Here, docker-compose is used with the **docker-compose** command instead
+> of **docker compose**.
+> Reason: The -f parameter is only available through **docker-compose**.
+
 
 #### Run certbot explicitly
 
@@ -60,12 +71,17 @@ machine for that.
 
 ## What's next
 
-Now, when you have deployed OpenMU, it's time to discover the AdminPanel.
-If your containers run on docker at your local machine, you can simply go to `http://localhost/`.
+The server is automatically started and initialized for Season 6. You can start
+playing, if you want :-)
 
-There you'll find a setup in the navigation menu, where you can select your desired
-game version, number of game servers (just the data of it), and if test accounts
+Additionally, take a look at the AdminPanel.
+
+If your containers run on docker at your local machine, you can simply go to `http://localhost/`
+
+If you want to run another game version, you can go to the setup page through
+the navigation menu, where you can select your desired game version,
+number of game servers (just the data of it), and if test accounts
 should be created.
 
-Click on 'Install', wait a bit until the database is set up and filled with the
+If you click on 'Install', wait a bit until the database is set up and filled with the
 data and voila, OpenMU is ready to use.

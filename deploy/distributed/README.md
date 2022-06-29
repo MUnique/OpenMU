@@ -20,15 +20,21 @@ See [https://github.com/git-guides/install-git](https://github.com/git-guides/in
 
 `git clone https://github.com/MUnique/OpenMU.git`
 
+It will create a new folder OpenMU with the repository contents inside.
+
 ### Navigate to the docker-compose files
 
 Navigate to the folder deploy/distributed
 
+`cd deploy/distributed`
+
 ### Option A - for local testing
 
-`docker compose up -d`
+To use the official docker images, just run:
 
-And that's it ;-)
+`docker compose up -d --no-build`
+
+And that's it. It's then available on your local computer through a loopback ip.
 
 However, if you want to make it available through the internet, you should choose
 Option B:
@@ -73,7 +79,8 @@ game version, number of game servers (just the data of it), and if test accounts
 should be created.
 
 Click on 'Install', wait a bit until the database is set up and filled with the
-data and voila, OpenMU is ready to use.
+data.
+OpenMU should now be ready to use.
 
 ## Environment variables
 
