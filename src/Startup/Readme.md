@@ -40,4 +40,5 @@ It supports the following values:
 |--------|--------------|---------|
 | public | Default value, if nothing is specified. The public ip is automatically determined by an [external API](https://www.ipify.org/). | -resolveIP:public |
 | local  | Determines a local ip. If none is found, a loopback IP is used (127.127.127.127). | -resolveIP:local |
+| loopback  | For testing on the same machine, a loopback IP is used (127.127.127.127). | -resolveIP:loopback |
 | [An IPv4-Address] | Defines a custom and constant IP address| -resolveIP:140.82.118.4 |

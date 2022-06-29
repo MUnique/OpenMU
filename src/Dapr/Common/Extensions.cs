@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Dapr.Common;
 
-using System.Net;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,11 +18,9 @@ using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.PlugIns;
-
 
 /// <summary>
 /// Common extensions for the building of daprized services.
@@ -74,60 +71,6 @@ public static class Extensions
                 }
             })
             .AddSingleton<PlugInManager>();
-    }
-
-    /// <summary>
-    /// Adds the <see cref="CustomIpResolver"/> with the specified address.
-    /// </summary>
-    /// <param name="services">The services.</param>
-    /// <param name="address">The address.</param>
-    /// <returns>The services.</returns>
-    public static IServiceCollection AddCustomIpResolver(this IServiceCollection services, IPAddress address)
-    {
-        return services.AddSingleton<IIpAddressResolver>(s => new CustomIpResolver(address));
-    }
-
-    /// <summary>
-    /// Adds a <see cref="IIpAddressResolver"/> depending on the environment.
-    /// In a development environment, a <see cref="LoopbackIpResolver"/> is added.
-    /// In a production environment, a <see cref="PublicIpResolver"/> is added.
-    /// </summary>
-    /// <param name="services">The services.</param>
-    /// <returns>The services.</returns>
-    public static IServiceCollection AddIpResolver(this IServiceCollection services)
-    {
-        if (Environment.GetEnvironmentVariable("RESOLVE_IP") is { } resolveIp)
-        {
-            if (IPAddress.TryParse(resolveIp, out var customIp))
-            {
-                return services.AddSingleton<IIpAddressResolver>(_ => new CustomIpResolver(customIp));
-            }
-
-            if (resolveIp == "local")
-            {
-                return services.AddSingleton<IIpAddressResolver, LocalIpResolver>();
-            }
-
-            if (resolveIp == "public")
-            {
-                return services.AddSingleton<IIpAddressResolver, PublicIpResolver>();
-            }
-
-            if (resolveIp == "loopback")
-            {
-                return services.AddSingleton<IIpAddressResolver, LoopbackIpResolver>();
-            }
-        }
-
-        var isDevelopmentEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-        if (isDevelopmentEnvironment)
-        {
-            // During development, we use a loopback IP (127.127.127.127).
-            return services.AddSingleton<IIpAddressResolver, LoopbackIpResolver>();
-        }
-
-        // In production our systems should expose itself with their corresponding public IPs.
-        return services.AddSingleton<IIpAddressResolver, PublicIpResolver>();
     }
 
     /// <summary>

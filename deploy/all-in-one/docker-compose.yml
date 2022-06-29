@@ -7,7 +7,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
       - openmu-startup
@@ -24,6 +24,7 @@ services:
       - "55980:55980"
     environment:
       DB_HOST: database
+      RESOLVE_IP: local
     working_dir: /app/
     volumes:
       - ./.htpasswd:/etc/nginx/.htpasswd
