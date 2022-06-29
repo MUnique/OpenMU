@@ -72,7 +72,8 @@ machine for that.
 
 Now, when you have deployed OpenMU, it's time to discover the AdminPanel.
 
-If your containers run on docker at your local machine, you can simply go to `http://localhost/admin`
+If your containers run on docker at your local machine, you can simply go to `http://localhost/admin`.
+The default username is 'admin', the password 'openmu'. You should change that later.
 
 There you'll find a setup in the navigation menu, where you can select your desired
 game version, number of game servers (just the data of it), and if test accounts

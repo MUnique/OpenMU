@@ -76,7 +76,8 @@ playing, if you want :-)
 
 Additionally, take a look at the AdminPanel.
 
-If your containers run on docker at your local machine, you can simply go to `http://localhost/`
+If your containers run on docker at your local machine, you can simply go to `http://localhost/`.
+The default username is 'admin', the password 'openmu'. You should change that later.
 
 If you want to run another game version, you can go to the setup page through
 the navigation menu, where you can select your desired game version,
