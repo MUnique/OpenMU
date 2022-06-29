@@ -84,12 +84,12 @@
     <None Remove="Resources\Terrain71.att" />
     <None Remove="Resources\Terrain72.att" />
     <None Remove="Resources\Terrain73.att" />
-    <None Remove="Resources\terrain74.att" />
-    <None Remove="Resources\terrain75.att" />
+    <None Remove="Resources\Terrain74.att" />
+    <None Remove="Resources\Terrain75.att" />
     <None Remove="Resources\Terrain78.att" />
     <None Remove="Resources\Terrain79.att" />
     <None Remove="Resources\Terrain8.att" />
-    <None Remove="Resources\terrain80.att" />
+    <None Remove="Resources\Terrain80.att" />
     <None Remove="Resources\Terrain81.att" />
     <None Remove="Resources\Terrain82.att" />
     <None Remove="Resources\Terrain9.att" />
