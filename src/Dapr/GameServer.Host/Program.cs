@@ -7,6 +7,7 @@ using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameServer.Host;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.ServerClients;
 using MUnique.OpenMU.Web.Map;
 using GameServer = MUnique.OpenMU.GameServer.GameServer;
@@ -35,7 +36,7 @@ services.AddSingleton<GameServer>()
     .AddPersistentSingleton<GameServerDefinition>(def => def.ServerID == gameServerId)
     .AddPeristenceProvider()
     .AddPlugInManager()
-    .AddIpResolver()
+    .AddIpResolver(args)
     .AddHostedService<GameServerHostedServiceWrapper>()
     .PublishManageableServer<IGameServer>();
 
