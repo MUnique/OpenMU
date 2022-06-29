@@ -176,12 +176,12 @@
     <EmbeddedResource Include="Resources\Terrain71.att" />
     <EmbeddedResource Include="Resources\Terrain72.att" />
     <EmbeddedResource Include="Resources\Terrain73.att" />
-    <EmbeddedResource Include="Resources\terrain74.att" />
-    <EmbeddedResource Include="Resources\terrain75.att" />
+    <EmbeddedResource Include="Resources\Terrain74.att" />
+    <EmbeddedResource Include="Resources\Terrain75.att" />
     <EmbeddedResource Include="Resources\Terrain78.att" />
     <EmbeddedResource Include="Resources\Terrain79.att" />
     <EmbeddedResource Include="Resources\Terrain8.att" />
-    <EmbeddedResource Include="Resources\terrain80.att" />
+    <EmbeddedResource Include="Resources\Terrain80.att" />
     <EmbeddedResource Include="Resources\Terrain81.att" />
     <EmbeddedResource Include="Resources\Terrain82.att" />
     <EmbeddedResource Include="Resources\Terrain9.att" />
