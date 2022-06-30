@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Services;
-using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// Navigation menu of the admin panel.
@@ -16,6 +15,10 @@ using Nito.AsyncEx.Synchronous;
 public partial class NavMenu
 {
     private bool _collapseNavMenu = true;
+
+    private bool _isLoadingConfig = false;
+
+    private bool _onlyShowSetup;
 
     [Inject]
     private IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
@@ -28,8 +31,6 @@ public partial class NavMenu
 
     private GameConfiguration? GameConfiguration { get; set; }
 
-    private bool OnlyShowSetup { get; set; }
-
     /// <summary>
     /// Gets the class for the entries of the navigation menu.
     /// "collapse" is a class of bootstrap which hides it.
@@ -37,26 +38,30 @@ public partial class NavMenu
     /// </summary>
     private string NavMenuCssClass => this._collapseNavMenu ? "collapse" : string.Empty;
 
-    /// <inheritdoc />
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-        this.LoadGameConfiguration();
+        await base.OnInitializedAsync();
         this.SetupService.DatabaseInitialized += this.OnDatabaseInitialized;
+        Task.Run(this.LoadGameConfigurationAsync);
     }
 
     private void OnDatabaseInitialized(object? sender, EventArgs args)
     {
         // We have to reload, because the old links are not correct anymore.
-        this.InvokeAsync(() =>
-        {
-            this.LoadGameConfiguration();
-            this.StateHasChanged();
-        }).WaitAndUnwrapException();
+        this.GameConfiguration = null;
+        Task.Run(this.LoadGameConfigurationAsync);
     }
 
-    private void LoadGameConfiguration()
+    private async Task LoadGameConfigurationAsync()
     {
+        if (this.GameConfiguration is not null || this._isLoadingConfig)
+        {
+            return;
+        }
+
+        this._isLoadingConfig = true;
+        await this.InvokeAsync(this.StateHasChanged);
+
         try
         {
             using var context = this.PersistenceContextProvider.CreateNewConfigurationContext();
@@ -67,7 +72,9 @@ public partial class NavMenu
             this.GameConfiguration = null;
         }
 
-        this.OnlyShowSetup = this.GameConfiguration is null;
+        this._onlyShowSetup = this.GameConfiguration is null;
+        this._isLoadingConfig = false;
+        await this.InvokeAsync(this.StateHasChanged);
     }
 
     private void ToggleNavMenu()

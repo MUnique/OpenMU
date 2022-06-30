@@ -12,7 +12,15 @@
     <!-- Hiding it programmatically is not a good idea here, because we want to hide it based on the width of the device/window. -->
     <div class="@NavMenuCssClass">
         <ul>
-            @if (this.OnlyShowSetup)
+            @if (this._isLoadingConfig)
+            {
+                <li>
+                    <NavLink href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-clock" aria-hidden="true"></span> Loading ...
+                    </NavLink>
+                </li>
+            }
+            else if (this._onlyShowSetup)
             {
                 <li>
                     <NavLink href="setup">

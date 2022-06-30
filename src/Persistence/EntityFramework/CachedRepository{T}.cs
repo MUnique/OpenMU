@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
+
 /// <summary>
 /// A repository which caches all of its data in memory.
 /// </summary>
@@ -35,8 +37,19 @@ public class CachedRepository<T> : IRepository<T>
     /// <inheritdoc/>
     public IEnumerable<T> GetAll()
     {
-        if (this._allLoaded || this._loading)
+        if (this._allLoaded)
         {
+            return this._cache.Values;
+        }
+
+        if (this._loading)
+        {
+            while (this._loading)
+            {
+                // TODO: When making this async, then do a Task.Delay...
+                Thread.Sleep(10);
+            }
+
             return this._cache.Values;
         }
 
