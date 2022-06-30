@@ -57,12 +57,10 @@ public static class IpAddressResolverFactory
     public static IServiceCollection AddIpResolver(this IServiceCollection serviceCollection, params string[] args)
     {
         var parameter = GetParameter(args);
-        var environmentVariable = Environment.GetEnvironmentVariable("RESOLVE_IP");
         switch (parameter)
         {
-            case null when environmentVariable is { }:
-                return serviceCollection.AddIpResolverByEnvironment();
             case null:
+                return serviceCollection.AddIpResolverByEnvironment();
             case { } p when p.StartsWith(PublicIpResolve, StringComparison.InvariantCultureIgnoreCase):
                 return serviceCollection.AddSingleton<IIpAddressResolver, PublicIpResolver>();
             case { } p when p.StartsWith(LocalIpResolve, StringComparison.InvariantCultureIgnoreCase):
