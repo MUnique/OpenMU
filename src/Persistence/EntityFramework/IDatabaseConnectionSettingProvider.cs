@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 
 /// <summary>
@@ -11,6 +12,12 @@ using Microsoft.EntityFrameworkCore;
 /// </summary>
 public interface IDatabaseConnectionSettingProvider
 {
+    /// <summary>
+    /// Initializes the settings provider.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    Task InitializeAsync(CancellationToken cancellationToken);
+
     /// <summary>
     /// Gets the connection setting for the specified context type.
     /// </summary>

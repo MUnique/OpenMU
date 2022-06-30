@@ -2,12 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.Dapr.Common;
 
+using System.Threading;
+using global::Dapr;
 using global::Dapr.Client;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework;
 
 /// <summary>
@@ -17,26 +18,53 @@ using MUnique.OpenMU.Persistence.EntityFramework;
 public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnectionSettingProvider
 {
     private const string SecretStoreName = "secrets";
+    private readonly DaprClient _daprClient;
+    private readonly ILogger<SecretStoreDatabaseConnectionSettingsProvider> _logger;
     private readonly Dictionary<string, ConnectionSetting> _connectionSettings = new(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SecretStoreDatabaseConnectionSettingsProvider"/> class.
+    /// Initializes a new instance of the <see cref="SecretStoreDatabaseConnectionSettingsProvider" /> class.
     /// </summary>
     /// <param name="daprClient">The dapr client.</param>
-    public SecretStoreDatabaseConnectionSettingsProvider(DaprClient daprClient)
+    /// <param name="logger">The logger.</param>
+    public SecretStoreDatabaseConnectionSettingsProvider(DaprClient daprClient, ILogger<SecretStoreDatabaseConnectionSettingsProvider> logger)
     {
-        var secrets = daprClient.GetBulkSecretAsync(SecretStoreName).WaitAndUnwrapException();
-        foreach (var secret in secrets.Where(kvp => string.Equals(kvp.Key.Split(':')[0], "connectionStrings", StringComparison.InvariantCultureIgnoreCase)))
-        {
-            var contextTypeName = secret.Value.Keys.First().Split(':').Last();
-            var setting = new ConnectionSetting
-            {
-                ContextTypeName = contextTypeName,
-                ConnectionString = secret.Value.Values.First()!,
-                DatabaseEngine = DatabaseEngine.Npgsql,
-            };
+        this._daprClient = daprClient;
+        this._logger = logger;
+    }
 
-            this._connectionSettings.Add(contextTypeName, setting);
+    /// <inheritdoc />
+    public async Task InitializeAsync(CancellationToken cancellationToken)
+    {
+        var isInitialized = false;
+        while (!isInitialized && !cancellationToken.IsCancellationRequested)
+        {
+            try
+            {
+                var secrets = await this._daprClient.GetBulkSecretAsync(SecretStoreName, cancellationToken: cancellationToken);
+                foreach (var secret in secrets.Where(kvp => string.Equals(kvp.Key.Split(':')[0], "connectionStrings", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    var contextTypeName = secret.Value.Keys.First().Split(':').Last();
+                    var setting = new ConnectionSetting
+                    {
+                        ContextTypeName = contextTypeName,
+                        ConnectionString = secret.Value.Values.First()!,
+                        DatabaseEngine = DatabaseEngine.Npgsql,
+                    };
+
+                    this._connectionSettings.Add(contextTypeName, setting);
+                }
+
+                ConnectionConfigurator.Initialize(this);
+                isInitialized = true;
+            }
+            catch (DaprException ex)
+            {
+                // This should never happen - however, it may happen when we are using a Dapr secret store.
+                // It may not be started yet, and the implementation to get it does retrieve it in the constructor already.
+                this._logger.LogWarning(ex, "Error occurred when retrieving the connection strings from the secrets store. Trying again in 3 seconds...");
+                await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 

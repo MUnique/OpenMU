@@ -247,8 +247,6 @@ public static class Extensions
         app.MapControllers();
         app.MapSubscribeHandler();
 
-        ConnectionConfigurator.Initialize(app.Services.GetService<IDatabaseConnectionSettingProvider>() ?? new ConfigFileDatabaseConnectionStringProvider());
-
         return app;
     }
 
@@ -256,8 +254,22 @@ public static class Extensions
     /// Waits for the completion of outstanding database updates.
     /// </summary>
     /// <param name="app">The application.</param>
-    public static Task WaitForUpdatedDatabase(this WebApplication app)
+    public static async Task WaitForUpdatedDatabase(this WebApplication app)
     {
-        return app.Services.GetService<PersistenceContextProvider>()!.WaitForUpdatedDatabase();
+        await app.WaitForDatabaseConnectionInitialization().ConfigureAwait(false);
+        await app.Services.GetService<PersistenceContextProvider>()!
+            .WaitForUpdatedDatabase()
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Waits for database connection (settings) initialization.
+    /// </summary>
+    /// <param name="app">The application.</param>
+    public static async Task WaitForDatabaseConnectionInitialization(this WebApplication app)
+    {
+        await app.Services.GetService<IDatabaseConnectionSettingProvider>()!
+            .InitializeAsync(default)
+            .ConfigureAwait(false);
     }
 }

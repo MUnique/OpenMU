@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.IO;
+using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,13 @@ public class ConfigFileDatabaseConnectionStringProvider : IDatabaseConnectionSet
     }
 
     private IDictionary<Type, ConnectionSetting> Settings => this._settings ??= this.LoadSettings();
+
+    /// <inheritdoc />
+    public async Task InitializeAsync(CancellationToken cancellationToken)
+    {
+        await Task.Run(() => this._settings = this.LoadSettings(), cancellationToken).ConfigureAwait(false);
+        ConnectionConfigurator.Initialize(this);
+    }
 
     /// <inheritdoc />
     public ConnectionSetting GetConnectionSetting<TContextType>()

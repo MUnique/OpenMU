@@ -19,4 +19,7 @@ services.AddPeristenceProvider(true)
 builder.AddAdminPanel();
 
 var app = builder.BuildAndConfigure(true);
+
+await app.WaitForDatabaseConnectionInitialization().ConfigureAwait(false);
+
 app.Run();

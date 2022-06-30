@@ -198,7 +198,8 @@ internal sealed class Program : IDisposable
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
         var addAdminPanel = this.IsAdminPanelEnabled(args);
-        ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        await new ConfigFileDatabaseConnectionStringProvider().InitializeAsync(default);
+
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Host.UseSerilog(this._logger);
@@ -253,6 +254,7 @@ internal sealed class Program : IDisposable
         this._logger.Information("Starting host...");
         var stopwatch = new Stopwatch();
         stopwatch.Start();
+
         await host.StartAsync();
         stopwatch.Stop();
         this._logger.Information($"Host started, elapsed time: {stopwatch.Elapsed}");
