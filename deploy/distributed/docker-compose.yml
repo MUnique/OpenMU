@@ -15,6 +15,10 @@ services:
     volumes:
       - ./nginx.dev.conf:/etc/nginx/nginx.conf
       - ./.htpasswd:/etc/nginx/.htpasswd
+    depends_on:
+      - grafana
+      - zipkin
+      - prometheus
 
   grafana:
     image: grafana/grafana:latest
