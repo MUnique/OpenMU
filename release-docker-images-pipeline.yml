@@ -29,6 +29,7 @@ steps:
       }
       if docker_tag_exists; then echo ##vso[task.setvariable variable=tagExists]true
       else echo ##vso[task.setvariable variable=tagExists]false
+      fi
 
 - task: Docker@2
   condition: eq(variables.tagExists, 'false')
