@@ -21,7 +21,7 @@ steps:
 - task: Bash@3
   inputs:
     targetType: 'inline'
-    arguments: '${{ variables.projectVersion }}'
+    arguments: $(projectVersion)
     script: |
       #!/bin/sh
       echo 'tag is $1'
