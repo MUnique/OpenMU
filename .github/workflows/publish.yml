@@ -35,6 +35,6 @@ jobs:
         with:
           PROJECT_FILE_PATH: src/Network/Packets/MUnique.OpenMU.Network.Packets.csproj
           TAG_COMMIT: true
-          TAG_FORMAT: '*'
+          TAG_FORMAT: v*
           NUGET_KEY: ${{secrets.NUGET_KEY}}
           PACKAGE_NAME: MUnique.OpenMU.Network.Packets
