@@ -18,19 +18,16 @@ steps:
 - task: PowerShell@2
   inputs:
     filePath: 'set-projectVersion.ps1'
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    arguments: $(projectVersion)
-    script: |
-      #!/bin/sh
-      echo 'tag is $1'
-      if (curl --silent -f -lSL https://index.docker.io/v1/repositories/munique/openmu/tags/$1 > /dev/null) then
-        echo '##vso[task.setvariable variable=tagExists]true'
-      else
-        echo '##vso[task.setvariable variable=tagExists]false'
-      fi
-
+- bash: |
+    #!/bin/sh
+    echo 'tag is $TAG'
+    if (curl --silent -f -lSL https://index.docker.io/v1/repositories/munique/openmu/tags/$TAG > /dev/null) then
+      echo '##vso[task.setvariable variable=tagExists]true'
+    else
+      echo '##vso[task.setvariable variable=tagExists]false'
+    fi
+  env:
+    TAG: $(projectVersion)
 - task: Docker@2
   condition: eq(variables.tagExists, 'false')
   inputs:
