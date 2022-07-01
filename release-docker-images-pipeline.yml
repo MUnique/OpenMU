@@ -24,7 +24,7 @@ steps:
     arguments: '${{ variables.projectVersion }}'
     script: |
       #!/bin/sh
-
+      echo 'tag is $1'
       if (curl --silent -f -lSL https://index.docker.io/v1/repositories/munique/openmu/tags/$1 > /dev/null) then
         echo '##vso[task.setvariable variable=tagExists]true'
       else
