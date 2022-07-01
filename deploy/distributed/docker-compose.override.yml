@@ -4,6 +4,12 @@ services:
   database:
     ports:
       - "5433:5432"
+  loki:
+    ports:
+      - "3100:3100"
+  prometheus:
+    ports:
+      - "9000:9090"
       
   redis-state:
     ports:

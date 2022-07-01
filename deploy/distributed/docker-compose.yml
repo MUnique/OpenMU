@@ -35,7 +35,7 @@ services:
   prometheus:
     image: prom/prometheus:v2.21.0
     ports:
-      - 9000:9090
+      - 9090
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
@@ -46,7 +46,7 @@ services:
     container_name: loki
     command: "-config.file=/etc/loki/config.yaml -target=all"
     ports:
-      - "3100:3100"
+      - 3100
       - 7946
       - 9095
     volumes:
@@ -85,6 +85,8 @@ services:
     image: "daprio/dapr"
     container_name: dapr_placement
     command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006"
 
   pubsub:
     image: rabbitmq:3-management-alpine
@@ -92,7 +94,6 @@ services:
     restart: always
     ports:
       - "5672"
-      - "50100:50001"
 
   database:
     image: postgres
@@ -118,7 +119,7 @@ services:
     image: munique/openmu-connect
     container_name: connectServer
     ports:
-      - "50010:50001"
+      - "50001"
       - "44405:44405"
       - "9464" # Prometheus
     environment:
@@ -145,7 +146,7 @@ services:
     image: munique/openmu-login
     container_name: loginServer
     ports:
-      - "50011:50001"
+      - "50001"
       - "9464" # Prometheus
     depends_on:
       - zipkin
@@ -168,7 +169,7 @@ services:
     image: munique/openmu-friend
     container_name: friendServer
     ports:
-      - "50012:50001"
+      - "50001"
       - "9464" # Prometheus
     depends_on:
       - chatServer-dapr
@@ -192,7 +193,7 @@ services:
     image: munique/openmu-guild
     container_name: guildServer
     ports:
-      - "50013:50001"
+      - "50001"
       - "9464" # Prometheus
     depends_on:
       - database
@@ -218,7 +219,7 @@ services:
       APPID: chatServer
     ports:
       - "55980:55980"
-      - "50014:50001"
+      - "50001"
       - "9464" # Prometheus
     depends_on:
       - database
@@ -274,7 +275,7 @@ services:
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "80"
-      - "50000:50001"
+      - "50001"
       - "55901:55901"
       - "9464" # Prometheus
     environment:
@@ -311,7 +312,7 @@ services:
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
       - "80"
-      - "50001:50001"
+      - "50001"
       - "55902:55902"
       - "9464" # Prometheus
     environment:
