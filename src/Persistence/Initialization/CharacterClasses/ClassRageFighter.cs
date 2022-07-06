@@ -28,6 +28,7 @@ internal partial class CharacterClassInitialization
         result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
         result.Number = (byte)number;
         result.Name = name;
+        result.CreationAllowedFlag = 8;
         result.IsMasterClass = isMaster;
         result.LevelRequirementByCreation = 150;
         result.NextGenerationClass = nextGenerationClass;

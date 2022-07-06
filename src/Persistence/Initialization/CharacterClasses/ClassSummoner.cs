@@ -33,6 +33,7 @@ internal partial class CharacterClassInitialization
         result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == ElvenlandMapId);
         result.Number = (byte)number;
         result.Name = name;
+        result.CreationAllowedFlag = 1;
         result.IsMasterClass = isMaster;
         result.NextGenerationClass = nextGenerationClass;
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
