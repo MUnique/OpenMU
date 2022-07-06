@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameServer.RemoteView.Guild;
@@ -33,18 +34,34 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
     public void ShowCharacterList()
     {
         var connection = this._player.Connection;
-        if (connection is null || this._player.Account is null)
+        if (connection is null || this._player.Account is not { } account)
         {
             return;
         }
 
-        var appearanceSerializer = this._player.AppearanceSerializer;
-        using var writer = connection.StartSafeWrite(CharacterList.HeaderType, CharacterList.GetRequiredSize(this._player.Account.Characters.Count));
-        var packet = new CharacterList(writer.Span);
-        byte maxClass = 0;
-        packet.CreationFlags = this._player.Account.UnlockedCharacterClasses?
+        var unlockFlags = CreateUnlockFlags(account);
+        this.SendCharacterList(unlockFlags);
+        if (unlockFlags > CharacterCreationUnlockFlags.None)
+        {
+            connection.SendCharacterClassCreationUnlock(unlockFlags);
+        }
+    }
+
+    private static CharacterCreationUnlockFlags CreateUnlockFlags(Account account)
+    {
+        byte aggregatedFlags = 0;
+        var result = account.UnlockedCharacterClasses?
             .Select(c => c.CreationAllowedFlag)
-            .Aggregate(maxClass, (current, flag) => (byte)(current | flag)) ?? 0;
+            .Aggregate(aggregatedFlags, (current, flag) => (byte)(current | flag)) ?? 0;
+        return (CharacterCreationUnlockFlags)result;
+    }
+
+    private void SendCharacterList(CharacterCreationUnlockFlags unlockFlags)
+    {
+        var appearanceSerializer = this._player.AppearanceSerializer;
+        using var writer = this._player.Connection!.StartSafeWrite(CharacterList.HeaderType, CharacterList.GetRequiredSize(this._player.Account!.Characters.Count));
+        var packet = new CharacterList(writer.Span);
+        packet.UnlockFlags = unlockFlags;
         packet.CharacterCount = (byte)this._player.Account.Characters.Count;
         packet.IsVaultExtended = this._player.Account.IsVaultExtended;
         var i = 0;

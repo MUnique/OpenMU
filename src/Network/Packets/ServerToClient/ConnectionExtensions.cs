@@ -729,6 +729,19 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Starts a safe write of a <see cref="CharacterClassCreationUnlock" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: It's send right after the CharacterList, in the character selection screen, if the account has any unlocked character classes.
+    /// Causes reaction on client side: The client unlocks the specified character classes, so they can be created.
+    /// </remarks>
+    public static CharacterClassCreationUnlockThreadSafeWriter StartWriteCharacterClassCreationUnlock(this IConnection connection)
+    {
+        return new (connection);
+    }
+
+    /// <summary>
     /// Starts a safe write of a <see cref="CharacterCreationSuccessful" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -3024,6 +3037,23 @@ public static class ConnectionExtensions
         var packet = writer.Packet;
         packet.PlayerId = @playerId;
         packet.Effect = @effect;
+        writer.Commit();
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CharacterClassCreationUnlock" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="unlockFlags">The unlock flags.</param>
+    /// <remarks>
+    /// Is sent by the server when: It's send right after the CharacterList, in the character selection screen, if the account has any unlocked character classes.
+    /// Causes reaction on client side: The client unlocks the specified character classes, so they can be created.
+    /// </remarks>
+    public static void SendCharacterClassCreationUnlock(this IConnection connection, CharacterCreationUnlockFlags @unlockFlags)
+    {
+        using var writer = connection.StartWriteCharacterClassCreationUnlock();
+        var packet = writer.Packet;
+        packet.UnlockFlags = @unlockFlags;
         writer.Commit();
     }
 
@@ -7549,6 +7579,58 @@ public readonly ref struct ShowEffectThreadSafeWriter
     public void Commit()
     {
         this.connection.Output.AdvanceSafely(ShowEffect.Length);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.connection.OutputLock.Release();
+    }
+}
+      
+/// <summary>
+/// A helper struct to write a <see cref="CharacterClassCreationUnlock"/> safely to a <see cref="IConnection.Output" />.
+/// </summary>
+public readonly ref struct CharacterClassCreationUnlockThreadSafeWriter
+{
+    private readonly IConnection connection;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterClassCreationUnlockThreadSafeWriter" /> struct.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    public CharacterClassCreationUnlockThreadSafeWriter(IConnection connection)
+    {
+        this.connection = connection;
+        this.connection.OutputLock.Wait();
+        try
+        {
+            // Initialize header and default values
+            var span = this.Span;
+            span.Clear();
+            _ = new CharacterClassCreationUnlock(span);
+        }
+        catch (InvalidOperationException)
+        {
+            this.connection.OutputLock.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Gets the span to write at.</summary>
+    private Span<byte> Span => this.connection.Output.GetSpan(CharacterClassCreationUnlock.Length)[..CharacterClassCreationUnlock.Length];
+
+    /// <summary>Gets the packet to write at.</summary>
+    public CharacterClassCreationUnlock Packet => this.Span;
+
+    /// <summary>
+    /// Commits the data of the <see cref="CharacterClassCreationUnlock" />.
+    /// </summary>
+    public void Commit()
+    {
+        this.connection.Output.AdvanceSafely(CharacterClassCreationUnlock.Length);
     }
 
     /// <summary>

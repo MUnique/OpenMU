@@ -4099,8 +4099,9 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>CreationFlags</Name>
+          <Type>Enum</Type>
+          <TypeName>CharacterCreationUnlockFlags</TypeName>
+          <Name>UnlockFlags</Name>
         </Field>
         <Field>
           <Index>5</Index>
@@ -4176,6 +4177,24 @@
           </Fields>
         </Structure>
       </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>DE</Code>
+      <SubCode>00</SubCode>
+      <Name>CharacterClassCreationUnlock</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>It's send right after the CharacterList, in the character selection screen, if the account has any unlocked character classes.</SentWhen>
+      <CausedReaction>The client unlocks the specified character classes, so they can be created.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterCreationUnlockFlags</TypeName>
+          <Name>UnlockFlags</Name>
+        </Field>
+      </Fields>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -8515,6 +8534,37 @@
           <Name>NoSocket</Name>
           <Description>No Socket</Description>
           <Value>255</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>CharacterCreationUnlockFlags</Name>
+      <Description>The flags to unlock the specified character classes for the creation of new characters.</Description>
+      <Values>
+        <EnumValue>
+          <Name>None</Name>
+          <Description>No unlocked class.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Summoner</Name>
+          <Description>Unlocks the summoner class.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DarkLord</Name>
+          <Description>Unlocks the dark lord class.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MagicGladiator</Name>
+          <Description>Unlocks the magic gladiator class.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>RageFighter</Name>
+          <Description>Unlocks the rage fighter class.</Description>
+          <Value>8</Value>
         </EnumValue>
       </Values>
     </Enum>

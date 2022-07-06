@@ -16,7 +16,7 @@ The game client shows the available characters of the account.
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x00  | Packet header - sub packet type identifier |
-| 4 | 1 | Byte |  | CreationFlags |
+| 4 | 1 | CharacterCreationUnlockFlags |  | UnlockFlags |
 | 5 | 1 | Byte |  | MoveCnt |
 | 6 | 1 | Byte |  | CharacterCount |
 | 7 | 1 | Boolean |  | IsVaultExtended |
@@ -58,3 +58,15 @@ Defines the role of a guild member.
 | 32 | BattleMaster | The member is a battle master. |
 | 128 | GuildMaster | The member is the guild master. |
 | 255 | Undefined | The character is not a member, therefore the role is undefined. |
+
+### CharacterCreationUnlockFlags Enum
+
+The flags to unlock the specified character classes for the creation of new characters.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | None | No unlocked class. |
+| 1 | Summoner | Unlocks the summoner class. |
+| 2 | DarkLord | Unlocks the dark lord class. |
+| 4 | MagicGladiator | Unlocks the magic gladiator class. |
+| 8 | RageFighter | Unlocks the rage fighter class. |
