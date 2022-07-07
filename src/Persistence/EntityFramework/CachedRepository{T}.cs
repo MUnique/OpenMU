@@ -54,17 +54,23 @@ public class CachedRepository<T> : IRepository<T>
         }
 
         this._loading = true;
-        IEnumerable<T> values = this.BaseRepository.GetAll();
-
-        foreach (var obj in values)
+        try
         {
-            if (!this._cache.ContainsKey(obj.Id))
+            IEnumerable<T> values = this.BaseRepository.GetAll();
+
+            foreach (var obj in values)
             {
-                this.AddToCache(obj.Id, obj);
+                if (!this._cache.ContainsKey(obj.Id))
+                {
+                    this.AddToCache(obj.Id, obj);
+                }
             }
         }
-
-        this._loading = false;
+        finally
+        {
+            this._loading = false;
+        }
+        
         this._allLoaded = true;
 
         return this._cache.Values;
