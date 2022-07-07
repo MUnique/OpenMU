@@ -28,6 +28,7 @@ public static class Exports
         "_content/Blazored.Typeahead/blazored-typeahead.js",
         "_content/Blazored.Modal/blazored.modal.js",
         "_content/BlazorInputFile/inputfile.js",
+        $"{Prefix}/js/map.js",
     }.ToImmutableList();
 
     /// <summary>
