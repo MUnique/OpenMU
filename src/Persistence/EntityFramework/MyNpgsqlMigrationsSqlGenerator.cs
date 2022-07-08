@@ -63,6 +63,7 @@ internal class MyNpgsqlMigrationsSqlGenerator : NpgsqlMigrationsSqlGenerator
     public MyNpgsqlMigrationsSqlGenerator(MigrationsSqlGeneratorDependencies dependencies, INpgsqlOptions npgsqlOptions)
         : base(dependencies, npgsqlOptions)
     {
+        ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
     }
 
     /// <summary>
