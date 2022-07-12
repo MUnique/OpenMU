@@ -28,8 +28,8 @@ public class WeatherStatusUpdatePlugIn : IWeatherStatusUpdatePlugIn
     }
 
     /// <inheritdoc />
-    public void ShowWeather(byte weather, byte variation)
+    public ValueTask ShowWeatherAsync(byte weather, byte variation)
     {
-        this._player.Connection.SendWeatherStatusUpdate(weather, variation);
+        return this._player.Connection.SendWeatherStatusUpdateAsync(weather, variation);
     }
 }

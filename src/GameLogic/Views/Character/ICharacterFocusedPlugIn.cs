@@ -13,5 +13,5 @@ public interface ICharacterFocusedPlugIn : IViewPlugIn
     /// A characters has been focused on the character selection screen.
     /// </summary>
     /// <param name="character">The character which has been focused.</param>
-    void CharacterFocused(DataModel.Entities.Character character);
+    ValueTask CharacterFocusedAsync(DataModel.Entities.Character character);
 }

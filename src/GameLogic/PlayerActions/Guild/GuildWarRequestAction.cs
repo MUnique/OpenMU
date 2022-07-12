@@ -18,9 +18,9 @@ public class GuildWarRequestAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="targetGuildName">Name of the target guild.</param>
-    public void RequestWar(Player player, string targetGuildName)
+    public ValueTask RequestWarAsync(Player player, string targetGuildName)
     {
-        this.TryRequestWar(player, targetGuildName, GuildWarType.Normal);
+        return this.TryRequestWarAsync(player, targetGuildName, GuildWarType.Normal);
     }
 
     /// <summary>
@@ -28,46 +28,50 @@ public class GuildWarRequestAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="targetGuildName">Name of the target guild.</param>
-    public void RequestBattleSoccer(Player player, string targetGuildName)
+    public ValueTask RequestBattleSoccerAsync(Player player, string targetGuildName)
     {
-        this.TryRequestWar(player, targetGuildName, GuildWarType.Soccer);
+        return this.TryRequestWarAsync(player, targetGuildName, GuildWarType.Soccer);
     }
 
-    private void TryRequestWar(Player player, string targetGuildName, GuildWarType guildWarType)
+    private async ValueTask TryRequestWarAsync(Player player, string targetGuildName, GuildWarType guildWarType)
     {
         if (player.GuildStatus is not { } guildStatus
             || player.GameContext is not IGameServerContext serverContext
-            || serverContext.GuildServer.GetGuild(player.GuildStatus.GuildId) is not { Name: not null } guild)
+            || await serverContext.GuildServer.GetGuildAsync(player.GuildStatus.GuildId) is not { Name: not null } guild)
         {
-            player.ViewPlugIns.GetPlugIn<IShowShowGuildWarRequestResultPlugIn>()?.ShowResult(GuildWarRequestResult.NotInGuild);
+            await player.InvokeViewPlugInAsync<IShowShowGuildWarRequestResultPlugIn>(p => p.ShowResultAsync(GuildWarRequestResult.NotInGuild)).ConfigureAwait(false);
             return;
         }
 
         if (guildStatus.Position != GuildPosition.GuildMaster)
         {
-            player.ViewPlugIns.GetPlugIn<IShowShowGuildWarRequestResultPlugIn>()?.ShowResult(GuildWarRequestResult.NotTheGuildMaster);
+            await player.InvokeViewPlugInAsync<IShowShowGuildWarRequestResultPlugIn>(p => p.ShowResultAsync(GuildWarRequestResult.NotTheGuildMaster)).ConfigureAwait(false);
             return;
         }
 
-        if (!serverContext.GuildServer.GuildExists(targetGuildName))
+        if (!await serverContext.GuildServer.GuildExistsAsync(targetGuildName))
         {
-            player.ViewPlugIns.GetPlugIn<IShowShowGuildWarRequestResultPlugIn>()?.ShowResult(GuildWarRequestResult.GuildNotFound);
+            await player.InvokeViewPlugInAsync<IShowShowGuildWarRequestResultPlugIn>(p => p.ShowResultAsync(GuildWarRequestResult.GuildNotFound)).ConfigureAwait(false);
             return;
         }
 
-        var targetGuildId = serverContext.GuildServer.GetGuildIdByName(targetGuildName);
+        var targetGuildId = await serverContext.GuildServer.GetGuildIdByNameAsync(targetGuildName);
 
         Player? targetGuildMaster = null;
-        serverContext.ForEachGuildPlayer(targetGuildId, p => targetGuildMaster = p.GuildStatus?.Position == GuildPosition.GuildMaster ? p : targetGuildMaster);
+        await serverContext.ForEachGuildPlayerAsync(targetGuildId, p =>
+        {
+            targetGuildMaster = p.GuildStatus?.Position == GuildPosition.GuildMaster ? p : targetGuildMaster;
+            return Task.CompletedTask;
+        });
         if (targetGuildMaster is null)
         {
-            player.ViewPlugIns.GetPlugIn<IShowShowGuildWarRequestResultPlugIn>()?.ShowResult(GuildWarRequestResult.GuildMasterOffline);
+            await player.InvokeViewPlugInAsync<IShowShowGuildWarRequestResultPlugIn>(p => p.ShowResultAsync(GuildWarRequestResult.GuildMasterOffline)).ConfigureAwait(false);
             return;
         }
 
         if (targetGuildMaster.GuildWarContext is not null || player.GuildWarContext is not null)
         {
-            player.ViewPlugIns.GetPlugIn<IShowShowGuildWarRequestResultPlugIn>()?.ShowResult(GuildWarRequestResult.AlreadyInWar);
+            await player.InvokeViewPlugInAsync<IShowShowGuildWarRequestResultPlugIn>(p => p.ShowResultAsync(GuildWarRequestResult.AlreadyInWar)).ConfigureAwait(false);
             return;
         }
 
@@ -81,7 +85,7 @@ public class GuildWarRequestAction
         targetGuildMaster.GuildWarContext = new GuildWarContext(guildWarType, score, GuildWarTeam.First, player);
         player.GuildWarContext = new GuildWarContext(guildWarType, score, GuildWarTeam.Second, null);
 
-        targetGuildMaster.ViewPlugIns.GetPlugIn<IShowGuildWarRequestPlugIn>()?.ShowRequest(guild.Name!, guildWarType);
-        player.ViewPlugIns.GetPlugIn<IShowShowGuildWarRequestResultPlugIn>()?.ShowResult(GuildWarRequestResult.RequestSentToGuildMaster);
+        await targetGuildMaster.InvokeViewPlugInAsync<IShowGuildWarRequestPlugIn>(p => p.ShowRequestAsync(guild.Name!, guildWarType)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IShowShowGuildWarRequestResultPlugIn>(p => p.ShowResultAsync(GuildWarRequestResult.RequestSentToGuildMaster)).ConfigureAwait(false);
     }
 }

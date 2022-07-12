@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using System.Threading;
+using Nito.AsyncEx;
 
 /// <summary>
 /// Interface for an observable object.
@@ -19,17 +19,17 @@ public interface IObservable
     /// <summary>
     /// Gets the lock for <see cref="Observers"/>.
     /// </summary>
-    ReaderWriterLockSlim ObserverLock { get; }
+    AsyncReaderWriterLock ObserverLock { get; }
 
     /// <summary>
     /// Adds the observer.
     /// </summary>
     /// <param name="observer">The observer.</param>
-    void AddObserver(IWorldObserver observer);
+    ValueTask AddObserverAsync(IWorldObserver observer);
 
     /// <summary>
     /// Removes the observer.
     /// </summary>
     /// <param name="observer">The observer.</param>
-    void RemoveObserver(IWorldObserver observer);
+    ValueTask RemoveObserverAsync(IWorldObserver observer);
 }

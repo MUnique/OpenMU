@@ -67,10 +67,10 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
         {
             if (connectServer.ServerState == ServerState.Started)
             {
-                connectServer.Shutdown();
+                connectServer.ShutdownAsync();
 
                 //// todo: is applying new settings required?
-                connectServer.Start();
+                connectServer.StartAsync();
             }
         }
     }

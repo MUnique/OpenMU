@@ -23,28 +23,28 @@ public class FriendServerInMemoryContext : InMemoryContext, IFriendServerContext
     }
 
     /// <inheritdoc/>
-    public Friend CreateNewFriend(string characterName, string friendName)
+    public async ValueTask<Friend> CreateNewFriendAsync(string characterName, string friendName)
     {
         var friend = this.CreateNew<MUnique.OpenMU.Interfaces.Friend>();
-        friend.FriendId = this.Manager.GetRepository<Character>().GetAll().FirstOrDefault(character => character.Name == friendName)?.Id ?? Guid.Empty;
-        friend.CharacterId = this.Manager.GetRepository<Character>().GetAll().FirstOrDefault(character => character.Name == characterName)?.Id ?? Guid.Empty;
+        friend.FriendId = (await this.Manager.GetRepository<Character>().GetAllAsync()).FirstOrDefault(character => character.Name == friendName)?.Id ?? Guid.Empty;
+        friend.CharacterId = (await this.Manager.GetRepository<Character>().GetAllAsync()).FirstOrDefault(character => character.Name == characterName)?.Id ?? Guid.Empty;
         return friend;
     }
 
     /// <inheritdoc/>
-    public Friend? GetFriendByNames(string characterName, string friendName)
+    public async ValueTask<Friend?> GetFriendByNamesAsync(string characterName, string friendName)
     {
-        var friendId = this.Manager.GetRepository<Character>().GetAll().FirstOrDefault(character => character.Name == friendName)?.Id;
-        var characterId = this.Manager.GetRepository<Character>().GetAll().FirstOrDefault(character => character.Name == characterName)?.Id;
+        var friendId = (await this.Manager.GetRepository<Character>().GetAllAsync()).FirstOrDefault(character => character.Name == friendName)?.Id;
+        var characterId = (await this.Manager.GetRepository<Character>().GetAllAsync()).FirstOrDefault(character => character.Name == characterName)?.Id;
 
-        return this.Manager.GetRepository<Friend>().GetAll().FirstOrDefault(f => f.FriendId == friendId && f.CharacterId == characterId);
+        return (await this.Manager.GetRepository<Friend>().GetAllAsync()).FirstOrDefault(f => f.FriendId == friendId && f.CharacterId == characterId);
     }
 
     /// <inheritdoc/>
-    public IEnumerable<FriendViewItem> GetFriends(Guid characterId)
+    public async ValueTask<IEnumerable<FriendViewItem>> GetFriendsAsync(Guid characterId)
     {
-        var characters = this.Manager.GetRepository<Character>().GetAll();
-        return this.Manager.GetRepository<Friend>().GetAll().Where(f => f.CharacterId == characterId)
+        var characters = await this.Manager.GetRepository<Character>().GetAllAsync();
+        return (await this.Manager.GetRepository<Friend>().GetAllAsync()).Where(f => f.CharacterId == characterId)
             .Select(f => (Friend: f, CharacterName: characters.FirstOrDefault(c => c.Id == f.CharacterId)?.Name, FriendName: characters.FirstOrDefault(c => c.Id == f.FriendId)?.Name))
             .Where(f => f.CharacterName is not null && f.FriendName is not null)
             .Select(f => new FriendViewItem(f.CharacterName!, f.FriendName!)
@@ -58,28 +58,28 @@ public class FriendServerInMemoryContext : InMemoryContext, IFriendServerContext
     }
 
     /// <inheritdoc />
-    public IEnumerable<string> GetFriendNames(Guid characterId)
+    public async ValueTask<IEnumerable<string>> GetFriendNamesAsync(Guid characterId)
     {
-        var characters = this.Manager.GetRepository<Character>().GetAll();
-        return this.Manager.GetRepository<Friend>().GetAll().Where(f => f.CharacterId == characterId)
+        var characters = await this.Manager.GetRepository<Character>().GetAllAsync();
+        return (await this.Manager.GetRepository<Friend>().GetAllAsync()).Where(f => f.CharacterId == characterId)
             .Select(f => characters.FirstOrDefault(c => c.Id == f.FriendId)?.Name!)
             .Where(name => name is not null);
     }
 
     /// <inheritdoc/>
-    public void Delete(string characterName, string friendName)
+    public async ValueTask DeleteAsync(string characterName, string friendName)
     {
-        if (this.GetFriendByNames(characterName, friendName) is { } item)
+        if (await this.GetFriendByNamesAsync(characterName, friendName) is { } item)
         {
-            this.Delete(item);
+            await this.DeleteAsync(item);
         }
     }
 
     /// <inheritdoc/>
-    public IEnumerable<string> GetOpenFriendRequesterNames(Guid characterId)
+    public async ValueTask<IEnumerable<string>> GetOpenFriendRequesterNamesAsync(Guid characterId)
     {
-        var characters = this.Manager.GetRepository<Character>().GetAll();
-        return this.Manager.GetRepository<Friend>().GetAll().Where(f => f.FriendId == characterId && f.RequestOpen)
+        var characters = await this.Manager.GetRepository<Character>().GetAllAsync();
+        return (await this.Manager.GetRepository<Friend>().GetAllAsync()).Where(f => f.FriendId == characterId && f.RequestOpen)
             .Select(f => characters.FirstOrDefault(c => c.Id == f.CharacterId)?.Name!)
             .Where(name => name is not null);
     }

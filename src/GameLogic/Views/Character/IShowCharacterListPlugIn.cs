@@ -12,5 +12,5 @@ public interface IShowCharacterListPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the character list.
     /// </summary>
-    void ShowCharacterList();
+    ValueTask ShowCharacterListAsync();
 }

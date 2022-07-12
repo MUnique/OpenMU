@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient;
 /// <summary>
 /// This part contains the custom indexer.
 /// </summary>
-public readonly ref partial struct AddSummonedMonstersToScope
+public readonly ref partial struct AddSummonedMonstersToScopeRef
 {
     /// <summary>
     /// Gets the final size, depending on the specified effects of each monster.
@@ -23,22 +23,22 @@ public readonly ref partial struct AddSummonedMonstersToScope
     }
 
     /// <summary>
-    /// Gets the <see cref="SummonedMonsterData" /> with the specified character index.
+    /// Gets the <see cref="SummonedMonsterDataRef" /> with the specified character index.
     /// </summary>
     /// <value>
-    /// The <see cref="SummonedMonsterData" />.
+    /// The <see cref="SummonedMonsterDataRef" />.
     /// </value>
     /// <param name="characterIndex">Index of the character.</param>
     /// <returns>The character data of the specified index.</returns>
     /// <remarks>
     /// It goes sequentially through the data. So when creating a new packet, it makes sense to create them sequentially in order of the index.
     /// </remarks>
-    public SummonedMonsterData this[int characterIndex]
+    public SummonedMonsterDataRef this[int characterIndex]
     {
         get
         {
             var index = this.GetIndexOfMonster(characterIndex, out _);
-            return new SummonedMonsterData(this._data[index..]);
+            return new SummonedMonsterDataRef(this._data[index..]);
         }
     }
 

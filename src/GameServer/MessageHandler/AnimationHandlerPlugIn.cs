@@ -25,7 +25,7 @@ internal class AnimationHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => AnimationRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < 5)
         {
@@ -46,6 +46,6 @@ internal class AnimationHandlerPlugIn : IPacketHandlerPlugIn
             _ => default
         };
 
-        player.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(player, animation, null, rotation), false);
+        await player.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowAnimationAsync(player, animation, null, rotation), false).ConfigureAwait(false);
     }
 }

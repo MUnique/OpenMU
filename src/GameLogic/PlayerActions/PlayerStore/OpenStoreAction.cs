@@ -16,7 +16,7 @@ public class OpenStoreAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="storeName">Name of the store.</param>
-    public void OpenStore(Player player, string storeName)
+    public async ValueTask OpenStoreAsync(Player player, string storeName)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.ShopStorage?.Items.Any(i => !i.StorePrice.HasValue) ?? true)
@@ -28,6 +28,6 @@ public class OpenStoreAction
         player.ShopStorage.StoreName = storeName;
         player.ShopStorage.StoreOpen = true;
         player.Logger.LogDebug("OpenStore: Player: [{0}], StoreName: [{1}]", player.SelectedCharacter!.Name, player.ShopStorage.StoreName);
-        player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerShopOpenedPlugIn>()?.PlayerShopOpened(player), true);
+        await player.ForEachWorldObserverAsync<IPlayerShopOpenedPlugIn>(p => p.PlayerShopOpenedAsync(player), true).ConfigureAwait(false);
     }
 }

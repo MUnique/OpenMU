@@ -48,20 +48,20 @@ public interface IChatClient
     /// <summary>
     /// Logs the chat client off, which means it removes it from it's current chat room and closes the connection.
     /// </summary>
-    void LogOff();
+    ValueTask LogOffAsync();
 
     /// <summary>
     /// Sends the message to this chat client.
     /// </summary>
     /// <param name="senderId">The sender identifier.</param>
     /// <param name="message">The message.</param>
-    void SendMessage(byte senderId, string message);
+    ValueTask SendMessageAsync(byte senderId, string message);
 
     /// <summary>
     /// Sends the client list of the chat room to this client.
     /// </summary>
     /// <param name="clients">The chat room clients.</param>
-    void SendChatRoomClientList(IReadOnlyCollection<IChatClient> clients);
+    ValueTask SendChatRoomClientListAsync(IReadOnlyCollection<IChatClient> clients);
 
     /// <summary>
     /// Notifies the client that another client has joined the chat room.
@@ -69,5 +69,5 @@ public interface IChatClient
     /// <param name="updatedClientId">The joined client identifier.</param>
     /// <param name="updatedClientName">Name of the joined client.</param>
     /// <param name="updateType">Type of the update (join or leave).</param>
-    void SendChatRoomClientUpdate(byte updatedClientId, string updatedClientName, ChatRoomClientUpdateType updateType);
+    ValueTask SendChatRoomClientUpdateAsync(byte updatedClientId, string updatedClientName, ChatRoomClientUpdateType updateType);
 }

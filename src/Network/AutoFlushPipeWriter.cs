@@ -57,11 +57,11 @@ public class AutoFlushPipeWriter : PipeWriter
         this._writeCounter.Add(bytes);
 
         // Mark this instance that flushing is required. If that was successful, run the flush
-        var wasMarkedForFlushBefore = Interlocked.CompareExchange(ref this._isMarkedForFlushing, 1, 0) == 1;
-        if (!wasMarkedForFlushBefore)
-        {
-            _ = Task.Run(this.DoFlushAsync);
-        }
+        //var wasMarkedForFlushBefore = Interlocked.CompareExchange(ref this._isMarkedForFlushing, 1, 0) == 1;
+        //if (!wasMarkedForFlushBefore)
+        //{
+        //    _ = Task.Run(this.DoFlushAsync);
+        //}
     }
 
     /// <inheritdoc />
@@ -73,7 +73,9 @@ public class AutoFlushPipeWriter : PipeWriter
     /// <inheritdoc />
     public override Span<byte> GetSpan(int sizeHint = 0)
     {
-        return this._target.GetSpan(sizeHint);
+        var span = this._target.GetSpan(sizeHint);
+        span.Clear();
+        return span;
     }
 
     private async Task DoFlushAsync()

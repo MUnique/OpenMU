@@ -2,12 +2,15 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx;
+
 namespace MUnique.OpenMU.Network.Benchmarks;
 
+using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 
 /// <summary>
-/// A benchmark to compare <see cref="ConnectionExtensions.StartSafeWrite"/> with doing the same manually.
+/// A benchmark of sending network packets.
 /// The memory allocation should be the same.
 /// </summary>
 [SimpleJob(RuntimeMoniker.NetCoreApp31)]
@@ -24,40 +27,77 @@ public class PacketSending
     public int PacketCount { get; set; }
 
     /// <summary>
-    /// Manually sends packets at the connection.
+    /// Sends packets at the connection with Spans.
     /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
     [Benchmark]
-    public void Manually()
+    public async ValueTask SendSpanAsync(CancellationToken cancellationToken)
     {
         var duplexPipe = new DuplexPipe();
-        var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
-        for (int i = 0; i < this.PacketCount; i++)
+        using var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
+        for (int i = 0; i < this.PacketCount && !cancellationToken.IsCancellationRequested; i++)
         {
-            lock (connection)
+            await connection.OutputLock.WaitAsync(cancellationToken);
+            try
             {
-                var span = connection.Output.GetSpan(this._c1Packet.Length);
-                this._c1Packet.CopyTo(span);
-                connection.Output.Advance(this._c1Packet.Length);
-            }
+                void Write()
+                {
+                    var span = connection.Output.GetSpan(this._c1Packet.Length);
+                    this._c1Packet.CopyTo(span);
+                    connection.Output.Advance(this._c1Packet.Length);
+                }
 
-            connection.Output.FlushAsync();
+                Write();
+                await connection.Output.FlushAsync(cancellationToken);
+            }
+            finally
+            {
+                connection.OutputLock.Release();
+            }
         }
     }
 
     /// <summary>
-    /// Sends packets with using <see cref="ConnectionExtensions.StartSafeWrite"/>.
+    /// Sends packets at the connection with Spans.
     /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
     [Benchmark]
-    public void SafeWrite()
+    public async ValueTask SendSpanInlineAsync(CancellationToken cancellationToken)
     {
         var duplexPipe = new DuplexPipe();
-        var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
-        for (int i = 0; i < this.PacketCount; i++)
+        using var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
+        for (int i = 0; i < this.PacketCount && !cancellationToken.IsCancellationRequested; i++)
         {
-            using var output = connection.StartSafeWrite(0xC1, this._c1Packet.Length);
-            var span = output.Span;
-            this._c1Packet.CopyTo(span);
-            output.Commit();
+            await connection.OutputLock.WaitAsync(cancellationToken);
+            try
+            {
+                this._c1Packet.CopyTo(connection.Output.GetSpan(this._c1Packet.Length));
+                connection.Output.Advance(this._c1Packet.Length);
+                await connection.Output.FlushAsync(cancellationToken);
+            }
+            finally
+            {
+                connection.OutputLock.Release();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Sends packets at the connection with Spans.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    [Benchmark]
+    public async ValueTask SendSpanInlineWithAsyncLockAsync(CancellationToken cancellationToken)
+    {
+        var asyncLock = new AsyncLock();
+        var duplexPipe = new DuplexPipe();
+        using var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
+        for (int i = 0; i < this.PacketCount && !cancellationToken.IsCancellationRequested; i++)
+        {
+            using var foo = await asyncLock.LockAsync(cancellationToken);
+            this._c1Packet.CopyTo(connection.Output.GetSpan(this._c1Packet.Length));
+            connection.Output.Advance(this._c1Packet.Length);
+            await connection.Output.FlushAsync(cancellationToken);
         }
     }
 }

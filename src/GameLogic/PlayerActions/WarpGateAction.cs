@@ -19,19 +19,19 @@ public class WarpGateAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="gate">The enter gate.</param>
-    public void EnterGate(Player player, EnterGate gate)
+    public async ValueTask EnterGateAsync(Player player, EnterGate gate)
     {
-        if (this.IsWarpLegit(player, gate))
+        if (await this.IsWarpLegitAsync(player, gate))
         {
-            player.WarpTo(gate.TargetGate!);
+            await player.WarpToAsync(gate.TargetGate!);
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()?.MapChangeFailed();
+            await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeFailedAsync()).ConfigureAwait(false);
         }
     }
 
-    private bool IsWarpLegit(Player player, EnterGate? enterGate)
+    private async ValueTask<bool> IsWarpLegitAsync(Player player, EnterGate? enterGate)
     {
         if (enterGate?.TargetGate?.Map is null)
         {
@@ -45,13 +45,13 @@ public class WarpGateAction
 
         if (enterGate.LevelRequirement > player.Attributes![Stats.Level])
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Your level is too low to enter this map.", Interfaces.MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Your level is too low to enter this map.", Interfaces.MessageType.BlueNormal)).ConfigureAwait(false);
             return false;
         }
 
         if (enterGate.TargetGate.Map.TryGetRequirementError(player, out var errorMessage))
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(errorMessage, Interfaces.MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(errorMessage, Interfaces.MessageType.BlueNormal)).ConfigureAwait(false);
             return false;
         }
 

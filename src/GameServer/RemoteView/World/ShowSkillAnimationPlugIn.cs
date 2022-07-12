@@ -31,17 +31,17 @@ public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
     public ShowSkillAnimationPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowSkillAnimation(IAttacker attacker, IAttackable? target, Skill skill, bool effectApplied)
+    public ValueTask ShowSkillAnimationAsync(IAttacker attacker, IAttackable? target, Skill skill, bool effectApplied)
     {
-        this.ShowSkillAnimation(attacker, target, skill.Number, effectApplied);
+        return this.ShowSkillAnimationAsync(attacker, target, skill.Number, effectApplied);
     }
 
     /// <inheritdoc/>
-    public void ShowSkillAnimation(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied)
+    public async ValueTask ShowSkillAnimationAsync(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied)
     {
         var playerId = attacker.GetId(this._player);
         var targetId = target.GetId(this._player);
         var skillId = NumberConversionExtensions.ToUnsigned(skillNumber);
-        this._player.Connection?.SendSkillAnimation(skillId, playerId, targetId);
+        await this._player.Connection.SendSkillAnimationAsync(skillId, playerId, targetId);
     }
 }

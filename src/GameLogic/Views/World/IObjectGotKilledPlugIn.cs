@@ -15,5 +15,5 @@ public interface IObjectGotKilledPlugIn : IViewPlugIn
     /// <param name="killedObject">The killed object.</param>
     /// <param name="killerObject">The object which killed the object.</param>
     /// /// <param name="skill">The skill with which was used.</param>
-    void ObjectGotKilled(IAttackable killedObject, IAttacker killerObject, Skill? skill = null);
+    ValueTask ObjectGotKilledAsync(IAttackable killedObject, IAttacker killerObject, Skill? skill = null);
 }

@@ -25,8 +25,8 @@ internal class ActiveQuestListRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => ActiveQuestListRequest.SubCode;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        player.ViewPlugIns.GetPlugIn<ICurrentlyActiveQuestsPlugIn>()?.ShowActiveQuests();
+        await player.InvokeViewPlugInAsync<ICurrentlyActiveQuestsPlugIn>(p => p.ShowActiveQuestsAsync()).ConfigureAwait(false);
     }
 }

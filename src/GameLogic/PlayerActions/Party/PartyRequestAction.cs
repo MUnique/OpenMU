@@ -18,27 +18,27 @@ public class PartyRequestAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="toRequest">The player which receives the request.</param>
-    public void HandlePartyRequest(Player player, Player toRequest)
+    public async ValueTask HandlePartyRequestAsync(Player player, Player toRequest)
     {
         if (toRequest.Party != null || toRequest.LastPartyRequester != null)
         {
-            this.SendMessageToPlayer(player, $"{player.Name} is already in a party.", MessageType.BlueNormal);
+            await this.SendMessageToPlayerAsync(player, $"{player.Name} is already in a party.", MessageType.BlueNormal);
         }
         else if (player.Party is null || (player.Party != null && Equals(player.Party.PartyMaster, player)))
         {
             if (toRequest.PlayerState.TryAdvanceTo(PlayerState.PartyRequest))
             {
-                this.SendPartyRequest(toRequest, player);
-                this.SendMessageToPlayer(player, $"Requested {toRequest.Name} for Party.", MessageType.BlueNormal);
+                await this.SendPartyRequestAsync(toRequest, player);
+                await this.SendMessageToPlayerAsync(player, $"Requested {toRequest.Name} for Party.", MessageType.BlueNormal);
             }
         }
         else
         {
-            this.SendMessageToPlayer(player, "You are not the Party Master.", MessageType.BlueNormal);
+            await this.SendMessageToPlayerAsync(player, "You are not the Party Master.", MessageType.BlueNormal);
         }
     }
 
-    private void SendPartyRequest(IPartyMember toRequest, IPartyMember requester)
+    private async ValueTask SendPartyRequestAsync(IPartyMember toRequest, IPartyMember requester)
     {
         if (Equals(requester, toRequest))
         {
@@ -46,14 +46,14 @@ public class PartyRequestAction
         }
 
         toRequest.LastPartyRequester = requester;
-        toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()?.ShowPartyRequest(requester);
+        await toRequest.InvokeViewPlugInAsync<IShowPartyRequestPlugIn>(p => p.ShowPartyRequestAsync(requester)).ConfigureAwait(false);
     }
 
-    private void SendMessageToPlayer(IPartyMember partyMember, string message, MessageType type)
+    private async ValueTask SendMessageToPlayerAsync(IPartyMember partyMember, string message, MessageType type)
     {
         if (partyMember is Player player)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, type);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, type)).ConfigureAwait(false);
         }
     }
 }

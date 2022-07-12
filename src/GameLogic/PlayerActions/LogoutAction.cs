@@ -16,16 +16,16 @@ public class LogoutAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="logoutType">Type of the logout.</param>
-    public void Logout(Player player, LogoutType logoutType)
+    public async ValueTask LogoutAsync(Player player, LogoutType logoutType)
     {
-        player.CurrentMap?.Remove(player);
-        player.Party?.KickMySelf(player);
+        player.CurrentMap?.RemoveAsync(player);
+        player.Party?.KickMySelfAsync(player);
         player.SelectedCharacter = null;
         player.MagicEffectList.ClearAllEffects();
         player.PersistenceContext.SaveChanges();
         if (logoutType == LogoutType.CloseGame)
         {
-            player.Disconnect();
+            await player.DisconnectAsync();
         }
         else
         {
@@ -34,7 +34,7 @@ public class LogoutAction
                 player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
             }
 
-            player.ViewPlugIns.GetPlugIn<ILogoutPlugIn>()?.Logout(logoutType);
+            await player.InvokeViewPlugInAsync<ILogoutPlugIn>(p => p.LogoutAsync(logoutType)).ConfigureAwait(false);
         }
     }
 }

@@ -31,11 +31,11 @@ public class NpcDialogClosedPlugIn075 : INpcDialogClosedPlugIn
     }
 
     /// <inheritdoc />
-    public void DialogClosed(MonsterDefinition npc)
+    public async ValueTask DialogClosedAsync(MonsterDefinition npc)
     {
         if (npc.NpcWindow == NpcWindow.ChaosMachine)
         {
-            this._player.Connection?.SendCraftingDialogClosed075();
+            await this._player.Connection.SendCraftingDialogClosed075Async().ConfigureAwait(false);
         }
     }
 }

@@ -22,12 +22,12 @@ public abstract class HealthPotionConsumeHandler : RecoverConsumeHandler.ManaHea
     protected override AttributeDefinition CurrentAttribute => Stats.CurrentHealth;
 
     /// <inheritdoc/>
-    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (base.ConsumeItem(player, item, targetItem, fruitUsage))
+        if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage))
         {
             // maybe instead of calling UpdateCurrentHealth etc. provide a more general method where we pass this.CurrentAttribute. The view can then decide what to do with it.
-            player.ViewPlugIns.GetPlugIn<IUpdateCurrentHealthPlugIn>()?.UpdateCurrentHealth();
+            await player.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
             return true;
         }
 

@@ -28,7 +28,7 @@ public class RespawnAfterDeathPlugIn075 : IRespawnAfterDeathPlugIn
     public RespawnAfterDeathPlugIn075(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void Respawn()
+    public async ValueTask RespawnAsync()
     {
         if (this._player.SelectedCharacter?.CurrentMap is null || this._player.Attributes is null)
         {
@@ -38,7 +38,7 @@ public class RespawnAfterDeathPlugIn075 : IRespawnAfterDeathPlugIn
         var mapNumber = (byte)this._player.SelectedCharacter.CurrentMap.Number;
         var position = this._player.IsWalking ? this._player.WalkTarget : this._player.Position;
 
-        this._player.Connection?.SendRespawnAfterDeath075(
+        await this._player.Connection.SendRespawnAfterDeath075Async(
             position.X,
             position.Y,
             mapNumber,
@@ -46,6 +46,7 @@ public class RespawnAfterDeathPlugIn075 : IRespawnAfterDeathPlugIn
             (ushort)this._player.Attributes[Stats.CurrentHealth],
             (ushort)this._player.Attributes[Stats.CurrentMana],
             (uint)this._player.SelectedCharacter.Experience,
-            (uint)this._player.Money);
+            (uint)this._player.Money)
+            .ConfigureAwait(false);
     }
 }

@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Interfaces;
 
+using System.Collections.Immutable;
+
 /// <summary>
 /// Interface for the guild server.
 /// </summary>
@@ -19,24 +21,24 @@ public interface IGuildServer
     /// </summary>
     /// <param name="guildName">Name of the guild.</param>
     /// <returns>True, if the guild exists; False, otherwise.</returns>
-    bool GuildExists(string guildName);
+    ValueTask<bool> GuildExistsAsync(string guildName);
 
     /// <summary>
     /// Gets the guild by the guild identifier.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
     /// <returns>The guild.</returns>
-    Guild? GetGuild(uint guildId);
+    ValueTask<Guild?> GetGuildAsync(uint guildId);
 
     /// <summary>
     /// Gets the guild id by the guild name.
     /// </summary>
     /// <param name="guildName">The guild name.</param>
     /// <returns>The guild id. <c>0</c>, if not found.</returns>
-    uint GetGuildIdByName(string guildName);
+    ValueTask<uint> GetGuildIdByNameAsync(string guildName);
 
     /// <summary>
-    /// Creates the guild and sets the guild master online at the guild server. A separate call to <see cref="PlayerEnteredGame"/> is not required.
+    /// Creates the guild and sets the guild master online at the guild server. A separate call to <see cref="PlayerEnteredGameAsync"/> is not required.
     /// </summary>
     /// <param name="name">The name.</param>
     /// <param name="masterName">Name of the master.</param>
@@ -44,17 +46,17 @@ public interface IGuildServer
     /// <param name="logo">The logo.</param>
     /// <param name="serverId">The identifier of the server on which the guild is getting created.</param>
     /// <returns>A flag, indicating if the guild has been created successfully.</returns>
-    bool CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId);
+    ValueTask<bool> CreateGuildAsync(string name, string masterName, Guid masterId, byte[] logo, byte serverId);
 
     /// <summary>
-    /// Creates the guild member and sets it online at the guild server. A separate call to <see cref="PlayerEnteredGame"/> is not required.
+    /// Creates the guild member and sets it online at the guild server. A separate call to <see cref="PlayerEnteredGameAsync"/> is not required.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
     /// <param name="characterId">The identifier.</param>
     /// <param name="characterName">The name.</param>
     /// <param name="role">The role of the member.</param>
     /// <param name="serverId">The identifier of the server on which the guild member is getting created.</param>
-    void CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId);
+    ValueTask CreateGuildMemberAsync(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId);
 
     /// <summary>
     /// Updates the guild member position.
@@ -62,7 +64,7 @@ public interface IGuildServer
     /// <param name="guildId">The guild identifier.</param>
     /// <param name="characterId">The id of the character.</param>
     /// <param name="role">The role.</param>
-    void ChangeGuildMemberPosition(uint guildId, Guid characterId, GuildPosition role);
+    ValueTask ChangeGuildMemberPositionAsync(uint guildId, Guid characterId, GuildPosition role);
 
     /// <summary>
     /// Notifies the guild server that a player (potential guild member) entered the game.
@@ -70,7 +72,7 @@ public interface IGuildServer
     /// <param name="characterId">The character identifier.</param>
     /// <param name="characterName">Name of the character.</param>
     /// <param name="serverId">The identifier of the server on which the guild member entered.</param>
-    void PlayerEnteredGame(Guid characterId, string characterName, byte serverId);
+    ValueTask PlayerEnteredGameAsync(Guid characterId, string characterName, byte serverId);
 
     /// <summary>
     /// Notifies the guild server that a guild member left the game.
@@ -78,34 +80,34 @@ public interface IGuildServer
     /// <param name="guildId">The guild identifier.</param>
     /// <param name="guildMemberId">The identifier of the guild member.</param>
     /// <param name="serverId">The identifier of the server from which the guild member left.</param>
-    void GuildMemberLeftGame(uint guildId, Guid guildMemberId, byte serverId);
+    ValueTask GuildMemberLeftGameAsync(uint guildId, Guid guildMemberId, byte serverId);
 
     /// <summary>
     /// Gets the guild member list.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
     /// <returns>The guild member list.</returns>
-    IEnumerable<GuildListEntry> GetGuildList(uint guildId);
+    ValueTask<IImmutableList<GuildListEntry>> GetGuildListAsync(uint guildId);
 
     /// <summary>
     /// Kicks a guild member from a guild.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
     /// <param name="playerName">Name of the player which is getting kicked.</param>
-    void KickMember(uint guildId, string playerName);
+    ValueTask KickMemberAsync(uint guildId, string playerName);
 
     /// <summary>
     /// Gets the guild position of a specific character.
     /// </summary>
     /// <param name="characterId">The character identifier.</param>
     /// <returns>The guild position.</returns>
-    GuildPosition GetGuildPosition(Guid characterId);
+    ValueTask<GuildPosition> GetGuildPositionAsync(Guid characterId);
 
     /// <summary>
     /// Increases the guild score by one.
     /// </summary>
     /// <param name="guildId">The identifier of the guild.</param>
-    void IncreaseGuildScore(uint guildId);
+    ValueTask IncreaseGuildScoreAsync(uint guildId);
 }
 
 /// <summary>

@@ -30,7 +30,7 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
     public NewNpcsInScopePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true)
+    public async ValueTask NewNpcsInScopeAsync(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true)
     {
         var connection = this._player.Connection;
         if (connection is null || newObjects is null || !newObjects.Any())
@@ -43,109 +43,118 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
 
         if (npcs.Any())
         {
-            NpcsInScope(isSpawned, connection, npcs);
+            await NpcsInScopeAsync(isSpawned, connection, npcs);
         }
 
         if (summons.Any())
         {
-            SummonedMonstersInScope(isSpawned, connection, summons);
+            await SummonedMonstersInScopeAsync(isSpawned, connection, summons);
         }
     }
 
-    private static void NpcsInScope(bool isSpawned, IConnection connection, ICollection<NonPlayerCharacter> npcs)
+    private static async ValueTask NpcsInScopeAsync(bool isSpawned, IConnection connection, ICollection<NonPlayerCharacter> npcs)
     {
-        using var writer = connection.StartSafeWrite(AddNpcsToScope.HeaderType, AddNpcsToScope.GetRequiredSize(npcs.Count));
-
-        var packet = new AddNpcsToScope(writer.Span)
+        int Write()
         {
-            NpcCount = (byte)npcs.Count,
-        };
-
-        int i = 0;
-        foreach (var npc in npcs)
-        {
-            var npcBlock = packet[i];
-            npcBlock.Id = npc.Id;
-            if (isSpawned)
+            var size = AddNpcsToScopeRef.GetRequiredSize(npcs.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new AddNpcsToScopeRef(span)
             {
-                npcBlock.Id |= 0x8000;
+                NpcCount = (byte)npcs.Count,
+            };
+
+            int i = 0;
+            foreach (var npc in npcs)
+            {
+                var npcBlock = packet[i];
+                npcBlock.Id = npc.Id;
+                if (isSpawned)
+                {
+                    npcBlock.Id |= 0x8000;
+                }
+
+                npcBlock.TypeNumber = (ushort)(npc.Definition?.Number ?? 0);
+                npcBlock.CurrentPositionX = npc.Position.X;
+                npcBlock.CurrentPositionY = npc.Position.Y;
+
+                var supportWalk = npc as ISupportWalk;
+                if (supportWalk?.IsWalking ?? false)
+                {
+                    npcBlock.TargetPositionX = supportWalk.WalkTarget.X;
+                    npcBlock.TargetPositionY = supportWalk.WalkTarget.Y;
+                }
+                else
+                {
+                    npcBlock.TargetPositionX = npc.Position.X;
+                    npcBlock.TargetPositionY = npc.Position.Y;
+                }
+
+                npcBlock.Rotation = npc.Rotation.ToPacketByte();
+
+                i++;
             }
 
-            npcBlock.TypeNumber = (ushort)(npc.Definition?.Number ?? 0);
-            npcBlock.CurrentPositionX = npc.Position.X;
-            npcBlock.CurrentPositionY = npc.Position.Y;
-
-            var supportWalk = npc as ISupportWalk;
-            if (supportWalk?.IsWalking ?? false)
-            {
-                npcBlock.TargetPositionX = supportWalk.WalkTarget.X;
-                npcBlock.TargetPositionY = supportWalk.WalkTarget.Y;
-            }
-            else
-            {
-                npcBlock.TargetPositionX = npc.Position.X;
-                npcBlock.TargetPositionY = npc.Position.Y;
-            }
-
-            npcBlock.Rotation = npc.Rotation.ToPacketByte();
-
-            i++;
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
-    private static void SummonedMonstersInScope(bool isSpawned, IConnection connection, ICollection<Monster> summons)
+    private static async ValueTask SummonedMonstersInScopeAsync(bool isSpawned, IConnection connection, ICollection<Monster> summons)
     {
-        const int estimatedEffectsPerPlayer = 5;
-        var estimatedSizePerCharacter = AddSummonedMonstersToScope.SummonedMonsterData.GetRequiredSize(estimatedEffectsPerPlayer);
-        var estimatedSize = AddSummonedMonstersToScope.GetRequiredSize(summons.Count, estimatedSizePerCharacter);
-        using var writer = connection.StartSafeWrite(AddSummonedMonstersToScope.HeaderType, estimatedSize);
-
-        var packet = new AddSummonedMonstersToScope(writer.Span)
+        int Write()
         {
-            MonsterCount = (byte)summons.Count,
-        };
-
-        int i = 0;
-        foreach (var summon in summons)
-        {
-            var block = packet[i];
-            block.Id = summon.Id;
-            if (isSpawned)
+            const int estimatedEffectsPerPlayer = 5;
+            var estimatedSizePerCharacter = AddSummonedMonstersToScopeRef.SummonedMonsterDataRef.GetRequiredSize(estimatedEffectsPerPlayer);
+            var estimatedSize = AddSummonedMonstersToScopeRef.GetRequiredSize(summons.Count, estimatedSizePerCharacter);
+            var span = connection.Output.GetSpan(estimatedSize);
+            var packet = new AddSummonedMonstersToScopeRef(span)
             {
-                block.Id |= 0x8000;
+                MonsterCount = (byte)summons.Count,
+            };
+
+            int i = 0;
+            foreach (var summon in summons)
+            {
+                var block = packet[i];
+                block.Id = summon.Id;
+                if (isSpawned)
+                {
+                    block.Id |= 0x8000;
+                }
+
+                block.TypeNumber = (ushort)(summon.Definition?.Number ?? 0);
+                block.CurrentPositionX = summon.Position.X;
+                block.CurrentPositionY = summon.Position.Y;
+
+                if (summon.IsWalking)
+                {
+                    block.TargetPositionX = summon.WalkTarget.X;
+                    block.TargetPositionY = summon.WalkTarget.Y;
+                }
+                else
+                {
+                    block.TargetPositionX = summon.Position.X;
+                    block.TargetPositionY = summon.Position.Y;
+                }
+
+                block.Rotation = summon.Rotation.ToPacketByte();
+                block.OwnerCharacterName = summon.SummonedBy?.Name ?? string.Empty;
+
+                var activeEffects = summon.MagicEffectList.VisibleEffects;
+                block.EffectCount = (byte)activeEffects.Count;
+                for (int e = block.EffectCount - 1; e >= 0; e--)
+                {
+                    var effectBlock = block[e];
+                    effectBlock.Id = (byte)activeEffects[e].Id;
+                }
+
+                i++;
             }
 
-            block.TypeNumber = (ushort)(summon.Definition?.Number ?? 0);
-            block.CurrentPositionX = summon.Position.X;
-            block.CurrentPositionY = summon.Position.Y;
-
-            if (summon.IsWalking)
-            {
-                block.TargetPositionX = summon.WalkTarget.X;
-                block.TargetPositionY = summon.WalkTarget.Y;
-            }
-            else
-            {
-                block.TargetPositionX = summon.Position.X;
-                block.TargetPositionY = summon.Position.Y;
-            }
-
-            block.Rotation = summon.Rotation.ToPacketByte();
-            block.OwnerCharacterName = summon.SummonedBy?.Name ?? string.Empty;
-
-            var activeEffects = summon.MagicEffectList.VisibleEffects;
-            block.EffectCount = (byte)activeEffects.Count;
-            for (int e = block.EffectCount - 1; e >= 0; e--)
-            {
-                var effectBlock = block[e];
-                effectBlock.Id = (byte)activeEffects[e].Id;
-            }
-
-            i++;
+            return estimatedSize;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

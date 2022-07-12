@@ -24,13 +24,13 @@ public class ListCommand : IChatCommandPlugIn
     public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
 
     /// <inheritdoc />
-    public void HandleCommand(Player player, string command)
+    public async ValueTask HandleCommandAsync(Player player, string command)
     {
         var commands = player.GetAvailableChatCommands();
 
         foreach (var commandUsage in commands.Select(x => x.Usage))
         {
-            player.ShowMessage(commandUsage);
+            await player.ShowMessageAsync(commandUsage);
         }
     }
 }

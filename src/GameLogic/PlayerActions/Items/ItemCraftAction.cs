@@ -20,7 +20,7 @@ public class ItemCraftAction
     /// <param name="player">The player.</param>
     /// <param name="mixTypeId">The mix type identifier.</param>
     /// <param name="socketSlot">The socket slot.</param>
-    public void MixItems(Player player, byte mixTypeId, byte socketSlot)
+    public async ValueTask MixItemsAsync(Player player, byte mixTypeId, byte socketSlot)
     {
         var npcStats = player.OpenedNpc?.Definition;
 
@@ -39,7 +39,7 @@ public class ItemCraftAction
         (CraftingResult, Item?) result;
         try
         {
-            result = craftingHandler.DoMix(player, socketSlot);
+            result = await craftingHandler.DoMixAsync(player, socketSlot);
         }
         catch
         {
@@ -47,10 +47,12 @@ public class ItemCraftAction
         }
 
         var itemList = player.TemporaryStorage?.Items.ToList() ?? new List<Item>();
-        player.ViewPlugIns.GetPlugIn<IShowItemCraftingResultPlugIn>()?.ShowResult(result.Item1, itemList.Count > 1 ? null : result.Item2);
-        player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(
-            itemList,
-            npcStats!.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine);
+        await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(result.Item1, itemList.Count > 1 ? null : result.Item2)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
+            p => p.ShowMerchantStoreItemListAsync(
+                itemList,
+                npcStats!.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine))
+            .ConfigureAwait(false);
     }
 
     private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)

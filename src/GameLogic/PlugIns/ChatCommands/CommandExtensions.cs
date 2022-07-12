@@ -129,9 +129,9 @@ public static class CommandExtensions
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="message">The message.</param>
-    public static void ShowMessage(this Player player, string message)
+    public static ValueTask ShowMessageAsync(this Player player, string message)
     {
-        player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
+        return player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
     }
 
     private static void ReadNamedArguments(object instance, IList<PropertyInfo> properties, IList<string> arguments)

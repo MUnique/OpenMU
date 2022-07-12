@@ -30,11 +30,11 @@ public class LoginServer : ILoginServer
     }
 
     /// <inheritdoc />
-    public async Task<bool> TryLogin(string accountName, byte serverId)
+    public async Task<bool> TryLoginAsync(string accountName, byte serverId)
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<LoginArguments, bool>(this._targetAppId, nameof(this.TryLogin), new LoginArguments(accountName, serverId));
+            return await this._daprClient.InvokeMethodAsync<LoginArguments, bool>(this._targetAppId, nameof(this.TryLoginAsync), new LoginArguments(accountName, serverId));
         }
         catch (Exception ex)
         {
@@ -44,11 +44,11 @@ public class LoginServer : ILoginServer
     }
 
     /// <inheritdoc />
-    public void LogOff(string accountName, byte serverId)
+    public async ValueTask LogOffAsync(string accountName, byte serverId)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.LogOff), new LoginArguments(accountName, serverId));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.LogOffAsync), new LoginArguments(accountName, serverId));
         }
         catch (Exception ex)
         {

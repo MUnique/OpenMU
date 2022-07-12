@@ -26,13 +26,13 @@ public class PlayerShopOpenedPlugIn : IPlayerShopOpenedPlugIn
     public PlayerShopOpenedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void PlayerShopOpened(Player playerWithShop)
+    public async ValueTask PlayerShopOpenedAsync(Player playerWithShop)
     {
-        this._player.ViewPlugIns.GetPlugIn<IShowShopsOfPlayersPlugIn>()?.ShowShopsOfPlayers(new List<Player>(1) { playerWithShop });
-        if (this._player == playerWithShop)
+        await this._player.InvokeViewPlugInAsync<IShowShopsOfPlayersPlugIn>(p => p.ShowShopsOfPlayersAsync(new List<Player>(1) { playerWithShop })).ConfigureAwait(false);
+        if (this._player == playerWithShop && this._player.Connection is { } connection)
         {
             // Success of opening the own shop
-            this._player.Connection?.SendPlayerShopOpenSuccessful();
+            await connection.SendPlayerShopOpenSuccessfulAsync().ConfigureAwait(false);
         }
     }
 }

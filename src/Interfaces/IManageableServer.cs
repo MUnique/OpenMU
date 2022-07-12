@@ -50,10 +50,10 @@ public interface IManageableServer : INotifyPropertyChanged, IHostedService
     /// <summary>
     /// Starts the server.
     /// </summary>
-    void Start();
+    ValueTask StartAsync();
 
     /// <summary>
     /// Stops the server.
     /// </summary>
-    void Shutdown();
+    ValueTask ShutdownAsync();
 }

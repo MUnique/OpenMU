@@ -12,5 +12,5 @@ public interface IUpdateCharacterStatsPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the character stats.
     /// </summary>
-    void UpdateCharacterStats();
+    ValueTask UpdateCharacterStatsAsync();
 }

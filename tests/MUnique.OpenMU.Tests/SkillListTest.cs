@@ -23,7 +23,7 @@ public class SkillListTest
     /// Tests if the created skill list contains a skill that was learned by the character before.
     /// </summary>
     [Test]
-    public void LearnedSkill()
+    public async ValueTask LearnedSkill()
     {
         var player = TestHelper.CreatePlayer();
         player.SelectedCharacter!.LearnedSkills.Add(this.CreateSkillEntry(LearnedSkillId));
@@ -35,12 +35,12 @@ public class SkillListTest
     /// Tests if skills of equipped items are getting added to the skill list.
     /// </summary>
     [Test]
-    public void ItemSkill()
+    public async ValueTask ItemSkill()
     {
         var player = TestHelper.CreatePlayer();
         var item = this.CreateItemWithSkill();
         item.Durability = 1;
-        player.Inventory!.AddItem(0, item);
+        await player.Inventory!.AddItemAsync(0, item);
         var skillList = new SkillList(player);
         Assert.That(skillList.ContainsSkill(ItemSkillId), Is.True);
     }
@@ -49,11 +49,11 @@ public class SkillListTest
     /// Tests if the skill of an item that gets equipped afterwards, is getting added to the skill list.
     /// </summary>
     [Test]
-    public void ItemSkillAddedLater()
+    public async ValueTask ItemSkillAddedLater()
     {
         var player = TestHelper.CreatePlayer();
         var skillList = player.SkillList as SkillList;
-        player.Inventory!.AddItem(0, this.CreateItemWithSkill());
+        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill());
 
         Assert.That(skillList!.ContainsSkill(ItemSkillId), Is.True);
     }
@@ -62,14 +62,14 @@ public class SkillListTest
     /// Tests the removal of item skills.
     /// </summary>
     [Test]
-    public void ItemSkillRemoved()
+    public async ValueTask ItemSkillRemoved()
     {
         var player = TestHelper.CreatePlayer();
         var item = this.CreateItemWithSkill();
         item.Durability = 1;
-        player.Inventory!.AddItem(0, item);
+        await player.Inventory!.AddItemAsync(0, item);
         var skillList = new SkillList(player);
-        Assert.That(skillList.RemoveItemSkill(item.Definition!.Skill!.Number.ToUnsigned()), Is.True);
+        Assert.That(await skillList.RemoveItemSkillAsync(item.Definition!.Skill!.Number.ToUnsigned()), Is.True);
         Assert.That(skillList.ContainsSkill(ItemSkillId), Is.False);
     }
 

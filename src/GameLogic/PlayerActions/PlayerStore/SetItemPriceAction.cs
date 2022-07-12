@@ -18,7 +18,7 @@ public class SetItemPriceAction
     /// <param name="player">The player.</param>
     /// <param name="slot">The slot of the item in the store (0 to 31).</param>
     /// <param name="price">The price.</param>
-    public void SetPrice(Player player, byte slot, int price)
+    public async ValueTask SetPriceAsync(Player player, byte slot, int price)
     {
         ItemPriceResult result;
         if (player.Level < 6)
@@ -37,6 +37,6 @@ public class SetItemPriceAction
             }
         }
 
-        player.ViewPlugIns.GetPlugIn<IItemPriceSetResponsePlugIn>()?.ItemPriceSetResponse(slot, result);
+        await player.InvokeViewPlugInAsync<IItemPriceSetResponsePlugIn>(p => p.ItemPriceSetResponseAsync(slot, result)).ConfigureAwait(false);
     }
 }

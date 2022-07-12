@@ -25,8 +25,8 @@ public class DrinkAlcoholPlugIn : IDrinkAlcoholPlugIn
     public DrinkAlcoholPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void DrinkAlcohol()
+    public async ValueTask DrinkAlcoholAsync()
     {
-        this._player.Connection?.SendConsumeItemWithEffect(ConsumeItemWithEffect.ConsumedItemType.Ale, 80);
+        await this._player.Connection.SendConsumeItemWithEffectAsync(ConsumeItemWithEffect.ConsumedItemType.Ale, 80).ConfigureAwait(false);
     }
 }

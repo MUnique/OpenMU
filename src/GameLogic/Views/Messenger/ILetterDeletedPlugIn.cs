@@ -13,5 +13,5 @@ public interface ILetterDeletedPlugIn : IViewPlugIn
     /// The letter has been deleted.
     /// </summary>
     /// <param name="letterIndex">The letter header index.</param>
-    void LetterDeleted(ushort letterIndex);
+    ValueTask LetterDeletedAsync(ushort letterIndex);
 }

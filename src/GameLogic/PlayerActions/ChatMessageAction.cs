@@ -39,7 +39,7 @@ public class ChatMessageAction
     /// <param name="playerName">Name of the <paramref name="sender"/>, except for <see cref="ChatMessageType.Whisper"/>, then its the receiver name.</param>
     /// <param name="message">The message which should be sent.</param>
     /// <param name="whisper">If set to <c>true</c> the message is whispered to the player with the <paramref name="playerName"/>; Otherwise, it's not a whisper.</param>
-    public void ChatMessage(Player sender, string playerName, string message, bool whisper)
+    public async ValueTask ChatMessageAsync(Player sender, string playerName, string message, bool whisper)
     {
         using var loggerScope = sender.Logger.BeginScope(this.GetType());
         ChatMessageType messageType = this.GetMessageType(message, whisper);
@@ -60,7 +60,7 @@ public class ChatMessageAction
 
                 if (sender.SelectedCharacter!.CharacterStatus >= commandHandler.MinCharacterStatusRequirement)
                 {
-                    commandHandler.HandleCommand(sender, message);
+                    await commandHandler.HandleCommandAsync(sender, message);
                 }
                 else
                 {
@@ -76,18 +76,18 @@ public class ChatMessageAction
                     sender.GameContext.PlugInManager.GetPlugInPoint<IWhisperMessageReceivedPlugIn>()?.WhisperMessageReceived(sender, whisperReceiver, message, eventArgs);
                     if (!eventArgs.Cancel)
                     {
-                        whisperReceiver.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter!.Name, ChatMessageType.Whisper);
+                        await whisperReceiver.InvokeViewPlugInAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(message, sender.SelectedCharacter!.Name, ChatMessageType.Whisper)).ConfigureAwait(false);
                     }
                 }
 
                 break;
             default:
-                this.HandleChatMessage(sender, message, messageType);
+                await this.HandleChatMessageAsync(sender, message, messageType).ConfigureAwait(false);
                 break;
         }
     }
 
-    private void HandleChatMessage(Player sender, string message, ChatMessageType messageType)
+    private async ValueTask HandleChatMessageAsync(Player sender, string message, ChatMessageType messageType)
     {
         sender.Logger.LogDebug("Chat Message Received: [{0}]:[{1}]", sender.SelectedCharacter!.Name, message);
         var eventArgs = new CancelEventArgs();
@@ -100,15 +100,15 @@ public class ChatMessageAction
         switch (messageType)
         {
             case ChatMessageType.Party:
-                sender.Party?.SendChatMessage(message, sender.SelectedCharacter.Name);
+                sender.Party?.SendChatMessageAsync(message, sender.SelectedCharacter.Name);
                 break;
             case ChatMessageType.Alliance:
             {
-                if (sender.GuildStatus != null)
+                if (sender.GuildStatus != null
+                    && (sender.GameContext as IGameServerContext)?.EventPublisher is { } publisher)
                 {
                     // TODO: Use DI to get the IEventPublisher
-                    var publisher = (sender.GameContext as IGameServerContext)?.EventPublisher;
-                    publisher?.AllianceMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    await publisher.AllianceMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
                 }
 
                 break;
@@ -116,10 +116,10 @@ public class ChatMessageAction
 
             case ChatMessageType.Guild:
             {
-                if (sender.GuildStatus != null)
+                if (sender.GuildStatus != null
+                    && (sender.GameContext as IGameServerContext)?.EventPublisher is { } publisher)
                 {
-                    var publisher = (sender.GameContext as IGameServerContext)?.EventPublisher;
-                    publisher?.GuildMessage(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    await publisher.GuildMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
                 }
 
                 break;
@@ -129,7 +129,7 @@ public class ChatMessageAction
             {
                 if (sender.SelectedCharacter.CharacterStatus >= CharacterStatus.GameMaster)
                 {
-                    sender.GameContext.SendGlobalNotification(message);
+                    await sender.GameContext.SendGlobalNotificationAsync(message);
                 }
 
                 break;
@@ -137,7 +137,7 @@ public class ChatMessageAction
 
             default:
                 sender.Logger.LogDebug("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
-                sender.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()?.ChatMessage(message, sender.SelectedCharacter.Name, ChatMessageType.Normal), true);
+                await sender.ForEachWorldObserverAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(message, sender.SelectedCharacter.Name, ChatMessageType.Normal), true).ConfigureAwait(false);
                 break;
         }
     }

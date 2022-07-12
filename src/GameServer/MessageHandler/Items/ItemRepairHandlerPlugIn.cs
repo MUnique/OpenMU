@@ -26,16 +26,16 @@ internal class ItemRepairHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => RepairItemRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         RepairItemRequest message = packet;
         if (message.ItemSlot == 0xFF)
         {
-            this._repairAction.RepairAllItems(player);
+            await this._repairAction.RepairAllItemsAsync(player);
         }
         else
         {
-            this._repairAction.RepairItem(player, message.ItemSlot);
+            await this._repairAction.RepairItemAsync(player, message.ItemSlot);
         }
     }
 }

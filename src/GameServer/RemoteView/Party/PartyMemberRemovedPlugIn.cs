@@ -25,8 +25,8 @@ public class PartyMemberRemovedPlugIn : IPartyMemberRemovedPlugIn
     public PartyMemberRemovedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void PartyMemberRemoved(byte index)
+    public async ValueTask PartyMemberRemovedAsync(byte index)
     {
-        this._player.Connection?.SendRemovePartyMember(index);
+        await this._player.Connection.SendRemovePartyMemberAsync(index).ConfigureAwait(false);
     }
 }

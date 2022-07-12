@@ -8,16 +8,16 @@ using System.Buffers;
 using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.ConnectServer.PacketHandler;
 using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Packets.ConnectServer;
 
 /// <summary>
 /// The client which connected to the connect server.
 /// </summary>
 internal sealed class Client : IDisposable
 {
-    private static readonly byte[] HelloPacket = { 0xC1, 4, 0, 1 };
-
     private readonly ILogger<Client> _logger;
     private readonly byte[] _receiveBuffer;
     private readonly Timer _onlineTimer;
@@ -38,7 +38,7 @@ internal sealed class Client : IDisposable
     public Client(IConnection connection, TimeSpan timeout, IPacketHandler<Client> packetHandler, byte maxPacketSize, ILogger<Client> logger)
     {
         this.Connection = connection;
-        this.Connection.PacketReceived += this.OnPacketReceived;
+        this.Connection.PacketReceived += this.OnPacketReceivedAsync;
         this.Timeout = timeout;
         this._packetHandler = packetHandler;
         this._logger = logger;
@@ -100,11 +100,9 @@ internal sealed class Client : IDisposable
     /// <summary>
     /// Sends the hello packet.
     /// </summary>
-    internal void SendHello()
+    internal ValueTask SendHelloAsync()
     {
-        using var writer = this.Connection.StartSafeWrite(HelloPacket[0], HelloPacket.Length);
-        HelloPacket.CopyTo(writer.Span);
-        writer.Commit();
+        return this.Connection.SendHelloAsync();
     }
 
     private void OnOnlineTimerElapsed(object? state)
@@ -114,7 +112,7 @@ internal sealed class Client : IDisposable
             if (this.Connection.Connected && DateTime.Now.Subtract(this._lastReceive) > this.Timeout)
             {
                 this._logger.LogDebug("Connection Timeout ({0}): Address {1}:{2} will be disconnected.", this.Timeout, this.Address, this.Port);
-                this.Connection.Disconnect();
+                this.Connection.DisconnectAsync().AsTask().WaitAndUnwrapException();
             }
         }
         catch (Exception ex)
@@ -123,16 +121,18 @@ internal sealed class Client : IDisposable
         }
     }
 
-    private void OnPacketReceived(object? sender, ReadOnlySequence<byte> sequence)
+    private async ValueTask OnPacketReceivedAsync(ReadOnlySequence<byte> sequence)
     {
         this._lastReceive = DateTime.Now;
         if (sequence.Length > this._receiveBuffer.Length)
         {
             this._logger.LogInformation($"Client {this.Address}:{this.Port} will be disconnected because it sent a packet which was too big (size of {sequence.Length}");
-            this.Connection.Disconnect();
+            await this.Connection.DisconnectAsync();
         }
 
         sequence.CopyTo(this._receiveBuffer);
-        this._packetHandler.HandlePacket(this, this._receiveBuffer.AsSpan(0, this._receiveBuffer.GetPacketSize()));
+        await this._packetHandler
+            .HandlePacketAsync(this, this._receiveBuffer.AsMemory(0, this._receiveBuffer.GetPacketSize()))
+            .ConfigureAwait(false);
     }
 }

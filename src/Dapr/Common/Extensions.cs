@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.Dapr.Common;
 
 using System.Reflection;
@@ -62,7 +64,13 @@ public static class Extensions
             {
                 try
                 {
-                    return s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+                    if (s.GetService<IPersistenceContextProvider>() is not { } persistenceContextProvider)
+                    {
+                        throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+                    }
+
+                    var configs = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException();
+                    return configs.ToList();
                 }
                 catch (PostgresException)
                 {
@@ -99,7 +107,15 @@ public static class Extensions
         where TTarget : class
     {
         return services.AddSingleton(s =>
-            (TTarget)s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<TActual>().First(predicate ?? (_ => true))!);
+        {
+            if (s.GetService<IPersistenceContextProvider>() is not { } persistenceContextProvider)
+            {
+                throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+            }
+
+            var objects = persistenceContextProvider.CreateNewConfigurationContext().GetAsync<TActual>().AsTask().WaitAndUnwrapException();
+            return (TTarget)objects.First(predicate ?? (_ => true))!;
+        });
     }
 
     /// <summary>

@@ -25,9 +25,9 @@ public class LetterSendResultPlugIn : ILetterSendResultPlugIn
     public LetterSendResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void LetterSendResult(LetterSendSuccess success, uint letterId)
+    public async ValueTask LetterSendResultAsync(LetterSendSuccess success, uint letterId)
     {
-        this._player.Connection?.SendLetterSendResponse(letterId, Convert(success));
+        await this._player.Connection.SendLetterSendResponseAsync(letterId, Convert(success)).ConfigureAwait(false);
     }
 
     private static LetterSendResponse.LetterSendRequestResult Convert(LetterSendSuccess success)

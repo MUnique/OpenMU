@@ -12,5 +12,5 @@ public interface IShowGuildCreationDialogPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the guild creation dialog.
     /// </summary>
-    void ShowGuildCreationDialog();
+    ValueTask ShowGuildCreationDialogAsync();
 }

@@ -12,5 +12,5 @@ public interface IUpdateLevelPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the level.
     /// </summary>
-    void UpdateLevel();
+    ValueTask UpdateLevelAsync();
 }

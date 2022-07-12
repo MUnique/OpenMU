@@ -27,7 +27,7 @@ public class ItemUpgradedPlugIn : IItemUpgradedPlugIn
     public ItemUpgradedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ItemUpgraded(Item item)
+    public async ValueTask ItemUpgradedAsync(Item item)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -35,13 +35,19 @@ public class ItemUpgradedPlugIn : IItemUpgradedPlugIn
             return;
         }
 
-        var itemSerializer = this._player.ItemSerializer;
-        using var writer = connection.StartSafeWrite(InventoryItemUpgraded.HeaderType, InventoryItemUpgraded.GetRequiredSize(itemSerializer.NeededSpace));
-        var message = new InventoryItemUpgraded(writer.Span)
+        int Write()
         {
-            InventorySlot = item.ItemSlot,
-        };
-        this._player.ItemSerializer.SerializeItem(message.ItemData, item);
-        writer.Commit();
+            var itemSerializer = this._player.ItemSerializer;
+            var size = InventoryItemUpgradedRef.GetRequiredSize(itemSerializer.NeededSpace);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new InventoryItemUpgradedRef(span)
+            {
+                InventorySlot = item.ItemSlot,
+            };
+            itemSerializer.SerializeItem(packet.ItemData, item);
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

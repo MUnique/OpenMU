@@ -38,7 +38,8 @@ public class ChatServerContainer : ServerContainerBase
     /// <inheritdoc />
     protected override async Task StartAsyncCore(CancellationToken cancellationToken)
     {
-        if (this._persistenceContextProvider.CreateNewConfigurationContext().Get<ChatServerDefinition>().FirstOrDefault() is { } definition)
+        var definitions = await this._persistenceContextProvider.CreateNewConfigurationContext().GetAsync<ChatServerDefinition>();
+        if (definitions.FirstOrDefault() is { } definition)
         {
             definition.ConvertToSettings();
             this._chatServer.Initialize(definition.ConvertToSettings());

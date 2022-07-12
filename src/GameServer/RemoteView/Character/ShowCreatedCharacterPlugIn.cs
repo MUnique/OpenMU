@@ -29,7 +29,7 @@ public class ShowCreatedCharacterPlugIn : IShowCreatedCharacterPlugIn
     public ShowCreatedCharacterPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowCreatedCharacter(Character character)
+    public async ValueTask ShowCreatedCharacterAsync(Character character)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -37,17 +37,23 @@ public class ShowCreatedCharacterPlugIn : IShowCreatedCharacterPlugIn
             return;
         }
 
-        using var writer = connection.StartSafeWrite(CharacterCreationSuccessful.HeaderType, CharacterCreationSuccessful.Length);
-        var packet = new CharacterCreationSuccessful(writer.Span)
+        int Write()
         {
-            CharacterName = character.Name,
-            CharacterSlot = character.CharacterSlot,
-            Level = (ushort)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Level)?.Value ?? 0),
-            Class = (CharacterClassNumber)character.CharacterClass!.Number,
-            CharacterStatus = (byte)character.CharacterStatus,
-        };
+            var size = CharacterCreationSuccessfulRef.Length;
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new CharacterCreationSuccessfulRef(span)
+            {
+                CharacterName = character.Name,
+                CharacterSlot = character.CharacterSlot,
+                Level = (ushort)(character.Attributes.FirstOrDefault(a => a.Definition == Stats.Level)?.Value ?? 0),
+                Class = (CharacterClassNumber)character.CharacterClass!.Number,
+                CharacterStatus = (byte)character.CharacterStatus,
+            };
 
-        packet.PreviewData.Fill(0xFF);
-        writer.Commit();
+            packet.PreviewData.Fill(0xFF);
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

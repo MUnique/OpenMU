@@ -26,8 +26,8 @@ public class ShowTradeRequestPlugIn : IShowTradeRequestPlugIn
     public ShowTradeRequestPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowTradeRequest(ITrader requester)
+    public async ValueTask ShowTradeRequestAsync(ITrader requester)
     {
-        this._player.Connection?.SendTradeRequest(requester.Name);
+        await this._player.Connection.SendTradeRequestAsync(requester.Name);
     }
 }

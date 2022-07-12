@@ -25,8 +25,8 @@ public class ShowDialogPlugIn : IShowDialogPlugIn
     public ShowDialogPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowDialog(byte categoryNumber, byte dialogNumber)
+    public ValueTask ShowDialogAsync(byte categoryNumber, byte dialogNumber)
     {
-        this._player.Connection?.SendServerCommand(categoryNumber, dialogNumber, 0);
+        return this._player.Connection.SendServerCommandAsync(categoryNumber, dialogNumber, 0);
     }
 }

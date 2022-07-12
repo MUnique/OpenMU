@@ -13,5 +13,5 @@ public interface IItemRemovedPlugIn : IViewPlugIn
     /// Notifies the client that an item got removed.
     /// </summary>
     /// <param name="inventorySlot">The inventory slot of the removed item.</param>
-    void RemoveItem(byte inventorySlot);
+    ValueTask RemoveItemAsync(byte inventorySlot);
 }

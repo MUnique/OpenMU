@@ -29,45 +29,49 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
     public AppearanceChangedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void AppearanceChanged(Player changedPlayer, Item item)
+    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item item)
     {
         var connection = this._player.Connection;
-        if (connection is null || changedPlayer.Inventory is null)
+        if (connection is null || changedPlayer.Inventory is not { } inventory)
         {
             return;
         }
 
-        var itemSerializer = this._player.ItemSerializer;
-        using var writer = connection.StartSafeWrite(
-            Network.Packets.ServerToClient.AppearanceChanged.HeaderType,
-            Network.Packets.ServerToClient.AppearanceChanged.GetRequiredSize(itemSerializer.NeededSpace));
-        var packet = new AppearanceChanged(writer.Span)
+        int Write()
         {
-            ChangedPlayerId = changedPlayer.GetId(this._player),
-        };
+            var itemSerializer = this._player.ItemSerializer;
+            var size = AppearanceChanged.GetRequiredSize(itemSerializer.NeededSpace);
+            var span = connection!.Output.GetSpan(size)[..size];
+            var packet = new AppearanceChangedRef(span)
+            {
+                ChangedPlayerId = changedPlayer.GetId(this._player),
+            };
 
-        if (changedPlayer.Inventory.EquippedItems.Contains(item))
-        {
-            itemSerializer.SerializeItem(packet.ItemData, item);
+            if (inventory!.EquippedItems.Contains(item))
+            {
+                itemSerializer.SerializeItem(packet.ItemData, item);
+            }
+            else
+            {
+                packet.ItemData.Fill(0xFF);
+            }
+
+            // The byte with index 1 usually now holds the item level and one part of the item option level.
+            // This full information is irrelevant. For this message, we just need the "glow" level, which means the one of the appearance serializer.
+            // In the available space, the item position is serialized.
+            // To summarize: The 4 higher bits hold the item position, the 4 lower bits hold the "glow" level
+            packet.ItemData[1] = (byte)(item.ItemSlot << 4);
+            packet.ItemData[1] |= item.GetGlowLevel();
+
+            // We could also continue to dumb down information here as this packet reveals all of the options of an item to
+            // other players - something which is probably not in interest of the players.
+            // However, for now we keep this logic close to the original server, which doesn't do a thing about it.
+
+            // Additionally, we could think of ignoring changes of rings and pendants, as they are usually not visible in the game client, except
+            // maybe transformation rings. So we'll leave it as it is, too.
+            return size;
         }
-        else
-        {
-            packet.ItemData.Fill(0xFF);
-        }
 
-        // The byte with index 1 usually now holds the item level and one part of the item option level.
-        // This full information is irrelevant. For this message, we just need the "glow" level, which means the one of the appearance serializer.
-        // In the available space, the item position is serialized.
-        // To summarize: The 4 higher bits hold the item position, the 4 lower bits hold the "glow" level
-        packet.ItemData[1] = (byte)(item.ItemSlot << 4);
-        packet.ItemData[1] |= item.GetGlowLevel();
-
-        // We could also continue to dumb down information here as this packet reveals all of the options of an item to
-        // other players - something which is probably not in interest of the players.
-        // However, for now we keep this logic close to the original server, which doesn't do a thing about it.
-
-        // Additionally, we could think of ignoring changes of rings and pendants, as they are usually not visible in the game client, except
-        // maybe transformation rings. So we'll leave it as it is, too.
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

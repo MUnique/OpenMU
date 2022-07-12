@@ -42,18 +42,18 @@ public class DeActivateMagicEffectPlugIn : IActivateMagicEffectPlugIn, IDeactiva
     public DeActivateMagicEffectPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ActivateMagicEffect(MagicEffect effect, IAttackable affectedObject)
+    public ValueTask ActivateMagicEffectAsync(MagicEffect effect, IAttackable affectedObject)
     {
-        this.SendMagicEffectStatus(effect, affectedObject, true, effect.Definition.SendDuration ? effect.Duration : TimeSpan.Zero);
+        return this.SendMagicEffectStatusAsync(effect, affectedObject, true, effect.Definition.SendDuration ? effect.Duration : TimeSpan.Zero);
     }
 
     /// <inheritdoc/>
-    public void DeactivateMagicEffect(MagicEffect effect, IAttackable affectedObject)
+    public ValueTask DeactivateMagicEffectAsync(MagicEffect effect, IAttackable affectedObject)
     {
-        this.SendMagicEffectStatus(effect, affectedObject, false, TimeSpan.Zero);
+        return this.SendMagicEffectStatusAsync(effect, affectedObject, false, TimeSpan.Zero);
     }
 
-    private void SendMagicEffectStatus(MagicEffect effect, IAttackable affectedPlayer, bool isActive, TimeSpan duration)
+    private async ValueTask SendMagicEffectStatusAsync(MagicEffect effect, IAttackable affectedPlayer, bool isActive, TimeSpan duration)
     {
         if (!(this._player.Connection?.Connected ?? false)
             || effect.Definition.Number <= 0)
@@ -71,11 +71,11 @@ public class DeActivateMagicEffectPlugIn : IActivateMagicEffectPlugIn, IDeactiva
         {
             var origin = EffectItemConsumption.EffectOrigin.HalloweenAndCherryBlossomEvent; // Basically, all normal consumable items which add effects
             var action = EffectItemConsumption.EffectAction.Add;
-            this._player.Connection?.SendEffectItemConsumption(origin, effectType, action, (uint)duration.TotalSeconds, (byte)effect.Definition.Number);
+            await this._player.Connection.SendEffectItemConsumptionAsync(origin, effectType, action, (uint)duration.TotalSeconds, (byte)effect.Definition.Number).ConfigureAwait(false);
         }
         else
         {
-            this._player.Connection?.SendMagicEffectStatus(isActive, playerId, (byte)effect.Id);
+            await this._player.Connection.SendMagicEffectStatusAsync(isActive, playerId, (byte)effect.Id).ConfigureAwait(false);
         }
     }
 }

@@ -16,5 +16,5 @@ public interface IMiniGameScoreTableViewPlugin : IViewPlugIn
     /// </summary>
     /// <param name="playerRank">The rank of this player.</param>
     /// <param name="scores">The scores of the players of the same mini game instance.</param>
-    void ShowScoreTable(byte playerRank, IReadOnlyCollection<(string Player, int Score, int BonusExp, int BonusMoney)> scores);
+    ValueTask ShowScoreTableAsync(byte playerRank, IReadOnlyCollection<(string Player, int Score, int BonusExp, int BonusMoney)> scores);
 }

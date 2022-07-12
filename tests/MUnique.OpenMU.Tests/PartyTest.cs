@@ -25,10 +25,11 @@ public class PartyTest
     /// Tests if an added party member gets added to the party list.
     /// </summary>
     [Test]
-    public void PartyMemberAdd()
+    public async ValueTask PartyMemberAdd()
     {
         var partyMember = this.CreatePartyMember();
-        var party = new Party(partyMember, 5, new NullLogger<Party>());
+        var party = new Party(5, new NullLogger<Party>());
+        await party.AddAsync(partyMember);
 
         Assert.That(party.PartyList, Contains.Item(partyMember));
     }
@@ -37,13 +38,13 @@ public class PartyTest
     /// Tests a kick request by a non-party-master for another player, which should fail.
     /// </summary>
     [Test]
-    public void PartyMemberKickFailByNonMaster()
+    public async ValueTask PartyMemberKickFailByNonMaster()
     {
-        var party = this.CreatePartyWithMembers(3);
+        var party = await this.CreatePartyWithMembersAsync(3);
         var partyMember2 = (Player)party.PartyList[1];
         var partyMember3 = party.PartyList[2];
 
-        this._kickAction.KickPlayer(partyMember2, (byte)party.PartyList.IndexOf(partyMember3));
+        await this._kickAction.KickPlayerAsync(partyMember2, (byte)party.PartyList.IndexOf(partyMember3));
         Assert.That(party.PartyList, Contains.Item(partyMember3));
     }
 
@@ -51,12 +52,12 @@ public class PartyTest
     /// Tests if the player is kicking himself works, even if the player is no party master.
     /// </summary>
     [Test]
-    public void PartyMemberKickHimself()
+    public async ValueTask PartyMemberKickHimself()
     {
-        var party = this.CreatePartyWithMembers(3);
+        var party = await this.CreatePartyWithMembersAsync(3);
         var partyMember2 = party.PartyList[1];
 
-        this._kickAction.KickPlayer((Player)partyMember2, (byte)party.PartyList.IndexOf(partyMember2));
+        await this._kickAction.KickPlayerAsync((Player)partyMember2, (byte)party.PartyList.IndexOf(partyMember2));
         Assert.That(party.PartyList, Is.Not.Contains(partyMember2));
         Assert.That(party.PartyList, Has.Count.EqualTo(2));
     }
@@ -65,13 +66,13 @@ public class PartyTest
     /// Tests if another player can be kicked by the party master.
     /// </summary>
     [Test]
-    public void PartyMemberKickByMaster()
+    public async ValueTask PartyMemberKickByMaster()
     {
-        var party = this.CreatePartyWithMembers(3);
+        var party = await this.CreatePartyWithMembersAsync(3);
         var partyMaster = (Player)party.PartyList[0];
         var partyMember = (Player)party.PartyList[1];
 
-        this._kickAction.KickPlayer(partyMaster, (byte)party.PartyList.IndexOf(partyMember));
+        await this._kickAction.KickPlayerAsync(partyMaster, (byte)party.PartyList.IndexOf(partyMember));
         Assert.That(party.PartyList, Is.Not.Contains(partyMember));
         Assert.That(party.PartyList, Has.Count.EqualTo(2));
     }
@@ -80,13 +81,13 @@ public class PartyTest
     /// Tests if the party disbands when the master kicks himself.
     /// </summary>
     [Test]
-    public void PartyMasterKicksHimself()
+    public async ValueTask PartyMasterKicksHimself()
     {
-        var party = this.CreatePartyWithMembers(3);
+        var party = await this.CreatePartyWithMembersAsync(3);
         var partyMaster = party.PartyList[0];
         var partyMember = party.PartyList[1];
 
-        this._kickAction.KickPlayer((Player)partyMaster, (byte)party.PartyList.IndexOf(partyMaster));
+        await this._kickAction.KickPlayerAsync((Player)partyMaster, (byte)party.PartyList.IndexOf(partyMaster));
         Assert.That(partyMember.Party, Is.Null);
         Assert.That(party.PartyList, Is.Null.Or.Empty);
     }
@@ -95,38 +96,39 @@ public class PartyTest
     /// Tests if the party automatically closes when one player is left.
     /// </summary>
     [Test]
-    public void PartyAutoClose()
+    public async ValueTask PartyAutoClose()
     {
         var partyMember1 = this.CreatePartyMember();
-        var party = new Party(partyMember1, 5, new NullLogger<Party>());
+        var party = new Party(5, new NullLogger<Party>());
+        await party.AddAsync(partyMember1);
         var partyMember1Index = (byte)(party.PartyList.Count - 1);
         var partyMember2 = this.CreatePartyMember();
-        party.Add(partyMember2);
+        await party.AddAsync(partyMember2);
         var partyMember2Index = (byte)(party.PartyList.Count - 1);
 
-        this._kickAction.KickPlayer(partyMember1, partyMember2Index);
+        await this._kickAction.KickPlayerAsync(partyMember1, partyMember2Index);
         Assert.That(partyMember1.Party, Is.Null);
         Assert.That(partyMember2.Party, Is.Null);
         Assert.That(party.PartyList, Is.Null.Or.Empty);
 
-        Mock.Get(partyMember1.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v!.PartyMemberRemoved(partyMember1Index), Times.Once);
-        Mock.Get(partyMember2.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v!.PartyMemberRemoved(partyMember2Index), Times.Once);
+        Mock.Get(partyMember1.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v!.PartyMemberRemovedAsync(partyMember1Index), Times.Once);
+        Mock.Get(partyMember2.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v!.PartyMemberRemovedAsync(partyMember2Index), Times.Once);
     }
 
     /// <summary>
     /// Tests the adding of party members.
     /// </summary>
     [Test]
-    public void PartyHandlerAdd()
+    public async ValueTask PartyHandlerAdd()
     {
         var handler = new PartyRequestAction();
         var player = this.CreatePartyMember();
         var toRequest = this.CreatePartyMember();
         player.Observers.Add(toRequest);
 
-        handler.HandlePartyRequest(player, toRequest);
+        await handler.HandlePartyRequestAsync(player, toRequest);
 
-        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequest(player), Times.Once);
+        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequestAsync(player), Times.Once);
         Assert.That(toRequest.LastPartyRequester, Is.SameAs(player));
     }
 
@@ -134,7 +136,7 @@ public class PartyTest
     /// Tests if the party gets created after the requested player responses with accepting the party.
     /// </summary>
     [Test]
-    public void PartyResponseAcceptNewParty()
+    public async ValueTask PartyResponseAcceptNewParty()
     {
         var handler = new PartyResponseAction();
         var player = this.CreatePartyMember();
@@ -142,13 +144,13 @@ public class PartyTest
         player.LastPartyRequester = requester;
         player.PlayerState.TryAdvanceTo(PlayerState.PartyRequest);
 
-        handler.HandleResponse(player, true);
+        await handler.HandleResponseAsync(player, true);
         Assert.That(player.Party, Is.Not.Null);
         Assert.That(player.Party!.PartyMaster, Is.SameAs(requester));
         Assert.That(player.LastPartyRequester, Is.Null);
         Assert.That(player.Party.PartyList, Contains.Item(player));
-        Mock.Get(player.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v!.UpdatePartyList(), Times.AtLeastOnce);
-        Mock.Get(requester.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v!.UpdatePartyList(), Times.AtLeastOnce);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v!.UpdatePartyListAsync(), Times.AtLeastOnce);
+        Mock.Get(requester.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v!.UpdatePartyListAsync(), Times.AtLeastOnce);
     }
 
     /// <summary>
@@ -156,7 +158,7 @@ public class PartyTest
     /// does not cause the player to be added to the other party.
     /// </summary>
     [Test]
-    public void PartyResponseAcceptExistingParty()
+    public async ValueTask PartyResponseAcceptExistingParty()
     {
         var handler = new PartyResponseAction();
 
@@ -164,16 +166,16 @@ public class PartyTest
         var player = this.CreatePartyMember();
         player.LastPartyRequester = this.CreatePartyMember();
         player.PlayerState.TryAdvanceTo(PlayerState.PartyRequest);
-        handler.HandleResponse(player, true);
+        await handler.HandleResponseAsync(player, true);
 
         // now another player will try to request party from the player, which should fail
         var requester = this.CreatePartyMember();
         player.LastPartyRequester = requester;
-        handler.HandleResponse(player, true);
+        await handler.HandleResponseAsync(player, true);
         Assert.That(player.Party!.PartyList, Is.Not.Contains(requester));
         Assert.That(player.LastPartyRequester, Is.Null);
         Assert.That(requester.Party, Is.Null);
-        Mock.Get(player.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequest(requester), Times.Never);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequestAsync(requester), Times.Never);
     }
 
     private Player CreatePartyMember()
@@ -183,13 +185,13 @@ public class PartyTest
         return result;
     }
 
-    private Party CreatePartyWithMembers(int numberOfMembers)
+    private async ValueTask<Party> CreatePartyWithMembersAsync(int numberOfMembers)
     {
-        var party = new Party(this.CreatePartyMember(), 5, new NullLogger<Party>());
-        for (ushort i = 1; i < numberOfMembers; i++)
+        var party = new Party(5, new NullLogger<Party>());
+        for (ushort i = 0; i < numberOfMembers; i++)
         {
             var partyMember = this.CreatePartyMember();
-            party.Add(partyMember);
+            await party.AddAsync(partyMember);
         }
 
         return party;

@@ -13,5 +13,5 @@ public interface IShowLoginResultPlugIn : IViewPlugIn
     /// Shows the login result.
     /// </summary>
     /// <param name="loginResult">The login result.</param>
-    void ShowLoginResult(LoginResult loginResult);
+    ValueTask ShowLoginResultAsync(LoginResult loginResult);
 }

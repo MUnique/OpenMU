@@ -47,5 +47,5 @@ public interface IShowEffectPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="target">The target object.</param>
     /// <param name="effectType">The effect type.</param>
-    void ShowEffect(IIdentifiable target, EffectType effectType);
+    ValueTask ShowEffectAsync(IIdentifiable target, EffectType effectType);
 }

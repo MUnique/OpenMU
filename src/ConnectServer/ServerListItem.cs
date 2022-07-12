@@ -74,7 +74,7 @@ internal class ServerListItem : IGameServerEntry
     {
         get
         {
-            ConnectionInfo connectInfo = this.ConnectInfo.AsSpan();
+            ConnectionInfoRef connectInfo = this.ConnectInfo.AsSpan();
             return new IPEndPoint(IPAddress.Parse(connectInfo.IpAddress), connectInfo.Port);
         }
 

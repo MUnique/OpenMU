@@ -76,7 +76,7 @@ public class MapInitializer : IMapInitializer
     }
 
     /// <inheritdoc />
-    public void InitializeState(GameMap createdMap)
+    public async ValueTask InitializeStateAsync(GameMap createdMap)
     {
         if (this.PlugInManager is null)
         {
@@ -91,7 +91,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this.InitializeSpawn(createdMap, spawnArea);
+                await this.InitializeSpawnAsync(createdMap, spawnArea);
             }
         }
 
@@ -103,7 +103,7 @@ public class MapInitializer : IMapInitializer
     /// </summary>
     /// <param name="createdMap">The created map.</param>
     /// <param name="eventStateProvider">The event state provider.</param>
-    public void InitializeNpcsOnEventStart(GameMap createdMap, IEventStateProvider eventStateProvider)
+    public async ValueTask InitializeNpcsOnEventStartAsync(GameMap createdMap, IEventStateProvider eventStateProvider)
     {
         if (this.PlugInManager is null)
         {
@@ -119,7 +119,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this.InitializeSpawn(createdMap, spawnArea, eventStateProvider);
+                await this.InitializeSpawnAsync(createdMap, spawnArea, eventStateProvider);
             }
         }
 
@@ -127,7 +127,7 @@ public class MapInitializer : IMapInitializer
     }
 
     /// <inheritdoc />
-    public void InitializeNpcsOnWaveStart(GameMap createdMap, IEventStateProvider eventStateProvider, byte waveNumber)
+    public async ValueTask InitializeNpcsOnWaveStartAsync(GameMap createdMap, IEventStateProvider eventStateProvider, byte waveNumber)
     {
         if (this.PlugInManager is null)
         {
@@ -144,7 +144,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this.InitializeSpawn(createdMap, spawnArea, eventStateProvider);
+                await this.InitializeSpawnAsync(createdMap, spawnArea, eventStateProvider);
             }
         }
 
@@ -152,7 +152,7 @@ public class MapInitializer : IMapInitializer
     }
 
     /// <inheritdoc />
-    public void InitializeSpawn(GameMap createdMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null)
+    public async ValueTask InitializeSpawnAsync(GameMap createdMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null)
     {
         var monsterDef = spawnArea.MonsterDefinition!;
         NonPlayerCharacter npc;
@@ -188,7 +188,7 @@ public class MapInitializer : IMapInitializer
         try
         {
             npc.Initialize();
-            createdMap.Add(npc);
+            await createdMap.AddAsync(npc);
         }
         catch (Exception ex)
         {

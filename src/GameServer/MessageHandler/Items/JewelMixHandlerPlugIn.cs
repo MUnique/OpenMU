@@ -27,7 +27,7 @@ internal class JewelMixHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => LahapJewelMixRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         LahapJewelMixRequest message = packet;
         if (packet.Length < 6)
@@ -38,10 +38,10 @@ internal class JewelMixHandlerPlugIn : IPacketHandlerPlugIn
         switch (message.Operation)
         {
             case LahapJewelMixRequest.MixType.Mix:
-                this._mixAction.StackItems(player, (byte)message.Item, GetStackSize(message.MixingStackSize));
+                await this._mixAction.StackItemsAsync(player, (byte)message.Item, GetStackSize(message.MixingStackSize));
                 break;
             case LahapJewelMixRequest.MixType.Unmix:
-                this._mixAction.UnstackItems(player, (byte)message.Item, message.UnmixingSourceSlot);
+                await this._mixAction.UnstackItemsAsync(player, (byte)message.Item, message.UnmixingSourceSlot);
                 break;
             default:
                 throw new ArgumentException($"The mix operation {message.Operation} is unknown.");

@@ -10,7 +10,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Interface of an world observer.
 /// </summary>
-public interface IWorldObserver
+public interface IWorldObserver : ILoggerOwner
 {
     /// <summary>
     /// Gets the view plug ins.

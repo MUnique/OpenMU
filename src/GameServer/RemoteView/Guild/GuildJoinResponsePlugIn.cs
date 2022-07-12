@@ -25,8 +25,8 @@ public class GuildJoinResponsePlugIn : IGuildJoinResponsePlugIn
     public GuildJoinResponsePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowGuildJoinResponse(GuildRequestAnswerResult result)
+    public async ValueTask ShowGuildJoinResponseAsync(GuildRequestAnswerResult result)
     {
-        this._player.Connection?.SendGuildJoinResponse(result.Convert());
+        await this._player.Connection.SendGuildJoinResponseAsync(result.Convert());
     }
 }

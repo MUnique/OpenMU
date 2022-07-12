@@ -9,7 +9,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using global::Dapr.Client;
 using MUnique.OpenMU.Interfaces;
-using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// A client to control a <seealso cref="IManageableServer"/>.
@@ -100,25 +99,25 @@ internal class ManageableServerClient : IManageableServer
     /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(IManageableServer.Start), cancellationToken);
+        return this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(IManageableServer.StartAsync), cancellationToken);
     }
 
     /// <inheritdoc/>
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(IManageableServer.Shutdown), cancellationToken);
+        return this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(IManageableServer.ShutdownAsync), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void Start()
+    public async ValueTask StartAsync()
     {
-        this.StartAsync(default).WaitAndUnwrapException();
+        await this.StartAsync(default);
     }
 
     /// <inheritdoc/>
-    public void Shutdown()
+    public async ValueTask ShutdownAsync()
     {
-        this.StopAsync(default).WaitAndUnwrapException();
+        await this.StopAsync(default);
     }
 
     /// <summary>

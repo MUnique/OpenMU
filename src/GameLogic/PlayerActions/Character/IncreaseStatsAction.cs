@@ -17,7 +17,7 @@ public class IncreaseStatsAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="statAttributeDefinition">The stat attribute definition.</param>
-    public void IncreaseStats(Player player, AttributeDefinition statAttributeDefinition)
+    public async ValueTask IncreaseStatsAsync(Player player, AttributeDefinition statAttributeDefinition)
     {
         if (player.SelectedCharacter is null)
         {
@@ -27,7 +27,7 @@ public class IncreaseStatsAction
         var selectedCharacter = player.SelectedCharacter;
         if (!selectedCharacter.CanIncreaseStats())
         {
-            this.PublishIncreaseResult(player, statAttributeDefinition, false);
+            await this.PublishIncreaseResult(player, statAttributeDefinition, false);
             return;
         }
 
@@ -40,15 +40,15 @@ public class IncreaseStatsAction
                 selectedCharacter.LevelUpPoints--;
             }
 
-            this.PublishIncreaseResult(player, statAttributeDefinition, true);
+            await this.PublishIncreaseResult(player, statAttributeDefinition, true);
             return;
         }
 
-        this.PublishIncreaseResult(player, statAttributeDefinition, false);
+        await this.PublishIncreaseResult(player, statAttributeDefinition, false);
     }
 
-    private void PublishIncreaseResult(Player player, AttributeDefinition statAttributeDefinition, bool success)
+    private ValueTask PublishIncreaseResult(Player player, AttributeDefinition statAttributeDefinition, bool success)
     {
-        player.ViewPlugIns.GetPlugIn<IStatIncreaseResultPlugIn>()?.StatIncreaseResult(statAttributeDefinition, success);
+        return player.InvokeViewPlugInAsync<IStatIncreaseResultPlugIn>(p => p.StatIncreaseResultAsync(statAttributeDefinition, success));
     }
 }

@@ -74,9 +74,9 @@ internal class JsonQueryBuilderTests
     /// </summary>
     [Test]
     [Ignore("It hits the database.")]
-    public void LoadConfigByJson()
+    public async Task LoadConfigByJsonAsync()
     {
-        using var installationContext = new ConfigurationContext();
+        await using var installationContext = new ConfigurationContext();
         installationContext.Database.OpenConnection();
         var builder = new GameConfigurationJsonObjectLoader();
         IEnumerable<GameConfiguration> result;
@@ -84,7 +84,8 @@ internal class JsonQueryBuilderTests
         stopwatch.Start();
         try
         {
-            result = builder.LoadAllObjects<EntityFramework.Model.GameConfiguration>(installationContext).ToList();
+            result = await builder.LoadAllObjectsAsync<EntityFramework.Model.GameConfiguration>(installationContext);
+            result = result.ToList();
         }
         finally
         {

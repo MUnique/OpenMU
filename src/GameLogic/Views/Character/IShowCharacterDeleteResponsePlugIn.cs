@@ -13,5 +13,5 @@ public interface IShowCharacterDeleteResponsePlugIn : IViewPlugIn
     /// Shows the character delete response result.
     /// </summary>
     /// <param name="result">The result.</param>
-    void ShowCharacterDeleteResponse(CharacterDeleteResult result);
+    ValueTask ShowCharacterDeleteResponseAsync(CharacterDeleteResult result);
 }

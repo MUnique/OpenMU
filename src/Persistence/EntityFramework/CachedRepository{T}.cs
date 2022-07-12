@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
-using System.Threading;
+using System.Collections;
 
 /// <summary>
 /// A repository which caches all of its data in memory.
@@ -35,7 +35,13 @@ public class CachedRepository<T> : IRepository<T>
     protected IRepository<T> BaseRepository { get; }
 
     /// <inheritdoc/>
-    public IEnumerable<T> GetAll()
+    async ValueTask<IEnumerable> IRepository.GetAllAsync()
+    {
+        return await this.GetAllAsync();
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IEnumerable<T>> GetAllAsync()
     {
         if (this._allLoaded)
         {
@@ -46,8 +52,7 @@ public class CachedRepository<T> : IRepository<T>
         {
             while (this._loading)
             {
-                // TODO: When making this async, then do a Task.Delay...
-                Thread.Sleep(10);
+                await Task.Delay(10);
             }
 
             return this._cache.Values;
@@ -56,8 +61,7 @@ public class CachedRepository<T> : IRepository<T>
         this._loading = true;
         try
         {
-            IEnumerable<T> values = this.BaseRepository.GetAll();
-
+            IEnumerable<T> values = await this.BaseRepository.GetAllAsync();
             foreach (var obj in values)
             {
                 if (!this._cache.ContainsKey(obj.Id))
@@ -70,41 +74,41 @@ public class CachedRepository<T> : IRepository<T>
         {
             this._loading = false;
         }
-        
+
         this._allLoaded = true;
 
         return this._cache.Values;
     }
 
     /// <inheritdoc/>
-    public T? GetById(Guid id)
+    public async ValueTask<T?> GetByIdAsync(Guid id)
     {
-        this.GetAll();
+        await this.GetAllAsync();
         this._cache.TryGetValue(id, out var result);
         return result;
     }
 
     /// <inheritdoc/>
-    object? IRepository.GetById(Guid id)
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id)
     {
-        return this.GetById(id);
+        return await this.GetByIdAsync(id);
     }
 
     /// <inheritdoc/>
-    public bool Delete(object obj)
+    public async ValueTask<bool> DeleteAsync(object obj)
     {
         if (obj is IIdentifiable identifiable)
         {
-            return this.Delete(identifiable.Id);
+            return await this.DeleteAsync(identifiable.Id);
         }
 
         return false;
     }
 
     /// <inheritdoc/>
-    public bool Delete(Guid id)
+    public async ValueTask<bool> DeleteAsync(Guid id)
     {
-        if (this.BaseRepository.Delete(id))
+        if (await this.BaseRepository.DeleteAsync(id))
         {
             this.RemoveFromCache(id);
             return true;

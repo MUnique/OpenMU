@@ -12,5 +12,5 @@ public interface IUpdateMaximumManaPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the maximum mana.
     /// </summary>
-    void UpdateMaximumMana();
+    ValueTask UpdateMaximumManaAsync();
 }

@@ -15,5 +15,5 @@ internal interface IPacketHandler<in T>
     /// </summary>
     /// <param name="obj">The object.</param>
     /// <param name="packet">The packet.</param>
-    void HandlePacket(T obj, Span<byte> packet);
+    ValueTask HandlePacketAsync(T obj, Memory<byte> packet);
 }

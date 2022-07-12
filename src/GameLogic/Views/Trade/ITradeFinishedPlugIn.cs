@@ -13,5 +13,5 @@ public interface ITradeFinishedPlugIn : IViewPlugIn
     /// The trade process has finished with the specified result.
     /// </summary>
     /// <param name="tradeResult">The trade result.</param>
-    void TradeFinished(TradeResult tradeResult);
+    ValueTask TradeFinishedAsync(TradeResult tradeResult);
 }

@@ -13,5 +13,5 @@ public interface IRespawnAfterDeathPlugIn : IViewPlugIn
     /// <summary>
     /// Respawns the player. The new map and coordinates are defined in the player.SelectedCharacter.CurrentMap.
     /// </summary>
-    void Respawn();
+    ValueTask RespawnAsync();
 }

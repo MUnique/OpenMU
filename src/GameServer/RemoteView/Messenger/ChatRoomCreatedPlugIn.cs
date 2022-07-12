@@ -26,8 +26,14 @@ public class ChatRoomCreatedPlugIn : IChatRoomCreatedPlugIn
     public ChatRoomCreatedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success)
+    public async ValueTask ChatRoomCreatedAsync(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success)
     {
-        this._player.Connection?.SendChatRoomConnectionInfo(authenticationInfo.HostAddress, authenticationInfo.RoomId, uint.Parse(authenticationInfo.AuthenticationToken), friendName, success);
+        await this._player.Connection.SendChatRoomConnectionInfoAsync(
+            authenticationInfo.HostAddress,
+            authenticationInfo.RoomId,
+            uint.Parse(authenticationInfo.AuthenticationToken),
+            friendName,
+            success)
+            .ConfigureAwait(false);
     }
 }

@@ -13,5 +13,5 @@ public interface IShowPartyRequestPlugIn : IViewPlugIn
     /// Shows the party request.
     /// </summary>
     /// <param name="requester">The requester.</param>
-    void ShowPartyRequest(IPartyMember requester);
+    ValueTask ShowPartyRequestAsync(IPartyMember requester);
 }

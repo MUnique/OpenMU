@@ -16,5 +16,5 @@ public interface IShowItemDropEffectPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="effect">The effect.</param>
     /// <param name="targetCoordinates">The target coordinates.</param>
-    void ShowEffect(ItemDropEffect effect, Point targetCoordinates);
+    ValueTask ShowEffectAsync(ItemDropEffect effect, Point targetCoordinates);
 }

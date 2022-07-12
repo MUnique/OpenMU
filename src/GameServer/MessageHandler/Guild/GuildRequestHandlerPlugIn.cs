@@ -26,9 +26,9 @@ internal class GuildRequestHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => GuildJoinRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildJoinRequest request = packet;
-        this._requestAction.RequestGuild(player, request.GuildMasterPlayerId);
+        await this._requestAction.RequestGuildAsync(player, request.GuildMasterPlayerId);
     }
 }

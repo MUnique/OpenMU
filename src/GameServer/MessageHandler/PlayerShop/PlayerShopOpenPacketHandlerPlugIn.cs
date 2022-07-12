@@ -27,9 +27,9 @@ internal class PlayerShopOpenPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => PlayerShopOpen.SubCode;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PlayerShopOpen message = packet;
-        this._openStoreAction.OpenStore(player, message.StoreName);
+        await this._openStoreAction.OpenStoreAsync(player, message.StoreName);
     }
 }

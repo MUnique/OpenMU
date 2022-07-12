@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.ServerClients;
 
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx.Synchronous;
 using Dapr.Client;
 using MUnique.OpenMU.Interfaces;
 
@@ -31,11 +30,11 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc />
-    public void ForwardLetter(LetterHeader letter)
+    public async ValueTask ForwardLetterAsync(LetterHeader letter)
     {
         try
         {
-            this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceived), letter).WaitAndUnwrapException();
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceivedAsync), letter);
         }
         catch (Exception ex)
         {
@@ -44,11 +43,11 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc />
-    public void FriendResponse(string characterName, string friendName, bool accepted)
+    public async ValueTask FriendResponseAsync(string characterName, string friendName, bool accepted)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.FriendResponse), new FriendResponseArguments(characterName, friendName, accepted)).WaitAndUnwrapException();
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.FriendResponseAsync), new FriendResponseArguments(characterName, friendName, accepted));
         }
         catch (Exception ex)
         {
@@ -57,23 +56,25 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc />
-    public void PlayerEnteredGame(byte serverId, Guid characterId, string characterName)
+    public ValueTask PlayerEnteredGameAsync(byte serverId, Guid characterId, string characterName)
     {
         // no action required - the friend server listens to the common pubsub, published by EventPublisher
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public void PlayerLeftGame(Guid characterId, string characterName)
+    public ValueTask PlayerLeftGameAsync(Guid characterId, string characterName)
     {
         // no action required - the friend server listens to the common pubsub, published by EventPublisher
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public void SetPlayerVisibilityState(byte serverId, Guid characterId, string characterName, bool isVisible)
+    public async ValueTask SetPlayerVisibilityStateAsync(byte serverId, Guid characterId, string characterName, bool isVisible)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.SetPlayerVisibilityState), new PlayerFriendOnlineStateArguments(characterId, characterName, serverId, isVisible)).WaitAndUnwrapException();
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.SetPlayerVisibilityStateAsync), new PlayerFriendOnlineStateArguments(characterId, characterName, serverId, isVisible));
         }
         catch (Exception ex)
         {
@@ -82,11 +83,11 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc />
-    public bool FriendRequest(string playerName, string friendName)
+    public async ValueTask<bool> FriendRequestAsync(string playerName, string friendName)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(this.FriendRequest), new RequestArguments(playerName, friendName)).WaitAndUnwrapException();
+            return await this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(this.FriendRequestAsync), new RequestArguments(playerName, friendName));
         }
         catch (Exception ex)
         {
@@ -96,11 +97,11 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc />
-    public void DeleteFriend(string name, string friendName)
+    public async ValueTask DeleteFriendAsync(string name, string friendName)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.DeleteFriend), new RequestArguments(name, friendName)).WaitAndUnwrapException();
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.DeleteFriendAsync), new RequestArguments(name, friendName));
         }
         catch (Exception ex)
         {
@@ -109,11 +110,11 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc />
-    public void CreateChatRoom(string playerName, string friendName)
+    public async ValueTask CreateChatRoomAsync(string playerName, string friendName)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateChatRoom), new RequestArguments(playerName, friendName)).WaitAndUnwrapException();
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateChatRoomAsync), new RequestArguments(playerName, friendName));
         }
         catch (Exception ex)
         {
@@ -122,11 +123,11 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc />
-    public bool InviteFriendToChatRoom(string selectedCharacterName, string friendName, ushort roomNumber)
+    public async ValueTask<bool> InviteFriendToChatRoomAsync(string selectedCharacterName, string friendName, ushort roomNumber)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<ChatRoomInvitationArguments, bool>(this._targetAppId, nameof(this.InviteFriendToChatRoom), new ChatRoomInvitationArguments(selectedCharacterName, friendName, roomNumber)).Result;
+            return await this._daprClient.InvokeMethodAsync<ChatRoomInvitationArguments, bool>(this._targetAppId, nameof(this.InviteFriendToChatRoomAsync), new ChatRoomInvitationArguments(selectedCharacterName, friendName, roomNumber));
         }
         catch (Exception ex)
         {

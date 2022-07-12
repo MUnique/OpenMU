@@ -22,7 +22,7 @@ public static class QuestExtensions
         questState.ClientActionPerformed = false;
         foreach (var requirementState in questState.RequirementStates)
         {
-            persistenceContext.Delete(requirementState);
+            persistenceContext.DeleteAsync(requirementState);
         }
 
         questState.RequirementStates.Clear();

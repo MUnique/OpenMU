@@ -67,13 +67,13 @@ public class PipelinedSimpleModulusEncryptor : PipelinedSimpleModulusBase, IPipe
     public PipeWriter Writer => this.Pipe.Writer;
 
     /// <inheritdoc />
-    protected override void OnComplete(Exception? exception)
+    protected override ValueTask OnCompleteAsync(Exception? exception)
     {
-        this._target.Complete(exception);
+        return this._target.CompleteAsync(exception);
     }
 
     /// <inheritdoc />
-    protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
+    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         packet.Slice(0, this.HeaderBuffer.Length).CopyTo(this.HeaderBuffer);
 
@@ -86,7 +86,7 @@ public class PipelinedSimpleModulusEncryptor : PipelinedSimpleModulusBase, IPipe
         }
 
         this.EncryptAndWrite(packet);
-        await this._target.FlushAsync();
+        await this._target.FlushAsync().ConfigureAwait(false);
     }
 
     /// <summary>

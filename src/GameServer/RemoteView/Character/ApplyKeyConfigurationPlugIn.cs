@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
@@ -26,7 +25,7 @@ public class ApplyKeyConfigurationPlugIn : IApplyKeyConfigurationPlugIn
     public ApplyKeyConfigurationPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ApplyKeyConfiguration()
+    public async ValueTask ApplyKeyConfigurationAsync()
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -40,11 +39,6 @@ public class ApplyKeyConfigurationPlugIn : IApplyKeyConfigurationPlugIn
             return;
         }
 
-        using var writer = connection.StartSafeWrite(
-            MUnique.OpenMU.Network.Packets.ServerToClient.ApplyKeyConfiguration.HeaderType,
-            MUnique.OpenMU.Network.Packets.ServerToClient.ApplyKeyConfiguration.GetRequiredSize(keyConfiguration.Length));
-        var packet = new ApplyKeyConfiguration(writer.Span);
-        keyConfiguration.AsSpan().CopyTo(packet.Configuration);
-        writer.Commit();
+        await connection.SendApplyKeyConfigurationAsync(keyConfiguration);
     }
 }

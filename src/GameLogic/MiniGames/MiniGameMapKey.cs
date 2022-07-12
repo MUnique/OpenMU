@@ -32,7 +32,7 @@ public record MiniGameMapKey(short MapNumber, byte MiniGameLevel, string Owner)
                 miniGameKey = new MiniGameMapKey(mapDefinition.Number, definition.GameLevel, requester.Name);
                 break;
             case MiniGameMapCreationPolicy.OnePerParty:
-                miniGameKey = new MiniGameMapKey(mapDefinition.Number, definition.GameLevel, requester.Party?.PartyMaster.Name ?? requester.Name);
+                miniGameKey = new MiniGameMapKey(mapDefinition.Number, definition.GameLevel, requester.Party?.PartyMaster?.Name ?? requester.Name);
                 break;
             case MiniGameMapCreationPolicy.Shared:
                 miniGameKey = new MiniGameMapKey(mapDefinition.Number, definition.GameLevel, string.Empty);

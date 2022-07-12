@@ -28,8 +28,8 @@ public class QuestStepInfoPlugIn : IQuestStepInfoPlugIn
     }
 
     /// <inheritdoc/>
-    public void ShowQuestStepInfo(short questGroup, short stepNumber)
+    public async ValueTask ShowQuestStepInfoAsync(short questGroup, short stepNumber)
     {
-        this._player.Connection?.SendQuestStepInfo((ushort)stepNumber, (ushort)questGroup);
+        await this._player.Connection.SendQuestStepInfoAsync((ushort)stepNumber, (ushort)questGroup);
     }
 }

@@ -19,15 +19,101 @@ using static System.Buffers.Binary.BinaryPrimitives;
 /// Is sent by the client when: This packet is sent by the client after the user clicked on an entry of the server list.
 /// Causes reaction on server side: The server will send a ConnectionInfo back to the client.
 /// </summary>
-public readonly ref struct ConnectionInfoRequest
+public readonly struct ConnectionInfoRequest075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConnectionInfoRequest075"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ConnectionInfoRequest075(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConnectionInfoRequest075"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ConnectionInfoRequest075(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF4;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the server id.
+    /// </summary>
+    public byte ServerId
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ConnectionInfoRequest075"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ConnectionInfoRequest075(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ConnectionInfoRequest075"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(ConnectionInfoRequest075 packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: This packet is sent by the client after the user clicked on an entry of the server list.
+/// Causes reaction on server side: The server will send a ConnectionInfo back to the client.
+/// </summary>
+public readonly struct ConnectionInfoRequest
+{
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionInfoRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ConnectionInfoRequest(Span<byte> data)
+    public ConnectionInfoRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -37,7 +123,7 @@ public readonly ref struct ConnectionInfoRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ConnectionInfoRequest(Span<byte> data, bool initialize)
+    private ConnectionInfoRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -81,23 +167,23 @@ public readonly ref struct ConnectionInfoRequest
     /// </summary>
     public ushort ServerId
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ConnectionInfoRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ConnectionInfoRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ConnectionInfoRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator ConnectionInfoRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ConnectionInfoRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ConnectionInfoRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ConnectionInfoRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(ConnectionInfoRequest packet) => packet._data; 
 }
 
 
@@ -105,15 +191,15 @@ public readonly ref struct ConnectionInfoRequest
 /// Is sent by the server when: This packet is sent by the server after the client requested the connection information of a server. This happens after the user clicked on a server.
 /// Causes reaction on client side: The client will try to connect to the server with the specified information.
 /// </summary>
-public readonly ref struct ConnectionInfo
+public readonly struct ConnectionInfo
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionInfo"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ConnectionInfo(Span<byte> data)
+    public ConnectionInfo(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -123,7 +209,7 @@ public readonly ref struct ConnectionInfo
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ConnectionInfo(Span<byte> data, bool initialize)
+    private ConnectionInfo(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -167,8 +253,8 @@ public readonly ref struct ConnectionInfo
     /// </summary>
     public string IpAddress
     {
-        get => this._data.ExtractString(4, 16, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 16).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(4, 16, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 16).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -176,23 +262,23 @@ public readonly ref struct ConnectionInfo
     /// </summary>
     public ushort Port
     {
-        get => ReadUInt16LittleEndian(this._data[20..]);
-        set => WriteUInt16LittleEndian(this._data[20..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[20..]);
+        set => WriteUInt16LittleEndian(this._data.Span[20..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ConnectionInfo"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ConnectionInfo"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ConnectionInfo(Span<byte> packet) => new (packet, false);
+    public static implicit operator ConnectionInfo(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ConnectionInfo"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ConnectionInfo"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ConnectionInfo packet) => packet._data; 
+    public static implicit operator Memory<byte>(ConnectionInfo packet) => packet._data; 
 }
 
 
@@ -200,15 +286,15 @@ public readonly ref struct ConnectionInfo
 /// Is sent by the client when: This packet is sent by the client after it connected and received the 'Hello' message.
 /// Causes reaction on server side: The server will send a ServerListResponse back to the client.
 /// </summary>
-public readonly ref struct ServerListRequest
+public readonly struct ServerListRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerListRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ServerListRequest(Span<byte> data)
+    public ServerListRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -218,7 +304,7 @@ public readonly ref struct ServerListRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ServerListRequest(Span<byte> data, bool initialize)
+    private ServerListRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -258,18 +344,18 @@ public readonly ref struct ServerListRequest
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ServerListRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ServerListRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ServerListRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator ServerListRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ServerListRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ServerListRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ServerListRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(ServerListRequest packet) => packet._data; 
 }
 
 
@@ -277,15 +363,15 @@ public readonly ref struct ServerListRequest
 /// Is sent by the server when: This packet is sent by the server after the client requested the current server list.
 /// Causes reaction on client side: The client shows the available servers with their load information.
 /// </summary>
-public readonly ref struct ServerListResponse
+public readonly struct ServerListResponse
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerListResponse"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ServerListResponse(Span<byte> data)
+    public ServerListResponse(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -295,7 +381,7 @@ public readonly ref struct ServerListResponse
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ServerListResponse(Span<byte> data, bool initialize)
+    private ServerListResponse(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -334,28 +420,28 @@ public readonly ref struct ServerListResponse
     /// </summary>
     public ushort ServerCount
     {
-        get => ReadUInt16BigEndian(this._data[5..]);
-        set => WriteUInt16BigEndian(this._data[5..], value);
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
     /// Gets the <see cref="ServerLoadInfo"/> of the specified index.
     /// </summary>
-        public ServerLoadInfo this[int index] => new (this._data[(7 + index * ServerLoadInfo.Length)..]);
+        public ServerLoadInfo this[int index] => new (this._data.Slice(7 + index * ServerLoadInfo.Length));
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ServerListResponse"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ServerListResponse"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ServerListResponse(Span<byte> packet) => new (packet, false);
+    public static implicit operator ServerListResponse(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ServerListResponse"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ServerListResponse"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ServerListResponse packet) => packet._data; 
+    public static implicit operator Memory<byte>(ServerListResponse packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="ServerLoadInfo"/>.
@@ -368,15 +454,15 @@ public readonly ref struct ServerListResponse
 /// <summary>
 /// Contains the id and the load of a server..
 /// </summary>
-public readonly ref struct ServerLoadInfo
+public readonly struct ServerLoadInfo
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerLoadInfo"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ServerLoadInfo(Span<byte> data)
+    public ServerLoadInfo(Memory<byte> data)
     {
         this._data = data;
     }
@@ -391,8 +477,8 @@ public readonly ref struct ServerLoadInfo
     /// </summary>
     public ushort ServerId
     {
-        get => ReadUInt16LittleEndian(this._data);
-        set => WriteUInt16LittleEndian(this._data, value);
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
     }
 
     /// <summary>
@@ -400,8 +486,8 @@ public readonly ref struct ServerLoadInfo
     /// </summary>
     public byte LoadPercentage
     {
-        get => this._data[2];
-        set => this._data[2] = value;
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
     }
 }
 }
@@ -411,15 +497,15 @@ public readonly ref struct ServerLoadInfo
 /// Is sent by the client when: This packet is sent by the client (below season 1) after it connected and received the 'Hello' message.
 /// Causes reaction on server side: The server will send a ServerListResponseOld back to the client.
 /// </summary>
-public readonly ref struct ServerListRequestOld
+public readonly struct ServerListRequestOld
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerListRequestOld"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ServerListRequestOld(Span<byte> data)
+    public ServerListRequestOld(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -429,7 +515,7 @@ public readonly ref struct ServerListRequestOld
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ServerListRequestOld(Span<byte> data, bool initialize)
+    private ServerListRequestOld(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -469,18 +555,18 @@ public readonly ref struct ServerListRequestOld
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ServerListRequestOld"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ServerListRequestOld"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ServerListRequestOld(Span<byte> packet) => new (packet, false);
+    public static implicit operator ServerListRequestOld(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ServerListRequestOld"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ServerListRequestOld"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ServerListRequestOld packet) => packet._data; 
+    public static implicit operator Memory<byte>(ServerListRequestOld packet) => packet._data; 
 }
 
 
@@ -488,15 +574,15 @@ public readonly ref struct ServerListRequestOld
 /// Is sent by the server when: This packet is sent by the server (below season 1) after the client requested the current server list.
 /// Causes reaction on client side: The client shows the available servers with their load information.
 /// </summary>
-public readonly ref struct ServerListResponseOld
+public readonly struct ServerListResponseOld
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerListResponseOld"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ServerListResponseOld(Span<byte> data)
+    public ServerListResponseOld(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -506,7 +592,7 @@ public readonly ref struct ServerListResponseOld
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ServerListResponseOld(Span<byte> data, bool initialize)
+    private ServerListResponseOld(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -545,28 +631,28 @@ public readonly ref struct ServerListResponseOld
     /// </summary>
     public byte ServerCount
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
     /// Gets the <see cref="ServerLoadInfo"/> of the specified index.
     /// </summary>
-        public ServerLoadInfo this[int index] => new (this._data[(6 + index * ServerLoadInfo.Length)..]);
+        public ServerLoadInfo this[int index] => new (this._data.Slice(6 + index * ServerLoadInfo.Length));
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ServerListResponseOld"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ServerListResponseOld"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ServerListResponseOld(Span<byte> packet) => new (packet, false);
+    public static implicit operator ServerListResponseOld(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ServerListResponseOld"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ServerListResponseOld"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ServerListResponseOld packet) => packet._data; 
+    public static implicit operator Memory<byte>(ServerListResponseOld packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="ServerLoadInfo"/>.
@@ -579,15 +665,15 @@ public readonly ref struct ServerListResponseOld
 /// <summary>
 /// Contains the id and the load of a server..
 /// </summary>
-public readonly ref struct ServerLoadInfo
+public readonly struct ServerLoadInfo
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerLoadInfo"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ServerLoadInfo(Span<byte> data)
+    public ServerLoadInfo(Memory<byte> data)
     {
         this._data = data;
     }
@@ -602,8 +688,8 @@ public readonly ref struct ServerLoadInfo
     /// </summary>
     public byte ServerId
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -611,8 +697,8 @@ public readonly ref struct ServerLoadInfo
     /// </summary>
     public byte LoadPercentage
     {
-        get => this._data[1];
-        set => this._data[1] = value;
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
     }
 }
 }
@@ -622,15 +708,15 @@ public readonly ref struct ServerLoadInfo
 /// Is sent by the server when: This packet is sent by the server after the client connected to the server.
 /// Causes reaction on client side: A game client will request the server list. The launcher would request the patch state.
 /// </summary>
-public readonly ref struct Hello
+public readonly struct Hello
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Hello"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public Hello(Span<byte> data)
+    public Hello(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -640,7 +726,7 @@ public readonly ref struct Hello
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private Hello(Span<byte> data, bool initialize)
+    private Hello(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -680,18 +766,18 @@ public readonly ref struct Hello
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="Hello"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="Hello"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator Hello(Span<byte> packet) => new (packet, false);
+    public static implicit operator Hello(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="Hello"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="Hello"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(Hello packet) => packet._data; 
+    public static implicit operator Memory<byte>(Hello packet) => packet._data; 
 }
 
 
@@ -699,15 +785,15 @@ public readonly ref struct Hello
 /// Is sent by the client when: This packet is sent by the client (launcher) to check if the patch version is high enough to be able to connect to the server.
 /// Causes reaction on server side: The connect server will check the version and sends a 'PatchVersionOkay' or a 'ClientNeedsPatch' message.
 /// </summary>
-public readonly ref struct PatchCheckRequest
+public readonly struct PatchCheckRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PatchCheckRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PatchCheckRequest(Span<byte> data)
+    public PatchCheckRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -717,7 +803,7 @@ public readonly ref struct PatchCheckRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PatchCheckRequest(Span<byte> data, bool initialize)
+    private PatchCheckRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -754,8 +840,8 @@ public readonly ref struct PatchCheckRequest
     /// </summary>
     public byte MajorVersion
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -763,8 +849,8 @@ public readonly ref struct PatchCheckRequest
     /// </summary>
     public byte MinorVersion
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -772,23 +858,23 @@ public readonly ref struct PatchCheckRequest
     /// </summary>
     public byte PatchVersion
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PatchCheckRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PatchCheckRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PatchCheckRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator PatchCheckRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PatchCheckRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PatchCheckRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PatchCheckRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(PatchCheckRequest packet) => packet._data; 
 }
 
 
@@ -796,15 +882,15 @@ public readonly ref struct PatchCheckRequest
 /// Is sent by the server when: This packet is sent by the server after the client (launcher) requested the to check the patch version and it was high enough.
 /// Causes reaction on client side: The launcher will activate its start button.
 /// </summary>
-public readonly ref struct PatchVersionOkay
+public readonly struct PatchVersionOkay
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PatchVersionOkay"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PatchVersionOkay(Span<byte> data)
+    public PatchVersionOkay(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -814,7 +900,7 @@ public readonly ref struct PatchVersionOkay
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PatchVersionOkay(Span<byte> data, bool initialize)
+    private PatchVersionOkay(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -847,18 +933,18 @@ public readonly ref struct PatchVersionOkay
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PatchVersionOkay"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PatchVersionOkay"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PatchVersionOkay(Span<byte> packet) => new (packet, false);
+    public static implicit operator PatchVersionOkay(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PatchVersionOkay"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PatchVersionOkay"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PatchVersionOkay packet) => packet._data; 
+    public static implicit operator Memory<byte>(PatchVersionOkay packet) => packet._data; 
 }
 
 
@@ -866,15 +952,15 @@ public readonly ref struct PatchVersionOkay
 /// Is sent by the server when: This packet is sent by the server after the client (launcher) requested to check the patch version and it requires an update.
 /// Causes reaction on client side: The launcher will download the required patches and then activate the start button.
 /// </summary>
-public readonly ref struct ClientNeedsPatch
+public readonly struct ClientNeedsPatch
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ClientNeedsPatch"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ClientNeedsPatch(Span<byte> data)
+    public ClientNeedsPatch(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -884,7 +970,7 @@ public readonly ref struct ClientNeedsPatch
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ClientNeedsPatch(Span<byte> data, bool initialize)
+    private ClientNeedsPatch(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -928,8 +1014,8 @@ public readonly ref struct ClientNeedsPatch
     /// </summary>
     public byte PatchVersion
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -937,23 +1023,23 @@ public readonly ref struct ClientNeedsPatch
     /// </summary>
     public string PatchAddress
     {
-        get => this._data.ExtractString(6, this._data.Length - 6, System.Text.Encoding.UTF8);
-        set => this._data.Slice(6).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(6, this._data.Length - 6, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ClientNeedsPatch"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ClientNeedsPatch"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ClientNeedsPatch(Span<byte> packet) => new (packet, false);
+    public static implicit operator ClientNeedsPatch(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ClientNeedsPatch"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ClientNeedsPatch"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ClientNeedsPatch packet) => packet._data; 
+    public static implicit operator Memory<byte>(ClientNeedsPatch packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified field content.

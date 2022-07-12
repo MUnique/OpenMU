@@ -27,15 +27,15 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player gameMaster, ItemChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, ItemChatCommandArgs arguments)
     {
         if (gameMaster.CurrentMap != null)
         {
             var item = CreateItem(gameMaster, arguments);
             var dropCoordinates = gameMaster.CurrentMap.Terrain.GetRandomCoordinate(gameMaster.Position, 1);
             var droppedItem = new DroppedItem(item, dropCoordinates, gameMaster.CurrentMap, gameMaster);
-            gameMaster.CurrentMap.Add(droppedItem);
-            this.ShowMessageTo(gameMaster, $"[{this.Key}] {item} created");
+            await gameMaster.CurrentMap.AddAsync(droppedItem);
+            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {item} created");
         }
     }
 

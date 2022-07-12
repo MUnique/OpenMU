@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Pipelines.Sockets.Unofficial;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A tcp listener which automatically creates instances of <see cref="Connection"/>s for accepted clients.
@@ -42,12 +43,12 @@ public class Listener
     /// <summary>
     /// Occurs when a client has been accepted by the tcp listener.
     /// </summary>
-    public event EventHandler<ClientAcceptedEventArgs>? ClientAccepted;
+    public event AsyncEventHandler<ClientAcceptedEventArgs>? ClientAccepted;
 
     /// <summary>
     /// Occurs when a client has been accepted by the tcp listener, but before a <see cref="Connection"/> is created.
     /// </summary>
-    public event EventHandler<ClientAcceptingEventArgs>? ClientAccepting;
+    public event AsyncEventHandler<ClientAcceptingEventArgs>? ClientAccepting;
 
     /// <summary>
     /// Gets a value indicating whether this listener is bound to a specific local port.
@@ -62,7 +63,7 @@ public class Listener
     {
         this._clientListener = new TcpListener(IPAddress.Any, this._port);
         this._clientListener.Start(backlog);
-        this._clientListener.BeginAcceptSocket(this.OnAccept, null);
+        this._clientListener.BeginAcceptSocket(this.OnAcceptAsync, null);
     }
 
     /// <summary>
@@ -99,7 +100,7 @@ public class Listener
         return new Connection(socketConnection, this.CreateDecryptor(socketConnection.Input), this.CreateEncryptor(socketConnection.Output), this._loggerFactory.CreateLogger<Connection>());
     }
 
-    private void OnAccept(IAsyncResult result)
+    private async void OnAcceptAsync(IAsyncResult result)
     {
         Socket socket;
         try
@@ -130,16 +131,25 @@ public class Listener
         // Accept the next client:
         if (this._clientListener?.Server.IsBound ?? false)
         {
-            this._clientListener.BeginAcceptSocket(this.OnAccept, null);
+            // todo: refactor to use AcceptSocketAsync
+            this._clientListener.BeginAcceptSocket(this.OnAcceptAsync, null);
         }
 
         ClientAcceptingEventArgs? cancel = null;
-        this.ClientAccepting?.Invoke(this, cancel = new ClientAcceptingEventArgs(socket));
+        if (this.ClientAccepting is { } clientAccepting)
+        {
+            await clientAccepting.Invoke(cancel = new ClientAcceptingEventArgs(socket));
+        }
+
         if (cancel is null || !cancel.Cancel)
         {
             socket.NoDelay = true; // todo: option?
             var connection = this.CreateConnection(socket);
-            this.ClientAccepted?.Invoke(this, new ClientAcceptedEventArgs(connection));
+
+            if (this.ClientAccepted is { } clientAccepted)
+            {
+                await clientAccepted.Invoke(new ClientAcceptedEventArgs(connection));
+            }
         }
         else
         {

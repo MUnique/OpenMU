@@ -25,6 +25,8 @@
 // ReSharper disable AssignmentIsFullyDiscarded
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UseObjectOrCollectionInitializer
+
+#nullable enable
 namespace MUnique.OpenMU.Network.Packets</xsl:text>
     <xsl:if test="$subNamespace">
       <xsl:text>.</xsl:text>
@@ -42,180 +44,74 @@ using MUnique.OpenMU.Network;
 /// &lt;/summary&gt;
 public static class ConnectionExtensions
 {</xsl:text>
-    <xsl:apply-templates select="pd:Packets/pd:Packet" mode="ext" />
     <xsl:apply-templates select="pd:Packets/pd:Packet" mode="ext2" />
     <xsl:text>}</xsl:text>
-    <xsl:apply-templates select="pd:Packets/pd:Packet" mode="writer" />
-
   </xsl:template>
 
-  <xsl:template match="pd:Packet[pd:Length]" mode="writer">
-    <xsl:variable name="template">
-      <xsl:text disable-output-escaping="yes" xml:space="preserve">
-/// &lt;summary>
-/// A helper struct to write a &lt;see cref="%NAME%"/> safely to a &lt;see cref="IConnection.Output" /&gt;.
-/// &lt;/summary>
-public readonly ref struct %NAME%ThreadSafeWriter
-{
-    private readonly IConnection connection;
-
+  <xsl:template match="pd:Packet[not(pd:Fields/pd:Field/pd:Type = 'Structure[]')]" mode="ext2">
+    <xsl:value-of select="$newline" />
+    <xsl:text>
     /// &lt;summary&gt;
-    /// Initializes a new instance of the &lt;see cref="%NAME%ThreadSafeWriter" /&gt; struct.
+    /// Sends a &lt;see cref="</xsl:text>
+    <xsl:apply-templates select="pd:Name" />
+    <xsl:text>" /&gt; to this connection.
     /// &lt;/summary&gt;
-    /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;
-    public %NAME%ThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
+    /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;</xsl:text>
+    <xsl:apply-templates select="pd:Fields/pd:Field" mode="paramdoc">
+      <xsl:sort select="pd:DefaultValue"/>
+    </xsl:apply-templates>
+    <xsl:call-template name="WriteRemarks" />
+    <xsl:text>    public static async </xsl:text>
+    <xsl:text>ValueTask Send</xsl:text>
+    <xsl:apply-templates select="pd:Name" />
+    <xsl:text>Async(this IConnection? connection</xsl:text>
+    <xsl:if test="count(pd:Fields/pd:Field) > 0">
+      <xsl:text>, </xsl:text>
+    </xsl:if>
+    <xsl:apply-templates select="pd:Fields/pd:Field" mode="params">
+      <xsl:sort select="pd:DefaultValue"/>
+    </xsl:apply-templates>
+    <xsl:text>)</xsl:text>
+    <xsl:value-of select="$newline"/>
+    <xsl:text>    {
+        if (connection is null)
         {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new %NAME%(span);
+            return;
         }
-        catch (InvalidOperationException)
+
+        int WritePacket(</xsl:text>
+    <xsl:text>)
         {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// &lt;summary&gt;Gets the span to write at.&lt;/summary&gt;
-    private Span&lt;byte&gt; Span => this.connection.Output.GetSpan(%NAME%.Length)[..%NAME%.Length];
-
-    /// &lt;summary&gt;Gets the packet to write at.&lt;/summary&gt;
-    public %NAME% Packet => this.Span;
-
-    /// &lt;summary&gt;
-    /// Commits the data of the &lt;see cref="%NAME%" /&gt;.
-    /// &lt;/summary&gt;
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(%NAME%.Length);
-    }
-
-    /// &lt;summary&gt;
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// &lt;/summary&gt;
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      </xsl:text>
-    </xsl:variable>
-    <xsl:call-template name="string-replace-all">
-      <xsl:with-param name="text" select="$template" />
-      <xsl:with-param name="replace">%NAME%</xsl:with-param>
-      <xsl:with-param name="by">
+            var length = </xsl:text>
+    <xsl:choose>
+      <xsl:when test="pd:Length">
         <xsl:apply-templates select="pd:Name" />
-      </xsl:with-param>
-    </xsl:call-template>
-  </xsl:template>
-
-
-  <xsl:template match="pd:Packet[pd:Length]" mode="ext">
-    <xsl:value-of select="$newline" />
-    <xsl:text>
-    /// &lt;summary&gt;
-    /// Starts a safe write of a &lt;see cref="</xsl:text>
+        <xsl:text>Ref.Length</xsl:text>
+      </xsl:when>
+      <xsl:when test="not(pd:Length)">
+        <xsl:apply-templates select="pd:Name" />
+        <xsl:text>Ref.GetRequiredSize(</xsl:text>
+        <xsl:apply-templates select="pd:Fields/pd:Field[(pd:Type = 'Binary' or pd:Type = 'String') and not(pd:Length)]" mode="length"/>
+        <xsl:text>)</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        throw new NotImplementedException()
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>;
+            var packet = new </xsl:text>
     <xsl:apply-templates select="pd:Name" />
-    <xsl:text>" /&gt; to this connection.
-    /// &lt;/summary&gt;
-    /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;</xsl:text>
-    <xsl:call-template name="WriteRemarks" />
-    <xsl:text>    public static </xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>ThreadSafeWriter StartWrite</xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>(this IConnection connection)</xsl:text>
-    <xsl:value-of select="$newline"/>
-    <xsl:text>    {
-        return new (connection);</xsl:text>
-    <xsl:value-of select="$newline"/>
-    <xsl:text>    }</xsl:text>
-  </xsl:template>
-
-
-  <xsl:template match="pd:Packet[pd:Length and not(pd:Fields/pd:Field/pd:Type = 'Structure[]')]" mode="ext2">
-    <xsl:value-of select="$newline" />
-    <xsl:text>
-    /// &lt;summary&gt;
-    /// Sends a &lt;see cref="</xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>" /&gt; to this connection.
-    /// &lt;/summary&gt;
-    /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;</xsl:text>
-    <xsl:apply-templates select="pd:Fields/pd:Field" mode="paramdoc">
-      <xsl:sort select="pd:DefaultValue"/>
-    </xsl:apply-templates>
-    <xsl:call-template name="WriteRemarks" />
-    <xsl:text>    public static </xsl:text>
-    <xsl:text>void Send</xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>(this IConnection connection</xsl:text>
-    <xsl:apply-templates select="pd:Fields/pd:Field" mode="params">
-      <xsl:sort select="pd:DefaultValue"/>
-    </xsl:apply-templates>
-    <xsl:text>)</xsl:text>
-    <xsl:value-of select="$newline"/>
-    <xsl:text>    {
-        using var writer = connection.StartWrite</xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>();</xsl:text>
-    <xsl:value-of select="$newline"/>
+    <xsl:text>Ref(connection.Output.GetSpan(length)[..length]);</xsl:text>
     <xsl:if test="pd:Fields/pd:Field">
-      <xsl:text>        var packet = writer.Packet;</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:apply-templates select="pd:Fields/pd:Field" mode="assignment" />
     </xsl:if>
-    <xsl:text>        writer.Commit();</xsl:text>
-    <xsl:value-of select="$newline"/>
-    <xsl:text>    }</xsl:text>
-  </xsl:template>
-
-  <xsl:template match="pd:Packet[not(pd:Length) and not(pd:Fields/pd:Field/pd:Type = 'Structure[]')]" mode="ext2">
-    <xsl:value-of select="$newline" />
     <xsl:text>
-    /// &lt;summary&gt;
-    /// Sends a &lt;see cref="</xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>" /&gt; to this connection.
-    /// &lt;/summary&gt;
-    /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;</xsl:text>
-    <xsl:apply-templates select="pd:Fields/pd:Field" mode="paramdoc">
-      <xsl:sort select="pd:DefaultValue"/>
-    </xsl:apply-templates>
-    <xsl:call-template name="WriteRemarks" />
-    <xsl:text>    public static </xsl:text>
-    <xsl:text>void Send</xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>(this IConnection connection</xsl:text>
-    <xsl:apply-templates select="pd:Fields/pd:Field" mode="params">
-      <xsl:sort select="pd:DefaultValue"/>
-    </xsl:apply-templates>
-    <xsl:text>)</xsl:text>
-    <xsl:value-of select="$newline"/>
-    <xsl:text>    {
-        using var writer = connection.StartSafeWrite(</xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>.HeaderType, </xsl:text>
-    <xsl:apply-templates select="pd:Name" />
-    <xsl:text>.GetRequiredSize(</xsl:text>
-    <xsl:apply-templates select="pd:Fields/pd:Field[(pd:Type = 'Binary' or pd:Type = 'String') and not(pd:Length)]" mode="length"/>
-    <xsl:text>));</xsl:text>
-    <xsl:value-of select="$newline"/>
-    <xsl:if test="pd:Fields/pd:Field">
-      <xsl:text>        var packet = new </xsl:text>
-      <xsl:apply-templates select="pd:Name" />
-      <xsl:text>(writer.Span);</xsl:text>
-      <xsl:value-of select="$newline"/>
-      <xsl:apply-templates select="pd:Fields/pd:Field" mode="assignment" />
-    </xsl:if>
-    <xsl:text>        writer.Commit();</xsl:text>
-    <xsl:value-of select="$newline"/>
-    <xsl:text>    }</xsl:text>
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }</xsl:text>
   </xsl:template>
 
   <xsl:template match="pd:Field" mode="length">
@@ -246,8 +142,12 @@ public readonly ref struct %NAME%ThreadSafeWriter
     <xsl:text>&lt;/param&gt;</xsl:text>
   </xsl:template>
 
+  <xsl:template match="pd:Type[. = 'Binary']" mode="type">Memory&lt;byte&gt;</xsl:template>
+
   <xsl:template match="pd:Field" mode="params">
-    <xsl:text>, </xsl:text>
+    <xsl:if test="position() > 1">
+      <xsl:text>, </xsl:text>
+    </xsl:if>
     <xsl:apply-templates select="pd:Type" mode="type"/>
     <xsl:text> @</xsl:text>
     <xsl:call-template name="LowerCaseName" />
@@ -257,17 +157,25 @@ public readonly ref struct %NAME%ThreadSafeWriter
     </xsl:if>
   </xsl:template>
 
+  <xsl:template match="pd:Field" mode="listparams">
+    <xsl:if test="position() > 1">
+      <xsl:text>, </xsl:text>
+    </xsl:if>
+    <xsl:text>@</xsl:text>
+    <xsl:call-template name="LowerCaseName" />
+  </xsl:template>
+
   <xsl:template match="pd:Field" mode="assignment">
     <xsl:choose>
       <xsl:when test="pd:Type='Binary'">
-        <xsl:text>        @</xsl:text>
+        <xsl:text>            @</xsl:text>
         <xsl:call-template name="LowerCaseName" />
-        <xsl:text>.CopyTo(packet.</xsl:text>
+        <xsl:text>.Span.CopyTo(packet.</xsl:text>
         <xsl:value-of select="pd:Name"/>
         <xsl:text>);</xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>        packet.</xsl:text>
+        <xsl:text>            packet.</xsl:text>
         <xsl:value-of select="pd:Name"/>
         <xsl:text> = @</xsl:text>
         <xsl:call-template name="LowerCaseName" />
@@ -309,9 +217,9 @@ public readonly ref struct %NAME%ThreadSafeWriter
   </xsl:template>
 
   <xsl:template match="text()" mode="params"></xsl:template>
+  <xsl:template match="text()" mode="listparams"></xsl:template>
   <xsl:template match="text()" mode="paramdoc"></xsl:template>
   <xsl:template match="text()" mode="assignment"></xsl:template>
-  <xsl:template match="text()" mode="ext"></xsl:template>
   <xsl:template match="text()" mode="ext2"></xsl:template>
   <xsl:template match="text()" mode="length"></xsl:template>
   <xsl:template match="text()" mode="writer"></xsl:template>

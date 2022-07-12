@@ -26,9 +26,9 @@ internal class ChatRequestHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => ChatRoomCreateRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         ChatRoomCreateRequest message = packet;
-        this._chatRequestAction.RequestChat(player, message.FriendName);
+        await this._chatRequestAction.RequestChatAsync(player, message.FriendName);
     }
 }

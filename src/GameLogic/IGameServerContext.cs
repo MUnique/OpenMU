@@ -51,30 +51,30 @@ public interface IGameServerContext : IGameContext
     /// </summary>
     /// <param name="guildId">The guild id.</param>
     /// <param name="action">The action which should be executed.</param>
-    void ForEachGuildPlayer(uint guildId, Action<Player> action);
+    ValueTask ForEachGuildPlayerAsync(uint guildId, Func<Player, Task> action);
 
     /// <summary>
     /// Executes an action for each player of the alliance of the guild.
     /// </summary>
     /// <param name="guildId">The guild id.</param>
     /// <param name="action">The action which should be executed.</param>
-    void ForEachAlliancePlayer(uint guildId, Action<Player> action);
+    ValueTask ForEachAlliancePlayerAsync(uint guildId, Func<Player, Task> action);
 
     /// <summary>
     /// Registers a guild member to the game, e.g. after a player entered a guild.
     /// </summary>
     /// <param name="guildMember">The guild member.</param>
-    void RegisterGuildMember(Player guildMember);
+    ValueTask RegisterGuildMemberAsync(Player guildMember);
 
     /// <summary>
     /// Unregisters a guild member from the game, e.g. after a player left the game or the guild.
     /// </summary>
     /// <param name="guildMember">The guild member.</param>
-    void UnregisterGuildMember(Player guildMember);
+    ValueTask UnregisterGuildMemberAsync(Player guildMember);
 
     /// <summary>
     /// Removes a whole guild, usually after it has been disbanded.
     /// </summary>
     /// <param name="guildId">The id of the guild.</param>
-    void RemoveGuild(uint guildId);
+    ValueTask RemoveGuildAsync(uint guildId);
 }

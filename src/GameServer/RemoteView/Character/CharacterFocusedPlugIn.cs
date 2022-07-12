@@ -26,8 +26,8 @@ public class CharacterFocusedPlugIn : ICharacterFocusedPlugIn
     public CharacterFocusedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void CharacterFocused(Character character)
+    public ValueTask CharacterFocusedAsync(Character character)
     {
-        this._player.Connection?.SendCharacterFocused(character.Name);
+        return this._player.Connection.SendCharacterFocusedAsync(character.Name);
     }
 }

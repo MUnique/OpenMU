@@ -31,7 +31,7 @@ public class ShowShopItemListPlugIn : IShowShopItemListPlugIn
     /// <remarks>
     /// Maybe cache the result, because a lot of players could request the same list. However, this isn't critical.
     /// </remarks>
-    public void ShowShopItemList(Player requestedPlayer, bool isUpdate)
+    public async ValueTask ShowShopItemListAsync(Player requestedPlayer, bool isUpdate)
     {
         var connection = this._player.Connection;
         if (connection is null || requestedPlayer.ShopStorage is null || requestedPlayer.SelectedCharacter is null)
@@ -42,27 +42,32 @@ public class ShowShopItemListPlugIn : IShowShopItemListPlugIn
         var itemSerializer = this._player.ItemSerializer;
         var playerId = requestedPlayer.GetId(this._player);
         var items = requestedPlayer.ShopStorage.Items.ToList();
-        using var writer = connection.StartSafeWrite(PlayerShopItemList.HeaderType, PlayerShopItemList.GetRequiredSize(items.Count));
-
-        var packet = new PlayerShopItemList(writer.Span)
+        int Write()
         {
-            Action = isUpdate ? PlayerShopItemList.ActionKind.UpdateAfterItemChange : PlayerShopItemList.ActionKind.ByRequest,
-            ItemCount = (byte)items.Count,
-            PlayerId = playerId,
-            PlayerName = requestedPlayer.SelectedCharacter.Name,
-            ShopName = requestedPlayer.ShopStorage.StoreName,
-        };
+            var size = PlayerShopItemListRef.GetRequiredSize(items.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new PlayerShopItemListRef(span)
+            {
+                Action = isUpdate ? PlayerShopItemList.ActionKind.UpdateAfterItemChange : PlayerShopItemList.ActionKind.ByRequest,
+                ItemCount = (byte)items.Count,
+                PlayerId = playerId,
+                PlayerName = requestedPlayer.SelectedCharacter.Name,
+                ShopName = requestedPlayer.ShopStorage.StoreName,
+            };
 
-        int i = 0;
-        foreach (var item in items)
-        {
-            var itemBlock = packet[i];
-            itemBlock.ItemSlot = item.ItemSlot;
-            itemBlock.Price = (uint)(item.StorePrice ?? 0);
-            itemSerializer.SerializeItem(itemBlock.ItemData, item);
-            i++;
+            int i = 0;
+            foreach (var item in items)
+            {
+                var itemBlock = packet[i];
+                itemBlock.ItemSlot = item.ItemSlot;
+                itemBlock.Price = (uint)(item.StorePrice ?? 0);
+                itemSerializer.SerializeItem(itemBlock.ItemData, item);
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

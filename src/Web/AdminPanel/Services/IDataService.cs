@@ -16,5 +16,5 @@ public interface IDataService<T>
     /// <param name="offset">The offset, which defines how many items of the original data source should be skipped.</param>
     /// <param name="count">The maximum number of items which should be returned.</param>
     /// <returns>The list of available data objects.</returns>
-    Task<List<T>> Get(int offset, int count);
+    Task<List<T>> GetAsync(int offset, int count);
 }

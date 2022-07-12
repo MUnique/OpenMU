@@ -26,22 +26,22 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
     }
 
     /// <inheritdoc />
-    protected override void LoadDependentData(object obj, DbContext currentContext)
+    protected override async ValueTask LoadDependentDataAsync(object obj, DbContext currentContext)
     {
         if (obj is GameServerDefinition definition)
         {
             var entityEntry = currentContext.Entry(obj);
             foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded && c.Metadata is INavigation))
             {
-                this.LoadCollection(entityEntry, (INavigation)collection.Metadata, currentContext);
+                await this.LoadCollectionAsync(entityEntry, (INavigation)collection.Metadata, currentContext);
                 collection.IsLoaded = true;
             }
 
             if (definition.GameConfigurationId.HasValue)
             {
                 definition.RawGameConfiguration =
-                    this.RepositoryManager.GetRepository<GameConfiguration>()
-                        .GetById(definition.GameConfigurationId.Value);
+                    await this.RepositoryManager.GetRepository<GameConfiguration>()
+                        .GetByIdAsync(definition.GameConfigurationId.Value);
 
                 if (currentContext is EntityDataContext context)
                 {
@@ -51,8 +51,8 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
 
             if (definition.ServerConfigurationId.HasValue)
             {
-                definition.ServerConfiguration = this.RepositoryManager.GetRepository<GameServerConfiguration>()
-                    .GetById(definition.ServerConfigurationId.Value);
+                definition.ServerConfiguration = await this.RepositoryManager.GetRepository<GameServerConfiguration>()
+                    .GetByIdAsync(definition.ServerConfigurationId.Value);
             }
         }
     }

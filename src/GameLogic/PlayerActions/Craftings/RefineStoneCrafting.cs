@@ -118,7 +118,7 @@ public class RefineStoneCrafting : SimpleItemCraftingHandler
     }
 
     /// <inheritdoc />
-    protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> referencedItems, Player player, byte socketSlot)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> referencedItems, Player player, byte socketSlot)
     {
         var higherRefineStoneItems = referencedItems
             .FirstOrDefault(r => r.ItemRequirement.Reference == HigherRefineStoneReference)?.Items;
@@ -140,7 +140,7 @@ public class RefineStoneCrafting : SimpleItemCraftingHandler
                 var refineStone = player.PersistenceContext.CreateNew<Item>();
                 refineStone.Definition = player.GameContext.Configuration.Items.First(item => item.Group == 14 && item.Number == refineStoneNumber);
                 refineStone.Durability = 1;
-                player.TemporaryStorage!.AddItem(refineStone);
+                player.TemporaryStorage!.AddItemAsync(refineStone);
                 yield return refineStone;
             }
         }

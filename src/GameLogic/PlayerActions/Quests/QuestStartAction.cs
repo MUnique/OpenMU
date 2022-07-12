@@ -20,7 +20,7 @@ public class QuestStartAction
     /// <param name="player">The player.</param>
     /// <param name="group">The group.</param>
     /// <param name="number">The number.</param>
-    public void StartQuest(Player player, short group, short number)
+    public async ValueTask StartQuestAsync(Player player, short group, short number)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var quest = player.GetQuest(group, number);
@@ -47,7 +47,7 @@ public class QuestStartAction
         if (questState.ActiveQuest != null)
         {
             player.Logger.LogDebug("There is already an active quest of this group.");
-            player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(questState.ActiveQuest, false);
+            await player.InvokeViewPlugInAsync<IQuestProgressPlugIn>(p => p.ShowQuestProgressAsync(questState.ActiveQuest, false)).ConfigureAwait(false);
             return;
         }
 
@@ -61,17 +61,17 @@ public class QuestStartAction
         {
             if (player.TryRemoveMoney(quest.RequiredStartMoney))
             {
-                player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
+                await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
             }
             else
             {
-                player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Not enough money to proceed", MessageType.BlueNormal);
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Not enough money to proceed", MessageType.BlueNormal)).ConfigureAwait(false);
                 return;
             }
         }
 
         questState.Clear(player.PersistenceContext);
         questState.ActiveQuest = quest;
-        player.ViewPlugIns.GetPlugIn<IQuestStartedPlugIn>()?.QuestStarted(quest);
+        await player.InvokeViewPlugInAsync<IQuestStartedPlugIn>(p => p.QuestStartedAsync(quest)).ConfigureAwait(false);
     }
 }

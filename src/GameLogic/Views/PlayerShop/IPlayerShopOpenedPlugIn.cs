@@ -13,5 +13,5 @@ public interface IPlayerShopOpenedPlugIn : IViewPlugIn
     /// A player opened his shop.
     /// </summary>
     /// <param name="player">The player who opened the shop.</param>
-    void PlayerShopOpened(Player player);
+    ValueTask PlayerShopOpenedAsync(Player player);
 }

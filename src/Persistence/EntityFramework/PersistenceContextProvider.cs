@@ -70,7 +70,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <summary>
     /// Waits until all database updates are applied.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public async Task WaitForUpdatedDatabase(CancellationToken cancellationToken = default)
     {
         while (!this.DatabaseExists()

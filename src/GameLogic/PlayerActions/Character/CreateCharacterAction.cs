@@ -20,7 +20,7 @@ public class CreateCharacterAction
     /// <param name="player">The player.</param>
     /// <param name="characterName">Name of the character.</param>
     /// <param name="characterClassId">The character class identifier.</param>
-    public void CreateCharacter(Player player, string characterName, int characterClassId)
+    public async ValueTask CreateCharacterAsync(Player player, string characterName, int characterClassId)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
@@ -32,19 +32,19 @@ public class CreateCharacterAction
         var characterClass = player.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.Number == characterClassId);
         if (characterClass is not null)
         {
-            var character = this.CreateCharacter(player, characterName, characterClass);
+            var character = await this.CreateCharacterAsync(player, characterName, characterClass);
             if (character != null)
             {
-                player.ViewPlugIns.GetPlugIn<IShowCreatedCharacterPlugIn>()?.ShowCreatedCharacter(character);
+                await player.InvokeViewPlugInAsync<IShowCreatedCharacterPlugIn>(p => p.ShowCreatedCharacterAsync(character)).ConfigureAwait(false);
             }
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IShowCharacterCreationFailedPlugIn>()?.ShowCharacterCreationFailed();
+            await player.InvokeViewPlugInAsync<IShowCharacterCreationFailedPlugIn>(p => p.ShowCharacterCreationFailedAsync()).ConfigureAwait(false);
         }
     }
 
-    private DataModel.Entities.Character? CreateCharacter(Player player, string name, CharacterClass charclass)
+    private async ValueTask<DataModel.Entities.Character?> CreateCharacterAsync(Player player, string name, CharacterClass charclass)
     {
         var account = player.Account;
         if (account is null)
@@ -94,7 +94,7 @@ public class CreateCharacterAction
         try
         {
             // todo: test if character name exists, before doing all this
-            player.PersistenceContext.SaveChanges();
+            await player.PersistenceContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -103,7 +103,7 @@ public class CreateCharacterAction
             player.Logger.LogError(ex, "Error when trying to create character '{0}'", name);
             return null;
         }
-            
+
         player.Logger.LogDebug("Creating Character Complete.");
         return character;
     }

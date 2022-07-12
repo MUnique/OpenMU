@@ -14,5 +14,5 @@ public interface ILetterSendResultPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="success">The success.</param>
     /// <param name="letterId">The client side id of the letter.</param>
-    void LetterSendResult(LetterSendSuccess success, uint letterId);
+    ValueTask LetterSendResultAsync(LetterSendSuccess success, uint letterId);
 }

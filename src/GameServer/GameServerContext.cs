@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer;
 
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
@@ -19,7 +20,7 @@ public class GameServerContext : GameContext, IGameServerContext
 {
     private readonly GameServerDefinition _gameServerDefinition;
 
-    private readonly ConcurrentDictionary<uint, List<Player>> _playersByGuild = new ();
+    private readonly ConcurrentDictionary<uint, LockableList<Player>> _playersByGuild = new ();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerContext" /> class.
@@ -89,25 +90,19 @@ public class GameServerContext : GameContext, IGameServerContext
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;
 
     /// <inheritdoc />
-    public void ForEachGuildPlayer(uint guildId, Action<Player> action)
+    public async ValueTask ForEachGuildPlayerAsync(uint guildId, Func<Player, Task> action)
     {
         if (!this._playersByGuild.TryGetValue(guildId, out var playerList))
         {
             return;
         }
 
-        lock (playerList)
-        {
-            for (int i = playerList.Count - 1; i >= 0; i--)
-            {
-                var player = playerList[i];
-                action(player);
-            }
-        }
+        using var readLock = await playerList.Lock.ReaderLockAsync();
+        await playerList.Select(action).WhenAll();
     }
 
     /// <inheritdoc />
-    public void ForEachAlliancePlayer(uint guildId, Action<Player> action)
+    public async ValueTask ForEachAlliancePlayerAsync(uint guildId, Func<Player, Task> action)
     {
         if (!this._playersByGuild.TryGetValue(guildId, out var playerList))
         {
@@ -115,42 +110,35 @@ public class GameServerContext : GameContext, IGameServerContext
         }
 
         // TODO: iterate other guilds of the alliance as well; maybe introduce another dictionary with alliance players
-
-        lock (playerList)
-        {
-            for (int i = playerList.Count - 1; i >= 0; i--)
-            {
-                var player = playerList[i];
-                action(player);
-            }
-        }
+        using var readLock = await playerList.Lock.ReaderLockAsync();
+        await playerList.Select(action).WhenAll();
     }
 
     /// <inheritdoc/>
-    public override void AddPlayer(Player player)
+    public override async ValueTask AddPlayerAsync(Player player)
     {
-        base.AddPlayer(player);
+        await base.AddPlayerAsync(player);
         player.PlayerLeftWorld += this.PlayerLeftWorld;
         player.PlayerEnteredWorld += this.PlayerEnteredWorld;
     }
 
     /// <inheritdoc/>
-    public override void RemovePlayer(Player player)
+    public override async ValueTask RemovePlayerAsync(Player player)
     {
         player.PlayerEnteredWorld -= this.PlayerEnteredWorld;
         player.PlayerLeftWorld -= this.PlayerLeftWorld;
-        base.RemovePlayer(player);
+        await base.RemovePlayerAsync(player);
     }
 
     /// <inheritdoc />
-    public void RemoveGuild(uint guildId)
+    public async ValueTask RemoveGuildAsync(uint guildId)
     {
         this._playersByGuild.Remove(guildId, out _);
         this.GuildDeleted?.Invoke(this, new GuildDeletedEventArgs(guildId));
     }
 
     /// <inheritdoc />
-    public void RegisterGuildMember(Player guildMember)
+    public async ValueTask RegisterGuildMemberAsync(Player guildMember)
     {
         if (guildMember.GuildStatus is null)
         {
@@ -158,15 +146,13 @@ public class GameServerContext : GameContext, IGameServerContext
         }
 
         var guildId = guildMember.GuildStatus.GuildId;
-        var guildList = this._playersByGuild.GetOrAdd(guildId, id => new List<Player>());
-        lock (guildList)
-        {
-            guildList.Add(guildMember);
-        }
+        var guildList = this._playersByGuild.GetOrAdd(guildId, id => new LockableList<Player>());
+        using var writeLock = await guildList.Lock.WriterLockAsync();
+        guildList.Add(guildMember);
     }
 
     /// <inheritdoc />
-    public void UnregisterGuildMember(Player guildMember)
+    public async ValueTask UnregisterGuildMemberAsync(Player guildMember)
     {
         if (guildMember.GuildStatus is null)
         {
@@ -179,37 +165,40 @@ public class GameServerContext : GameContext, IGameServerContext
             return;
         }
 
-        lock (guildList)
-        {
-            guildList.Remove(guildMember);
-        }
+        using var writeLock = await guildList.Lock.WriterLockAsync();
+        guildList.Remove(guildMember);
     }
 
-    private void PlayerEnteredWorld(object? sender, EventArgs e)
+    private async ValueTask PlayerEnteredWorld(Player player)
     {
-        if (sender is not Player { SelectedCharacter: { } selectedCharacter })
+        if (player is not { SelectedCharacter: { } selectedCharacter })
         {
             return;
         }
 
-        this.EventPublisher.PlayerEnteredGame(this.Id, selectedCharacter.Id, selectedCharacter.Name);
+        await this.EventPublisher.PlayerEnteredGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name);
     }
 
-    private void PlayerLeftWorld(object? sender, EventArgs e)
+    private async ValueTask PlayerLeftWorld(Player player)
     {
-        if (sender is not Player { SelectedCharacter: { } selectedCharacter } player)
+        if (player is not { SelectedCharacter: { } selectedCharacter })
         {
             return;
         }
 
-        this.EventPublisher.PlayerLeftGame(this.Id, selectedCharacter.Id, selectedCharacter.Name, player.GuildStatus?.GuildId ?? 0);
+        await this.EventPublisher.PlayerLeftGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name, player.GuildStatus?.GuildId ?? 0);
 
         if (player.GuildStatus is null)
         {
             return;
         }
 
-        this.UnregisterGuildMember(player);
+        await this.UnregisterGuildMemberAsync(player);
         player.GuildStatus = null;
+    }
+
+    private class LockableList<T> : List<T>
+    {
+        public AsyncReaderWriterLock Lock { get; } = new ();
     }
 }

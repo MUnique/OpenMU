@@ -17,7 +17,7 @@ public class TradeRequestAction
     /// <param name="player">The player who requests the trade.</param>
     /// <param name="partner">The partner which will be requested.</param>
     /// <returns>The success of sending the request to the <paramref name="partner"/>.</returns>
-    public bool RequestTrade(ITrader player, ITrader partner)
+    public async ValueTask<bool> RequestTradeAsync(ITrader player, ITrader partner)
     {
         if (player.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>() is null || partner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>() is null)
         {
@@ -37,7 +37,7 @@ public class TradeRequestAction
 
         player.TradingPartner = partner;
         partner.TradingPartner = player;
-        partner.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>()?.ShowTradeRequest(player);
+        await partner.InvokeViewPlugInAsync<IShowTradeRequestPlugIn>(p => p.ShowTradeRequestAsync(player)).ConfigureAwait(false);
         return true;
     }
 }

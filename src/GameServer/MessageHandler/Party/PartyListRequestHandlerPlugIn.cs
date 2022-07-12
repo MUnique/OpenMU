@@ -26,8 +26,8 @@ internal class PartyListRequestHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => PartyListRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        this._action.RequestPartyList(player);
+        await this._action.RequestPartyListAsync(player);
     }
 }

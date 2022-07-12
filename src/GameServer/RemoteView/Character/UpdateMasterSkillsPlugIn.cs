@@ -27,7 +27,7 @@ public class UpdateMasterSkillsPlugIn : IUpdateMasterSkillsPlugIn
     public UpdateMasterSkillsPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void UpdateMasterSkills()
+    public async ValueTask UpdateMasterSkillsAsync()
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -41,23 +41,29 @@ public class UpdateMasterSkillsPlugIn : IUpdateMasterSkillsPlugIn
             return;
         }
 
-        using var writer = connection.StartSafeWrite(MasterSkillList.HeaderType, MasterSkillList.GetRequiredSize(masterSkills.Count));
-        var packet = new MasterSkillList(writer.Span)
+        int Write()
         {
-            MasterSkillCount = (uint)masterSkills.Count,
-        };
+            var size = MasterSkillListRef.GetRequiredSize(masterSkills.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new MasterSkillListRef(span)
+            {
+                MasterSkillCount = (uint)masterSkills.Count,
+            };
 
-        int i = 0;
-        foreach (var masterSkill in masterSkills)
-        {
-            var skillsBlock = packet[i];
-            skillsBlock.MasterSkillIndex = masterSkill.Skill!.GetMasterSkillIndex(this._player.SelectedCharacter.CharacterClass);
-            skillsBlock.Level = (byte)masterSkill.Level;
-            skillsBlock.DisplayValue = masterSkill.CalculateDisplayValue();
-            skillsBlock.DisplayValueOfNextLevel = masterSkill.CalculateNextDisplayValue();
-            i++;
+            int i = 0;
+            foreach (var masterSkill in masterSkills)
+            {
+                var skillsBlock = packet[i];
+                skillsBlock.MasterSkillIndex = masterSkill.Skill!.GetMasterSkillIndex(this._player.SelectedCharacter.CharacterClass);
+                skillsBlock.Level = (byte)masterSkill.Level;
+                skillsBlock.DisplayValue = masterSkill.CalculateDisplayValue();
+                skillsBlock.DisplayValueOfNextLevel = masterSkill.CalculateNextDisplayValue();
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

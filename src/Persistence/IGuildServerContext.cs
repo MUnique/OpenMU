@@ -16,7 +16,7 @@ public interface IGuildServerContext : IContext
     /// </summary>
     /// <param name="name">The name.</param>
     /// <returns>True, if the guild with the specified name exists.</returns>
-    bool GuildWithNameExists(string name);
+    ValueTask<bool> GuildWithNameExistsAsync(string name);
 
     /// <summary>
     /// Gets the member names of a guild.
@@ -24,5 +24,5 @@ public interface IGuildServerContext : IContext
     /// <param name="guildId">The guild identifier.</param>
     /// <returns>The member names of a guild.</returns>
     /// <remarks>Since names are stored in Character.Name and not duplicated.</remarks>
-    IReadOnlyDictionary<Guid, string> GetMemberNames(Guid guildId);
+    ValueTask<IReadOnlyDictionary<Guid, string>> GetMemberNamesAsync(Guid guildId);
 }

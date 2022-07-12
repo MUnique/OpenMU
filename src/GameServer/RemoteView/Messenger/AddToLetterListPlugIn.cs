@@ -26,13 +26,14 @@ public class AddToLetterListPlugIn : IAddToLetterListPlugIn
     public AddToLetterListPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void AddToLetterList(LetterHeader letter, ushort newLetterIndex, bool newLetter)
+    public async ValueTask AddToLetterListAsync(LetterHeader letter, ushort newLetterIndex, bool newLetter)
     {
-        this._player.Connection?.SendAddLetter(
+        await this._player.Connection.SendAddLetterAsync(
             newLetterIndex,
             letter.SenderName ?? string.Empty,
             letter.LetterDate.ToUniversalTime().AddHours(this._player.Account?.TimeZone ?? 0).ToString("yyyy-MM-dd HH:mm:ss"),
             letter.Subject ?? string.Empty,
-            newLetter ? AddLetter.LetterState.New : letter.ReadFlag ? AddLetter.LetterState.Read : AddLetter.LetterState.Unread);
+            newLetter ? AddLetter.LetterState.New : letter.ReadFlag ? AddLetter.LetterState.Read : AddLetter.LetterState.Unread)
+            .ConfigureAwait(false);
     }
 }

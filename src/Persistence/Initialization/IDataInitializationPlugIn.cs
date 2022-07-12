@@ -24,5 +24,5 @@ public interface IDataInitializationPlugIn : IStrategyPlugIn<string>
     /// </summary>
     /// <param name="numberOfGameServers">The number of game servers.</param>
     /// <param name="createTestAccounts">If set to <c>true</c>, test accounts should be created.</param>
-    void CreateInitialData(byte numberOfGameServers, bool createTestAccounts);
+    Task CreateInitialDataAsync(byte numberOfGameServers, bool createTestAccounts);
 }

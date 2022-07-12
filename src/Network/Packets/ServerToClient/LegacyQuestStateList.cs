@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient;
 /// <summary>
 /// This part implements the indexer and size calculation for the message.
 /// </summary>
-public readonly ref partial struct LegacyQuestStateList
+public readonly ref partial struct LegacyQuestStateListRef
 {
     private const int StatesPerByte = 4;
     private const int BitsPerState = 2;

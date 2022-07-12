@@ -18,33 +18,47 @@ public static class Exports
     /// <summary>
     /// Gets the url prefix to the scripts of this project.
     /// </summary>
-    public static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
+    private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
+
+    private static IEnumerable<string> AdminPanelScripts
+    {
+        get
+        {
+            yield return "_content/Blazored.Typeahead/blazored-typeahead.js";
+            yield return "_content/Blazored.Modal/blazored.modal.js";
+            yield return "_content/BlazorInputFile/inputfile.js";
+            yield return $"{Prefix}/js/map.js";
+        }
+    }
+
+    private static IEnumerable<string> AdminPanelStylesheets
+    {
+        get
+        {
+            yield return "_content/Blazored.Typeahead/blazored-typeahead.css";
+            yield return "_content/Blazored.Modal/blazored-modal.css";
+            yield return $"{Prefix}/css/site.css";
+        }
+    }
 
     /// <summary>
     /// Gets the scripts.
     /// </summary>
-    public static ImmutableList<string> Scripts { get; } = new[]
-    {
-        "_content/Blazored.Typeahead/blazored-typeahead.js",
-        "_content/Blazored.Modal/blazored.modal.js",
-        "_content/BlazorInputFile/inputfile.js",
-        $"{Prefix}/js/map.js",
-    }.ToImmutableList();
+    public static ImmutableList<string> Scripts { get; } = AdminPanelEnvironment.IsHostingEmbedded
+        ? Web.Map.Exports.Scripts.Concat(AdminPanelScripts).ToImmutableList()
+        : AdminPanelScripts.ToImmutableList();
 
     /// <summary>
     /// Gets the script mappings.
     /// </summary>
-    public static ImmutableList<(string Key, string Path)> ScriptMappings { get; } = new (string Key, string Path)[]
-    {
-    }.ToImmutableList();
+    public static ImmutableList<(string Key, string Path)> ScriptMappings { get; } = AdminPanelEnvironment.IsHostingEmbedded
+        ? Web.Map.Exports.ScriptMappings.ToImmutableList()
+        : ImmutableList<(string Key, string Path)>.Empty;
 
     /// <summary>
     /// Gets the stylesheets.
     /// </summary>
-    public static ImmutableList<string> Stylesheets { get; } = new[]
-    {
-        "_content/Blazored.Typeahead/blazored-typeahead.css",
-        "_content/Blazored.Modal/blazored-modal.css",
-        $"{Prefix}/css/site.css",
-    }.ToImmutableList();
+    public static ImmutableList<string> Stylesheets { get; } = AdminPanelEnvironment.IsHostingEmbedded
+        ? Web.Map.Exports.Stylesheets.Concat(AdminPanelStylesheets).ToImmutableList()
+        : AdminPanelStylesheets.ToImmutableList();
 }

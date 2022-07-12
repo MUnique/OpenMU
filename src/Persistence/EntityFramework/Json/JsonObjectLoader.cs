@@ -38,7 +38,7 @@ public class JsonObjectLoader
     /// <typeparam name="T">The type of the <see cref="IIdentifiable"/> object.</typeparam>
     /// <param name="context">The context.</param>
     /// <returns>All objects of <typeparamref name="T"/>.</returns>
-    public IEnumerable<T> LoadAllObjects<T>(DbContext context)
+    public async ValueTask<IEnumerable<T>> LoadAllObjectsAsync<T>(DbContext context)
         where T : class, IIdentifiable
     {
         var result = new List<T>();
@@ -46,12 +46,13 @@ public class JsonObjectLoader
         var queryString = this._queryBuilder.BuildJsonQueryForEntity(type);
         using var command = context.Database.GetDbConnection().CreateCommand();
         command.CommandText = queryString;
-        using var reader = command.ExecuteReader();
+        using var reader = await command.ExecuteReaderAsync();
         if (reader.HasRows)
         {
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
-                if (this._deserializer.Deserialize<T>(reader.GetTextReader(2), this._referenceResolver) is { } item)
+                using var textReader = reader.GetTextReader(2);
+                if (this._deserializer.Deserialize<T>(textReader, this._referenceResolver) is { } item)
                 {
                     result.Add(item);
                 }
@@ -69,7 +70,7 @@ public class JsonObjectLoader
     /// <param name="id">The identifier of the object which should be loaded.</param>
     /// <param name="context">The context.</param>
     /// <returns>The loaded object, if available; Otherwise, null.</returns>
-    public T? LoadObject<T>(Guid id, DbContext context)
+    public async ValueTask<T?> LoadObjectAsync<T>(Guid id, DbContext context)
         where T : class, IIdentifiable
     {
         IEntityType type;
@@ -87,10 +88,11 @@ public class JsonObjectLoader
         idParameter.Value = id;
 
         command.Parameters.Add(idParameter);
-        using var reader = command.ExecuteReader();
-        if (reader.HasRows && reader.Read())
+        using var reader = await command.ExecuteReaderAsync();
+        if (reader.HasRows && await reader.ReadAsync())
         {
-            return this._deserializer.Deserialize<T>(reader.GetTextReader(2), this._referenceResolver);
+            using var textReader = reader.GetTextReader(2);
+            return this._deserializer.Deserialize<T>(textReader, this._referenceResolver);
         }
 
         return default;

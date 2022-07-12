@@ -19,7 +19,7 @@ public class DropItemAction
     /// <param name="player">The player.</param>
     /// <param name="slot">The slot.</param>
     /// <param name="target">The target coordinates.</param>
-    public void DropItem(Player player, byte slot, Point target)
+    public async ValueTask DropItemAsync(Player player, byte slot, Point target)
     {
         var item = player.Inventory?.GetItem(slot);
 
@@ -28,16 +28,16 @@ public class DropItemAction
             if (item.Definition!.DropItems.Count > 0
                 && item.Definition!.DropItems.Where(di => di.SourceItemLevel == item.Level) is { } itemDropGroups)
             {
-                this.DropRandomItem(item, player, itemDropGroups);
+                await this.DropRandomItemAsync(item, player, itemDropGroups).ConfigureAwait(false);
             }
             else
             {
-                this.DropItem(player, item, target);
+                await this.DropItemAsync(player, item, target).ConfigureAwait(false);
             }
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(slot, false);
+            await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(slot, false)).ConfigureAwait(false);
         }
     }
 
@@ -47,11 +47,11 @@ public class DropItemAction
     /// <param name="sourceItem">The source item.</param>
     /// <param name="player">The player.</param>
     /// <param name="dropItemGroups">The <see cref="DropItemGroup"/> from which the random item is generated.</param>
-    private void DropRandomItem(Item sourceItem, Player player, IEnumerable<ItemDropItemGroup> dropItemGroups)
+    private async ValueTask DropRandomItemAsync(Item sourceItem, Player player, IEnumerable<ItemDropItemGroup> dropItemGroups)
     {
         if (dropItemGroups.Any(g => g.RequiredCharacterLevel > player.Level))
         {
-            player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(sourceItem.ItemSlot, false);
+            await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(sourceItem.ItemSlot, false)).ConfigureAwait(false);
             return;
         }
 
@@ -59,49 +59,49 @@ public class DropItemAction
         if (droppedMoneyAmount is { })
         {
             var droppedMoney = new DroppedMoney(droppedMoneyAmount.Value, player.Position, player.CurrentMap!);
-            player.CurrentMap!.Add(droppedMoney);
+            await player.CurrentMap!.AddAsync(droppedMoney);
         }
 
         if (item is { })
         {
             var droppedItem = new DroppedItem(item, player.Position, player.CurrentMap!, player);
-            player.CurrentMap!.Add(droppedItem);
+            await player.CurrentMap!.AddAsync(droppedItem);
         }
 
         if (dropEffect is { } && dropEffect != ItemDropEffect.Undefined)
         {
-            this.ShowDropEffect(player, dropEffect.Value);
+            await this.ShowDropEffectAsync(player, dropEffect.Value);
         }
 
-        this.RemoveItemFromInventory(player, sourceItem);
-        player.PersistenceContext.Delete(sourceItem);
+        await this.RemoveItemFromInventoryAsync(player, sourceItem);
+        await player.PersistenceContext.DeleteAsync(sourceItem);
     }
 
-    private void ShowDropEffect(Player player, ItemDropEffect dropEffect)
+    private async ValueTask ShowDropEffectAsync(Player player, ItemDropEffect dropEffect)
     {
         if (dropEffect == ItemDropEffect.Swirl)
         {
-            player.ViewPlugIns.GetPlugIn<IShowEffectPlugIn>()?.ShowEffect(player, IShowEffectPlugIn.EffectType.Swirl);
+            await player.InvokeViewPlugInAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(player, IShowEffectPlugIn.EffectType.Swirl)).ConfigureAwait(false);
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IShowItemDropEffectPlugIn>()?.ShowEffect(dropEffect, player.Position);
+            await player.InvokeViewPlugInAsync<IShowItemDropEffectPlugIn>(p => p.ShowEffectAsync(dropEffect, player.Position)).ConfigureAwait(false);
         }
     }
 
-    private void DropItem(Player player, Item item, Point target)
+    private async ValueTask DropItemAsync(Player player, Item item, Point target)
     {
         var owners = item.Definition!.IsBoundToCharacter
             ? player.GetAsEnumerable()
             : player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
         var droppedItem = new DroppedItem(item, target, player.CurrentMap!, player, owners);
-        player.CurrentMap!.Add(droppedItem);
-        this.RemoveItemFromInventory(player, item);
+        await player.CurrentMap!.AddAsync(droppedItem);
+        await this.RemoveItemFromInventoryAsync(player, item);
     }
 
-    private void RemoveItemFromInventory(Player player, Item item)
+    private async ValueTask RemoveItemFromInventoryAsync(Player player, Item item)
     {
-        player.Inventory!.RemoveItem(item);
-        player.ViewPlugIns.GetPlugIn<IItemDropResultPlugIn>()?.ItemDropResult(item.ItemSlot, true);
+        await player.Inventory!.RemoveItemAsync(item);
+        await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(item.ItemSlot, true)).ConfigureAwait(false);
     }
 }

@@ -35,47 +35,47 @@ public class ResetCharacterAction
     /// <summary>
     /// Reset specific character.
     /// </summary>
-    public void ResetCharacter()
+    public async ValueTask ResetCharacterAsync()
     {
         var resetFeature = this._player.GameContext.FeaturePlugIns.GetPlugIn<ResetFeaturePlugIn>();
         if (resetFeature is null)
         {
-            this.ShowMessage("Reset is not enabled.");
+            await this.ShowMessageAsync("Reset is not enabled.");
             return;
         }
 
         if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld && this._npc is null)
         {
-            this.ShowMessage("Cannot do reset with any windows opened.");
+            await this.ShowMessageAsync("Cannot do reset with any windows opened.");
             return;
         }
 
         if (this._player.Attributes is null || this._player.SelectedCharacter is null)
         {
-            this.ShowMessage("Not entered the game.");
+            await this.ShowMessageAsync("Not entered the game.");
             return;
         }
 
         var configuration = resetFeature.Configuration;
         if (configuration is null)
         {
-            this.ShowMessage("Reset is not configured.");
+            await this.ShowMessageAsync("Reset is not configured.");
             return;
         }
 
         if (this._player.Level < configuration.RequiredLevel)
         {
-            this.ShowMessage($"Required level for reset is {configuration.RequiredLevel}.");
+            await this.ShowMessageAsync($"Required level for reset is {configuration.RequiredLevel}.");
             return;
         }
 
         if (configuration.ResetLimit > 0 && (this.GetResetCount() + 1) > configuration.ResetLimit)
         {
-            this.ShowMessage($"Maximum resets of {configuration.ResetLimit} reached.");
+            await this.ShowMessageAsync($"Maximum resets of {configuration.ResetLimit} reached.");
             return;
         }
 
-        if (!this.TryConsumeMoney(configuration))
+        if (!await this.TryConsumeMoneyAsync(configuration))
         {
             return;
         }
@@ -85,18 +85,18 @@ public class ResetCharacterAction
         this._player.SelectedCharacter.Experience = 0;
         this.UpdateStats(configuration);
         this.MoveHome();
-        this.Logout();
+        await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection);
     }
 
-    private void ShowMessage(string message)
+    private ValueTask ShowMessageAsync(string message)
     {
         if (this._npc is null)
         {
-            this._player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
+            return this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
         }
         else
         {
-            this._player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject(message, this._npc);
+            return this._player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, this._npc));
         }
     }
 
@@ -105,7 +105,7 @@ public class ResetCharacterAction
         return (int)this._player.Attributes![Stats.Resets];
     }
 
-    private bool TryConsumeMoney(ResetConfiguration configuration)
+    private async ValueTask<bool> TryConsumeMoneyAsync(ResetConfiguration configuration)
     {
         var calculatedRequiredZen = configuration.RequiredMoney;
         if (configuration.MultiplyRequiredMoneyByResetCount)
@@ -115,7 +115,7 @@ public class ResetCharacterAction
 
         if (!this._player.TryRemoveMoney(calculatedRequiredZen))
         {
-            this.ShowMessage($"You don't have enough money for reset, required zen is {calculatedRequiredZen}");
+            await this.ShowMessageAsync($"You don't have enough money for reset, required zen is {calculatedRequiredZen}");
             return false;
         }
 
@@ -151,10 +151,5 @@ public class ResetCharacterAction
             this._player.SelectedCharacter.CurrentMap = spawnGate.Map;
             this._player.Rotation = spawnGate.Direction;
         }
-    }
-
-    private void Logout()
-    {
-        this._logoutAction.Logout(this._player, LogoutType.BackToCharacterSelection);
     }
 }

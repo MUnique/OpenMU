@@ -18,5 +18,5 @@ public interface IShowMoneyDropPlugIn : IViewPlugIn
     /// <param name="isFreshDrop">If set to <c>true</c>, it's a fresh drop.</param>
     /// <param name="amount">The amount of money which was dropped.</param>
     /// <param name="point">The position of the money on the map.</param>
-    void ShowMoney(ushort itemId, bool isFreshDrop, uint amount, Point point);
+    ValueTask ShowMoneyAsync(ushort itemId, bool isFreshDrop, uint amount, Point point);
 }

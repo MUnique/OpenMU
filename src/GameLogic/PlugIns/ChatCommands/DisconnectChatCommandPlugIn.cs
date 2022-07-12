@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
+using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 using MUnique.OpenMU.PlugIns;
 
@@ -25,14 +26,14 @@ public class DisconnectChatCommandPlugIn : ChatCommandPlugInBase<DisconnectChatC
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player gameMaster, DisconnectChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, DisconnectChatCommandArgs arguments)
     {
         var player = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
-        player.Disconnect();
+        await player.DisconnectAsync();
 
         if (!player.Name.Equals(gameMaster.Name))
         {
-            this.ShowMessageTo(gameMaster, $"[{this.Key}] {player.Name} has been disconnected.");
+            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {player.Name} has been disconnected.");
         }
     }
 }

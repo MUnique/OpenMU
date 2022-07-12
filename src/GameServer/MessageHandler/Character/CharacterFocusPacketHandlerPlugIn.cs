@@ -27,9 +27,9 @@ internal class CharacterFocusPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => 0x15;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         FocusCharacter message = packet;
-        this._focusCharacterAction.FocusCharacter(player, message.Name);
+        await this._focusCharacterAction.FocusCharacterAsync(player, message.Name);
     }
 }

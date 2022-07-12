@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Trade;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -26,14 +27,14 @@ public class TradeFinishedPlugIn : ITradeFinishedPlugIn
     public TradeFinishedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void TradeFinished(TradeResult tradeResult)
+    public async ValueTask TradeFinishedAsync(TradeResult tradeResult)
     {
-        this._player.Connection?.SendTradeFinished(Convert(tradeResult));
+        await this._player.Connection.SendTradeFinishedAsync(Convert(tradeResult));
 
         if (tradeResult != TradeResult.TimedOut)
         {
-            this._player.ViewPlugIns.GetPlugIn<IUpdateInventoryListPlugIn>()?.UpdateInventoryList();
-            this._player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
+            await this._player.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
+            await this._player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
         }
     }
 

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameServer.MessageHandler.Quests;
@@ -31,19 +32,24 @@ public class QuestStartedPlugIn : IQuestStartedPlugIn
     }
 
     /// <inheritdoc/>
-    public void QuestStarted(QuestDefinition quest)
+    public async ValueTask QuestStartedAsync(QuestDefinition quest)
     {
+        if (this._player.Connection is null)
+        {
+            return;
+        }
+
         if (quest.Group == QuestConstants.LegacyQuestGroup)
         {
-            this._player.Connection?.SendLegacySetQuestStateResponse((byte)quest.Number, 0, this._player.GetLegacyQuestStateByte());
+            await this._player.Connection.SendLegacySetQuestStateResponseAsync((byte)quest.Number, 0, this._player.GetLegacyQuestStateByte());
         }
         else
         {
             var state = this._player.GetQuestState(quest.Group);
             if (state?.ActiveQuest == quest)
             {
-                this._player.Connection?.SendQuestStepInfo((ushort)quest.Number, (ushort)quest.Group);
-                this._player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(quest, true);
+                await this._player.Connection.SendQuestStepInfoAsync((ushort)quest.Number, (ushort)quest.Group);
+                await this._player.InvokeViewPlugInAsync<IQuestProgressPlugIn>(p => p.ShowQuestProgressAsync(quest, true)).ConfigureAwait(false);
             }
         }
     }

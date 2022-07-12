@@ -17,5 +17,5 @@ public interface IChatRoomCreatedPlugIn : IViewPlugIn
     /// <param name="authenticationInfo">The id of the created chat room.</param>
     /// <param name="friendName">The character name of the friend which is expected in the chat room.</param>
     /// <param name="success">If set to <c>true</c>, the chat room has been created successfully; Otherwise not.</param>
-    void ChatRoomCreated(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success);
+    ValueTask ChatRoomCreatedAsync(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success);
 }

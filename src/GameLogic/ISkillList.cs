@@ -30,14 +30,14 @@ public interface ISkillList
     /// Adds the learned skill.
     /// </summary>
     /// <param name="skill">The skill.</param>
-    void AddLearnedSkill(Skill skill);
+    ValueTask AddLearnedSkillAsync(Skill skill);
 
     /// <summary>
     /// Removes the item skill.
     /// </summary>
     /// <param name="skillId">The skill identifier.</param>
     /// <returns>The success of removing the skill.</returns>
-    bool RemoveItemSkill(ushort skillId);
+    ValueTask<bool> RemoveItemSkillAsync(ushort skillId);
 
     /// <summary>
     /// Determines whether the list contains the specified skill of the specified id.

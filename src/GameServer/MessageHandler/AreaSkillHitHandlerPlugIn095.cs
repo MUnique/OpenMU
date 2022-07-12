@@ -29,7 +29,7 @@ internal class AreaSkillHitHandlerPlugIn095 : AreaSkillHitHandlerMultiTargetPlug
     public byte Key => AreaSkillHit095.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < 8)
         {
@@ -46,7 +46,7 @@ internal class AreaSkillHitHandlerPlugIn095 : AreaSkillHitHandlerMultiTargetPlug
 
         for (var i = 0; i < message.TargetCount; i++)
         {
-            this.AttackTarget(player, skillEntry, message[i].TargetId);
+            await this.AttackTargetAsync(player, skillEntry, message[i].TargetId);
         }
     }
 }

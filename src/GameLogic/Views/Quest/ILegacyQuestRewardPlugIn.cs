@@ -22,5 +22,5 @@ public interface ILegacyQuestRewardPlugIn : IViewPlugIn
     /// <param name="rewardType">Type of the reward.</param>
     /// <param name="value">The value.</param>
     /// <param name="attributeReward">The attribute reward.</param>
-    void Show(Player player, QuestRewardType rewardType, int value, AttributeDefinition? attributeReward);
+    ValueTask ShowAsync(Player player, QuestRewardType rewardType, int value, AttributeDefinition? attributeReward);
 }

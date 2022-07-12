@@ -25,9 +25,9 @@ public class ShowVaultLockChangeResponsePlugIn : IShowVaultLockChangeResponse
     public ShowVaultLockChangeResponsePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowResponse(VaultLockChangeResult result)
+    public async ValueTask ShowResponseAsync(VaultLockChangeResult result)
     {
-        this._player.Connection?.SendVaultProtectionInformation(this.GetVaultState(result));
+        await this._player.Connection.SendVaultProtectionInformationAsync(this.GetVaultState(result));
     }
 
     private VaultProtectionInformation.VaultProtectionState GetVaultState(VaultLockChangeResult result)

@@ -28,11 +28,11 @@ public class ItemSerializerTests
     /// Sets up the test environment by initializing configuration data and a <see cref="IPersistenceContextProvider"/>.
     /// </summary>
     [OneTimeSetUp]
-    public void Setup()
+    public async ValueTask Setup()
     {
         this._contextProvider = new InMemoryPersistenceContextProvider();
-        new DataInitialization(this._contextProvider, new NullLoggerFactory()).CreateInitialData(3, true);
-        this._gameConfiguration = this._contextProvider.CreateNewConfigurationContext().Get<GameConfiguration>().First();
+        await new DataInitialization(this._contextProvider, new NullLoggerFactory()).CreateInitialDataAsync(3, true);
+        this._gameConfiguration = (await this._contextProvider.CreateNewConfigurationContext().GetAsync<GameConfiguration>()).First();
         this._itemSerializer = new ItemSerializer();
     }
 

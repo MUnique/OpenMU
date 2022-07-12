@@ -13,5 +13,5 @@ public interface IFriendAddedPlugIn : IViewPlugIn
     /// A friend has been added to the friend list.
     /// </summary>
     /// <param name="friendName">The character name of the friend.</param>
-    void FriendAdded(string friendName);
+    ValueTask FriendAddedAsync(string friendName);
 }

@@ -17,7 +17,7 @@ public class LetterDeleteAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="letter">The letter.</param>
-    public void DeleteLetter(Player player, LetterHeader letter)
+    public async ValueTask DeleteLetterAsync(Player player, LetterHeader letter)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.SelectedCharacter is not { } character)
@@ -26,8 +26,8 @@ public class LetterDeleteAction
             return;
         }
 
-        var letterIndex = player.SelectedCharacter.Letters.IndexOf(letter);
-        player.SelectedCharacter.Letters.RemoveAt(letterIndex);
-        player.ViewPlugIns.GetPlugIn<ILetterDeletedPlugIn>()?.LetterDeleted((ushort)letterIndex);
+        var letterIndex = character.Letters.IndexOf(letter);
+        character.Letters.RemoveAt(letterIndex);
+        await player.InvokeViewPlugInAsync<ILetterDeletedPlugIn>(p => p.LetterDeletedAsync((ushort)letterIndex)).ConfigureAwait(false);
     }
 }

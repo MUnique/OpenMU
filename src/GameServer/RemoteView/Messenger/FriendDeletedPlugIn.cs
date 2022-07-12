@@ -25,8 +25,8 @@ public class FriendDeletedPlugIn : IFriendDeletedPlugIn
     public FriendDeletedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void FriendDeleted(string deletedFriend)
+    public async ValueTask FriendDeletedAsync(string deletedFriend)
     {
-        this._player.Connection?.SendFriendDeleted(deletedFriend);
+        await this._player.Connection.SendFriendDeletedAsync(deletedFriend).ConfigureAwait(false);
     }
 }

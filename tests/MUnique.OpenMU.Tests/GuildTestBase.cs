@@ -2,13 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GuildServer;
-
 namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -54,18 +53,31 @@ public class GuildTestBase
     /// Setups the test objects.
     /// </summary>
     [SetUp]
-    public virtual void Setup()
+    public virtual async ValueTask Setup()
     {
         this.GameServer0 = new Mock<IGameServer>();
         this.GameServer1 = new Mock<IGameServer>();
         this.PersistenceContextProvider = new InMemoryPersistenceContextProvider();
 
         this.GuildMaster = this.GetGuildMaster();
+
+        this.SetupGameServer(this.GameServer0);
+        this.SetupGameServer(this.GameServer1);
+
         this.GameServers = new Dictionary<int, IGameServer> { { 0, this.GameServer0.Object }, { 1, this.GameServer1.Object } };
-        this.GuildServer = new OpenMU.GuildServer.GuildServer(new GuildChangeToGameServerPublisher(this.GameServers), this.PersistenceContextProvider, new NullLogger<GuildServer.GuildServer>());
-        this.GuildServer.CreateGuild(GuildName, this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0);
-        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
-        this.GuildServer.GuildMemberLeftGame(guildId, this.GuildMaster.Id, 0);
+        this.GuildServer = new OpenMU.GuildServer.GuildServer(new GuildChangeToGameServerPublisher(this.GameServers), this.PersistenceContextProvider, new NullLogger<GuildServer>());
+        await this.GuildServer.CreateGuildAsync(GuildName, this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName);
+        await this.GuildServer.GuildMemberLeftGameAsync(guildId, this.GuildMaster.Id, 0);
+    }
+
+    /// <summary>
+    /// Sets up the game server.
+    /// </summary>
+    /// <param name="gameServer">The game server.</param>
+    protected virtual void SetupGameServer(Mock<IGameServer> gameServer)
+    {
+        // can be overwritten.
     }
 
     private Character GetGuildMaster()

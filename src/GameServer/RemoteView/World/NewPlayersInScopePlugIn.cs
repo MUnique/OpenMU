@@ -34,35 +34,35 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
     public NewPlayersInScopePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void NewPlayersInScope(IEnumerable<Player> newPlayers, bool isSpawned = true)
+    public async ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newPlayers, bool isSpawned = true)
     {
         if (newPlayers is null || !newPlayers.Any())
         {
             return;
         }
 
-        this.SendCharacters(newPlayers, out var shopPlayers, out var guildPlayers, isSpawned);
+        var (shopPlayers, guildPlayers) = await this.SendCharactersAsync(newPlayers, isSpawned);
 
         if (shopPlayers != null)
         {
-            this._player.ViewPlugIns.GetPlugIn<IShowShopsOfPlayersPlugIn>()?.ShowShopsOfPlayers(shopPlayers);
+            await this._player.InvokeViewPlugInAsync<IShowShopsOfPlayersPlugIn>(p => p.ShowShopsOfPlayersAsync(shopPlayers)).ConfigureAwait(false);
         }
 
         if (guildPlayers != null)
         {
-            this._player.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayersToGuild(guildPlayers, true);
+            await this._player.InvokeViewPlugInAsync<IAssignPlayersToGuildPlugIn>(p => p.AssignPlayersToGuildAsync(guildPlayers, true)).ConfigureAwait(false);
         }
     }
 
-    private void SendCharacters(IEnumerable<Player> newPlayers, out IList<Player>? shopPlayers, out IList<Player>? guildPlayers, bool isSpawned)
+    private async ValueTask<(IList<Player>? ShopPlayers, IList<Player>? GuildPlayers)> SendCharactersAsync(IEnumerable<Player> newPlayers, bool isSpawned)
     {
-        shopPlayers = null;
-        guildPlayers = null;
+        IList<Player>? shopPlayers = null;
+        IList<Player>? guildPlayers = null;
 
         var connection = this._player.Connection;
         if (connection is null)
         {
-            return;
+            return (shopPlayers, guildPlayers);
         }
 
         var newPlayerList = newPlayers.ToList();
@@ -70,11 +70,11 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         {
             if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)
             {
-                this.SendCharacter(newPlayer, isSpawned);
+                await this.SendCharacterAsync(newPlayer, isSpawned);
             }
             else
             {
-                this.SendTransformedCharacter(newPlayer, isSpawned);
+                await this.SendTransformedCharacterAsync(newPlayer, isSpawned);
             }
 
             if (newPlayer.ShopStorage?.StoreOpen ?? false)
@@ -87,9 +87,11 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
                 (guildPlayers ??= new List<Player>()).Add(newPlayer);
             }
         }
+
+        return (shopPlayers, guildPlayers);
     }
 
-    private void SendCharacter(Player newPlayer, bool isSpawned)
+    private async ValueTask SendCharacterAsync(Player newPlayer, bool isSpawned)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -103,58 +105,64 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
             return;
         }
 
-        var appearanceSerializer = this._player.AppearanceSerializer;
-        var activeEffects = newPlayer.MagicEffectList.VisibleEffects;
-        const int estimatedEffectsPerPlayer = 5;
-        var estimatedSizePerCharacter = AddCharactersToScope.CharacterData.GetRequiredSize(Math.Max(estimatedEffectsPerPlayer, activeEffects.Count));
-        var estimatedSize = AddCharactersToScope.GetRequiredSize(1, estimatedSizePerCharacter);
-        using var writer = connection.StartSafeWrite(AddCharactersToScope.HeaderType, estimatedSize);
-        var packet = new AddCharactersToScope(writer.Span)
+        int Write()
         {
-            CharacterCount = 1,
-        };
+            var appearanceSerializer = this._player.AppearanceSerializer;
+            var activeEffects = newPlayer.MagicEffectList.VisibleEffects;
+            const int estimatedEffectsPerPlayer = 5;
+            var estimatedSizePerCharacter = AddCharactersToScope.CharacterData.GetRequiredSize(Math.Max(estimatedEffectsPerPlayer, activeEffects.Count));
+            var estimatedSize = AddCharactersToScope.GetRequiredSize(1, estimatedSizePerCharacter);
 
-        var playerBlock = packet[0];
-        playerBlock.Id = newPlayer.GetId(this._player);
-        if (isSpawned)
-        {
-            playerBlock.Id |= 0x8000;
+            var span = connection.Output.GetSpan(estimatedSize)[..estimatedSize];
+            var packet = new AddCharactersToScopeRef(span)
+            {
+                CharacterCount = 1,
+            };
+
+            var playerBlock = packet[0];
+            playerBlock.Id = newPlayer.GetId(this._player);
+            if (isSpawned)
+            {
+                playerBlock.Id |= 0x8000;
+            }
+
+            playerBlock.CurrentPositionX = newPlayer.Position.X;
+            playerBlock.CurrentPositionY = newPlayer.Position.Y;
+
+            appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 21
+            playerBlock.Name = selectedCharacter.Name;
+            if (newPlayer.IsWalking)
+            {
+                playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
+                playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
+            }
+            else
+            {
+                playerBlock.TargetPositionX = newPlayer.Position.X;
+                playerBlock.TargetPositionY = newPlayer.Position.Y;
+            }
+
+            playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
+            playerBlock.HeroState = selectedCharacter.State.Convert();
+
+            playerBlock.EffectCount = (byte)activeEffects.Count;
+            for (int e = playerBlock.EffectCount - 1; e >= 0; e--)
+            {
+                var effectBlock = playerBlock[e];
+                effectBlock.Id = (byte)activeEffects[e].Id;
+            }
+
+            // The calculation of the final size is not a requirement, but we do it to save some traffic.
+            // The original server also doesn't send more bytes than necessary.
+            var finalSize = packet.FinalSize;
+            span.Slice(0, finalSize).SetPacketSize();
+            return finalSize;
         }
 
-        playerBlock.CurrentPositionX = newPlayer.Position.X;
-        playerBlock.CurrentPositionY = newPlayer.Position.Y;
-
-        appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 21
-        playerBlock.Name = selectedCharacter.Name;
-        if (newPlayer.IsWalking)
-        {
-            playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
-            playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
-        }
-        else
-        {
-            playerBlock.TargetPositionX = newPlayer.Position.X;
-            playerBlock.TargetPositionY = newPlayer.Position.Y;
-        }
-
-        playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
-        playerBlock.HeroState = selectedCharacter.State.Convert();
-
-        playerBlock.EffectCount = (byte)activeEffects.Count;
-        for (int e = playerBlock.EffectCount - 1; e >= 0; e--)
-        {
-            var effectBlock = playerBlock[e];
-            effectBlock.Id = (byte)activeEffects[e].Id;
-        }
-
-        // The calculation of the final size is not a requirement, but we do it to save some traffic.
-        // The original server also doesn't send more bytes than necessary.
-        var finalSize = packet.FinalSize;
-        writer.Span.Slice(0, finalSize).SetPacketSize();
-        writer.Commit(finalSize);
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
-    private void SendTransformedCharacter(Player newPlayer, bool isSpawned)
+    private async ValueTask SendTransformedCharacterAsync(Player newPlayer, bool isSpawned)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -168,55 +176,60 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
             return;
         }
 
-        var appearanceSerializer = this._player.AppearanceSerializer;
-        var activeEffects = newPlayer.MagicEffectList.VisibleEffects;
-        const int estimatedEffectsPerPlayer = 5;
-        var estimatedSizePerCharacter = AddTransformedCharactersToScope.CharacterData.GetRequiredSize(Math.Max(estimatedEffectsPerPlayer, activeEffects.Count));
-        var estimatedSize = AddTransformedCharactersToScope.GetRequiredSize(1, estimatedSizePerCharacter);
-        using var writer = connection.StartSafeWrite(AddTransformedCharactersToScope.HeaderType, estimatedSize);
-        var packet = new AddTransformedCharactersToScope(writer.Span)
+        int Write()
         {
-            CharacterCount = 1,
-        };
+            var appearanceSerializer = this._player.AppearanceSerializer;
+            var activeEffects = newPlayer.MagicEffectList.VisibleEffects;
+            const int estimatedEffectsPerPlayer = 5;
+            var estimatedSizePerCharacter = AddTransformedCharactersToScopeRef.CharacterDataRef.GetRequiredSize(Math.Max(estimatedEffectsPerPlayer, activeEffects.Count));
+            var estimatedSize = AddTransformedCharactersToScopeRef.GetRequiredSize(1, estimatedSizePerCharacter);
+            var span = connection.Output.GetSpan(estimatedSize)[..estimatedSize];
+            var packet = new AddTransformedCharactersToScopeRef(span)
+            {
+                CharacterCount = 1,
+            };
 
-        var playerBlock = packet[0];
-        playerBlock.Id = newPlayer.GetId(this._player);
-        if (isSpawned)
-        {
-            playerBlock.Id |= 0x8000;
+            var playerBlock = packet[0];
+            playerBlock.Id = newPlayer.GetId(this._player);
+            if (isSpawned)
+            {
+                playerBlock.Id |= 0x8000;
+            }
+
+            playerBlock.CurrentPositionX = newPlayer.Position.X;
+            playerBlock.CurrentPositionY = newPlayer.Position.Y;
+
+            appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 21
+            playerBlock.Name = selectedCharacter.Name;
+            if (newPlayer.IsWalking)
+            {
+                playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
+                playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
+            }
+            else
+            {
+                playerBlock.TargetPositionX = newPlayer.Position.X;
+                playerBlock.TargetPositionY = newPlayer.Position.Y;
+            }
+
+            playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
+            playerBlock.HeroState = selectedCharacter.State.Convert();
+
+            playerBlock.EffectCount = (byte)activeEffects.Count;
+            playerBlock.Skin = (ushort)this._player.Attributes![Stats.TransformationSkin];
+            for (int e = playerBlock.EffectCount - 1; e >= 0; e--)
+            {
+                var effectBlock = playerBlock[e];
+                effectBlock.Id = (byte)activeEffects[e].Id;
+            }
+
+            // The calculation of the final size is not a requirement, but we do it to save some traffic.
+            // The original server also doesn't send more bytes than necessary.
+            var finalSize = packet.FinalSize;
+            span.Slice(0, finalSize).SetPacketSize();
+            return finalSize;
         }
 
-        playerBlock.CurrentPositionX = newPlayer.Position.X;
-        playerBlock.CurrentPositionY = newPlayer.Position.Y;
-
-        appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 21
-        playerBlock.Name = selectedCharacter.Name;
-        if (newPlayer.IsWalking)
-        {
-            playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
-            playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
-        }
-        else
-        {
-            playerBlock.TargetPositionX = newPlayer.Position.X;
-            playerBlock.TargetPositionY = newPlayer.Position.Y;
-        }
-
-        playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
-        playerBlock.HeroState = selectedCharacter.State.Convert();
-
-        playerBlock.EffectCount = (byte)activeEffects.Count;
-        playerBlock.Skin = (ushort)this._player.Attributes![Stats.TransformationSkin];
-        for (int e = playerBlock.EffectCount - 1; e >= 0; e--)
-        {
-            var effectBlock = playerBlock[e];
-            effectBlock.Id = (byte)activeEffects[e].Id;
-        }
-
-        // The calculation of the final size is not a requirement, but we do it to save some traffic.
-        // The original server also doesn't send more bytes than necessary.
-        var finalSize = packet.FinalSize;
-        writer.Span.Slice(0, finalSize).SetPacketSize();
-        writer.Commit(finalSize);
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

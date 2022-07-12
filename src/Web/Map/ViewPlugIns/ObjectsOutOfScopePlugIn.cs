@@ -34,7 +34,7 @@ public class ObjectsOutOfScopePlugIn : JsViewPlugInBase, IObjectsOutOfScopePlugI
     }
 
     /// <inheritdoc />
-    public async void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
+    public async ValueTask ObjectsOutOfScopeAsync(IEnumerable<IIdentifiable> objects)
     {
         try
         {
@@ -54,7 +54,7 @@ public class ObjectsOutOfScopePlugIn : JsViewPlugInBase, IObjectsOutOfScopePlugI
         }
         catch (Exception e)
         {
-            this.Logger.LogError(e, $"Error in {nameof(this.ObjectsOutOfScope)}; objects: {string.Join(';', objects)}");
+            this.Logger.LogError(e, $"Error in {nameof(this.ObjectsOutOfScopeAsync)}; objects: {string.Join(';', objects)}");
         }
     }
 }

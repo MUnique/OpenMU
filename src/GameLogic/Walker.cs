@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
 using System.Threading;
+using Nito.AsyncEx;
+using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -16,7 +18,18 @@ public sealed class Walker : IDisposable
     private readonly ISupportWalk _walkSupporter;
     private readonly Func<TimeSpan> _stepDelay;
     private readonly Queue<WalkingStep> _nextSteps = new (5);
-    private readonly ReaderWriterLockSlim _walkLock;
+
+    /// <summary>
+    /// This array keeps all steps of the current walk.
+    /// </summary>
+    private readonly WalkingStep[] _currentWalkSteps = new WalkingStep[16];
+
+    private readonly AsyncReaderWriterLock _walkLock;
+
+    /// <summary>
+    /// The number of steps which are stored in <see cref="_currentWalkSteps"/> for the current walk.
+    /// </summary>
+    private int _currentWalkStepCount;
     private CancellationTokenSource? _walkCts;
     private bool _isDisposed;
 
@@ -29,7 +42,7 @@ public sealed class Walker : IDisposable
     {
         this._walkSupporter = walkSupporter;
         this._stepDelay = stepDelay;
-        this._walkLock = new ReaderWriterLockSlim();
+        this._walkLock = new AsyncReaderWriterLock();
     }
 
     /// <summary>
@@ -42,31 +55,39 @@ public sealed class Walker : IDisposable
     /// </summary>
     /// <param name="target">The target coordinates.</param>
     /// <param name="steps">The steps.</param>
-    public void WalkTo(Point target, Span<WalkingStep> steps)
+    public async ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps)
     {
         if (this._isDisposed)
         {
             return;
         }
 
-        this._walkLock.EnterWriteLock();
-        try
+        if (steps.Length > 16)
         {
-            this.CurrentTarget = target;
+            throw new ArgumentException("Maximum number of steps (16) exceeded.", nameof(steps));
+        }
+
+        using var writerLock = await this._walkLock.WriterLockAsync();
+
+        void EnqueueSteps()
+        {
+            this._currentWalkStepCount = steps.Length;
             this._nextSteps.Clear();
-            foreach (var step in steps)
+            int i = steps.Length - 1;
+            foreach (var step in steps.Span)
             {
                 this._nextSteps.Enqueue(step);
+                this._currentWalkSteps[i] = step;
+                i--;
             }
+        }
 
-            var cts = new CancellationTokenSource();
-            this._walkCts = cts;
-            Task.Run(async () => await this.WalkLoop(cts.Token), cts.Token);
-        }
-        finally
-        {
-            this._walkLock.ExitWriteLock();
-        }
+        this.CurrentTarget = target;
+        EnqueueSteps();
+
+        var cts = new CancellationTokenSource();
+        this._walkCts = cts;
+        _ = Task.Run(async () => await this.WalkLoop(cts.Token), cts.Token);
     }
 
     /// <summary>
@@ -74,21 +95,14 @@ public sealed class Walker : IDisposable
     /// </summary>
     /// <param name="directions">The directions.</param>
     /// <returns>The number of written directions.</returns>
-    public int GetDirections(Span<Direction> directions)
+    public async ValueTask<int> GetDirectionsAsync(Memory<Direction> directions)
     {
         var count = 0;
-        this._walkLock.EnterReadLock();
-        try
+        using var readerLock = await this._walkLock.ReaderLockAsync();
+        foreach (var direction in this._currentWalkSteps[..this._currentWalkStepCount].Select(step => step.Direction))
         {
-            foreach (var direction in this._nextSteps.Reverse().Select(step => step.Direction))
-            {
-                directions[count] = direction;
-                count++;
-            }
-        }
-        finally
-        {
-            this._walkLock.ExitReadLock();
+            directions.Span[count] = direction;
+            count++;
         }
 
         return count;
@@ -99,21 +113,14 @@ public sealed class Walker : IDisposable
     /// </summary>
     /// <param name="steps">The steps.</param>
     /// <returns>The number of written steps.</returns>
-    public int GetSteps(Span<WalkingStep> steps)
+    public async ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps)
     {
         var count = 0;
-        this._walkLock.EnterReadLock();
-        try
+        using var readerLock = await this._walkLock.ReaderLockAsync();
+        foreach (var direction in this._currentWalkSteps[.._currentWalkStepCount])
         {
-            foreach (var direction in this._nextSteps.Reverse())
-            {
-                steps[count] = direction;
-                count++;
-            }
-        }
-        finally
-        {
-            this._walkLock.ExitReadLock();
+            steps.Span[count] = direction;
+            count++;
         }
 
         return count;
@@ -122,23 +129,18 @@ public sealed class Walker : IDisposable
     /// <summary>
     /// Stops the walk.
     /// </summary>
-    public void Stop()
+    public async ValueTask StopAsync()
     {
-        this._walkLock.EnterWriteLock();
-        try
+        using var writeLock = await this._walkLock.WriterLockAsync();
+
+        if (this._walkCts != null)
         {
-            if (this._walkCts != null)
-            {
-                this._walkCts.Cancel(false);
-                this._walkCts.Dispose();
-                this._walkCts = null;
-                this._nextSteps.Clear();
-                this.CurrentTarget = default;
-            }
-        }
-        finally
-        {
-            this._walkLock.ExitWriteLock();
+            this._walkCts.Cancel(false);
+            this._walkCts.Dispose();
+            this._walkCts = null;
+            this._nextSteps.Clear();
+            this._currentWalkStepCount = 0;
+            this.CurrentTarget = default;
         }
     }
 
@@ -148,12 +150,10 @@ public sealed class Walker : IDisposable
     public void Dispose()
     {
         this._isDisposed = true;
-        if (this._walkCts != null)
+        if (this._walkCts is { IsCancellationRequested: false })
         {
-            this.Stop();
+            this.StopAsync().AsTask().WaitAndUnwrapException();
         }
-
-        this._walkLock.Dispose();
     }
 
     private async Task WalkLoop(CancellationToken cancellationToken)
@@ -165,7 +165,7 @@ public sealed class Walker : IDisposable
         while (!cancellationToken.IsCancellationRequested)
         {
             var sw = Stopwatch.StartNew();
-            this.WalkStep(cancellationToken);
+            await this.WalkStepAsync(cancellationToken);
 
             var nextDelay = delay - lastOffset;
             if (nextDelay > TimeSpan.Zero)
@@ -185,7 +185,7 @@ public sealed class Walker : IDisposable
     /// <summary>
     /// Performs the next step of a walk.
     /// </summary>
-    private void WalkStep(CancellationToken cancellationToken)
+    private async ValueTask WalkStepAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -196,35 +196,21 @@ public sealed class Walker : IDisposable
             }
 
             bool stop;
-            this._walkLock.EnterReadLock();
-            try
+            using (await this._walkLock.ReaderLockAsync())
             {
                 stop = !cancellationToken.IsCancellationRequested && this.ShouldWalkerStop();
-            }
-            finally
-            {
-                this._walkLock.ExitReadLock();
             }
 
             if (stop)
             {
-                this.Stop();
+                await this.StopAsync();
+                return;
             }
 
             // Update new coords
-            this._walkLock.EnterWriteLock();
-            try
+            using (await this._walkLock.WriterLockAsync(cancellationToken))
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
                 this.WalkNextStepIfStepAvailable();
-            }
-            finally
-            {
-                this._walkLock.ExitWriteLock();
             }
         }
         catch (Exception ex)

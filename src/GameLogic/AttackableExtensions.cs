@@ -139,14 +139,14 @@ public static class AttackableExtensions
     /// <param name="target">The target.</param>
     /// <param name="player">The player.</param>
     /// <param name="skillEntry">The skill entry.</param>
-    public static void ApplyMagicEffect(this IAttackable target, Player player, SkillEntry skillEntry)
+    public static async ValueTask ApplyMagicEffectAsync(this IAttackable target, Player player, SkillEntry skillEntry)
     {
         if (skillEntry.BuffPowerUp is null)
         {
             player.CreateMagicEffectPowerUp(skillEntry);
         }
 
-        target.ApplyMagicEffect(player, skillEntry.Skill!.MagicEffectDef!, skillEntry.BuffPowerUp!, skillEntry.PowerUpDuration!);
+        await target.ApplyMagicEffectAsync(player, skillEntry.Skill!.MagicEffectDef!, skillEntry.BuffPowerUp!, skillEntry.PowerUpDuration!);
     }
 
     /// <summary>
@@ -189,7 +189,7 @@ public static class AttackableExtensions
     /// <param name="player">The player.</param>
     /// <param name="skillEntry">The skill entry.</param>
     /// <returns>The success of the appliance.</returns>
-    public static bool TryApplyElementalEffects(this IAttackable target, Player player, SkillEntry skillEntry)
+    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, Player player, SkillEntry skillEntry)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var modifier = skillEntry.Skill.ElementalModifierTarget;
@@ -210,13 +210,13 @@ public static class AttackableExtensions
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number))
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            target.ApplyMagicEffect(player, skillEntry);
+            await target.ApplyMagicEffectAsync(player, skillEntry);
             applied = true;
         }
 
         if (modifier == Stats.LightningResistance)
         {
-            target.MoveRandomly();
+            await target.MoveRandomlyAsync();
             applied = true;
         }
 
@@ -234,7 +234,7 @@ public static class AttackableExtensions
     /// <returns>
     /// The success of the appliance.
     /// </returns>
-    public static bool TryApplyElementalEffects(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration)
+    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration)
     {
         var modifier = skill.ElementalModifierTarget;
         if (modifier is null)
@@ -256,13 +256,13 @@ public static class AttackableExtensions
             && duration is not null)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            target.ApplyMagicEffect(attacker, effectDefinition, powerUp, duration);
+            await target.ApplyMagicEffectAsync(attacker, effectDefinition, powerUp, duration);
             applied = true;
         }
 
         if (modifier == Stats.LightningResistance)
         {
-            target.MoveRandomly();
+            await target.MoveRandomlyAsync();
             applied = true;
         }
 
@@ -323,7 +323,7 @@ public static class AttackableExtensions
 
     /// <summary>Moves the target randomly.</summary>
     /// <param name="target">The target.</param>
-    public static void MoveRandomly(this IAttackable target)
+    public static async ValueTask MoveRandomlyAsync(this IAttackable target)
     {
         if (target is IMovable movable && target.CurrentMap is { } map)
         {
@@ -334,7 +334,7 @@ public static class AttackableExtensions
             var isNewYAllowed = newY is >= byte.MinValue and <= byte.MaxValue;
             if (isNewXAllowed && isNewYAllowed && terrain.AIgrid[newX, newY] == 1)
             {
-                movable.Move(new Point((byte)newX, (byte)newY));
+                await movable.MoveAsync(new Point((byte)newX, (byte)newY));
             }
         }
     }
@@ -504,12 +504,12 @@ public static class AttackableExtensions
     /// <param name="magicEffectDefinition">The magic effect definition.</param>
     /// <param name="powerUp">The power up of the effect.</param>
     /// <param name="duration">The duration of the effect.</param>
-    private static void ApplyMagicEffect(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement powerUp, IElement duration)
+    private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement powerUp, IElement duration)
     {
         var magicEffect = magicEffectDefinition.PowerUpDefinition!.TargetAttribute == Stats.IsPoisoned
             ? new PoisonMagicEffect(powerUp, magicEffectDefinition, TimeSpan.FromSeconds(duration.Value), attacker, target)
             : new MagicEffect(powerUp, magicEffectDefinition, TimeSpan.FromSeconds(duration!.Value));
 
-        target.MagicEffectList.AddEffect(magicEffect);
+        await target.MagicEffectList.AddEffectAsync(magicEffect);
     }
 }

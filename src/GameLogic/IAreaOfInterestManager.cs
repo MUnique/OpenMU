@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -16,13 +17,13 @@ public interface IAreaOfInterestManager
     /// Adds the object to the area of interest.
     /// </summary>
     /// <param name="obj">The object.</param>
-    void AddObject(ILocateable obj);
+    ValueTask AddObjectAsync(ILocateable obj);
 
     /// <summary>
     /// Removes the object from the area of interest.
     /// </summary>
     /// <param name="obj">The object.</param>
-    void RemoveObject(ILocateable obj);
+    ValueTask RemoveObjectAsync(ILocateable obj);
 
     /// <summary>
     /// Moves the object.
@@ -31,7 +32,7 @@ public interface IAreaOfInterestManager
     /// <param name="target">The new coordinates.</param>
     /// <param name="moveLock">The move lock.</param>
     /// <param name="moveType">Type of the move.</param>
-    void MoveObject(ILocateable obj, Point target, object moveLock, MoveType moveType);
+    ValueTask MoveObjectAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType);
 
     /// <summary>
     /// Gets the object in range.

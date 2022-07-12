@@ -8,7 +8,6 @@ using global::Dapr.Client;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ServerClients;
-using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// Implementation of a <see cref="IEventPublisher"/> which publishes the events
@@ -32,16 +31,15 @@ public class EventPublisher : IEventPublisher
     }
 
     /// <inheritdoc />
-    public void PlayerEnteredGame(byte serverId, Guid characterId, string characterName)
+    public async ValueTask PlayerEnteredGameAsync(byte serverId, Guid characterId, string characterName)
     {
         try
         {
-            this._daprClient
+            await this._daprClient
                 .PublishEventAsync(
                     PubSubName,
-                    nameof(IEventPublisher.PlayerEnteredGame),
-                    new PlayerOnlineStateArguments(characterId, characterName, serverId))
-                .WaitAndUnwrapException();
+                    nameof(IEventPublisher.PlayerEnteredGameAsync),
+                    new PlayerOnlineStateArguments(characterId, characterName, serverId));
         }
         catch (Exception ex)
         {
@@ -50,16 +48,15 @@ public class EventPublisher : IEventPublisher
     }
 
     /// <inheritdoc />
-    public void PlayerLeftGame(byte serverId, Guid characterId, string characterName, uint guildId = 0)
+    public async ValueTask PlayerLeftGameAsync(byte serverId, Guid characterId, string characterName, uint guildId = 0)
     {
         try
         {
-            this._daprClient
+            await this._daprClient
                 .PublishEventAsync(
                     PubSubName,
-                    nameof(IEventPublisher.PlayerLeftGame),
-                    new PlayerOnlineStateArguments(characterId, characterName, serverId, guildId))
-                .WaitAndUnwrapException();
+                    nameof(IEventPublisher.PlayerLeftGameAsync),
+                    new PlayerOnlineStateArguments(characterId, characterName, serverId, guildId));
         }
         catch (Exception ex)
         {
@@ -68,16 +65,15 @@ public class EventPublisher : IEventPublisher
     }
 
     /// <inheritdoc />
-    public void GuildMessage(uint guildId, string sender, string message)
+    public async ValueTask GuildMessageAsync(uint guildId, string sender, string message)
     {
         try
         {
-            this._daprClient
+            await this._daprClient
                 .PublishEventAsync(
                     PubSubName,
-                    nameof(IGameServer.GuildChatMessage),
-                    new GuildMessageArguments(guildId, sender, message))
-                .WaitAndUnwrapException();
+                    nameof(IGameServer.GuildChatMessageAsync),
+                    new GuildMessageArguments(guildId, sender, message));
         }
         catch (Exception ex)
         {
@@ -86,16 +82,15 @@ public class EventPublisher : IEventPublisher
     }
 
     /// <inheritdoc />
-    public void AllianceMessage(uint guildId, string sender, string message)
+    public async ValueTask AllianceMessageAsync(uint guildId, string sender, string message)
     {
         try
         {
-            this._daprClient
+            await this._daprClient
                 .PublishEventAsync(
                     PubSubName,
-                    nameof(IGameServer.AllianceChatMessage),
-                    new GuildMessageArguments(guildId, sender, message))
-                .WaitAndUnwrapException();
+                    nameof(IGameServer.AllianceChatMessageAsync),
+                    new GuildMessageArguments(guildId, sender, message));
         }
         catch (Exception ex)
         {

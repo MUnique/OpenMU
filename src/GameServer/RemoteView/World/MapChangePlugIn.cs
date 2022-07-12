@@ -28,18 +28,18 @@ public class MapChangePlugIn : IMapChangePlugIn
     public MapChangePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void MapChange()
+    public ValueTask MapChangeAsync()
     {
-        this.SendMessage(true);
+        return this.SendMessageAsync(true);
     }
 
     /// <inheritdoc/>
-    public void MapChangeFailed()
+    public ValueTask MapChangeFailedAsync()
     {
-        this.SendMessage(false);
+        return this.SendMessageAsync(false);
     }
 
-    private void SendMessage(bool success)
+    private async ValueTask SendMessageAsync(bool success)
     {
         if (this._player.SelectedCharacter?.CurrentMap is null)
         {
@@ -49,6 +49,6 @@ public class MapChangePlugIn : IMapChangePlugIn
         var mapNumber = this._player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
         var position = this._player.IsWalking ? this._player.WalkTarget : this._player.Position;
 
-        this._player.Connection?.SendMapChanged(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte(), success);
+        await this._player.Connection.SendMapChangedAsync(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte(), success).ConfigureAwait(false);
     }
 }

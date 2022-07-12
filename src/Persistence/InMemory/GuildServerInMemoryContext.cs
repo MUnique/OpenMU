@@ -21,16 +21,17 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
     }
 
     /// <inheritdoc/>
-    public bool GuildWithNameExists(string name)
+    public async ValueTask<bool> GuildWithNameExistsAsync(string name)
     {
-        return this.Manager.GetRepository<DataModel.Entities.Guild>().GetAll().Any(g => g.Name == name);
+        return (await this.Manager.GetRepository<DataModel.Entities.Guild>().GetAllAsync()).Any(g => g.Name == name);
     }
 
     /// <inheritdoc/>
-    public IReadOnlyDictionary<Guid, string> GetMemberNames(Guid guildId)
+    public async ValueTask<IReadOnlyDictionary<Guid, string>> GetMemberNamesAsync(Guid guildId)
     {
-        var members = this.Manager.GetRepository<GuildMember>().GetAll().Where(member => member.GuildId == guildId);
-        var characters = this.Manager.GetRepository<Character>().GetAll();
+        var members = (await this.Manager.GetRepository<GuildMember>().GetAllAsync())
+                                            .Where(member => member.GuildId == guildId);
+        var characters = await this.Manager.GetRepository<Character>().GetAllAsync();
         return members
             .Select(m => (m.Id, Name: characters.FirstOrDefault(c => c.Id == m.Id)?.Name!))
             .Where(m => m.Name is not null)

@@ -26,9 +26,9 @@ internal class SellItemToNpcHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => SellItemToNpcRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         SellItemToNpcRequest message = packet;
-        this._sellAction.SellItem(player, message.ItemSlot);
+        await this._sellAction.SellItemAsync(player, message.ItemSlot);
     }
 }

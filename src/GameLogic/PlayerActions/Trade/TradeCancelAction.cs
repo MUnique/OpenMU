@@ -15,20 +15,20 @@ public class TradeCancelAction : BaseTradeAction
     /// Cancels the trade.
     /// </summary>
     /// <param name="trader">The trader.</param>
-    public new void CancelTrade(ITrader trader)
+    public new async ValueTask CancelTradeAsync(ITrader trader)
     {
         using var loggerScope = (trader as Player)?.Logger.BeginScope(this.GetType());
         var tradingPartner = trader.TradingPartner;
         if (tradingPartner != null)
         {
-            base.CancelTrade(tradingPartner);
-            base.CancelTrade(trader!);
-            trader!.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()?.TradeFinished(TradeResult.Cancelled);
-            tradingPartner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()?.TradeFinished(TradeResult.Cancelled);
+            await base.CancelTradeAsync(tradingPartner);
+            await base.CancelTradeAsync(trader);
+            await trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
+            await tradingPartner.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
         }
         else
         {
-            (trader as Player)?.Logger.LogWarning($"Trader {trader?.Name} invoked CancelTrade, but it probably wasn't in a trade (TradingPartner = null).");
+            trader.Logger.LogWarning($"Trader {trader?.Name} invoked CancelTrade, but it probably wasn't in a trade (TradingPartner = null).");
         }
     }
 }

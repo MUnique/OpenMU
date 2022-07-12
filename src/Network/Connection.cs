@@ -12,7 +12,9 @@ using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Pipelines.Sockets.Unofficial;
+using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.Network.SimpleModulus;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A connection which works on <see cref="IDuplexPipe"/>.
@@ -53,10 +55,10 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     }
 
     /// <inheritdoc />
-    public event PipedPacketReceivedHandler? PacketReceived;
+    public event AsyncEventHandler<ReadOnlySequence<byte>>? PacketReceived;
 
     /// <inheritdoc />
-    public event DisconnectedHandler? Disconnected;
+    public event AsyncEventHandler? Disconnected;
 
     /// <inheritdoc />
     public bool Connected => this.SocketConnection != null ? this.SocketConnection.ShutdownKind == PipeShutdownKind.None && !this._disconnected : !this._disconnected;
@@ -91,17 +93,21 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
             ConnectionCounter.Add(1);
             await this.ReadSource().ConfigureAwait(false);
         }
-        catch (Exception e)
+        catch (OperationCanceledException)
         {
-            this.OnComplete(e);
+            // not an error which we need to handle.
+        }
+        catch (Exception ex)
+        {
+            await this.OnCompleteAsync(ex).ConfigureAwait(false);
             return;
         }
 
-        this.OnComplete(null);
+        await this.OnCompleteAsync(null).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Disconnect()
+    public async ValueTask DisconnectAsync()
     {
         using var scope = this._logger.BeginScope(this._remoteEndPoint);
         if (this._disconnected)
@@ -123,19 +129,19 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger.LogDebug("Disconnected");
         this._disconnected = true;
 
-        this.Disconnected?.Invoke(this, EventArgs.Empty);
+        await this.Disconnected.SafeInvoke().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        this.Disconnect();
+        this.DisconnectAsync().AsTask().WaitAndUnwrapException();
         this.PacketReceived = null;
         this.Disconnected = null;
     }
 
     /// <inheritdoc />
-    protected override void OnComplete(Exception? exception)
+    protected override async ValueTask OnCompleteAsync(Exception? exception)
     {
         using var scope = this._logger.BeginScope(this._remoteEndPoint);
         if (exception is InvalidBlockChecksumException)
@@ -155,8 +161,8 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
             }
         }
 
-        this.Output.Complete(exception);
-        this.Disconnect();
+        await this.Output.CompleteAsync(exception).ConfigureAwait(false);
+        await this.DisconnectAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -164,7 +170,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// </summary>
     /// <param name="packet">The mu online packet.</param>
     /// <returns>The async task.</returns>
-    protected override Task ReadPacket(ReadOnlySequence<byte> packet)
+    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         IncomingBytesCounter.Add(packet.Length);
 
@@ -174,13 +180,11 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
                 .Start();
         try
         {
-            this.PacketReceived?.Invoke(this, packet);
+            await this.PacketReceived.SafeInvoke(packet);
         }
         finally
         {
             activity?.Stop();
         }
-
-        return Task.CompletedTask;
     }
 }

@@ -24,7 +24,7 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
     public GameMapInfoAdapter(GameMap map, IGameContext gameContext)
     {
         this._map = map;
-        gameContext.ForEachPlayer(p =>
+        gameContext.ForEachPlayerAsync(async p =>
         {
             if (p.CurrentMap == this._map)
             {
@@ -32,8 +32,8 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
             }
         });
 
-        this._map.ObjectAdded += this.OnMapObjectAdded;
-        this._map.ObjectRemoved += this.OnMapObjectRemoved;
+        this._map.ObjectAdded += this.OnMapObjectAddedAsync;
+        this._map.ObjectRemoved += this.OnMapObjectRemovedAsync;
     }
 
     /// <inheritdoc/>
@@ -60,13 +60,13 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        this._map.ObjectAdded -= this.OnMapObjectAdded;
-        this._map.ObjectRemoved -= this.OnMapObjectRemoved;
+        this._map.ObjectAdded -= this.OnMapObjectAddedAsync;
+        this._map.ObjectRemoved -= this.OnMapObjectRemovedAsync;
         this.PropertyChanged = null;
         this._players.Clear();
     }
 
-    private void OnMapObjectAdded(object? sender, (GameMap Map, ILocateable Object) args)
+    private async ValueTask OnMapObjectAddedAsync((GameMap Map, ILocateable Object) args)
     {
         if (args.Object is Player player)
         {
@@ -76,7 +76,7 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
         }
     }
 
-    private void OnMapObjectRemoved(object? sender, (GameMap Map, ILocateable Object) args)
+    private async ValueTask OnMapObjectRemovedAsync((GameMap Map, ILocateable Object) args)
     {
         if (args.Object is Player player)
         {

@@ -13,5 +13,5 @@ public interface IShowShowGuildWarRequestResultPlugIn : IViewPlugIn
     /// Shows the result.
     /// </summary>
     /// <param name="result">The result.</param>
-    void ShowResult(GuildWarRequestResult result);
+    ValueTask ShowResultAsync(GuildWarRequestResult result);
 }

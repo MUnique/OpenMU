@@ -9,7 +9,6 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
-using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -31,7 +30,7 @@ public class ShowLoginWindowPlugIn : IShowLoginWindowPlugIn
     }
 
     /// <inheritdoc/>
-    public void ShowLoginWindow()
+    public async ValueTask ShowLoginWindowAsync()
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -39,13 +38,20 @@ public class ShowLoginWindowPlugIn : IShowLoginWindowPlugIn
             return;
         }
 
-        using var writer = connection.StartSafeWrite(GameServerEntered.HeaderType, GameServerEntered.Length);
-        var message = new GameServerEntered(writer.Span)
+        int Write()
         {
-            PlayerId = ViewExtensions.ConstantPlayerId,
-        };
+            var size = GameServerEnteredRef.Length;
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new GameServerEnteredRef(span)
+            {
+                PlayerId = ViewExtensions.ConstantPlayerId,
+            };
 
-        ClientVersionResolver.Resolve(this._player.ClientVersion).CopyTo(message.Version);
-        writer.Commit();
+            ClientVersionResolver.Resolve(this._player.ClientVersion).CopyTo(packet.Version);
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -27,13 +28,13 @@ internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
     /// </summary>
     /// <param name="headerId">The id of its header.</param>
     /// <returns>The body of the header.</returns>
-    public LetterBody? GetBodyByHeaderId(Guid headerId)
+    public async ValueTask<LetterBody?> GetBodyByHeaderIdAsync(Guid headerId)
     {
         using var context = this.GetContext();
-        var letterBody = context.Context.Set<LetterBody>().FirstOrDefault(body => body.HeaderId == headerId);
+        var letterBody = await context.Context.Set<LetterBody>().FirstOrDefaultAsync(body => body.HeaderId == headerId);
         if (letterBody != null)
         {
-            this.LoadDependentData(letterBody, context.Context);
+            await this.LoadDependentDataAsync(letterBody, context.Context);
         }
 
         return letterBody;

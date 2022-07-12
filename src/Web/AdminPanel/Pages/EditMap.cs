@@ -99,7 +99,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         {
             this._disposeCts = new CancellationTokenSource();
             var cts = this._disposeCts.Token;
-            Task.Run(() => this.LoadDataAsync(cts), cts);
+            _ = Task.Run(() => this.LoadDataAsync(cts), cts);
         }
     }
 
@@ -115,7 +115,7 @@ public sealed class EditMap : ComponentBase, IDisposable
             {
                 try
                 {
-                    this._model = this._persistenceContext.GetById<GameMapDefinition>(this.Id);
+                    this._model = await this._persistenceContext.GetByIdAsync<GameMapDefinition>(this.Id);
                 }
                 catch (Exception ex)
                 {

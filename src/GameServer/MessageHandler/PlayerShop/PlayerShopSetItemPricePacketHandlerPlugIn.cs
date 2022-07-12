@@ -28,10 +28,10 @@ internal class PlayerShopSetItemPricePacketHandlerPlugIn : ISubPacketHandlerPlug
     public byte Key => PlayerShopSetItemPrice.SubCode;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PlayerShopSetItemPrice message = packet;
         player.Logger.LogDebug("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter?.Name, message.ItemSlot, message.Price);
-        this._setPriceAction.SetPrice(player, message.ItemSlot, (int)message.Price);
+        await this._setPriceAction.SetPriceAsync(player, message.ItemSlot, (int)message.Price);
     }
 }

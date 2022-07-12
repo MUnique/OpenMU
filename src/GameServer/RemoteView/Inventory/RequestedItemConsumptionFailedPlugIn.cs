@@ -27,15 +27,16 @@ public class RequestedItemConsumptionFailedPlugIn : IRequestedItemConsumptionFai
 
     /// <inheritdoc />
     /// <remarks>The server sends the current health/shield to the client, with <see cref="ItemConsumptionFailed"/>.</remarks>
-    public void RequestedItemConsumptionFailed()
+    public async ValueTask RequestedItemConsumptionFailedAsync()
     {
         if (this._player.Attributes is null)
         {
             return;
         }
 
-        this._player.Connection?.SendItemConsumptionFailed(
+        await this._player.Connection.SendItemConsumptionFailedAsync(
             (ushort)Math.Max(this._player.Attributes[Stats.CurrentHealth], 0f),
-            (ushort)Math.Max(this._player.Attributes[Stats.CurrentShield], 0f));
+            (ushort)Math.Max(this._player.Attributes[Stats.CurrentShield], 0f))
+            .ConfigureAwait(false);
     }
 }

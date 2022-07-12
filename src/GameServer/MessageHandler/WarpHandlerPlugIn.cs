@@ -29,18 +29,18 @@ internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => WarpCommandRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         WarpCommandRequest request = packet;
         ushort warpInfoIndex = request.WarpInfoIndex;
         var warpInfo = player.GameContext.Configuration.WarpList?.FirstOrDefault(info => info.Index == warpInfoIndex);
         if (warpInfo != null)
         {
-            this._warpAction.WarpTo(player, warpInfo);
+            await this._warpAction.WarpToAsync(player, warpInfo);
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 }

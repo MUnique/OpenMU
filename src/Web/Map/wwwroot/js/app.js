@@ -323,7 +323,7 @@ System.register("Attackable", ["three", "tween"], function (exports_5, context_5
             }(THREE.Mesh));
             exports_5("Attackable", Attackable);
             ;
-            new THREE.TextureLoader().load("img/attackable_alphamap.png", function (t) {
+            new THREE.TextureLoader().load("_content/MUnique.OpenMU.Web.Map/img/attackable_alphamap.png", function (t) {
                 exports_5("attackableAlphaMapTexture", attackableAlphaMapTexture = t);
             });
         }
@@ -581,8 +581,13 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 World.prototype.addAnimation = function (animatingId, animation, targetId, direction) {
                     var animating = this.getObjectById(animatingId);
                     if (animating !== undefined && animating !== null) {
-                        var rotationMultiplier = 0x10;
-                        animating.rotateTo(direction / rotationMultiplier);
+                        if (animation === 122) {
+                            animating.rotateTo(direction);
+                        }
+                        else {
+                            var rotationMultiplier = 0x10;
+                            animating.rotateTo(direction / rotationMultiplier);
+                        }
                     }
                     if (targetId !== null) {
                         var target = this.getObjectById(targetId);

@@ -12,5 +12,5 @@ public interface IShowLoginWindowPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the login window.
     /// </summary>
-    void ShowLoginWindow();
+    ValueTask ShowLoginWindowAsync();
 }

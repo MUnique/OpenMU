@@ -60,7 +60,7 @@ public sealed class PersistentLoginServer : ILoginServer
     }
 
     /// <inheritdoc />
-    public async Task<bool> TryLogin(string accountName, byte serverId)
+    public async Task<bool> TryLoginAsync(string accountName, byte serverId)
     {
         try
         {
@@ -75,7 +75,7 @@ public sealed class PersistentLoginServer : ILoginServer
                 // Never logged in, so first insert a fresh state and try again.
                 // We never want to have the same account logged in twice, because that may lead to game mechanic exploits.
                 await this._daprClient.SaveStateAsync<int?>(StoreName, accountName, OfflineServerId, new StateOptions { Concurrency = ConcurrencyMode.FirstWrite, Consistency = ConsistencyMode.Strong });
-                return await this.TryLogin(accountName, serverId);
+                return await this.TryLoginAsync(accountName, serverId);
             }
 
             var success = await this._daprClient.TrySaveStateAsync(StoreName, accountName, serverId, eTag);
@@ -90,20 +90,17 @@ public sealed class PersistentLoginServer : ILoginServer
     }
 
     /// <inheritdoc />
-    public void LogOff(string accountName, byte serverId)
+    public async ValueTask LogOffAsync(string accountName, byte serverId)
     {
-        Task.Run(async () =>
+        try
         {
-            try
-            {
-                await this.SetAccountOfflineAsync(accountName);
-                await this.RemoveFromIndexAsync(accountName, serverId);
-            }
-            catch (Exception ex)
-            {
-                this._logger.LogError(ex, "Unexpected error when removing account {0} from server {1}", accountName, serverId);
-            }
-        });
+            await this.SetAccountOfflineAsync(accountName);
+            await this.RemoveFromIndexAsync(accountName, serverId);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when removing account {0} from server {1}", accountName, serverId);
+        }
     }
 
     private async Task AddToIndexAsync(string accountName, byte serverId)

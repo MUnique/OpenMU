@@ -34,7 +34,7 @@ public class SeedSphereCrafting : SimpleItemCraftingHandler
     public static byte SeedReference { get; } = 0x77;
 
     /// <inheritdoc />
-    protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
     {
         var seed = requiredItems.Single(i => i.ItemRequirement.Reference == SeedReference).Items.Single();
         var sphere = requiredItems.Single(i => i.ItemRequirement.Reference == SphereReference).Items.Single();
@@ -57,7 +57,7 @@ public class SeedSphereCrafting : SimpleItemCraftingHandler
         result.Definition = player.GameContext.Configuration.Items.Single(i => i.Number == resultSphereNumber && i.Group == 12);
         result.Level = seed.Level; // The level defines the kind of option
 
-        player.TemporaryStorage!.AddItem(result);
-        yield return result;
+        await player.TemporaryStorage!.AddItemAsync(result);
+        return new List<Item> { result };
     }
 }

@@ -24,7 +24,7 @@ public class ConnectionTests
         var duplexPipe = new DuplexPipe();
         using var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         var disconnected = false;
-        connection.Disconnected += (sender, args) => disconnected = true;
+        connection.Disconnected += async () => disconnected = true;
         _ = connection.BeginReceive();
         try
         {

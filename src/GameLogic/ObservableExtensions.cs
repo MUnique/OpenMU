@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.GameLogic.Views;
+
 namespace MUnique.OpenMU.GameLogic;
 
 /// <summary>
@@ -9,16 +11,27 @@ namespace MUnique.OpenMU.GameLogic;
 /// </summary>
 public static class ObservableExtensions
 {
-    /// <summary>
-    /// Executes the action for all observing players of the observable.
-    /// </summary>
-    /// <param name="observable">The observable.</param>
-    /// <param name="action">The action.</param>
-    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action"/> should be done for <paramref name="observable"/> too.</param>
-    public static void ForEachObservingPlayer(this IObservable observable, Action<Player> action, bool includeThis)
-    {
-        observable.ForEachObserving(action, includeThis);
-    }
+    ///// <summary>
+    ///// Executes the action for all observing players of the observable.
+    ///// </summary>
+    ///// <param name="observable">The observable.</param>
+    ///// <param name="action">The action.</param>
+    ///// <param name="includeThis">if set to <c>true</c> the <paramref name="action"/> should be done for <paramref name="observable"/> too.</param>
+    //public static void ForEachObservingPlayer(this IObservable observable, Action<Player> action, bool includeThis)
+    //{
+    //    observable.ForEachObserving(action, includeThis);
+    //}
+
+    ///// <summary>
+    ///// Executes the action for all observing players of the observable.
+    ///// </summary>
+    ///// <param name="observable">The observable.</param>
+    ///// <param name="action">The action.</param>
+    ///// <param name="includeThis">if set to <c>true</c> the <paramref name="action"/> should be done for <paramref name="observable"/> too.</param>
+    //public static ValueTask ForEachObservingPlayerAsync(this IObservable observable, Func<Player, ValueTask> action, bool includeThis)
+    //{
+    //    return observable.ForEachObservingAsync(action, includeThis);
+    //}
 
     /// <summary>
     /// Executes the action for all observers of the observable.
@@ -32,22 +45,61 @@ public static class ObservableExtensions
     }
 
     /// <summary>
+    /// Executes the action for all observers of the observable.
+    /// </summary>
+    /// <typeparam name="TViewPlugIn">The type of the <see cref="IViewPlugIn"/>.</typeparam>
+    /// <param name="observable">The observable.</param>
+    /// <param name="action">The action.</param>
+    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action" /> should be done for <paramref name="observable" /> too.</param>
+    public static ValueTask ForEachWorldObserverAsync<TViewPlugIn>(this IObservable observable, Func<TViewPlugIn, ValueTask> action, bool includeThis)
+        where TViewPlugIn : class, IViewPlugIn
+    {
+        return observable.ForEachObservingAsync<IWorldObserver>(o => o.InvokeViewPlugInAsync(action), includeThis);
+    }
+
+    /// <summary>
+    /// Invokes the view plug in asynchronously and catches possible errors.
+    /// </summary>
+    /// <typeparam name="TViewPlugIn">The type of the view plug in.</typeparam>
+    /// <param name="observer">The observer.</param>
+    /// <param name="action">The action.</param>
+    public static async ValueTask InvokeViewPlugInAsync<TViewPlugIn>(this IWorldObserver observer, Func<TViewPlugIn, ValueTask> action)
+        where TViewPlugIn : class, IViewPlugIn
+    {
+        if (observer.ViewPlugIns.GetPlugIn<TViewPlugIn>() is { } plugIn)
+        {
+            try
+            {
+                await action(plugIn).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                observer.Logger.LogError(ex, $"Error when invoking view action of {typeof(TViewPlugIn)}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Executes the action for all observers of the observable.
+    /// </summary>
+    /// <param name="observable">The observable.</param>
+    /// <param name="action">The action.</param>
+    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action"/> should be done for <paramref name="observable"/> too.</param>
+    public static ValueTask ForEachWorldObserverAsync(this IObservable observable, Func<IWorldObserver, ValueTask> action, bool includeThis)
+    {
+        return observable.ForEachObservingAsync(action, includeThis);
+    }
+
+    /// <summary>
     /// Gets the observing player with the specified identifier, if found. Otherwise, null.
     /// </summary>
     /// <param name="observable">The observable.</param>
     /// <param name="playerId">The player identifier.</param>
     /// <returns>The observing player with the specified identifier, if found. Otherwise, null.</returns>
-    public static Player? GetObservingPlayerWithId(this IObservable observable, ushort playerId)
+    public static async ValueTask<Player?> GetObservingPlayerWithIdAsync(this IObservable observable, ushort playerId)
     {
-        observable.ObserverLock.EnterReadLock();
-        try
-        {
-            return observable.Observers.OfType<Player>().FirstOrDefault(p => p.Id == playerId);
-        }
-        finally
-        {
-            observable.ObserverLock.ExitReadLock();
-        }
+        using var readerLock = await observable.ObserverLock.ReaderLockAsync();
+        return observable.Observers.OfType<Player>().FirstOrDefault(p => p.Id == playerId);
     }
 
     /// <summary>
@@ -61,32 +113,62 @@ public static class ObservableExtensions
     {
         try
         {
-            observable.ObserverLock.EnterReadLock();
-            try
+            using var readerLock = observable.ObserverLock.ReaderLock();
+            foreach (var obs in observable.Observers.OfType<T>())
             {
-                foreach (var obs in observable.Observers.OfType<T>())
+                if (!includeThis && obs.Equals(observable))
                 {
-                    if (!includeThis && obs.Equals(observable))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    try
+                try
+                {
+                    action(obs);
+                }
+                catch (Exception ex)
+                {
+                    if (obs is ILoggerOwner loggerOwner)
                     {
-                        action(obs);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (obs is ILoggerOwner loggerOwner)
-                        {
-                            loggerOwner.Logger.LogError(ex, "Error when performing action for {0}", obs);
-                        }
+                        loggerOwner.Logger.LogError(ex, "Error when performing action for {0}", obs);
                     }
                 }
             }
-            finally
+        }
+        catch (ObjectDisposedException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Executes the action for all observing players of the observable.
+    /// </summary>
+    /// <param name="observable">The observable.</param>
+    /// <param name="action">The action.</param>
+    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action"/> should be done for <paramref name="observable"/> too.</param>
+    public static async ValueTask ForEachObservingAsync<T>(this IObservable observable, Func<T, ValueTask> action, bool includeThis)
+        where T : class, IWorldObserver
+    {
+        try
+        {
+            using var readerLock = await observable.ObserverLock.ReaderLockAsync();
+            foreach (var obs in observable.Observers.OfType<T>())
             {
-                observable.ObserverLock.ExitReadLock();
+                if (!includeThis && obs.Equals(observable))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    await action(obs);
+                }
+                catch (Exception ex)
+                {
+                    if (obs is ILoggerOwner loggerOwner)
+                    {
+                        loggerOwner.Logger.LogError(ex, "Error when performing action for {0}", obs);
+                    }
+                }
             }
         }
         catch (ObjectDisposedException)

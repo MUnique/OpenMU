@@ -2,9 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Threading;
+using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Pathfinding;
 
@@ -18,7 +21,7 @@ public sealed class DroppedItem : IDisposable, ILocateable
     /// <summary>
     /// Gets the pickup lock. Used to synchronize pick up requests from the players.
     /// </summary>
-    private readonly object _pickupLock;
+    private readonly AsyncLock _pickupLock = new ();
 
     private readonly DateTime _dropTimestamp = DateTime.UtcNow;
 
@@ -59,7 +62,6 @@ public sealed class DroppedItem : IDisposable, ILocateable
     public DroppedItem(Item item, Point position, GameMap map, Player? dropper, IEnumerable<object>? owners)
     {
         this.Item = item;
-        this._pickupLock = new object();
         this.Position = position;
         this.CurrentMap = map;
         this._dropper = dropper;
@@ -83,23 +85,26 @@ public sealed class DroppedItem : IDisposable, ILocateable
     /// <inheritdoc/>
     public GameMap CurrentMap { get; }
 
+    /// <inheritdoc/>
+    public bool IsFreshDrop => !this._itemIsPersistent;
+
     /// <summary>
     /// Tries to pick the item up by the specified player.
     /// </summary>
     /// <param name="player">The player.</param>
-    /// <param name="stackTarget">If the success is <c>true</c>, and this is not <c>null</c>, this dropped item was stacked on an existing item of the players inventory.</param>
     /// <returns>
     /// The success.
+    /// StackTarget: If the success is <c>true</c>, and this is not <c>null</c>, this dropped item was stacked on an existing item of the players inventory.
     /// </returns>
     /// <remarks>
     /// Can be overwritten, for example for quest items which dropped only for a specific player.
     /// </remarks>
-    public bool TryPickUpBy(Player player, out Item? stackTarget)
+    public async ValueTask<(bool Success, Item? StackTarget)> TryPickUpByAsync(Player player)
     {
-        stackTarget = null;
+        Item? stackTarget = null;
         if (!this._availableToPick)
         {
-            return false;
+            return (false, stackTarget);
         }
 
         if (this.Item.IsStackable())
@@ -109,26 +114,26 @@ public sealed class DroppedItem : IDisposable, ILocateable
 
         if (stackTarget != null)
         {
-            if (this.TryStackOnItem(player, stackTarget))
+            if (await this.TryStackOnItemAsync(player, stackTarget))
             {
-                return true;
+                return (true, stackTarget);
             }
 
-            return false;
+            return (false, stackTarget);
         }
 
         if (this.Item.Definition!.IsBoundToCharacter && !this.IsPlayerAnOwner(player))
         {
-            return false;
+            return (false, stackTarget);
         }
 
         if (!this.IsPlayerAnOwner(player)
             && DateTime.UtcNow < this._dropTimestamp.Add(TimeUntilDropIsFree))
         {
-            return false;
+            return (false, stackTarget);
         }
 
-        return this.TryPickUp(player);
+        return (await this.TryPickUpAsync(player), stackTarget);
     }
 
     /// <inheritdoc/>
@@ -145,7 +150,7 @@ public sealed class DroppedItem : IDisposable, ILocateable
         {
             this._removeTimer = null;
             timer.Dispose();
-            this.CurrentMap.Remove(this);
+            this.CurrentMap.RemoveAsync(this).AsTask().WaitWithoutException(); //todo
             this._dropper = null;
             this._owners = null;
         }
@@ -174,7 +179,7 @@ public sealed class DroppedItem : IDisposable, ILocateable
         return this._owners?.Contains(player) ?? true;
     }
 
-    private bool TryPickUp(Player player)
+    private async ValueTask<bool> TryPickUpAsync(Player player)
     {
         player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
         var slot = player.Inventory?.CheckInvSpace(this.Item);
@@ -185,7 +190,7 @@ public sealed class DroppedItem : IDisposable, ILocateable
         }
 
         var itemWasTemporary = this.Item is TemporaryItem;
-        lock (this._pickupLock)
+        using (await this._pickupLock.LockAsync())
         {
             if (!this._availableToPick)
             {
@@ -193,7 +198,7 @@ public sealed class DroppedItem : IDisposable, ILocateable
                 return false;
             }
 
-            if (!player.Inventory!.AddItem((byte)slot, this.Item))
+            if (!await player.Inventory!.AddItemAsync((byte)slot, this.Item))
             {
                 player.Logger.LogDebug("Item could not be added to the inventory, Player {0}, Item {1}", player, this);
                 return false;
@@ -226,10 +231,10 @@ public sealed class DroppedItem : IDisposable, ILocateable
         return true;
     }
 
-    private bool TryStackOnItem(Player player, Item stackTarget)
+    private async ValueTask<bool> TryStackOnItemAsync(Player player, Item stackTarget)
     {
         player.Logger.LogDebug("Player {0} tries to pick up {1}, trying to add to an existing item at slot {2}", player, this, stackTarget.ItemSlot);
-        lock (this._pickupLock)
+        using (await this._pickupLock.LockAsync())
         {
             if (!this._availableToPick)
             {
@@ -267,7 +272,7 @@ public sealed class DroppedItem : IDisposable, ILocateable
             // So we use a new temporary persistence context instead.
             // We use a trade-context as it just focuses on the items. Otherwise, we would track a lot more items.
             using var context = repositoryManager.CreateNewTradeContext();
-            context.Delete(this.Item);
+            context.DeleteAsync(this.Item);
             context.SaveChanges();
         }
         catch (Exception e)

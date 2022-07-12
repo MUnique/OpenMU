@@ -27,7 +27,7 @@ public class ItemMoveFailedPlugIn : IItemMoveFailedPlugIn
     public ItemMoveFailedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ItemMoveFailed(Item? item)
+    public async ValueTask ItemMoveFailedAsync(Item? item)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -35,14 +35,20 @@ public class ItemMoveFailedPlugIn : IItemMoveFailedPlugIn
             return;
         }
 
-        var itemSerializer = this._player.ItemSerializer;
-        using var writer = connection.StartSafeWrite(ItemMoveRequestFailed.HeaderType, ItemMoveRequestFailed.GetRequiredSize(itemSerializer.NeededSpace));
-        var message = new ItemMoveRequestFailed(writer.Span);
-        if (item != null)
+        int Write()
         {
-            itemSerializer.SerializeItem(message.ItemData, item);
+            var itemSerializer = this._player.ItemSerializer;
+            var size = ItemMoveRequestFailedRef.GetRequiredSize(itemSerializer.NeededSpace);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new ItemMoveRequestFailedRef(span);
+            if (item != null)
+            {
+                itemSerializer.SerializeItem(packet.ItemData, item);
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

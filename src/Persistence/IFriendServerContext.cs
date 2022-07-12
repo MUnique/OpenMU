@@ -17,7 +17,7 @@ public interface IFriendServerContext : IContext
     /// <param name="characterName">Name of the character.</param>
     /// <param name="friendName">Name of the friend.</param>
     /// <returns>The created friend view item.</returns>
-    Friend CreateNewFriend(string characterName, string friendName);
+    ValueTask<Friend> CreateNewFriendAsync(string characterName, string friendName);
 
     /// <summary>
     /// Gets the friend view item by friend.
@@ -25,33 +25,33 @@ public interface IFriendServerContext : IContext
     /// <param name="characterName">Name of the character holding the friend view item in its friendlist.</param>
     /// <param name="friendName">Name of the friend.</param>
     /// <returns>The friend view item of the friend.</returns>
-    Friend? GetFriendByNames(string characterName, string friendName);
+    ValueTask<Friend?> GetFriendByNamesAsync(string characterName, string friendName);
 
     /// <summary>
     /// Gets the friends of a character.
     /// </summary>
     /// <param name="characterId">Id of the character.</param>
     /// <returns>The friends of the character.</returns>
-    IEnumerable<FriendViewItem> GetFriends(Guid characterId);
+    ValueTask<IEnumerable<FriendViewItem>> GetFriendsAsync(Guid characterId);
 
     /// <summary>
     /// Gets the friend names of a character.
     /// </summary>
     /// <param name="characterId">Id of the character.</param>
     /// <returns>The friend names of the character.</returns>
-    IEnumerable<string> GetFriendNames(Guid characterId);
+    ValueTask<IEnumerable<string>> GetFriendNamesAsync(Guid characterId);
 
     /// <summary>
     /// Deletes the friend with name <paramref name="friendName"/> from the friendlist of <paramref name="characterName"/>.
     /// </summary>
     /// <param name="characterName">Name of the character holding the friend view item in its friendlist.</param>
     /// <param name="friendName">Name of the friend.</param>
-    void Delete(string characterName, string friendName);
+    ValueTask DeleteAsync(string characterName, string friendName);
 
     /// <summary>
     /// Gets the names from characters which requested a friendship to the character with the specified id and are not answered yet.
     /// </summary>
     /// <param name="characterId">Id of the character.</param>
     /// <returns>The open friend requester names.</returns>
-    IEnumerable<string> GetOpenFriendRequesterNames(Guid characterId);
+    ValueTask<IEnumerable<string>> GetOpenFriendRequesterNamesAsync(Guid characterId);
 }

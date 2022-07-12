@@ -81,11 +81,11 @@ public partial class MapEditor : IDisposable
     }
 
     /// <inheritdoc />
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
         this.NotificationService.PropertyChanged += this.OnPropertyChanged;
-        this.Maps = this.PersistenceContext.Get<GameMapDefinition>().OrderBy(c => c.Number).ToList();
+        this.Maps = (await this.PersistenceContext.GetAsync<GameMapDefinition>()).OrderBy(c => c.Number).ToList();
     }
 
     /// <inheritdoc />
@@ -406,7 +406,7 @@ public partial class MapEditor : IDisposable
                 return;
         }
 
-        this.PersistenceContext.Delete(this._focusedObject);
+        this.PersistenceContext.DeleteAsync(this._focusedObject);
         this._focusedObject = null;
     }
 

@@ -27,9 +27,9 @@ internal class SetVaultPinPlugIn : ISubPacketHandlerPlugIn
     public byte Key => SetVaultPin.SubCode;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         SetVaultPin message = packet;
-        this._setVaultPinAction.SetPin(player, message.Pin.ToString(), message.Password);
+        await this._setVaultPinAction.SetPinAsync(player, message.Pin.ToString(), message.Password);
     }
 }

@@ -35,5 +35,5 @@ public interface IShowMerchantStoreItemListPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="storeItems">The store items.</param>
     /// <param name="storeKind">Kind of the store.</param>
-    void ShowMerchantStoreItemList(ICollection<Item> storeItems, StoreKind storeKind);
+    ValueTask ShowMerchantStoreItemListAsync(ICollection<Item> storeItems, StoreKind storeKind);
 }

@@ -77,11 +77,11 @@ public partial class PacketSenderForm : Form
 
             if (this.toClientRadioButton.Checked)
             {
-                this._connection.SendToClient(data);
+                this._connection.SendToClientAsync(data);
             }
             else
             {
-                this._connection.SendToServer(data);
+                this._connection.SendToServerAsync(data);
             }
         }
     }

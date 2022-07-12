@@ -32,6 +32,8 @@ public class PlugInManager
     /// <param name="serviceProvider">The service provider.</param>
     public PlugInManager(ICollection<PlugInConfiguration>? configurations, ILoggerFactory loggerFactory, IServiceProvider? serviceProvider)
     {
+        _ = typeof(Nito.AsyncEx.AsyncReaderWriterLock); // Ensure Nito.AsyncEx.Coordination is loaded so it will be available in proxy generation.
+
         this._logger = loggerFactory.CreateLogger<PlugInManager>();
         this._serviceContainer = new ServiceContainer(serviceProvider);
         this._serviceContainer.AddService(typeof(PlugInManager), this);

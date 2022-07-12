@@ -25,9 +25,9 @@ public class ShowCharacterDeleteResponsePlugIn : IShowCharacterDeleteResponsePlu
     public ShowCharacterDeleteResponsePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowCharacterDeleteResponse(CharacterDeleteResult result)
+    public async ValueTask ShowCharacterDeleteResponseAsync(CharacterDeleteResult result)
     {
-        this._player.Connection.SendCharacterDeleteResponse(ConvertResult(result));
+        await this._player.Connection.SendCharacterDeleteResponseAsync(ConvertResult(result));
     }
 
     private static CharacterDeleteResponse.CharacterDeleteResult ConvertResult(CharacterDeleteResult result)

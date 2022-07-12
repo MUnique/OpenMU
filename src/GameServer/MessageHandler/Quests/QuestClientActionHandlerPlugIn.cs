@@ -27,7 +27,7 @@ public class QuestClientActionHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => QuestClientActionRequest.SubCode;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         QuestClientActionRequest request = packet;
         this._questClientAction.ClientAction(player, (short)request.QuestGroup, (short)request.QuestNumber);

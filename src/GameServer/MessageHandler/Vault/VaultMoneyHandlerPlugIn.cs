@@ -25,7 +25,7 @@ internal class VaultMoneyHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => VaultMoveMoneyRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         VaultMoveMoneyRequest request = packet;
         switch (request.Direction)
@@ -40,6 +40,6 @@ internal class VaultMoneyHandlerPlugIn : IPacketHandlerPlugIn
                 throw new InvalidEnumArgumentException($"The direction {request.Direction} is not a valid value.");
         }
 
-        player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney(true);
+        await player.InvokeViewPlugInAsync<IUpdateVaultMoneyPlugIn>(p => p.UpdateVaultMoneyAsync(true)).ConfigureAwait(false);
     }
 }

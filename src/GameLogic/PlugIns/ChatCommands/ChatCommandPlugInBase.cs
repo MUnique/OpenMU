@@ -22,16 +22,16 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     public abstract CharacterStatus MinCharacterStatusRequirement { get; }
 
     /// <inheritdoc/>
-    public virtual void HandleCommand(Player player, string command)
+    public virtual async ValueTask HandleCommandAsync(Player player, string command)
     {
         try
         {
             var arguments = command.ParseArguments<T>();
-            this.DoHandleCommand(player, arguments);
+            await this.DoHandleCommandAsync(player, arguments);
         }
         catch (ArgumentException argEx)
         {
-            this.ShowMessageTo(player, $"[{this.Key}] {argEx.Message}");
+            await this.ShowMessageToAsync(player, $"[{this.Key}] {argEx.Message}");
         }
         catch (Exception ex)
         {
@@ -44,7 +44,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="arguments">The arguments.</param>
-    protected abstract void DoHandleCommand(Player player, T arguments);
+    protected abstract ValueTask DoHandleCommandAsync(Player player, T arguments);
 
     /// <summary>
     /// Shows a message to a player.
@@ -52,9 +52,9 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     /// <param name="player">The player.</param>
     /// <param name="message">The message.</param>
     /// <param name="messageType">The message type.</param>
-    protected void ShowMessageTo(Player player, string message, MessageType messageType = MessageType.BlueNormal)
+    protected ValueTask ShowMessageToAsync(Player player, string message, MessageType messageType = MessageType.BlueNormal)
     {
-        player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, messageType);
+        return player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType));
     }
 
     /// <summary>
@@ -80,12 +80,12 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     /// <param name="player">The player.</param>
     /// <param name="guildName">The guild name.</param>
     /// <returns>The guild id.</returns>
-    protected uint GetGuildIdByName(Player player, string guildName)
+    protected async ValueTask<uint> GetGuildIdByNameAsync(Player player, string guildName)
     {
         var guildServer = (player.GameContext as IGameServerContext)!.GuildServer;
-        var guildId = guildServer.GetGuildIdByName(guildName);
+        var guildId = await guildServer.GetGuildIdByNameAsync(guildName);
 
-        if (guildId == default(uint))
+        if (guildId == default)
         {
             throw new ArgumentException($"Guild {guildName} not found.");
         }

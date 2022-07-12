@@ -31,115 +31,115 @@ public class GameServerController : ControllerBase
     /// Sends a chat message to all connected guild members.
     /// </summary>
     /// <param name="data">The message arguments.</param>
-    [HttpPost(nameof(IGameServer.GuildChatMessage))]
-    [Topic("pubsub", nameof(IGameServer.GuildChatMessage))]
-    public void GuildChatMessage([FromBody] GuildMessageArguments data)
+    [HttpPost(nameof(IGameServer.GuildChatMessageAsync))]
+    [Topic("pubsub", nameof(IGameServer.GuildChatMessageAsync))]
+    public ValueTask GuildChatMessageAsync([FromBody] GuildMessageArguments data)
     {
-        this._gameServer.GuildChatMessage(data.GuildId, data.Sender, data.Message);
+        return this._gameServer.GuildChatMessageAsync(data.GuildId, data.Sender, data.Message);
     }
 
     /// <summary>
     /// Sends a chat message to all connected alliance members.
     /// </summary>
     /// <param name="data">The message arguments.</param>
-    [HttpPost(nameof(IGameServer.AllianceChatMessage))]
-    [Topic("pubsub", nameof(IGameServer.AllianceChatMessage))]
-    public void AllianceChatMessage([FromBody] GuildMessageArguments data)
+    [HttpPost(nameof(IGameServer.AllianceChatMessageAsync))]
+    [Topic("pubsub", nameof(IGameServer.AllianceChatMessageAsync))]
+    public ValueTask AllianceChatMessageAsync([FromBody] GuildMessageArguments data)
     {
-        this._gameServer.AllianceChatMessage(data.GuildId, data.Sender, data.Message);
+        return this._gameServer.AllianceChatMessageAsync(data.GuildId, data.Sender, data.Message);
     }
 
     /// <summary>
     /// Notifies the game server that a guild got deleted.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
-    [HttpPost(nameof(IGameServer.GuildDeleted))]
-    [Topic("pubsub", nameof(GuildDeleted))]
-    public void GuildDeleted([FromBody] uint guildId)
+    [HttpPost(nameof(IGameServer.GuildDeletedAsync))]
+    [Topic("pubsub", nameof(GuildDeletedAsync))]
+    public ValueTask GuildDeletedAsync([FromBody] uint guildId)
     {
-        this._gameServer.GuildDeleted(guildId);
+        return this._gameServer.GuildDeletedAsync(guildId);
     }
 
     /// <summary>
     /// Notifies the game server that a guild member got removed from a guild.
     /// </summary>
     /// <param name="playerName">Name of the player which got removed from a guild.</param>
-    [HttpPost(nameof(IGameServer.GuildPlayerKicked))]
-    [Topic("pubsub", nameof(IGameServer.GuildPlayerKicked))]
-    public void GuildPlayerKicked([FromBody] string playerName)
+    [HttpPost(nameof(IGameServer.GuildPlayerKickedAsync))]
+    [Topic("pubsub", nameof(IGameServer.GuildPlayerKickedAsync))]
+    public ValueTask GuildPlayerKickedAsync([FromBody] string playerName)
     {
-        this._gameServer.GuildPlayerKicked(playerName);
+        return this._gameServer.GuildPlayerKickedAsync(playerName);
     }
 
     /// <summary>
     /// Notifies the game server that a letter got received for an online player.
     /// </summary>
     /// <param name="letter">The letter header.</param>
-    [HttpPost(nameof(IGameServer.LetterReceived))]
-    [Topic("pubsub", nameof(IGameServer.LetterReceived))]
-    public void LetterReceived([FromBody] LetterHeader letter)
+    [HttpPost(nameof(IGameServer.LetterReceivedAsync))]
+    [Topic("pubsub", nameof(IGameServer.LetterReceivedAsync))]
+    public ValueTask LetterReceivedAsync([FromBody] LetterHeader letter)
     {
-        this._gameServer.LetterReceived(letter);
+        return this._gameServer.LetterReceivedAsync(letter);
     }
 
     /// <summary>
     /// Assigns the guild to the player.
     /// </summary>
     /// <param name="data">The assignment arguments.</param>
-    [HttpPost(nameof(IGameServer.AssignGuildToPlayer))]
-    public void AssignGuildToPlayer([FromBody] GuildMemberAssignArguments data)
+    [HttpPost(nameof(IGameServer.AssignGuildToPlayerAsync))]
+    public ValueTask AssignGuildToPlayerAsync([FromBody] GuildMemberAssignArguments data)
     {
-        this._gameServer.AssignGuildToPlayer(data.CharacterName, data.MemberStatus);
+        return this._gameServer.AssignGuildToPlayerAsync(data.CharacterName, data.MemberStatus);
     }
 
     /// <summary>
     /// Initializes the messenger of a player.
     /// </summary>
     /// <param name="initializationData">The initialization data.</param>
-    [HttpPost(nameof(IGameServer.InitializeMessenger))]
-    public void InitializeMessenger([FromBody] MessengerInitializationData initializationData)
+    [HttpPost(nameof(IGameServer.InitializeMessengerAsync))]
+    public ValueTask InitializeMessengerAsync([FromBody] MessengerInitializationData initializationData)
     {
-        this._gameServer.InitializeMessenger(initializationData);
+        return this._gameServer.InitializeMessengerAsync(initializationData);
     }
 
     /// <summary>
     /// Sends a global message to all connected players with the specified message type.
     /// </summary>
     /// <param name="data">The message arguments.</param>
-    [HttpPost(nameof(IGameServer.SendGlobalMessage))]
-    public void SendGlobalMessage([FromBody] MessageArguments data)
+    [HttpPost(nameof(IGameServer.SendGlobalMessageAsync))]
+    public ValueTask SendGlobalMessageAsync([FromBody] MessageArguments data)
     {
-        this._gameServer.SendGlobalMessage(data.Message, data.Type);
+        return this._gameServer.SendGlobalMessageAsync(data.Message, data.Type);
     }
 
     /// <summary>
     /// Notifies the server that a player made a friend request to another player, which is online on this server.
     /// </summary>
     /// <param name="data">The request arguments.</param>
-    [HttpPost(nameof(IGameServer.FriendRequest))]
-    public void FriendRequest([FromBody] RequestArguments data)
+    [HttpPost(nameof(IGameServer.FriendRequestAsync))]
+    public ValueTask FriendRequestAsync([FromBody] RequestArguments data)
     {
-        this._gameServer.FriendRequest(data.Requester, data.Receiver);
+        return this._gameServer.FriendRequestAsync(data.Requester, data.Receiver);
     }
 
     /// <summary>
     /// Notifies the game server that a friend online state changed.
     /// </summary>
     /// <param name="data">The state change arguments.</param>
-    [HttpPost(nameof(IGameServer.FriendOnlineStateChanged))]
-    public void FriendOnlineStateChanged([FromBody] FriendOnlineStateChangedArguments data)
+    [HttpPost(nameof(IGameServer.FriendOnlineStateChangedAsync))]
+    public ValueTask FriendOnlineStateChangedAsync([FromBody] FriendOnlineStateChangedArguments data)
     {
-        this._gameServer.FriendOnlineStateChanged(data.Player, data.Friend, data.ServerId);
+        return this._gameServer.FriendOnlineStateChangedAsync(data.Player, data.Friend, data.ServerId);
     }
 
     /// <summary>
     /// Notifies the game server that a chat room got created on the chat server for a player which is online on this game server.
     /// </summary>
     /// <param name="data">The chat room creation arguments.</param>
-    [HttpPost(nameof(IGameServer.ChatRoomCreated))]
-    public void ChatRoomCreated([FromBody] ChatRoomCreationArguments data)
+    [HttpPost(nameof(IGameServer.ChatRoomCreatedAsync))]
+    public ValueTask ChatRoomCreatedAsync([FromBody] ChatRoomCreationArguments data)
     {
-        this._gameServer.ChatRoomCreated(data.AuthenticationInfo, data.FriendName);
+        return this._gameServer.ChatRoomCreatedAsync(data.AuthenticationInfo, data.FriendName);
     }
 
     /// <summary>
@@ -147,10 +147,10 @@ public class GameServerController : ControllerBase
     /// </summary>
     /// <param name="playerName">Name of the player.</param>
     /// <returns>True, if the player has been disconnected; False, otherwise.</returns>
-    [HttpPost(nameof(IGameServer.DisconnectPlayer))]
-    public bool DisconnectPlayer([FromBody] string playerName)
+    [HttpPost(nameof(IGameServer.DisconnectPlayerAsync))]
+    public ValueTask<bool> DisconnectPlayerAsync([FromBody] string playerName)
     {
-        return this._gameServer.DisconnectPlayer(playerName);
+        return this._gameServer.DisconnectPlayerAsync(playerName);
     }
 
     /// <summary>
@@ -158,9 +158,9 @@ public class GameServerController : ControllerBase
     /// </summary>
     /// <param name="playerName">Name of the player.</param>
     /// <returns>True, if the player has been banned; False, otherwise.</returns>
-    [HttpPost(nameof(IGameServer.BanPlayer))]
-    public bool BanPlayer([FromBody] string playerName)
+    [HttpPost(nameof(IGameServer.BanPlayerAsync))]
+    public ValueTask<bool> BanPlayerAsync([FromBody] string playerName)
     {
-        return this._gameServer.BanPlayer(playerName);
+        return this._gameServer.BanPlayerAsync(playerName);
     }
 }

@@ -34,11 +34,11 @@ public abstract class ManaPotionConsumehandler : RecoverConsumeHandler.ManaHealt
     }
 
     /// <inheritdoc />
-    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (base.ConsumeItem(player, item, targetItem, fruitUsage))
+        if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage))
         {
-            player.ViewPlugIns.GetPlugIn<IUpdateCurrentManaPlugIn>()?.UpdateCurrentMana();
+            await player.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
             return true;
         }
 

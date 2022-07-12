@@ -31,7 +31,7 @@ public class ElfSoldierBuffRequestAction
     /// Requests the buff and adds it to the <see cref="Player.MagicEffectList"/> when the player is allowed to get it.
     /// </summary>
     /// <param name="player">The player.</param>
-    public void RequestBuff(Player player)
+    public async ValueTask RequestBuffAsync(Player player)
     {
         if (player.OpenedNpc is null
             || player.OpenedNpc.Definition.NpcWindow != NpcWindow.NpcDialog
@@ -42,11 +42,11 @@ public class ElfSoldierBuffRequestAction
 
         if (player.Level > 220)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You're strong enough on your own.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You're strong enough on your own.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
-        player.MagicEffectList.AddEffect(new MagicEffect(
+        await player.MagicEffectList.AddEffectAsync(new MagicEffect(
             TimeSpan.FromMinutes(60),
             BuffEffect,
             new MagicEffect.ElementWithTarget(new ConstantElement(50 + (player.Level / 5)), Stats.DefenseBase),

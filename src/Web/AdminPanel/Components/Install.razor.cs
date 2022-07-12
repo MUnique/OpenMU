@@ -74,7 +74,7 @@ public sealed partial class Install
         var task = Task.Run(() =>
         {
             this.SetupService.CreateDatabase(() =>
-                this.SelectedVersion!.CreateInitialData((byte)this.GameServerCount, this.CreateTestAccounts));
+                this.SelectedVersion!.CreateInitialDataAsync((byte)this.GameServerCount, this.CreateTestAccounts));
         });
 
         this.IsInstalling = true;

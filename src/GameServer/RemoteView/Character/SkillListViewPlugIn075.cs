@@ -28,22 +28,22 @@ public class SkillListViewPlugIn075 : SkillListViewPlugIn
     }
 
     /// <inheritdoc/>
-    public override void AddSkill(Skill skill)
+    public override async ValueTask AddSkillAsync(Skill skill)
     {
         var skillIndex = this.AddSkillToList(skill);
-        this.Player.Connection?.SendSkillAdded075(skillIndex, this.GetSkillNumberAndLevel(skill));
+        await this.Player.Connection.SendSkillAdded075Async(skillIndex, this.GetSkillNumberAndLevel(skill));
     }
 
     /// <inheritdoc/>
-    public override void RemoveSkill(Skill skill)
+    public override async ValueTask RemoveSkillAsync(Skill skill)
     {
         var skillIndex = (byte)this.SkillList.IndexOf(skill);
-        this.Player.Connection?.SendSkillRemoved075(skillIndex, this.GetSkillNumberAndLevel(skill));
+        await this.Player.Connection.SendSkillRemoved075Async(skillIndex, this.GetSkillNumberAndLevel(skill));
         this.SkillList[skillIndex] = null;
     }
 
     /// <inheritdoc/>
-    public override void UpdateSkillList()
+    public override async ValueTask UpdateSkillListAsync()
     {
         var connection = this.Player.Connection;
         if (connection is null)
@@ -53,20 +53,26 @@ public class SkillListViewPlugIn075 : SkillListViewPlugIn
 
         this.BuildSkillList();
 
-        using var writer = connection.StartSafeWrite(SkillListUpdate075.HeaderType, SkillListUpdate075.GetRequiredSize(this.SkillList.Count));
-        var packet = new SkillListUpdate075(writer.Span)
+        int Write()
         {
-            Count = (byte)this.SkillList.Count,
-        };
+            var size = SkillListUpdate075Ref.GetRequiredSize(this.SkillList.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new SkillListUpdate075Ref(span)
+            {
+                Count = (byte)this.SkillList.Count,
+            };
 
-        for (byte i = 0; i < this.SkillList.Count; i++)
-        {
-            var skillEntry = packet[i];
-            skillEntry.SkillIndex = i;
-            skillEntry.SkillNumberAndLevel = this.GetSkillNumberAndLevel(this.SkillList[i]);
+            for (byte i = 0; i < this.SkillList.Count; i++)
+            {
+                var skillEntry = packet[i];
+                skillEntry.SkillIndex = i;
+                skillEntry.SkillNumberAndLevel = this.GetSkillNumberAndLevel(this.SkillList[i]);
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     /// <summary>

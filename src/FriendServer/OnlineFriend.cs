@@ -117,7 +117,7 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     public void OnNext(OnlineFriend value)
     {
         // Send update to this player
-        this._gameServer.FriendOnlineStateChanged(this.ServerId, this.PlayerName, value.PlayerName, value.ServerId == FriendServer.InvisibleServerId ? FriendServer.OfflineServerId : value.ServerId);
+        this._gameServer.FriendOnlineStateChangedAsync(this.ServerId, this.PlayerName, value.PlayerName, value.ServerId == FriendServer.InvisibleServerId ? FriendServer.OfflineServerId : value.ServerId);
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     public void RemoveSubscriber(OnlineFriend friend)
     {
         this.Unsubscribe(friend);
-        this._gameServer.FriendOnlineStateChanged(friend.ServerId, friend.PlayerName, this.PlayerName, FriendServer.OfflineServerId);
+        this._gameServer.FriendOnlineStateChangedAsync(friend.ServerId, friend.PlayerName, this.PlayerName, FriendServer.OfflineServerId);
     }
 
     /// <inheritdoc/>

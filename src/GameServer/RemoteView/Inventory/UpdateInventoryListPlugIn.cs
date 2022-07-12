@@ -26,7 +26,7 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
     public UpdateInventoryListPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateInventoryList()
+    public async ValueTask UpdateInventoryListAsync()
     {
         var connection = this._player.Connection;
         if (connection is null || this._player.SelectedCharacter?.Inventory is null)
@@ -35,24 +35,30 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
         }
 
         // C4 00 00 00 F3 10 ...
-        var itemSerializer = this._player.ItemSerializer;
-        var lengthPerItem = StoredItem.GetRequiredSize(itemSerializer.NeededSpace);
         var items = this._player.SelectedCharacter.Inventory.Items.OrderBy(item => item.ItemSlot).ToList();
-        using var writer = connection.StartSafeWrite(CharacterInventory.HeaderType, CharacterInventory.GetRequiredSize(items.Count, lengthPerItem));
-        var packet = new CharacterInventory(writer.Span)
+        int Write()
         {
-            ItemCount = (byte)items.Count,
-        };
+            var itemSerializer = this._player.ItemSerializer;
+            var lengthPerItem = StoredItemRef.GetRequiredSize(itemSerializer.NeededSpace);
+            var size = CharacterInventoryRef.GetRequiredSize(items.Count, lengthPerItem);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new CharacterInventoryRef(span)
+            {
+                ItemCount = (byte)items.Count,
+            };
 
-        int i = 0;
-        foreach (var item in items)
-        {
-            var storedItem = packet[i, lengthPerItem];
-            storedItem.ItemSlot = item.ItemSlot;
-            itemSerializer.SerializeItem(storedItem.ItemData, item);
-            i++;
+            int i = 0;
+            foreach (var item in items)
+            {
+                var storedItem = packet[i, lengthPerItem];
+                storedItem.ItemSlot = item.ItemSlot;
+                itemSerializer.SerializeItem(storedItem.ItemData, item);
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

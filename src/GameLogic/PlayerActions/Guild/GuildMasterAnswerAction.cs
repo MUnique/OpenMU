@@ -32,11 +32,11 @@ public class GuildMasterAnswerAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="answer">The answer.</param>
-    public void ProcessAnswer(Player player, Answer answer)
+    public async ValueTask ProcessAnswerAsync(Player player, Answer answer)
     {
         if (player.PlayerState.CurrentState == PlayerState.EnteredWorld && answer == Answer.ShowDialog)
         {
-            player.ViewPlugIns.GetPlugIn<IShowGuildCreationDialogPlugIn>()?.ShowGuildCreationDialog();
+            await player.InvokeViewPlugInAsync<IShowGuildCreationDialogPlugIn>(p => p.ShowGuildCreationDialogAsync()).ConfigureAwait(false);
         }
         else if (player.OpenedNpc?.Definition.NpcWindow == NpcWindow.GuildMaster && player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld))
         {

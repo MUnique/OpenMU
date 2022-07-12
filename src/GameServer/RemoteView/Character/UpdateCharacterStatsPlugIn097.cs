@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -30,7 +29,7 @@ public class UpdateCharacterStatsPlugIn097 : IUpdateCharacterStatsPlugIn
     public UpdateCharacterStatsPlugIn097(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateCharacterStats()
+    public async ValueTask UpdateCharacterStatsAsync()
     {
         var connection = this._player.Connection;
         if (connection is null || this._player.Account is null)
@@ -38,37 +37,32 @@ public class UpdateCharacterStatsPlugIn097 : IUpdateCharacterStatsPlugIn
             return;
         }
 
-        using (var writer = connection.StartSafeWrite(CharacterInformation097.HeaderType, CharacterInformation097.Length))
-        {
-            _ = new CharacterInformation097(writer.Span)
-            {
-                X = this._player.Position.X,
-                Y = this._player.Position.Y,
-                MapId = (byte)this._player.SelectedCharacter!.CurrentMap!.Number,
-                CurrentExperience = (uint)this._player.SelectedCharacter.Experience,
-                ExperienceForNextLevel = (uint)this._player.GameServerContext.Configuration.ExperienceTable![(int)this._player.Attributes![Stats.Level] + 1],
-                LevelUpPoints = (ushort)this._player.SelectedCharacter.LevelUpPoints,
-                Strength = (ushort)this._player.Attributes[Stats.BaseStrength],
-                Agility = (ushort)this._player.Attributes[Stats.BaseAgility],
-                Vitality = (ushort)this._player.Attributes[Stats.BaseVitality],
-                Energy = (ushort)this._player.Attributes[Stats.BaseEnergy],
-                CurrentHealth = (ushort)this._player.Attributes[Stats.CurrentHealth],
-                MaximumHealth = (ushort)this._player.Attributes[Stats.MaximumHealth],
-                CurrentMana = (ushort)this._player.Attributes[Stats.CurrentMana],
-                MaximumMana = (ushort)this._player.Attributes[Stats.MaximumMana],
-                CurrentAbility = (ushort)this._player.Attributes[Stats.CurrentAbility],
-                MaximumAbility = (ushort)this._player.Attributes[Stats.MaximumAbility],
-                Money = (uint)this._player.Money,
-                HeroState = this._player.SelectedCharacter.State.Convert(),
-                Status = this._player.SelectedCharacter.CharacterStatus.Convert(),
-                UsedFruitPoints = (ushort)this._player.SelectedCharacter.UsedFruitPoints,
-                MaxFruitPoints = this._player.SelectedCharacter.GetMaximumFruitPoints(),
-                Leadership = (ushort)this._player.Attributes[Stats.BaseLeadership],
-            };
+        await connection.SendCharacterInformation097Async(
+            this._player.Position.X,
+            this._player.Position.Y,
+            (byte)this._player.SelectedCharacter!.CurrentMap!.Number,
+            this._player.Rotation.ToPacketByte(),
+            (uint)this._player.SelectedCharacter.Experience,
+            (uint)this._player.GameServerContext.Configuration.ExperienceTable![(int)this._player.Attributes![Stats.Level] + 1],
+            (ushort)this._player.SelectedCharacter.LevelUpPoints,
+            (ushort)this._player.Attributes[Stats.BaseStrength],
+            (ushort)this._player.Attributes[Stats.BaseAgility],
+            (ushort)this._player.Attributes[Stats.BaseVitality],
+            (ushort)this._player.Attributes[Stats.BaseEnergy],
+            (ushort)this._player.Attributes[Stats.CurrentHealth],
+            (ushort)this._player.Attributes[Stats.MaximumHealth],
+            (ushort)this._player.Attributes[Stats.CurrentMana],
+            (ushort)this._player.Attributes[Stats.MaximumMana],
+            (ushort)this._player.Attributes[Stats.CurrentAbility],
+            (ushort)this._player.Attributes[Stats.MaximumAbility],
+            (uint)this._player.Money,
+            this._player.SelectedCharacter.State.Convert(),
+            this._player.SelectedCharacter.CharacterStatus.Convert(),
+            (ushort)this._player.SelectedCharacter.UsedFruitPoints,
+            this._player.SelectedCharacter.GetMaximumFruitPoints(),
+            (ushort)this._player.Attributes[Stats.BaseLeadership])
+            .ConfigureAwait(false);
 
-            writer.Commit();
-        }
-
-        this._player.ViewPlugIns.GetPlugIn<IApplyKeyConfigurationPlugIn>()?.ApplyKeyConfiguration();
+        await this._player.InvokeViewPlugInAsync<IApplyKeyConfigurationPlugIn>(p => p.ApplyKeyConfigurationAsync()).ConfigureAwait(false);
     }
 }

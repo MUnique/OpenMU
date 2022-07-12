@@ -13,5 +13,5 @@ public interface IPlayerLeftGuildPlugIn : IViewPlugIn
     /// A Player the left his guild.
     /// </summary>
     /// <param name="player">The player who left his guild.</param>
-    void PlayerLeftGuild(Player player);
+    ValueTask PlayerLeftGuildAsync(Player player);
 }

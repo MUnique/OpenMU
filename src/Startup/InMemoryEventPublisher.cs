@@ -29,39 +29,39 @@ public class InMemoryEventPublisher : IEventPublisher
     }
 
     /// <inheritdoc />
-    public void PlayerEnteredGame(byte serverId, Guid characterId, string characterName)
+    public async ValueTask PlayerEnteredGameAsync(byte serverId, Guid characterId, string characterName)
     {
-        this._guildServer.PlayerEnteredGame(characterId, characterName, serverId);
+        await this._guildServer.PlayerEnteredGameAsync(characterId, characterName, serverId);
 
-        this._friendServer.PlayerEnteredGame(serverId, characterId, characterName);
+        await this._friendServer.PlayerEnteredGameAsync(serverId, characterId, characterName);
     }
 
     /// <inheritdoc />
-    public void PlayerLeftGame(byte serverId, Guid characterId, string characterName, uint guildId = 0)
+    public async ValueTask PlayerLeftGameAsync(byte serverId, Guid characterId, string characterName, uint guildId = 0)
     {
         if (guildId > 0)
         {
-            this._guildServer.GuildMemberLeftGame(guildId, characterId, serverId);
+            await this._guildServer.GuildMemberLeftGameAsync(guildId, characterId, serverId);
         }
 
-        this._friendServer.PlayerLeftGame(characterId, characterName);
+        await this._friendServer.PlayerLeftGameAsync(characterId, characterName);
     }
 
     /// <inheritdoc />
-    public void GuildMessage(uint guildId, string sender, string message)
+    public async ValueTask GuildMessageAsync(uint guildId, string sender, string message)
     {
         foreach (var gameServer in this._gameServers)
         {
-            gameServer.Value.GuildChatMessage(guildId, sender, message);
+            await gameServer.Value.GuildChatMessageAsync(guildId, sender, message);
         }
     }
 
     /// <inheritdoc />
-    public void AllianceMessage(uint guildId, string sender, string message)
+    public async ValueTask AllianceMessageAsync(uint guildId, string sender, string message)
     {
         foreach (var gameServer in this._gameServers)
         {
-            gameServer.Value.AllianceChatMessage(guildId, sender, message);
+            await gameServer.Value.AllianceChatMessageAsync(guildId, sender, message);
         }
     }
 }

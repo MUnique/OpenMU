@@ -26,11 +26,11 @@ public class UpdateMiniGameStateViewViewPlugIn : IUpdateMiniGameStateViewPlugIn
     public UpdateMiniGameStateViewViewPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void UpdateState(MiniGameType type, MiniGameState state)
+    public async ValueTask UpdateStateAsync(MiniGameType type, MiniGameState state)
     {
         if (TryGetState(type, state, out var miniGameState))
         {
-            this._player.Connection?.SendUpdateMiniGameState(miniGameState);
+            await this._player.Connection.SendUpdateMiniGameStateAsync(miniGameState).ConfigureAwait(false);
         }
     }
 

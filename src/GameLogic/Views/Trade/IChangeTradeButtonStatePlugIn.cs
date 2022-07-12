@@ -13,5 +13,5 @@ public interface IChangeTradeButtonStatePlugIn : IViewPlugIn
     /// Changes the state of the other players trade button.
     /// </summary>
     /// <param name="state">The state.</param>
-    void ChangeTradeButtonState(TradeButtonState state);
+    ValueTask ChangeTradeButtonStateAsync(TradeButtonState state);
 }

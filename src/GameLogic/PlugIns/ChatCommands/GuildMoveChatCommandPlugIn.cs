@@ -25,9 +25,9 @@ public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCom
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player gameMaster, GuildMoveChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, GuildMoveChatCommandArgs arguments)
     {
-        var guildId = this.GetGuildIdByName(gameMaster, arguments.GuildName!);
+        var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!);
 
         if (gameMaster.GameContext is not IGameServerContext gameServerContext)
         {
@@ -35,14 +35,14 @@ public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCom
         }
 
         var exitGate = this.GetExitGate(gameMaster, arguments.MapIdOrName!, arguments.Coordinates);
-        gameServerContext.ForEachGuildPlayer(guildId, guildPlayer =>
+        await gameServerContext.ForEachGuildPlayerAsync(guildId, async guildPlayer =>
         {
-            guildPlayer.WarpTo(exitGate);
+            await guildPlayer.WarpToAsync(exitGate);
 
             if (!guildPlayer.Name.Equals(gameMaster.Name))
             {
-                this.ShowMessageTo(guildPlayer, "You have been moved by the game master.");
-                this.ShowMessageTo(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been moved to {exitGate!.Map!.Name} at {guildPlayer.Position.X}, {guildPlayer.Position.Y}");
+                await this.ShowMessageToAsync(guildPlayer, "You have been moved by the game master.");
+                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been moved to {exitGate!.Map!.Name} at {guildPlayer.Position.X}, {guildPlayer.Position.Y}");
             }
         });
     }

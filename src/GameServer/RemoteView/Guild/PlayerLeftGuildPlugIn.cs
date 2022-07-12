@@ -28,10 +28,11 @@ public class PlayerLeftGuildPlugIn : IPlayerLeftGuildPlugIn
     public PlayerLeftGuildPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void PlayerLeftGuild(Player player)
+    public async ValueTask PlayerLeftGuildAsync(Player player)
     {
-        this._player.Connection.SendGuildMemberLeftGuild(
+        await this._player.Connection.SendGuildMemberLeftGuildAsync(
             player.GetId(this._player),
-            player.GuildStatus?.Position == GuildPosition.GuildMaster);
+            player.GuildStatus?.Position == GuildPosition.GuildMaster)
+            .ConfigureAwait(false);
     }
 }

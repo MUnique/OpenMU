@@ -29,7 +29,7 @@ public class ItemMovedPlugIn : IItemMovedPlugIn
     public ItemMovedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ItemMoved(Item item, byte toSlot, Storages storage)
+    public async ValueTask ItemMovedAsync(Item item, byte toSlot, Storages storage)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -44,14 +44,20 @@ public class ItemMovedPlugIn : IItemMovedPlugIn
             targetStorage = ItemStorageKind.Inventory;
         }
 
-        using var writer = connection.StartSafeWrite(Network.Packets.ServerToClient.ItemMoved.HeaderType, Network.Packets.ServerToClient.ItemMoved.GetRequiredSize(itemSerializer.NeededSpace));
-        var message = new ItemMoved(writer.Span)
+        int Write()
         {
-            TargetStorageType = targetStorage,
-            TargetSlot = toSlot,
-        };
-        itemSerializer.SerializeItem(message.ItemData, item);
+            var size = ItemMovedRef.GetRequiredSize(ItemMovedRef.GetRequiredSize(itemSerializer.NeededSpace));
+            var span = connection.Output.GetSpan(size)[..size];
+            var message = new ItemMovedRef(span)
+            {
+                TargetStorageType = targetStorage,
+                TargetSlot = toSlot,
+            };
+            itemSerializer.SerializeItem(message.ItemData, item);
 
-        writer.Commit();
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

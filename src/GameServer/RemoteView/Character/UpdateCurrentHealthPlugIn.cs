@@ -26,14 +26,14 @@ public class UpdateCurrentHealthPlugIn : IUpdateCurrentHealthPlugIn
     public UpdateCurrentHealthPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateCurrentHealth()
+    public async ValueTask UpdateCurrentHealthAsync()
     {
         if (this._player.Attributes is null)
         {
             return;
         }
 
-        this._player.Connection?.SendCurrentHealthAndShield(
+        await this._player.Connection.SendCurrentHealthAndShieldAsync(
             (ushort)Math.Max(this._player.Attributes[Stats.CurrentHealth], 0f),
             (ushort)Math.Max(this._player.Attributes[Stats.CurrentShield], 0f));
     }

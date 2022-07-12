@@ -15,5 +15,5 @@ public interface ILegacyQuestStateDialogPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the quest state of the character.
     /// </summary>
-    void Show();
+    ValueTask ShowAsync();
 }

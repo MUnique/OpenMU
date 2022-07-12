@@ -48,22 +48,22 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     protected RemotePlayer Player => this._player;
 
     /// <inheritdoc/>
-    public virtual void AddSkill(Skill skill)
+    public virtual async ValueTask AddSkillAsync(Skill skill)
     {
         var skillIndex = this.AddSkillToList(skill);
-        this._player.Connection?.SendSkillAdded(skillIndex, (ushort)skill.Number, 0);
+        await this._player.Connection.SendSkillAddedAsync(skillIndex, (ushort)skill.Number, 0);
     }
 
     /// <inheritdoc/>
-    public virtual void RemoveSkill(Skill skill)
+    public virtual async ValueTask RemoveSkillAsync(Skill skill)
     {
         var skillIndex = this.SkillList.IndexOf(skill);
-        this._player.Connection?.SendSkillRemoved((byte)skillIndex, (ushort)skill.Number);
+        await this._player.Connection.SendSkillRemovedAsync((byte)skillIndex, (ushort)skill.Number);
         this.SkillList[skillIndex] = null;
     }
 
     /// <inheritdoc/>
-    public virtual void UpdateSkillList()
+    public virtual async ValueTask UpdateSkillListAsync()
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -73,29 +73,35 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
 
         this.BuildSkillList();
 
-        using var writer = connection.StartSafeWrite(SkillListUpdate.HeaderType, SkillListUpdate.GetRequiredSize(this.SkillList.Count));
-        var packet = new SkillListUpdate(writer.Span)
+        int Write()
         {
-            Count = (byte)this.SkillList.Count,
-        };
-
-        for (byte i = 0; i < this.SkillList.Count; i++)
-        {
-            var skillEntry = packet[i];
-            skillEntry.SkillIndex = i;
-
-            var skill = this.SkillList[i];
-            if (skill is not null)
+            var size = SkillListUpdateRef.GetRequiredSize(this.SkillList.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new SkillListUpdateRef(span)
             {
-                skillEntry.SkillNumber = (ushort)skill.Number;
-                if (skill.MasterDefinition is not null)
+                Count = (byte)this.SkillList.Count,
+            };
+
+            for (byte i = 0; i < this.SkillList.Count; i++)
+            {
+                var skillEntry = packet[i];
+                skillEntry.SkillIndex = i;
+
+                var skill = this.SkillList[i];
+                if (skill is not null)
                 {
-                    skillEntry.SkillLevel = (byte)(this._player.SkillList!.GetSkill((ushort)skill.Number)?.Level ?? 0);
+                    skillEntry.SkillNumber = (ushort)skill.Number;
+                    if (skill.MasterDefinition is not null)
+                    {
+                        skillEntry.SkillLevel = (byte)(this._player.SkillList!.GetSkill((ushort)skill.Number)?.Level ?? 0);
+                    }
                 }
             }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

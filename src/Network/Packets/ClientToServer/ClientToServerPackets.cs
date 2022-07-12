@@ -19,15 +19,15 @@ using static System.Buffers.Binary.BinaryPrimitives;
 /// Is sent by the client when: This packet is sent by the client every few seconds. It contains the current "TickCount" of the client operating system and the attack speed of the selected character.
 /// Causes reaction on server side: By the original server this is used to detect speed hacks.
 /// </summary>
-public readonly ref struct Ping
+public readonly struct Ping
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Ping"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public Ping(Span<byte> data)
+    public Ping(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -37,7 +37,7 @@ public readonly ref struct Ping
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private Ping(Span<byte> data, bool initialize)
+    private Ping(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -81,8 +81,8 @@ public readonly ref struct Ping
     /// </summary>
     public uint TickCount
     {
-        get => ReadUInt32LittleEndian(this._data[4..]);
-        set => WriteUInt32LittleEndian(this._data[4..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -90,8 +90,8 @@ public readonly ref struct Ping
     /// </summary>
     public byte Speed1
     {
-        get => this._data[8];
-        set => this._data[8] = value;
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
     }
 
     /// <summary>
@@ -99,8 +99,8 @@ public readonly ref struct Ping
     /// </summary>
     public byte Speed2
     {
-        get => this._data[9];
-        set => this._data[9] = value;
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
     }
 
     /// <summary>
@@ -108,8 +108,8 @@ public readonly ref struct Ping
     /// </summary>
     public byte Speed3
     {
-        get => this._data[10];
-        set => this._data[10] = value;
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
     }
 
     /// <summary>
@@ -117,23 +117,23 @@ public readonly ref struct Ping
     /// </summary>
     public byte Speed4
     {
-        get => this._data[11];
-        set => this._data[11] = value;
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="Ping"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="Ping"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator Ping(Span<byte> packet) => new (packet, false);
+    public static implicit operator Ping(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="Ping"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="Ping"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(Ping packet) => packet._data; 
+    public static implicit operator Memory<byte>(Ping packet) => packet._data; 
 }
 
 
@@ -141,15 +141,15 @@ public readonly ref struct Ping
 /// Is sent by the client when: A player sends a public chat message.
 /// Causes reaction on server side: The message is forwarded to all surrounding players, including the sender.
 /// </summary>
-public readonly ref struct PublicChatMessage
+public readonly struct PublicChatMessage
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PublicChatMessage"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PublicChatMessage(Span<byte> data)
+    public PublicChatMessage(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -159,7 +159,7 @@ public readonly ref struct PublicChatMessage
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PublicChatMessage(Span<byte> data, bool initialize)
+    private PublicChatMessage(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -191,8 +191,8 @@ public readonly ref struct PublicChatMessage
     /// </summary>
     public string Character
     {
-        get => this._data.ExtractString(3, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(3, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(3, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -200,23 +200,23 @@ public readonly ref struct PublicChatMessage
     /// </summary>
     public string Message
     {
-        get => this._data.ExtractString(13, this._data.Length - 13, System.Text.Encoding.UTF8);
-        set => this._data.Slice(13).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(13, this._data.Length - 13, System.Text.Encoding.UTF8);
+        set => this._data.Slice(13).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PublicChatMessage"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PublicChatMessage"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PublicChatMessage(Span<byte> packet) => new (packet, false);
+    public static implicit operator PublicChatMessage(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PublicChatMessage"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PublicChatMessage"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PublicChatMessage packet) => packet._data; 
+    public static implicit operator Memory<byte>(PublicChatMessage packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified field content.
@@ -230,15 +230,15 @@ public readonly ref struct PublicChatMessage
 /// Is sent by the client when: A player sends a private chat message to a specific target player.
 /// Causes reaction on server side: The message is forwarded to the target player.
 /// </summary>
-public readonly ref struct WhisperMessage
+public readonly struct WhisperMessage
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WhisperMessage"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public WhisperMessage(Span<byte> data)
+    public WhisperMessage(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -248,7 +248,7 @@ public readonly ref struct WhisperMessage
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private WhisperMessage(Span<byte> data, bool initialize)
+    private WhisperMessage(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -280,8 +280,8 @@ public readonly ref struct WhisperMessage
     /// </summary>
     public string ReceiverName
     {
-        get => this._data.ExtractString(3, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(3, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(3, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -289,23 +289,23 @@ public readonly ref struct WhisperMessage
     /// </summary>
     public string Message
     {
-        get => this._data.ExtractString(13, this._data.Length - 13, System.Text.Encoding.UTF8);
-        set => this._data.Slice(13).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(13, this._data.Length - 13, System.Text.Encoding.UTF8);
+        set => this._data.Slice(13).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="WhisperMessage"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="WhisperMessage"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator WhisperMessage(Span<byte> packet) => new (packet, false);
+    public static implicit operator WhisperMessage(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="WhisperMessage"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="WhisperMessage"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(WhisperMessage packet) => packet._data; 
+    public static implicit operator Memory<byte>(WhisperMessage packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified field content.
@@ -319,15 +319,15 @@ public readonly ref struct WhisperMessage
 /// Is sent by the client when: The player tries to log into the game.
 /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
 /// </summary>
-public readonly ref struct LoginLongPassword
+public readonly struct LoginLongPassword
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoginLongPassword"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public LoginLongPassword(Span<byte> data)
+    public LoginLongPassword(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -337,7 +337,7 @@ public readonly ref struct LoginLongPassword
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private LoginLongPassword(Span<byte> data, bool initialize)
+    private LoginLongPassword(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -381,7 +381,7 @@ public readonly ref struct LoginLongPassword
     /// </summary>
     public Span<byte> Username
     {
-        get => this._data.Slice(4, 10);
+        get => this._data.Slice(4, 10).Span;
     }
 
     /// <summary>
@@ -389,7 +389,7 @@ public readonly ref struct LoginLongPassword
     /// </summary>
     public Span<byte> Password
     {
-        get => this._data.Slice(14, 20);
+        get => this._data.Slice(14, 20).Span;
     }
 
     /// <summary>
@@ -397,8 +397,8 @@ public readonly ref struct LoginLongPassword
     /// </summary>
     public uint TickCount
     {
-        get => ReadUInt32BigEndian(this._data[34..]);
-        set => WriteUInt32BigEndian(this._data[34..], value);
+        get => ReadUInt32BigEndian(this._data.Span[34..]);
+        set => WriteUInt32BigEndian(this._data.Span[34..], value);
     }
 
     /// <summary>
@@ -406,7 +406,7 @@ public readonly ref struct LoginLongPassword
     /// </summary>
     public Span<byte> ClientVersion
     {
-        get => this._data.Slice(38, 5);
+        get => this._data.Slice(38, 5).Span;
     }
 
     /// <summary>
@@ -414,22 +414,22 @@ public readonly ref struct LoginLongPassword
     /// </summary>
     public Span<byte> ClientSerial
     {
-        get => this._data.Slice(43, 16);
+        get => this._data.Slice(43, 16).Span;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="LoginLongPassword"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LoginLongPassword"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator LoginLongPassword(Span<byte> packet) => new (packet, false);
+    public static implicit operator LoginLongPassword(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="LoginLongPassword"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="LoginLongPassword"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(LoginLongPassword packet) => packet._data; 
+    public static implicit operator Memory<byte>(LoginLongPassword packet) => packet._data; 
 }
 
 
@@ -437,15 +437,15 @@ public readonly ref struct LoginLongPassword
 /// Is sent by the client when: The player tries to log into the game.
 /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
 /// </summary>
-public readonly ref struct LoginShortPassword
+public readonly struct LoginShortPassword
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoginShortPassword"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public LoginShortPassword(Span<byte> data)
+    public LoginShortPassword(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -455,7 +455,7 @@ public readonly ref struct LoginShortPassword
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private LoginShortPassword(Span<byte> data, bool initialize)
+    private LoginShortPassword(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -499,7 +499,7 @@ public readonly ref struct LoginShortPassword
     /// </summary>
     public Span<byte> Username
     {
-        get => this._data.Slice(4, 10);
+        get => this._data.Slice(4, 10).Span;
     }
 
     /// <summary>
@@ -507,7 +507,7 @@ public readonly ref struct LoginShortPassword
     /// </summary>
     public Span<byte> Password
     {
-        get => this._data.Slice(14, 10);
+        get => this._data.Slice(14, 10).Span;
     }
 
     /// <summary>
@@ -515,8 +515,8 @@ public readonly ref struct LoginShortPassword
     /// </summary>
     public uint TickCount
     {
-        get => ReadUInt32BigEndian(this._data[24..]);
-        set => WriteUInt32BigEndian(this._data[24..], value);
+        get => ReadUInt32BigEndian(this._data.Span[24..]);
+        set => WriteUInt32BigEndian(this._data.Span[24..], value);
     }
 
     /// <summary>
@@ -524,7 +524,7 @@ public readonly ref struct LoginShortPassword
     /// </summary>
     public Span<byte> ClientVersion
     {
-        get => this._data.Slice(28, 5);
+        get => this._data.Slice(28, 5).Span;
     }
 
     /// <summary>
@@ -532,22 +532,22 @@ public readonly ref struct LoginShortPassword
     /// </summary>
     public Span<byte> ClientSerial
     {
-        get => this._data.Slice(33, 16);
+        get => this._data.Slice(33, 16).Span;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="LoginShortPassword"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LoginShortPassword"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator LoginShortPassword(Span<byte> packet) => new (packet, false);
+    public static implicit operator LoginShortPassword(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="LoginShortPassword"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="LoginShortPassword"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(LoginShortPassword packet) => packet._data; 
+    public static implicit operator Memory<byte>(LoginShortPassword packet) => packet._data; 
 }
 
 
@@ -555,15 +555,15 @@ public readonly ref struct LoginShortPassword
 /// Is sent by the client when: The player tries to log into the game.
 /// Causes reaction on server side: The server is authenticating the sent login name and password. If it's correct, the state of the player is proceeding to be logged in.
 /// </summary>
-public readonly ref struct Login075
+public readonly struct Login075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Login075"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public Login075(Span<byte> data)
+    public Login075(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -573,7 +573,7 @@ public readonly ref struct Login075
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private Login075(Span<byte> data, bool initialize)
+    private Login075(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -617,7 +617,7 @@ public readonly ref struct Login075
     /// </summary>
     public Span<byte> Username
     {
-        get => this._data.Slice(4, 10);
+        get => this._data.Slice(4, 10).Span;
     }
 
     /// <summary>
@@ -625,7 +625,7 @@ public readonly ref struct Login075
     /// </summary>
     public Span<byte> Password
     {
-        get => this._data.Slice(14, 10);
+        get => this._data.Slice(14, 10).Span;
     }
 
     /// <summary>
@@ -633,8 +633,8 @@ public readonly ref struct Login075
     /// </summary>
     public uint TickCount
     {
-        get => ReadUInt32BigEndian(this._data[24..]);
-        set => WriteUInt32BigEndian(this._data[24..], value);
+        get => ReadUInt32BigEndian(this._data.Span[24..]);
+        set => WriteUInt32BigEndian(this._data.Span[24..], value);
     }
 
     /// <summary>
@@ -642,7 +642,7 @@ public readonly ref struct Login075
     /// </summary>
     public Span<byte> ClientVersion
     {
-        get => this._data.Slice(28, 3);
+        get => this._data.Slice(28, 3).Span;
     }
 
     /// <summary>
@@ -650,22 +650,22 @@ public readonly ref struct Login075
     /// </summary>
     public Span<byte> ClientSerial
     {
-        get => this._data.Slice(31, 16);
+        get => this._data.Slice(31, 16).Span;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="Login075"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="Login075"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator Login075(Span<byte> packet) => new (packet, false);
+    public static implicit operator Login075(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="Login075"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="Login075"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(Login075 packet) => packet._data; 
+    public static implicit operator Memory<byte>(Login075 packet) => packet._data; 
 }
 
 
@@ -673,15 +673,15 @@ public readonly ref struct Login075
 /// Is sent by the client when: When the client wants to leave the game in various ways.
 /// Causes reaction on server side: Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.
 /// </summary>
-public readonly ref struct LogOut
+public readonly struct LogOut
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LogOut"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public LogOut(Span<byte> data)
+    public LogOut(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -691,7 +691,7 @@ public readonly ref struct LogOut
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private LogOut(Span<byte> data, bool initialize)
+    private LogOut(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -735,23 +735,23 @@ public readonly ref struct LogOut
     /// </summary>
     public LogOutType Type
     {
-        get => (LogOutType)this._data[4];
-        set => this._data[4] = (byte)value;
+        get => (LogOutType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="LogOut"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LogOut"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator LogOut(Span<byte> packet) => new (packet, false);
+    public static implicit operator LogOut(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="LogOut"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="LogOut"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(LogOut packet) => packet._data; 
+    public static implicit operator Memory<byte>(LogOut packet) => packet._data; 
 }
 
 
@@ -759,15 +759,15 @@ public readonly ref struct LogOut
 /// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop.
 /// Causes reaction on server side: The price is set for the specified item. Works only if the shop is currently closed.
 /// </summary>
-public readonly ref struct PlayerShopSetItemPrice
+public readonly struct PlayerShopSetItemPrice
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerShopSetItemPrice"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PlayerShopSetItemPrice(Span<byte> data)
+    public PlayerShopSetItemPrice(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -777,7 +777,7 @@ public readonly ref struct PlayerShopSetItemPrice
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PlayerShopSetItemPrice(Span<byte> data, bool initialize)
+    private PlayerShopSetItemPrice(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -821,8 +821,8 @@ public readonly ref struct PlayerShopSetItemPrice
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -830,23 +830,23 @@ public readonly ref struct PlayerShopSetItemPrice
     /// </summary>
     public uint Price
     {
-        get => ReadUInt32LittleEndian(this._data[5..]);
-        set => WriteUInt32LittleEndian(this._data[5..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopSetItemPrice"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PlayerShopSetItemPrice"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PlayerShopSetItemPrice(Span<byte> packet) => new (packet, false);
+    public static implicit operator PlayerShopSetItemPrice(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PlayerShopSetItemPrice"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PlayerShopSetItemPrice"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PlayerShopSetItemPrice packet) => packet._data; 
+    public static implicit operator Memory<byte>(PlayerShopSetItemPrice packet) => packet._data; 
 }
 
 
@@ -854,15 +854,15 @@ public readonly ref struct PlayerShopSetItemPrice
 /// Is sent by the client when: The player wants to open his personal item shop.
 /// Causes reaction on server side: The personal item shop is opened and the surrounding players are informed about it, including the own player.
 /// </summary>
-public readonly ref struct PlayerShopOpen
+public readonly struct PlayerShopOpen
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerShopOpen"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PlayerShopOpen(Span<byte> data)
+    public PlayerShopOpen(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -872,7 +872,7 @@ public readonly ref struct PlayerShopOpen
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PlayerShopOpen(Span<byte> data, bool initialize)
+    private PlayerShopOpen(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -916,23 +916,23 @@ public readonly ref struct PlayerShopOpen
     /// </summary>
     public string StoreName
     {
-        get => this._data.ExtractString(4, 26, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 26).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(4, 26, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 26).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopOpen"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PlayerShopOpen"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PlayerShopOpen(Span<byte> packet) => new (packet, false);
+    public static implicit operator PlayerShopOpen(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PlayerShopOpen"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PlayerShopOpen"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PlayerShopOpen packet) => packet._data; 
+    public static implicit operator Memory<byte>(PlayerShopOpen packet) => packet._data; 
 }
 
 
@@ -940,15 +940,15 @@ public readonly ref struct PlayerShopOpen
 /// Is sent by the client when: The player wants to close his personal item shop.
 /// Causes reaction on server side: The personal item shop is closed and the surrounding players are informed about it, including the own player.
 /// </summary>
-public readonly ref struct PlayerShopClose
+public readonly struct PlayerShopClose
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerShopClose"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PlayerShopClose(Span<byte> data)
+    public PlayerShopClose(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -958,7 +958,7 @@ public readonly ref struct PlayerShopClose
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PlayerShopClose(Span<byte> data, bool initialize)
+    private PlayerShopClose(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -998,18 +998,18 @@ public readonly ref struct PlayerShopClose
     public C3HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopClose"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PlayerShopClose"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PlayerShopClose(Span<byte> packet) => new (packet, false);
+    public static implicit operator PlayerShopClose(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PlayerShopClose"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PlayerShopClose"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PlayerShopClose packet) => packet._data; 
+    public static implicit operator Memory<byte>(PlayerShopClose packet) => packet._data; 
 }
 
 
@@ -1017,15 +1017,15 @@ public readonly ref struct PlayerShopClose
 /// Is sent by the client when: A player opens a shop of another player.
 /// Causes reaction on server side: The list of items is sent back, if the shop of the player is currently open.
 /// </summary>
-public readonly ref struct PlayerShopItemListRequest
+public readonly struct PlayerShopItemListRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerShopItemListRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PlayerShopItemListRequest(Span<byte> data)
+    public PlayerShopItemListRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1035,7 +1035,7 @@ public readonly ref struct PlayerShopItemListRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PlayerShopItemListRequest(Span<byte> data, bool initialize)
+    private PlayerShopItemListRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1079,8 +1079,8 @@ public readonly ref struct PlayerShopItemListRequest
     /// </summary>
     public ushort PlayerId
     {
-        get => ReadUInt16BigEndian(this._data[4..]);
-        set => WriteUInt16BigEndian(this._data[4..], value);
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -1088,23 +1088,23 @@ public readonly ref struct PlayerShopItemListRequest
     /// </summary>
     public string PlayerName
     {
-        get => this._data.ExtractString(6, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(6, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(6, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopItemListRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PlayerShopItemListRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PlayerShopItemListRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator PlayerShopItemListRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PlayerShopItemListRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PlayerShopItemListRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PlayerShopItemListRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(PlayerShopItemListRequest packet) => packet._data; 
 }
 
 
@@ -1112,15 +1112,15 @@ public readonly ref struct PlayerShopItemListRequest
 /// Is sent by the client when: A player wants to buy the item of another players shop.
 /// Causes reaction on server side: If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.
 /// </summary>
-public readonly ref struct PlayerShopItemBuyRequest
+public readonly struct PlayerShopItemBuyRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerShopItemBuyRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PlayerShopItemBuyRequest(Span<byte> data)
+    public PlayerShopItemBuyRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1130,7 +1130,7 @@ public readonly ref struct PlayerShopItemBuyRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PlayerShopItemBuyRequest(Span<byte> data, bool initialize)
+    private PlayerShopItemBuyRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1174,8 +1174,8 @@ public readonly ref struct PlayerShopItemBuyRequest
     /// </summary>
     public ushort PlayerId
     {
-        get => ReadUInt16BigEndian(this._data[4..]);
-        set => WriteUInt16BigEndian(this._data[4..], value);
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -1183,8 +1183,8 @@ public readonly ref struct PlayerShopItemBuyRequest
     /// </summary>
     public string PlayerName
     {
-        get => this._data.ExtractString(6, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(6, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(6, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -1192,23 +1192,23 @@ public readonly ref struct PlayerShopItemBuyRequest
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[16];
-        set => this._data[16] = value;
+        get => this._data.Span[16];
+        set => this._data.Span[16] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerShopItemBuyRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PlayerShopItemBuyRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PlayerShopItemBuyRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator PlayerShopItemBuyRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PlayerShopItemBuyRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PlayerShopItemBuyRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PlayerShopItemBuyRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(PlayerShopItemBuyRequest packet) => packet._data; 
 }
 
 
@@ -1216,15 +1216,15 @@ public readonly ref struct PlayerShopItemBuyRequest
 /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
 /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
 /// </summary>
-public readonly ref struct PickupItemRequest
+public readonly struct PickupItemRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PickupItemRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PickupItemRequest(Span<byte> data)
+    public PickupItemRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1234,7 +1234,7 @@ public readonly ref struct PickupItemRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PickupItemRequest(Span<byte> data, bool initialize)
+    private PickupItemRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1271,23 +1271,23 @@ public readonly ref struct PickupItemRequest
     /// </summary>
     public ushort ItemId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PickupItemRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PickupItemRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PickupItemRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator PickupItemRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PickupItemRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PickupItemRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PickupItemRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(PickupItemRequest packet) => packet._data; 
 }
 
 
@@ -1295,15 +1295,15 @@ public readonly ref struct PickupItemRequest
 /// Is sent by the client when: A player requests to pick up an item which is laying on the ground in the near of the players character.
 /// Causes reaction on server side: If the player is allowed to pick the item up, and is the first player which tried that, it tries to add the item to the inventory. The server sends a response about the result of the request.
 /// </summary>
-public readonly ref struct PickupItemRequest075
+public readonly struct PickupItemRequest075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PickupItemRequest075"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PickupItemRequest075(Span<byte> data)
+    public PickupItemRequest075(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1313,7 +1313,7 @@ public readonly ref struct PickupItemRequest075
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PickupItemRequest075(Span<byte> data, bool initialize)
+    private PickupItemRequest075(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1350,23 +1350,23 @@ public readonly ref struct PickupItemRequest075
     /// </summary>
     public ushort ItemId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PickupItemRequest075"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PickupItemRequest075"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PickupItemRequest075(Span<byte> packet) => new (packet, false);
+    public static implicit operator PickupItemRequest075(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PickupItemRequest075"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PickupItemRequest075"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PickupItemRequest075 packet) => packet._data; 
+    public static implicit operator Memory<byte>(PickupItemRequest075 packet) => packet._data; 
 }
 
 
@@ -1374,15 +1374,15 @@ public readonly ref struct PickupItemRequest075
 /// Is sent by the client when: A player requests to drop on item of his inventory on the ground.
 /// Causes reaction on server side: When the specified coordinates are valid, and the item is allowed to be dropped, it will be dropped on the ground and the surrounding players are notified.
 /// </summary>
-public readonly ref struct DropItemRequest
+public readonly struct DropItemRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DropItemRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public DropItemRequest(Span<byte> data)
+    public DropItemRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1392,7 +1392,7 @@ public readonly ref struct DropItemRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private DropItemRequest(Span<byte> data, bool initialize)
+    private DropItemRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1429,8 +1429,8 @@ public readonly ref struct DropItemRequest
     /// </summary>
     public byte TargetX
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -1438,8 +1438,8 @@ public readonly ref struct DropItemRequest
     /// </summary>
     public byte TargetY
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -1447,23 +1447,23 @@ public readonly ref struct DropItemRequest
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="DropItemRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="DropItemRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator DropItemRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator DropItemRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="DropItemRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="DropItemRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(DropItemRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(DropItemRequest packet) => packet._data; 
 }
 
 
@@ -1471,15 +1471,15 @@ public readonly ref struct DropItemRequest
 /// Is sent by the client when: A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.
 /// Causes reaction on server side: 
 /// </summary>
-public readonly ref struct ItemMoveRequest
+public readonly struct ItemMoveRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemMoveRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ItemMoveRequest(Span<byte> data)
+    public ItemMoveRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1489,7 +1489,7 @@ public readonly ref struct ItemMoveRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ItemMoveRequest(Span<byte> data, bool initialize)
+    private ItemMoveRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1526,8 +1526,8 @@ public readonly ref struct ItemMoveRequest
     /// </summary>
     public ItemStorageKind FromStorage
     {
-        get => (ItemStorageKind)this._data[3];
-        set => this._data[3] = (byte)value;
+        get => (ItemStorageKind)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
     }
 
     /// <summary>
@@ -1535,8 +1535,8 @@ public readonly ref struct ItemMoveRequest
     /// </summary>
     public byte FromSlot
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -1544,7 +1544,7 @@ public readonly ref struct ItemMoveRequest
     /// </summary>
     public Span<byte> ItemData
     {
-        get => this._data.Slice(5, 12);
+        get => this._data.Slice(5, 12).Span;
     }
 
     /// <summary>
@@ -1552,8 +1552,8 @@ public readonly ref struct ItemMoveRequest
     /// </summary>
     public ItemStorageKind ToStorage
     {
-        get => (ItemStorageKind)this._data[17];
-        set => this._data[17] = (byte)value;
+        get => (ItemStorageKind)this._data.Span[17];
+        set => this._data.Span[17] = (byte)value;
     }
 
     /// <summary>
@@ -1561,23 +1561,23 @@ public readonly ref struct ItemMoveRequest
     /// </summary>
     public byte ToSlot
     {
-        get => this._data[18];
-        set => this._data[18] = value;
+        get => this._data.Span[18];
+        set => this._data.Span[18] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemMoveRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ItemMoveRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ItemMoveRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator ItemMoveRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ItemMoveRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ItemMoveRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ItemMoveRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(ItemMoveRequest packet) => packet._data; 
 }
 
 
@@ -1585,7 +1585,7 @@ public readonly ref struct ItemMoveRequest
 /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
 /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
 /// </summary>
-public readonly ref struct ConsumeItemRequest
+public readonly struct ConsumeItemRequest
 {
     /// <summary>
     /// Defines how the fruit is used. Only applies, if the the item is a fruit.
@@ -1603,13 +1603,13 @@ public readonly ref struct ConsumeItemRequest
             RemovePoints = 1,
     }
 
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsumeItemRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ConsumeItemRequest(Span<byte> data)
+    public ConsumeItemRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1619,7 +1619,7 @@ public readonly ref struct ConsumeItemRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ConsumeItemRequest(Span<byte> data, bool initialize)
+    private ConsumeItemRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1656,8 +1656,8 @@ public readonly ref struct ConsumeItemRequest
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -1665,8 +1665,8 @@ public readonly ref struct ConsumeItemRequest
     /// </summary>
     public byte TargetSlot
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -1674,23 +1674,23 @@ public readonly ref struct ConsumeItemRequest
     /// </summary>
     public ConsumeItemRequest.FruitUsage FruitConsumption
     {
-        get => (FruitUsage)this._data[5];
-        set => this._data[5] = (byte)value;
+        get => (FruitUsage)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ConsumeItemRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ConsumeItemRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ConsumeItemRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator ConsumeItemRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ConsumeItemRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ConsumeItemRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ConsumeItemRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(ConsumeItemRequest packet) => packet._data; 
 }
 
 
@@ -1698,15 +1698,15 @@ public readonly ref struct ConsumeItemRequest
 /// Is sent by the client when: A player requests to 'consume' an item. This can be a potion which recovers some kind of attribute, or a jewel to upgrade a target item.
 /// Causes reaction on server side: The server tries to 'consume' the specified item and responses accordingly.
 /// </summary>
-public readonly ref struct ConsumeItemRequest075
+public readonly struct ConsumeItemRequest075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsumeItemRequest075"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ConsumeItemRequest075(Span<byte> data)
+    public ConsumeItemRequest075(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1716,7 +1716,7 @@ public readonly ref struct ConsumeItemRequest075
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ConsumeItemRequest075(Span<byte> data, bool initialize)
+    private ConsumeItemRequest075(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1753,8 +1753,8 @@ public readonly ref struct ConsumeItemRequest075
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -1762,23 +1762,23 @@ public readonly ref struct ConsumeItemRequest075
     /// </summary>
     public byte TargetSlot
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ConsumeItemRequest075"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ConsumeItemRequest075"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ConsumeItemRequest075(Span<byte> packet) => new (packet, false);
+    public static implicit operator ConsumeItemRequest075(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ConsumeItemRequest075"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ConsumeItemRequest075"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ConsumeItemRequest075 packet) => packet._data; 
+    public static implicit operator Memory<byte>(ConsumeItemRequest075 packet) => packet._data; 
 }
 
 
@@ -1786,15 +1786,15 @@ public readonly ref struct ConsumeItemRequest075
 /// Is sent by the client when: A player wants to talk to an NPC.
 /// Causes reaction on server side: Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.
 /// </summary>
-public readonly ref struct TalkToNpcRequest
+public readonly struct TalkToNpcRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TalkToNpcRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TalkToNpcRequest(Span<byte> data)
+    public TalkToNpcRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1804,7 +1804,7 @@ public readonly ref struct TalkToNpcRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private TalkToNpcRequest(Span<byte> data, bool initialize)
+    private TalkToNpcRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1841,23 +1841,23 @@ public readonly ref struct TalkToNpcRequest
     /// </summary>
     public ushort NpcId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="TalkToNpcRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="TalkToNpcRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator TalkToNpcRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator TalkToNpcRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="TalkToNpcRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="TalkToNpcRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(TalkToNpcRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(TalkToNpcRequest packet) => packet._data; 
 }
 
 
@@ -1865,15 +1865,15 @@ public readonly ref struct TalkToNpcRequest
 /// Is sent by the client when: A player closes the dialog which was opened by an interaction with a NPC.
 /// Causes reaction on server side: The server updates the state of the player accordingly.
 /// </summary>
-public readonly ref struct CloseNpcRequest
+public readonly struct CloseNpcRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CloseNpcRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public CloseNpcRequest(Span<byte> data)
+    public CloseNpcRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1883,7 +1883,7 @@ public readonly ref struct CloseNpcRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private CloseNpcRequest(Span<byte> data, bool initialize)
+    private CloseNpcRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1916,18 +1916,18 @@ public readonly ref struct CloseNpcRequest
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="CloseNpcRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CloseNpcRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator CloseNpcRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator CloseNpcRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="CloseNpcRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="CloseNpcRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(CloseNpcRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(CloseNpcRequest packet) => packet._data; 
 }
 
 
@@ -1935,15 +1935,15 @@ public readonly ref struct CloseNpcRequest
 /// Is sent by the client when: A player wants to buy an item from an opened NPC merchant.
 /// Causes reaction on server side: If the player has enough money, the item is added to the inventory and money is removed. Corresponding messages are sent back to the game client.
 /// </summary>
-public readonly ref struct BuyItemFromNpcRequest
+public readonly struct BuyItemFromNpcRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BuyItemFromNpcRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public BuyItemFromNpcRequest(Span<byte> data)
+    public BuyItemFromNpcRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -1953,7 +1953,7 @@ public readonly ref struct BuyItemFromNpcRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private BuyItemFromNpcRequest(Span<byte> data, bool initialize)
+    private BuyItemFromNpcRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -1990,23 +1990,23 @@ public readonly ref struct BuyItemFromNpcRequest
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="BuyItemFromNpcRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="BuyItemFromNpcRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator BuyItemFromNpcRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator BuyItemFromNpcRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="BuyItemFromNpcRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="BuyItemFromNpcRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(BuyItemFromNpcRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(BuyItemFromNpcRequest packet) => packet._data; 
 }
 
 
@@ -2014,15 +2014,15 @@ public readonly ref struct BuyItemFromNpcRequest
 /// Is sent by the client when: A player wants to sell an item of his inventory to the opened NPC merchant.
 /// Causes reaction on server side: The item is sold for money to the NPC. The item is removed from the inventory and money is added. Corresponding messages are sent back to the game client.
 /// </summary>
-public readonly ref struct SellItemToNpcRequest
+public readonly struct SellItemToNpcRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SellItemToNpcRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public SellItemToNpcRequest(Span<byte> data)
+    public SellItemToNpcRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2032,7 +2032,7 @@ public readonly ref struct SellItemToNpcRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private SellItemToNpcRequest(Span<byte> data, bool initialize)
+    private SellItemToNpcRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2069,23 +2069,23 @@ public readonly ref struct SellItemToNpcRequest
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="SellItemToNpcRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="SellItemToNpcRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator SellItemToNpcRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator SellItemToNpcRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="SellItemToNpcRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="SellItemToNpcRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(SellItemToNpcRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(SellItemToNpcRequest packet) => packet._data; 
 }
 
 
@@ -2093,15 +2093,15 @@ public readonly ref struct SellItemToNpcRequest
 /// Is sent by the client when: A player wants to repair an item of his inventory.
 /// Causes reaction on server side: The item is repaired if the player has enough money in its inventory. A corresponding response is sent.
 /// </summary>
-public readonly ref struct RepairItemRequest
+public readonly struct RepairItemRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RepairItemRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public RepairItemRequest(Span<byte> data)
+    public RepairItemRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2111,7 +2111,7 @@ public readonly ref struct RepairItemRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private RepairItemRequest(Span<byte> data, bool initialize)
+    private RepairItemRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2148,23 +2148,23 @@ public readonly ref struct RepairItemRequest
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="RepairItemRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RepairItemRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator RepairItemRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator RepairItemRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="RepairItemRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="RepairItemRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(RepairItemRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(RepairItemRequest packet) => packet._data; 
 }
 
 
@@ -2172,15 +2172,15 @@ public readonly ref struct RepairItemRequest
 /// Is sent by the client when: A player selected to warp by selecting an entry in the warp list (configured in game client files).
 /// Causes reaction on server side: If the player has enough money and is allowed to enter the map, it's getting moved to there.
 /// </summary>
-public readonly ref struct WarpCommandRequest
+public readonly struct WarpCommandRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WarpCommandRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public WarpCommandRequest(Span<byte> data)
+    public WarpCommandRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2190,7 +2190,7 @@ public readonly ref struct WarpCommandRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private WarpCommandRequest(Span<byte> data, bool initialize)
+    private WarpCommandRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2234,23 +2234,23 @@ public readonly ref struct WarpCommandRequest
     /// </summary>
     public ushort WarpInfoIndex
     {
-        get => ReadUInt16LittleEndian(this._data[8..]);
-        set => WriteUInt16LittleEndian(this._data[8..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="WarpCommandRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="WarpCommandRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator WarpCommandRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator WarpCommandRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="WarpCommandRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="WarpCommandRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(WarpCommandRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(WarpCommandRequest packet) => packet._data; 
 }
 
 
@@ -2258,15 +2258,15 @@ public readonly ref struct WarpCommandRequest
 /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
 /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
 /// </summary>
-public readonly ref struct EnterGateRequest
+public readonly struct EnterGateRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EnterGateRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public EnterGateRequest(Span<byte> data)
+    public EnterGateRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2276,7 +2276,7 @@ public readonly ref struct EnterGateRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private EnterGateRequest(Span<byte> data, bool initialize)
+    private EnterGateRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2313,8 +2313,8 @@ public readonly ref struct EnterGateRequest
     /// </summary>
     public ushort GateNumber
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -2322,8 +2322,8 @@ public readonly ref struct EnterGateRequest
     /// </summary>
     public byte TeleportTargetX
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
@@ -2331,23 +2331,23 @@ public readonly ref struct EnterGateRequest
     /// </summary>
     public byte TeleportTargetY
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="EnterGateRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EnterGateRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator EnterGateRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator EnterGateRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="EnterGateRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="EnterGateRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(EnterGateRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(EnterGateRequest packet) => packet._data; 
 }
 
 
@@ -2355,15 +2355,15 @@ public readonly ref struct EnterGateRequest
 /// Is sent by the client when: Usually: When the player enters an area on the game map which is configured as gate at the client data files. In the special case of wizards, this packet is also used for the teleport skill. When this is the case, GateNumber is 0 and the target coordinates are specified.
 /// Causes reaction on server side: If the player is allowed to enter the "gate", it's moved to the corresponding exit gate area.
 /// </summary>
-public readonly ref struct EnterGateRequest075
+public readonly struct EnterGateRequest075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EnterGateRequest075"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public EnterGateRequest075(Span<byte> data)
+    public EnterGateRequest075(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2373,7 +2373,7 @@ public readonly ref struct EnterGateRequest075
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private EnterGateRequest075(Span<byte> data, bool initialize)
+    private EnterGateRequest075(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2410,8 +2410,8 @@ public readonly ref struct EnterGateRequest075
     /// </summary>
     public byte GateNumber
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -2419,8 +2419,8 @@ public readonly ref struct EnterGateRequest075
     /// </summary>
     public byte TeleportTargetX
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -2428,23 +2428,23 @@ public readonly ref struct EnterGateRequest075
     /// </summary>
     public byte TeleportTargetY
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="EnterGateRequest075"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EnterGateRequest075"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator EnterGateRequest075(Span<byte> packet) => new (packet, false);
+    public static implicit operator EnterGateRequest075(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="EnterGateRequest075"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="EnterGateRequest075"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(EnterGateRequest075 packet) => packet._data; 
+    public static implicit operator Memory<byte>(EnterGateRequest075 packet) => packet._data; 
 }
 
 
@@ -2452,15 +2452,15 @@ public readonly ref struct EnterGateRequest075
 /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
 /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
 /// </summary>
-public readonly ref struct UnlockVault
+public readonly struct UnlockVault
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UnlockVault"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public UnlockVault(Span<byte> data)
+    public UnlockVault(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2470,7 +2470,7 @@ public readonly ref struct UnlockVault
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private UnlockVault(Span<byte> data, bool initialize)
+    private UnlockVault(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2514,23 +2514,23 @@ public readonly ref struct UnlockVault
     /// </summary>
     public ushort Pin
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="UnlockVault"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="UnlockVault"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator UnlockVault(Span<byte> packet) => new (packet, false);
+    public static implicit operator UnlockVault(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="UnlockVault"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="UnlockVault"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(UnlockVault packet) => packet._data; 
+    public static implicit operator Memory<byte>(UnlockVault packet) => packet._data; 
 }
 
 
@@ -2538,15 +2538,15 @@ public readonly ref struct UnlockVault
 /// Is sent by the client when: The player wants to set a new pin for the vault when it's in unlocked state.
 /// Causes reaction on server side: The vault pin is set. VaultProtectionInformation is sent as response.
 /// </summary>
-public readonly ref struct SetVaultPin
+public readonly struct SetVaultPin
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SetVaultPin"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public SetVaultPin(Span<byte> data)
+    public SetVaultPin(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2556,7 +2556,7 @@ public readonly ref struct SetVaultPin
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private SetVaultPin(Span<byte> data, bool initialize)
+    private SetVaultPin(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2600,8 +2600,8 @@ public readonly ref struct SetVaultPin
     /// </summary>
     public ushort Pin
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -2609,23 +2609,23 @@ public readonly ref struct SetVaultPin
     /// </summary>
     public string Password
     {
-        get => this._data.ExtractString(6, 20, System.Text.Encoding.UTF8);
-        set => this._data.Slice(6, 20).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(6, 20, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 20).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="SetVaultPin"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="SetVaultPin"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator SetVaultPin(Span<byte> packet) => new (packet, false);
+    public static implicit operator SetVaultPin(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="SetVaultPin"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="SetVaultPin"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(SetVaultPin packet) => packet._data; 
+    public static implicit operator Memory<byte>(SetVaultPin packet) => packet._data; 
 }
 
 
@@ -2633,15 +2633,15 @@ public readonly ref struct SetVaultPin
 /// Is sent by the client when: The player wants to remove the pin for the vault when it's in unlocked state.
 /// Causes reaction on server side: The vault pin is removed. VaultProtectionInformation is sent as response.
 /// </summary>
-public readonly ref struct RemoveVaultPin
+public readonly struct RemoveVaultPin
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RemoveVaultPin"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public RemoveVaultPin(Span<byte> data)
+    public RemoveVaultPin(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2651,7 +2651,7 @@ public readonly ref struct RemoveVaultPin
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private RemoveVaultPin(Span<byte> data, bool initialize)
+    private RemoveVaultPin(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2695,23 +2695,23 @@ public readonly ref struct RemoveVaultPin
     /// </summary>
     public string Password
     {
-        get => this._data.ExtractString(6, 20, System.Text.Encoding.UTF8);
-        set => this._data.Slice(6, 20).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(6, 20, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 20).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="RemoveVaultPin"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RemoveVaultPin"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator RemoveVaultPin(Span<byte> packet) => new (packet, false);
+    public static implicit operator RemoveVaultPin(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="RemoveVaultPin"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="RemoveVaultPin"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(RemoveVaultPin packet) => packet._data; 
+    public static implicit operator Memory<byte>(RemoveVaultPin packet) => packet._data; 
 }
 
 
@@ -2719,15 +2719,15 @@ public readonly ref struct RemoveVaultPin
 /// Is sent by the client when: The player closed an opened vault dialog.
 /// Causes reaction on server side: The state on the server is updated.
 /// </summary>
-public readonly ref struct VaultClosed
+public readonly struct VaultClosed
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VaultClosed"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public VaultClosed(Span<byte> data)
+    public VaultClosed(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2737,7 +2737,7 @@ public readonly ref struct VaultClosed
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private VaultClosed(Span<byte> data, bool initialize)
+    private VaultClosed(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2770,18 +2770,18 @@ public readonly ref struct VaultClosed
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="VaultClosed"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="VaultClosed"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator VaultClosed(Span<byte> packet) => new (packet, false);
+    public static implicit operator VaultClosed(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="VaultClosed"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="VaultClosed"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(VaultClosed packet) => packet._data; 
+    public static implicit operator Memory<byte>(VaultClosed packet) => packet._data; 
 }
 
 
@@ -2789,7 +2789,7 @@ public readonly ref struct VaultClosed
 /// Is sent by the client when: The player wants to move money from or to the vault storage.
 /// Causes reaction on server side: The money is moved, if possible.
 /// </summary>
-public readonly ref struct VaultMoveMoneyRequest
+public readonly struct VaultMoveMoneyRequest
 {
     /// <summary>
     /// Defines the moving direction of money between inventory and vault.
@@ -2807,13 +2807,13 @@ public readonly ref struct VaultMoveMoneyRequest
             VaultToInventory = 1,
     }
 
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VaultMoveMoneyRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public VaultMoveMoneyRequest(Span<byte> data)
+    public VaultMoveMoneyRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -2823,7 +2823,7 @@ public readonly ref struct VaultMoveMoneyRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private VaultMoveMoneyRequest(Span<byte> data, bool initialize)
+    private VaultMoveMoneyRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -2860,8 +2860,8 @@ public readonly ref struct VaultMoveMoneyRequest
     /// </summary>
     public VaultMoveMoneyRequest.VaultMoneyMoveDirection Direction
     {
-        get => (VaultMoneyMoveDirection)this._data[3];
-        set => this._data[3] = (byte)value;
+        get => (VaultMoneyMoveDirection)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
     }
 
     /// <summary>
@@ -2869,23 +2869,23 @@ public readonly ref struct VaultMoveMoneyRequest
     /// </summary>
     public uint Amount
     {
-        get => ReadUInt32LittleEndian(this._data[4..]);
-        set => WriteUInt32LittleEndian(this._data[4..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="VaultMoveMoneyRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="VaultMoveMoneyRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator VaultMoveMoneyRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator VaultMoveMoneyRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="VaultMoveMoneyRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="VaultMoveMoneyRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(VaultMoveMoneyRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(VaultMoveMoneyRequest packet) => packet._data; 
 }
 
 
@@ -2893,7 +2893,7 @@ public readonly ref struct VaultMoveMoneyRequest
 /// Is sent by the client when: When a player has the Lahap npc dialog open and wants to combine or disband jewel stacks.
 /// Causes reaction on server side: If successful, the inventory is updated and the game client gets corresponding responses.
 /// </summary>
-public readonly ref struct LahapJewelMixRequest
+public readonly struct LahapJewelMixRequest
 {
     /// <summary>
     /// Describes what kind of operation is requested.
@@ -2988,13 +2988,13 @@ public readonly ref struct LahapJewelMixRequest
             HigherRefineStone = 9,
     }
 
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LahapJewelMixRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public LahapJewelMixRequest(Span<byte> data)
+    public LahapJewelMixRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3004,7 +3004,7 @@ public readonly ref struct LahapJewelMixRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private LahapJewelMixRequest(Span<byte> data, bool initialize)
+    private LahapJewelMixRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3041,8 +3041,8 @@ public readonly ref struct LahapJewelMixRequest
     /// </summary>
     public LahapJewelMixRequest.MixType Operation
     {
-        get => (MixType)this._data[3];
-        set => this._data[3] = (byte)value;
+        get => (MixType)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
     }
 
     /// <summary>
@@ -3050,8 +3050,8 @@ public readonly ref struct LahapJewelMixRequest
     /// </summary>
     public LahapJewelMixRequest.ItemType Item
     {
-        get => (ItemType)this._data[4];
-        set => this._data[4] = (byte)value;
+        get => (ItemType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -3059,8 +3059,8 @@ public readonly ref struct LahapJewelMixRequest
     /// </summary>
     public LahapJewelMixRequest.StackSize MixingStackSize
     {
-        get => (StackSize)this._data[5];
-        set => this._data[5] = (byte)value;
+        get => (StackSize)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
     }
 
     /// <summary>
@@ -3068,23 +3068,23 @@ public readonly ref struct LahapJewelMixRequest
     /// </summary>
     public byte UnmixingSourceSlot
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="LahapJewelMixRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LahapJewelMixRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator LahapJewelMixRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator LahapJewelMixRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="LahapJewelMixRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="LahapJewelMixRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(LahapJewelMixRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(LahapJewelMixRequest packet) => packet._data; 
 }
 
 
@@ -3092,15 +3092,15 @@ public readonly ref struct LahapJewelMixRequest
 /// Is sent by the client when: When the player opens the party menu in the game client.
 /// Causes reaction on server side: If the player is in a party, the server sends back a list with information about all players of the party.
 /// </summary>
-public readonly ref struct PartyListRequest
+public readonly struct PartyListRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PartyListRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PartyListRequest(Span<byte> data)
+    public PartyListRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3110,7 +3110,7 @@ public readonly ref struct PartyListRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PartyListRequest(Span<byte> data, bool initialize)
+    private PartyListRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3143,18 +3143,18 @@ public readonly ref struct PartyListRequest
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyListRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PartyListRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PartyListRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator PartyListRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PartyListRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PartyListRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PartyListRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(PartyListRequest packet) => packet._data; 
 }
 
 
@@ -3162,15 +3162,15 @@ public readonly ref struct PartyListRequest
 /// Is sent by the client when: A party master wants to kick another player from his party, or when a player wants to kick himself from his party.
 /// Causes reaction on server side: If the sending player is the party master, or the player wants to kick himself, the target player is removed from the party.
 /// </summary>
-public readonly ref struct PartyPlayerKickRequest
+public readonly struct PartyPlayerKickRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PartyPlayerKickRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PartyPlayerKickRequest(Span<byte> data)
+    public PartyPlayerKickRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3180,7 +3180,7 @@ public readonly ref struct PartyPlayerKickRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PartyPlayerKickRequest(Span<byte> data, bool initialize)
+    private PartyPlayerKickRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3217,23 +3217,23 @@ public readonly ref struct PartyPlayerKickRequest
     /// </summary>
     public byte PlayerIndex
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyPlayerKickRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PartyPlayerKickRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PartyPlayerKickRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator PartyPlayerKickRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PartyPlayerKickRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PartyPlayerKickRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PartyPlayerKickRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(PartyPlayerKickRequest packet) => packet._data; 
 }
 
 
@@ -3241,15 +3241,15 @@ public readonly ref struct PartyPlayerKickRequest
 /// Is sent by the client when: A party master wants to invite another player to his party.
 /// Causes reaction on server side: If the requesting player has no party, or is the party master, a request is sent to the target player.
 /// </summary>
-public readonly ref struct PartyInviteRequest
+public readonly struct PartyInviteRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PartyInviteRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PartyInviteRequest(Span<byte> data)
+    public PartyInviteRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3259,7 +3259,7 @@ public readonly ref struct PartyInviteRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PartyInviteRequest(Span<byte> data, bool initialize)
+    private PartyInviteRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3296,23 +3296,23 @@ public readonly ref struct PartyInviteRequest
     /// </summary>
     public ushort TargetPlayerId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyInviteRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PartyInviteRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PartyInviteRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator PartyInviteRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PartyInviteRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PartyInviteRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PartyInviteRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(PartyInviteRequest packet) => packet._data; 
 }
 
 
@@ -3320,15 +3320,15 @@ public readonly ref struct PartyInviteRequest
 /// Is sent by the client when: A player was invited by another player to join a party and this player sent the response back.
 /// Causes reaction on server side: If the sender accepts the request, it's added to the party.
 /// </summary>
-public readonly ref struct PartyInviteResponse
+public readonly struct PartyInviteResponse
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PartyInviteResponse"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PartyInviteResponse(Span<byte> data)
+    public PartyInviteResponse(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3338,7 +3338,7 @@ public readonly ref struct PartyInviteResponse
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PartyInviteResponse(Span<byte> data, bool initialize)
+    private PartyInviteResponse(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3375,23 +3375,23 @@ public readonly ref struct PartyInviteResponse
     /// </summary>
     public bool Accepted
     {
-        get => this._data[3..].GetBoolean();
-        set => this._data[3..].SetBoolean(value);
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PartyInviteResponse"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PartyInviteResponse"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PartyInviteResponse(Span<byte> packet) => new (packet, false);
+    public static implicit operator PartyInviteResponse(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PartyInviteResponse"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PartyInviteResponse"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PartyInviteResponse packet) => packet._data; 
+    public static implicit operator Memory<byte>(PartyInviteResponse packet) => packet._data; 
 }
 
 
@@ -3399,15 +3399,15 @@ public readonly ref struct PartyInviteResponse
 /// Is sent by the client when: A player wants to walk on the game map.
 /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
 /// </summary>
-public readonly ref struct WalkRequest
+public readonly struct WalkRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WalkRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public WalkRequest(Span<byte> data)
+    public WalkRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3417,7 +3417,7 @@ public readonly ref struct WalkRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private WalkRequest(Span<byte> data, bool initialize)
+    private WalkRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3449,8 +3449,8 @@ public readonly ref struct WalkRequest
     /// </summary>
     public byte SourceX
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -3458,8 +3458,8 @@ public readonly ref struct WalkRequest
     /// </summary>
     public byte SourceY
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -3467,8 +3467,8 @@ public readonly ref struct WalkRequest
     /// </summary>
     public byte StepCount
     {
-        get => this._data[5..].GetByteValue(4, 0);
-        set => this._data[5..].SetByteValue(value, 4, 0);
+        get => this._data.Span[5..].GetByteValue(4, 0);
+        set => this._data.Span[5..].SetByteValue(value, 4, 0);
     }
 
     /// <summary>
@@ -3476,8 +3476,8 @@ public readonly ref struct WalkRequest
     /// </summary>
     public byte TargetRotation
     {
-        get => this._data[5..].GetByteValue(4, 4);
-        set => this._data[5..].SetByteValue(value, 4, 4);
+        get => this._data.Span[5..].GetByteValue(4, 4);
+        set => this._data.Span[5..].SetByteValue(value, 4, 4);
     }
 
     /// <summary>
@@ -3485,22 +3485,22 @@ public readonly ref struct WalkRequest
     /// </summary>
     public Span<byte> Directions
     {
-        get => this._data.Slice(6);
+        get => this._data.Slice(6).Span;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="WalkRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="WalkRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator WalkRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator WalkRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="WalkRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="WalkRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(WalkRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(WalkRequest packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified length of <see cref="Directions"/>.
@@ -3515,15 +3515,15 @@ public readonly ref struct WalkRequest
 /// Is sent by the client when: A player wants to walk on the game map.
 /// Causes reaction on server side: The player gets moved on the map, visible for other surrounding players.
 /// </summary>
-public readonly ref struct WalkRequest075
+public readonly struct WalkRequest075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WalkRequest075"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public WalkRequest075(Span<byte> data)
+    public WalkRequest075(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3533,7 +3533,7 @@ public readonly ref struct WalkRequest075
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private WalkRequest075(Span<byte> data, bool initialize)
+    private WalkRequest075(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3565,8 +3565,8 @@ public readonly ref struct WalkRequest075
     /// </summary>
     public byte SourceX
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -3574,8 +3574,8 @@ public readonly ref struct WalkRequest075
     /// </summary>
     public byte SourceY
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -3583,8 +3583,8 @@ public readonly ref struct WalkRequest075
     /// </summary>
     public byte StepCount
     {
-        get => this._data[5..].GetByteValue(4, 0);
-        set => this._data[5..].SetByteValue(value, 4, 0);
+        get => this._data.Span[5..].GetByteValue(4, 0);
+        set => this._data.Span[5..].SetByteValue(value, 4, 0);
     }
 
     /// <summary>
@@ -3592,8 +3592,8 @@ public readonly ref struct WalkRequest075
     /// </summary>
     public byte TargetRotation
     {
-        get => this._data[5..].GetByteValue(4, 4);
-        set => this._data[5..].SetByteValue(value, 4, 4);
+        get => this._data.Span[5..].GetByteValue(4, 4);
+        set => this._data.Span[5..].SetByteValue(value, 4, 4);
     }
 
     /// <summary>
@@ -3601,22 +3601,22 @@ public readonly ref struct WalkRequest075
     /// </summary>
     public Span<byte> Directions
     {
-        get => this._data.Slice(6);
+        get => this._data.Slice(6).Span;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="WalkRequest075"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="WalkRequest075"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator WalkRequest075(Span<byte> packet) => new (packet, false);
+    public static implicit operator WalkRequest075(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="WalkRequest075"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="WalkRequest075"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(WalkRequest075 packet) => packet._data; 
+    public static implicit operator Memory<byte>(WalkRequest075 packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified length of <see cref="Directions"/>.
@@ -3631,15 +3631,15 @@ public readonly ref struct WalkRequest075
 /// Is sent by the client when: It's sent when the player performs specific skills.
 /// Causes reaction on server side: Usually, the player is moved instantly to the specified coordinates on the current map. In OpenMU, this request is not handled, because it allows hackers to "teleport" to any coordinates.
 /// </summary>
-public readonly ref struct InstantMoveRequest
+public readonly struct InstantMoveRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InstantMoveRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public InstantMoveRequest(Span<byte> data)
+    public InstantMoveRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3649,7 +3649,7 @@ public readonly ref struct InstantMoveRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private InstantMoveRequest(Span<byte> data, bool initialize)
+    private InstantMoveRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3686,8 +3686,8 @@ public readonly ref struct InstantMoveRequest
     /// </summary>
     public byte TargetX
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -3695,23 +3695,23 @@ public readonly ref struct InstantMoveRequest
     /// </summary>
     public byte TargetY
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="InstantMoveRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="InstantMoveRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator InstantMoveRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator InstantMoveRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="InstantMoveRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="InstantMoveRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(InstantMoveRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(InstantMoveRequest packet) => packet._data; 
 }
 
 
@@ -3719,15 +3719,15 @@ public readonly ref struct InstantMoveRequest
 /// Is sent by the client when: A player does any kind of animation.
 /// Causes reaction on server side: The animation number and rotation is forwarded to all surrounding players.
 /// </summary>
-public readonly ref struct AnimationRequest
+public readonly struct AnimationRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AnimationRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AnimationRequest(Span<byte> data)
+    public AnimationRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3737,7 +3737,7 @@ public readonly ref struct AnimationRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AnimationRequest(Span<byte> data, bool initialize)
+    private AnimationRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3774,8 +3774,8 @@ public readonly ref struct AnimationRequest
     /// </summary>
     public byte Rotation
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -3783,23 +3783,23 @@ public readonly ref struct AnimationRequest
     /// </summary>
     public byte AnimationNumber
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AnimationRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AnimationRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator AnimationRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator AnimationRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AnimationRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AnimationRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AnimationRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(AnimationRequest packet) => packet._data; 
 }
 
 
@@ -3807,15 +3807,15 @@ public readonly ref struct AnimationRequest
 /// Is sent by the client when: After a successful login or after the player decided to leave the game world to go back to the character selection screen.
 /// Causes reaction on server side: The server sends the character list with all available characters.
 /// </summary>
-public readonly ref struct RequestCharacterList
+public readonly struct RequestCharacterList
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RequestCharacterList"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public RequestCharacterList(Span<byte> data)
+    public RequestCharacterList(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3825,7 +3825,7 @@ public readonly ref struct RequestCharacterList
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private RequestCharacterList(Span<byte> data, bool initialize)
+    private RequestCharacterList(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3865,18 +3865,18 @@ public readonly ref struct RequestCharacterList
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="RequestCharacterList"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RequestCharacterList"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator RequestCharacterList(Span<byte> packet) => new (packet, false);
+    public static implicit operator RequestCharacterList(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="RequestCharacterList"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="RequestCharacterList"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(RequestCharacterList packet) => packet._data; 
+    public static implicit operator Memory<byte>(RequestCharacterList packet) => packet._data; 
 }
 
 
@@ -3884,15 +3884,15 @@ public readonly ref struct RequestCharacterList
 /// Is sent by the client when: The game client is at the character selection screen and the player requests to add a new character.
 /// Causes reaction on server side: The server checks if the player is allowed to create the character and sends a response back.
 /// </summary>
-public readonly ref struct CreateCharacter
+public readonly struct CreateCharacter
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateCharacter"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public CreateCharacter(Span<byte> data)
+    public CreateCharacter(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3902,7 +3902,7 @@ public readonly ref struct CreateCharacter
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private CreateCharacter(Span<byte> data, bool initialize)
+    private CreateCharacter(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -3946,8 +3946,8 @@ public readonly ref struct CreateCharacter
     /// </summary>
     public string Name
     {
-        get => this._data.ExtractString(4, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(4, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -3955,23 +3955,23 @@ public readonly ref struct CreateCharacter
     /// </summary>
     public CharacterClassNumber Class
     {
-        get => (CharacterClassNumber)this._data[14..].GetByteValue(6, 2);
-        set => this._data[14..].SetByteValue((byte)value, 6, 2);
+        get => (CharacterClassNumber)this._data.Span[14..].GetByteValue(6, 2);
+        set => this._data.Span[14..].SetByteValue((byte)value, 6, 2);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="CreateCharacter"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CreateCharacter"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator CreateCharacter(Span<byte> packet) => new (packet, false);
+    public static implicit operator CreateCharacter(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="CreateCharacter"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="CreateCharacter"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(CreateCharacter packet) => packet._data; 
+    public static implicit operator Memory<byte>(CreateCharacter packet) => packet._data; 
 }
 
 
@@ -3979,15 +3979,15 @@ public readonly ref struct CreateCharacter
 /// Is sent by the client when: The game client is at the character selection screen and the player requests to delete an existing character.
 /// Causes reaction on server side: The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.
 /// </summary>
-public readonly ref struct DeleteCharacter
+public readonly struct DeleteCharacter
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteCharacter"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public DeleteCharacter(Span<byte> data)
+    public DeleteCharacter(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -3997,7 +3997,7 @@ public readonly ref struct DeleteCharacter
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private DeleteCharacter(Span<byte> data, bool initialize)
+    private DeleteCharacter(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4041,8 +4041,8 @@ public readonly ref struct DeleteCharacter
     /// </summary>
     public string Name
     {
-        get => this._data.ExtractString(4, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(4, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -4050,23 +4050,23 @@ public readonly ref struct DeleteCharacter
     /// </summary>
     public string SecurityCode
     {
-        get => this._data.ExtractString(14, this._data.Length - 14, System.Text.Encoding.UTF8);
-        set => this._data.Slice(14).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(14, this._data.Length - 14, System.Text.Encoding.UTF8);
+        set => this._data.Slice(14).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="DeleteCharacter"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="DeleteCharacter"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator DeleteCharacter(Span<byte> packet) => new (packet, false);
+    public static implicit operator DeleteCharacter(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="DeleteCharacter"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="DeleteCharacter"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(DeleteCharacter packet) => packet._data; 
+    public static implicit operator Memory<byte>(DeleteCharacter packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified field content.
@@ -4080,15 +4080,15 @@ public readonly ref struct DeleteCharacter
 /// Is sent by the client when: The player selects a character to enter the game world on the character selection screen.
 /// Causes reaction on server side: The player joins the game world with the specified character.
 /// </summary>
-public readonly ref struct SelectCharacter
+public readonly struct SelectCharacter
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SelectCharacter"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public SelectCharacter(Span<byte> data)
+    public SelectCharacter(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4098,7 +4098,7 @@ public readonly ref struct SelectCharacter
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private SelectCharacter(Span<byte> data, bool initialize)
+    private SelectCharacter(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4142,23 +4142,23 @@ public readonly ref struct SelectCharacter
     /// </summary>
     public string Name
     {
-        get => this._data.ExtractString(4, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(4, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="SelectCharacter"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="SelectCharacter"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator SelectCharacter(Span<byte> packet) => new (packet, false);
+    public static implicit operator SelectCharacter(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="SelectCharacter"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="SelectCharacter"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(SelectCharacter packet) => packet._data; 
+    public static implicit operator Memory<byte>(SelectCharacter packet) => packet._data; 
 }
 
 
@@ -4166,15 +4166,15 @@ public readonly ref struct SelectCharacter
 /// Is sent by the client when: The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.
 /// Causes reaction on server side: The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.
 /// </summary>
-public readonly ref struct FocusCharacter
+public readonly struct FocusCharacter
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FocusCharacter"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public FocusCharacter(Span<byte> data)
+    public FocusCharacter(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4184,7 +4184,7 @@ public readonly ref struct FocusCharacter
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private FocusCharacter(Span<byte> data, bool initialize)
+    private FocusCharacter(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4228,23 +4228,23 @@ public readonly ref struct FocusCharacter
     /// </summary>
     public string Name
     {
-        get => this._data.ExtractString(4, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(4, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="FocusCharacter"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="FocusCharacter"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator FocusCharacter(Span<byte> packet) => new (packet, false);
+    public static implicit operator FocusCharacter(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="FocusCharacter"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="FocusCharacter"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(FocusCharacter packet) => packet._data; 
+    public static implicit operator Memory<byte>(FocusCharacter packet) => packet._data; 
 }
 
 
@@ -4252,15 +4252,15 @@ public readonly ref struct FocusCharacter
 /// Is sent by the client when: The player decides to add a stat point to a specific stat type, by pressing a plus-button in the character info menu.
 /// Causes reaction on server side: The server checks if a level-up-point is available. If yes, it adds the point to the specified stat type. It sends a response back to the client.
 /// </summary>
-public readonly ref struct IncreaseCharacterStatPoint
+public readonly struct IncreaseCharacterStatPoint
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="IncreaseCharacterStatPoint"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public IncreaseCharacterStatPoint(Span<byte> data)
+    public IncreaseCharacterStatPoint(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4270,7 +4270,7 @@ public readonly ref struct IncreaseCharacterStatPoint
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private IncreaseCharacterStatPoint(Span<byte> data, bool initialize)
+    private IncreaseCharacterStatPoint(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4314,23 +4314,23 @@ public readonly ref struct IncreaseCharacterStatPoint
     /// </summary>
     public CharacterStatAttribute StatType
     {
-        get => (CharacterStatAttribute)this._data[4];
-        set => this._data[4] = (byte)value;
+        get => (CharacterStatAttribute)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="IncreaseCharacterStatPoint"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IncreaseCharacterStatPoint"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator IncreaseCharacterStatPoint(Span<byte> packet) => new (packet, false);
+    public static implicit operator IncreaseCharacterStatPoint(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="IncreaseCharacterStatPoint"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="IncreaseCharacterStatPoint"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(IncreaseCharacterStatPoint packet) => packet._data; 
+    public static implicit operator Memory<byte>(IncreaseCharacterStatPoint packet) => packet._data; 
 }
 
 
@@ -4338,15 +4338,15 @@ public readonly ref struct IncreaseCharacterStatPoint
 /// Is sent by the client when: After the server sent a map change message and the client has initialized the game map visualization.
 /// Causes reaction on server side: The character is added to the internal game map and ready to interact with other entities.
 /// </summary>
-public readonly ref struct ClientReadyAfterMapChange
+public readonly struct ClientReadyAfterMapChange
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ClientReadyAfterMapChange"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ClientReadyAfterMapChange(Span<byte> data)
+    public ClientReadyAfterMapChange(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4356,7 +4356,7 @@ public readonly ref struct ClientReadyAfterMapChange
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ClientReadyAfterMapChange(Span<byte> data, bool initialize)
+    private ClientReadyAfterMapChange(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4396,18 +4396,18 @@ public readonly ref struct ClientReadyAfterMapChange
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ClientReadyAfterMapChange"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ClientReadyAfterMapChange"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ClientReadyAfterMapChange(Span<byte> packet) => new (packet, false);
+    public static implicit operator ClientReadyAfterMapChange(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ClientReadyAfterMapChange"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ClientReadyAfterMapChange"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ClientReadyAfterMapChange packet) => packet._data; 
+    public static implicit operator Memory<byte>(ClientReadyAfterMapChange packet) => packet._data; 
 }
 
 
@@ -4415,15 +4415,15 @@ public readonly ref struct ClientReadyAfterMapChange
 /// Is sent by the client when: When leaving the game world with a character.
 /// Causes reaction on server side: The server saves this configuration in its database.
 /// </summary>
-public readonly ref struct SaveKeyConfiguration
+public readonly struct SaveKeyConfiguration
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SaveKeyConfiguration"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public SaveKeyConfiguration(Span<byte> data)
+    public SaveKeyConfiguration(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4433,7 +4433,7 @@ public readonly ref struct SaveKeyConfiguration
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private SaveKeyConfiguration(Span<byte> data, bool initialize)
+    private SaveKeyConfiguration(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4472,22 +4472,22 @@ public readonly ref struct SaveKeyConfiguration
     /// </summary>
     public Span<byte> Configuration
     {
-        get => this._data.Slice(4);
+        get => this._data.Slice(4).Span;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="SaveKeyConfiguration"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="SaveKeyConfiguration"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator SaveKeyConfiguration(Span<byte> packet) => new (packet, false);
+    public static implicit operator SaveKeyConfiguration(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="SaveKeyConfiguration"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="SaveKeyConfiguration"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(SaveKeyConfiguration packet) => packet._data; 
+    public static implicit operator Memory<byte>(SaveKeyConfiguration packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified length of <see cref="Configuration"/>.
@@ -4502,15 +4502,15 @@ public readonly ref struct SaveKeyConfiguration
 /// Is sent by the client when: The player wants to add or increase the level of a specific master skill of the master skill tree.
 /// Causes reaction on server side: Adds or increases the master skill level of the specified skill, if the character is allowed to do that. A response is sent back to the client.
 /// </summary>
-public readonly ref struct AddMasterSkillPoint
+public readonly struct AddMasterSkillPoint
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AddMasterSkillPoint"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AddMasterSkillPoint(Span<byte> data)
+    public AddMasterSkillPoint(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4520,7 +4520,7 @@ public readonly ref struct AddMasterSkillPoint
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AddMasterSkillPoint(Span<byte> data, bool initialize)
+    private AddMasterSkillPoint(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4564,23 +4564,23 @@ public readonly ref struct AddMasterSkillPoint
     /// </summary>
     public ushort SkillId
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AddMasterSkillPoint"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AddMasterSkillPoint"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator AddMasterSkillPoint(Span<byte> packet) => new (packet, false);
+    public static implicit operator AddMasterSkillPoint(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AddMasterSkillPoint"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AddMasterSkillPoint"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AddMasterSkillPoint packet) => packet._data; 
+    public static implicit operator Memory<byte>(AddMasterSkillPoint packet) => packet._data; 
 }
 
 
@@ -4588,15 +4588,15 @@ public readonly ref struct AddMasterSkillPoint
 /// Is sent by the client when: A player attacks a target without using a skill.
 /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
 /// </summary>
-public readonly ref struct HitRequest
+public readonly struct HitRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HitRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public HitRequest(Span<byte> data)
+    public HitRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4606,7 +4606,7 @@ public readonly ref struct HitRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private HitRequest(Span<byte> data, bool initialize)
+    private HitRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4643,8 +4643,8 @@ public readonly ref struct HitRequest
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
@@ -4652,8 +4652,8 @@ public readonly ref struct HitRequest
     /// </summary>
     public byte AttackAnimation
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -4661,23 +4661,23 @@ public readonly ref struct HitRequest
     /// </summary>
     public byte LookingDirection
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="HitRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="HitRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator HitRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator HitRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="HitRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="HitRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(HitRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(HitRequest packet) => packet._data; 
 }
 
 
@@ -4685,15 +4685,15 @@ public readonly ref struct HitRequest
 /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
 /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
 /// </summary>
-public readonly ref struct TargetedSkill
+public readonly struct TargetedSkill
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TargetedSkill"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TargetedSkill(Span<byte> data)
+    public TargetedSkill(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4703,7 +4703,7 @@ public readonly ref struct TargetedSkill
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private TargetedSkill(Span<byte> data, bool initialize)
+    private TargetedSkill(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4740,8 +4740,8 @@ public readonly ref struct TargetedSkill
     /// </summary>
     public ushort SkillId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
@@ -4749,23 +4749,23 @@ public readonly ref struct TargetedSkill
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16BigEndian(this._data[5..]);
-        set => WriteUInt16BigEndian(this._data[5..], value);
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="TargetedSkill"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="TargetedSkill"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator TargetedSkill(Span<byte> packet) => new (packet, false);
+    public static implicit operator TargetedSkill(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="TargetedSkill"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="TargetedSkill"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(TargetedSkill packet) => packet._data; 
+    public static implicit operator Memory<byte>(TargetedSkill packet) => packet._data; 
 }
 
 
@@ -4773,15 +4773,15 @@ public readonly ref struct TargetedSkill
 /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
 /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
 /// </summary>
-public readonly ref struct TargetedSkill075
+public readonly struct TargetedSkill075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TargetedSkill075"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TargetedSkill075(Span<byte> data)
+    public TargetedSkill075(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4791,7 +4791,7 @@ public readonly ref struct TargetedSkill075
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private TargetedSkill075(Span<byte> data, bool initialize)
+    private TargetedSkill075(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4828,8 +4828,8 @@ public readonly ref struct TargetedSkill075
     /// </summary>
     public byte SkillIndex
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -4837,23 +4837,23 @@ public readonly ref struct TargetedSkill075
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16BigEndian(this._data[4..]);
-        set => WriteUInt16BigEndian(this._data[4..], value);
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="TargetedSkill075"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="TargetedSkill075"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator TargetedSkill075(Span<byte> packet) => new (packet, false);
+    public static implicit operator TargetedSkill075(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="TargetedSkill075"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="TargetedSkill075"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(TargetedSkill075 packet) => packet._data; 
+    public static implicit operator Memory<byte>(TargetedSkill075 packet) => packet._data; 
 }
 
 
@@ -4861,15 +4861,15 @@ public readonly ref struct TargetedSkill075
 /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
 /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
 /// </summary>
-public readonly ref struct TargetedSkill095
+public readonly struct TargetedSkill095
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TargetedSkill095"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TargetedSkill095(Span<byte> data)
+    public TargetedSkill095(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4879,7 +4879,7 @@ public readonly ref struct TargetedSkill095
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private TargetedSkill095(Span<byte> data, bool initialize)
+    private TargetedSkill095(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -4916,8 +4916,8 @@ public readonly ref struct TargetedSkill095
     /// </summary>
     public byte SkillIndex
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -4925,23 +4925,23 @@ public readonly ref struct TargetedSkill095
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16BigEndian(this._data[4..]);
-        set => WriteUInt16BigEndian(this._data[4..], value);
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="TargetedSkill095"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="TargetedSkill095"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator TargetedSkill095(Span<byte> packet) => new (packet, false);
+    public static implicit operator TargetedSkill095(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="TargetedSkill095"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="TargetedSkill095"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(TargetedSkill095 packet) => packet._data; 
+    public static implicit operator Memory<byte>(TargetedSkill095 packet) => packet._data; 
 }
 
 
@@ -4949,15 +4949,15 @@ public readonly ref struct TargetedSkill095
 /// Is sent by the client when: A player cancels a specific magic effect of a skill, usually 'Infinity Arrow' and 'Wizardy Enhance'.
 /// Causes reaction on server side: The effect is cancelled and an update is sent to the player and all surrounding players.
 /// </summary>
-public readonly ref struct MagicEffectCancelRequest
+public readonly struct MagicEffectCancelRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MagicEffectCancelRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public MagicEffectCancelRequest(Span<byte> data)
+    public MagicEffectCancelRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -4967,7 +4967,7 @@ public readonly ref struct MagicEffectCancelRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private MagicEffectCancelRequest(Span<byte> data, bool initialize)
+    private MagicEffectCancelRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5004,23 +5004,23 @@ public readonly ref struct MagicEffectCancelRequest
     /// </summary>
     public ushort SkillId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="MagicEffectCancelRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MagicEffectCancelRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator MagicEffectCancelRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator MagicEffectCancelRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="MagicEffectCancelRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="MagicEffectCancelRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(MagicEffectCancelRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(MagicEffectCancelRequest packet) => packet._data; 
 }
 
 
@@ -5028,15 +5028,15 @@ public readonly ref struct MagicEffectCancelRequest
 /// Is sent by the client when: A player is performing an skill which affects an area of the map.
 /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
 /// </summary>
-public readonly ref struct AreaSkill
+public readonly struct AreaSkill
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AreaSkill"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AreaSkill(Span<byte> data)
+    public AreaSkill(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -5046,7 +5046,7 @@ public readonly ref struct AreaSkill
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AreaSkill(Span<byte> data, bool initialize)
+    private AreaSkill(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5083,8 +5083,8 @@ public readonly ref struct AreaSkill
     /// </summary>
     public ushort SkillId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
@@ -5092,8 +5092,8 @@ public readonly ref struct AreaSkill
     /// </summary>
     public byte TargetX
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -5101,8 +5101,8 @@ public readonly ref struct AreaSkill
     /// </summary>
     public byte TargetY
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
@@ -5110,8 +5110,8 @@ public readonly ref struct AreaSkill
     /// </summary>
     public byte Rotation
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
     }
 
     /// <summary>
@@ -5119,8 +5119,8 @@ public readonly ref struct AreaSkill
     /// </summary>
     public ushort ExtraTargetId
     {
-        get => ReadUInt16BigEndian(this._data[10..]);
-        set => WriteUInt16BigEndian(this._data[10..], value);
+        get => ReadUInt16BigEndian(this._data.Span[10..]);
+        set => WriteUInt16BigEndian(this._data.Span[10..], value);
     }
 
     /// <summary>
@@ -5128,23 +5128,23 @@ public readonly ref struct AreaSkill
     /// </summary>
     public byte AnimationCounter
     {
-        get => this._data[12];
-        set => this._data[12] = value;
+        get => this._data.Span[12];
+        set => this._data.Span[12] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkill"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AreaSkill"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator AreaSkill(Span<byte> packet) => new (packet, false);
+    public static implicit operator AreaSkill(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AreaSkill"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AreaSkill"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AreaSkill packet) => packet._data; 
+    public static implicit operator Memory<byte>(AreaSkill packet) => packet._data; 
 }
 
 
@@ -5152,15 +5152,15 @@ public readonly ref struct AreaSkill
 /// Is sent by the client when: An area skill was performed and the client decided to hit a target.
 /// Causes reaction on server side: The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.
 /// </summary>
-public readonly ref struct AreaSkillHit
+public readonly struct AreaSkillHit
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AreaSkillHit"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AreaSkillHit(Span<byte> data)
+    public AreaSkillHit(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -5170,7 +5170,7 @@ public readonly ref struct AreaSkillHit
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AreaSkillHit(Span<byte> data, bool initialize)
+    private AreaSkillHit(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5207,8 +5207,8 @@ public readonly ref struct AreaSkillHit
     /// </summary>
     public ushort SkillId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
@@ -5216,8 +5216,8 @@ public readonly ref struct AreaSkillHit
     /// </summary>
     public byte TargetX
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -5225,8 +5225,8 @@ public readonly ref struct AreaSkillHit
     /// </summary>
     public byte TargetY
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
@@ -5234,8 +5234,8 @@ public readonly ref struct AreaSkillHit
     /// </summary>
     public byte HitCounter
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
     }
 
     /// <summary>
@@ -5243,8 +5243,8 @@ public readonly ref struct AreaSkillHit
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16BigEndian(this._data[9..]);
-        set => WriteUInt16BigEndian(this._data[9..], value);
+        get => ReadUInt16BigEndian(this._data.Span[9..]);
+        set => WriteUInt16BigEndian(this._data.Span[9..], value);
     }
 
     /// <summary>
@@ -5252,23 +5252,23 @@ public readonly ref struct AreaSkillHit
     /// </summary>
     public byte AnimationCounter
     {
-        get => this._data[11];
-        set => this._data[11] = value;
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkillHit"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AreaSkillHit"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator AreaSkillHit(Span<byte> packet) => new (packet, false);
+    public static implicit operator AreaSkillHit(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AreaSkillHit"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AreaSkillHit"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AreaSkillHit packet) => packet._data; 
+    public static implicit operator Memory<byte>(AreaSkillHit packet) => packet._data; 
 }
 
 
@@ -5276,15 +5276,15 @@ public readonly ref struct AreaSkillHit
 /// Is sent by the client when: A player is performing an skill which affects an area of the map.
 /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
 /// </summary>
-public readonly ref struct AreaSkill075
+public readonly struct AreaSkill075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AreaSkill075"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AreaSkill075(Span<byte> data)
+    public AreaSkill075(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -5294,7 +5294,7 @@ public readonly ref struct AreaSkill075
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AreaSkill075(Span<byte> data, bool initialize)
+    private AreaSkill075(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5331,8 +5331,8 @@ public readonly ref struct AreaSkill075
     /// </summary>
     public byte SkillIndex
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -5340,8 +5340,8 @@ public readonly ref struct AreaSkill075
     /// </summary>
     public byte TargetX
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -5349,8 +5349,8 @@ public readonly ref struct AreaSkill075
     /// </summary>
     public byte TargetY
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -5358,23 +5358,23 @@ public readonly ref struct AreaSkill075
     /// </summary>
     public byte Rotation
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkill075"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AreaSkill075"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator AreaSkill075(Span<byte> packet) => new (packet, false);
+    public static implicit operator AreaSkill075(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AreaSkill075"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AreaSkill075"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AreaSkill075 packet) => packet._data; 
+    public static implicit operator Memory<byte>(AreaSkill075 packet) => packet._data; 
 }
 
 
@@ -5382,15 +5382,15 @@ public readonly ref struct AreaSkill075
 /// Is sent by the client when: An area skill was performed and the client decided to hit one or more targets.
 /// Causes reaction on server side: The server is calculating the damage and applying it to the targets. The attacker gets a response back with the caused damage.
 /// </summary>
-public readonly ref struct AreaSkillHit075
+public readonly struct AreaSkillHit075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AreaSkillHit075"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AreaSkillHit075(Span<byte> data)
+    public AreaSkillHit075(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -5400,7 +5400,7 @@ public readonly ref struct AreaSkillHit075
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AreaSkillHit075(Span<byte> data, bool initialize)
+    private AreaSkillHit075(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5432,8 +5432,8 @@ public readonly ref struct AreaSkillHit075
     /// </summary>
     public byte SkillIndex
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -5441,8 +5441,8 @@ public readonly ref struct AreaSkillHit075
     /// </summary>
     public byte TargetX
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -5450,8 +5450,8 @@ public readonly ref struct AreaSkillHit075
     /// </summary>
     public byte TargetY
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -5459,28 +5459,28 @@ public readonly ref struct AreaSkillHit075
     /// </summary>
     public byte TargetCount
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
     /// Gets the <see cref="TargetData"/> of the specified index.
     /// </summary>
-        public TargetData this[int index] => new (this._data[(7 + index * TargetData.Length)..]);
+        public TargetData this[int index] => new (this._data.Slice(7 + index * TargetData.Length));
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkillHit075"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AreaSkillHit075"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator AreaSkillHit075(Span<byte> packet) => new (packet, false);
+    public static implicit operator AreaSkillHit075(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AreaSkillHit075"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AreaSkillHit075"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AreaSkillHit075 packet) => packet._data; 
+    public static implicit operator Memory<byte>(AreaSkillHit075 packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="TargetData"/>.
@@ -5493,15 +5493,15 @@ public readonly ref struct AreaSkillHit075
 /// <summary>
 /// Contains the data of the target.
 /// </summary>
-public readonly ref struct TargetData
+public readonly struct TargetData
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TargetData"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TargetData(Span<byte> data)
+    public TargetData(Memory<byte> data)
     {
         this._data = data;
     }
@@ -5516,8 +5516,8 @@ public readonly ref struct TargetData
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16BigEndian(this._data);
-        set => WriteUInt16BigEndian(this._data, value);
+        get => ReadUInt16BigEndian(this._data.Span);
+        set => WriteUInt16BigEndian(this._data.Span, value);
     }
 }
 }
@@ -5527,15 +5527,15 @@ public readonly ref struct TargetData
 /// Is sent by the client when: A player is performing an skill which affects an area of the map.
 /// Causes reaction on server side: It's forwarded to all surrounding players, so that the animation is visible. In the original server implementation, no damage is done yet for attack skills - there are separate hit packets.
 /// </summary>
-public readonly ref struct AreaSkill095
+public readonly struct AreaSkill095
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AreaSkill095"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AreaSkill095(Span<byte> data)
+    public AreaSkill095(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -5545,7 +5545,7 @@ public readonly ref struct AreaSkill095
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AreaSkill095(Span<byte> data, bool initialize)
+    private AreaSkill095(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5582,8 +5582,8 @@ public readonly ref struct AreaSkill095
     /// </summary>
     public byte SkillIndex
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -5591,8 +5591,8 @@ public readonly ref struct AreaSkill095
     /// </summary>
     public byte TargetX
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -5600,8 +5600,8 @@ public readonly ref struct AreaSkill095
     /// </summary>
     public byte TargetY
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -5609,23 +5609,23 @@ public readonly ref struct AreaSkill095
     /// </summary>
     public byte Rotation
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkill095"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AreaSkill095"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator AreaSkill095(Span<byte> packet) => new (packet, false);
+    public static implicit operator AreaSkill095(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AreaSkill095"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AreaSkill095"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AreaSkill095 packet) => packet._data; 
+    public static implicit operator Memory<byte>(AreaSkill095 packet) => packet._data; 
 }
 
 
@@ -5633,15 +5633,15 @@ public readonly ref struct AreaSkill095
 /// Is sent by the client when: An area skill was performed and the client decided to hit one or more targets.
 /// Causes reaction on server side: The server is calculating the damage and applying it to the targets. The attacker gets a response back with the caused damage.
 /// </summary>
-public readonly ref struct AreaSkillHit095
+public readonly struct AreaSkillHit095
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AreaSkillHit095"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AreaSkillHit095(Span<byte> data)
+    public AreaSkillHit095(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -5651,7 +5651,7 @@ public readonly ref struct AreaSkillHit095
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AreaSkillHit095(Span<byte> data, bool initialize)
+    private AreaSkillHit095(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5683,8 +5683,8 @@ public readonly ref struct AreaSkillHit095
     /// </summary>
     public byte SkillIndex
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -5692,8 +5692,8 @@ public readonly ref struct AreaSkillHit095
     /// </summary>
     public byte TargetX
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -5701,8 +5701,8 @@ public readonly ref struct AreaSkillHit095
     /// </summary>
     public byte TargetY
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -5710,8 +5710,8 @@ public readonly ref struct AreaSkillHit095
     /// </summary>
     public byte Counter
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
@@ -5719,28 +5719,28 @@ public readonly ref struct AreaSkillHit095
     /// </summary>
     public byte TargetCount
     {
-        get => this._data[7];
-        set => this._data[7] = value;
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
     }
 
     /// <summary>
     /// Gets the <see cref="TargetData"/> of the specified index.
     /// </summary>
-        public TargetData this[int index] => new (this._data[(8 + index * TargetData.Length)..]);
+        public TargetData this[int index] => new (this._data.Slice(8 + index * TargetData.Length));
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkillHit095"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AreaSkillHit095"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator AreaSkillHit095(Span<byte> packet) => new (packet, false);
+    public static implicit operator AreaSkillHit095(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AreaSkillHit095"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AreaSkillHit095"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AreaSkillHit095 packet) => packet._data; 
+    public static implicit operator Memory<byte>(AreaSkillHit095 packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="TargetData"/>.
@@ -5753,15 +5753,15 @@ public readonly ref struct AreaSkillHit095
 /// <summary>
 /// Contains the data of the target.
 /// </summary>
-public readonly ref struct TargetData
+public readonly struct TargetData
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TargetData"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TargetData(Span<byte> data)
+    public TargetData(Memory<byte> data)
     {
         this._data = data;
     }
@@ -5776,8 +5776,8 @@ public readonly ref struct TargetData
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16BigEndian(this._data);
-        set => WriteUInt16BigEndian(this._data, value);
+        get => ReadUInt16BigEndian(this._data.Span);
+        set => WriteUInt16BigEndian(this._data.Span, value);
     }
 }
 }
@@ -5787,15 +5787,15 @@ public readonly ref struct TargetData
 /// Is sent by the client when: The player wants to cancel the trade.
 /// Causes reaction on server side: The trade is cancelled and the previous inventory state is restored.
 /// </summary>
-public readonly ref struct TradeCancel
+public readonly struct TradeCancel
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TradeCancel"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TradeCancel(Span<byte> data)
+    public TradeCancel(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -5805,7 +5805,7 @@ public readonly ref struct TradeCancel
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private TradeCancel(Span<byte> data, bool initialize)
+    private TradeCancel(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5838,18 +5838,18 @@ public readonly ref struct TradeCancel
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeCancel"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="TradeCancel"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator TradeCancel(Span<byte> packet) => new (packet, false);
+    public static implicit operator TradeCancel(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="TradeCancel"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="TradeCancel"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(TradeCancel packet) => packet._data; 
+    public static implicit operator Memory<byte>(TradeCancel packet) => packet._data; 
 }
 
 
@@ -5857,15 +5857,15 @@ public readonly ref struct TradeCancel
 /// Is sent by the client when: The player presses the trade button.
 /// Causes reaction on server side: The state change is forwarded to the trade partner. If both players press the trade button at the same time, the server will try to complete the trade by exchanging the items and money.
 /// </summary>
-public readonly ref struct TradeButtonStateChange
+public readonly struct TradeButtonStateChange
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TradeButtonStateChange"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TradeButtonStateChange(Span<byte> data)
+    public TradeButtonStateChange(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -5875,7 +5875,7 @@ public readonly ref struct TradeButtonStateChange
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private TradeButtonStateChange(Span<byte> data, bool initialize)
+    private TradeButtonStateChange(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5912,23 +5912,23 @@ public readonly ref struct TradeButtonStateChange
     /// </summary>
     public TradeButtonState NewState
     {
-        get => (TradeButtonState)this._data[3];
-        set => this._data[3] = (byte)value;
+        get => (TradeButtonState)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeButtonStateChange"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="TradeButtonStateChange"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator TradeButtonStateChange(Span<byte> packet) => new (packet, false);
+    public static implicit operator TradeButtonStateChange(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="TradeButtonStateChange"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="TradeButtonStateChange"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(TradeButtonStateChange packet) => packet._data; 
+    public static implicit operator Memory<byte>(TradeButtonStateChange packet) => packet._data; 
 }
 
 
@@ -5936,15 +5936,15 @@ public readonly ref struct TradeButtonStateChange
 /// Is sent by the client when: The player requests to open a trade with another player.
 /// Causes reaction on server side: The request is forwarded to the requested player.
 /// </summary>
-public readonly ref struct TradeRequest
+public readonly struct TradeRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TradeRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TradeRequest(Span<byte> data)
+    public TradeRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -5954,7 +5954,7 @@ public readonly ref struct TradeRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private TradeRequest(Span<byte> data, bool initialize)
+    private TradeRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -5991,23 +5991,23 @@ public readonly ref struct TradeRequest
     /// </summary>
     public ushort PlayerId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="TradeRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator TradeRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator TradeRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="TradeRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="TradeRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(TradeRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(TradeRequest packet) => packet._data; 
 }
 
 
@@ -6015,15 +6015,15 @@ public readonly ref struct TradeRequest
 /// Is sent by the client when: A requested player responded to a trade request of another player.
 /// Causes reaction on server side: When the trade request was accepted, the server tries to open a new trade and sends corresponding responses to both players. 
 /// </summary>
-public readonly ref struct TradeRequestResponse
+public readonly struct TradeRequestResponse
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TradeRequestResponse"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public TradeRequestResponse(Span<byte> data)
+    public TradeRequestResponse(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6033,7 +6033,7 @@ public readonly ref struct TradeRequestResponse
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private TradeRequestResponse(Span<byte> data, bool initialize)
+    private TradeRequestResponse(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6070,23 +6070,23 @@ public readonly ref struct TradeRequestResponse
     /// </summary>
     public bool TradeAccepted
     {
-        get => this._data[3..].GetBoolean();
-        set => this._data[3..].SetBoolean(value);
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="TradeRequestResponse"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="TradeRequestResponse"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator TradeRequestResponse(Span<byte> packet) => new (packet, false);
+    public static implicit operator TradeRequestResponse(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="TradeRequestResponse"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="TradeRequestResponse"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(TradeRequestResponse packet) => packet._data; 
+    public static implicit operator Memory<byte>(TradeRequestResponse packet) => packet._data; 
 }
 
 
@@ -6094,15 +6094,15 @@ public readonly ref struct TradeRequestResponse
 /// Is sent by the client when: A player requests to set an amount of money in the trade.
 /// Causes reaction on server side: It's taken from the available money of the inventory. If the new money amount is lower than the amount which was set before, it's added back to the inventory. The trade partner is informed about any change.
 /// </summary>
-public readonly ref struct SetTradeMoney
+public readonly struct SetTradeMoney
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SetTradeMoney"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public SetTradeMoney(Span<byte> data)
+    public SetTradeMoney(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6112,7 +6112,7 @@ public readonly ref struct SetTradeMoney
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private SetTradeMoney(Span<byte> data, bool initialize)
+    private SetTradeMoney(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6149,23 +6149,23 @@ public readonly ref struct SetTradeMoney
     /// </summary>
     public uint Amount
     {
-        get => ReadUInt32LittleEndian(this._data[4..]);
-        set => WriteUInt32LittleEndian(this._data[4..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="SetTradeMoney"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="SetTradeMoney"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator SetTradeMoney(Span<byte> packet) => new (packet, false);
+    public static implicit operator SetTradeMoney(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="SetTradeMoney"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="SetTradeMoney"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(SetTradeMoney packet) => packet._data; 
+    public static implicit operator Memory<byte>(SetTradeMoney packet) => packet._data; 
 }
 
 
@@ -6173,15 +6173,15 @@ public readonly ref struct SetTradeMoney
 /// Is sent by the client when: A player requests to delete a letter.
 /// Causes reaction on server side: The letter is getting deleted.
 /// </summary>
-public readonly ref struct LetterDeleteRequest
+public readonly struct LetterDeleteRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LetterDeleteRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public LetterDeleteRequest(Span<byte> data)
+    public LetterDeleteRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6191,7 +6191,7 @@ public readonly ref struct LetterDeleteRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private LetterDeleteRequest(Span<byte> data, bool initialize)
+    private LetterDeleteRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6228,23 +6228,23 @@ public readonly ref struct LetterDeleteRequest
     /// </summary>
     public ushort LetterIndex
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="LetterDeleteRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LetterDeleteRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator LetterDeleteRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator LetterDeleteRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="LetterDeleteRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="LetterDeleteRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(LetterDeleteRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(LetterDeleteRequest packet) => packet._data; 
 }
 
 
@@ -6252,15 +6252,15 @@ public readonly ref struct LetterDeleteRequest
 /// Is sent by the client when: A player wants to send a letter to another players character.
 /// Causes reaction on server side: The letter is sent to the other character, if it exists and the player has the required money.
 /// </summary>
-public readonly ref struct LetterSendRequest
+public readonly struct LetterSendRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LetterSendRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public LetterSendRequest(Span<byte> data)
+    public LetterSendRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6270,7 +6270,7 @@ public readonly ref struct LetterSendRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private LetterSendRequest(Span<byte> data, bool initialize)
+    private LetterSendRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6302,8 +6302,8 @@ public readonly ref struct LetterSendRequest
     /// </summary>
     public uint LetterId
     {
-        get => ReadUInt32LittleEndian(this._data[4..]);
-        set => WriteUInt32LittleEndian(this._data[4..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -6311,8 +6311,8 @@ public readonly ref struct LetterSendRequest
     /// </summary>
     public string Receiver
     {
-        get => this._data.ExtractString(8, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(8, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(8, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(8, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -6320,8 +6320,8 @@ public readonly ref struct LetterSendRequest
     /// </summary>
     public string Title
     {
-        get => this._data.ExtractString(18, 60, System.Text.Encoding.UTF8);
-        set => this._data.Slice(18, 60).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(18, 60, System.Text.Encoding.UTF8);
+        set => this._data.Slice(18, 60).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -6329,8 +6329,8 @@ public readonly ref struct LetterSendRequest
     /// </summary>
     public byte Rotation
     {
-        get => this._data[78];
-        set => this._data[78] = value;
+        get => this._data.Span[78];
+        set => this._data.Span[78] = value;
     }
 
     /// <summary>
@@ -6338,8 +6338,8 @@ public readonly ref struct LetterSendRequest
     /// </summary>
     public byte Animation
     {
-        get => this._data[79];
-        set => this._data[79] = value;
+        get => this._data.Span[79];
+        set => this._data.Span[79] = value;
     }
 
     /// <summary>
@@ -6347,23 +6347,23 @@ public readonly ref struct LetterSendRequest
     /// </summary>
     public string Message
     {
-        get => this._data.ExtractString(82, this._data.Length - 82, System.Text.Encoding.UTF8);
-        set => this._data.Slice(82).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(82, this._data.Length - 82, System.Text.Encoding.UTF8);
+        set => this._data.Slice(82).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="LetterSendRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LetterSendRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator LetterSendRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator LetterSendRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="LetterSendRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="LetterSendRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(LetterSendRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(LetterSendRequest packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified field content.
@@ -6377,15 +6377,15 @@ public readonly ref struct LetterSendRequest
 /// Is sent by the client when: A player requests to read a specific letter of his letter list.
 /// Causes reaction on server side: The server sends the requested letter content back to the game client.
 /// </summary>
-public readonly ref struct LetterReadRequest
+public readonly struct LetterReadRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LetterReadRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public LetterReadRequest(Span<byte> data)
+    public LetterReadRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6395,7 +6395,7 @@ public readonly ref struct LetterReadRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private LetterReadRequest(Span<byte> data, bool initialize)
+    private LetterReadRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6432,23 +6432,23 @@ public readonly ref struct LetterReadRequest
     /// </summary>
     public ushort LetterIndex
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="LetterReadRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LetterReadRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator LetterReadRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator LetterReadRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="LetterReadRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="LetterReadRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(LetterReadRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(LetterReadRequest packet) => packet._data; 
 }
 
 
@@ -6456,15 +6456,15 @@ public readonly ref struct LetterReadRequest
 /// Is sent by the client when: A guild member wants to kick himself or a guild master wants to kick another player from its guild.
 /// Causes reaction on server side: If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.
 /// </summary>
-public readonly ref struct GuildKickPlayerRequest
+public readonly struct GuildKickPlayerRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildKickPlayerRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GuildKickPlayerRequest(Span<byte> data)
+    public GuildKickPlayerRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6474,7 +6474,7 @@ public readonly ref struct GuildKickPlayerRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildKickPlayerRequest(Span<byte> data, bool initialize)
+    private GuildKickPlayerRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6506,8 +6506,8 @@ public readonly ref struct GuildKickPlayerRequest
     /// </summary>
     public string PlayerName
     {
-        get => this._data.ExtractString(3, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(3, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(3, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -6515,23 +6515,23 @@ public readonly ref struct GuildKickPlayerRequest
     /// </summary>
     public string SecurityCode
     {
-        get => this._data.ExtractString(13, this._data.Length - 13, System.Text.Encoding.UTF8);
-        set => this._data.Slice(13).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(13, this._data.Length - 13, System.Text.Encoding.UTF8);
+        set => this._data.Slice(13).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildKickPlayerRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildKickPlayerRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildKickPlayerRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator GuildKickPlayerRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildKickPlayerRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildKickPlayerRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildKickPlayerRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(GuildKickPlayerRequest packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified field content.
@@ -6545,15 +6545,15 @@ public readonly ref struct GuildKickPlayerRequest
 /// Is sent by the client when: A player (non-guild member) requests to join a guild.
 /// Causes reaction on server side: The request is forwarded to the guild master. There can only be one request at a time. If the guild master already has an open request, a corresponding response is directly sent back to the requesting player.
 /// </summary>
-public readonly ref struct GuildJoinRequest
+public readonly struct GuildJoinRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildJoinRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GuildJoinRequest(Span<byte> data)
+    public GuildJoinRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6563,7 +6563,7 @@ public readonly ref struct GuildJoinRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildJoinRequest(Span<byte> data, bool initialize)
+    private GuildJoinRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6600,23 +6600,23 @@ public readonly ref struct GuildJoinRequest
     /// </summary>
     public ushort GuildMasterPlayerId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildJoinRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildJoinRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildJoinRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator GuildJoinRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildJoinRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildJoinRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildJoinRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(GuildJoinRequest packet) => packet._data; 
 }
 
 
@@ -6624,15 +6624,15 @@ public readonly ref struct GuildJoinRequest
 /// Is sent by the client when: A guild master responded to a previously sent request.
 /// Causes reaction on server side: If the request was accepted by the guild master, the previously requesting player is added to the guild.
 /// </summary>
-public readonly ref struct GuildJoinResponse
+public readonly struct GuildJoinResponse
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildJoinResponse"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GuildJoinResponse(Span<byte> data)
+    public GuildJoinResponse(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6642,7 +6642,7 @@ public readonly ref struct GuildJoinResponse
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildJoinResponse(Span<byte> data, bool initialize)
+    private GuildJoinResponse(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6679,23 +6679,23 @@ public readonly ref struct GuildJoinResponse
     /// </summary>
     public bool Accepted
     {
-        get => this._data[3..].GetBoolean();
-        set => this._data[3..].SetBoolean(value);
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildJoinResponse"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildJoinResponse"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildJoinResponse(Span<byte> packet) => new (packet, false);
+    public static implicit operator GuildJoinResponse(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildJoinResponse"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildJoinResponse"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildJoinResponse packet) => packet._data; 
+    public static implicit operator Memory<byte>(GuildJoinResponse packet) => packet._data; 
 }
 
 
@@ -6703,15 +6703,15 @@ public readonly ref struct GuildJoinResponse
 /// Is sent by the client when: A guild player opens its guild menu in the game client.
 /// Causes reaction on server side: A list of all guild members and their state is sent back as response.
 /// </summary>
-public readonly ref struct GuildListRequest
+public readonly struct GuildListRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildListRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GuildListRequest(Span<byte> data)
+    public GuildListRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6721,7 +6721,7 @@ public readonly ref struct GuildListRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildListRequest(Span<byte> data, bool initialize)
+    private GuildListRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6754,18 +6754,18 @@ public readonly ref struct GuildListRequest
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildListRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildListRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildListRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator GuildListRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildListRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildListRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildListRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(GuildListRequest packet) => packet._data; 
 }
 
 
@@ -6773,15 +6773,15 @@ public readonly ref struct GuildListRequest
 /// Is sent by the client when: When a player wants to create a guild.
 /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
 /// </summary>
-public readonly ref struct GuildCreateRequest
+public readonly struct GuildCreateRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildCreateRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GuildCreateRequest(Span<byte> data)
+    public GuildCreateRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6791,7 +6791,7 @@ public readonly ref struct GuildCreateRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildCreateRequest(Span<byte> data, bool initialize)
+    private GuildCreateRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6828,8 +6828,8 @@ public readonly ref struct GuildCreateRequest
     /// </summary>
     public string GuildName
     {
-        get => this._data.ExtractString(4, 8, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 8).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(4, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -6837,22 +6837,22 @@ public readonly ref struct GuildCreateRequest
     /// </summary>
     public Span<byte> GuildEmblem
     {
-        get => this._data.Slice(12, 32);
+        get => this._data.Slice(12, 32).Span;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildCreateRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildCreateRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildCreateRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator GuildCreateRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildCreateRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildCreateRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildCreateRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(GuildCreateRequest packet) => packet._data; 
 }
 
 
@@ -6860,15 +6860,15 @@ public readonly ref struct GuildCreateRequest
 /// Is sent by the client when: When a player wants to create a guild.
 /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
 /// </summary>
-public readonly ref struct GuildCreateRequest075
+public readonly struct GuildCreateRequest075
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildCreateRequest075"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GuildCreateRequest075(Span<byte> data)
+    public GuildCreateRequest075(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6878,7 +6878,7 @@ public readonly ref struct GuildCreateRequest075
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildCreateRequest075(Span<byte> data, bool initialize)
+    private GuildCreateRequest075(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6915,8 +6915,8 @@ public readonly ref struct GuildCreateRequest075
     /// </summary>
     public string GuildName
     {
-        get => this._data.ExtractString(3, 8, System.Text.Encoding.UTF8);
-        set => this._data.Slice(3, 8).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(3, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(3, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -6924,22 +6924,22 @@ public readonly ref struct GuildCreateRequest075
     /// </summary>
     public Span<byte> GuildEmblem
     {
-        get => this._data.Slice(11, 32);
+        get => this._data.Slice(11, 32).Span;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildCreateRequest075"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildCreateRequest075"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildCreateRequest075(Span<byte> packet) => new (packet, false);
+    public static implicit operator GuildCreateRequest075(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildCreateRequest075"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildCreateRequest075"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildCreateRequest075 packet) => packet._data; 
+    public static implicit operator Memory<byte>(GuildCreateRequest075 packet) => packet._data; 
 }
 
 
@@ -6947,15 +6947,15 @@ public readonly ref struct GuildCreateRequest075
 /// Is sent by the client when: The player has the dialog of the guild master NPC opened and decided about its next step.
 /// Causes reaction on server side: It either cancels the guild creation or proceeds with the guild creation dialog where the player can enter the guild name and symbol.
 /// </summary>
-public readonly ref struct GuildMasterAnswer
+public readonly struct GuildMasterAnswer
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildMasterAnswer"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GuildMasterAnswer(Span<byte> data)
+    public GuildMasterAnswer(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -6965,7 +6965,7 @@ public readonly ref struct GuildMasterAnswer
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildMasterAnswer(Span<byte> data, bool initialize)
+    private GuildMasterAnswer(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7002,23 +7002,23 @@ public readonly ref struct GuildMasterAnswer
     /// </summary>
     public bool ShowCreationDialog
     {
-        get => this._data[3..].GetBoolean();
-        set => this._data[3..].SetBoolean(value);
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildMasterAnswer"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildMasterAnswer"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildMasterAnswer(Span<byte> packet) => new (packet, false);
+    public static implicit operator GuildMasterAnswer(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildMasterAnswer"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildMasterAnswer"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildMasterAnswer packet) => packet._data; 
+    public static implicit operator Memory<byte>(GuildMasterAnswer packet) => packet._data; 
 }
 
 
@@ -7026,15 +7026,15 @@ public readonly ref struct GuildMasterAnswer
 /// Is sent by the client when: The player has the dialog of the guild creation dialog opened and decided against creating a guild.
 /// Causes reaction on server side: It either cancels the guild creation.
 /// </summary>
-public readonly ref struct CancelGuildCreation
+public readonly struct CancelGuildCreation
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CancelGuildCreation"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public CancelGuildCreation(Span<byte> data)
+    public CancelGuildCreation(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7044,7 +7044,7 @@ public readonly ref struct CancelGuildCreation
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private CancelGuildCreation(Span<byte> data, bool initialize)
+    private CancelGuildCreation(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7077,18 +7077,18 @@ public readonly ref struct CancelGuildCreation
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="CancelGuildCreation"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CancelGuildCreation"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator CancelGuildCreation(Span<byte> packet) => new (packet, false);
+    public static implicit operator CancelGuildCreation(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="CancelGuildCreation"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="CancelGuildCreation"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(CancelGuildCreation packet) => packet._data; 
+    public static implicit operator Memory<byte>(CancelGuildCreation packet) => packet._data; 
 }
 
 
@@ -7096,15 +7096,15 @@ public readonly ref struct CancelGuildCreation
 /// Is sent by the client when: A guild master requested a guild war against another guild.
 /// Causes reaction on server side: If the guild master confirms, the war is declared.
 /// </summary>
-public readonly ref struct GuildWarResponse
+public readonly struct GuildWarResponse
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildWarResponse"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GuildWarResponse(Span<byte> data)
+    public GuildWarResponse(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7114,7 +7114,7 @@ public readonly ref struct GuildWarResponse
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildWarResponse(Span<byte> data, bool initialize)
+    private GuildWarResponse(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7151,23 +7151,23 @@ public readonly ref struct GuildWarResponse
     /// </summary>
     public bool Accepted
     {
-        get => this._data[3..].GetBoolean();
-        set => this._data[3..].SetBoolean(value);
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildWarResponse"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildWarResponse"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildWarResponse(Span<byte> packet) => new (packet, false);
+    public static implicit operator GuildWarResponse(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildWarResponse"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildWarResponse"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildWarResponse packet) => packet._data; 
+    public static implicit operator Memory<byte>(GuildWarResponse packet) => packet._data; 
 }
 
 
@@ -7175,15 +7175,15 @@ public readonly ref struct GuildWarResponse
 /// Is sent by the client when: A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.
 /// Causes reaction on server side: The server sends a response which includes the guild name and emblem.
 /// </summary>
-public readonly ref struct GuildInfoRequest
+public readonly struct GuildInfoRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GuildInfoRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public GuildInfoRequest(Span<byte> data)
+    public GuildInfoRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7193,7 +7193,7 @@ public readonly ref struct GuildInfoRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildInfoRequest(Span<byte> data, bool initialize)
+    private GuildInfoRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7230,23 +7230,23 @@ public readonly ref struct GuildInfoRequest
     /// </summary>
     public uint GuildId
     {
-        get => ReadUInt32LittleEndian(this._data[4..]);
-        set => WriteUInt32LittleEndian(this._data[4..], value);
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildInfoRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildInfoRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildInfoRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator GuildInfoRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildInfoRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildInfoRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildInfoRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(GuildInfoRequest packet) => packet._data; 
 }
 
 
@@ -7254,15 +7254,15 @@ public readonly ref struct GuildInfoRequest
 /// Is sent by the client when: A player wants to repair an item of his inventory, either himself or with the usage of an NPC.
 /// Causes reaction on server side: If the item is damaged and repairable, the durability of the item is maximized and corresponding responses are sent back to the client.
 /// </summary>
-public readonly ref struct ItemRepair
+public readonly struct ItemRepair
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemRepair"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ItemRepair(Span<byte> data)
+    public ItemRepair(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7272,7 +7272,7 @@ public readonly ref struct ItemRepair
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ItemRepair(Span<byte> data, bool initialize)
+    private ItemRepair(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7309,23 +7309,23 @@ public readonly ref struct ItemRepair
     /// </summary>
     public byte InventoryItemSlot
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemRepair"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ItemRepair"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ItemRepair(Span<byte> packet) => new (packet, false);
+    public static implicit operator ItemRepair(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ItemRepair"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ItemRepair"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ItemRepair packet) => packet._data; 
+    public static implicit operator Memory<byte>(ItemRepair packet) => packet._data; 
 }
 
 
@@ -7333,7 +7333,7 @@ public readonly ref struct ItemRepair
 /// Is sent by the client when: The player has the dialog of the chaos machine open and decided to mix (craft) the items which he put into the chaos machine dialog.
 /// Causes reaction on server side: Based on the type of mix and it's corresponding success rate, the mix succeeds or fails. The client gets a corresponding response with the created, changed or lost items.
 /// </summary>
-public readonly ref struct ChaosMachineMixRequest
+public readonly struct ChaosMachineMixRequest
 {
     /// <summary>
     /// This enum describes the possible chaos machine mix type identifiers.
@@ -7396,13 +7396,13 @@ public readonly ref struct ChaosMachineMixRequest
             PotionOfSoul = 16,
     }
 
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChaosMachineMixRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChaosMachineMixRequest(Span<byte> data)
+    public ChaosMachineMixRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7412,7 +7412,7 @@ public readonly ref struct ChaosMachineMixRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ChaosMachineMixRequest(Span<byte> data, bool initialize)
+    private ChaosMachineMixRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7449,8 +7449,8 @@ public readonly ref struct ChaosMachineMixRequest
     /// </summary>
     public ChaosMachineMixRequest.ChaosMachineMixType MixType
     {
-        get => (ChaosMachineMixType)this._data[3];
-        set => this._data[3] = (byte)value;
+        get => (ChaosMachineMixType)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
     }
 
     /// <summary>
@@ -7458,23 +7458,23 @@ public readonly ref struct ChaosMachineMixRequest
     /// </summary>
     public byte SocketSlot
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChaosMachineMixRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChaosMachineMixRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ChaosMachineMixRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator ChaosMachineMixRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ChaosMachineMixRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ChaosMachineMixRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ChaosMachineMixRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(ChaosMachineMixRequest packet) => packet._data; 
 }
 
 
@@ -7482,15 +7482,15 @@ public readonly ref struct ChaosMachineMixRequest
 /// Is sent by the client when: A player closes the dialog which was opened by an interaction with the chaos machine goblin.
 /// Causes reaction on server side: The server updates the state of the player accordingly.
 /// </summary>
-public readonly ref struct CraftingDialogCloseRequest
+public readonly struct CraftingDialogCloseRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CraftingDialogCloseRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public CraftingDialogCloseRequest(Span<byte> data)
+    public CraftingDialogCloseRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7500,7 +7500,7 @@ public readonly ref struct CraftingDialogCloseRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private CraftingDialogCloseRequest(Span<byte> data, bool initialize)
+    private CraftingDialogCloseRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7533,18 +7533,18 @@ public readonly ref struct CraftingDialogCloseRequest
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="CraftingDialogCloseRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CraftingDialogCloseRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator CraftingDialogCloseRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator CraftingDialogCloseRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="CraftingDialogCloseRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="CraftingDialogCloseRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(CraftingDialogCloseRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(CraftingDialogCloseRequest packet) => packet._data; 
 }
 
 
@@ -7552,15 +7552,15 @@ public readonly ref struct CraftingDialogCloseRequest
 /// Is sent by the client when: A player wants to add another players character into his friend list of the messenger.
 /// Causes reaction on server side: A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.
 /// </summary>
-public readonly ref struct FriendAddRequest
+public readonly struct FriendAddRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FriendAddRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public FriendAddRequest(Span<byte> data)
+    public FriendAddRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7570,7 +7570,7 @@ public readonly ref struct FriendAddRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private FriendAddRequest(Span<byte> data, bool initialize)
+    private FriendAddRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7607,23 +7607,23 @@ public readonly ref struct FriendAddRequest
     /// </summary>
     public string FriendName
     {
-        get => this._data.ExtractString(3, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(3, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(3, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="FriendAddRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="FriendAddRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator FriendAddRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator FriendAddRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="FriendAddRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="FriendAddRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(FriendAddRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(FriendAddRequest packet) => packet._data; 
 }
 
 
@@ -7631,15 +7631,15 @@ public readonly ref struct FriendAddRequest
 /// Is sent by the client when: A player wants to delete another players character from his friend list of the messenger.
 /// Causes reaction on server side: The entry in the friend list is removed. The player is shown as offline in the other players friends list.
 /// </summary>
-public readonly ref struct FriendDelete
+public readonly struct FriendDelete
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FriendDelete"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public FriendDelete(Span<byte> data)
+    public FriendDelete(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7649,7 +7649,7 @@ public readonly ref struct FriendDelete
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private FriendDelete(Span<byte> data, bool initialize)
+    private FriendDelete(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7686,23 +7686,23 @@ public readonly ref struct FriendDelete
     /// </summary>
     public string FriendName
     {
-        get => this._data.ExtractString(3, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(3, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(3, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="FriendDelete"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="FriendDelete"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator FriendDelete(Span<byte> packet) => new (packet, false);
+    public static implicit operator FriendDelete(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="FriendDelete"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="FriendDelete"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(FriendDelete packet) => packet._data; 
+    public static implicit operator Memory<byte>(FriendDelete packet) => packet._data; 
 }
 
 
@@ -7710,15 +7710,15 @@ public readonly ref struct FriendDelete
 /// Is sent by the client when: A player wants to open a chat with another player of his friend list.
 /// Causes reaction on server side: If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.
 /// </summary>
-public readonly ref struct ChatRoomCreateRequest
+public readonly struct ChatRoomCreateRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatRoomCreateRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChatRoomCreateRequest(Span<byte> data)
+    public ChatRoomCreateRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7728,7 +7728,7 @@ public readonly ref struct ChatRoomCreateRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ChatRoomCreateRequest(Span<byte> data, bool initialize)
+    private ChatRoomCreateRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7765,23 +7765,23 @@ public readonly ref struct ChatRoomCreateRequest
     /// </summary>
     public string FriendName
     {
-        get => this._data.ExtractString(3, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(3, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(3, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomCreateRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChatRoomCreateRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ChatRoomCreateRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator ChatRoomCreateRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ChatRoomCreateRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ChatRoomCreateRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ChatRoomCreateRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(ChatRoomCreateRequest packet) => packet._data; 
 }
 
 
@@ -7789,15 +7789,15 @@ public readonly ref struct ChatRoomCreateRequest
 /// Is sent by the client when: A player received a friend request from another player and responded to it.
 /// Causes reaction on server side: If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.
 /// </summary>
-public readonly ref struct FriendAddResponse
+public readonly struct FriendAddResponse
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FriendAddResponse"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public FriendAddResponse(Span<byte> data)
+    public FriendAddResponse(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7807,7 +7807,7 @@ public readonly ref struct FriendAddResponse
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private FriendAddResponse(Span<byte> data, bool initialize)
+    private FriendAddResponse(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7844,8 +7844,8 @@ public readonly ref struct FriendAddResponse
     /// </summary>
     public bool Accepted
     {
-        get => this._data[3..].GetBoolean();
-        set => this._data[3..].SetBoolean(value);
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
     }
 
     /// <summary>
@@ -7853,23 +7853,23 @@ public readonly ref struct FriendAddResponse
     /// </summary>
     public string FriendRequesterName
     {
-        get => this._data.ExtractString(4, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(4, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="FriendAddResponse"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="FriendAddResponse"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator FriendAddResponse(Span<byte> packet) => new (packet, false);
+    public static implicit operator FriendAddResponse(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="FriendAddResponse"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="FriendAddResponse"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(FriendAddResponse packet) => packet._data; 
+    public static implicit operator Memory<byte>(FriendAddResponse packet) => packet._data; 
 }
 
 
@@ -7877,15 +7877,15 @@ public readonly ref struct FriendAddResponse
 /// Is sent by the client when: A player wants to set himself on- or offline.
 /// Causes reaction on server side: Depending on the state, the player is shown as offline or online in all friend lists of his friends.
 /// </summary>
-public readonly ref struct SetFriendOnlineState
+public readonly struct SetFriendOnlineState
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SetFriendOnlineState"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public SetFriendOnlineState(Span<byte> data)
+    public SetFriendOnlineState(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7895,7 +7895,7 @@ public readonly ref struct SetFriendOnlineState
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private SetFriendOnlineState(Span<byte> data, bool initialize)
+    private SetFriendOnlineState(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -7932,23 +7932,23 @@ public readonly ref struct SetFriendOnlineState
     /// </summary>
     public bool OnlineState
     {
-        get => this._data[3..].GetBoolean();
-        set => this._data[3..].SetBoolean(value);
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="SetFriendOnlineState"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="SetFriendOnlineState"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator SetFriendOnlineState(Span<byte> packet) => new (packet, false);
+    public static implicit operator SetFriendOnlineState(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="SetFriendOnlineState"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="SetFriendOnlineState"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(SetFriendOnlineState packet) => packet._data; 
+    public static implicit operator Memory<byte>(SetFriendOnlineState packet) => packet._data; 
 }
 
 
@@ -7956,15 +7956,15 @@ public readonly ref struct SetFriendOnlineState
 /// Is sent by the client when: A player wants to invite additional players from his friend list to an existing chat room.
 /// Causes reaction on server side: The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.
 /// </summary>
-public readonly ref struct ChatRoomInvitationRequest
+public readonly struct ChatRoomInvitationRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatRoomInvitationRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChatRoomInvitationRequest(Span<byte> data)
+    public ChatRoomInvitationRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -7974,7 +7974,7 @@ public readonly ref struct ChatRoomInvitationRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ChatRoomInvitationRequest(Span<byte> data, bool initialize)
+    private ChatRoomInvitationRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8011,8 +8011,8 @@ public readonly ref struct ChatRoomInvitationRequest
     /// </summary>
     public string FriendName
     {
-        get => this._data.ExtractString(3, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(3, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(3, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(3, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -8020,8 +8020,8 @@ public readonly ref struct ChatRoomInvitationRequest
     /// </summary>
     public ushort RoomId
     {
-        get => ReadUInt16BigEndian(this._data[13..]);
-        set => WriteUInt16BigEndian(this._data[13..], value);
+        get => ReadUInt16BigEndian(this._data.Span[13..]);
+        set => WriteUInt16BigEndian(this._data.Span[13..], value);
     }
 
     /// <summary>
@@ -8029,23 +8029,23 @@ public readonly ref struct ChatRoomInvitationRequest
     /// </summary>
     public uint RequestId
     {
-        get => ReadUInt32BigEndian(this._data[15..]);
-        set => WriteUInt32BigEndian(this._data[15..], value);
+        get => ReadUInt32BigEndian(this._data.Span[15..]);
+        set => WriteUInt32BigEndian(this._data.Span[15..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomInvitationRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChatRoomInvitationRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ChatRoomInvitationRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator ChatRoomInvitationRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ChatRoomInvitationRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ChatRoomInvitationRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ChatRoomInvitationRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(ChatRoomInvitationRequest packet) => packet._data; 
 }
 
 
@@ -8053,15 +8053,15 @@ public readonly ref struct ChatRoomInvitationRequest
 /// Is sent by the client when: After the player entered the game world with a character.
 /// Causes reaction on server side: The quest state is sent back as response.
 /// </summary>
-public readonly ref struct LegacyQuestStateRequest
+public readonly struct LegacyQuestStateRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LegacyQuestStateRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public LegacyQuestStateRequest(Span<byte> data)
+    public LegacyQuestStateRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8071,7 +8071,7 @@ public readonly ref struct LegacyQuestStateRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private LegacyQuestStateRequest(Span<byte> data, bool initialize)
+    private LegacyQuestStateRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8104,18 +8104,18 @@ public readonly ref struct LegacyQuestStateRequest
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacyQuestStateRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LegacyQuestStateRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator LegacyQuestStateRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator LegacyQuestStateRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="LegacyQuestStateRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="LegacyQuestStateRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(LegacyQuestStateRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(LegacyQuestStateRequest packet) => packet._data; 
 }
 
 
@@ -8123,15 +8123,15 @@ public readonly ref struct LegacyQuestStateRequest
 /// Is sent by the client when: The player wants to change the state of a quest, e.g. to start or to finish a quest.
 /// Causes reaction on server side: Depending on the requested new state, a response is sent back.
 /// </summary>
-public readonly ref struct LegacyQuestStateSetRequest
+public readonly struct LegacyQuestStateSetRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LegacyQuestStateSetRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public LegacyQuestStateSetRequest(Span<byte> data)
+    public LegacyQuestStateSetRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8141,7 +8141,7 @@ public readonly ref struct LegacyQuestStateSetRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private LegacyQuestStateSetRequest(Span<byte> data, bool initialize)
+    private LegacyQuestStateSetRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8178,8 +8178,8 @@ public readonly ref struct LegacyQuestStateSetRequest
     /// </summary>
     public byte QuestNumber
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -8187,23 +8187,23 @@ public readonly ref struct LegacyQuestStateSetRequest
     /// </summary>
     public LegacyQuestState NewState
     {
-        get => (LegacyQuestState)this._data[4];
-        set => this._data[4] = (byte)value;
+        get => (LegacyQuestState)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="LegacyQuestStateSetRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LegacyQuestStateSetRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator LegacyQuestStateSetRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator LegacyQuestStateSetRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="LegacyQuestStateSetRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="LegacyQuestStateSetRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(LegacyQuestStateSetRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(LegacyQuestStateSetRequest packet) => packet._data; 
 }
 
 
@@ -8211,15 +8211,15 @@ public readonly ref struct LegacyQuestStateSetRequest
 /// Is sent by the client when: The player wants to command its equipped pet (raven).
 /// Causes reaction on server side: 
 /// </summary>
-public readonly ref struct PetCommandRequest
+public readonly struct PetCommandRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PetCommandRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PetCommandRequest(Span<byte> data)
+    public PetCommandRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8229,7 +8229,7 @@ public readonly ref struct PetCommandRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PetCommandRequest(Span<byte> data, bool initialize)
+    private PetCommandRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8266,8 +8266,8 @@ public readonly ref struct PetCommandRequest
     /// </summary>
     public byte PetType
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -8275,8 +8275,8 @@ public readonly ref struct PetCommandRequest
     /// </summary>
     public PetCommandMode CommandMode
     {
-        get => (PetCommandMode)this._data[4];
-        set => this._data[4] = (byte)value;
+        get => (PetCommandMode)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -8284,23 +8284,23 @@ public readonly ref struct PetCommandRequest
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16BigEndian(this._data[5..]);
-        set => WriteUInt16BigEndian(this._data[5..], value);
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PetCommandRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PetCommandRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PetCommandRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator PetCommandRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PetCommandRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PetCommandRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PetCommandRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(PetCommandRequest packet) => packet._data; 
 }
 
 
@@ -8308,15 +8308,15 @@ public readonly ref struct PetCommandRequest
 /// Is sent by the client when: The player hovers over a pet. The client sends this request to retrieve information (level, experience) of the pet (dark raven, horse).
 /// Causes reaction on server side: The server sends a PetInfoResponse.
 /// </summary>
-public readonly ref struct PetInfoRequest
+public readonly struct PetInfoRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PetInfoRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public PetInfoRequest(Span<byte> data)
+    public PetInfoRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8326,7 +8326,7 @@ public readonly ref struct PetInfoRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private PetInfoRequest(Span<byte> data, bool initialize)
+    private PetInfoRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8363,8 +8363,8 @@ public readonly ref struct PetInfoRequest
     /// </summary>
     public PetType Pet
     {
-        get => (PetType)this._data[3];
-        set => this._data[3] = (byte)value;
+        get => (PetType)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
     }
 
     /// <summary>
@@ -8372,8 +8372,8 @@ public readonly ref struct PetInfoRequest
     /// </summary>
     public StorageType Storage
     {
-        get => (StorageType)this._data[4];
-        set => this._data[4] = (byte)value;
+        get => (StorageType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
@@ -8381,23 +8381,23 @@ public readonly ref struct PetInfoRequest
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="PetInfoRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PetInfoRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator PetInfoRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator PetInfoRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="PetInfoRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="PetInfoRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(PetInfoRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(PetInfoRequest packet) => packet._data; 
 }
 
 
@@ -8405,15 +8405,15 @@ public readonly ref struct PetInfoRequest
 /// Is sent by the client when: The client opened an quest NPC dialog and selected an available quests.
 /// Causes reaction on server side: If the quest is already active, it responds with the QuestProgress. If the quest is inactive, the server decides if the character can start the quest and responds with a QuestStepInfo with the StartingNumber. A character can run up to 3 concurrent quests at a time.
 /// </summary>
-public readonly ref struct QuestSelectRequest
+public readonly struct QuestSelectRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestSelectRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public QuestSelectRequest(Span<byte> data)
+    public QuestSelectRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8423,7 +8423,7 @@ public readonly ref struct QuestSelectRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private QuestSelectRequest(Span<byte> data, bool initialize)
+    private QuestSelectRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8467,8 +8467,8 @@ public readonly ref struct QuestSelectRequest
     /// </summary>
     public ushort QuestNumber
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -8476,8 +8476,8 @@ public readonly ref struct QuestSelectRequest
     /// </summary>
     public ushort QuestGroup
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
@@ -8485,23 +8485,23 @@ public readonly ref struct QuestSelectRequest
     /// </summary>
     public byte UnknownField
     {
-        get => this._data[8];
-        set => this._data[8] = value;
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestSelectRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestSelectRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator QuestSelectRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator QuestSelectRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="QuestSelectRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="QuestSelectRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(QuestSelectRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(QuestSelectRequest packet) => packet._data; 
 }
 
 
@@ -8509,7 +8509,7 @@ public readonly ref struct QuestSelectRequest
 /// Is sent by the client when: After the server started a quest (and sent a F60B message) the game client requests to proceed with the quest.
 /// Causes reaction on server side: The quest state is set accordingly on the server. The next response seems to depend on the quest configuration. Depending on the action of the next quest state, the server will send either a quest progress message (F60C) or again a quest start message (F60B).
 /// </summary>
-public readonly ref struct QuestProceedRequest
+public readonly struct QuestProceedRequest
 {
     /// <summary>
     /// Describes how to proceed with the specified quest.
@@ -8532,13 +8532,13 @@ public readonly ref struct QuestProceedRequest
             RefuseQuest = 2,
     }
 
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestProceedRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public QuestProceedRequest(Span<byte> data)
+    public QuestProceedRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8548,7 +8548,7 @@ public readonly ref struct QuestProceedRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private QuestProceedRequest(Span<byte> data, bool initialize)
+    private QuestProceedRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8592,8 +8592,8 @@ public readonly ref struct QuestProceedRequest
     /// </summary>
     public ushort QuestNumber
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -8601,8 +8601,8 @@ public readonly ref struct QuestProceedRequest
     /// </summary>
     public ushort QuestGroup
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
@@ -8610,23 +8610,23 @@ public readonly ref struct QuestProceedRequest
     /// </summary>
     public QuestProceedRequest.QuestProceedAction ProceedAction
     {
-        get => (QuestProceedAction)this._data[8];
-        set => this._data[8] = (byte)value;
+        get => (QuestProceedAction)this._data.Span[8];
+        set => this._data.Span[8] = (byte)value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestProceedRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestProceedRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator QuestProceedRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator QuestProceedRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="QuestProceedRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="QuestProceedRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(QuestProceedRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(QuestProceedRequest packet) => packet._data; 
 }
 
 
@@ -8634,15 +8634,15 @@ public readonly ref struct QuestProceedRequest
 /// Is sent by the client when: The game client requests to complete an active quest.
 /// Causes reaction on server side: The server checks the conditions to complete the quest. If this fails, nothing happens. If all conditions are met, the reward is given to the player and the quest state is set accordingly, so that the player can select to start the next quest. Additionally, the quest completion response message (F60D) is sent to the client.
 /// </summary>
-public readonly ref struct QuestCompletionRequest
+public readonly struct QuestCompletionRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestCompletionRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public QuestCompletionRequest(Span<byte> data)
+    public QuestCompletionRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8652,7 +8652,7 @@ public readonly ref struct QuestCompletionRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private QuestCompletionRequest(Span<byte> data, bool initialize)
+    private QuestCompletionRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8696,8 +8696,8 @@ public readonly ref struct QuestCompletionRequest
     /// </summary>
     public ushort QuestNumber
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -8705,23 +8705,23 @@ public readonly ref struct QuestCompletionRequest
     /// </summary>
     public ushort QuestGroup
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestCompletionRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestCompletionRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator QuestCompletionRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator QuestCompletionRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="QuestCompletionRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="QuestCompletionRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(QuestCompletionRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(QuestCompletionRequest packet) => packet._data; 
 }
 
 
@@ -8729,15 +8729,15 @@ public readonly ref struct QuestCompletionRequest
 /// Is sent by the client when: The game client requests to cancel an active quest.
 /// Causes reaction on server side: The server checks if the quest is currently in progress. In this case, the quest state is reset and a response (F60F) is sent back to the client.
 /// </summary>
-public readonly ref struct QuestCancelRequest
+public readonly struct QuestCancelRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestCancelRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public QuestCancelRequest(Span<byte> data)
+    public QuestCancelRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8747,7 +8747,7 @@ public readonly ref struct QuestCancelRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private QuestCancelRequest(Span<byte> data, bool initialize)
+    private QuestCancelRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8791,8 +8791,8 @@ public readonly ref struct QuestCancelRequest
     /// </summary>
     public ushort QuestNumber
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -8800,23 +8800,23 @@ public readonly ref struct QuestCancelRequest
     /// </summary>
     public ushort QuestGroup
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestCancelRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestCancelRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator QuestCancelRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator QuestCancelRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="QuestCancelRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="QuestCancelRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(QuestCancelRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(QuestCancelRequest packet) => packet._data; 
 }
 
 
@@ -8824,15 +8824,15 @@ public readonly ref struct QuestCancelRequest
 /// Is sent by the client when: The game client requests to complete a client action, e.g. completing a tutorial.
 /// Causes reaction on server side: The server checks if the specified quest is currently in progress. If the quest got a Condition (condition type 0x10) for this flag, the condition is flagged as fulfilled.
 /// </summary>
-public readonly ref struct QuestClientActionRequest
+public readonly struct QuestClientActionRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestClientActionRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public QuestClientActionRequest(Span<byte> data)
+    public QuestClientActionRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8842,7 +8842,7 @@ public readonly ref struct QuestClientActionRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private QuestClientActionRequest(Span<byte> data, bool initialize)
+    private QuestClientActionRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8886,8 +8886,8 @@ public readonly ref struct QuestClientActionRequest
     /// </summary>
     public ushort QuestNumber
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -8895,23 +8895,23 @@ public readonly ref struct QuestClientActionRequest
     /// </summary>
     public ushort QuestGroup
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestClientActionRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestClientActionRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator QuestClientActionRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator QuestClientActionRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="QuestClientActionRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="QuestClientActionRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(QuestClientActionRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(QuestClientActionRequest packet) => packet._data; 
 }
 
 
@@ -8919,15 +8919,15 @@ public readonly ref struct QuestClientActionRequest
 /// Is sent by the client when: The clients requests the states of all quests, usually after entering the game.
 /// Causes reaction on server side: The list of active quests is sent back (F61A) without changing any state. This list just contains all running or completed quests for each group.
 /// </summary>
-public readonly ref struct ActiveQuestListRequest
+public readonly struct ActiveQuestListRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ActiveQuestListRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ActiveQuestListRequest(Span<byte> data)
+    public ActiveQuestListRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -8937,7 +8937,7 @@ public readonly ref struct ActiveQuestListRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ActiveQuestListRequest(Span<byte> data, bool initialize)
+    private ActiveQuestListRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8977,18 +8977,18 @@ public readonly ref struct ActiveQuestListRequest
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ActiveQuestListRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ActiveQuestListRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ActiveQuestListRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator ActiveQuestListRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ActiveQuestListRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ActiveQuestListRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ActiveQuestListRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(ActiveQuestListRequest packet) => packet._data; 
 }
 
 
@@ -8996,15 +8996,15 @@ public readonly ref struct ActiveQuestListRequest
 /// Is sent by the client when: The game client requests the state of a specific active quests.
 /// Causes reaction on server side: The quest state is sent back (F61B) without changing any state, if the quest is currently in progress.
 /// </summary>
-public readonly ref struct QuestStateRequest
+public readonly struct QuestStateRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestStateRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public QuestStateRequest(Span<byte> data)
+    public QuestStateRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -9014,7 +9014,7 @@ public readonly ref struct QuestStateRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private QuestStateRequest(Span<byte> data, bool initialize)
+    private QuestStateRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -9058,8 +9058,8 @@ public readonly ref struct QuestStateRequest
     /// </summary>
     public ushort QuestNumber
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -9067,23 +9067,23 @@ public readonly ref struct QuestStateRequest
     /// </summary>
     public ushort QuestGroup
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="QuestStateRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestStateRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator QuestStateRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator QuestStateRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="QuestStateRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="QuestStateRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(QuestStateRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(QuestStateRequest packet) => packet._data; 
 }
 
 
@@ -9091,15 +9091,15 @@ public readonly ref struct QuestStateRequest
 /// Is sent by the client when: The game client requests the list of event quests, usually after entering the game.
 /// Causes reaction on server side: The server may answer with a response which seems to depend if the character is member of a Gen or not. If it's not in a gen, it sends a response (F603).
 /// </summary>
-public readonly ref struct EventQuestStateListRequest
+public readonly struct EventQuestStateListRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventQuestStateListRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public EventQuestStateListRequest(Span<byte> data)
+    public EventQuestStateListRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -9109,7 +9109,7 @@ public readonly ref struct EventQuestStateListRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private EventQuestStateListRequest(Span<byte> data, bool initialize)
+    private EventQuestStateListRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -9149,18 +9149,18 @@ public readonly ref struct EventQuestStateListRequest
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="EventQuestStateListRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EventQuestStateListRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator EventQuestStateListRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator EventQuestStateListRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="EventQuestStateListRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="EventQuestStateListRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(EventQuestStateListRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(EventQuestStateListRequest packet) => packet._data; 
 }
 
 
@@ -9168,15 +9168,15 @@ public readonly ref struct EventQuestStateListRequest
 /// Is sent by the client when: The client opened an quest NPC dialog and requests a list of available quests.
 /// Causes reaction on server side: The list of available quests of this NPC is sent back (F60A).
 /// </summary>
-public readonly ref struct AvailableQuestsRequest
+public readonly struct AvailableQuestsRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AvailableQuestsRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AvailableQuestsRequest(Span<byte> data)
+    public AvailableQuestsRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -9186,7 +9186,7 @@ public readonly ref struct AvailableQuestsRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AvailableQuestsRequest(Span<byte> data, bool initialize)
+    private AvailableQuestsRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -9226,18 +9226,18 @@ public readonly ref struct AvailableQuestsRequest
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AvailableQuestsRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AvailableQuestsRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator AvailableQuestsRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator AvailableQuestsRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AvailableQuestsRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AvailableQuestsRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AvailableQuestsRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(AvailableQuestsRequest packet) => packet._data; 
 }
 
 
@@ -9245,15 +9245,15 @@ public readonly ref struct AvailableQuestsRequest
 /// Is sent by the client when: The game client requests to get a buff from the currently interacting quest npc. As far as we know, only the Elf Soldier NPC offers such a buff until a certain character level (150 or 220).
 /// Causes reaction on server side: The server should check if the correct Quest NPC (e.g. Elf Soldier) dialog is opened and the player didn't reach the level limit yet. If that's both the case, it adds a defined buff (MagicEffect) to the player; Otherwise, a message is sent to the player.
 /// </summary>
-public readonly ref struct NpcBuffRequest
+public readonly struct NpcBuffRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NpcBuffRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public NpcBuffRequest(Span<byte> data)
+    public NpcBuffRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -9263,7 +9263,7 @@ public readonly ref struct NpcBuffRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private NpcBuffRequest(Span<byte> data, bool initialize)
+    private NpcBuffRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -9303,18 +9303,18 @@ public readonly ref struct NpcBuffRequest
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="NpcBuffRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="NpcBuffRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator NpcBuffRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator NpcBuffRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="NpcBuffRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="NpcBuffRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(NpcBuffRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(NpcBuffRequest packet) => packet._data; 
 }
 
 
@@ -9322,15 +9322,15 @@ public readonly ref struct NpcBuffRequest
 /// Is sent by the client when: The player requests to enter the devil square through the Charon NPC.
 /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x90) back to the client. If it was successful, the character gets moved to the event map.
 /// </summary>
-public readonly ref struct DevilSquareEnterRequest
+public readonly struct DevilSquareEnterRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquareEnterRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public DevilSquareEnterRequest(Span<byte> data)
+    public DevilSquareEnterRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -9340,7 +9340,7 @@ public readonly ref struct DevilSquareEnterRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private DevilSquareEnterRequest(Span<byte> data, bool initialize)
+    private DevilSquareEnterRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -9377,8 +9377,8 @@ public readonly ref struct DevilSquareEnterRequest
     /// </summary>
     public byte SquareLevel
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -9386,23 +9386,23 @@ public readonly ref struct DevilSquareEnterRequest
     /// </summary>
     public byte TicketItemInventoryIndex
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="DevilSquareEnterRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="DevilSquareEnterRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator DevilSquareEnterRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator DevilSquareEnterRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="DevilSquareEnterRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="DevilSquareEnterRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(DevilSquareEnterRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(DevilSquareEnterRequest packet) => packet._data; 
 }
 
 
@@ -9410,15 +9410,15 @@ public readonly ref struct DevilSquareEnterRequest
 /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
 /// Causes reaction on server side: The remaining time is sent back to the client.
 /// </summary>
-public readonly ref struct RequestEventRemainingTime
+public readonly struct RequestEventRemainingTime
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RequestEventRemainingTime"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public RequestEventRemainingTime(Span<byte> data)
+    public RequestEventRemainingTime(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -9428,7 +9428,7 @@ public readonly ref struct RequestEventRemainingTime
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private RequestEventRemainingTime(Span<byte> data, bool initialize)
+    private RequestEventRemainingTime(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -9465,8 +9465,8 @@ public readonly ref struct RequestEventRemainingTime
     /// </summary>
     public byte EventType
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -9474,23 +9474,23 @@ public readonly ref struct RequestEventRemainingTime
     /// </summary>
     public byte EventLevel
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="RequestEventRemainingTime"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RequestEventRemainingTime"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator RequestEventRemainingTime(Span<byte> packet) => new (packet, false);
+    public static implicit operator RequestEventRemainingTime(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="RequestEventRemainingTime"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="RequestEventRemainingTime"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(RequestEventRemainingTime packet) => packet._data; 
+    public static implicit operator Memory<byte>(RequestEventRemainingTime packet) => packet._data; 
 }
 
 
@@ -9498,15 +9498,15 @@ public readonly ref struct RequestEventRemainingTime
 /// Is sent by the client when: The player requests to enter the blood castle through the Archangel Messenger NPC.
 /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x9A) back to the client. If it was successful, the character gets moved to the event map.
 /// </summary>
-public readonly ref struct BloodCastleEnterRequest
+public readonly struct BloodCastleEnterRequest
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleEnterRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public BloodCastleEnterRequest(Span<byte> data)
+    public BloodCastleEnterRequest(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -9516,7 +9516,7 @@ public readonly ref struct BloodCastleEnterRequest
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private BloodCastleEnterRequest(Span<byte> data, bool initialize)
+    private BloodCastleEnterRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -9553,8 +9553,8 @@ public readonly ref struct BloodCastleEnterRequest
     /// </summary>
     public byte CastleLevel
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -9562,23 +9562,23 @@ public readonly ref struct BloodCastleEnterRequest
     /// </summary>
     public byte TicketItemInventoryIndex
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="BloodCastleEnterRequest"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="BloodCastleEnterRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator BloodCastleEnterRequest(Span<byte> packet) => new (packet, false);
+    public static implicit operator BloodCastleEnterRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="BloodCastleEnterRequest"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="BloodCastleEnterRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(BloodCastleEnterRequest packet) => packet._data; 
+    public static implicit operator Memory<byte>(BloodCastleEnterRequest packet) => packet._data; 
 }
     /// <summary>
     /// The state of the trade button.

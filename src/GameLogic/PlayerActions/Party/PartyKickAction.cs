@@ -17,7 +17,7 @@ public class PartyKickAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="index">The index.</param>
-    public void KickPlayer(Player player, byte index)
+    public async ValueTask KickPlayerAsync(Player player, byte index)
     {
         if (player.Party is { } party)
         {
@@ -28,7 +28,7 @@ public class PartyKickAction
                 return;
             }
 
-            party.KickPlayer(index);
+            await party.KickPlayerAsync(index);
         }
     }
 }

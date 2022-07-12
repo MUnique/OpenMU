@@ -125,12 +125,13 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
     }
 
     /// <inheritdoc />
-    protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
     {
         var resultItems = this._settings.ResultItemSelect == ResultItemSelection.All
             ? this._settings.ResultItems
             : this._settings.ResultItems.SelectRandom().GetAsEnumerable();
 
+        var resultList = new List<Item>();
         foreach (var craftingResultItem in resultItems)
         {
             if (craftingResultItem.Reference > 0
@@ -139,7 +140,7 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
                 foreach (var item in referencedItem.Items)
                 {
                     item.Level += craftingResultItem.AddLevel;
-                    yield return item;
+                    resultList.Add(item);
                 }
 
                 continue;
@@ -152,18 +153,19 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
                 continue;
             }
 
-            foreach (var resultItem in this.CreateResultItems(player, requiredItems, craftingResultItem))
-            {
-                yield return resultItem;
-            }
+            resultList.AddRange(await this.CreateResultItemsAsync(player, requiredItems, craftingResultItem));
         }
+
+        return resultList;
     }
 
-    private IEnumerable<Item> CreateResultItems(Player player, IList<CraftingRequiredItemLink> referencedItems, ItemCraftingResultItem craftingResultItem)
+    private async ValueTask<List<Item>> CreateResultItemsAsync(Player player, IList<CraftingRequiredItemLink> referencedItems, ItemCraftingResultItem craftingResultItem)
     {
         int resultItemCount = this._settings.MultipleAllowed
             ? referencedItems.FirstOrDefault(r => r.ItemRequirement.Reference > 0)?.Items.Count() ?? 1
             : 1;
+
+        var resultList = new List<Item>(resultItemCount);
         for (int i = 0; i < resultItemCount; i++)
         {
             // Create new Item
@@ -185,9 +187,11 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
                 resultItem.HasSkill = true;
             }
 
-            player.TemporaryStorage!.AddItem(resultItem);
-            yield return resultItem;
+            await player.TemporaryStorage!.AddItemAsync(resultItem);
+            resultList.Add(resultItem);
         }
+
+        return resultList;
     }
 
     private void AddRandomLuckOption(Item resultItem, Player player)

@@ -38,11 +38,12 @@ public partial class NavMenu
     /// </summary>
     private string NavMenuCssClass => this._collapseNavMenu ? "collapse" : string.Empty;
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         this.SetupService.DatabaseInitialized += this.OnDatabaseInitialized;
-        Task.Run(this.LoadGameConfigurationAsync);
+        _ = Task.Run(this.LoadGameConfigurationAsync);
     }
 
     private void OnDatabaseInitialized(object? sender, EventArgs args)
@@ -65,7 +66,7 @@ public partial class NavMenu
         try
         {
             using var context = this.PersistenceContextProvider.CreateNewConfigurationContext();
-            this.GameConfiguration = context.Get<GameConfiguration>().FirstOrDefault();
+            this.GameConfiguration = (await context.GetAsync<GameConfiguration>()).FirstOrDefault();
         }
         catch
         {

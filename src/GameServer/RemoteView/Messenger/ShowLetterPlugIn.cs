@@ -27,7 +27,7 @@ public class ShowLetterPlugIn : IShowLetterPlugIn
     public ShowLetterPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowLetter(LetterBody letter)
+    public async ValueTask ShowLetterAsync(LetterBody letter)
     {
         var connection = this._player.Connection;
         if (connection is null || this._player.SelectedCharacter is null)
@@ -37,23 +37,28 @@ public class ShowLetterPlugIn : IShowLetterPlugIn
 
         var appearanceSerializer = this._player.AppearanceSerializer;
         var letterIndex = this._player.SelectedCharacter.Letters.IndexOf(letter.Header!);
-        using var writer = connection.StartSafeWrite(OpenLetter.HeaderType, OpenLetter.GetRequiredSize(letter.Message));
-
-        var result = new OpenLetter(writer.Span)
+        int Write()
         {
-            LetterIndex = (ushort)letterIndex,
-            MessageSize = (ushort)Encoding.UTF8.GetByteCount(letter.Message),
-            Animation = letter.Animation,
-            Rotation = letter.Rotation,
-            Message = letter.Message,
-        };
+            var size = OpenLetterRef.GetRequiredSize(letter.Message);
+            var span = connection.Output.GetSpan(size)[..size];
+            var result = new OpenLetterRef(span)
+            {
+                LetterIndex = (ushort)letterIndex,
+                MessageSize = (ushort)Encoding.UTF8.GetByteCount(letter.Message),
+                Animation = letter.Animation,
+                Rotation = letter.Rotation,
+                Message = letter.Message,
+            };
 
-        // TODO: Somewhere is the GM-Sign defined.
-        if (letter.SenderAppearance is not null)
-        {
-            appearanceSerializer.WriteAppearanceData(result.SenderAppearance, letter.SenderAppearance, false);
+            // TODO: Somewhere is the GM-Sign defined.
+            if (letter.SenderAppearance is not null)
+            {
+                appearanceSerializer.WriteAppearanceData(result.SenderAppearance, letter.SenderAppearance, false);
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

@@ -31,7 +31,7 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
     public CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    public void HandleCommand(Player player, string command)
+    public async ValueTask HandleCommandAsync(Player player, string command)
     {
         try
         {
@@ -47,16 +47,16 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
             {
                 if (!selectedCharacter.CanIncreaseStats())
                 {
-                    player.ShowMessage("Cancelled adding points. No more points available.");
+                    await player.ShowMessageAsync("Cancelled adding points. No more points available.");
                     break;
                 }
 
-                this._action.IncreaseStats(player, attribute);
+                await this._action.IncreaseStatsAsync(player, attribute);
             }
         }
         catch (ArgumentException e)
         {
-            player.ShowMessage(e.Message);
+            await player.ShowMessageAsync(e.Message);
         }
     }
 

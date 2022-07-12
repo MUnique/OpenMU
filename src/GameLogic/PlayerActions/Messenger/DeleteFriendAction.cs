@@ -16,13 +16,13 @@ public class DeleteFriendAction
     /// </summary>
     /// <param name="player">The player who wants to delete the friend from his friend list.</param>
     /// <param name="friendName">Name of the friend which should get deleted from the friend list.</param>
-    public void DeleteFriend(Player player, string friendName)
+    public async ValueTask DeleteFriendAsync(Player player, string friendName)
     {
         var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
         if (friendServer != null && player.SelectedCharacter is { } character)
         {
-            friendServer.DeleteFriend(character.Name, friendName);
-            player.ViewPlugIns.GetPlugIn<IFriendDeletedPlugIn>()?.FriendDeleted(friendName);
+            await friendServer.DeleteFriendAsync(character.Name, friendName);
+            await player.InvokeViewPlugInAsync<IFriendDeletedPlugIn>(p => p.FriendDeletedAsync(friendName)).ConfigureAwait(false);
         }
     }
 }

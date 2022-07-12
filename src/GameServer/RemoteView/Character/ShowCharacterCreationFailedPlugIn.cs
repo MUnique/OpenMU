@@ -25,8 +25,8 @@ public class ShowCharacterCreationFailedPlugIn : IShowCharacterCreationFailedPlu
     public ShowCharacterCreationFailedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowCharacterCreationFailed()
+    public async ValueTask ShowCharacterCreationFailedAsync()
     {
-        this._player.Connection?.SendCharacterCreationFailed();
+        await this._player.Connection.SendCharacterCreationFailedAsync();
     }
 }

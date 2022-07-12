@@ -17,5 +17,5 @@ public interface IAddToLetterListPlugIn : IViewPlugIn
     /// <param name="letter">Letter which should be added.</param>
     /// <param name="index">The index of the letter in the letter list.</param>
     /// <param name="newLetter">Determines if this letter is new, that means it got just sent.</param>
-    void AddToLetterList(LetterHeader letter, ushort index, bool newLetter);
+    ValueTask AddToLetterListAsync(LetterHeader letter, ushort index, bool newLetter);
 }

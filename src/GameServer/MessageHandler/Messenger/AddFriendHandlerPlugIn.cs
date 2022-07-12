@@ -26,9 +26,9 @@ internal class AddFriendHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => FriendAddRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         FriendAddRequest message = packet;
-        this._addAction.AddFriend(player, message.FriendName);
+        await this._addAction.AddFriendAsync(player, message.FriendName);
     }
 }

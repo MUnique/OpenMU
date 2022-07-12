@@ -19,12 +19,12 @@ public class StorageTest
     /// Tests the adding of a small item to the upper left corner of the storage.
     /// </summary>
     [Test]
-    public void AddItem1X1TopLeft()
+    public async ValueTask AddItem1X1TopLeft()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
         var item = this.GetItem(1, 1);
-        var added = storage.AddItem(12, item);
+        var added = await storage.AddItemAsync(12, item);
         Assert.That(added, Is.True);
         Assert.That(storage.Items.Contains(item), Is.True);
         Assert.That(storage.FreeSlots.Contains((byte)12), Is.False);
@@ -34,13 +34,13 @@ public class StorageTest
     /// Tests adding a 2x2 item to the right bottom corner of the storage.
     /// </summary>
     [Test]
-    public void AddItem2X2AtRightBottom()
+    public async ValueTask AddItem2X2AtRightBottom()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
         var item = this.GetItem(2, 2);
         byte slot = 12 + (6 * 8) + 6;
-        var added = storage.AddItem(slot, item);
+        var added = await storage.AddItemAsync(slot, item);
         Assert.That(added, Is.True);
         Assert.That(storage.Items.Contains(item), Is.True);
         Assert.That(storage.FreeSlots.Contains(slot), Is.False);
@@ -50,13 +50,13 @@ public class StorageTest
     /// Tests if the adding of the item fails because the same slot is already in use by another item.
     /// </summary>
     [Test]
-    public void AddItemFailSpaceInUse()
+    public async ValueTask AddItemFailSpaceInUse()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
-        storage.AddItem(12, this.GetItem(1, 1));
+        await storage.AddItemAsync(12, this.GetItem(1, 1));
         var item = this.GetItem(1, 1);
-        var added = storage.AddItem(12, item);
+        var added = await storage.AddItemAsync(12, item);
         Assert.That(added, Is.False);
         Assert.That(storage.Items.Contains(item), Is.False);
         Assert.That(storage.FreeSlots.Contains((byte)12), Is.False);
@@ -66,15 +66,15 @@ public class StorageTest
     /// Tests if the adding of the item one line below another 2x2 item fails.
     /// </summary>
     [Test]
-    public void AddItemFailSpaceInUseVertical()
+    public async ValueTask AddItemFailSpaceInUseVertical()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
         var addedItem = this.GetItem(2, 2);
-        storage.AddItem(12, addedItem);
-        var added = storage.AddItem(13, this.GetItem(1, 1));
+        await storage.AddItemAsync(12, addedItem);
+        var added = await storage.AddItemAsync(13, this.GetItem(1, 1));
         Assert.That(added, Is.False);
-        added = storage.AddItem(12 + 8, this.GetItem(1, 1));
+        added = await storage.AddItemAsync(12 + 8, this.GetItem(1, 1));
         Assert.That(added, Is.False);
         Assert.That(storage.Items.Count(), Is.EqualTo(1));
         Assert.That(storage.Items.Contains(addedItem), Is.True);
@@ -89,11 +89,11 @@ public class StorageTest
     /// because the left part of the item would hang over.
     /// </summary>
     [Test]
-    public void AddItem2X1FailRightBorder()
+    public async ValueTask AddItem2X1FailRightBorder()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
-        var added = storage.AddItem(12 + 7, this.GetItem(2, 1));
+        var added = await storage.AddItemAsync(12 + 7, this.GetItem(2, 1));
         Assert.That(added, Is.False);
         Assert.That(storage.FreeSlots.Contains((byte)(12 + 7)), Is.True);
     }
@@ -103,11 +103,11 @@ public class StorageTest
     /// because the bottom part of the item would hang over.
     /// </summary>
     [Test]
-    public void AddItem1X2FailBottom()
+    public async ValueTask AddItem1X2FailBottom()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
-        var added = storage.AddItem(12 + (7 * 8), this.GetItem(1, 2));
+        var added = await storage.AddItemAsync(12 + (7 * 8), this.GetItem(1, 2));
         Assert.That(added, Is.False);
         Assert.That(storage.FreeSlots.Contains((byte)(12 + (7 * 8))), Is.True);
     }

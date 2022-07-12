@@ -14,5 +14,5 @@ public interface IFriendStateUpdatePlugIn : IViewPlugIn
     /// </summary>
     /// <param name="friend">The friends character name.</param>
     /// <param name="serverId">The server identifier.</param>
-    void FriendStateUpdate(string friend, int serverId);
+    ValueTask FriendStateUpdateAsync(string friend, int serverId);
 }

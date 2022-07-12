@@ -12,5 +12,5 @@ public interface IShowGuildWarDeclaredPlugIn : IViewPlugIn
     /// <summary>
     /// Shows, that the guild war was declared.
     /// </summary>
-    void ShowDeclared();
+    ValueTask ShowDeclaredAsync();
 }

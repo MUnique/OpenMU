@@ -24,20 +24,20 @@ public class LetterSendAction
     /// <param name="rotation">The rotation.</param>
     /// <param name="animation">The animation.</param>
     /// <param name="letterId">The client side letter id.</param>
-    public void SendLetter(Player player, string receiver, string message, string title, byte rotation, byte animation, uint letterId)
+    public async ValueTask SendLetterAsync(Player player, string receiver, string message, string title, byte rotation, byte animation, uint letterId)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var sendPrice = player.GameContext.Configuration.LetterSendPrice;
         if (player.Money < sendPrice)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Not enough Zen to send a letter.", MessageType.BlueNormal);
-            player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.NotEnoughMoney, letterId);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Not enough Zen to send a letter.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.NotEnoughMoney, letterId)).ConfigureAwait(false);
             return;
         }
 
         if (player.SelectedCharacter is null)
         {
-            player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
+            await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.TryAgain, letterId)).ConfigureAwait(false);
             return;
         }
 
@@ -47,28 +47,31 @@ public class LetterSendAction
             using (var context = player.GameContext.PersistenceContextProvider.CreateNewPlayerContext(player.GameContext.Configuration))
             {
                 letter = this.CreateLetter(context, player, receiver, message, title, rotation, animation);
-                if (!context.CanSaveLetter(letter))
+                if (!await context.CanSaveLetterAsync(letter))
                 {
-                    player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.ReceiverNotExists, letterId);
+                    await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.ReceiverNotExists, letterId)).ConfigureAwait(false);
                     return;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
 
-            player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.Success, letterId);
+            await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.Success, letterId)).ConfigureAwait(false);
             player.TryAddMoney(-sendPrice);
         }
         catch (Exception ex)
         {
             player.Logger.LogError(ex, "Unexpected error when trying to send a letter");
-            player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, letterId);
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Oops, some error happened during sending the Letter.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.TryAgain, letterId)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Oops, some error happened during sending the Letter.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
         // Try to forward it to the player, if he is online
-        (player.GameContext as IGameServerContext)?.FriendServer.ForwardLetter(letter);
+        if ((player.GameContext as IGameServerContext)?.FriendServer is { } friendServer)
+        {
+            await friendServer.ForwardLetterAsync(letter);
+        }
     }
 
     private LetterHeader CreateLetter(IContext context, Player player, string receiver, string message, string title, byte rotation, byte animation)

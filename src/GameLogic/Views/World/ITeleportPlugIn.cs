@@ -12,5 +12,5 @@ public interface ITeleportPlugIn : IViewPlugIn
     /// <summary>
     /// Will be called then the player teleported or failed to teleport to another location of the same map.
     /// </summary>
-    void ShowTeleported();
+    ValueTask ShowTeleportedAsync();
 }

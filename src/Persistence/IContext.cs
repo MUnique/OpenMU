@@ -16,6 +16,12 @@ public interface IContext : IDisposable
     bool SaveChanges();
 
     /// <summary>
+    /// Saves the changes of the context.
+    /// </summary>
+    /// <returns><c>True</c>, if the saving was successful; <c>false</c>, otherwise.</returns>
+    ValueTask<bool> SaveChangesAsync();
+
+    /// <summary>
     /// Detaches the specified item from the context, if required.
     /// All reachable navigation properties are recursively detached from the context, too.
     /// </summary>
@@ -54,7 +60,7 @@ public interface IContext : IDisposable
     /// <typeparam name="T">The type of the object.</typeparam>
     /// <param name="obj">The object.</param>
     /// <returns><c>True</c>, if successful; Otherwise, false.</returns>
-    bool Delete<T>(T obj)
+    ValueTask<bool> DeleteAsync<T>(T obj)
         where T : class;
 
     /// <summary>
@@ -63,7 +69,7 @@ public interface IContext : IDisposable
     /// <typeparam name="T">The type of the requested object.</typeparam>
     /// <param name="id">The identifier.</param>
     /// <returns>The object of the specified type by its identifier.</returns>
-    T? GetById<T>(Guid id)
+    ValueTask<T?> GetByIdAsync<T>(Guid id)
         where T : class;
 
     /// <summary>
@@ -71,6 +77,6 @@ public interface IContext : IDisposable
     /// </summary>
     /// <typeparam name="T">The type of the requested objects.</typeparam>
     /// <returns>All objects of the specified type.</returns>
-    IEnumerable<T> Get<T>()
+    ValueTask<IEnumerable<T>> GetAsync<T>()
         where T : class;
 }

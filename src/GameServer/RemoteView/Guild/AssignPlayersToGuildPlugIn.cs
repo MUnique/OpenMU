@@ -30,7 +30,7 @@ public class AssignPlayersToGuildPlugIn : IAssignPlayersToGuildPlugIn
     public AssignPlayersToGuildPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void AssignPlayersToGuild(ICollection<Player> guildPlayers, bool appearsNew)
+    public async ValueTask AssignPlayersToGuildAsync(ICollection<Player> guildPlayers, bool appearsNew)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -43,24 +43,30 @@ public class AssignPlayersToGuildPlugIn : IAssignPlayersToGuildPlugIn
         // 01
         // 34 4B 00 00 80 00 00
         // A4 F2 00 00 00
-        using var writer = connection.StartSafeWrite(0xC2, AssignCharacterToGuild.GetRequiredSize(guildPlayers.Count));
-        var packet = new AssignCharacterToGuild(writer.Span)
+        int Write()
         {
-            PlayerCount = (byte)guildPlayers.Count,
-        };
+            var size = AssignCharacterToGuildRef.GetRequiredSize(guildPlayers.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new AssignCharacterToGuildRef(span)
+            {
+                PlayerCount = (byte)guildPlayers.Count,
+            };
 
-        int i = 0;
-        foreach (var guildPlayer in guildPlayers)
-        {
-            this.SetGuildPlayerBlock(packet[i], guildPlayer, appearsNew);
-            i++;
+            int i = 0;
+            foreach (var guildPlayer in guildPlayers)
+            {
+                this.SetGuildPlayerBlock(packet[i], guildPlayer, appearsNew);
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void AssignPlayerToGuild(Player guildPlayer, bool appearsNew)
+    public async ValueTask AssignPlayerToGuildAsync(Player guildPlayer, bool appearsNew)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -73,18 +79,23 @@ public class AssignPlayersToGuildPlugIn : IAssignPlayersToGuildPlugIn
         // 01
         // 34 4B 00 00 80 00 00
         // A4 F2 00 00 00
-        using var writer = connection.StartSafeWrite(AssignCharacterToGuild.HeaderType, AssignCharacterToGuild.GetRequiredSize(1));
-        var packet = new AssignCharacterToGuild(writer.Span)
+        int Write()
         {
-            PlayerCount = 1,
-        };
+            var size = AssignCharacterToGuildRef.GetRequiredSize(1);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new AssignCharacterToGuildRef(span)
+            {
+                PlayerCount = 1,
+            };
 
-        this.SetGuildPlayerBlock(packet[0], guildPlayer, appearsNew);
+            this.SetGuildPlayerBlock(packet[0], guildPlayer, appearsNew);
+            return size;
+        }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
-    private void SetGuildPlayerBlock(AssignCharacterToGuild.GuildMemberRelation playerBlock, Player guildPlayer, bool appearsNew)
+    private void SetGuildPlayerBlock(AssignCharacterToGuildRef.GuildMemberRelationRef playerBlock, Player guildPlayer, bool appearsNew)
     {
         if (guildPlayer.GuildStatus is null)
         {

@@ -12,5 +12,5 @@ public interface IUpdateMoneyPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the money value.
     /// </summary>
-    void UpdateMoney();
+    ValueTask UpdateMoneyAsync();
 }

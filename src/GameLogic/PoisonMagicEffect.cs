@@ -66,7 +66,7 @@ public sealed class PoisonMagicEffect : MagicEffect
                 return;
             }
 
-            this.Owner.ApplyPoisonDamage(this.Attacker, (uint)damage);
+            this.Owner.ApplyPoisonDamageAsync(this.Attacker, (uint)damage);
         }
         catch (Exception ex)
         {

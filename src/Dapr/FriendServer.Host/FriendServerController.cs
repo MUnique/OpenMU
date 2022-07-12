@@ -34,15 +34,15 @@ public class FriendServerController : ControllerBase
 
     /// <summary>
     /// Is called when a player entered the game.
-    /// It will cause a response with <see cref="IFriendSystemSubscriber.InitializeMessenger" />
+    /// It will cause a response with <see cref="IFriendSystemSubscriber.InitializeMessengerAsync" />
     /// and a state update for friends.
     /// </summary>
     /// <param name="data">The data.</param>
-    [Topic("pubsub", nameof(IEventPublisher.PlayerEnteredGame))]
-    [HttpPost(nameof(IEventPublisher.PlayerEnteredGame))]
-    public void PlayerEnteredGame([FromBody] PlayerOnlineStateArguments data)
+    [Topic("pubsub", nameof(IEventPublisher.PlayerEnteredGameAsync))]
+    [HttpPost(nameof(IEventPublisher.PlayerEnteredGameAsync))]
+    public async Task PlayerEnteredGame([FromBody] PlayerOnlineStateArguments data)
     {
-        this._friendServer.PlayerEnteredGame(data.ServerId, data.CharacterId, data.CharacterName);
+        await this._friendServer.PlayerEnteredGameAsync(data.ServerId, data.CharacterId, data.CharacterName);
     }
 
     /// <summary>
@@ -50,31 +50,31 @@ public class FriendServerController : ControllerBase
     /// It will cause a state update for friends.
     /// </summary>
     /// <param name="data">The data.</param>
-    [Topic("pubsub", nameof(IEventPublisher.PlayerLeftGame))]
-    [HttpPost(nameof(IEventPublisher.PlayerLeftGame))]
-    public void PlayerLeftGame([FromBody] PlayerOnlineStateArguments data)
+    [Topic("pubsub", nameof(IEventPublisher.PlayerLeftGameAsync))]
+    [HttpPost(nameof(IEventPublisher.PlayerLeftGameAsync))]
+    public async Task PlayerLeftGameAsync([FromBody] PlayerOnlineStateArguments data)
     {
-        this._friendServer.PlayerLeftGame(data.CharacterId, data.CharacterName);
+        await this._friendServer.PlayerLeftGameAsync(data.CharacterId, data.CharacterName);
     }
 
     /// <summary>
     /// Sets the online visibility state of a character.
     /// </summary>
     /// <param name="data">The data.</param>
-    [HttpPost(nameof(IFriendServer.SetPlayerVisibilityState))]
-    public void SetPlayerInvisibilityState([FromBody] PlayerFriendOnlineStateArguments data)
+    [HttpPost(nameof(IFriendServer.SetPlayerVisibilityStateAsync))]
+    public async Task SetPlayerInvisibilityStateAsync([FromBody] PlayerFriendOnlineStateArguments data)
     {
-        this._friendServer.SetPlayerVisibilityState(data.ServerId, data.CharacterId, data.CharacterName, data.IsVisible);
+        await this._friendServer.SetPlayerVisibilityStateAsync(data.ServerId, data.CharacterId, data.CharacterName, data.IsVisible);
     }
 
     /// <summary>
     /// Handles the friend request response.
     /// </summary>
     /// <param name="data">The data.</param>
-    [HttpPost(nameof(IFriendServer.FriendResponse))]
-    public void FriendResponse([FromBody] FriendResponseArguments data)
+    [HttpPost(nameof(IFriendServer.FriendResponseAsync))]
+    public async Task FriendResponseAsync([FromBody] FriendResponseArguments data)
     {
-        this._friendServer.FriendResponse(data.CharacterName, data.FriendName, data.Accepted);
+        await this._friendServer.FriendResponseAsync(data.CharacterName, data.FriendName, data.Accepted);
     }
 
     /// <summary>
@@ -82,30 +82,30 @@ public class FriendServerController : ControllerBase
     /// </summary>
     /// <param name="data">The data.</param>
     /// <returns>If a new friend view item got added to the players friend list.</returns>
-    [HttpPost(nameof(IFriendServer.FriendRequest))]
-    public bool FriendRequest([FromBody] RequestArguments data)
+    [HttpPost(nameof(IFriendServer.FriendRequestAsync))]
+    public async Task<bool> FriendRequestAsync([FromBody] RequestArguments data)
     {
-        return this._friendServer.FriendRequest(data.Requester, data.Receiver);
+        return await this._friendServer.FriendRequestAsync(data.Requester, data.Receiver);
     }
 
     /// <summary>
     /// Deletes the friend.
     /// </summary>
     /// <param name="data">The data.</param>
-    [HttpPost(nameof(IFriendServer.DeleteFriend))]
-    public void DeleteFriend([FromBody] RequestArguments data)
+    [HttpPost(nameof(IFriendServer.DeleteFriendAsync))]
+    public async Task DeleteFriendAsync([FromBody] RequestArguments data)
     {
-        this._friendServer.DeleteFriend(data.Requester, data.Receiver);
+        await this._friendServer.DeleteFriendAsync(data.Requester, data.Receiver);
     }
 
     /// <summary>
     /// Creates a new chat room.
     /// </summary>
     /// <param name="data">The data.</param>
-    [HttpPost(nameof(IFriendServer.CreateChatRoom))]
-    public void CreateChatRoom([FromBody] RequestArguments data)
+    [HttpPost(nameof(IFriendServer.CreateChatRoomAsync))]
+    public async Task CreateChatRoomAsync([FromBody] RequestArguments data)
     {
-        this._friendServer.CreateChatRoom(data.Requester, data.Receiver);
+        await this._friendServer.CreateChatRoomAsync(data.Requester, data.Receiver);
     }
 
     /// <summary>
@@ -113,9 +113,9 @@ public class FriendServerController : ControllerBase
     /// </summary>
     /// <param name="data">The data.</param>
     /// <returns>The success of the invitation.</returns>
-    [HttpPost(nameof(IFriendServer.InviteFriendToChatRoom))]
-    public bool InviteFriendToChatRoom([FromBody] ChatRoomInvitationArguments data)
+    [HttpPost(nameof(IFriendServer.InviteFriendToChatRoomAsync))]
+    public async Task<bool> InviteFriendToChatRoomAsync([FromBody] ChatRoomInvitationArguments data)
     {
-        return this._friendServer.InviteFriendToChatRoom(data.CharacterName, data.FriendName, data.RoomNumber);
+        return await this._friendServer.InviteFriendToChatRoomAsync(data.CharacterName, data.FriendName, data.RoomNumber);
     }
 }

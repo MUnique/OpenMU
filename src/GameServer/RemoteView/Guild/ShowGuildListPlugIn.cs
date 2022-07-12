@@ -28,7 +28,7 @@ public class ShowGuildListPlugIn : IShowGuildListPlugIn
     public ShowGuildListPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowGuildList(IEnumerable<OpenMU.Interfaces.GuildListEntry> players)
+    public async ValueTask ShowGuildListAsync(IEnumerable<OpenMU.Interfaces.GuildListEntry> players)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -37,28 +37,33 @@ public class ShowGuildListPlugIn : IShowGuildListPlugIn
         }
 
         var playerCount = players.Count();
-
-        using var writer = connection.StartSafeWrite(GuildList.HeaderType, GuildList.GetRequiredSize(playerCount));
-        var packet = new GuildList(writer.Span)
+        int Write()
         {
-            GuildMemberCount = (byte)playerCount,
-            IsInGuild = playerCount > 0,
-            RivalGuildName = string.Empty, // TODO
-            CurrentScore = 0, // TODO
-            TotalScore = 0, // TODO
-        };
+            var size = GuildListRef.GetRequiredSize(playerCount);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new GuildListRef(span)
+            {
+                GuildMemberCount = (byte)playerCount,
+                IsInGuild = playerCount > 0,
+                RivalGuildName = string.Empty, // TODO
+                CurrentScore = 0, // TODO
+                TotalScore = 0, // TODO
+            };
 
-        int i = 0;
-        foreach (var member in players)
-        {
-            var memberBlock = packet[i];
-            memberBlock.Name = member.PlayerName;
-            memberBlock.Role = member.PlayerPosition.Convert();
-            memberBlock.ServerId = member.ServerId;
-            memberBlock.ServerId2 = (byte)(member.ServerId == 0xFF ? 0x7F : 0x80 + member.ServerId);
-            i++;
+            int i = 0;
+            foreach (var member in players)
+            {
+                var memberBlock = packet[i];
+                memberBlock.Name = member.PlayerName;
+                memberBlock.Role = member.PlayerPosition.Convert();
+                memberBlock.ServerId = member.ServerId;
+                memberBlock.ServerId2 = (byte)(member.ServerId == 0xFF ? 0x7F : 0x80 + member.ServerId);
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

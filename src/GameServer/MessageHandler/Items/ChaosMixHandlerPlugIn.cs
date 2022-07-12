@@ -26,11 +26,11 @@ internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => ChaosMachineMixRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         ChaosMachineMixRequest message = packet;
         var socketSlot = packet.Length > 4 ? message.SocketSlot : (byte)0;
         var mixType = packet.Length > 3 ? message.MixType : ChaosMachineMixRequest.ChaosMachineMixType.ChaosWeapon;
-        this._mixAction.MixItems(player, (byte)mixType, socketSlot);
+        await this._mixAction.MixItemsAsync(player, (byte)mixType, socketSlot);
     }
 }

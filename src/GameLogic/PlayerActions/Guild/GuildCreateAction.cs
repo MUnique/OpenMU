@@ -17,7 +17,7 @@ public class GuildCreateAction
     /// <param name="creator">The creator.</param>
     /// <param name="guildName">Name of the guild.</param>
     /// <param name="guildEmblem">The guild emblem.</param>
-    public void CreateGuild(Player creator, string guildName, byte[] guildEmblem)
+    public async ValueTask CreateGuildAsync(Player creator, string guildName, byte[] guildEmblem)
     {
         using var loggerScope = creator.Logger.BeginScope(this.GetType());
         if (creator.PlayerState.CurrentState != PlayerState.EnteredWorld)
@@ -33,20 +33,20 @@ public class GuildCreateAction
             return;
         }
 
-        if (guildServer.GuildExists(guildName))
+        if (await guildServer.GuildExistsAsync(guildName))
         {
-            creator.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()?.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);
+            await creator.InvokeViewPlugInAsync<IShowGuildCreateResultPlugIn>(p => p.ShowGuildCreateResultAsync(GuildCreateErrorDetail.GuildAlreadyExist)).ConfigureAwait(false);
             return;
         }
 
-        if (guildServer.CreateGuild(guildName, creator.SelectedCharacter!.Name, creator.SelectedCharacter.Id, guildEmblem, ((IGameServerContext)creator.GameContext).Id))
+        if (await guildServer.CreateGuildAsync(guildName, creator.SelectedCharacter!.Name, creator.SelectedCharacter.Id, guildEmblem, ((IGameServerContext)creator.GameContext).Id))
         {
-            creator.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()?.ShowGuildCreateResult(GuildCreateErrorDetail.None);
+            await creator.InvokeViewPlugInAsync<IShowGuildCreateResultPlugIn>(p => p.ShowGuildCreateResultAsync(GuildCreateErrorDetail.None)).ConfigureAwait(false);
             creator.Logger.LogInformation("Guild created: [{0}], Master: [{1}]", guildName, creator.SelectedCharacter.Name);
         }
         else
         {
-            creator.ViewPlugIns.GetPlugIn<IShowGuildCreateResultPlugIn>()?.ShowGuildCreateResult(GuildCreateErrorDetail.GuildAlreadyExist);
+            await creator.InvokeViewPlugInAsync<IShowGuildCreateResultPlugIn>(p => p.ShowGuildCreateResultAsync(GuildCreateErrorDetail.GuildAlreadyExist)).ConfigureAwait(false);
         }
     }
 }

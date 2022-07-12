@@ -22,7 +22,7 @@ public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn
     public static short ResetNpcNumber => 371;
 
     /// <inheritdoc />
-    public void PlayerTalksToNpc(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
+    public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
         if (npc.Definition.Number != ResetNpcNumber)
         {
@@ -31,6 +31,6 @@ public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn
 
         eventArgs.HasBeenHandled = true;
         var resetAction = new ResetCharacterAction(player, npc);
-        resetAction.ResetCharacter();
+        await resetAction.ResetCharacterAsync();
     }
 }

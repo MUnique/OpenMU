@@ -12,7 +12,7 @@ public interface IPartyHealthViewPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the party health.
     /// </summary>
-    void UpdatePartyHealth();
+    ValueTask UpdatePartyHealthAsync();
 
     /// <summary>
     /// Determines whether a health update is needed.

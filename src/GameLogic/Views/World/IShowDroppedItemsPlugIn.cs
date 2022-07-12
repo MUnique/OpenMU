@@ -14,5 +14,5 @@ public interface IShowDroppedItemsPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="droppedItems">The dropped items.</param>
     /// <param name="freshDrops">if set to <c>true</c> this items are fresh drops; Otherwise they are already laying on the ground when reaching a newly discovered part of the map.</param>
-    void ShowDroppedItems(IEnumerable<DroppedItem> droppedItems, bool freshDrops);
+    ValueTask ShowDroppedItemsAsync(IEnumerable<DroppedItem> droppedItems, bool freshDrops);
 }

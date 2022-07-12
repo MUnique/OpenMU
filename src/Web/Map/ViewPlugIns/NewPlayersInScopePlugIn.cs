@@ -34,7 +34,7 @@ public class NewPlayersInScopePlugIn : JsViewPlugInBase, INewPlayersInScopePlugI
     }
 
     /// <inheritdoc />
-    public async void NewPlayersInScope(IEnumerable<Player> newObjects, bool isSpawned = true)
+    public async ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newObjects, bool isSpawned = true)
     {
         try
         {
@@ -54,7 +54,7 @@ public class NewPlayersInScopePlugIn : JsViewPlugInBase, INewPlayersInScopePlugI
         }
         catch (Exception e)
         {
-            this.Logger.LogError(e, $"Error in {nameof(this.NewPlayersInScope)}");
+            this.Logger.LogError(e, $"Error in {nameof(this.NewPlayersInScopeAsync)}");
         }
     }
 }

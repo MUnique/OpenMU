@@ -13,5 +13,5 @@ public interface IShowLetterPlugIn : IViewPlugIn
     /// Shows the letter body.
     /// </summary>
     /// <param name="letterBody">The letter body.</param>
-    void ShowLetter(LetterBody letterBody);
+    ValueTask ShowLetterAsync(LetterBody letterBody);
 }

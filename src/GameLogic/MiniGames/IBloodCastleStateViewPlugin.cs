@@ -20,7 +20,7 @@ public interface IBloodCastleStateViewPlugin : IViewPlugIn
     /// <param name="curMonster">Current number of monsters killed.</param>
     /// <param name="questItemOwner">The player which picked up the quest item.</param>
     /// <param name="questItem">The quest item which was dropped by the statue.</param>
-    void UpdateState(BloodCastleStatus status, TimeSpan remainingTime, int maxMonster, int curMonster, IIdentifiable? questItemOwner, Item? questItem);
+    ValueTask UpdateStateAsync(BloodCastleStatus status, TimeSpan remainingTime, int maxMonster, int curMonster, IIdentifiable? questItemOwner, Item? questItem);
 }
 
 /// <summary>

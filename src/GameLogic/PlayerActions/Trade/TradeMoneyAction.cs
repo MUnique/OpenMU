@@ -19,12 +19,12 @@ public class TradeMoneyAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="moneyAmount">The money amount.</param>
-    public void TradeMoney(Player player, uint moneyAmount)
+    public async ValueTask TradeMoneyAsync(Player player, uint moneyAmount)
     {
         // Check if Trade is open
         if (player.PlayerState.CurrentState != PlayerState.TradeOpened)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Uncheck trade accept button first", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Uncheck trade accept button first", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
@@ -38,17 +38,16 @@ public class TradeMoneyAction
         player.TryAddMoney(player.TradingMoney);
         player.TryAddMoney((int)(-1 * moneyAmount));
         player.TradingMoney = (int)moneyAmount;
-        player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
-        player.ViewPlugIns.GetPlugIn<IRequestedTradeMoneyHasBeenSetPlugIn>()?.RequestedTradeMoneyHasBeenSet();
+        await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IRequestedTradeMoneyHasBeenSetPlugIn>(p => p.RequestedTradeMoneyHasBeenSetAsync()).ConfigureAwait(false);
 
-        // Send the Money Packet to the Trading Partner
-        player.TradingPartner?.ViewPlugIns.GetPlugIn<ISetTradeMoneyPlugIn>()?.SetTradeMoney(moneyAmount);
-
-        player.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()?.ChangeTradeButtonState(TradeButtonState.Red);
-        if (player.TradingPartner != null)
+        await player.InvokeViewPlugInAsync<IChangeTradeButtonStatePlugIn>(p => p.ChangeTradeButtonStateAsync(TradeButtonState.Red)).ConfigureAwait(false);
+        if (player.TradingPartner is { } tradingPartner)
         {
-            player.TradingPartner.PlayerState.TryAdvanceTo(PlayerState.TradeOpened);
-            player.TradingPartner.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()?.ChangeTradeButtonState(TradeButtonState.Red);
+            // Send the Money Packet to the Trading Partner
+            await tradingPartner.InvokeViewPlugInAsync<ISetTradeMoneyPlugIn>(p => p.SetTradeMoneyAsync(moneyAmount)).ConfigureAwait(false);
+            tradingPartner.PlayerState.TryAdvanceTo(PlayerState.TradeOpened);
+            await tradingPartner.InvokeViewPlugInAsync<IChangeTradeButtonStatePlugIn>(p => p.ChangeTradeButtonStateAsync(TradeButtonState.Red)).ConfigureAwait(false);
         }
     }
 }

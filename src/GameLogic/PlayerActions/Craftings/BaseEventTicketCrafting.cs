@@ -100,14 +100,18 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
     protected abstract byte GetSuccessRate(int eventLevel);
 
     /// <inheritdoc />
-    protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex)
     {
         var item = player.PersistenceContext.CreateNew<Item>();
         item.Definition = player.GameContext.Configuration.Items.First(i => i.Name == this._resultItemName);
         item.Level = this.GetEventLevel(requiredItems);
         item.Durability = 1;
-        player.TemporaryStorage?.AddItem(item);
-        yield return item;
+        if (player.TemporaryStorage is { } temporaryStorage)
+        {
+            await temporaryStorage!.AddItemAsync(item);
+        }
+
+        return new List<Item> { item };
     }
 
     private byte GetEventLevel(IList<CraftingRequiredItemLink> requiredItems)

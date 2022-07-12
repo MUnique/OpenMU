@@ -16,5 +16,5 @@ public interface IShowMessagePlugIn : IViewPlugIn
     /// </summary>
     /// <param name="message">The message.</param>
     /// <param name="messageType">Type of the message.</param>
-    void ShowMessage(string message, MessageType messageType);
+    ValueTask ShowMessageAsync(string message, MessageType messageType);
 }

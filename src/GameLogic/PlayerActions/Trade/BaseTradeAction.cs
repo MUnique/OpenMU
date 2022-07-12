@@ -34,7 +34,7 @@ public class BaseTradeAction
     /// Cancels the trade.
     /// </summary>
     /// <param name="trader">The trader.</param>
-    protected void CancelTrade(ITrader trader)
+    protected async ValueTask CancelTradeAsync(ITrader trader)
     {
         CancelledTrades.Add(1);
         using (var context = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
@@ -49,7 +49,11 @@ public class BaseTradeAction
             {
                 trader.Inventory!.Clear();
                 trader.BackupInventory.RestoreItemStates();
-                trader.BackupInventory.Items.ForEach(item => trader.Inventory.AddItem(item.ItemSlot, item));
+                foreach (var item in trader.BackupInventory.Items)
+                {
+                    await trader.Inventory.AddItemAsync(item.ItemSlot, item);
+                }
+
                 trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;
             }
         }
@@ -73,9 +77,18 @@ public class BaseTradeAction
     /// </summary>
     /// <param name="trader">The trader.</param>
     /// <param name="message">The message.</param>
-    protected void SendMessage(ITrader trader, string message)
+    protected async ValueTask SendMessageAsync(ITrader trader, string message)
     {
-        var player = trader as Player;
-        player?.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, MessageType.BlueNormal);
+        if (trader is IWorldObserver observer)
+        {
+            try
+            {
+                await observer.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                trader.Logger.LogError(ex, "Error sending a message");
+            }
+        }
     }
 }

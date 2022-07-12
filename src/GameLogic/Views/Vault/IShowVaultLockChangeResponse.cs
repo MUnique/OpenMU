@@ -13,5 +13,5 @@ public interface IShowVaultLockChangeResponse : IViewPlugIn
     /// Shows the result of a request to enter, modify or remove the pin code of the vault.
     /// </summary>
     /// <param name="result">The result.</param>
-    void ShowResponse(VaultLockChangeResult result);
+    ValueTask ShowResponseAsync(VaultLockChangeResult result);
 }

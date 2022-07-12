@@ -15,7 +15,7 @@ public class GuildListRequestAction
     /// Requests the guild list of the guild the player is currently part of.
     /// </summary>
     /// <param name="player">The player.</param>
-    public void RequestGuildList(Player player)
+    public async ValueTask RequestGuildListAsync(Player player)
     {
         if (player.GuildStatus is null)
         {
@@ -24,8 +24,8 @@ public class GuildListRequestAction
 
         if ((player.GameContext as IGameServerContext)?.GuildServer is { } guildServer)
         {
-            var players = guildServer.GetGuildList(player.GuildStatus.GuildId);
-            player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()?.ShowGuildList(players);
+            var players = await guildServer.GetGuildListAsync(player.GuildStatus.GuildId);
+            await player.InvokeViewPlugInAsync<IShowGuildListPlugIn>(p => p.ShowGuildListAsync(players)).ConfigureAwait(false);
         }
     }
 }

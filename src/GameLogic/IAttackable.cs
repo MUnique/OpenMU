@@ -58,19 +58,19 @@ public interface IAttackable : IIdentifiable, ILocateable
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     /// <param name="skill">The skill.</param>
-    void AttackBy(IAttacker attacker, SkillEntry? skill);
+    ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill);
 
     /// <summary>
-    /// Reflects the damage which was done previously with <see cref="AttackBy" /> or even <see cref="ReflectDamage" /> to the <paramref name="reflector" />.
+    /// Reflects the damage which was done previously with <see cref="AttackByAsync" /> or even <see cref="ReflectDamageAsync" /> to the <paramref name="reflector" />.
     /// </summary>
     /// <param name="reflector">The reflector.</param>
     /// <param name="damage">The damage.</param>
-    void ReflectDamage(IAttacker reflector, uint damage);
+    ValueTask ReflectDamageAsync(IAttacker reflector, uint damage);
 
     /// <summary>
     /// Applies the poison damage.
     /// </summary>
     /// <param name="initialAttacker">The initial attacker.</param>
     /// <param name="damage">The damage.</param>
-    void ApplyPoisonDamage(IAttacker initialAttacker, uint damage);
+    ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
 }

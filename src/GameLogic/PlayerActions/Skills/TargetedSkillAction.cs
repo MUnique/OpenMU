@@ -29,7 +29,7 @@ public class TargetedSkillAction
     /// <param name="player">The player.</param>
     /// <param name="target">The target.</param>
     /// <param name="skillId">The skill identifier.</param>
-    public void PerformSkill(Player player, IAttackable target, ushort skillId)
+    public async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var skillEntry = player.SkillList?.GetSkill(skillId);
@@ -59,7 +59,7 @@ public class TargetedSkillAction
             // target position might be out of sync so we send the current coordinates to the client again.
             if (!(target is ISupportWalk { IsWalking: true }))
             {
-                player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()?.ObjectMoved(target, MoveType.Instant);
+                await player.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(target, MoveType.Instant)).ConfigureAwait(false);
             }
 
             return;
@@ -74,19 +74,19 @@ public class TargetedSkillAction
         }
 
         // enough mana, ag etc?
-        if (!player.TryConsumeForSkill(skill))
+        if (!await player.TryConsumeForSkillAsync(skill))
         {
             return;
         }
 
         if (skill.MovesToTarget)
         {
-            player.Move(target.Position);
+            await player.MoveAsync(target.Position);
         }
 
         if (skill.MovesTarget)
         {
-            target.MoveRandomly();
+            await target.MoveRandomlyAsync();
         }
 
         var effectApplied = false;
@@ -95,18 +95,18 @@ public class TargetedSkillAction
             if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
                 && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is { } monsterDefinition)
             {
-                player.CreateSummonedMonster(monsterDefinition);
+                await player.CreateSummonedMonsterAsync(monsterDefinition);
             }
         }
         else
         {
-            effectApplied = this.ApplySkill(player, target, skillEntry!);
+            effectApplied = await this.ApplySkillAsync(player, target, skillEntry!);
         }
 
-        player.ForEachWorldObserver(obs => obs.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(player, target, skill, effectApplied), true);
+        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, skill, effectApplied), true).ConfigureAwait(false);
     }
 
-    private bool ApplySkill(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
+    private async ValueTask<bool> ApplySkillAsync(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var skill = skillEntry.Skill;
@@ -116,14 +116,14 @@ public class TargetedSkillAction
         {
             if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
             {
-                target.AttackBy(player, skillEntry);
-                success = target.TryApplyElementalEffects(player, skillEntry) || success;
+                await target.AttackByAsync(player, skillEntry);
+                success = await target.TryApplyElementalEffectsAsync(player, skillEntry) || success;
             }
             else if (skill.MagicEffectDef != null)
             {
                 if (skill.SkillType == SkillType.Buff)
                 {
-                    target.ApplyMagicEffect(player, skillEntry);
+                    await target.ApplyMagicEffectAsync(player, skillEntry);
                     success = true;
                 }
                 else if (skill.SkillType == SkillType.Regeneration)

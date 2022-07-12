@@ -24,13 +24,13 @@ public abstract class PacketPipeReaderBase
     /// </summary>
     /// <param name="packet">The mu online packet.</param>
     /// <returns>The async task.</returns>
-    protected abstract Task ReadPacket(ReadOnlySequence<byte> packet);
+    protected abstract ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet);
 
     /// <summary>
     /// Called when the <see cref="Source"/> completed.
     /// </summary>
     /// <param name="exception">The exception, if any occured; Otherwise, <c>null</c>.</param>
-    protected abstract void OnComplete(Exception? exception);
+    protected abstract ValueTask OnCompleteAsync(Exception? exception);
 
     /// <summary>
     /// Reads from the <see cref="Source"/> until it's completed or cancelled.
@@ -58,11 +58,11 @@ public abstract class PacketPipeReaderBase
         }
         catch (Exception e)
         {
-            this.OnComplete(e);
+            await this.OnCompleteAsync(e).ConfigureAwait(false);
             throw;
         }
 
-        this.OnComplete(null);
+        await this.OnCompleteAsync(null).ConfigureAwait(false);
     }
 
     private async Task<bool> ReadBuffer()
@@ -84,7 +84,7 @@ public abstract class PacketPipeReaderBase
                     // Notify our source, that we don't intend to read anymore.
                     await this.Source.CompleteAsync(exception).ConfigureAwait(false);
 
-                    this.OnComplete(exception);
+                    await this.OnCompleteAsync(exception);
                     throw exception;
                 }
             }
@@ -92,7 +92,7 @@ public abstract class PacketPipeReaderBase
             if (length is > 0 && buffer.Length >= length)
             {
                 var packet = buffer.Slice(0, length.Value);
-                await this.ReadPacket(packet).ConfigureAwait(false);
+                await this.ReadPacketAsync(packet).ConfigureAwait(false);
 
                 buffer = buffer.Slice(buffer.GetPosition(length.Value), buffer.End);
                 length = null;
@@ -108,7 +108,7 @@ public abstract class PacketPipeReaderBase
         if (result.IsCanceled || result.IsCompleted)
         {
             // Not possible to advance any further, e.g. because of a disconnected network connection.
-            this.OnComplete(null);
+            await this.OnCompleteAsync(null);
         }
         else
         {

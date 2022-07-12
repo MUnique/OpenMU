@@ -26,9 +26,9 @@ internal class TradeMoneyHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => SetTradeMoney.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         SetTradeMoney message = packet;
-        this._tradeAction.TradeMoney(player, message.Amount);
+        await this._tradeAction.TradeMoneyAsync(player, message.Amount);
     }
 }

@@ -16,5 +16,5 @@ public interface IQuestStateResponsePlugIn : IViewPlugIn
     /// Shows the state of the quest.
     /// </summary>
     /// <param name="questState">The quest state.</param>
-    void ShowQuestState(CharacterQuestState? questState);
+    ValueTask ShowQuestStateAsync(CharacterQuestState? questState);
 }

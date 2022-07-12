@@ -27,9 +27,9 @@ public class QuestSelectRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => QuestSelectRequest.SubCode;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         QuestSelectRequest request = packet;
-        this._questSelectAction.SelectQuest(player, (short)request.QuestGroup, (short)request.QuestNumber);
+        await this._questSelectAction.SelectQuestAsync(player, (short)request.QuestGroup, (short)request.QuestNumber);
     }
 }

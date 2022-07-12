@@ -26,15 +26,15 @@ internal class WalkMonsterChatCommand : ChatCommandPlugInBase<MoveMonsterCommand
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player gameMaster, MoveMonsterCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, MoveMonsterCommandArgs arguments)
     {
         var monster = gameMaster.ObservingBuckets.SelectMany(b => b).OfType<Monster>().FirstOrDefault(m => m.Id == arguments.Id);
         if (monster is null)
         {
-            this.ShowMessageTo(gameMaster, $"Monster with id {arguments.Id} not found.");
+            await this.ShowMessageToAsync(gameMaster, $"Monster with id {arguments.Id} not found.");
             return;
         }
 
-        monster.WalkTo(arguments.Coordinates);
+        await monster.WalkToAsync(arguments.Coordinates);
     }
 }

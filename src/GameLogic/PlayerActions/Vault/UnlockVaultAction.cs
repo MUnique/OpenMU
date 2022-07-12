@@ -16,16 +16,19 @@ public class UnlockVaultAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="pin">The pin.</param>
-    public void UnlockVault(Player player, string pin)
+    public async ValueTask UnlockVaultAsync(Player player, string pin)
     {
+        VaultLockChangeResult result;
         if (player.Account?.VaultPassword == pin)
         {
             player.IsVaultLocked = false;
-            player.ViewPlugIns.GetPlugIn<IShowVaultLockChangeResponse>()?.ShowResponse(VaultLockChangeResult.Unlocked);
+            result = VaultLockChangeResult.Unlocked;
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IShowVaultLockChangeResponse>()?.ShowResponse(VaultLockChangeResult.UnlockFailedByWrongPin);
+            result = VaultLockChangeResult.UnlockFailedByWrongPin;
         }
+
+        await player.InvokeViewPlugInAsync<IShowVaultLockChangeResponse>(p => p.ShowResponseAsync(result)).ConfigureAwait(false);
     }
 }

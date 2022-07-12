@@ -15,5 +15,5 @@ public interface IItemMovedPlugIn : IViewPlugIn
     /// <param name="item">The item.</param>
     /// <param name="toSlot">The new slot index.</param>
     /// <param name="storage">The new storage.</param>
-    void ItemMoved(Item item, byte toSlot, Storages storage);
+    ValueTask ItemMovedAsync(Item item, byte toSlot, Storages storage);
 }

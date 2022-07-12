@@ -27,7 +27,7 @@ internal class Program
     /// The main entry point for the application.
     /// </summary>
     /// <param name="args">The arguments. </param>
-    internal static void Main(string[] args)
+    internal static async Task Main(string[] args)
     {
         SelfLog.Enable(Console.Error);
         var logConfiguration = new ConfigurationBuilder()
@@ -60,7 +60,7 @@ internal class Program
             pluginManager.DiscoverAndRegisterPlugInsOf<INetworkEncryptionFactoryPlugIn>();
             var chatServer = new ChatServer(addressResolver, loggerFactory, pluginManager);
             chatServer.Initialize(configuration);
-            chatServer.Start();
+            await chatServer.StartAsync();
             var exDbClient = new ExDbClient(exDbHost, exDbPort, chatServer, chatServerListenerPort, loggerFactory);
             _logger.LogInformation("ChatServer started and ready");
             while (Console.ReadLine() != "exit")
@@ -68,8 +68,8 @@ internal class Program
                 // keep application running
             }
 
-            exDbClient.Disconnect();
-            chatServer.Shutdown();
+            await exDbClient.DisconnectAsync();
+            await chatServer.ShutdownAsync();
         }
         catch (Exception ex)
         {

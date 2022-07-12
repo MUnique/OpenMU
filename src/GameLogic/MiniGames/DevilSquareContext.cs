@@ -53,7 +53,7 @@ public sealed class DevilSquareContext : MiniGameContext
     }
 
     /// <inheritdoc />
-    protected override void GameEnded(ICollection<Player> finishers)
+    protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
         var sortedFinishers = finishers
             .Select(f => this._gameStates[f.Name])
@@ -67,7 +67,7 @@ public sealed class DevilSquareContext : MiniGameContext
         {
             rank++;
             state.Rank = rank;
-            var (bonusScore, givenMoney) = this.GiveRewardsAndGetBonusScore(state.Player, rank);
+            var (bonusScore, givenMoney) = await this.GiveRewardsAndGetBonusScoreAsync(state.Player, rank);
             state.AddScore(bonusScore);
             scoreList.Add((
                 state.Player.Name,
@@ -78,17 +78,17 @@ public sealed class DevilSquareContext : MiniGameContext
 
         this._highScoreTable = scoreList.AsReadOnly();
 
-        this.SaveRanking(sortedFinishers.Select(state => (state.Rank, state.Player.SelectedCharacter!, state.Score)));
-        base.GameEnded(finishers);
+        await this.SaveRankingAsync(sortedFinishers.Select(state => (state.Rank, state.Player.SelectedCharacter!, state.Score)));
+        await base.GameEndedAsync(finishers);
     }
 
     /// <inheritdoc />
-    protected override void ShowScore(Player player)
+    protected override async ValueTask ShowScoreAsync(Player player)
     {
         if (this._highScoreTable is { } table
             && this._gameStates.TryGetValue(player.Name, out var state))
         {
-            player.ViewPlugIns.GetPlugIn<IMiniGameScoreTableViewPlugin>()?.ShowScoreTable((byte)state.Rank, table);
+            await player.InvokeViewPlugInAsync<IMiniGameScoreTableViewPlugin>(p => p.ShowScoreTableAsync((byte)state.Rank, table)).ConfigureAwait(false);
         }
     }
 

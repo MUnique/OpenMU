@@ -64,6 +64,18 @@ public class EntityFrameworkContextBase : IContext
         return true;
     }
 
+    /// <inheritdoc/>
+    public async ValueTask<bool> SaveChangesAsync()
+    {
+        // when we have a change publisher attached, we want to get the changed entries before accepting them.
+        // Otherwise, we can accept them.
+        var acceptChanges = this._changePublisher is null;
+
+        await this.Context.SaveChangesAsync(acceptChanges);
+
+        return true;
+    }
+
     /// <inheritdoc />
     public bool Detach(object item)
     {
@@ -103,7 +115,7 @@ public class EntityFrameworkContextBase : IContext
     }
 
     /// <inheritdoc/>
-    public bool Delete<T>(T obj)
+    public async ValueTask<bool> DeleteAsync<T>(T obj)
         where T : class
     {
         var result = this.Context.Remove(obj) is { };
@@ -116,19 +128,19 @@ public class EntityFrameworkContextBase : IContext
     }
 
     /// <inheritdoc/>
-    public T? GetById<T>(Guid id)
+    public async ValueTask<T?> GetByIdAsync<T>(Guid id)
         where T : class
     {
         using var context = this.RepositoryManager.ContextStack.UseContext(this);
-        return this.RepositoryManager.GetRepository<T>().GetById(id);
+        return await this.RepositoryManager.GetRepository<T>().GetByIdAsync(id);
     }
 
     /// <inheritdoc/>
-    public IEnumerable<T> Get<T>()
+    public async ValueTask<IEnumerable<T>> GetAsync<T>()
         where T : class
     {
         using var context = this.RepositoryManager.ContextStack.UseContext(this);
-        return this.RepositoryManager.GetRepository<T>().GetAll();
+        return await this.RepositoryManager.GetRepository<T>().GetAllAsync();
     }
 
     /// <inheritdoc/>

@@ -14,5 +14,5 @@ public interface IItemSoldByPlayerShopPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="slot">The slot of the item.</param>
     /// <param name="buyer">The buyer.</param>
-    void ItemSoldByPlayerShop(byte slot, Player buyer);
+    ValueTask ItemSoldByPlayerShopAsync(byte slot, Player buyer);
 }

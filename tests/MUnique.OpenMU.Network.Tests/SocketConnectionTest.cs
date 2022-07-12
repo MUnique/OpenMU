@@ -142,7 +142,7 @@ public class SocketConnectionTest
             }
 
             int packetCount = 0;
-            connection.PacketReceived += (sender, p) => Interlocked.Increment(ref packetCount);
+            connection.PacketReceived += async p => Interlocked.Increment(ref packetCount);
             connection.BeginReceive();
 
             var packet = new byte[] { 0xC1, 10, 0, 0, 0, 0, 0, 0, 0, 0 };

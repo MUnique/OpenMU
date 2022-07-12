@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Threading;
+
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
@@ -25,23 +27,23 @@ public class OnlineChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatCommandArg
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc/>
-    protected override void DoHandleCommand(Player gameMasterPlayer, EmptyChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMasterPlayer, EmptyChatCommandArgs arguments)
     {
         var totalCharactersCount = 0;
         var totalGameMastersCount = 0;
-        gameMasterPlayer.GameContext.ForEachPlayer(player =>
+        await gameMasterPlayer.GameContext.ForEachPlayerAsync(async player =>
         {
             switch (player.SelectedCharacter?.CharacterStatus)
             {
                 case CharacterStatus.Normal:
-                    totalCharactersCount++;
+                    Interlocked.Increment(ref totalCharactersCount);
                     break;
                 case CharacterStatus.GameMaster:
-                    totalGameMastersCount++;
+                    Interlocked.Increment(ref totalGameMastersCount);
                     break;
             }
         });
 
-        this.ShowMessageTo(gameMasterPlayer, $"[{this.Key}] {totalGameMastersCount} GM(s) and {totalCharactersCount} player(s) online");
+        await this.ShowMessageToAsync(gameMasterPlayer, $"[{this.Key}] {totalGameMastersCount} GM(s) and {totalCharactersCount} player(s) online");
     }
 }

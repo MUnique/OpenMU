@@ -17,14 +17,14 @@ public class QuestCancelAction
     /// <param name="player">The player.</param>
     /// <param name="group">The group of the quest.</param>
     /// <param name="number">The number of the quest.</param>
-    public void CancelQuest(Player player, short group, short number)
+    public async ValueTask CancelQuestAsync(Player player, short group, short number)
     {
         var questState = player.GetQuestState(group, number);
         if (questState?.ActiveQuest != null)
         {
             var quest = questState.ActiveQuest;
             questState.Clear(player.PersistenceContext);
-            player.ViewPlugIns.GetPlugIn<IQuestCancelledPlugIn>()?.QuestCancelled(quest);
+            await player.InvokeViewPlugInAsync<IQuestCancelledPlugIn>(p => p.QuestCancelledAsync(quest)).ConfigureAwait(false);
         }
     }
 }

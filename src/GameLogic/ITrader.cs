@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Interface of a trader.
 /// </summary>
-public interface ITrader
+public interface ITrader : IWorldObserver
 {
     /// <summary>
     /// Gets the character name.
@@ -73,9 +73,4 @@ public interface ITrader
     /// Gets the game context of the trader.
     /// </summary>
     IGameContext GameContext { get; }
-
-    /// <summary>
-    /// Gets the trade view.
-    /// </summary>
-    ICustomPlugInContainer<IViewPlugIn> ViewPlugIns { get; }
 }

@@ -2,7 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.PlugIns;
+
 namespace MUnique.OpenMU.GameLogic;
+
+using Nito.AsyncEx;
 
 /// <summary>
 /// The types of item storages.
@@ -118,14 +122,14 @@ public interface IStorage
     /// <param name="slot">The slot where the items should be put in.</param>
     /// <param name="item">The item.</param>
     /// <returns>True, if successful.</returns>
-    bool AddItem(byte slot, Item item);
+    ValueTask<bool> AddItemAsync(byte slot, Item item);
 
     /// <summary>
     /// Adds the item to the next free slot of the storage.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>True, if successful.</returns>
-    bool AddItem(Item item);
+    ValueTask<bool> AddItemAsync(Item item);
 
     /// <summary>
     /// Tries to add money to itemStorage.
@@ -154,7 +158,7 @@ public interface IStorage
     /// <param name="anotherStorage">The other storage.</param>
     /// <returns>If it was successful.</returns>
     /// <remarks>Helpful for the trade function where all items of the trade partner has to be added to the own inventory.</remarks>
-    bool TryTakeAll(IStorage anotherStorage);
+    ValueTask<bool> TryTakeAllAsync(IStorage anotherStorage);
 
     /// <summary>
     /// Gets the item from the specified slot.
@@ -167,7 +171,7 @@ public interface IStorage
     /// Removes the item from this storage.
     /// </summary>
     /// <param name="item">The item which should be removed.</param>
-    void RemoveItem(Item item);
+    ValueTask RemoveItemAsync(Item item);
 
     /// <summary>
     /// Clears this storage from all of its items.
@@ -184,7 +188,7 @@ public interface IInventoryStorage : IStorage
     /// <summary>
     /// Occurs when the equipped items changed.
     /// </summary>
-    event EventHandler<ItemEventArgs> EquippedItemsChanged;
+    event AsyncEventHandler<ItemEventArgs> EquippedItemsChanged;
 
     /// <summary>
     /// Gets all items which are in the wearable slots.
@@ -213,5 +217,5 @@ public interface IShopStorage : IStorage
     /// <summary>
     /// Gets the store lock.
     /// </summary>
-    object StoreLock { get; }
+    AsyncLock StoreLock { get; }
 }

@@ -32,17 +32,17 @@ public class SkillListViewPlugIn095 : SkillListViewPlugIn075
     }
 
     /// <inheritdoc/>
-    public override void AddSkill(Skill skill)
+    public override async ValueTask AddSkillAsync(Skill skill)
     {
         var skillIndex = this.AddSkillToList(skill);
-        this.Player.Connection?.SendSkillAdded095(skillIndex, this.GetSkillNumberAndLevel(skill));
+        await this.Player.Connection.SendSkillAdded095Async(skillIndex, this.GetSkillNumberAndLevel(skill)).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public override void RemoveSkill(Skill skill)
+    public override async ValueTask RemoveSkillAsync(Skill skill)
     {
         var skillIndex = (byte)this.SkillList.IndexOf(skill);
-        this.Player.Connection?.SendSkillRemoved095(skillIndex, this.GetSkillNumberAndLevel(skill));
+        await this.Player.Connection.SendSkillRemoved095Async(skillIndex, this.GetSkillNumberAndLevel(skill)).ConfigureAwait(false);
         this.SkillList[skillIndex] = null;
     }
 }

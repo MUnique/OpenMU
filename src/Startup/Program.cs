@@ -129,17 +129,17 @@ internal sealed class Program : IDisposable
         {
             foreach (var chatServer in this._servers.OfType<ChatServer>())
             {
-                chatServer.Start();
+                await chatServer.StartAsync();
             }
 
             foreach (var gameServer in this._gameServers.Values)
             {
-                gameServer.Start();
+                await gameServer.StartAsync();
             }
 
             foreach (var connectServer in this._servers.OfType<IConnectServer>())
             {
-                connectServer.Start();
+                await connectServer.StartAsync();
             }
         }
     }
@@ -205,7 +205,7 @@ internal sealed class Program : IDisposable
         builder.Host.UseSerilog(this._logger);
         if (addAdminPanel)
         {
-            builder.AddAdminPanel();
+            builder.AddAdminPanel(includeMapApp: true);
         }
 
         builder.Host
@@ -232,11 +232,10 @@ internal sealed class Program : IDisposable
                     .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
                     .AddSingleton<PlugInManager>()
                     .AddSingleton<IServerProvider, LocalServerProvider>()
-                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
+                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
                     .AddHostedService<ChatServerContainer>()
                     .AddHostedService<GameServerContainer>()
                     .AddHostedService(provider => provider.GetService<ConnectServerContainer>());
-
             });
         var host = builder.Build();
 
@@ -367,6 +366,6 @@ internal sealed class Program : IDisposable
         var plugInManager = new PlugInManager(null, loggerFactory, serviceContainer);
         plugInManager.DiscoverAndRegisterPlugInsOf<IDataInitializationPlugIn>();
         var initialization = plugInManager.GetStrategy<IDataInitializationPlugIn>(version) ?? throw new Exception("Data initialization plugin not found");
-        initialization.CreateInitialData(3, true);
+        initialization.CreateInitialDataAsync(3, true);
     }
 }

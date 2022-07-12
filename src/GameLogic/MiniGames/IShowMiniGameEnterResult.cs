@@ -17,5 +17,5 @@ public interface IShowMiniGameEnterResultPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="miniGameType">The type of the mini game.</param>
     /// <param name="enterResult">The result.</param>
-    void ShowResult(MiniGameType miniGameType, EnterResult enterResult);
+    ValueTask ShowResultAsync(MiniGameType miniGameType, EnterResult enterResult);
 }

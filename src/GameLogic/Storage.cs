@@ -93,7 +93,7 @@ public class Storage : IStorage
     protected Item?[] ItemArray { get; }
 
     /// <inheritdoc/>
-    public virtual bool AddItem(byte slot, Item item)
+    public virtual ValueTask<bool> AddItemAsync(byte slot, Item item)
     {
         var result = this.AddItemInternal((byte)(slot - this._slotOffset), item);
         if (result)
@@ -102,11 +102,11 @@ public class Storage : IStorage
             item.ItemSlot = slot;
         }
 
-        return result;
+        return ValueTask.FromResult(result);
     }
 
     /// <inheritdoc/>
-    public bool AddItem(Item item)
+    public async ValueTask<bool> AddItemAsync(Item item)
     {
         var freeSlot = this.CheckInvSpace(item);
         if (freeSlot is null)
@@ -114,7 +114,7 @@ public class Storage : IStorage
             return false;
         }
 
-        return this.AddItem((byte)freeSlot, item);
+        return await this.AddItemAsync((byte)freeSlot, item);
     }
 
     /// <inheritdoc/>
@@ -163,12 +163,12 @@ public class Storage : IStorage
     }
 
     /// <inheritdoc/>
-    public bool TryTakeAll(IStorage anotherStorage)
+    public async ValueTask<bool> TryTakeAllAsync(IStorage anotherStorage)
     {
         // TODO: this should be a all-or-nothing action...
         foreach (var item in anotherStorage.Items)
         {
-            if (!this.AddItem(item))
+            if (!await this.AddItemAsync(item))
             {
                 return false;
             }
@@ -190,7 +190,7 @@ public class Storage : IStorage
     }
 
     /// <inheritdoc/>
-    public virtual void RemoveItem(Item item)
+    public virtual async ValueTask RemoveItemAsync(Item item)
     {
         var slot = item.ItemSlot - this._slotOffset;
         this.ItemArray[slot] = null;

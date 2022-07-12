@@ -29,7 +29,7 @@ internal class ItemMoveHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => ItemMoveRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         ItemMoveRequest message = packet;
 
@@ -40,9 +40,9 @@ internal class ItemMoveHandlerPlugIn : IPacketHandlerPlugIn
             itemSize = remotePlayer.ItemSerializer.NeededSpace;
         }
 
-        var toStorage = (ItemStorageKind)packet[5 + itemSize];
-        byte toSlot = packet[6 + itemSize];
+        var toStorage = (ItemStorageKind)packet.Span[5 + itemSize];
+        byte toSlot = packet.Span[6 + itemSize];
 
-        this._moveAction.MoveItem(player, message.FromSlot, message.FromStorage.Convert(), toSlot, toStorage.Convert());
+        await this._moveAction.MoveItemAsync(player, message.FromSlot, message.FromStorage.Convert(), toSlot, toStorage.Convert());
     }
 }

@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A game server listener that listens on a TCP port.
@@ -54,7 +55,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
     }
 
     /// <inheritdoc/>
-    public event EventHandler<PlayerConnectedEventArgs>? PlayerConnected;
+    public event AsyncEventHandler<PlayerConnectedEventArgs>? PlayerConnected;
 
     private INetworkEncryptionFactoryPlugIn? EncryptionFactoryPlugIn { get; set; }
 
@@ -79,7 +80,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
         var port = this._endPoint.NetworkPort;
         this._logger.LogInformation("Starting Server Listener, port {port}", port);
         this._listener = new Listener(port, this.CreateDecryptor, this.CreateEncryptor, this._loggerFactory);
-        this._listener.ClientAccepted += this.OnClientAccepted;
+        this._listener.ClientAccepted += this.OnClientAcceptedAsync;
         this._listener.ClientAccepting += this.OnClientAccepting;
         if (this._endPoint.AlternativePublishedPort > 0)
         {
@@ -124,7 +125,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
             : new PipelinedDecryptor(arg);
     }
 
-    private void OnClientAccepting(object? sender, ClientAcceptingEventArgs e)
+    private async ValueTask OnClientAccepting(ClientAcceptingEventArgs e)
     {
         if (this._gameContext.PlayerCount >= this._gameContext.ServerConfiguration.MaximumPlayers)
         {
@@ -134,31 +135,31 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
     }
 
-    private void OnClientAccepted(object? sender, ClientAcceptedEventArgs e)
+    private async ValueTask OnClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
         var connection = e.AcceptedConnection;
         var remoteEndPoint = connection.EndPoint as IPEndPoint;
         this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));
 
         var remotePlayer = new RemotePlayer(this._gameContext, connection, this.ClientVersion);
-        connection.Disconnected += (_, _) =>
+        connection.Disconnected += async () =>
         {
-            remotePlayer.Disconnect();
+            await remotePlayer.DisconnectAsync();
             this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.PlayerCount);
         };
 
-        this.OnPlayerConnected(remotePlayer);
+        await this.OnPlayerConnectedAsync(remotePlayer);
 
         // we don't want to await the call.
-        connection.BeginReceive();
+        _ = Task.Run(connection.BeginReceive);
     }
 
-    private void OnPlayerConnected(Player player)
+    private async ValueTask OnPlayerConnectedAsync(Player player)
     {
         var eventHandler = this.PlayerConnected;
         if (eventHandler != null)
         {
-            eventHandler(this, new PlayerConnectedEventArgs(player));
+            await eventHandler(new PlayerConnectedEventArgs(player));
         }
         else
         {

@@ -26,9 +26,9 @@ internal class PartyKickHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => (byte)PacketType.PartyKick;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PartyPlayerKickRequest message = packet;
-        this._action.KickPlayer(player, message.PlayerIndex);
+        await this._action.KickPlayerAsync(player, message.PlayerIndex);
     }
 }

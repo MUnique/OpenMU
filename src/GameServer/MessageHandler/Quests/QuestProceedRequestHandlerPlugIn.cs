@@ -28,7 +28,7 @@ public class QuestProceedRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => QuestProceedRequest.SubCode;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         QuestProceedRequest request = packet;
         var questGroup = (short)request.QuestGroup;
@@ -40,11 +40,11 @@ public class QuestProceedRequestHandlerPlugIn : ISubPacketHandlerPlugIn
             if (questState?.ActiveQuest != null)
             {
                 // keep it running and confirm that it started
-                player.ViewPlugIns.GetPlugIn<IQuestStartedPlugIn>()?.QuestStarted(questState.ActiveQuest);
+                await player.InvokeViewPlugInAsync<IQuestStartedPlugIn>(p => p.QuestStartedAsync(questState.ActiveQuest)).ConfigureAwait(false);
             }
             else
             {
-                this._questStartAction.StartQuest(player, (short)request.QuestGroup, (short)request.QuestNumber);
+                await this._questStartAction.StartQuestAsync(player, (short)request.QuestGroup, (short)request.QuestNumber);
             }
         }
         else
@@ -54,7 +54,7 @@ public class QuestProceedRequestHandlerPlugIn : ISubPacketHandlerPlugIn
                     .FirstOrDefault(q => q.Group == questGroup && q.StartingNumber == questNumber)
                 is { } quest)
             {
-                player.ViewPlugIns.GetPlugIn<IQuestStepInfoPlugIn>()?.ShowQuestStepInfo(quest.Group, quest.RefuseNumber);
+                await player.InvokeViewPlugInAsync<IQuestStepInfoPlugIn>(p => p.ShowQuestStepInfoAsync(quest.Group, quest.RefuseNumber)).ConfigureAwait(false);
             }
         }
     }

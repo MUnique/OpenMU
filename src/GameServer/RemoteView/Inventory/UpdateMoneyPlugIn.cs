@@ -25,8 +25,8 @@ public class UpdateMoneyPlugIn : IUpdateMoneyPlugIn
     public UpdateMoneyPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateMoney()
+    public async ValueTask UpdateMoneyAsync()
     {
-        this._player.Connection?.SendInventoryMoneyUpdate((uint)this._player.Money);
+        await this._player.Connection.SendInventoryMoneyUpdateAsync((uint)this._player.Money);
     }
 }

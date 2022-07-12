@@ -20,14 +20,14 @@ public class DeleteCharacterAction
     /// <param name="player">The player.</param>
     /// <param name="characterName">Name of the character.</param>
     /// <param name="securityCode">The security code.</param>
-    public void DeleteCharacter(Player player, string characterName, string securityCode)
+    public async ValueTask DeleteCharacterAsync(Player player, string characterName, string securityCode)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
-        var result = this.DeleteCharacterRequest(player, characterName, securityCode);
-        player.ViewPlugIns.GetPlugIn<IShowCharacterDeleteResponsePlugIn>()?.ShowCharacterDeleteResponse(result);
+        var result = await this.DeleteCharacterRequestAsync(player, characterName, securityCode);
+        await player.InvokeViewPlugInAsync<IShowCharacterDeleteResponsePlugIn>(p => p.ShowCharacterDeleteResponseAsync(result)).ConfigureAwait(false);
     }
 
-    private CharacterDeleteResult DeleteCharacterRequest(Player player, string characterName, string securityCode)
+    private async ValueTask<CharacterDeleteResult> DeleteCharacterRequestAsync(Player player, string characterName, string securityCode)
     {
         if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
         {
@@ -51,15 +51,15 @@ public class DeleteCharacterAction
             return CharacterDeleteResult.WrongSecurityCode;
         }
 
-        if (player.GameContext is IGameServerContext gameServerContext && gameServerContext.GuildServer.GetGuildPosition(character.Id) != null)
+        if (player.GameContext is IGameServerContext gameServerContext && await gameServerContext.GuildServer.GetGuildPositionAsync(character.Id) != GuildPosition.Undefined)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Can't delete a guild member. Remove the character from guild first.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Can't delete a guild member. Remove the character from guild first.", MessageType.BlueNormal)).ConfigureAwait(false);
             return CharacterDeleteResult.Unsuccessful;
         }
 
         player.Account.Characters.Remove(character);
         player.GameContext.PlugInManager.GetPlugInPoint<ICharacterDeletedPlugIn>()?.CharacterDeleted(player, character);
-        player.PersistenceContext.Delete(character);
+        await player.PersistenceContext.DeleteAsync(character);
         return CharacterDeleteResult.Successful;
     }
 }

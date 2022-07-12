@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -26,15 +27,16 @@ public class UpdateMasterStatsPlugIn : IUpdateMasterStatsPlugIn
     public UpdateMasterStatsPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void SendMasterStats()
+    public async ValueTask SendMasterStatsAsync()
     {
         var character = this._player.SelectedCharacter;
-        if (character is null || this._player.Attributes is null)
+        var connection = this._player.Connection;
+        if (character is null || this._player.Attributes is null || connection is null)
         {
             return;
         }
 
-        this._player.Connection?.SendMasterStatsUpdate(
+        await connection.SendMasterStatsUpdateAsync(
             (ushort)this._player.Attributes[Stats.MasterLevel],
             (ulong)character.MasterExperience,
             (ulong)this._player.GameServerContext.Configuration.MasterExperienceTable![(int)this._player.Attributes[Stats.MasterLevel] + 1],
@@ -44,6 +46,6 @@ public class UpdateMasterStatsPlugIn : IUpdateMasterStatsPlugIn
             (ushort)this._player.Attributes[Stats.MaximumShield],
             (ushort)this._player.Attributes[Stats.MaximumAbility]);
 
-        this._player.ViewPlugIns.GetPlugIn<IUpdateMasterSkillsPlugIn>()?.UpdateMasterSkills();
+        await this._player.InvokeViewPlugInAsync<IUpdateMasterSkillsPlugIn>(p => p.UpdateMasterSkillsAsync()).ConfigureAwait(false);
     }
 }

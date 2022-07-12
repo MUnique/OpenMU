@@ -32,15 +32,15 @@ public class GameServerHostedServiceWrapper : IHostedService
     }
 
     /// <inheritdoc/>
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         if (!this._isInitialized)
         {
-            this._initializer.Initialize();
+            await this._initializer.InitializeAsync();
             this._isInitialized = true;
         }
 
-        return this._gameServer.StartAsync(cancellationToken);
+        await this._gameServer.StartAsync(cancellationToken);
     }
 
     /// <inheritdoc/>

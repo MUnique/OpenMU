@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.PlugIns.Tests;
 
 using System.ComponentModel;
+using Nito.AsyncEx;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.Tests;
@@ -15,6 +16,18 @@ using MUnique.OpenMU.Tests;
 [TestFixture]
 public class PlugInProxyTypeGeneratorTest
 {
+    /// <summary>
+    /// An interface with an unsupported method signature.
+    /// </summary>
+    [PlugInPoint("Async test", "Bar")]
+    public interface IAsyncPlugIn
+    {
+        /// <summary>
+        /// An async method.
+        /// </summary>
+        ValueTask MyMethodAsync();
+    }
+
     /// <summary>
     /// An interface with an unsupported method signature.
     /// </summary>
@@ -61,6 +74,33 @@ public class PlugInProxyTypeGeneratorTest
         proxy.AddPlugIn(secondMock.Object, true);
 
         (proxy as IExamplePlugIn)?.DoStuff(player, command, args);
+
+        firstMock.VerifyAll();
+        secondMock.VerifyAll();
+    }
+
+    /// <summary>
+    /// Tests if multiple plugins are executed.
+    /// </summary>
+    [Test]
+    public async ValueTask MultipleAsyncPlugInsAreExecuted()
+    {
+        var generator = new PlugInProxyTypeGenerator();
+        var proxy = generator.GenerateProxy<IAsyncPlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
+
+        // Forcing to load NitoEx
+        _ = new AsyncReaderWriterLock();
+        _ = new AwaitableDisposable<IDisposable>(Task.FromResult((IDisposable)null!));
+
+        var firstMock = new Mock<IAsyncPlugIn>();
+        var secondMock = new Mock<IAsyncPlugIn>();
+
+        firstMock.Setup(p => p.MyMethodAsync()).Verifiable();
+        secondMock.Setup(p => p.MyMethodAsync()).Verifiable();
+        proxy.AddPlugIn(firstMock.Object, true);
+        proxy.AddPlugIn(secondMock.Object, true);
+
+        await ((IAsyncPlugIn)proxy).MyMethodAsync();
 
         firstMock.VerifyAll();
         secondMock.VerifyAll();

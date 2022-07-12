@@ -15,5 +15,5 @@ public interface IShowAvailableQuestsPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the available quests.
     /// </summary>
-    void ShowAvailableQuests();
+    ValueTask ShowAvailableQuestsAsync();
 }

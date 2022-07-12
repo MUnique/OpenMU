@@ -13,5 +13,5 @@ public interface IShowGuildJoinRequestPlugIn : IViewPlugIn
     /// Shows the guild join request.
     /// </summary>
     /// <param name="requester">The requester.</param>
-    void ShowGuildJoinRequest(Player requester);
+    ValueTask ShowGuildJoinRequestAsync(Player requester);
 }

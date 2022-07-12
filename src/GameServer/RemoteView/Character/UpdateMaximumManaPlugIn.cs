@@ -26,7 +26,7 @@ public class UpdateMaximumManaPlugIn : IUpdateMaximumManaPlugIn
     public UpdateMaximumManaPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateMaximumMana()
+    public async ValueTask UpdateMaximumManaAsync()
     {
         if (this._player.Attributes is null
             || !(this._player.Connection?.Connected ?? false))
@@ -34,7 +34,7 @@ public class UpdateMaximumManaPlugIn : IUpdateMaximumManaPlugIn
             return;
         }
 
-        this._player.Connection?.SendMaximumManaAndAbility(
+        await this._player.Connection.SendMaximumManaAndAbilityAsync(
             (ushort)this._player.Attributes[Stats.MaximumMana],
             (ushort)this._player.Attributes[Stats.MaximumAbility]);
     }

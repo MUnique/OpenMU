@@ -22,5 +22,5 @@ public interface IPacketHandlerPlugInBase : IStrategyPlugIn<byte>
     /// </summary>
     /// <param name="player">The player for which the packet should be handled.</param>
     /// <param name="packet">The packet which should be handled.</param>
-    void HandlePacket(Player player, Span<byte> packet);
+    ValueTask HandlePacketAsync(Player player, Memory<byte> packet);
 }

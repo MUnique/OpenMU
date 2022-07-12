@@ -58,21 +58,21 @@ public class ChatRoomTests
     /// Tries to join a null client. This should fail with an <see cref="ArgumentNullException"/>.
     /// </summary>
     [Test]
-    public void TryJoinNullClient()
+    public async ValueTask TryJoinNullClient()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
         var clientId = room.GetNextClientIndex();
         var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
-        Assert.Throws<ArgumentNullException>(() => room.TryJoin(null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() => room.TryJoinAsync(null!).AsTask());
     }
 
     /// <summary>
     /// Tries to join the room with an unauthenticated client. This should fail.
     /// </summary>
     [Test]
-    public void TryJoinWithUnauthenticatedClient()
+    public async ValueTask TryJoinWithUnauthenticatedClient()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -80,14 +80,14 @@ public class ChatRoomTests
         var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
-        Assert.That(room.TryJoin(chatClient.Object), Is.False);
+        Assert.That(await room.TryJoinAsync(chatClient.Object), Is.False);
     }
 
     /// <summary>
     /// Tries to join the room with a client with a wrong authentication token. This should fail.
     /// </summary>
     [Test]
-    public void TryJoinWithAuthenticatedClientButWrongToken()
+    public async ValueTask TryJoinWithAuthenticatedClientButWrongToken()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -96,14 +96,14 @@ public class ChatRoomTests
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns("987654321");
-        Assert.That(room.TryJoin(chatClient.Object), Is.False);
+        Assert.That(await room.TryJoinAsync(chatClient.Object), Is.False);
     }
 
     /// <summary>
     /// Tries to join the room with an authenticated client. This should be successful.
     /// </summary>
     [Test]
-    public void TryJoinWithAuthenticatedClient()
+    public async ValueTask TryJoinWithAuthenticatedClient()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -112,14 +112,14 @@ public class ChatRoomTests
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
-        Assert.That(room.TryJoin(chatClient.Object), Is.True);
+        Assert.That(await room.TryJoinAsync(chatClient.Object), Is.True);
     }
 
     /// <summary>
-    /// Tests if <see cref="IChatClient.SendChatRoomClientList"/> is called after a client successfully joined a room.
+    /// Tests if <see cref="IChatClient.SendChatRoomClientListAsync"/> is called after a client successfully joined a room.
     /// </summary>
     [Test]
-    public void ChatRoomClientListSent()
+    public async ValueTask ChatRoomClientListSent()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -128,15 +128,15 @@ public class ChatRoomTests
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
-        room.TryJoin(chatClient.Object);
-        chatClient.Verify(c => c.SendChatRoomClientList(room.ConnectedClients), Times.Once);
+        await room.TryJoinAsync(chatClient.Object);
+        chatClient.Verify(c => c.SendChatRoomClientListAsync(room.ConnectedClients), Times.Once);
     }
 
     /// <summary>
     /// Tests if <see cref="ChatRoom.ConnectedClients"/> returns the successfully authenticated and joined client.
     /// </summary>
     [Test]
-    public void ConnectedClients()
+    public async ValueTask ConnectedClients()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -145,16 +145,16 @@ public class ChatRoomTests
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
-        room.TryJoin(chatClient.Object);
+        await room.TryJoinAsync(chatClient.Object);
         Assert.That(room.ConnectedClients, Has.Count.EqualTo(1));
         Assert.That(room.ConnectedClients, Contains.Item(chatClient.Object));
     }
 
     /// <summary>
-    /// Tests if <see cref="IChatClient.SendChatRoomClientUpdate"/> is called as soon as another client joined the room.
+    /// Tests if <see cref="IChatClient.SendChatRoomClientUpdateAsync"/> is called as soon as another client joined the room.
     /// </summary>
     [Test]
-    public void SendJoinedMessage()
+    public async ValueTask SendJoinedMessage()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -172,17 +172,17 @@ public class ChatRoomTests
         chatClient1.SetupAllProperties();
         chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
-        room.TryJoin(chatClient0.Object);
-        room.TryJoin(chatClient1.Object);
+        await room.TryJoinAsync(chatClient0.Object);
+        await room.TryJoinAsync(chatClient1.Object);
 
-        chatClient0.Verify(c => c.SendChatRoomClientUpdate(clientId1, authenticationInfo1.ClientName, ChatRoomClientUpdateType.Joined), Times.Once);
+        chatClient0.Verify(c => c.SendChatRoomClientUpdateAsync(clientId1, authenticationInfo1.ClientName, ChatRoomClientUpdateType.Joined), Times.Once);
     }
 
     /// <summary>
-    /// Tests if <see cref="IChatClient.SendChatRoomClientUpdate"/> is called as soon as another client left the room.
+    /// Tests if <see cref="IChatClient.SendChatRoomClientUpdateAsync"/> is called as soon as another client left the room.
     /// </summary>
     [Test]
-    public void SendLeftMessage()
+    public async ValueTask SendLeftMessage()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -201,18 +201,18 @@ public class ChatRoomTests
         chatClient1.SetupAllProperties();
         chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
-        room.TryJoin(chatClient0.Object);
-        room.TryJoin(chatClient1.Object);
+        await room.TryJoinAsync(chatClient0.Object);
+        await room.TryJoinAsync(chatClient1.Object);
 
-        room.Leave(chatClient0.Object);
-        chatClient1.Verify(c => c.SendChatRoomClientUpdate(clientId0, authenticationInfo0.ClientName, ChatRoomClientUpdateType.Left), Times.Once);
+        await room.LeaveAsync(chatClient0.Object);
+        chatClient1.Verify(c => c.SendChatRoomClientUpdateAsync(clientId0, authenticationInfo0.ClientName, ChatRoomClientUpdateType.Left), Times.Once);
     }
 
     /// <summary>
-    /// Tests if <see cref="IChatClient.SendMessage"/> is called as soon as a message is sent through the room.
+    /// Tests if <see cref="IChatClient.SendMessageAsync"/> is called as soon as a message is sent through the room.
     /// </summary>
     [Test]
-    public void SendMessage()
+    public async ValueTask SendMessage()
     {
         const ushort roomId = 4711;
         const string chatMessage = "foobar1234567890";
@@ -230,19 +230,19 @@ public class ChatRoomTests
         var chatClient1 = new Mock<IChatClient>();
         chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
-        room.TryJoin(chatClient0.Object);
-        room.TryJoin(chatClient1.Object);
+        await room.TryJoinAsync(chatClient0.Object);
+        await room.TryJoinAsync(chatClient1.Object);
 
-        room.SendMessage(clientId1, chatMessage);
-        chatClient0.Verify(c => c.SendMessage(clientId1, chatMessage), Times.Once);
-        chatClient1.Verify(c => c.SendMessage(clientId1, chatMessage), Times.Once);
+        await room.SendMessageAsync(clientId1, chatMessage);
+        chatClient0.Verify(c => c.SendMessageAsync(clientId1, chatMessage), Times.Once);
+        chatClient1.Verify(c => c.SendMessageAsync(clientId1, chatMessage), Times.Once);
     }
 
     /// <summary>
     /// Tests if <see cref="ChatRoom.RoomClosed"/> is fired as soon as all connected clients left the room.
     /// </summary>
     [Test]
-    public void RoomClosedEvent()
+    public async ValueTask RoomClosedEvent()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -261,10 +261,10 @@ public class ChatRoomTests
 
         var eventCalled = false;
         room.RoomClosed += (sender, e) => eventCalled = true;
-        room.TryJoin(chatClient0.Object);
-        room.TryJoin(chatClient1.Object);
-        room.Leave(chatClient0.Object);
-        room.Leave(chatClient1.Object);
+        await room.TryJoinAsync(chatClient0.Object);
+        await room.TryJoinAsync(chatClient1.Object);
+        await room.LeaveAsync(chatClient0.Object);
+        await room.LeaveAsync(chatClient1.Object);
         Assert.That(eventCalled, Is.True);
     }
 }

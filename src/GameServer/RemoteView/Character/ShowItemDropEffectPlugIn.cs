@@ -27,19 +27,19 @@ public class ShowItemDropEffectPlugIn : IShowItemDropEffectPlugIn
     public ShowItemDropEffectPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowEffect(ItemDropEffect effect, Point targetCoordinates)
+    public async ValueTask ShowEffectAsync(ItemDropEffect effect, Point targetCoordinates)
     {
         var (x, y) = targetCoordinates;
         switch (effect)
         {
             case ItemDropEffect.Fireworks:
-                this._player.Connection?.SendShowFireworks(x, y);
+                await this._player.Connection.SendShowFireworksAsync(x, y);
                 break;
             case ItemDropEffect.ChristmasFireworks:
-                this._player.Connection?.SendShowChristmasFireworks(x, y);
+                await this._player.Connection.SendShowChristmasFireworksAsync(x, y);
                 break;
             case ItemDropEffect.FanfareSound:
-                this._player.Connection?.SendPlayFanfareSound(x, y);
+                await this._player.Connection.SendPlayFanfareSoundAsync(x, y);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(effect));

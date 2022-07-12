@@ -13,5 +13,5 @@ public interface IShowGuildCreateResultPlugIn : IViewPlugIn
     /// Shows the guild create result.
     /// </summary>
     /// <param name="errorDetail">The error detail.</param>
-    void ShowGuildCreateResult(GuildCreateErrorDetail errorDetail);
+    ValueTask ShowGuildCreateResultAsync(GuildCreateErrorDetail errorDetail);
 }

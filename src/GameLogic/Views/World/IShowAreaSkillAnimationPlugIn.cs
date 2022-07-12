@@ -18,5 +18,5 @@ public interface IShowAreaSkillAnimationPlugIn : IViewPlugIn
     /// <param name="skill">The skill.</param>
     /// <param name="point">The coordinates.</param>
     /// <param name="rotation">The rotation.</param>
-    void ShowAreaSkillAnimation(Player player, Skill skill, Point point, byte rotation);
+    ValueTask ShowAreaSkillAnimationAsync(Player player, Skill skill, Point point, byte rotation);
 }

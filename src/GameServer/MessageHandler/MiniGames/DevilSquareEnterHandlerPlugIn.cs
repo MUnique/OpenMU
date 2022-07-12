@@ -30,7 +30,7 @@ internal class DevilSquareEnterHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => DevilSquareEnterRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < DevilSquareEnterRequest.Length
             || player.SelectedCharacter?.CharacterClass is null)
@@ -41,6 +41,6 @@ internal class DevilSquareEnterHandlerPlugIn : IPacketHandlerPlugIn
         DevilSquareEnterRequest request = packet;
         var actualLevel = request.SquareLevel + 1;
         var ticketIndex = request.TicketItemInventoryIndex - InventoryConstants.EquippableSlotsCount;
-        this._enterAction.TryEnterMiniGame(player, MiniGameType.DevilSquare, actualLevel, (byte)ticketIndex);
+        await this._enterAction.TryEnterMiniGameAsync(player, MiniGameType.DevilSquare, actualLevel, (byte)ticketIndex);
     }
 }

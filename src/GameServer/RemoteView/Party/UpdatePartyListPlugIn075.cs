@@ -28,7 +28,7 @@ public class UpdatePartyListPlugIn075 : IUpdatePartyListPlugIn
     public UpdatePartyListPlugIn075(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdatePartyList()
+    public async ValueTask UpdatePartyListAsync()
     {
         var connection = this._player.Connection;
         var party = this._player.Party;
@@ -39,23 +39,29 @@ public class UpdatePartyListPlugIn075 : IUpdatePartyListPlugIn
 
         var partyList = party.PartyList;
         var partyListCount = partyList.Count;
-        using var writer = connection.StartSafeWrite(PartyList075.HeaderType, PartyList075.GetRequiredSize(partyListCount));
-        var packet = new PartyList075(writer.Span)
+        int Write()
         {
-            Count = (byte)partyListCount,
-        };
+            var size = PartyList075Ref.GetRequiredSize(partyListCount);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new PartyList075Ref(span)
+            {
+                Count = (byte)partyListCount,
+            };
 
-        for (byte i = 0; i < partyListCount; i++)
-        {
-            var partyMember = partyList[i];
-            var partyMemberBlock = packet[i];
-            partyMemberBlock.Index = i;
-            partyMemberBlock.Name = partyMember.Name;
-            partyMemberBlock.MapId = (byte)(partyMember.CurrentMap?.MapId ?? 0);
-            partyMemberBlock.PositionX = partyMember.Position.X;
-            partyMemberBlock.PositionY = partyMember.Position.Y;
+            for (byte i = 0; i < partyListCount; i++)
+            {
+                var partyMember = partyList[i];
+                var partyMemberBlock = packet[i];
+                partyMemberBlock.Index = i;
+                partyMemberBlock.Name = partyMember.Name;
+                partyMemberBlock.MapId = (byte)(partyMember.CurrentMap?.MapId ?? 0);
+                partyMemberBlock.PositionX = partyMember.Position.X;
+                partyMemberBlock.PositionY = partyMember.Position.Y;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

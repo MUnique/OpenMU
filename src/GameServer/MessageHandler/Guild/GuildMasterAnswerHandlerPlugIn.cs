@@ -26,9 +26,9 @@ internal class GuildMasterAnswerHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => GuildMasterAnswer.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildMasterAnswer answer = packet;
-        this._answerAction.ProcessAnswer(player, answer.ShowCreationDialog ? GuildMasterAnswerAction.Answer.ShowDialog : GuildMasterAnswerAction.Answer.Cancel);
+        await this._answerAction.ProcessAnswerAsync(player, answer.ShowCreationDialog ? GuildMasterAnswerAction.Answer.ShowDialog : GuildMasterAnswerAction.Answer.Cancel);
     }
 }

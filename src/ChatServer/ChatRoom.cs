@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.ChatServer;
 
 using System.Threading;
@@ -126,11 +128,13 @@ internal sealed class ChatRoom : IDisposable
         localLockSlim.EnterWriteLock();
         try
         {
-            foreach (var client in this._connectedClients)
+            Task.Run(async () =>
             {
-                client.LogOff();
-            }
-
+                foreach (var connectedClient in this._connectedClients)
+                {
+                    await connectedClient.LogOffAsync().ConfigureAwait(false);
+                }
+            }).WaitAndUnwrapException();
             this._connectedClients.Clear();
             this.RoomClosed?.Invoke(this, new ChatRoomClosedEventArgs(this));
             this.RoomClosed = null;
@@ -149,7 +153,7 @@ internal sealed class ChatRoom : IDisposable
     /// </summary>
     /// <param name="chatClient">The chat client.</param>
     /// <returns>True, if the <paramref name="chatClient"/> provides the correct registered id with it's token.</returns>
-    internal bool TryJoin(IChatClient chatClient)
+    internal async ValueTask<bool> TryJoinAsync(IChatClient chatClient)
     {
         if (chatClient is null)
         {
@@ -178,9 +182,9 @@ internal sealed class ChatRoom : IDisposable
                     chatClient.Nickname = authenticationInformation.ClientName;
                     chatClient.Index = authenticationInformation.Index;
                     this._registeredClients.Remove(authenticationInformation);
-                    this.SendChatRoomClientUpdate(chatClient, ChatRoomClientUpdateType.Joined);
+                    await this.SendChatRoomClientUpdateAsync(chatClient, ChatRoomClientUpdateType.Joined);
                     this._connectedClients.Add(chatClient);
-                    chatClient.SendChatRoomClientList(this._connectedClients);
+                    await chatClient.SendChatRoomClientListAsync(this._connectedClients);
                     return true;
                 }
             }
@@ -202,7 +206,7 @@ internal sealed class ChatRoom : IDisposable
     /// If the chatroom is empty then, it will be removed from the manager.
     /// </summary>
     /// <param name="chatClient">The chat client.</param>
-    internal void Leave(IChatClient chatClient)
+    internal async ValueTask LeaveAsync(IChatClient chatClient)
     {
         if (this._isClosing)
         {
@@ -227,7 +231,7 @@ internal sealed class ChatRoom : IDisposable
             roomIsEmpty = this._connectedClients.Count < 1;
             if (!roomIsEmpty)
             {
-                this.SendChatRoomClientUpdate(chatClient, ChatRoomClientUpdateType.Left);
+                await this.SendChatRoomClientUpdateAsync(chatClient, ChatRoomClientUpdateType.Left);
             }
         }
         finally
@@ -246,7 +250,7 @@ internal sealed class ChatRoom : IDisposable
     /// </summary>
     /// <param name="senderId">The sender identifier.</param>
     /// <param name="message">The message.</param>
-    internal void SendMessage(byte senderId, string message)
+    internal async ValueTask SendMessageAsync(byte senderId, string message)
     {
         if (this._isClosing)
         {
@@ -256,7 +260,10 @@ internal sealed class ChatRoom : IDisposable
         this._lockSlim?.EnterReadLock();
         try
         {
-            this._connectedClients.ForEach(c => c.SendMessage(senderId, message));
+            foreach (var connectedClient in this._connectedClients)
+            {
+                await connectedClient.SendMessageAsync(senderId, message);
+            }
         }
         finally
         {
@@ -264,11 +271,11 @@ internal sealed class ChatRoom : IDisposable
         }
     }
 
-    private void SendChatRoomClientUpdate(IChatClient updatedClient, ChatRoomClientUpdateType updateType)
+    private async ValueTask SendChatRoomClientUpdateAsync(IChatClient updatedClient, ChatRoomClientUpdateType updateType)
     {
         foreach (var client in this._connectedClients)
         {
-            client.SendChatRoomClientUpdate(updatedClient.Index, updatedClient.Nickname ?? string.Empty, updateType);
+            await client.SendChatRoomClientUpdateAsync(updatedClient.Index, updatedClient.Nickname ?? string.Empty, updateType);
         }
     }
 }

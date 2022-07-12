@@ -41,6 +41,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
         this._identifier = mapIdentifier;
         this._gameServer = gameServer;
         this._mapId = mapId;
+        this.Logger = loggerFactory.CreateLogger(this.GetType());
         this._adapterToWorldView = new ObserverToWorldViewAdapter(this, byte.MaxValue);
 
         var viewPlugIns = new CustomPlugInContainer<IViewPlugIn>();
@@ -59,6 +60,9 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
 
     /// <inheritdoc />
     public event EventHandler? ObjectsChanged;
+
+    /// <inheritdoc />
+    public ILogger Logger { get; }
 
     /// <inheritdoc/>
     public int InfoRange => byte.MaxValue;
@@ -82,27 +86,27 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     public IDictionary<int, ILocateable> Objects { get; } = new Dictionary<int, ILocateable>();
 
     /// <inheritdoc/>
-    public void LocateableAdded(object? sender, BucketItemEventArgs<ILocateable> eventArgs)
+    public ValueTask LocateableAddedAsync(ILocateable item)
     {
-        this._adapterToWorldView.LocateableAdded(sender, eventArgs);
+        return this._adapterToWorldView.LocateableAddedAsync(item);
     }
 
     /// <inheritdoc/>
-    public void LocateableRemoved(object? sender, BucketItemEventArgs<ILocateable> eventArgs)
+    public ValueTask LocateableRemovedAsync(ILocateable item)
     {
-        this._adapterToWorldView.LocateableRemoved(sender, eventArgs);
+        return this._adapterToWorldView.LocateableRemovedAsync(item);
     }
 
     /// <inheritdoc/>
-    public void LocateablesOutOfScope(IEnumerable<ILocateable> oldObjects)
+    public ValueTask LocateablesOutOfScopeAsync(IEnumerable<ILocateable> oldObjects)
     {
-        this._adapterToWorldView.LocateablesOutOfScope(oldObjects);
+        return this._adapterToWorldView.LocateablesOutOfScopeAsync(oldObjects);
     }
 
     /// <inheritdoc/>
-    public void NewLocateablesInScope(IEnumerable<ILocateable> newObjects)
+    public ValueTask NewLocateablesInScopeAsync(IEnumerable<ILocateable> newObjects)
     {
-        this._adapterToWorldView.NewLocateablesInScope(newObjects);
+        return this._adapterToWorldView.NewLocateablesInScopeAsync(newObjects);
     }
 
     /// <inheritdoc />

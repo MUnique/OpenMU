@@ -27,7 +27,7 @@ public class TradeItemAppearPlugIn : ITradeItemAppearPlugIn
     public TradeItemAppearPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void TradeItemAppear(byte toSlot, Item item)
+    public async ValueTask TradeItemAppearAsync(byte toSlot, Item item)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -35,13 +35,20 @@ public class TradeItemAppearPlugIn : ITradeItemAppearPlugIn
             return;
         }
 
-        var itemSerializer = this._player.ItemSerializer;
-        using var writer = connection.StartSafeWrite(TradeItemAdded.HeaderType, TradeItemAdded.GetRequiredSize(itemSerializer.NeededSpace));
-        var packet = new TradeItemAdded(writer.Span)
+        int Write()
         {
-            ToSlot = toSlot,
-        };
-        itemSerializer.SerializeItem(packet.ItemData, item);
-        writer.Commit();
+            var itemSerializer = this._player.ItemSerializer;
+            var size = TradeItemAddedRef.GetRequiredSize(itemSerializer.NeededSpace);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new TradeItemAddedRef(span)
+            {
+                ToSlot = toSlot,
+            };
+            itemSerializer.SerializeItem(packet.ItemData, item);
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

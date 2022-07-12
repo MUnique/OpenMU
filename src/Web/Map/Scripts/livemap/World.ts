@@ -121,8 +121,12 @@ export class World extends THREE.Object3D {
     public addAnimation(animatingId: number, animation: number, targetId: number, direction: number): void {
         const animating = this.getObjectById(animatingId);
         if (animating !== undefined && animating !== null) {
-            const rotationMultiplier = 0x10;
-            animating.rotateTo(direction / rotationMultiplier);
+            if (animation === 122) {
+                animating.rotateTo(direction);
+            } else {
+                const rotationMultiplier = 0x10;
+                animating.rotateTo(direction / rotationMultiplier);
+            }
         }
 
         if (targetId !== null) {

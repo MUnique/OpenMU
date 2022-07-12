@@ -143,9 +143,10 @@ public class PacketHandlerPlugInContainerTest
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc />
-        public void HandlePacket(Player player, Span<byte> packet)
+        public ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
         {
             // does nothing here
+            return ValueTask.CompletedTask;
         }
     }
 
@@ -162,9 +163,10 @@ public class PacketHandlerPlugInContainerTest
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc />
-        public void HandlePacket(Player player, Span<byte> packet)
+        public ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
         {
             // does nothing here
+            return ValueTask.CompletedTask;
         }
     }
 
@@ -181,9 +183,10 @@ public class PacketHandlerPlugInContainerTest
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc />
-        public void HandlePacket(Player player, Span<byte> packet)
+        public ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
         {
             // does nothing here
+            return ValueTask.CompletedTask;
         }
     }
 
@@ -200,9 +203,10 @@ public class PacketHandlerPlugInContainerTest
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc />
-        public void HandlePacket(Player player, Span<byte> packet)
+        public ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
         {
             // does nothing here
+            return ValueTask.CompletedTask;
         }
     }
 
@@ -219,9 +223,10 @@ public class PacketHandlerPlugInContainerTest
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc />
-        public void HandlePacket(Player player, Span<byte> packet)
+        public ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
         {
             // does nothing here
+            return ValueTask.CompletedTask;
         }
     }
 
@@ -237,9 +242,10 @@ public class PacketHandlerPlugInContainerTest
         public bool IsEncryptionExpected => false;
 
         /// <inheritdoc />
-        public void HandlePacket(Player player, Span<byte> packet)
+        public ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
         {
             // does nothing here
+            return ValueTask.CompletedTask;
         }
     }
 }

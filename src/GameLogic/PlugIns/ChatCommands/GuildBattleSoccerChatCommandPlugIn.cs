@@ -28,8 +28,8 @@ public class GuildBattleSoccerChatCommandPlugIn : ChatCommandPlugInBase<GuildWar
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player guildMaster, GuildWarChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player guildMaster, GuildWarChatCommandArgs arguments)
     {
-        this._action.RequestBattleSoccer(guildMaster, arguments.GuildName);
+        await this._action.RequestBattleSoccerAsync(guildMaster, arguments.GuildName);
     }
 }

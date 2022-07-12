@@ -90,18 +90,18 @@ public partial class ItemTable<TItem>
         var result = await modal.Result;
         if (result.Cancelled)
         {
-            this.PersistenceContext.Delete(item);
+            await this.PersistenceContext.DeleteAsync(item);
         }
         else
         {
             this.Value ??= new List<TItem>();
             this.Value.Add(item);
-            this.PersistenceContext.SaveChanges();
+            await this.PersistenceContext.SaveChangesAsync();
             this.StateHasChanged();
         }
     }
 
-    private void OnRemoveClick(TItem item)
+    private async Task OnRemoveClick(TItem item)
     {
         this.Value?.Remove(item);
 
@@ -109,9 +109,9 @@ public partial class ItemTable<TItem>
         if (!this.ValueExpression!.GetAccessedMemberType().IsConfigurationType()
             && !typeof(TItem).IsConfigurationType())
         {
-            this.PersistenceContext.Delete(item);
+            await this.PersistenceContext.DeleteAsync(item);
         }
 
-        this.PersistenceContext.SaveChanges();
+        await this.PersistenceContext.SaveChangesAsync();
     }
 }

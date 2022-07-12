@@ -25,21 +25,21 @@ public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisco
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player gameMaster, GuildDisconnectChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, GuildDisconnectChatCommandArgs arguments)
     {
-        var guildId = this.GetGuildIdByName(gameMaster, arguments.GuildName!);
+        var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!);
         if (gameMaster.GameContext is not IGameServerContext gameServerContext)
         {
             return;
         }
 
-        gameServerContext.ForEachGuildPlayer(guildId, guildPlayer =>
+        await gameServerContext.ForEachGuildPlayerAsync(guildId, async guildPlayer =>
         {
-            guildPlayer.Disconnect();
+            await guildPlayer.DisconnectAsync();
 
             if (!guildPlayer.Name.Equals(gameMaster.Name))
             {
-                this.ShowMessageTo(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been disconnected.");
+                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been disconnected.");
             }
         });
     }

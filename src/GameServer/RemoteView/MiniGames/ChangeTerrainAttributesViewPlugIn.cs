@@ -27,33 +27,39 @@ public class ChangeTerrainAttributesViewPlugIn : IChangeTerrainAttributesViewPlu
     public ChangeTerrainAttributesViewPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ChangeAttributes(TerrainAttributeType attribute, bool setAttribute, IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> areas)
+    public async ValueTask ChangeAttributesAsync(TerrainAttributeType attribute, bool setAttribute, IReadOnlyCollection<(byte StartX, byte StartY, byte EndX, byte EndY)> areas)
     {
-        if (this._player.Connection is null)
+        if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        using var writer = this._player.Connection.StartSafeWrite(0xC1, ChangeTerrainAttributes.GetRequiredSize(areas.Count));
-        var message = new ChangeTerrainAttributes(writer.Span)
+        int Write()
         {
-            Attribute = Convert(attribute),
-            RemoveAttribute = !setAttribute,
-            AreaCount = (byte)areas.Count,
-        };
+            var size = ChangeTerrainAttributesRef.GetRequiredSize(areas.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var message = new ChangeTerrainAttributesRef(span)
+            {
+                Attribute = Convert(attribute),
+                RemoveAttribute = !setAttribute,
+                AreaCount = (byte)areas.Count,
+            };
 
-        var i = 0;
-        foreach (var (startX, startY, endX, endY) in areas)
-        {
-            var item = message[i];
-            item.StartX = startX;
-            item.StartY = startY;
-            item.EndX = endX;
-            item.EndY = endY;
-            i++;
+            var i = 0;
+            foreach (var (startX, startY, endX, endY) in areas)
+            {
+                var item = message[i];
+                item.StartX = startX;
+                item.StartY = startY;
+                item.EndX = endX;
+                item.EndY = endY;
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write);
     }
 
     private static ChangeTerrainAttributes.TerrainAttributeType Convert(TerrainAttributeType type)

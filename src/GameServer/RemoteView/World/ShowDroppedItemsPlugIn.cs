@@ -27,7 +27,7 @@ public class ShowDroppedItemsPlugIn : IShowDroppedItemsPlugIn
     public ShowDroppedItemsPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowDroppedItems(IEnumerable<DroppedItem> droppedItems, bool freshDrops)
+    public async ValueTask ShowDroppedItemsAsync(IEnumerable<DroppedItem> droppedItems, bool freshDrops)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -35,32 +35,38 @@ public class ShowDroppedItemsPlugIn : IShowDroppedItemsPlugIn
             return;
         }
 
-        var itemSerializer = this._player.ItemSerializer;
-        var droppedItemLength = ItemsDropped.DroppedItem.GetRequiredSize(itemSerializer.NeededSpace);
         int itemCount = droppedItems.Count();
-        using var writer = connection.StartSafeWrite(ItemsDropped.HeaderType, ItemsDropped.GetRequiredSize(itemCount, droppedItemLength));
-        var packet = new ItemsDropped(writer.Span)
+        int Write()
         {
-            ItemCount = (byte)itemCount,
-        };
-
-        int i = 0;
-        foreach (var item in droppedItems)
-        {
-            var itemBlock = packet[i, droppedItemLength];
-            itemBlock.Id = item.Id;
-            if (freshDrops)
+            var itemSerializer = this._player.ItemSerializer;
+            var droppedItemLength = ItemsDroppedRef.DroppedItemRef.GetRequiredSize(itemSerializer.NeededSpace);
+            var size = ItemsDroppedRef.GetRequiredSize(itemCount, droppedItemLength);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new ItemsDroppedRef(span)
             {
-                itemBlock.IsFreshDrop = true;
+                ItemCount = (byte)itemCount,
+            };
+
+            int i = 0;
+            foreach (var item in droppedItems)
+            {
+                var itemBlock = packet[i, droppedItemLength];
+                itemBlock.Id = item.Id;
+                if (freshDrops)
+                {
+                    itemBlock.IsFreshDrop = true;
+                }
+
+                itemBlock.PositionX = item.Position.X;
+                itemBlock.PositionY = item.Position.Y;
+                itemSerializer.SerializeItem(itemBlock.ItemData, item.Item);
+
+                i++;
             }
 
-            itemBlock.PositionX = item.Position.X;
-            itemBlock.PositionY = item.Position.Y;
-            itemSerializer.SerializeItem(itemBlock.ItemData, item.Item);
-
-            i++;
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

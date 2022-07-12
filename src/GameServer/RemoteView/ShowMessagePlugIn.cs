@@ -25,7 +25,7 @@ public class ShowMessagePlugIn : IShowMessagePlugIn
     public ShowMessagePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowMessage(string message, OpenMU.Interfaces.MessageType messageType)
+    public async ValueTask ShowMessageAsync(string message, OpenMU.Interfaces.MessageType messageType)
     {
         const int maxMessageLength = 241;
 
@@ -35,7 +35,7 @@ public class ShowMessagePlugIn : IShowMessagePlugIn
             while (rest.Length > 0)
             {
                 var partSize = Encoding.UTF8.GetCharacterCountOfMaxByteCount(rest, maxMessageLength);
-                this.ShowMessage(rest.Substring(0, partSize), messageType);
+                await this.ShowMessageAsync(rest.Substring(0, partSize), messageType);
                 rest = rest.Length > partSize ? rest.Substring(startIndex: partSize) : string.Empty;
             }
 
@@ -44,7 +44,7 @@ public class ShowMessagePlugIn : IShowMessagePlugIn
 
         const string messagePrefix = "000000000";
         var content = this._player.ClientVersion.Season > 0 ? messagePrefix + message : message;
-        this._player.Connection?.SendServerMessage(ConvertMessageType(messageType), content);
+        await this._player.Connection.SendServerMessageAsync(ConvertMessageType(messageType), content);
     }
 
     private static ServerMessage.MessageType ConvertMessageType(OpenMU.Interfaces.MessageType messageType)

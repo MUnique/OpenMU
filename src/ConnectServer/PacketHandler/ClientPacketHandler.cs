@@ -30,29 +30,31 @@ internal class ClientPacketHandler : IPacketHandler<Client>
     {
         this._logger = loggerFactory.CreateLogger<ClientPacketHandler>();
         this._connectServerSettings = connectServer.Settings;
+
+        // TODO: Is 0x05 correct? PatchCheckRequest has Code 0x02
         this._packetHandlers.Add(0x05, new FtpRequestHandler(connectServer.Settings, loggerFactory.CreateLogger<FtpRequestHandler>()));
         this._packetHandlers.Add(0xF4, new ServerListHandler(connectServer, loggerFactory));
     }
 
     /// <inheritdoc/>
-    public void HandlePacket(Client client, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Client client, Memory<byte> packet)
     {
         try
         {
-            if (packet[1] > this._connectServerSettings.MaximumReceiveSize || packet.Length < 4)
+            if (packet.Length > this._connectServerSettings.MaximumReceiveSize || packet.Length < 4)
             {
-                this.DisconnectClientUnknownPacket(client, packet);
+                await this.DisconnectClientUnknownPacketAsync(client, packet).ConfigureAwait(false);
                 return;
             }
 
-            var packetType = packet[2];
+            var packetType = packet.Span[2];
             if (this._packetHandlers.TryGetValue(packetType, out var packetHandler))
             {
-                packetHandler.HandlePacket(client, packet);
+                await packetHandler.HandlePacketAsync(client, packet).ConfigureAwait(false);
             }
             else if (this._connectServerSettings.DisconnectOnUnknownPacket)
             {
-                this.DisconnectClientUnknownPacket(client, packet);
+                await this.DisconnectClientUnknownPacketAsync(client, packet).ConfigureAwait(false);
             }
             else
             {
@@ -72,9 +74,9 @@ internal class ClientPacketHandler : IPacketHandler<Client>
         }
     }
 
-    private void DisconnectClientUnknownPacket(Client client, Span<byte> packet)
+    private async ValueTask DisconnectClientUnknownPacketAsync(Client client, Memory<byte> packet)
     {
         this._logger.LogInformation("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
-        client.Connection.Disconnect();
+        await client.Connection.DisconnectAsync().ConfigureAwait(false);
     }
 }

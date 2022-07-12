@@ -34,17 +34,22 @@ public class ShowHitPlugIn : IShowHitPlugIn
     }
 
     /// <remarks>
-    /// This Packet is sent to the Client when a Player or Monster got Hit and damaged.
+    /// This Packet is sent to the Client when a Player or Monster got hit and damaged.
     /// It includes which Player/Monster got hit by who, and the Damage Type.
     /// It is obvious that the mu online protocol only supports 16 bits for each damage value. To prevent bugs (own player health)
     /// and to make it somehow visible that the damage exceeds 65k, we send more than one packet, if the 16bits are not enough.
     /// </remarks>
     /// <inheritdoc/>
-    public void ShowHit(IAttackable target, HitInfo hitInfo)
+    public async ValueTask ShowHitAsync(IAttackable target, HitInfo hitInfo)
     {
         var targetId = target.GetId(this._player);
         var remainingHealthDamage = hitInfo.HealthDamage;
         var remainingShieldDamage = hitInfo.ShieldDamage;
+
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
 
         // do/while, so that a 'miss' with 0 damage sends a message, too.
         do
@@ -52,7 +57,7 @@ public class ShowHitPlugIn : IShowHitPlugIn
             var healthDamage = (ushort)System.Math.Min(0xFFFF, remainingHealthDamage);
             var shieldDamage = (ushort)System.Math.Min(0xFFFF, remainingShieldDamage);
 
-            this._player.Connection?.SendObjectHit(
+            await connection.SendObjectHitAsync(
                 this._operation,
                 targetId,
                 healthDamage,

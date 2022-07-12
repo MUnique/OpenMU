@@ -10,14 +10,22 @@ namespace MUnique.OpenMU.Network;
 public static class ConnectionExtensions
 {
     /// <summary>
-    /// Starts a safe write to this connection. The specified packet size has to be exact, because it can't be changed afterwards.
+    /// Sends a message asynchronously.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="packetType">Type of the packet (e.g. 0xC1).</param>
-    /// <param name="expectedPacketSize">Size of the expected packet. It's set in the header by default.</param>
-    /// <returns>An <see cref="IDisposable" /> which can be used in a using-construct. It provides the target span to write at, too.</returns>
-    public static ThreadSafeWriter StartSafeWrite(this IConnection connection, byte packetType, int expectedPacketSize)
+    /// <param name="packetBuilder">The packet builder which writes to the <see cref="IConnection.Output"/> and returns the length of the packet in bytes.</param>
+    public static async ValueTask SendAsync(this IConnection connection, Func<int> packetBuilder)
     {
-        return new (connection, packetType, expectedPacketSize);
+        await connection.OutputLock.WaitAsync();
+        try
+        {
+            var length = packetBuilder();
+            connection.Output.Advance(length);
+            await connection.Output.FlushAsync();
+        }
+        finally
+        {
+            connection.OutputLock.Release();
+        }
     }
 }

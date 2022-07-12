@@ -15,9 +15,9 @@ using MUnique.OpenMU.Interfaces;
 internal class NotImplementedItemConsumeHandler : IItemConsumeHandler
 {
     /// <inheritdoc/>
-    public bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Using this item is not implemented yet.", MessageType.BlueNormal);
+        await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Using this item is not implemented yet.", MessageType.BlueNormal)).ConfigureAwait(false);
         return false;
     }
 }

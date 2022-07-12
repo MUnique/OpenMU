@@ -25,8 +25,8 @@ public class SetTradeMoneyPlugIn : ISetTradeMoneyPlugIn
     public SetTradeMoneyPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void SetTradeMoney(uint moneyAmount)
+    public ValueTask SetTradeMoneyAsync(uint moneyAmount)
     {
-        this._player.Connection?.SendTradeMoneyUpdate(moneyAmount);
+        return this._player.Connection.SendTradeMoneyUpdateAsync(moneyAmount);
     }
 }

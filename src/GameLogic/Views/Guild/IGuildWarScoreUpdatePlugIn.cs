@@ -12,5 +12,5 @@ public interface IGuildWarScoreUpdatePlugIn : IViewPlugIn
     /// <summary>
     /// Updates the score.
     /// </summary>
-    void UpdateScore();
+    ValueTask UpdateScoreAsync();
 }

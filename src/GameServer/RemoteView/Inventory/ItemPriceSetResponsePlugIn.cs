@@ -26,8 +26,8 @@ public class ItemPriceSetResponsePlugIn : IItemPriceSetResponsePlugIn
     public ItemPriceSetResponsePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ItemPriceSetResponse(byte itemSlot, ItemPriceResult result)
+    public async ValueTask ItemPriceSetResponseAsync(byte itemSlot, ItemPriceResult result)
     {
-        this._player.Connection?.SendPlayerShopSetItemPriceResponse(itemSlot, result.Convert());
+        await this._player.Connection.SendPlayerShopSetItemPriceResponseAsync(itemSlot, result.Convert()).ConfigureAwait(false);
     }
 }

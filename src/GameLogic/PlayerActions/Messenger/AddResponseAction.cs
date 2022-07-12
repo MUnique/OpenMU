@@ -17,7 +17,7 @@ public class AddResponseAction
     /// <param name="player">The player.</param>
     /// <param name="requesterName">Name of the requester.</param>
     /// <param name="accepted">if set to <c>true</c> the request has been accepted.</param>
-    public void ProceedResponse(Player player, string requesterName, bool accepted)
+    public async ValueTask ProceedResponseAsync(Player player, string requesterName, bool accepted)
     {
         if (string.IsNullOrEmpty(requesterName))
         {
@@ -30,10 +30,10 @@ public class AddResponseAction
         {
             if (accepted)
             {
-                player.ViewPlugIns.GetPlugIn<IFriendAddedPlugIn>()?.FriendAdded(requesterName);
+                await player.InvokeViewPlugInAsync<IFriendAddedPlugIn>(p => p.FriendAddedAsync(requesterName)).ConfigureAwait(false);
             }
 
-            friendServer.FriendResponse(character.Name, requesterName, accepted);
+            await friendServer.FriendResponseAsync(character.Name, requesterName, accepted);
         }
     }
 }

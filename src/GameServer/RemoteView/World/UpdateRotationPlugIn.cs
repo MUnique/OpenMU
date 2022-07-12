@@ -24,8 +24,9 @@ public class UpdateRotationPlugIn : IUpdateRotationPlugIn
     public UpdateRotationPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateRotation()
+    public ValueTask UpdateRotationAsync()
     {
         //// TODO: Implement Rotation, packet: { 0xc1, 0x04, 0x0F, 0x12 }
+        return ValueTask.CompletedTask;
     }
 }

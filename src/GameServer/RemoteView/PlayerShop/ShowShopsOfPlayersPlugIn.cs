@@ -28,7 +28,7 @@ public class ShowShopsOfPlayersPlugIn : IShowShopsOfPlayersPlugIn
     public ShowShopsOfPlayersPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowShopsOfPlayers(ICollection<Player> playersWithShop)
+    public async ValueTask ShowShopsOfPlayersAsync(ICollection<Player> playersWithShop)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -36,26 +36,31 @@ public class ShowShopsOfPlayersPlugIn : IShowShopsOfPlayersPlugIn
             return;
         }
 
-        using var writer = connection.StartSafeWrite(PlayerShops.HeaderType, PlayerShops.GetRequiredSize(playersWithShop.Count));
-
-        var packet = new PlayerShops(writer.Span)
+        int Write()
         {
-            ShopCount = (byte)playersWithShop.Count,
-        };
-
-        int i = 0;
-        foreach (var shopPlayer in playersWithShop)
-        {
-            var shopBlock = packet[i];
-            if (shopPlayer.ShopStorage is not null)
+            var size = PlayerShopsRef.GetRequiredSize(playersWithShop.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new PlayerShopsRef(span)
             {
-                shopBlock.PlayerId = shopPlayer.GetId(this._player);
-                shopBlock.StoreName = shopPlayer.ShopStorage.StoreName;
+                ShopCount = (byte)playersWithShop.Count,
+            };
+
+            int i = 0;
+            foreach (var shopPlayer in playersWithShop)
+            {
+                var shopBlock = packet[i];
+                if (shopPlayer.ShopStorage is not null)
+                {
+                    shopBlock.PlayerId = shopPlayer.GetId(this._player);
+                    shopBlock.StoreName = shopPlayer.ShopStorage.StoreName;
+                }
+
+                i++;
             }
 
-            i++;
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

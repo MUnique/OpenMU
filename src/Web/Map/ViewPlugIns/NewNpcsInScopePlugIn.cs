@@ -35,7 +35,7 @@ public class NewNpcsInScopePlugIn : JsViewPlugInBase, INewNpcsInScopePlugIn
     }
 
     /// <inheritdoc />
-    public async void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true)
+    public async ValueTask NewNpcsInScopeAsync(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true)
     {
         try
         {
@@ -59,7 +59,7 @@ public class NewNpcsInScopePlugIn : JsViewPlugInBase, INewNpcsInScopePlugIn
         }
         catch (Exception e)
         {
-            this.Logger.LogError(e, $"Error in {nameof(this.NewNpcsInScope)}");
+            this.Logger.LogError(e, $"Error in {nameof(this.NewNpcsInScopeAsync)}");
         }
     }
 }

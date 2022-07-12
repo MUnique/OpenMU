@@ -41,7 +41,7 @@ public class PartyHealthViewPlugIn : IPartyHealthViewPlugIn
     }
 
     /// <inheritdoc/>
-    public void UpdatePartyHealth()
+    public async ValueTask UpdatePartyHealthAsync()
     {
         var partyList = this._player.Party?.PartyList;
         if (partyList is null)
@@ -56,20 +56,26 @@ public class PartyHealthViewPlugIn : IPartyHealthViewPlugIn
         }
 
         var partyListCount = partyList.Count;
-        using var writer = connection.StartSafeWrite(PartyHealthUpdate.HeaderType, PartyHealthUpdate.GetRequiredSize(partyListCount));
-        var packet = new PartyHealthUpdate(writer.Span)
+        int Write()
         {
-            Count = (byte)partyListCount,
-        };
+            var size = PartyHealthUpdateRef.GetRequiredSize(partyListCount);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new PartyHealthUpdateRef(span)
+            {
+                Count = (byte)partyListCount,
+            };
 
-        for (int i = 0; i < partyListCount; i++)
-        {
-            var member = packet[i];
-            member.Index = (byte)i;
-            member.Value = this.HealthValues[i];
+            for (int i = 0; i < partyListCount; i++)
+            {
+                var member = packet[i];
+                member.Index = (byte)i;
+                member.Value = this.HealthValues[i];
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     private bool UpdateHealthValues()

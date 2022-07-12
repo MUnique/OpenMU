@@ -29,16 +29,16 @@ internal class LetterSendHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => LetterSendRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         LetterSendRequest message = packet;
         if (packet.Length < 83)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Letter invalid.", MessageType.BlueNormal);
-            player.ViewPlugIns.GetPlugIn<ILetterSendResultPlugIn>()?.LetterSendResult(LetterSendSuccess.TryAgain, message.LetterId);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Letter invalid.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.TryAgain, message.LetterId)).ConfigureAwait(false);
             return;
         }
 
-        this._sendAction.SendLetter(player, message.Receiver, message.Message, message.Title, message.Rotation, message.Animation, message.LetterId);
+        await this._sendAction.SendLetterAsync(player, message.Receiver, message.Message, message.Title, message.Rotation, message.Animation, message.LetterId);
     }
 }

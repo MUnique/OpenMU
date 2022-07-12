@@ -30,7 +30,7 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     }
 
     /// <inheritdoc />
-    public override GameConfiguration? GetById(Guid id)
+    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id)
     {
         if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
         {
@@ -38,10 +38,10 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
 
         var database = currentContext.Context.Database;
-        database.OpenConnection();
+        await database.OpenConnectionAsync();
         try
         {
-            if (this._objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context) is { } config)
+            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context) is { } config)
             {
                 this.SetExperienceTables(config);
                 return config;
@@ -51,12 +51,12 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
         finally
         {
-            database.CloseConnection();
+            await database.CloseConnectionAsync();
         }
     }
 
     /// <inheritdoc />
-    public override IEnumerable<GameConfiguration> GetAll()
+    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync()
     {
         if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
         {
@@ -64,16 +64,16 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
 
         var database = currentContext.Context.Database;
-        database.OpenConnection();
+        await database.OpenConnectionAsync();
         try
         {
-            var configs = this._objectLoader.LoadAllObjects<GameConfiguration>(currentContext.Context).ToList();
+            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context)).ToList();
             configs.ForEach(this.SetExperienceTables);
             return configs;
         }
         finally
         {
-            database.CloseConnection();
+            await database.CloseConnectionAsync();
         }
     }
 

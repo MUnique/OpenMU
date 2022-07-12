@@ -47,6 +47,8 @@ internal class PlugInProxyTypeGenerator
             .AddUsings(
                 UsingDirective(ParseName("System")),
                 UsingDirective(ParseName("System.Collections.Generic")),
+                UsingDirective(ParseName("System.Threading.Tasks")),
+                UsingDirective(ParseName("Nito.AsyncEx")),
                 UsingDirective(ParseName(typeof(TPlugIn).Namespace!)));
         var referencedNamespaces = this.GetReferencedNamespaces(type).Select(ns => UsingDirective(ParseName(ns)));
         namespaceSyntax = namespaceSyntax.AddUsings(referencedNamespaces.ToArray());
@@ -93,6 +95,12 @@ internal class PlugInProxyTypeGenerator
             typeSyntax = typeSyntax.AddMembers(methodDeclaration);
         }
 
+        foreach (var method in type.GetMethods().Where(m => m.ReturnType == typeof(ValueTask) || m.ReturnType == typeof(Task)))
+        {
+            MethodDeclarationSyntax methodDeclaration = this.ImplementAsyncMethod(type, method);
+            typeSyntax = typeSyntax.AddMembers(methodDeclaration);
+        }
+
         return typeSyntax;
     }
 
@@ -116,14 +124,42 @@ internal class PlugInProxyTypeGenerator
             .WithBody(Block()); // empty body
     }
 
-    private MethodDeclarationSyntax ImplementMethod(Type type, MethodInfo method)
+    private MethodDeclarationSyntax ImplementAsyncMethod(Type type, MethodInfo method)
     {
         const string forEachVariableName = "plugIn";
-        var methodDeclaration = MethodDeclaration(PredefinedType(Token(SyntaxKind.VoidKeyword)), method.Name)
-            .AddModifiers(Token(SyntaxKind.PublicKeyword));
-        var methodCallStatement = forEachVariableName + "." + method.Name + "(";
+
+        var methodDeclaration = MethodDeclaration(IdentifierName(method.ReturnType.Name), method.Name)
+            .AddModifiers(Token(SyntaxKind.PublicKeyword))
+            .AddModifiers(Token(SyntaxKind.AsyncKeyword));
+
+        var methodCallStatement = this.GenerateAsyncMethodCallStatement(method, forEachVariableName, out var cancelEventArgs, ref methodDeclaration);
+        var methodCall = ParseStatement(methodCallStatement);
+        BlockSyntax forEachBody = Block(methodCall);
+        if (cancelEventArgs != null)
+        {
+            forEachBody = Block(IfStatement(ParseExpression("!" + cancelEventArgs.Name + ".Cancel"), forEachBody));
+        }
+
+        BlockSyntax forEachBlock = Block(
+            ForEachStatement(
+                ParseTypeName(this.GetTypeName(type)),
+                forEachVariableName,
+                ParseExpression("this.ActivePlugIns"),
+                forEachBody));
+
+        BlockSyntax methodBody = Block(
+            ParseStatement("using var l = await this.Lock.ReaderLockAsync();"),
+            forEachBlock);
+
+        methodDeclaration = methodDeclaration.WithBody(methodBody);
+        return methodDeclaration;
+    }
+
+    private string GenerateAsyncMethodCallStatement(MethodInfo method, string forEachVariableName, out ParameterInfo? cancelEventArgs, ref MethodDeclarationSyntax methodDeclaration)
+    {
+        var methodCallStatement = "await " + forEachVariableName + "." + method.Name + "(";
         bool first = true;
-        ParameterInfo? cancelEventArgs = null;
+        cancelEventArgs = null;
         foreach (var parameter in method.GetParameters().Where(p => !string.IsNullOrWhiteSpace(p.Name)))
         {
             methodDeclaration = methodDeclaration.AddParameterListParameters(Parameter(
@@ -144,6 +180,22 @@ internal class PlugInProxyTypeGenerator
         }
 
         methodCallStatement += ");";
+        return methodCallStatement;
+    }
+
+    private async ValueTask Foo()
+    {
+
+    }
+
+    private MethodDeclarationSyntax ImplementMethod(Type type, MethodInfo method)
+    {
+        const string forEachVariableName = "plugIn";
+
+        var methodDeclaration = MethodDeclaration(PredefinedType(Token(SyntaxKind.VoidKeyword)), method.Name)
+            .AddModifiers(Token(SyntaxKind.PublicKeyword));
+
+        var methodCallStatement = this.GenerateSyncMethodCallStatement(method, forEachVariableName, out var cancelEventArgs, ref methodDeclaration);
         var methodCall = ParseStatement(methodCallStatement);
         BlockSyntax forEachBody = Block(methodCall);
         if (cancelEventArgs != null)
@@ -159,15 +211,38 @@ internal class PlugInProxyTypeGenerator
                 forEachBody));
 
         BlockSyntax methodBody = Block(
-            ParseStatement("this.LockSlim.EnterReadLock();"),
-            TryStatement(
-                Token(SyntaxKind.TryKeyword),
-                forEachBlock,
-                List<CatchClauseSyntax>(), // no catch clause
-                FinallyClause(
-                    Block(ParseStatement("this.LockSlim.ExitReadLock();")))));
+            ParseStatement("using var l = this.Lock.ReaderLock();"),
+            forEachBlock);
 
         methodDeclaration = methodDeclaration.WithBody(methodBody);
         return methodDeclaration;
+    }
+
+    private string GenerateSyncMethodCallStatement(MethodInfo method, string forEachVariableName, out ParameterInfo? cancelEventArgs, ref MethodDeclarationSyntax methodDeclaration)
+    {
+        var methodCallStatement = forEachVariableName + "." + method.Name + "(";
+        bool first = true;
+        cancelEventArgs = null;
+        foreach (var parameter in method.GetParameters().Where(p => !string.IsNullOrWhiteSpace(p.Name)))
+        {
+            methodDeclaration = methodDeclaration.AddParameterListParameters(Parameter(
+                List<AttributeListSyntax>(),
+                TokenList(),
+                ParseTypeName(this.GetTypeName(parameter.ParameterType)),
+                ParseToken(parameter.Name!),
+                null));
+            if (!first)
+            {
+                methodCallStatement += ", ";
+            }
+
+            methodCallStatement += parameter.Name;
+            cancelEventArgs ??= parameter.ParameterType == typeof(CancelEventArgs) || parameter.ParameterType.IsSubclassOf(typeof(CancelEventArgs)) ? parameter : null;
+
+            first = false;
+        }
+
+        methodCallStatement += ");";
+        return methodCallStatement;
     }
 }

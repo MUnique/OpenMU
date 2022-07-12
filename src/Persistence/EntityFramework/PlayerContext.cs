@@ -23,43 +23,51 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc/>
-    public DataModel.Entities.LetterBody? GetLetterBodyByHeaderId(Guid headerId)
+    public async ValueTask<DataModel.Entities.LetterBody?> GetLetterBodyByHeaderIdAsync(Guid headerId)
     {
         using (this.RepositoryManager.ContextStack.UseContext(this))
         {
-            var repository = this.RepositoryManager.GetRepository<LetterBody>() as LetterBodyRepository;
-            return repository?.GetBodyByHeaderId(headerId);
+            if (this.RepositoryManager.GetRepository<LetterBody, LetterBodyRepository>() is { } repository)
+            {
+                return await repository.GetBodyByHeaderIdAsync(headerId);
+            }
         }
+
+        return null;
     }
 
     /// <inheritdoc/>
-    public bool CanSaveLetter(Interfaces.LetterHeader letterHeader)
+    public async ValueTask<bool> CanSaveLetterAsync(Interfaces.LetterHeader letterHeader)
     {
         if (letterHeader is not Model.LetterHeader persistentHeader)
         {
             return false;
         }
 
-        persistentHeader.Receiver = this.Context.Set<Character>().FirstOrDefault(c => c.Name == letterHeader.ReceiverName);
+        persistentHeader.Receiver = await this.Context.Set<Character>().FirstOrDefaultAsync(c => c.Name == letterHeader.ReceiverName);
         return persistentHeader.Receiver != null;
     }
 
     /// <inheritdoc />
-    public DataModel.Entities.Account? GetAccountByLoginName(string loginName, string password)
+    public async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password)
     {
         using (this.RepositoryManager.ContextStack.UseContext(this))
         {
-            var repository = this.RepositoryManager.GetRepository<Account>() as AccountRepository;
-            return repository?.GetAccountByLoginName(loginName, password);
+            if (this.RepositoryManager.GetRepository<Account, AccountRepository>() is { } accountRepository)
+            {
+                return await accountRepository.GetAccountByLoginNameAsync(loginName, password);
+            }
         }
+
+        return null;
     }
 
     /// <inheritdoc />
-    public IEnumerable<DataModel.Entities.Account> GetAccountsOrderedByLoginName(int skip, int count)
+    public async ValueTask<IEnumerable<DataModel.Entities.Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count)
     {
         using (this.RepositoryManager.ContextStack.UseContext(this))
         {
-            return this.Context.Set<Account>().OrderBy(a => a.LoginName).Skip(skip).Take(count).ToList();
+            return await this.Context.Set<Account>().OrderBy(a => a.LoginName).Skip(skip).Take(count).ToListAsync();
         }
     }
 }

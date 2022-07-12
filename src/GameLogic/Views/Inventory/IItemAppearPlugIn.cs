@@ -13,5 +13,5 @@ public interface IItemAppearPlugIn : IViewPlugIn
     /// Notifies the client that a new item appears in the inventory.
     /// </summary>
     /// <param name="newItem">The new item.</param>
-    void ItemAppear(Item newItem);
+    ValueTask ItemAppearAsync(Item newItem);
 }

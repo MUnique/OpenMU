@@ -4,7 +4,8 @@
       "commandName": "Project",
       "commandLineArgs": "-autostart -resolveIp:local --demo",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://+:80"
       }
     }
   }

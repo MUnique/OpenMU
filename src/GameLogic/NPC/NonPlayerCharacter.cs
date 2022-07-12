@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.NPC;
 
-using System.Threading;
+using Nito.AsyncEx;
 
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
@@ -47,7 +47,7 @@ public class NonPlayerCharacter : IObservable, IRotatable, ILocateable, IHasBuck
     /// <summary>
     /// Gets the lock for <see cref="Observers"/>.
     /// </summary>
-    public ReaderWriterLockSlim ObserverLock { get; } = new ();
+    public AsyncReaderWriterLock ObserverLock { get; } = new ();
 
     /// <inheritdoc/>
     public GameMap CurrentMap { get; }
@@ -90,31 +90,17 @@ public class NonPlayerCharacter : IObservable, IRotatable, ILocateable, IHasBuck
     }
 
     /// <inheritdoc/>
-    public void AddObserver(IWorldObserver observer)
+    public async ValueTask AddObserverAsync(IWorldObserver observer)
     {
-        this.ObserverLock.EnterWriteLock();
-        try
-        {
-            this.Observers.Add(observer);
-        }
-        finally
-        {
-            this.ObserverLock.ExitWriteLock();
-        }
+        using var writerLock = await this.ObserverLock.WriterLockAsync();
+        this.Observers.Add(observer);
     }
 
     /// <inheritdoc/>
-    public void RemoveObserver(IWorldObserver observer)
+    public async ValueTask RemoveObserverAsync(IWorldObserver observer)
     {
-        this.ObserverLock.EnterWriteLock();
-        try
-        {
-            this.Observers.Remove(observer);
-        }
-        finally
-        {
-            this.ObserverLock.ExitWriteLock();
-        }
+        using var writerLock = await this.ObserverLock.WriterLockAsync();
+        this.Observers.Remove(observer);
     }
 
     /// <inheritdoc/>
@@ -138,9 +124,7 @@ public class NonPlayerCharacter : IObservable, IRotatable, ILocateable, IHasBuck
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "<ObserverLock>k__BackingField", Justification = "Can't access backing field.")]
     protected virtual void Dispose(bool managed)
     {
-        this.CurrentMap?.Remove(this);
-
-        this.ObserverLock.Dispose();
+        this.CurrentMap?.RemoveAsync(this); //TODO await
     }
 
     /// <summary>
@@ -148,7 +132,7 @@ public class NonPlayerCharacter : IObservable, IRotatable, ILocateable, IHasBuck
     /// </summary>
     /// <param name="target">The new coordinates.</param>
     /// <param name="type">The type of moving.</param>
-    protected virtual void Move(Point target, MoveType type)
+    protected virtual ValueTask MoveAsync(Point target, MoveType type)
     {
         throw new NotSupportedException("NPCs can't be moved");
     }

@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
+
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections.Concurrent;
@@ -53,12 +56,12 @@ public class GameMap
     /// <summary>
     /// Occurs when an object was added to the map.
     /// </summary>
-    public event EventHandler<(GameMap Map, ILocateable Object)>? ObjectAdded;
+    public event AsyncEventHandler<(GameMap Map, ILocateable Object)>? ObjectAdded;
 
     /// <summary>
     /// Occurs when an object was removed from the map.
     /// </summary>
-    public event EventHandler<(GameMap Map, ILocateable Object)>? ObjectRemoved;
+    public event AsyncEventHandler<(GameMap Map, ILocateable Object)>? ObjectRemoved;
 
     /// <summary>
     /// Gets the map identifier.
@@ -127,9 +130,9 @@ public class GameMap
     /// Removes the locateable from the map.
     /// </summary>
     /// <param name="locateable">The locateable.</param>
-    public void Remove(ILocateable locateable)
+    public async ValueTask RemoveAsync(ILocateable locateable)
     {
-        this._areaOfInterestManager.RemoveObject(locateable);
+        await this._areaOfInterestManager.RemoveObjectAsync(locateable);
         if (this._objectsInMap.Remove(locateable.Id) && locateable.Id != 0)
         {
             if (locateable is DroppedItem
@@ -148,7 +151,10 @@ public class GameMap
                 Interlocked.Decrement(ref this._playerCount);
             }
 
-            this.ObjectRemoved?.Invoke(this, (this, locateable));
+            if (this.ObjectRemoved is { } eventHandler)
+            {
+                await eventHandler((this, locateable));
+            }
         }
     }
 
@@ -156,7 +162,7 @@ public class GameMap
     /// Adds the locateable to the map.
     /// </summary>
     /// <param name="locateable">The locateable object.</param>
-    public void Add(ILocateable locateable)
+    public async ValueTask AddAsync(ILocateable locateable)
     {
         switch (locateable)
         {
@@ -181,8 +187,11 @@ public class GameMap
         }
 
         this._objectsInMap.Add(locateable.Id, locateable);
-        this._areaOfInterestManager.AddObject(locateable);
-        this.ObjectAdded?.Invoke(this, (this, locateable));
+        await this._areaOfInterestManager.AddObjectAsync(locateable);
+        if (this.ObjectAdded is { } eventHandler)
+        {
+            await eventHandler((this, locateable));
+        }
     }
 
     /// <summary>
@@ -192,34 +201,34 @@ public class GameMap
     /// <param name="target">The new coordinates.</param>
     /// <param name="moveLock">The move lock.</param>
     /// <param name="moveType">Type of the move.</param>
-    public void Move(ILocateable locatable, Point target, object moveLock, MoveType moveType)
+    public ValueTask MoveAsync(ILocateable locatable, Point target, AsyncLock moveLock, MoveType moveType)
     {
-        this._areaOfInterestManager.MoveObject(locatable, target, moveLock, moveType);
+        return this._areaOfInterestManager.MoveObjectAsync(locatable, target, moveLock, moveType);
     }
 
     /// <summary>
     /// Respawns the specified locateable.
     /// </summary>
     /// <param name="locateable">The locateable.</param>
-    public void Respawn(ILocateable locateable)
+    public async ValueTask RespawnAsync(ILocateable locateable)
     {
-        this._areaOfInterestManager.RemoveObject(locateable);
-        this._areaOfInterestManager.AddObject(locateable);
+        await this._areaOfInterestManager.RemoveObjectAsync(locateable);
+        await this._areaOfInterestManager.AddObjectAsync(locateable);
     }
 
     /// <summary>
     /// Clears event NPCs.
     /// </summary>
-    public void ClearEventSpawnedNpcs()
+    public async ValueTask ClearEventSpawnedNpcsAsync()
     {
         var eventMonsters = this._objectsInMap.Values
             .OfType<NonPlayerCharacter>()
             .Where(n => n.SpawnArea.SpawnTrigger is not SpawnTrigger.Automatic)
             .ToList();
-        eventMonsters.ForEach(m =>
+        foreach (var monster in eventMonsters)
         {
-            m.CurrentMap.Remove(m);
-            m.Dispose();
-        });
+            await monster.CurrentMap.RemoveAsync(monster).ConfigureAwait(false);
+            monster.Dispose();
+        }
     }
 }

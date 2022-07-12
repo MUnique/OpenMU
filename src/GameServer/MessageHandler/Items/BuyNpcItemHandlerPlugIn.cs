@@ -26,9 +26,9 @@ internal class BuyNpcItemHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => BuyItemFromNpcRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         BuyItemFromNpcRequest message = packet;
-        this._buyAction.BuyItem(player, message.ItemSlot);
+        await this._buyAction.BuyItemAsync(player, message.ItemSlot);
     }
 }

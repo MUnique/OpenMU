@@ -12,5 +12,5 @@ public interface IUpdateCurrentManaPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the current mana.
     /// </summary>
-    void UpdateCurrentMana();
+    ValueTask UpdateCurrentManaAsync();
 }

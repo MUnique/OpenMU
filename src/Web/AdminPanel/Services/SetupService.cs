@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.Web.AdminPanel.Services;
 
 using System.Threading;
@@ -66,7 +68,7 @@ public class SetupService
         get
         {
             using var context = this._contextProvider.CreateNewTypedContext<GameClientDefinition>();
-            var definition = context.Get<GameClientDefinition>().FirstOrDefault();
+            var definition = context.GetAsync<GameClientDefinition>().AsTask().WaitAndUnwrapException().FirstOrDefault();
             return definition is { } ? new ClientVersion(definition.Season, definition.Episode, definition.Language) : null;
         }
     }

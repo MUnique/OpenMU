@@ -27,8 +27,8 @@ public class ItemDurabilityChangedPlugIn : IItemDurabilityChangedPlugIn
     public ItemDurabilityChangedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ItemDurabilityChanged(Item item, bool afterConsumption)
+    public async ValueTask ItemDurabilityChangedAsync(Item item, bool afterConsumption)
     {
-        this._player.Connection?.SendItemDurabilityChanged(item.ItemSlot, item.Durability(), afterConsumption);
+        await this._player.Connection.SendItemDurabilityChangedAsync(item.ItemSlot, item.Durability(), afterConsumption).ConfigureAwait(false);
     }
 }

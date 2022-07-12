@@ -16,5 +16,5 @@ public interface IInitializeMessengerPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="data">The data which was provided by the <see cref="IFriendServer"/>.</param>
     /// <param name="maxLetters">The maximum number of letters a player can have in its inbox.</param>
-    void InitializeMessenger(MessengerInitializationData data, int maxLetters);
+    ValueTask InitializeMessengerAsync(MessengerInitializationData data, int maxLetters);
 }

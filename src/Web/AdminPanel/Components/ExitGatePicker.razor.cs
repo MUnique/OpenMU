@@ -101,11 +101,11 @@ public partial class ExitGatePicker
         }
     }
 
-    private void OnMapSelected(ChangeEventArgs args)
+    private async Task OnMapSelected(ChangeEventArgs args)
     {
         if (Guid.TryParse(args.Value as string, out var mapId))
         {
-            this.Map = this.PersistenceContext.GetById<GameMapDefinition>(mapId);
+            this.Map = await this.PersistenceContext.GetByIdAsync<GameMapDefinition>(mapId);
         }
     }
 }

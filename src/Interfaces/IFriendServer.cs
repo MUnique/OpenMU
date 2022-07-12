@@ -31,7 +31,7 @@ public interface IFriendServer
     /// Forwards the letter.
     /// </summary>
     /// <param name="letter">The letter.</param>
-    void ForwardLetter(LetterHeader letter);
+    ValueTask ForwardLetterAsync(LetterHeader letter);
 
     /// <summary>
     /// Handles the friend request response.
@@ -39,17 +39,17 @@ public interface IFriendServer
     /// <param name="characterName">The character name of the responder.</param>
     /// <param name="friendName">The character name of the requester.</param>
     /// <param name="accepted">Indicating whether the request got accepted.</param>
-    void FriendResponse(string characterName, string friendName, bool accepted);
+    ValueTask FriendResponseAsync(string characterName, string friendName, bool accepted);
 
     /// <summary>
     /// Is called when a player entered the game.
-    /// It will cause a response with <see cref="IFriendSystemSubscriber.InitializeMessenger"/>
+    /// It will cause a response with <see cref="IFriendSystemSubscriber.InitializeMessengerAsync"/>
     /// and a state update for friends.
     /// </summary>
     /// <param name="serverId">The server identifier.</param>
     /// <param name="characterId">The character identifier.</param>
     /// <param name="characterName">Name of the character.</param>
-    void PlayerEnteredGame(byte serverId, Guid characterId, string characterName);
+    ValueTask PlayerEnteredGameAsync(byte serverId, Guid characterId, string characterName);
 
     /// <summary>
     /// Is called when a player leaves the game.
@@ -57,7 +57,7 @@ public interface IFriendServer
     /// </summary>
     /// <param name="characterId">The character identifier.</param>
     /// <param name="characterName">Name of the character.</param>
-    void PlayerLeftGame(Guid characterId, string characterName);
+    ValueTask PlayerLeftGameAsync(Guid characterId, string characterName);
 
     /// <summary>
     /// Sets the online visibility state of a character.
@@ -66,7 +66,7 @@ public interface IFriendServer
     /// <param name="characterId">Id of the character.</param>
     /// <param name="characterName">Name of the character.</param>
     /// <param name="isVisible">If set to <c>true</c>, the character is visible as online. Otherwise, it appears as offline for other players, but is still online</param>
-    void SetPlayerVisibilityState(byte serverId, Guid characterId, string characterName, bool isVisible);
+    ValueTask SetPlayerVisibilityStateAsync(byte serverId, Guid characterId, string characterName, bool isVisible);
 
     /// <summary>
     /// Sends a friend request to the friend, and adds a new friend view item to the players friend list.
@@ -74,21 +74,21 @@ public interface IFriendServer
     /// <param name="playerName">The name of the requesting player.</param>
     /// <param name="friendName">The name of the requested friend.</param>
     /// <returns>If a new friend view item got added to the players friend list.</returns>
-    bool FriendRequest(string playerName, string friendName);
+    ValueTask<bool> FriendRequestAsync(string playerName, string friendName);
 
     /// <summary>
     /// Deletes the friend.
     /// </summary>
     /// <param name="name">The player who is deleting a friend from his friend list.</param>
     /// <param name="friendName">Name of the friend who should be deleted.</param>
-    void DeleteFriend(string name, string friendName);
+    ValueTask DeleteFriendAsync(string name, string friendName);
 
     /// <summary>
     /// Creates a new chat room.
     /// </summary>
     /// <param name="playerName">Name of the player who is creating the chat room.</param>
     /// <param name="friendName">Name of the friend who should be invited to the chat room.</param>
-    void CreateChatRoom(string playerName, string friendName);
+    ValueTask CreateChatRoomAsync(string playerName, string friendName);
 
     /// <summary>
     /// Invites a friend to an existing chat room.
@@ -97,5 +97,5 @@ public interface IFriendServer
     /// <param name="friendName">Name of the friend.</param>
     /// <param name="roomNumber">The room number.</param>
     /// <returns>The success of the invitation.</returns>
-    bool InviteFriendToChatRoom(string selectedCharacterName, string friendName, ushort roomNumber);
+    ValueTask<bool> InviteFriendToChatRoomAsync(string selectedCharacterName, string friendName, ushort roomNumber);
 }

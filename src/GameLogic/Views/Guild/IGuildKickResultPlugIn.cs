@@ -13,5 +13,5 @@ public interface IGuildKickResultPlugIn : IViewPlugIn
     /// Shows the result of the kick request.
     /// </summary>
     /// <param name="successCode">The success code.</param>
-    void GuildKickResult(GuildKickSuccess successCode);
+    ValueTask GuildKickResultAsync(GuildKickSuccess successCode);
 }

@@ -25,9 +25,9 @@ public class ShowTradeRequestAnswerPlugIn : IShowTradeRequestAnswerPlugIn
     public ShowTradeRequestAnswerPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowTradeRequestAnswer(bool tradeAccepted)
+    public async ValueTask ShowTradeRequestAnswerAsync(bool tradeAccepted)
     {
-        this._player.Connection?.SendTradeRequestAnswer(
+        await this._player.Connection.SendTradeRequestAnswerAsync(
             tradeAccepted,
             this._player.TradingPartner?.Name ?? string.Empty,
             (ushort)(tradeAccepted ? this._player.TradingPartner?.Level ?? 0 : 0),

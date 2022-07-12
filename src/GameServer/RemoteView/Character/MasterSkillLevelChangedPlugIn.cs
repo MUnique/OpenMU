@@ -27,7 +27,7 @@ public class MasterSkillLevelChangedPlugIn : IMasterSkillLevelChangedPlugIn
     public MasterSkillLevelChangedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void MasterSkillLevelChanged(SkillEntry skillEntry)
+    public async ValueTask MasterSkillLevelChangedAsync(SkillEntry skillEntry)
     {
         var character = this._player.SelectedCharacter;
         if (character?.CharacterClass is null || skillEntry.Skill is null)
@@ -35,7 +35,7 @@ public class MasterSkillLevelChangedPlugIn : IMasterSkillLevelChangedPlugIn
             return;
         }
 
-        this._player.Connection?.SendMasterSkillLevelUpdate(
+        await this._player.Connection.SendMasterSkillLevelUpdateAsync(
             true,
             (ushort)character.MasterLevelUpPoints,
             skillEntry.Skill.GetMasterSkillIndex(character.CharacterClass),

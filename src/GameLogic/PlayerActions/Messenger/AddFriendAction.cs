@@ -16,15 +16,15 @@ public class AddFriendAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="friendName">Name of the friend.</param>
-    public void AddFriend(Player player, string friendName)
+    public async ValueTask AddFriendAsync(Player player, string friendName)
     {
         var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
         if (friendServer != null && player.SelectedCharacter is { } character)
         {
-            bool isNewFriend = friendServer.FriendRequest(character.Name, friendName);
+            bool isNewFriend = await friendServer.FriendRequestAsync(character.Name, friendName);
             if (isNewFriend)
             {
-                player.ViewPlugIns.GetPlugIn<IFriendAddedPlugIn>()?.FriendAdded(friendName);
+                await player.InvokeViewPlugInAsync<IFriendAddedPlugIn>(p => p.FriendAddedAsync(friendName)).ConfigureAwait(false);
             }
         }
     }

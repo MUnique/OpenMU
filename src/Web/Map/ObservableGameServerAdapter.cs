@@ -43,7 +43,7 @@ public class ObservableGameServerAdapter : IObservableGameServer
         var map = this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId);
         if (map != null)
         {
-            map.Add(worldObserver);
+            map.AddAsync(worldObserver);
         }
         else
         {
@@ -58,7 +58,7 @@ public class ObservableGameServerAdapter : IObservableGameServer
         if (this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId) is { } map
             && map.GetObject(worldObserverId) is { } observer)
         {
-            map.Remove(observer);
+            map.RemoveAsync(observer);
         }
     }
 

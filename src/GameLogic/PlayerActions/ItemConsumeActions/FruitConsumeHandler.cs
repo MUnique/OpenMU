@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 public class FruitConsumeHandler : BaseConsumeHandler
 {
     /// <inheritdoc />
-    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
         if (!this.CheckPreconditions(player, item))
         {
@@ -25,8 +25,8 @@ public class FruitConsumeHandler : BaseConsumeHandler
         var statAttribute = this.GetStatAttribute(item);
         if (player.Level < 10 || item.Level > 4)
         {
-            player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
-                .ShowResponse(isAdding ? FruitConsumptionResult.PlusPrevented : FruitConsumptionResult.MinusPrevented, 0, statAttribute);
+            await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(
+                p => p.ShowResponseAsync(isAdding ? FruitConsumptionResult.PlusPrevented : FruitConsumptionResult.MinusPrevented, 0, statAttribute)).ConfigureAwait(false);
             return false;
         }
 
@@ -34,14 +34,14 @@ public class FruitConsumeHandler : BaseConsumeHandler
             a.IncreasableByPlayer && a.Attribute == statAttribute);
         if (statAttributeDefinition is null)
         {
-            player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
-                .ShowResponse(isAdding ? FruitConsumptionResult.PlusPrevented : FruitConsumptionResult.MinusPrevented, 0, statAttribute);
+            await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(
+                p => p.ShowResponseAsync(isAdding ? FruitConsumptionResult.PlusPrevented : FruitConsumptionResult.MinusPrevented, 0, statAttribute)).ConfigureAwait(false);
             return false;
         }
 
         if (player.Inventory!.EquippedItems.Any())
         {
-            player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?.ShowResponse(FruitConsumptionResult.PreventedByEquippedItems, 0, statAttribute);
+            await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(p => p.ShowResponseAsync(FruitConsumptionResult.PreventedByEquippedItems, 0, statAttribute)).ConfigureAwait(false);
             return false;
         }
 
@@ -52,15 +52,13 @@ public class FruitConsumeHandler : BaseConsumeHandler
 
         if (maximumRemainingPoints <= 0)
         {
-            player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
-                .ShowResponse(isAdding ? FruitConsumptionResult.PlusPreventedByMaximum : FruitConsumptionResult.MinusPreventedByMaximum, 0, statAttribute);
+            await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(p => p.ShowResponseAsync(isAdding ? FruitConsumptionResult.PlusPreventedByMaximum : FruitConsumptionResult.MinusPreventedByMaximum, 0, statAttribute)).ConfigureAwait(false);
             return false;
         }
 
         if (!isAdding && player.Attributes![statAttribute] <= statAttributeDefinition.BaseValue)
         {
-            player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
-                .ShowResponse(FruitConsumptionResult.MinusPreventedByDefault, 0, statAttribute);
+            await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(p => p.ShowResponseAsync(FruitConsumptionResult.MinusPreventedByDefault, 0, statAttribute)).ConfigureAwait(false);
             return false;
         }
 
@@ -72,24 +70,21 @@ public class FruitConsumeHandler : BaseConsumeHandler
             {
                 player.Attributes![statAttribute] += randomPoints;
                 player.SelectedCharacter.UsedFruitPoints += randomPoints;
-                player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
-                    .ShowResponse(FruitConsumptionResult.PlusSuccess, randomPoints, statAttribute);
+                await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(p => p.ShowResponseAsync(FruitConsumptionResult.PlusSuccess, randomPoints, statAttribute)).ConfigureAwait(false);
             }
             else
             {
                 player.Attributes![statAttribute] -= randomPoints;
                 player.SelectedCharacter.UsedNegFruitPoints += randomPoints;
-                player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
-                    .ShowResponse(FruitConsumptionResult.MinusSuccess, randomPoints, statAttribute);
+                await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(p => p.ShowResponseAsync(FruitConsumptionResult.MinusSuccess, randomPoints, statAttribute)).ConfigureAwait(false);
             }
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IFruitConsumptionResponsePlugIn>()?
-                .ShowResponse(isAdding ? FruitConsumptionResult.PlusFailed : FruitConsumptionResult.MinusFailed, 0, statAttribute);
+            await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(p => p.ShowResponseAsync(isAdding ? FruitConsumptionResult.PlusFailed : FruitConsumptionResult.MinusFailed, 0, statAttribute)).ConfigureAwait(false);
         }
 
-        this.ConsumeSourceItem(player, item);
+        await this.ConsumeSourceItemAsync(player, item);
         return true;
     }
 

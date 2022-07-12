@@ -17,63 +17,57 @@ public class LoginAction
     /// <param name="player">The player.</param>
     /// <param name="username">The username.</param>
     /// <param name="password">The password.</param>
-    public void Login(Player player, string username, string password)
+    public async ValueTask LoginAsync(Player player, string username, string password)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         Account? account;
         try
         {
-            account = player.PersistenceContext.GetAccountByLoginName(username, password);
+            account = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password);
         }
         catch (Exception ex)
         {
             player.Logger.LogError(ex, "Login Failed.");
-            player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.ConnectionError);
+            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             return;
         }
 
         if (account is null)
         {
             player.Logger.LogInformation($"Account not found or invalid password, username: [{username}]");
-            player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.InvalidPassword);
+            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.InvalidPassword)).ConfigureAwait(false);
         }
         else if (account.State == AccountState.Banned)
         {
-            player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.AccountBlocked);
+            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountBlocked)).ConfigureAwait(false);
         }
         else if (account.State == AccountState.TemporarilyBanned)
         {
-            player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()
-                ?.ShowLoginResult(LoginResult.TemporaryBlocked);
+            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.TemporaryBlocked)).ConfigureAwait(false);
         }
         else
         {
-            Task.Run(async () =>
+            try
             {
-                try
+                using var context = player.PlayerState.TryBeginAdvanceTo(PlayerState.Authenticated);
+                if (context.Allowed && player.GameContext is IGameServerContext gameServerContext &&
+                    await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id))
                 {
-                    using var context = player.PlayerState.TryBeginAdvanceTo(PlayerState.Authenticated);
-                    if (context.Allowed && player.GameContext is IGameServerContext gameServerContext &&
-                        await gameServerContext.LoginServer.TryLogin(username, gameServerContext.Id))
-                    {
-                        player.Account = account;
-                        player.Logger.LogDebug("Login successful, username: [{0}]", username);
-                        player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()?.ShowLoginResult(LoginResult.Ok);
-                    }
-                    else
-                    {
-                        context.Allowed = false;
-                        player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()
-                            ?.ShowLoginResult(LoginResult.AccountAlreadyConnected);
-                    }
+                    player.Account = account;
+                    player.Logger.LogDebug("Login successful, username: [{0}]", username);
+                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.Ok)).ConfigureAwait(false);
                 }
-                catch (Exception ex)
+                else
                 {
-                    player.Logger.LogError(ex, "Unexpected error during login through login server");
-                    player.ViewPlugIns.GetPlugIn<IShowLoginResultPlugIn>()
-                        ?.ShowLoginResult(LoginResult.ConnectionError);
+                    context.Allowed = false;
+                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
                 }
-            });
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Unexpected error during login through login server");
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+            }
         }
     }
 }

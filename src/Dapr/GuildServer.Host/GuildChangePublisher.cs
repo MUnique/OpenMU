@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Microsoft.Extensions.Logging;
+
 namespace MUnique.OpenMU.GuildServer.Host;
 
 using global::Dapr.Client;
@@ -14,31 +16,55 @@ using MUnique.OpenMU.ServerClients;
 public class GuildChangePublisher : IGuildChangePublisher
 {
     private readonly DaprClient _daprClient;
+    private readonly ILogger<GuildChangePublisher> _logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GuildChangePublisher"/> class.
+    /// Initializes a new instance of the <see cref="GuildChangePublisher" /> class.
     /// </summary>
     /// <param name="daprClient">The dapr client.</param>
-    public GuildChangePublisher(DaprClient daprClient)
+    /// <param name="logger">The logger.</param>
+    public GuildChangePublisher(DaprClient daprClient, ILogger<GuildChangePublisher> logger)
     {
         this._daprClient = daprClient;
+        this._logger = logger;
     }
 
     /// <inheritdoc />
-    public void GuildPlayerKicked(string playerName)
+    public async ValueTask GuildPlayerKickedAsync(string playerName)
     {
-        this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildPlayerKicked), playerName);
+        try
+        {
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildPlayerKickedAsync), playerName);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.GuildPlayerKickedAsync));
+        }
     }
 
     /// <inheritdoc />
-    public void GuildDeleted(uint guildId)
+    public async ValueTask GuildDeletedAsync(uint guildId)
     {
-        this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildDeleted), guildId);
+        try
+        {
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildDeletedAsync), guildId);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.GuildDeletedAsync));
+        }
     }
 
     /// <inheritdoc />
-    public void AssignGuildToPlayer(byte serverId, string characterName, GuildMemberStatus status)
+    public async ValueTask AssignGuildToPlayerAsync(byte serverId, string characterName, GuildMemberStatus status)
     {
-        this._daprClient.InvokeMethodAsync($"gameServer{serverId + 1}", nameof(IGameServer.AssignGuildToPlayer), new GuildMemberAssignArguments(characterName, status));
+        try
+        {
+            await this._daprClient.InvokeMethodAsync($"gameServer{serverId + 1}", nameof(IGameServer.AssignGuildToPlayerAsync), new GuildMemberAssignArguments(characterName, status));
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.AssignGuildToPlayerAsync));
+        }
     }
 }

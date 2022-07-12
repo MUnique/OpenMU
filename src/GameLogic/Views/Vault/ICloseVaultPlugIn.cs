@@ -12,5 +12,5 @@ public interface ICloseVaultPlugIn : IViewPlugIn
     /// <summary>
     /// Closes the vault.
     /// </summary>
-    void CloseVault();
+    ValueTask CloseVaultAsync();
 }

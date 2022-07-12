@@ -12,5 +12,5 @@ public interface IUpdateMasterStatsPlugIn : IViewPlugIn
     /// <summary>
     /// Sends the master stats to the client.
     /// </summary>
-    void SendMasterStats();
+    ValueTask SendMasterStatsAsync();
 }

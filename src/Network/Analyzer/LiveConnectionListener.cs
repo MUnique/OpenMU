@@ -84,13 +84,13 @@ public class LiveConnectionListener : Listener
 
     private IPipelinedDecryptor? GetDecryptor(PipeReader pipeReader, DataDirection direction) => this.NetworkEncryptionPlugIn?.CreateDecryptor(pipeReader, direction);
 
-    private void OnClientAccepted(object? sender, ClientAcceptedEventArgs e)
+    private async ValueTask OnClientAccepted(ClientAcceptedEventArgs e)
     {
         var clientConnection = e.AcceptedConnection;
         try
         {
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            serverSocket.Connect(this.TargetHost, this.TargetPort);
+            await serverSocket.ConnectAsync(this.TargetHost, this.TargetPort);
             var socketConnection = SocketConnection.Create(serverSocket);
 
             var decryptor = this.GetDecryptor(socketConnection.Input, DataDirection.ServerToClient);
@@ -103,7 +103,7 @@ public class LiveConnectionListener : Listener
         catch (Exception exception)
         {
             this._logger.LogError(exception, "Error while connecting to the server. Disconnecting the client.");
-            clientConnection.Disconnect();
+            await clientConnection.DisconnectAsync();
         }
     }
 }

@@ -27,8 +27,8 @@ public class BuffRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => NpcBuffRequest.SubCode;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        this._buffRequestAction.RequestBuff(player);
+        await this._buffRequestAction.RequestBuffAsync(player);
     }
 }

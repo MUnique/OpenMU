@@ -71,10 +71,10 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
     }
 
     /// <inheritdoc />
-    protected override Task StartAsyncCore(CancellationToken cancellationToken)
+    protected override async Task StartAsyncCore(CancellationToken cancellationToken)
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
-        foreach (var connectServerDefinition in persistenceContext.Get<ConnectServerDefinition>())
+        foreach (var connectServerDefinition in await persistenceContext.GetAsync<ConnectServerDefinition>())
         {
             var connectServer = this._connectServerFactory.CreateConnectServer(connectServerDefinition);
             this._servers.Add(connectServer);
@@ -96,8 +96,6 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
                 this._observers[client] = connectServer;
             }
         }
-
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc />

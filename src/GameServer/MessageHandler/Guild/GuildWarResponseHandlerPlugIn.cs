@@ -26,9 +26,9 @@ internal class GuildWarResponseHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => GuildWarResponse.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildWarResponse response = packet;
-        this._answerAction.ProcessAnswer(player, response.Accepted);
+        await this._answerAction.ProcessAnswerAsync(player, response.Accepted);
     }
 }

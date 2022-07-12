@@ -27,9 +27,9 @@ internal class CharacterDeletePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => 2;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         DeleteCharacter message = packet;
-        this._deleteCharacterAction.DeleteCharacter(player, message.Name, message.SecurityCode);
+        await this._deleteCharacterAction.DeleteCharacterAsync(player, message.Name, message.SecurityCode);
     }
 }

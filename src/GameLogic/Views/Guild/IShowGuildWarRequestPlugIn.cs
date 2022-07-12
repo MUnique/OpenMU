@@ -16,5 +16,5 @@ public interface IShowGuildWarRequestPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="requestingGuildName">Name of the requesting guild.</param>
     /// <param name="warType">Type of the war.</param>
-    void ShowRequest(string requestingGuildName, GuildWarType warType);
+    ValueTask ShowRequestAsync(string requestingGuildName, GuildWarType warType);
 }

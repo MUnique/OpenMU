@@ -31,7 +31,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     }
 
     /// <inheritdoc />
-    public override GameConfiguration? GetById(Guid id)
+    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id)
     {
         var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
         if (currentContext is null)
@@ -40,10 +40,10 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         }
 
         var database = currentContext.Context.Database;
-        database.OpenConnection();
+        await database.OpenConnectionAsync();
         try
         {
-            if (this._objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context) is { } config)
+            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context) is { } config)
             {
                 currentContext.Attach(config);
                 return config;
@@ -53,12 +53,12 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         }
         finally
         {
-            database.CloseConnection();
+            await database.CloseConnectionAsync();
         }
     }
 
     /// <inheritdoc />
-    public override IEnumerable<GameConfiguration> GetAll()
+    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync()
     {
         var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
         if (currentContext is null)
@@ -67,16 +67,16 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         }
 
         var database = currentContext.Context.Database;
-        database.OpenConnection();
+        await database.OpenConnectionAsync();
         try
         {
-            var configs = this._objectLoader.LoadAllObjects<GameConfiguration>(currentContext.Context).ToList();
+            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context)).ToList();
             configs.ForEach(currentContext.Attach);
             return configs;
         }
         finally
         {
-            database.CloseConnection();
+            await database.CloseConnectionAsync();
         }
     }
 }

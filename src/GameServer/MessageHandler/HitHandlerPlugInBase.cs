@@ -23,7 +23,7 @@ internal abstract class HitHandlerPlugInBase : IPacketHandlerPlugIn
     public abstract byte Key { get; }
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < 7)
         {
@@ -45,7 +45,7 @@ internal abstract class HitHandlerPlugInBase : IPacketHandlerPlugIn
         }
         else
         {
-            this._hitAction.Hit(player, target, message.AttackAnimation, message.LookingDirection.ParseAsDirection());
+            await this._hitAction.HitAsync(player, target, message.AttackAnimation, message.LookingDirection.ParseAsDirection());
         }
     }
 }

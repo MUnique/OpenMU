@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.PlugIns;
 
-using System.Threading;
+using Nito.AsyncEx;
 
 /// <summary>
 /// Base class for the implementation of plugin point proxies.
@@ -42,7 +42,7 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
     /// <summary>
     /// Gets the reader writer lock which is used to add and remove plugins.
     /// </summary>
-    protected ReaderWriterLockSlim LockSlim { get; } = new ();
+    protected AsyncReaderWriterLock Lock { get; } = new ();
 
     /// <summary>
     /// Gets the currently active plug ins.
@@ -59,15 +59,8 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
     {
         get
         {
-            this.LockSlim.EnterReadLock();
-            try
-            {
-                return this._knownPlugIns.ToList();
-            }
-            finally
-            {
-                this.LockSlim.ExitReadLock();
-            }
+            using var l = this.Lock.ReaderLock();
+            return this._knownPlugIns.ToList();
         }
     }
 
@@ -76,18 +69,11 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
     /// <exception cref="T:System.Threading.LockRecursionException">The <see cref="P:System.Threading.ReaderWriterLockSlim.RecursionPolicy"></see> property is <see cref="F:System.Threading.LockRecursionPolicy.NoRecursion"></see> and the current thread has already entered the lock in any mode.   -or-   The current thread has entered read mode, so trying to enter the lock in write mode would create the possibility of a deadlock.   -or-   The recursion number would exceed the capacity of the counter. The limit is so large that applications should never encounter it.</exception>
     public void AddPlugIn(TPlugIn plugIn, bool isActive)
     {
-        this.LockSlim.EnterWriteLock();
-        try
+        using var l = this.Lock.WriterLock();
+        this._knownPlugIns.Add(plugIn);
+        if (isActive)
         {
-            this._knownPlugIns.Add(plugIn);
-            if (isActive)
-            {
-                this.ActivatePlugIn(plugIn);
-            }
-        }
-        finally
-        {
-            this.LockSlim.ExitWriteLock();
+            this.ActivatePlugIn(plugIn);
         }
     }
 
@@ -97,15 +83,8 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
     /// <param name="plugIn">The plug in.</param>
     protected void RemovePlugIn(TPlugIn plugIn)
     {
-        this.LockSlim.EnterWriteLock();
-        try
-        {
-            this._knownPlugIns.Remove(plugIn);
-        }
-        finally
-        {
-            this.LockSlim.ExitWriteLock();
-        }
+        using var l = this.Lock.WriterLock();
+        this._knownPlugIns.Remove(plugIn);
     }
 
     /// <summary>
@@ -151,28 +130,14 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
     /// <returns>The known plugin, if found. Otherwise, null.</returns>
     protected TPlugIn? FindKnownPlugin(Type plugInType)
     {
-        this.LockSlim.EnterReadLock();
-        try
-        {
-            return this._knownPlugIns.FirstOrDefault(p => p.GetType() == plugInType);
-        }
-        finally
-        {
-            this.LockSlim.ExitReadLock();
-        }
+        using var l = this.Lock.ReaderLock();
+        return this._knownPlugIns.FirstOrDefault(p => p.GetType() == plugInType);
     }
 
     private TPlugIn? FindActivePlugin(Type plugInType)
     {
-        this.LockSlim.EnterReadLock();
-        try
-        {
-            return this.ActivePlugIns.FirstOrDefault(plugInType.IsInstanceOfType);
-        }
-        finally
-        {
-            this.LockSlim.ExitReadLock();
-        }
+        using var l = this.Lock.ReaderLock();
+        return this.ActivePlugIns.FirstOrDefault(plugInType.IsInstanceOfType);
     }
 
     private bool IsEventRelevant(PlugInEventArgs e) => typeof(TPlugIn).IsAssignableFrom(e.PlugInType);
@@ -190,14 +155,9 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
             return;
         }
 
-        this.LockSlim.EnterWriteLock();
-        try
+        using (this.Lock.WriterLock())
         {
             this.DeactivatePlugIn(plugIn);
-        }
-        finally
-        {
-            this.LockSlim.ExitWriteLock();
         }
 
         this.AfterDeactivatePlugInType(plugIn);
@@ -224,14 +184,9 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
             return;
         }
 
-        this.LockSlim.EnterWriteLock();
-        try
+        using (this.Lock.WriterLock())
         {
             this.ActivatePlugIn(plugIn);
-        }
-        finally
-        {
-            this.LockSlim.ExitWriteLock();
         }
     }
 

@@ -23,12 +23,12 @@ public class RestoreItemCrafting : SimpleItemCraftingHandler
     }
 
     /// <inheritdoc />
-    protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
     {
         var item = requiredItems.First().Items.First();
         var johOptionLink = item.ItemOptions.First(link => link.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption);
         item.ItemOptions.Remove(johOptionLink);
-        player.PersistenceContext.Delete(johOptionLink);
-        yield return item;
+        await player.PersistenceContext.DeleteAsync(johOptionLink);
+        return new List<Item> { item };
     }
 }

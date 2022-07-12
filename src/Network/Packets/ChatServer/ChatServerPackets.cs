@@ -19,15 +19,15 @@ using static System.Buffers.Binary.BinaryPrimitives;
 /// Is sent by the client when: This packet is sent by the client after it connected to the server, to authenticate itself.
 /// Causes reaction on server side: The server will check the token. If it's correct, the client gets added to the requested chat room.
 /// </summary>
-public readonly ref struct Authenticate
+public readonly struct Authenticate
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Authenticate"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public Authenticate(Span<byte> data)
+    public Authenticate(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -37,7 +37,7 @@ public readonly ref struct Authenticate
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private Authenticate(Span<byte> data, bool initialize)
+    private Authenticate(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -74,8 +74,8 @@ public readonly ref struct Authenticate
     /// </summary>
     public ushort RoomId
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -83,23 +83,23 @@ public readonly ref struct Authenticate
     /// </summary>
     public string Token
     {
-        get => this._data.ExtractString(6, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(6, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(6, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="Authenticate"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="Authenticate"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator Authenticate(Span<byte> packet) => new (packet, false);
+    public static implicit operator Authenticate(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="Authenticate"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="Authenticate"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(Authenticate packet) => packet._data; 
+    public static implicit operator Memory<byte>(Authenticate packet) => packet._data; 
 }
 
 
@@ -107,15 +107,15 @@ public readonly ref struct Authenticate
 /// Is sent by the server when: This packet is sent by the server after another chat client joined the chat room.
 /// Causes reaction on client side: The client will add the client in its list (if over 2 clients are connected to the same room), or show its name in the title bar.
 /// </summary>
-public readonly ref struct ChatRoomClientJoined
+public readonly struct ChatRoomClientJoined
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatRoomClientJoined"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChatRoomClientJoined(Span<byte> data)
+    public ChatRoomClientJoined(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -125,7 +125,7 @@ public readonly ref struct ChatRoomClientJoined
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ChatRoomClientJoined(Span<byte> data, bool initialize)
+    private ChatRoomClientJoined(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -169,8 +169,8 @@ public readonly ref struct ChatRoomClientJoined
     /// </summary>
     public byte ClientIndex
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -178,23 +178,23 @@ public readonly ref struct ChatRoomClientJoined
     /// </summary>
     public string Name
     {
-        get => this._data.ExtractString(5, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(5, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClientJoined"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChatRoomClientJoined"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ChatRoomClientJoined(Span<byte> packet) => new (packet, false);
+    public static implicit operator ChatRoomClientJoined(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ChatRoomClientJoined"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ChatRoomClientJoined"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ChatRoomClientJoined packet) => packet._data; 
+    public static implicit operator Memory<byte>(ChatRoomClientJoined packet) => packet._data; 
 }
 
 
@@ -202,15 +202,15 @@ public readonly ref struct ChatRoomClientJoined
 /// Is sent by the server when: This packet is sent by the server after a chat client left the chat room.
 /// Causes reaction on client side: The client will remove the client from its list, or mark its name in the title bar as offline.
 /// </summary>
-public readonly ref struct ChatRoomClientLeft
+public readonly struct ChatRoomClientLeft
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatRoomClientLeft"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChatRoomClientLeft(Span<byte> data)
+    public ChatRoomClientLeft(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -220,7 +220,7 @@ public readonly ref struct ChatRoomClientLeft
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ChatRoomClientLeft(Span<byte> data, bool initialize)
+    private ChatRoomClientLeft(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -264,8 +264,8 @@ public readonly ref struct ChatRoomClientLeft
     /// </summary>
     public byte ClientIndex
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -273,23 +273,23 @@ public readonly ref struct ChatRoomClientLeft
     /// </summary>
     public string Name
     {
-        get => this._data.ExtractString(5, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(5, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClientLeft"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChatRoomClientLeft"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ChatRoomClientLeft(Span<byte> packet) => new (packet, false);
+    public static implicit operator ChatRoomClientLeft(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ChatRoomClientLeft"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ChatRoomClientLeft"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ChatRoomClientLeft packet) => packet._data; 
+    public static implicit operator Memory<byte>(ChatRoomClientLeft packet) => packet._data; 
 }
 
 
@@ -297,15 +297,15 @@ public readonly ref struct ChatRoomClientLeft
 /// Is sent by the server when: This packet is sent by the server after another chat client sent a message to the current chat room.
 /// Causes reaction on client side: The client will show the message.
 /// </summary>
-public readonly ref struct ChatRoomClients
+public readonly struct ChatRoomClients
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatRoomClients"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChatRoomClients(Span<byte> data)
+    public ChatRoomClients(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -315,7 +315,7 @@ public readonly ref struct ChatRoomClients
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ChatRoomClients(Span<byte> data, bool initialize)
+    private ChatRoomClients(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -347,28 +347,28 @@ public readonly ref struct ChatRoomClients
     /// </summary>
     public byte ClientCount
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
     /// Gets the <see cref="ChatClient"/> of the specified index.
     /// </summary>
-        public ChatClient this[int index] => new (this._data[(8 + index * ChatClient.Length)..]);
+        public ChatClient this[int index] => new (this._data.Slice(8 + index * ChatClient.Length));
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatRoomClients"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChatRoomClients"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ChatRoomClients(Span<byte> packet) => new (packet, false);
+    public static implicit operator ChatRoomClients(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ChatRoomClients"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ChatRoomClients"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ChatRoomClients packet) => packet._data; 
+    public static implicit operator Memory<byte>(ChatRoomClients packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="ChatClient"/>.
@@ -381,15 +381,15 @@ public readonly ref struct ChatRoomClients
 /// <summary>
 /// Contains the index and the name of a connected chat client in the room..
 /// </summary>
-public readonly ref struct ChatClient
+public readonly struct ChatClient
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatClient"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChatClient(Span<byte> data)
+    public ChatClient(Memory<byte> data)
     {
         this._data = data;
     }
@@ -404,8 +404,8 @@ public readonly ref struct ChatClient
     /// </summary>
     public byte Index
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -413,8 +413,8 @@ public readonly ref struct ChatClient
     /// </summary>
     public string Name
     {
-        get => this._data.ExtractString(1, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(1, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(1, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(1, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 }
 }
@@ -424,15 +424,15 @@ public readonly ref struct ChatClient
 /// Is sent by the server when: This packet is sent by the server after another chat client sent a message to the current chat room.
 /// Causes reaction on client side: The client will show the message.
 /// </summary>
-public readonly ref struct ChatMessage
+public readonly struct ChatMessage
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatMessage"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public ChatMessage(Span<byte> data)
+    public ChatMessage(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -442,7 +442,7 @@ public readonly ref struct ChatMessage
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private ChatMessage(Span<byte> data, bool initialize)
+    private ChatMessage(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -474,8 +474,8 @@ public readonly ref struct ChatMessage
     /// </summary>
     public byte SenderIndex
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -483,8 +483,8 @@ public readonly ref struct ChatMessage
     /// </summary>
     public byte MessageLength
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 
     /// <summary>
@@ -492,23 +492,23 @@ public readonly ref struct ChatMessage
     /// </summary>
     public string Message
     {
-        get => this._data.ExtractString(5, this._data.Length - 5, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(5, this._data.Length - 5, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChatMessage"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChatMessage"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator ChatMessage(Span<byte> packet) => new (packet, false);
+    public static implicit operator ChatMessage(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="ChatMessage"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="ChatMessage"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(ChatMessage packet) => packet._data; 
+    public static implicit operator Memory<byte>(ChatMessage packet) => packet._data; 
 
     /// <summary>
     /// Calculates the size of the packet for the specified field content.
@@ -522,15 +522,15 @@ public readonly ref struct ChatMessage
 /// Is sent by the client when: This packet is sent by the client in a fixed interval.
 /// Causes reaction on server side: The server will keep the connection and chat room intact as long as the clients sends a message in a certain period of time.
 /// </summary>
-public readonly ref struct KeepAlive
+public readonly struct KeepAlive
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KeepAlive"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public KeepAlive(Span<byte> data)
+    public KeepAlive(Memory<byte> data)
         : this(data, true)
     {
     }
@@ -540,7 +540,7 @@ public readonly ref struct KeepAlive
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private KeepAlive(Span<byte> data, bool initialize)
+    private KeepAlive(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -573,16 +573,16 @@ public readonly ref struct KeepAlive
     public C1Header Header => new (this._data);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="KeepAlive"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="KeepAlive"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator KeepAlive(Span<byte> packet) => new (packet, false);
+    public static implicit operator KeepAlive(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="KeepAlive"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="KeepAlive"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(KeepAlive packet) => packet._data; 
+    public static implicit operator Memory<byte>(KeepAlive packet) => packet._data; 
 }

@@ -126,6 +126,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Adds the form to the render tree.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <param name="currentSequence">The current sequence.</param>
     protected abstract void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence);
 
     /// <inheritdoc />
@@ -233,7 +238,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
         this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, Array.Empty<object>())!;
 
-        var method = typeof(IContext).GetMethod(nameof(IContext.GetById))!.MakeGenericMethod(this.Type);
+        var method = typeof(IContext).GetMethod(nameof(IContext.GetByIdAsync))!.MakeGenericMethod(this.Type);
         try
         {
             if (!cancellationToken.IsCancellationRequested)

@@ -14,5 +14,5 @@ public interface IShowItemCraftingResultPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="result">The crafting result.</param>
     /// <param name="createdItem">The created item.</param>
-    void ShowResult(CraftingResult result, Item? createdItem);
+    ValueTask ShowResultAsync(CraftingResult result, Item? createdItem);
 }

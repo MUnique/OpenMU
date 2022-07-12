@@ -20,7 +20,7 @@ public class EnterMiniGameAction
     /// <param name="miniGameType">The mini game type.</param>
     /// <param name="gameLevel">The mini game level.</param>
     /// <param name="gameTicketInventoryIndex">The inventory index of the ticket.</param>
-    public void TryEnterMiniGame(Player player, MiniGameType miniGameType, int gameLevel, byte gameTicketInventoryIndex)
+    public async ValueTask TryEnterMiniGameAsync(Player player, MiniGameType miniGameType, int gameLevel, byte gameTicketInventoryIndex)
     {
         if (player.SelectedCharacter?.CharacterClass is null)
         {
@@ -31,7 +31,7 @@ public class EnterMiniGameAction
             .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel);
         if (miniGameDefinition is null || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass))
         {
-            player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, EnterResult.Failed);
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
             return;
         }
 
@@ -39,36 +39,37 @@ public class EnterMiniGameAction
         var characterLevel = player.Attributes![Stats.Level];
         if (characterLevel < miniGameDefinition.MinimumCharacterLevel)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, EnterResult.CharacterLevelTooLow);
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.CharacterLevelTooLow)).ConfigureAwait(false);
             return;
         }
 
         if (characterLevel > miniGameDefinition.MaximumCharacterLevel)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, EnterResult.CharacterLevelTooHigh);
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.CharacterLevelTooHigh)).ConfigureAwait(false);
             return;
         }
 
         if (!this.CheckTicketItem(miniGameDefinition, player, gameTicketInventoryIndex, out var ticketItem))
         {
-            player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, EnterResult.Failed);
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
             return;
         }
 
         var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
         var miniGame = player.GameContext.GetMiniGame(miniGameDefinition, player);
-        if (miniGame.TryEnter(player, out var result))
+        var enterResult = await miniGame.TryEnterAsync(player);
+        if (enterResult == EnterResult.Success)
         {
-            this.ConsumeTicketItem(ticketItem, player);
-            player.WarpTo(entrance);
+            await this.ConsumeTicketItemAsync(ticketItem, player);
+            await player.WarpToAsync(entrance);
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IShowMiniGameEnterResultPlugIn>()?.ShowResult(miniGameType, result);
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, enterResult)).ConfigureAwait(false);
         }
     }
 
-    private void ConsumeTicketItem(Item? ticketItem, Player player)
+    private async ValueTask ConsumeTicketItemAsync(Item? ticketItem, Player player)
     {
         if (ticketItem is null)
         {
@@ -83,13 +84,17 @@ public class EnterMiniGameAction
         if (ticketItem.Durability == 0)
         {
             var slot = ticketItem.ItemSlot;
-            player.Inventory?.RemoveItem(ticketItem);
-            player.PersistenceContext.Delete(ticketItem);
-            player.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(slot);
+            if (player.Inventory is { } inventory)
+            {
+                await inventory.RemoveItemAsync(ticketItem);
+            }
+
+            await player.PersistenceContext.DeleteAsync(ticketItem);
+            await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot));
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(ticketItem, false);
+            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(ticketItem, false)).ConfigureAwait(false);
         }
     }
 

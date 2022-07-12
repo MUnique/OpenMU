@@ -15,13 +15,13 @@ public interface IGuildChangePublisher
     /// Notifies the game server that a guild member got removed from a guild.
     /// </summary>
     /// <param name="playerName">Name of the player which got removed from a guild.</param>
-    void GuildPlayerKicked(string playerName);
+    ValueTask GuildPlayerKickedAsync(string playerName);
 
     /// <summary>
     /// Notifies the game server that a guild got deleted.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
-    void GuildDeleted(uint guildId);
+    ValueTask GuildDeletedAsync(uint guildId);
 
     /// <summary>
     /// Assigns a guild to a player.
@@ -29,5 +29,5 @@ public interface IGuildChangePublisher
     /// <param name="serverId">The server identifier.</param>
     /// <param name="characterName">Name of the character.</param>
     /// <param name="status">The status.</param>
-    void AssignGuildToPlayer(byte serverId, string characterName, GuildMemberStatus status);
+    ValueTask AssignGuildToPlayerAsync(byte serverId, string characterName, GuildMemberStatus status);
 }

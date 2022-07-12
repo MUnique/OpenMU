@@ -16,7 +16,7 @@ public class ChatRequestAction
     /// </summary>
     /// <param name="player">The player who requests the chat.</param>
     /// <param name="friendName">Name of the friend, with which the player wants to chat.</param>
-    public void RequestChat(Player player, string friendName)
+    public async ValueTask RequestChatAsync(Player player, string friendName)
     {
         var character = player.SelectedCharacter;
         if (character is null)
@@ -25,8 +25,10 @@ public class ChatRequestAction
         }
 
         var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
-
-        friendServer?.CreateChatRoom(character.Name, friendName);
+        if (friendServer is { })
+        {
+            await friendServer.CreateChatRoomAsync(character.Name, friendName);
+        }
     }
 
     /// <summary>
@@ -36,7 +38,7 @@ public class ChatRequestAction
     /// <param name="friendName">Name of the friend.</param>
     /// <param name="roomId">The room identifier.</param>
     /// <param name="requestId">The request identifier.</param>
-    public void InviteFriendToChat(Player player, string friendName, ushort roomId, uint requestId)
+    public async ValueTask InviteFriendToChatAsync(Player player, string friendName, ushort roomId, uint requestId)
     {
         var character = player.SelectedCharacter;
         if (character is null)
@@ -45,10 +47,10 @@ public class ChatRequestAction
         }
 
         var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
-        if (friendServer != null)
+        if (friendServer is { })
         {
-            var result = friendServer.InviteFriendToChatRoom(character.Name, friendName, roomId);
-            player.ViewPlugIns.GetPlugIn<IShowFriendInvitationResultPlugIn>()?.ShowFriendInvitationResult(result, requestId);
+            var result = await friendServer.InviteFriendToChatRoomAsync(character.Name, friendName, roomId);
+            await player.InvokeViewPlugInAsync<IShowFriendInvitationResultPlugIn>(p => p.ShowFriendInvitationResultAsync(result, requestId)).ConfigureAwait(false);
         }
     }
 }

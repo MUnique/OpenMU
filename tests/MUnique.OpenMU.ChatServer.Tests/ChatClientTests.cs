@@ -146,7 +146,7 @@ public class ChatClientTests
         var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
         var expectedPacket = new byte[] { 0xC1, 0x0C, 0x04, 0x01, 0x06, 0xBD, 0x8E, 0xEA, 0xBD, 0x8E, 0xEA, 0xFC };
-        client.SendMessage(1, "AAAAAA");
+        await client.SendMessageAsync(1, "AAAAAA");
         var sendResult = await duplexPipe.SendPipe.Reader.ReadAsync();
         var sentPacket = sendResult.Buffer.ToArray();
         Assert.That(sentPacket, Is.EqualTo(expectedPacket));
@@ -257,7 +257,7 @@ public class ChatClientTests
     }
 
     /// <summary>
-    /// Tests if a call to <see cref="ChatClient.LogOff" /> removes it from the chatroom,
+    /// Tests if a call to <see cref="ChatClient.LogOffAsync" /> removes it from the chatroom,
     /// and the other remaining client gets notified about it.
     /// </summary>
     /// <returns>The async task.</returns>
@@ -282,7 +282,7 @@ public class ChatClientTests
         var aliceAuthPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
         await alicePipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(aliceAuthPacket);
 
-        bobsClient.LogOff();
+        await bobsClient.LogOffAsync();
 
         await Task.Delay(100);
 

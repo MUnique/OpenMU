@@ -4,8 +4,6 @@
 
 namespace MUnique.OpenMU.Network.Packets;
 
-using System.Buffers;
-
 /// <summary>
 /// Extensions for byte spans to read and write data.
 /// These may be called by the generated code, so please don't delete unused ones - they could be used in the future.
@@ -112,7 +110,17 @@ public static class ByteSpanExtensions
     public static string ExtractString(this Span<byte> span, int startIndex, int maximumBytes, Encoding encoding)
     {
         var content = span.Slice(startIndex, Math.Min(span.Length - startIndex, maximumBytes)).ToArray();
-        int count = content.TakeWhile(b => b != 0).Count();
+        int count = 0;
+        for (int i = 0; i < content.Length; i++)
+        {
+            if (content[i] == 0)
+            {
+                break;
+            }
+
+            count++;
+        }
+
         return encoding.GetString(content, 0, count);
     }
 
@@ -125,16 +133,7 @@ public static class ByteSpanExtensions
     public static void WriteString(this Span<byte> target, string text, Encoding encoding)
     {
         target.Clear();
-        var array = ArrayPool<byte>.Shared.Rent(encoding.GetByteCount(text));
-        try
-        {
-            var size = encoding.GetBytes(text, 0, text.Length, array, 0);
-            array.AsSpan(0, size).CopyTo(target);
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(array, true);
-        }
+        encoding.GetBytes(text, target);
     }
 
     /// <summary>

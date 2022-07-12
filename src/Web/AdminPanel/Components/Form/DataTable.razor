@@ -129,7 +129,7 @@
         try
         {
             this.StateHasChanged();
-            var loadedItems = await this._dataService.Get((page - 1) * this.PageSize, this.PageSize);
+            var loadedItems = await this._dataService.GetAsync((page - 1) * this.PageSize, this.PageSize);
             var isRefresh = this.Page == page;
             if (isRefresh)
             {

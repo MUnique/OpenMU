@@ -27,15 +27,15 @@ public class ShowEffectPlugIn : IShowEffectPlugIn
     public ShowEffectPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowEffect(IIdentifiable target, IShowEffectPlugIn.EffectType effectType)
+    public async ValueTask ShowEffectAsync(IIdentifiable target, IShowEffectPlugIn.EffectType effectType)
     {
         if (effectType == IShowEffectPlugIn.EffectType.Swirl)
         {
-            this._player.Connection?.SendShowSwirl(target.GetId(this._player));
+            await this._player.Connection.SendShowSwirlAsync(target.GetId(this._player));
         }
         else
         {
-            this._player.Connection?.SendShowEffect(target.GetId(this._player), Convert(effectType));
+            await this._player.Connection.SendShowEffectAsync(target.GetId(this._player), Convert(effectType));
         }
     }
 

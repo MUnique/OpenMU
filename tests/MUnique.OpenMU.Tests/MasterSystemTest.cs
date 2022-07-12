@@ -49,7 +49,7 @@ public class MasterSystemTest
     [Test]
     public void FailedInsufficientLevelUpPoints()
     {
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter!.LearnedSkills, Is.Empty);
     }
 
@@ -60,7 +60,7 @@ public class MasterSystemTest
     public void Succeeded()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Is.Not.Empty);
     }
 
@@ -71,7 +71,7 @@ public class MasterSystemTest
     public void RankNotSufficient()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank2);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Is.Empty);
     }
 
@@ -82,9 +82,9 @@ public class MasterSystemTest
     public void PreviousRankTooLowLevel()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 9;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank2);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(1));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.First().Skill, Is.SameAs(this._skillRank1));
     }
@@ -96,9 +96,9 @@ public class MasterSystemTest
     public void PreviousRankEnoughLevels()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank2);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank1), Is.True);
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank2), Is.True);
@@ -111,12 +111,12 @@ public class MasterSystemTest
     public void MinimumLevel10WithEnoughPoints()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank2);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         this._player.SelectedCharacter.LearnedSkills.Last().Level = 10;
         this._player.SelectedCharacter.MasterLevelUpPoints = 10;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank3);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank3);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(3));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank3), Is.True);
     }
@@ -128,12 +128,12 @@ public class MasterSystemTest
     public void MinimumLevel10WithoutEnoughPoints()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank2);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         this._player.SelectedCharacter.LearnedSkills.Last().Level = 10;
         this._player.SelectedCharacter.MasterLevelUpPoints = 9;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank3);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank3);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank3), Is.False);
     }
@@ -145,7 +145,7 @@ public class MasterSystemTest
     public void AddedSkillGotLevel()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.LearnedSkills.First().Level, Is.EqualTo(1));
     }
 
@@ -156,8 +156,8 @@ public class MasterSystemTest
     public void AddLevelToLearnedSkill()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.LearnedSkills.First().Level, Is.EqualTo(2));
     }
 
@@ -168,11 +168,11 @@ public class MasterSystemTest
     public void RequiredSkillNotLearned()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
 
         this._skillRank2.MasterDefinition!.RequiredMasterSkills.Add(new Skill());
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank2);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(1));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank2), Is.False);
     }
@@ -184,10 +184,10 @@ public class MasterSystemTest
     public void RequiredSkillLearned()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
         this._skillRank2.MasterDefinition!.RequiredMasterSkills.Add(this._skillRank1);
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank2);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank2), Is.True);
     }
@@ -199,7 +199,7 @@ public class MasterSystemTest
     public void MasterLevelUpPointDecreasedWhenLearned()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(0));
     }
 
@@ -210,7 +210,7 @@ public class MasterSystemTest
     public void MasterLevelUpPointNotDecreasedWhenNotLearned()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank2);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
     }
 
@@ -221,10 +221,10 @@ public class MasterSystemTest
     public void MasterLevelMaximumReached()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 3;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 19;
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
-        this._addAction.AddMasterPoint(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.LearnedSkills.First().Level, Is.EqualTo(20));
         Assert.That(this._player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
     }

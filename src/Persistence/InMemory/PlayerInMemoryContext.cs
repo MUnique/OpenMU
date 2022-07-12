@@ -21,25 +21,28 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc/>
-    public MUnique.OpenMU.DataModel.Entities.LetterBody? GetLetterBodyByHeaderId(Guid headerId)
+    public async ValueTask<MUnique.OpenMU.DataModel.Entities.LetterBody?> GetLetterBodyByHeaderIdAsync(Guid headerId)
     {
-        return this.Manager.GetRepository<LetterBody>().GetAll().FirstOrDefault(body => body.Header.Id == headerId);
+        var allLetters = await this.Manager.GetRepository<LetterBody>().GetAllAsync();
+        return allLetters.FirstOrDefault(body => body.Header.Id == headerId);
     }
 
     /// <inheritdoc/>
-    public MUnique.OpenMU.DataModel.Entities.Account? GetAccountByLoginName(string loginName, string password)
+    public async ValueTask<MUnique.OpenMU.DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password)
     {
-        return this.Manager.GetRepository<Account>().GetAll().FirstOrDefault(account => account.LoginName == loginName && BCrypt.Net.BCrypt.Verify(password, account.PasswordHash));
+        var allAccounts = await this.Manager.GetRepository<Account>().GetAllAsync();
+        return allAccounts.FirstOrDefault(account => account.LoginName == loginName && BCrypt.Net.BCrypt.Verify(password, account.PasswordHash));
     }
 
     /// <inheritdoc/>
-    public IEnumerable<MUnique.OpenMU.DataModel.Entities.Account> GetAccountsOrderedByLoginName(int skip, int count)
+    public async ValueTask<IEnumerable<MUnique.OpenMU.DataModel.Entities.Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count)
     {
-        return this.Manager.GetRepository<Account>().GetAll().OrderBy(a => a.LoginName).Skip(skip).Take(count);
+        var allAccounts = await this.Manager.GetRepository<Account>().GetAllAsync();
+        return allAccounts.OrderBy(a => a.LoginName).Skip(skip).Take(count);
     }
 
     /// <inheritdoc/>
-    public bool CanSaveLetter(Interfaces.LetterHeader letterHeader)
+    public async ValueTask<bool> CanSaveLetterAsync(Interfaces.LetterHeader letterHeader)
     {
         return true;
     }

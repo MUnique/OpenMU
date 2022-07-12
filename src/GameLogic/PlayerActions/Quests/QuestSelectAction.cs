@@ -18,7 +18,7 @@ public class QuestSelectAction
     /// <param name="player">The player.</param>
     /// <param name="group">The <see cref="QuestDefinition.Group"/>.</param>
     /// <param name="number">The <see cref="QuestDefinition.StartingNumber"/>.</param>
-    public void SelectQuest(Player player, short group, short number)
+    public async ValueTask SelectQuestAsync(Player player, short group, short number)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var quest = player.GetQuest(group, number);
@@ -32,7 +32,7 @@ public class QuestSelectAction
         if (questState?.ActiveQuest != null)
         {
             player.Logger.LogDebug("There is already an active quest of this group.");
-            player.ViewPlugIns.GetPlugIn<IQuestProgressPlugIn>()?.ShowQuestProgress(questState.ActiveQuest, false);
+            await player.InvokeViewPlugInAsync<IQuestProgressPlugIn>(p => p.ShowQuestProgressAsync(questState.ActiveQuest, false)).ConfigureAwait(false);
             return;
         }
 
@@ -50,7 +50,7 @@ public class QuestSelectAction
 
         if (quest.StartingNumber == number && quest.Number != number)
         {
-            player.ViewPlugIns.GetPlugIn<IQuestStepInfoPlugIn>()?.ShowQuestStepInfo(quest.Group, quest.StartingNumber);
+            await player.InvokeViewPlugInAsync<IQuestStepInfoPlugIn>(p => p.ShowQuestStepInfoAsync(quest.Group, quest.StartingNumber)).ConfigureAwait(false);
         }
     }
 }

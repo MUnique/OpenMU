@@ -123,7 +123,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     }
 
     /// <inheritdoc />
-    public Task<List<PlugInConfigurationViewItem>> Get(int offset, int count)
+    public async Task<List<PlugInConfigurationViewItem>> GetAsync(int offset, int count)
     {
         var result = new List<PlugInConfigurationViewItem>();
 
@@ -131,7 +131,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         {
             using var context = this._persistenceContextProvider.CreateNewContext();
             var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
-            foreach (var gameConfig in context.Get<GameConfiguration>())
+            foreach (var gameConfig in await context.GetAsync<GameConfiguration>())
             {
                 var rest = count - result.Count;
                 if (rest == 0)
@@ -147,7 +147,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
             // swallow
         }
 
-        return Task.FromResult(result);
+        return result;
     }
 
     /// <summary>

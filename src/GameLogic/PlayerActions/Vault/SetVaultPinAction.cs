@@ -17,22 +17,22 @@ public class SetVaultPinAction
     /// <param name="player">The player.</param>
     /// <param name="newPin">The new pin.</param>
     /// <param name="accountPassword">The account password.</param>
-    public void SetPin(Player player, string newPin, string accountPassword)
+    public async ValueTask SetPinAsync(Player player, string newPin, string accountPassword)
     {
         if (player.Account is null || player.IsVaultLocked)
         {
-            player.ViewPlugIns.GetPlugIn<IShowVaultLockChangeResponse>()?.ShowResponse(VaultLockChangeResult.SetPinFailedBecauseLock);
+            await player.InvokeViewPlugInAsync<IShowVaultLockChangeResponse>(p => p.ShowResponseAsync(VaultLockChangeResult.SetPinFailedBecauseLock)).ConfigureAwait(false);
             return;
         }
 
         if (BCrypt.Net.BCrypt.Verify(accountPassword, player.Account.PasswordHash))
         {
             player.Account.VaultPassword = newPin;
-            player.ViewPlugIns.GetPlugIn<IShowVaultLockChangeResponse>()?.ShowResponse(VaultLockChangeResult.Unlocked);
+            await player.InvokeViewPlugInAsync<IShowVaultLockChangeResponse>(p => p.ShowResponseAsync(VaultLockChangeResult.Unlocked)).ConfigureAwait(false);
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IShowVaultLockChangeResponse>()?.ShowResponse(VaultLockChangeResult.SetPinFailedBecauseLock);
+            await player.InvokeViewPlugInAsync<IShowVaultLockChangeResponse>(p => p.ShowResponseAsync(VaultLockChangeResult.SetPinFailedBecauseLock)).ConfigureAwait(false);
         }
     }
 }

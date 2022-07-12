@@ -27,9 +27,9 @@ internal class RemoveVaultPinPlugIn : ISubPacketHandlerPlugIn
     public byte Key => RemoveVaultPin.SubCode;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         RemoveVaultPin message = packet;
-        this._unlockVaultAction.RemovePin(player, message.Password);
+        await this._unlockVaultAction.RemovePinAsync(player, message.Password);
     }
 }

@@ -34,7 +34,7 @@ public class LogInHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => LoginLongPassword.SubCode;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < 42)
         {
@@ -68,7 +68,7 @@ public class LogInHandlerPlugIn : ISubPacketHandlerPlugIn
             player.Logger.LogDebug($"User tries to log in. username:{username}, version:{version.AsString()}, tickCount:{tickCount} ");
         }
 
-        this._loginAction.Login(player, username, password);
+        this._loginAction.LoginAsync(player, username, password);
         if (player is RemotePlayer remotePlayer)
         {
             // Set Version in RemotePlayer so that the right plugins will be selected

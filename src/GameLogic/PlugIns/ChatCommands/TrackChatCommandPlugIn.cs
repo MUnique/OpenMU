@@ -25,7 +25,7 @@ public class TrackChatCommandPlugIn : ChatCommandPlugInBase<TraceChatCommandArgs
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc/>
-    protected override void DoHandleCommand(Player gameMaster, TraceChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, TraceChatCommandArgs arguments)
     {
         var player = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
 
@@ -40,7 +40,7 @@ public class TrackChatCommandPlugIn : ChatCommandPlugInBase<TraceChatCommandArgs
                 Y2 = (byte)(gameMaster.SelectedCharacter.PositionY + 2),
             };
 
-            player.WarpTo(gameMasterLocation);
+            await player.WarpToAsync(gameMasterLocation);
         }
     }
 }

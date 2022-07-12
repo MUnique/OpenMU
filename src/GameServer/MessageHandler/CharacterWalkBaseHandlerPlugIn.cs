@@ -21,7 +21,7 @@ internal abstract class CharacterWalkBaseHandlerPlugIn : IPacketHandlerPlugIn
     public abstract byte Key { get; }
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < 6)
         {
@@ -29,18 +29,18 @@ internal abstract class CharacterWalkBaseHandlerPlugIn : IPacketHandlerPlugIn
         }
 
         WalkRequest request = packet;
-        this.Walk(player, request, new Point(request.SourceX, request.SourceY));
+        await this.WalkAsync(player, request, new Point(request.SourceX, request.SourceY));
     }
 
-    private void Walk(Player player, WalkRequest request, Point sourcePoint)
+    private async ValueTask WalkAsync(Player player, WalkRequest request, Point sourcePoint)
     {
         if (request.Header.Length > 6)
         {
             // in a walk packet, x and y are the current coordinates and the steps are leading us to the target
             var steps = this.GetSteps(sourcePoint, this.DecodePayload(request, out _));
-            var target = this.GetTarget(steps, sourcePoint);
+            var target = this.GetTarget(steps.Span, sourcePoint);
 
-            player.WalkTo(target, steps);
+            await player.WalkToAsync(target, steps);
         }
         else
         {
@@ -59,7 +59,7 @@ internal abstract class CharacterWalkBaseHandlerPlugIn : IPacketHandlerPlugIn
         return source;
     }
 
-    private Span<WalkingStep> GetSteps(Point start, Span<Direction> directions)
+    private Memory<WalkingStep> GetSteps(Point start, Span<Direction> directions)
     {
         var result = new WalkingStep[directions.Length];
         var previousTarget = start;

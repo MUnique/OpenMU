@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Persistence.InMemory;
 /// <summary>
 /// Interface for a memory repository, which allows to modify its stored items.
 /// </summary>
-public interface IMemoryRepository
+public interface IMemoryRepository : IRepository
 {
     /// <summary>
     /// Adds the specified object with the specified key.

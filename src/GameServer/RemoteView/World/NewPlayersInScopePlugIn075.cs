@@ -33,7 +33,7 @@ public class NewPlayersInScopePlugIn075 : INewPlayersInScopePlugIn
     public NewPlayersInScopePlugIn075(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void NewPlayersInScope(IEnumerable<Player> newPlayers, bool isSpawned = true)
+    public async ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newPlayers, bool isSpawned = true)
     {
         if (!newPlayers.Any())
         {
@@ -52,11 +52,11 @@ public class NewPlayersInScopePlugIn075 : INewPlayersInScopePlugIn
         {
             if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)
             {
-                this.SendAddToScopeMessage(isSpawned, connection, newPlayer);
+                await this.SendAddToScopeMessageAsync(isSpawned, connection, newPlayer);
             }
             else
             {
-                this.SendAddTransformedToScopeMessage(isSpawned, connection, newPlayer);
+                await this.SendAddTransformedToScopeMessageAsync(isSpawned, connection, newPlayer);
             }
 
             if (newPlayer.GuildStatus != null)
@@ -67,95 +67,105 @@ public class NewPlayersInScopePlugIn075 : INewPlayersInScopePlugIn
 
         if (guildPlayers != null)
         {
-            this._player.ViewPlugIns.GetPlugIn<IAssignPlayersToGuildPlugIn>()?.AssignPlayersToGuild(guildPlayers, true);
+            await this._player.InvokeViewPlugInAsync<IAssignPlayersToGuildPlugIn>(p => p.AssignPlayersToGuildAsync(guildPlayers, true)).ConfigureAwait(false);
         }
     }
 
-    private void SendAddTransformedToScopeMessage(bool isSpawned, IConnection connection, Player transformedPlayer)
+    private async ValueTask SendAddTransformedToScopeMessageAsync(bool isSpawned, IConnection connection, Player transformedPlayer)
     {
-        using var writer = connection.StartSafeWrite(AddTransformedCharactersToScope075.HeaderType, AddTransformedCharactersToScope075.GetRequiredSize(1));
-        var packet = new AddTransformedCharactersToScope075(writer.Span)
+        int Write()
         {
-            CharacterCount = 1,
-        };
+            var size = AddTransformedCharactersToScope075Ref.GetRequiredSize(1);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new AddTransformedCharactersToScope075Ref(span)
+            {
+                CharacterCount = 1,
+            };
 
-        var playerId = transformedPlayer.GetId(this._player);
-        var playerBlock = packet[0];
-        playerBlock.Id = playerId;
-        if (isSpawned)
-        {
-            playerBlock.Id |= 0x8000;
+            var playerId = transformedPlayer.GetId(this._player);
+            var playerBlock = packet[0];
+            playerBlock.Id = playerId;
+            if (isSpawned)
+            {
+                playerBlock.Id |= 0x8000;
+            }
+
+            playerBlock.Skin = (byte)(transformedPlayer.Attributes?[Stats.TransformationSkin] ?? 0);
+
+            playerBlock.CurrentPositionX = transformedPlayer.Position.X;
+            playerBlock.CurrentPositionY = transformedPlayer.Position.Y;
+
+            playerBlock.IsPoisoned = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
+            playerBlock.IsIced = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
+            playerBlock.IsDamageBuffed = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
+            playerBlock.IsDefenseBuffed = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
+            playerBlock.Name = transformedPlayer.SelectedCharacter!.Name;
+
+            if (transformedPlayer.IsWalking)
+            {
+                playerBlock.TargetPositionX = transformedPlayer.WalkTarget.X;
+                playerBlock.TargetPositionY = transformedPlayer.WalkTarget.Y;
+            }
+            else
+            {
+                playerBlock.TargetPositionX = transformedPlayer.Position.X;
+                playerBlock.TargetPositionY = transformedPlayer.Position.Y;
+            }
+
+            playerBlock.Rotation = transformedPlayer.Rotation.ToPacketByte();
+            playerBlock.HeroState = transformedPlayer.SelectedCharacter.State.Convert();
+            return size;
         }
 
-        playerBlock.Skin = (byte)(transformedPlayer.Attributes?[Stats.TransformationSkin] ?? 0);
-
-        playerBlock.CurrentPositionX = transformedPlayer.Position.X;
-        playerBlock.CurrentPositionY = transformedPlayer.Position.Y;
-
-        playerBlock.IsPoisoned = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
-        playerBlock.IsIced = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
-        playerBlock.IsDamageBuffed = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
-        playerBlock.IsDefenseBuffed = transformedPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
-        playerBlock.Name = transformedPlayer.SelectedCharacter!.Name;
-
-        if (transformedPlayer.IsWalking)
-        {
-            playerBlock.TargetPositionX = transformedPlayer.WalkTarget.X;
-            playerBlock.TargetPositionY = transformedPlayer.WalkTarget.Y;
-        }
-        else
-        {
-            playerBlock.TargetPositionX = transformedPlayer.Position.X;
-            playerBlock.TargetPositionY = transformedPlayer.Position.Y;
-        }
-
-        playerBlock.Rotation = transformedPlayer.Rotation.ToPacketByte();
-        playerBlock.HeroState = transformedPlayer.SelectedCharacter.State.Convert();
-
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
-    private void SendAddToScopeMessage(bool isSpawned, IConnection connection, Player newPlayer)
+    private async ValueTask SendAddToScopeMessageAsync(bool isSpawned, IConnection connection, Player newPlayer)
     {
-        var appearanceSerializer = this._player.AppearanceSerializer;
-        using var writer = connection.StartSafeWrite(AddCharactersToScope075.HeaderType, AddCharactersToScope075.GetRequiredSize(1));
-        var packet = new AddCharactersToScope075(writer.Span)
+        int Write()
         {
-            CharacterCount = 1,
-        };
+            var appearanceSerializer = this._player.AppearanceSerializer;
+            var size = AddCharactersToScope075Ref.GetRequiredSize(1);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new AddCharactersToScope075Ref(span)
+            {
+                CharacterCount = 1,
+            };
 
-        var playerId = newPlayer.GetId(this._player);
-        var playerBlock = packet[0];
-        playerBlock.Id = playerId;
-        if (isSpawned)
-        {
-            playerBlock.Id |= 0x8000;
+            var playerId = newPlayer.GetId(this._player);
+            var playerBlock = packet[0];
+            playerBlock.Id = playerId;
+            if (isSpawned)
+            {
+                playerBlock.Id |= 0x8000;
+            }
+
+            playerBlock.CurrentPositionX = newPlayer.Position.X;
+            playerBlock.CurrentPositionY = newPlayer.Position.Y;
+            appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 12
+
+            playerBlock.IsPoisoned = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
+            playerBlock.IsIced = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
+            playerBlock.IsDamageBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
+            playerBlock.IsDefenseBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
+            playerBlock.Name = newPlayer.SelectedCharacter!.Name;
+
+            if (newPlayer.IsWalking)
+            {
+                playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
+                playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
+            }
+            else
+            {
+                playerBlock.TargetPositionX = newPlayer.Position.X;
+                playerBlock.TargetPositionY = newPlayer.Position.Y;
+            }
+
+            playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
+            playerBlock.HeroState = newPlayer.SelectedCharacter.State.Convert();
+            return size;
         }
 
-        playerBlock.CurrentPositionX = newPlayer.Position.X;
-        playerBlock.CurrentPositionY = newPlayer.Position.Y;
-        appearanceSerializer.WriteAppearanceData(playerBlock.Appearance, newPlayer.AppearanceData, true); // 4 ... 12
-
-        playerBlock.IsPoisoned = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Poisoned);
-        playerBlock.IsIced = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.Iced);
-        playerBlock.IsDamageBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DamageBuff);
-        playerBlock.IsDefenseBuffed = newPlayer.MagicEffectList.ActiveEffects.ContainsKey(EffectNumbers.DefenseBuff);
-        playerBlock.Name = newPlayer.SelectedCharacter!.Name;
-
-        if (newPlayer.IsWalking)
-        {
-            playerBlock.TargetPositionX = newPlayer.WalkTarget.X;
-            playerBlock.TargetPositionY = newPlayer.WalkTarget.Y;
-        }
-        else
-        {
-            playerBlock.TargetPositionX = newPlayer.Position.X;
-            playerBlock.TargetPositionY = newPlayer.Position.Y;
-        }
-
-        playerBlock.Rotation = newPlayer.Rotation.ToPacketByte();
-        playerBlock.HeroState = newPlayer.SelectedCharacter.State.Convert();
-
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

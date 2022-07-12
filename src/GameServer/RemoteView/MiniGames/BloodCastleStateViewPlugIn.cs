@@ -27,15 +27,16 @@ public class BloodCastleStateViewPlugIn : IBloodCastleStateViewPlugin
     public BloodCastleStateViewPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void UpdateState(BloodCastleStatus status, TimeSpan remainingTime, int maxMonster, int curMonster, IIdentifiable? questItemOwner, Item? questItem)
+    public async ValueTask UpdateStateAsync(BloodCastleStatus status, TimeSpan remainingTime, int maxMonster, int curMonster, IIdentifiable? questItemOwner, Item? questItem)
     {
-        this._player.Connection?.SendBloodCastleState(
+        await this._player.Connection.SendBloodCastleStateAsync(
             Convert(status),
             (ushort)remainingTime.TotalSeconds,
             (ushort)maxMonster,
             (ushort)curMonster,
             questItemOwner?.GetId(this._player) ?? 0xFF,
-            (byte)((questItem?.Level + 1) ?? 0xFF));
+            (byte)((questItem?.Level + 1) ?? 0xFF))
+            .ConfigureAwait(false);
     }
 
     private static BloodCastleState.Status Convert(BloodCastleStatus status)
