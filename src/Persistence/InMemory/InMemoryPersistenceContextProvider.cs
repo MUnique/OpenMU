@@ -63,21 +63,22 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
-    public bool DatabaseExists()
+    public Task<bool> DatabaseExistsAsync()
     {
-        return true;
+        return Task.FromResult(true);
     }
 
     /// <inheritdoc />
-    public bool IsDatabaseUpToDate()
+    public Task<bool> IsDatabaseUpToDateAsync()
     {
-        return true;
+        return Task.FromResult(true);
     }
 
     /// <inheritdoc />
-    public void ApplyAllPendingUpdates()
+    public Task ApplyAllPendingUpdatesAsync()
     {
         // we don't need to do anything.
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -87,14 +88,15 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
-    public bool CanConnectToDatabase()
+    public Task<bool> CanConnectToDatabaseAsync()
     {
-        return true;
+        return Task.FromResult(true);
     }
 
     /// <inheritdoc />
-    public void ReCreateDatabase()
+    public Task ReCreateDatabaseAsync()
     {
         this._repositoryManager = new();
+        return Task.CompletedTask;
     }
 }

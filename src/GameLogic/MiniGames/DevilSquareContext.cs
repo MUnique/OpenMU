@@ -42,14 +42,14 @@ public sealed class DevilSquareContext : MiniGameContext
     }
 
     /// <inheritdoc />
-    protected override void OnGameStart(ICollection<Player> players)
+    protected override async ValueTask OnGameStartAsync(ICollection<Player> players)
     {
         foreach (var player in players)
         {
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
         }
 
-        base.OnGameStart(players);
+        await base.OnGameStartAsync(players);
     }
 
     /// <inheritdoc />

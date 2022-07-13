@@ -6,7 +6,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>warnings</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <WarningsAsErrors>nullable;CS4014</WarningsAsErrors>
     <DocumentationFile>bin\$(Configuration)\MUnique.OpenMU.Persistence.SourceGenerator.xml</DocumentationFile>
   </PropertyGroup>
 

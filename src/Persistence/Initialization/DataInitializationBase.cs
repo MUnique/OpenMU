@@ -205,7 +205,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
 
     private GameServerConfiguration CreateGameServerConfiguration(ICollection<GameMapDefinition> maps)
     {
-        var gameServerConfiguration = this.Context!.CreateNew<GameServerConfiguration>();
+        var gameServerConfiguration = this.Context.CreateNew<GameServerConfiguration>();
         gameServerConfiguration.MaximumPlayers = 1000;
 
         // by default we add every map to a server configuration

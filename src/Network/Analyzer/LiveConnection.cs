@@ -161,12 +161,12 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
     private async ValueTask ServerPacketReceived(ReadOnlySequence<byte> data)
     {
         var dataAsArray = data.ToArray();
-        this.SendToClientAsync(dataAsArray);
+        await this.SendToClientAsync(dataAsArray);
     }
 
     private async ValueTask ClientPacketReceived(ReadOnlySequence<byte> data)
     {
         var dataAsArray = data.ToArray();
-        this.SendToServerAsync(dataAsArray);
+        await this.SendToServerAsync(dataAsArray);
     }
 }

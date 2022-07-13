@@ -45,12 +45,12 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <returns>
     ///   <c>true</c> if [is database up to date]; otherwise, <c>false</c>.
     /// </returns>
-    public bool IsDatabaseUpToDate()
+    public async Task<bool> IsDatabaseUpToDateAsync()
     {
         try
         {
             using var installationContext = new EntityDataContext();
-            return !installationContext.Database.GetPendingMigrations().Any();
+            return !(await installationContext.Database.GetPendingMigrationsAsync()).Any();
         }
         catch
         {
@@ -61,10 +61,10 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <summary>
     /// Applies all pending updates to the database schema.
     /// </summary>
-    public void ApplyAllPendingUpdates()
+    public async Task ApplyAllPendingUpdatesAsync()
     {
         using var installationContext = new EntityDataContext();
-        installationContext.Database.Migrate();
+        await installationContext.Database.MigrateAsync();
     }
 
     /// <summary>
@@ -73,8 +73,8 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <param name="cancellationToken">The cancellation token.</param>
     public async Task WaitForUpdatedDatabase(CancellationToken cancellationToken = default)
     {
-        while (!this.DatabaseExists()
-               || !this.IsDatabaseUpToDate())
+        while (!await this.DatabaseExistsAsync()
+               || !await this.IsDatabaseUpToDateAsync())
         {
             await Task.Delay(3000, cancellationToken);
         }
@@ -109,12 +109,12 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// Determines if the database exists already, by checking if any migration has been applied.
     /// </summary>
     /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
-    public bool DatabaseExists()
+    public async Task<bool> DatabaseExistsAsync()
     {
         try
         {
-            using var installationContext = new EntityDataContext();
-            return installationContext.Database.GetAppliedMigrations().Any();
+            await using var installationContext = new EntityDataContext();
+            return (await installationContext.Database.GetAppliedMigrationsAsync()).Any();
         }
         catch
         {
@@ -128,23 +128,23 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <returns>
     ///   <c>true</c> if this instance can connect to the database; otherwise, <c>false</c>.
     /// </returns>
-    public bool CanConnectToDatabase()
+    public async Task<bool> CanConnectToDatabaseAsync()
     {
-        using var installationContext = new EntityDataContext();
-        return installationContext.Database.CanConnect();
+        await using var installationContext = new EntityDataContext();
+        return await installationContext.Database.CanConnectAsync();
     }
 
     /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
-    public void ReCreateDatabase()
+    public async Task ReCreateDatabaseAsync()
     {
-        using (var installationContext = new EntityDataContext())
+        await using (var installationContext = new EntityDataContext())
         {
-            installationContext.Database.EnsureDeleted();
+            await installationContext.Database.EnsureDeletedAsync();
         }
 
-        this.ApplyAllPendingUpdates();
+        await this.ApplyAllPendingUpdatesAsync();
 
         // We create a new repository manager, so that the previously loaded data is not effective anymore.
         this.CachingRepositoryManager = new CachingRepositoryManager(this._loggerFactory);

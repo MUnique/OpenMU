@@ -74,7 +74,8 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
         var result = await context.Context.Set<T>().ToListAsync();
         await this.LoadDependentDataAsync(result, context.Context);
         var newItems = context.Context.ChangeTracker.Entries<T>().Where(e => e.State == EntityState.Added).Select(e => e.Entity);
-        return result.Concat(newItems);
+        result.AddRange(newItems);
+        return result;
     }
 
     /// <inheritdoc/>

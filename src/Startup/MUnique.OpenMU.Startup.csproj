@@ -6,7 +6,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <WarningsAsErrors>nullable;CS4014</WarningsAsErrors>
     <DockerComposeProjectPath>..\..\deploy\all-in-one\docker-compose-all-in-one.dcproj</DockerComposeProjectPath>
     <UserSecretsId>4D77CA72-8356-43AA-8689-00F2367561B2</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>

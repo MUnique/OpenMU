@@ -2,11 +2,14 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Nito.AsyncEx;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Interfaces;
 
@@ -18,6 +21,7 @@ public class EntityFrameworkContextBase : IContext
 {
     private readonly bool _isOwner;
     private readonly IConfigurationChangePublisher? _changePublisher;
+    private readonly AsyncLock _lock = new AsyncLock();
     private bool _isDisposed;
 
     /// <summary>Initializes a new instance of the <see cref="EntityFrameworkContextBase" /> class.</summary>
@@ -55,6 +59,8 @@ public class EntityFrameworkContextBase : IContext
     /// <inheritdoc/>
     public bool SaveChanges()
     {
+        using var l = this._lock.Lock();
+
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
         // Otherwise, we can accept them.
         var acceptChanges = this._changePublisher is null;
@@ -67,6 +73,7 @@ public class EntityFrameworkContextBase : IContext
     /// <inheritdoc/>
     public async ValueTask<bool> SaveChangesAsync()
     {
+        using var l = await this._lock.LockAsync();
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
         // Otherwise, we can accept them.
         var acceptChanges = this._changePublisher is null;
@@ -79,6 +86,7 @@ public class EntityFrameworkContextBase : IContext
     /// <inheritdoc />
     public bool Detach(object item)
     {
+        using var l = this._lock.Lock();
         var entry = this.Context.Entry(item);
         if (entry is null)
         {
@@ -95,6 +103,7 @@ public class EntityFrameworkContextBase : IContext
     /// <inheritdoc />
     public void Attach(object item)
     {
+        using var l = this._lock.Lock();
         this.Context.Attach(item);
     }
 
@@ -109,6 +118,7 @@ public class EntityFrameworkContextBase : IContext
     public T CreateNew<T>(params object?[] args)
         where T : class
     {
+        using var l = this._lock.Lock();
         var instance = typeof(CachingEntityFrameworkContext).Assembly.CreateNew<T>(args);
         this.Context.Add(instance);
         return instance;
@@ -118,6 +128,7 @@ public class EntityFrameworkContextBase : IContext
     public async ValueTask<bool> DeleteAsync<T>(T obj)
         where T : class
     {
+        using var l = await this._lock.LockAsync();
         var result = this.Context.Remove(obj) is { };
         if (result)
         {
@@ -131,6 +142,7 @@ public class EntityFrameworkContextBase : IContext
     public async ValueTask<T?> GetByIdAsync<T>(Guid id)
         where T : class
     {
+        using var l = await this._lock.LockAsync();
         using var context = this.RepositoryManager.ContextStack.UseContext(this);
         return await this.RepositoryManager.GetRepository<T>().GetByIdAsync(id);
     }
@@ -139,6 +151,7 @@ public class EntityFrameworkContextBase : IContext
     public async ValueTask<IEnumerable<T>> GetAsync<T>()
         where T : class
     {
+        using var l = await this._lock.LockAsync();
         using var context = this.RepositoryManager.ContextStack.UseContext(this);
         return await this.RepositoryManager.GetRepository<T>().GetAllAsync();
     }

@@ -216,7 +216,11 @@ internal sealed class Program : IDisposable
                     .AddIpResolver(args)
                     .AddSingleton(this._gameServers)
                     .AddSingleton(this._gameServers.Values)
-                    .AddSingleton(s => this.DeterminePersistenceContextProvider(args, s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered.")))
+                    .AddSingleton(s => 
+                        this.DeterminePersistenceContextProviderAsync(
+                            args,
+                            s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."))
+                            .WaitAndUnwrapException())
                     .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
                     .AddSingleton<ILoginServer, LoginServer>()
                     .AddSingleton<IGuildServer, GuildServer>()
@@ -297,7 +301,7 @@ internal sealed class Program : IDisposable
         return parameter.Substring(parameter.IndexOf(':') + 1);
     }
 
-    private IMigratableDatabaseContextProvider DeterminePersistenceContextProvider(string[] args, ILoggerFactory loggerFactory)
+    private async Task<IMigratableDatabaseContextProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory)
     {
         var version = this.GetVersionParameter(args);
 
@@ -305,32 +309,32 @@ internal sealed class Program : IDisposable
         if (args.Contains("-demo"))
         {
             contextProvider = new InMemoryPersistenceContextProvider();
-            this.InitializeData(version, loggerFactory, contextProvider);
+            await this.InitializeDataAsync(version, loggerFactory, contextProvider);
         }
         else
         {
-            contextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory);
+            contextProvider = await this.PrepareRepositoryManagerAsync(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory);
         }
 
         return contextProvider;
     }
 
-    private IMigratableDatabaseContextProvider PrepareRepositoryManager(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
+    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryManagerAsync(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
     {
         var contextProvider = new PersistenceContextProvider(loggerFactory, null);
-        if (reinit || !contextProvider.DatabaseExists())
+        if (reinit || !await contextProvider.DatabaseExistsAsync())
         {
             this._logger.Information("The database is getting (re-)initialized...");
-            contextProvider.ReCreateDatabase();
-            this.InitializeData(version, loggerFactory, contextProvider);
+            await contextProvider.ReCreateDatabaseAsync();
+            await this.InitializeDataAsync(version, loggerFactory, contextProvider);
             this._logger.Information("...initialization finished.");
         }
-        else if (!contextProvider.IsDatabaseUpToDate())
+        else if (!await contextProvider.IsDatabaseUpToDateAsync())
         {
             if (autoupdate)
             {
                 Console.WriteLine("The database needs to be updated before the server can be started. Updating...");
-                contextProvider.ApplyAllPendingUpdates();
+                await contextProvider.ApplyAllPendingUpdatesAsync();
                 Console.WriteLine("The database has been successfully updated.");
             }
             else
@@ -339,7 +343,7 @@ internal sealed class Program : IDisposable
                 var key = Console.ReadLine()?.ToLowerInvariant();
                 if (key == "y")
                 {
-                    contextProvider.ApplyAllPendingUpdates();
+                    await contextProvider.ApplyAllPendingUpdatesAsync();
                     Console.WriteLine("The database has been successfully updated.");
                 }
                 else
@@ -357,7 +361,7 @@ internal sealed class Program : IDisposable
         return contextProvider;
     }
 
-    private void InitializeData(string version, ILoggerFactory loggerFactory, IPersistenceContextProvider contextProvider)
+    private async Task InitializeDataAsync(string version, ILoggerFactory loggerFactory, IPersistenceContextProvider contextProvider)
     {
         var serviceContainer = new ServiceContainer();
         serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
@@ -366,6 +370,6 @@ internal sealed class Program : IDisposable
         var plugInManager = new PlugInManager(null, loggerFactory, serviceContainer);
         plugInManager.DiscoverAndRegisterPlugInsOf<IDataInitializationPlugIn>();
         var initialization = plugInManager.GetStrategy<IDataInitializationPlugIn>(version) ?? throw new Exception("Data initialization plugin not found");
-        initialization.CreateInitialDataAsync(3, true);
+        await initialization.CreateInitialDataAsync(3, true);
     }
 }

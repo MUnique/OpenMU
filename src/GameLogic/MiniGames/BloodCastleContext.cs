@@ -177,7 +177,7 @@ public sealed class BloodCastleContext : MiniGameContext
     }
 
     /// <inheritdoc />
-    protected override void OnGameStart(ICollection<Player> players)
+    protected override async ValueTask OnGameStartAsync(ICollection<Player> players)
     {
         foreach (var player in players)
         {
@@ -185,7 +185,7 @@ public sealed class BloodCastleContext : MiniGameContext
         }
 
         _ = Task.Run(async () => await this.ShowRemainingTimeLoopAsync(this.GameEndedToken), this.GameEndedToken);
-        base.OnGameStart(players);
+        await base.OnGameStartAsync(players);
     }
 
     /// <inheritdoc />

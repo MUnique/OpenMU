@@ -43,17 +43,17 @@ public class SetupService
     /// <summary>
     /// Gets a value indicating whether this application can connect to database.
     /// </summary>
-    public bool CanConnectToDatabase => this._contextProvider.CanConnectToDatabase();
+    public bool CanConnectToDatabase => this._contextProvider.CanConnectToDatabaseAsync().WaitAndUnwrapException();
 
     /// <summary>
     /// Gets a value indicating whether the data is installed.
     /// </summary>
-    public bool IsInstalled => this._contextProvider.DatabaseExists();
+    public bool IsInstalled => this._contextProvider.DatabaseExistsAsync().WaitAndUnwrapException();
 
     /// <summary>
     /// Gets a value indicating whether the database requires an update.
     /// </summary>
-    public bool IsUpdateRequired => !this._contextProvider.IsDatabaseUpToDate();
+    public bool IsUpdateRequired => !this._contextProvider.IsDatabaseUpToDateAsync().WaitAndUnwrapException();
 
     /// <summary>
     /// Gets a value indicating whether the data is initialized.
@@ -88,7 +88,7 @@ public class SetupService
     /// <param name="cancellationToken">The cancellation token.</param>
     public Task InstallUpdatesAsync(CancellationToken cancellationToken)
     {
-        this._contextProvider.ApplyAllPendingUpdates();
+        this._contextProvider.ApplyAllPendingUpdatesAsync();
         return this._contextProvider.WaitForUpdatedDatabase(cancellationToken);
     }
 
@@ -98,7 +98,7 @@ public class SetupService
     /// <param name="dataInitialization">The data initialization action.</param>
     public void CreateDatabase(Action dataInitialization)
     {
-        this._contextProvider.ReCreateDatabase();
+        this._contextProvider.ReCreateDatabaseAsync();
         dataInitialization();
         this.DatabaseInitialized?.Invoke(this, EventArgs.Empty);
     }

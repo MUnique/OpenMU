@@ -15,7 +15,7 @@ public interface IMigratableDatabaseContextProvider : IPersistenceContextProvide
     /// Determines if the database exists already, by checking if any migration has been applied.
     /// </summary>
     /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
-    bool DatabaseExists();
+    Task<bool> DatabaseExistsAsync();
 
     /// <summary>
     /// Determines whether the database schema is up to date.
@@ -23,12 +23,12 @@ public interface IMigratableDatabaseContextProvider : IPersistenceContextProvide
     /// <returns>
     ///   <c>true</c> if the database is up to date; otherwise, <c>false</c>.
     /// </returns>
-    bool IsDatabaseUpToDate();
+    Task<bool> IsDatabaseUpToDateAsync();
 
     /// <summary>
     /// Applies all pending updates to the database schema.
     /// </summary>
-    void ApplyAllPendingUpdates();
+    Task ApplyAllPendingUpdatesAsync();
 
     /// <summary>
     /// Waits until all database updates are applied.
@@ -42,10 +42,10 @@ public interface IMigratableDatabaseContextProvider : IPersistenceContextProvide
     /// <returns>
     ///   <c>true</c> if this instance can connect to the database; otherwise, <c>false</c>.
     /// </returns>
-    bool CanConnectToDatabase();
+    Task<bool> CanConnectToDatabaseAsync();
 
     /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
-    void ReCreateDatabase();
+    Task ReCreateDatabaseAsync();
 }

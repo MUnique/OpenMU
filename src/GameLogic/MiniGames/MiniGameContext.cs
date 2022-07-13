@@ -60,7 +60,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
         this.State = MiniGameState.Open;
 
-        _ = Task.Run(this.RunGameAsync);
+        _ = Task.Run(() => this.RunGameAsync(this.GameEndedToken), this.GameEndedToken);
     }
 
     /// <summary>
@@ -150,6 +150,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     {
         base.Dispose(disposing);
 
+        // TODO: implement AsyncDisposable
         using (this._enterLock.Lock())
         {
             this.State = MiniGameState.Disposed;
@@ -186,7 +187,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// Will be called when the game has been started.
     /// </summary>
     /// <param name="players">The player which started with the game.</param>
-    protected virtual void OnGameStart(ICollection<Player> players)
+    protected virtual async ValueTask OnGameStartAsync(ICollection<Player> players)
     {
         var startEvents = this.Definition.ChangeEvents
             .OrderBy(e => e.Index)
@@ -195,7 +196,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
         foreach (var changeEvent in startEvents)
         {
-            this.ApplyChangeEvent(changeEvent);
+            await this.ApplyChangeEventAsync(changeEvent);
         }
 
         this._remainingEvents.AddRange(
@@ -468,21 +469,38 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
     }
 
-    private void RunSpawnWaves()
-    {
-        foreach (var spawnWave in this.Definition.SpawnWaves)
-        {
-            this.RunSpawnWaveAsync(spawnWave).ConfigureAwait(false);
-        }
-    }
-
-    private async ValueTask RunSpawnWaveAsync(MiniGameSpawnWave spawnWave)
+    private async Task RunSpawnWavesAsync(CancellationToken cancellationToken)
     {
         try
         {
+            foreach (var spawnWave in this.Definition.SpawnWaves)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                await this.RunSpawnWaveAsync(spawnWave, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // game ended.
+        }
+    }
+
+    private async ValueTask RunSpawnWaveAsync(MiniGameSpawnWave spawnWave, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             if (spawnWave.StartTime > TimeSpan.Zero)
             {
-                await Task.Delay(spawnWave.StartTime, this._gameEndedCts.Token).ConfigureAwait(false);
+                await Task.Delay(spawnWave.StartTime, cancellationToken).ConfigureAwait(false);
             }
 
             this.Logger.LogInformation("Starting next wave: {0}", spawnWave.Description);
@@ -493,11 +511,8 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
             this._currentSpawnWaves.Add(spawnWave.WaveNumber);
             await this._mapInitializer.InitializeNpcsOnWaveStartAsync(this.Map, this, spawnWave.WaveNumber);
-            await Task.Delay(spawnWave.EndTime - spawnWave.StartTime, this._gameEndedCts.Token).ConfigureAwait(false);
+            await Task.Delay(spawnWave.EndTime - spawnWave.StartTime, cancellationToken).ConfigureAwait(false);
             this.Logger.LogInformation("Wave ended: {0}", spawnWave.Description);
-        }
-        catch (TaskCanceledException)
-        {
         }
         catch (Exception ex)
         {
@@ -509,7 +524,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
     }
 
-    private async ValueTask RunGameAsync()
+    private async ValueTask RunGameAsync(CancellationToken cancellationToken)
     {
         var countdownMessageDuration = TimeSpan.FromSeconds(30);
         try
@@ -518,7 +533,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
             var gameDuration = this.Definition.GameDuration.AtLeast(countdownMessageDuration);
             var exitDuration = this.Definition.ExitDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
 
-            await Task.Delay(enterDuration, this._gameEndedCts.Token).ConfigureAwait(false);
+            await Task.Delay(enterDuration, cancellationToken).ConfigureAwait(false);
             if (this._enteredPlayers.Count == 0)
             {
                 return;
@@ -531,7 +546,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
             try
             {
-                await Task.Delay(gameDuration, this._gameEndedCts.Token).ConfigureAwait(false);
+                await Task.Delay(gameDuration, cancellationToken).ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
@@ -569,9 +584,9 @@ public class MiniGameContext : Disposable, IEventStateProvider
             players = this._enteredPlayers.ToList();
         }
 
-        this.OnGameStart(players);
-        this.RunSpawnWaves();
+        await this.OnGameStartAsync(players);
         await this._mapInitializer.InitializeNpcsOnEventStartAsync(this.Map, this);
+        _ = Task.Run(() => this.RunSpawnWavesAsync(this.GameEndedToken), this.GameEndedToken);
     }
 
     private async ValueTask ShowCountdownMessageAsync()
@@ -702,11 +717,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
         return true;
     }
 
-    private void ApplyChangeEvent(MiniGameChangeEvent changeEvent, string? triggeredBy = null)
+    private async Task ApplyChangeEventAsync(MiniGameChangeEvent changeEvent, string? triggeredBy = null)
     {
         if (changeEvent.TerrainChanges.Any())
         {
-            this.UpdateClientTerrain(changeEvent.TerrainChanges);
+            await this.UpdateClientTerrain(changeEvent.TerrainChanges);
             this.UpdateServerTerrain(changeEvent.TerrainChanges);
         }
 
@@ -714,15 +729,13 @@ public class MiniGameContext : Disposable, IEventStateProvider
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this);
+                await this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this);
             }
         }
 
         if (changeEvent.Message is { } message)
         {
-            _ = Task.Run(async () => await this.ForEachPlayerAsync(player => player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()
-                                                                                 ?.ShowMessageAsync(string.Format(message, triggeredBy), Interfaces.MessageType.GoldenCenter).AsTask()
-                                                                             ?? Task.CompletedTask));
+            await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(string.Format(message, triggeredBy), Interfaces.MessageType.GoldenCenter)).AsTask());
         }
     }
 
@@ -744,7 +757,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
     }
 
-    private void UpdateClientTerrain(ICollection<MiniGameTerrainChange> changes)
+    private async ValueTask UpdateClientTerrain(ICollection<MiniGameTerrainChange> changes)
     {
         var groupedChanges = changes
             .GroupBy(
@@ -753,14 +766,13 @@ public class MiniGameContext : Disposable, IEventStateProvider
             .Select(g => (g.Key, Areas: g.ToList()))
             .ToList();
 
-        Task.Run(async () => await this.ForEachPlayerAsync(async player =>
+        await this.ForEachPlayerAsync(async player =>
         {
             foreach (var group in groupedChanges)
             {
-                await (player.ViewPlugIns.GetPlugIn<IChangeTerrainAttributesViewPlugin>()?
-                    .ChangeAttributesAsync(group.Key.TerrainAttribute, group.Key.SetTerrainAttribute, group.Areas) ?? ValueTask.CompletedTask);
+                await player.InvokeViewPlugInAsync<IChangeTerrainAttributesViewPlugin>(p => p.ChangeAttributesAsync(group.Key.TerrainAttribute, group.Key.SetTerrainAttribute, group.Areas));
             }
-        }));
+        });
     }
 
     private void CheckKillForEventChanges(IAttackable killedObject)
@@ -774,7 +786,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         {
             this._remainingEvents.Remove(nextEvent);
             this.UpdateNextEvent();
-            this.ApplyChangeEvent(nextEvent.Definition, killedObject.LastDeath?.KillerName);
+            _ = Task.Run(() => this.ApplyChangeEventAsync(nextEvent.Definition, killedObject.LastDeath?.KillerName));
         }
     }
 

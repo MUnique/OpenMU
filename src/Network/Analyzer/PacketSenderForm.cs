@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network.Analyzer;
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 /// <summary>
@@ -60,29 +61,36 @@ public partial class PacketSenderForm : Form
         }
     }
 
-    private void SendButtonClick(object? sender, EventArgs e)
+    private async void SendButtonClick(object? sender, EventArgs e)
     {
-        foreach (var line in this.packetTextBox.Lines.Where(l => !string.IsNullOrEmpty(l.Trim())))
+        try
         {
-            if (!CapturedConnectionExtensions.TryParseArray(line.Trim(), out var data))
+            foreach (var line in this.packetTextBox.Lines.Where(l => !string.IsNullOrEmpty(l.Trim())))
             {
-                MessageBox.Show("Wrong format. Please enter the packet in hex format with a space between each byte. \n Example: C1 03 30", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+                if (!CapturedConnectionExtensions.TryParseArray(line.Trim(), out var data))
+                {
+                    MessageBox.Show("Wrong format. Please enter the packet in hex format with a space between each byte. \n Example: C1 03 30", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
-            if (!this._connection.IsConnected)
-            {
-                return;
-            }
+                if (!this._connection.IsConnected)
+                {
+                    return;
+                }
 
-            if (this.toClientRadioButton.Checked)
-            {
-                this._connection.SendToClientAsync(data);
+                if (this.toClientRadioButton.Checked)
+                {
+                    await this._connection.SendToClientAsync(data);
+                }
+                else
+                {
+                    await this._connection.SendToServerAsync(data);
+                }
             }
-            else
-            {
-                this._connection.SendToServerAsync(data);
-            }
+        }
+        catch (Exception ex)
+        {
+            Debug.Fail(ex.Message, ex.StackTrace);
         }
     }
 }

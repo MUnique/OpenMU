@@ -9,7 +9,7 @@
 <div class="map-select">
     <label for="mapSelect">Selected Map:</label>
     <select title="Map" @onchange=this.OnMapSelected id="mapSelect" autocomplete="off">
-        @foreach (var map in this.Maps)
+        @foreach (var map in this.Maps ?? Enumerable.Empty<GameMapDefinition>())
         {
             <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>Map: @map.ToString()</option>
         }
@@ -41,32 +41,35 @@
     </div>
 </div>
 
-<div class="map-host" width="@(_scale * 255)" height="@(_scale * 255)" @onmousemove="@this.OnMouseMove" @onmouseup="() => _resizerPosition = null">
-    <img src="@(this._terrainImage.ToBase64String(PngFormat.Instance))"
-         width="@(_scale * 255)"
-         height="@(_scale * 255)"
-         alt="Terrain of @this.Map.Name"/>
-    @foreach (var obj in this.GetMapObjects())
-    {
-        <div class="@this.GetCssClass(obj)"
-             title="@obj.ToString()"
-             style="@this.GetSizeAndPositionStyle(obj)"
-             @onclick="@(_ => { if (!this._createMode) { this._focusedObject = obj; } })">
-            @if (this.ShowResizers(obj))
-            {
-                <Resizers Resizing="@this.OnStartResizing" />
-            }
-            else if (this.ShowArrow(obj, out var spawn))
-            {
-                <div class="arrow @this.GetFocusedRotation()"></div>
-            }
-            else
-            {
-                // show nothing
-            }
-        </div>
-    }
-</div>
+@if (this._terrainImage is { })
+{
+    <div class="map-host" width="@(_scale * 255)" height="@(_scale * 255)" @onmousemove="@this.OnMouseMove" @onmouseup="() => _resizerPosition = null">
+        <img src="@(this._terrainImage.ToBase64String(PngFormat.Instance))"
+             width="@(_scale * 255)"
+             height="@(_scale * 255)"
+             alt="Terrain of @this.Map.Name"/>
+        @foreach (var obj in this.GetMapObjects())
+        {
+            <div class="@this.GetCssClass(obj)"
+                 title="@obj.ToString()"
+                 style="@this.GetSizeAndPositionStyle(obj)"
+                 @onclick="@(_ => { if (!this._createMode) { this._focusedObject = obj; } })">
+                @if (this.ShowResizers(obj))
+                {
+                    <Resizers Resizing="@this.OnStartResizing"/>
+                }
+                else if (this.ShowArrow(obj, out var spawn))
+                {
+                    <div class="arrow @this.GetFocusedRotation()"></div>
+                }
+                else
+                {
+                    // show nothing
+                }
+            </div>
+        }
+    </div>
+}
 
 @if (!this._createMode)
 {

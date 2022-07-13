@@ -83,9 +83,17 @@ public partial class MapEditor : IDisposable
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
         this.NotificationService.PropertyChanged += this.OnPropertyChanged;
-        this.Maps = (await this.PersistenceContext.GetAsync<GameMapDefinition>()).OrderBy(c => c.Number).ToList();
+        try
+        {
+            this.Maps = (await this.PersistenceContext.GetAsync<GameMapDefinition>()).OrderBy(c => c.Number).ToList();
+        }
+        catch (Exception ex)
+        {
+            
+        }
+        
+        await base.OnInitializedAsync();
     }
 
     /// <inheritdoc />
