@@ -22,9 +22,9 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     /// Initializes a new instance of the <see cref="CachingGameConfigurationRepository" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger for this class.</param>
-    public CachingGameConfigurationRepository(RepositoryManager repositoryManager, ILogger<CachingGameConfigurationRepository> logger)
-        : base(repositoryManager, logger)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public CachingGameConfigurationRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory)
+        : base(repositoryManager, loggerFactory)
     {
         this._objectLoader = new GameConfigurationJsonObjectLoader();
     }

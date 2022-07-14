@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
@@ -51,7 +53,7 @@ public class InMemoryContext : IContext
         if (item is IIdentifiable identifiable)
         {
             var repository = this.Manager.GetRepository(item.GetType()) as IMemoryRepository;
-            repository?.Remove(identifiable.Id);
+            repository?.RemoveAsync(identifiable.Id).AsTask().WaitWithoutException();
         }
 
         return false;
@@ -90,7 +92,7 @@ public class InMemoryContext : IContext
     public ValueTask<bool> DeleteAsync<T>(T obj)
         where T : class
     {
-        return this.Manager.GetRepository<T>()?.DeleteAsync(obj) ?? ValueTask.FromResult(false);
+        return this.Manager.GetRepository<T>().DeleteAsync(obj);
     }
 
     /// <inheritdoc/>

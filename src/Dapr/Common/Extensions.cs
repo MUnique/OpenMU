@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.Dapr.Common;
 
 using System.Reflection;
@@ -11,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using Npgsql;
 using OpenTelemetry.Metrics;
 using Serilog.Debugging;
@@ -270,11 +269,11 @@ public static class Extensions
     /// Waits for the completion of outstanding database updates.
     /// </summary>
     /// <param name="app">The application.</param>
-    public static async Task WaitForUpdatedDatabase(this WebApplication app)
+    public static async Task WaitForUpdatedDatabaseAsync(this WebApplication app)
     {
-        await app.WaitForDatabaseConnectionInitialization().ConfigureAwait(false);
+        await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);
         await app.Services.GetService<PersistenceContextProvider>()!
-            .WaitForUpdatedDatabase()
+            .WaitForUpdatedDatabaseAsync()
             .ConfigureAwait(false);
     }
 
@@ -282,7 +281,7 @@ public static class Extensions
     /// Waits for database connection (settings) initialization.
     /// </summary>
     /// <param name="app">The application.</param>
-    public static async Task WaitForDatabaseConnectionInitialization(this WebApplication app)
+    public static async Task WaitForDatabaseConnectionInitializationAsync(this WebApplication app)
     {
         await app.Services.GetService<IDatabaseConnectionSettingProvider>()!
             .InitializeAsync(default)

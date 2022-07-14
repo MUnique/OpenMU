@@ -41,7 +41,7 @@ public class LiveConnectionListener : Listener
         this._logger = loggerFactory.CreateLogger<LiveConnectionListener>();
         this._invokeAction = invokeAction;
 
-        this.ClientAccepted += this.OnClientAccepted;
+        this.ClientAccepted += this.OnClientAcceptedAsync;
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public class LiveConnectionListener : Listener
 
     private IPipelinedDecryptor? GetDecryptor(PipeReader pipeReader, DataDirection direction) => this.NetworkEncryptionPlugIn?.CreateDecryptor(pipeReader, direction);
 
-    private async ValueTask OnClientAccepted(ClientAcceptedEventArgs e)
+    private async ValueTask OnClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
         var clientConnection = e.AcceptedConnection;
         try

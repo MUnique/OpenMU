@@ -25,9 +25,9 @@ public class PartyTest
     /// Tests if an added party member gets added to the party list.
     /// </summary>
     [Test]
-    public async ValueTask PartyMemberAdd()
+    public async ValueTask PartyMemberAddAsync()
     {
-        var partyMember = this.CreatePartyMember();
+        var partyMember = await this.CreatePartyMemberAsync();
         var party = new Party(5, new NullLogger<Party>());
         await party.AddAsync(partyMember);
 
@@ -38,7 +38,7 @@ public class PartyTest
     /// Tests a kick request by a non-party-master for another player, which should fail.
     /// </summary>
     [Test]
-    public async ValueTask PartyMemberKickFailByNonMaster()
+    public async ValueTask PartyMemberKickFailByNonMasterAsync()
     {
         var party = await this.CreatePartyWithMembersAsync(3);
         var partyMember2 = (Player)party.PartyList[1];
@@ -52,7 +52,7 @@ public class PartyTest
     /// Tests if the player is kicking himself works, even if the player is no party master.
     /// </summary>
     [Test]
-    public async ValueTask PartyMemberKickHimself()
+    public async ValueTask PartyMemberKickHimselfAsync()
     {
         var party = await this.CreatePartyWithMembersAsync(3);
         var partyMember2 = party.PartyList[1];
@@ -66,7 +66,7 @@ public class PartyTest
     /// Tests if another player can be kicked by the party master.
     /// </summary>
     [Test]
-    public async ValueTask PartyMemberKickByMaster()
+    public async ValueTask PartyMemberKickByMasterAsync()
     {
         var party = await this.CreatePartyWithMembersAsync(3);
         var partyMaster = (Player)party.PartyList[0];
@@ -81,7 +81,7 @@ public class PartyTest
     /// Tests if the party disbands when the master kicks himself.
     /// </summary>
     [Test]
-    public async ValueTask PartyMasterKicksHimself()
+    public async ValueTask PartyMasterKicksHimselfAsync()
     {
         var party = await this.CreatePartyWithMembersAsync(3);
         var partyMaster = party.PartyList[0];
@@ -96,13 +96,13 @@ public class PartyTest
     /// Tests if the party automatically closes when one player is left.
     /// </summary>
     [Test]
-    public async ValueTask PartyAutoClose()
+    public async ValueTask PartyAutoCloseAsync()
     {
-        var partyMember1 = this.CreatePartyMember();
+        var partyMember1 = await this.CreatePartyMemberAsync();
         var party = new Party(5, new NullLogger<Party>());
         await party.AddAsync(partyMember1);
         var partyMember1Index = (byte)(party.PartyList.Count - 1);
-        var partyMember2 = this.CreatePartyMember();
+        var partyMember2 = await this.CreatePartyMemberAsync();
         await party.AddAsync(partyMember2);
         var partyMember2Index = (byte)(party.PartyList.Count - 1);
 
@@ -119,11 +119,11 @@ public class PartyTest
     /// Tests the adding of party members.
     /// </summary>
     [Test]
-    public async ValueTask PartyHandlerAdd()
+    public async ValueTask PartyHandlerAddAsync()
     {
         var handler = new PartyRequestAction();
-        var player = this.CreatePartyMember();
-        var toRequest = this.CreatePartyMember();
+        var player = await this.CreatePartyMemberAsync();
+        var toRequest = await this.CreatePartyMemberAsync();
         player.Observers.Add(toRequest);
 
         await handler.HandlePartyRequestAsync(player, toRequest);
@@ -136,11 +136,11 @@ public class PartyTest
     /// Tests if the party gets created after the requested player responses with accepting the party.
     /// </summary>
     [Test]
-    public async ValueTask PartyResponseAcceptNewParty()
+    public async ValueTask PartyResponseAcceptNewPartyAsync()
     {
         var handler = new PartyResponseAction();
-        var player = this.CreatePartyMember();
-        var requester = this.CreatePartyMember();
+        var player = await this.CreatePartyMemberAsync();
+        var requester = await this.CreatePartyMemberAsync();
         player.LastPartyRequester = requester;
         player.PlayerState.TryAdvanceTo(PlayerState.PartyRequest);
 
@@ -158,18 +158,18 @@ public class PartyTest
     /// does not cause the player to be added to the other party.
     /// </summary>
     [Test]
-    public async ValueTask PartyResponseAcceptExistingParty()
+    public async ValueTask PartyResponseAcceptExistingPartyAsync()
     {
         var handler = new PartyResponseAction();
 
         // first put the player in a party with another player
-        var player = this.CreatePartyMember();
-        player.LastPartyRequester = this.CreatePartyMember();
+        var player = await this.CreatePartyMemberAsync();
+        player.LastPartyRequester = await this.CreatePartyMemberAsync();
         player.PlayerState.TryAdvanceTo(PlayerState.PartyRequest);
         await handler.HandleResponseAsync(player, true);
 
         // now another player will try to request party from the player, which should fail
-        var requester = this.CreatePartyMember();
+        var requester = await this.CreatePartyMemberAsync();
         player.LastPartyRequester = requester;
         await handler.HandleResponseAsync(player, true);
         Assert.That(player.Party!.PartyList, Is.Not.Contains(requester));
@@ -178,9 +178,9 @@ public class PartyTest
         Mock.Get(player.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequestAsync(requester), Times.Never);
     }
 
-    private Player CreatePartyMember()
+    private async ValueTask<Player> CreatePartyMemberAsync()
     {
-        var result = TestHelper.CreatePlayer(this.GetGameContext());
+        var result = await TestHelper.CreatePlayerAsync(this.GetGameContext());
         result.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
         return result;
     }
@@ -190,7 +190,7 @@ public class PartyTest
         var party = new Party(5, new NullLogger<Party>());
         for (ushort i = 0; i < numberOfMembers; i++)
         {
-            var partyMember = this.CreatePartyMember();
+            var partyMember = await this.CreatePartyMemberAsync();
             await party.AddAsync(partyMember);
         }
 

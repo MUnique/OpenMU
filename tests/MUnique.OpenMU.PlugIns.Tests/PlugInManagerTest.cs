@@ -33,13 +33,13 @@ public class PlugInManagerTest
     /// Tests if registered plugins are active by default.
     /// </summary>
     [Test]
-    public void RegisteredPlugInsActiveByDefault()
+    public async ValueTask RegisteredPlugInsActiveByDefaultAsync()
     {
         var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
         var plugIn = new ExamplePlugIn();
         manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
 
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
 
@@ -52,14 +52,14 @@ public class PlugInManagerTest
     /// Tests if plugins can be deactivated and are not executed if they are.
     /// </summary>
     [Test]
-    public void DeactivatingPlugIns()
+    public async ValueTask DeactivatingPlugInsAsync()
     {
         var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
         var plugIn = new ExamplePlugIn();
         manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
         manager.DeactivatePlugIn<ExamplePlugIn>();
 
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
 
@@ -72,7 +72,7 @@ public class PlugInManagerTest
     /// Tests if deactivating a deactivated plugin doesn't cause issues.
     /// </summary>
     [Test]
-    public void DeactivatingDeactivatedPlugIn()
+    public async ValueTask DeactivatingDeactivatedPlugInAsync()
     {
         var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
         var plugIn = new ExamplePlugIn();
@@ -80,7 +80,7 @@ public class PlugInManagerTest
         manager.DeactivatePlugIn<ExamplePlugIn>();
         manager.DeactivatePlugIn<ExamplePlugIn>();
 
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
 
@@ -93,7 +93,7 @@ public class PlugInManagerTest
     /// Tests if activating an activated plugin doesn't cause issues.
     /// </summary>
     [Test]
-    public void ActivatingActivatedPlugIn()
+    public async ValueTask ActivatingActivatedPlugInAsync()
     {
         var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
         var plugIn = new ExamplePlugIn();
@@ -101,7 +101,7 @@ public class PlugInManagerTest
         manager.ActivatePlugIn<ExamplePlugIn>();
         manager.ActivatePlugIn<ExamplePlugIn>();
 
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
 
@@ -114,7 +114,7 @@ public class PlugInManagerTest
     /// Tests if deactivating a plugin doesn't affect another plugin.
     /// </summary>
     [Test]
-    public void DeactivatingOnePlugInDoesntAffectOthers()
+    public async ValueTask DeactivatingOnePlugInDoesntAffectOthersAsync()
     {
         var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
         var plugIn = new ExamplePlugIn();
@@ -124,7 +124,7 @@ public class PlugInManagerTest
         manager.ActivatePlugIn<ExamplePlugIn.NestedPlugIn>();
         manager.DeactivatePlugIn<ExamplePlugIn.NestedPlugIn>();
 
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
 
@@ -139,7 +139,7 @@ public class PlugInManagerTest
     /// <param name="active">If set to <c>true</c>, the <see cref="PlugInConfiguration"/> is configured to be active.</param>
     [TestCase(true)]
     [TestCase(false)]
-    public void CreatedAndActiveByConfiguration(bool active)
+    public async ValueTask CreatedAndActiveByConfigurationAsync(bool active)
     {
         var configuration = new PlugInConfiguration
         {
@@ -147,7 +147,7 @@ public class PlugInManagerTest
             IsActive = active,
         };
         var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
 
@@ -160,7 +160,7 @@ public class PlugInManagerTest
     /// Tests if a custom plugin gets created and executed.
     /// </summary>
     [Test]
-    public void CustomPlugInByConfiguration()
+    public async ValueTask CustomPlugInByConfigurationAsync()
     {
         var configuration = new PlugInConfiguration
         {
@@ -192,7 +192,7 @@ public class PlugInManagerTest
                     }",
         };
         var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider());
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
 
@@ -254,7 +254,7 @@ public class PlugInManagerTest
     /// Tests if plugins can be activated and are executed if they are.
     /// </summary>
     [Test]
-    public void ActivatingPlugIns()
+    public async ValueTask ActivatingPlugInsAsync()
     {
         var manager = new PlugInManager(null, new NullLoggerFactory(), this.CreateServiceProvider());
         var plugIn = new ExamplePlugIn();
@@ -262,7 +262,7 @@ public class PlugInManagerTest
         manager.DeactivatePlugIn<ExamplePlugIn>();
         manager.ActivatePlugIn<ExamplePlugIn>();
 
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
 

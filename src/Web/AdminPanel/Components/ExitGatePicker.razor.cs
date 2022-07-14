@@ -92,7 +92,7 @@ public partial class ExitGatePicker
             (this._scale * gate.Y1).ToString(CultureInfo.InvariantCulture));
     }
 
-    private async void OnSelected(ExitGate exitGate)
+    private async Task OnSelectedAsync(ExitGate exitGate)
     {
         this.SelectedGate = exitGate;
         if (this.SelectedGateChanged is { } eventCallback)
@@ -101,7 +101,7 @@ public partial class ExitGatePicker
         }
     }
 
-    private async Task OnMapSelected(ChangeEventArgs args)
+    private async Task OnMapSelectedAsync(ChangeEventArgs args)
     {
         if (Guid.TryParse(args.Value as string, out var mapId))
         {

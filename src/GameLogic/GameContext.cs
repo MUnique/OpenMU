@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The game context which holds all data of the game together.
 /// </summary>
-public class GameContext : Disposable, IGameContext
+public class GameContext : AsyncDisposable, IGameContext
 {
     private static readonly Meter Meter = new(MeterName);
 
@@ -29,22 +29,24 @@ public class GameContext : Disposable, IGameContext
 
     private static readonly Counter<int> MiniGameCounter = Meter.CreateCounter<int>("MiniGameCount");
 
-    private readonly Dictionary<ushort, GameMap> _mapList = new ();
+    private readonly Dictionary<ushort, GameMap> _mapList = new();
 
-    private readonly Dictionary<MiniGameMapKey, MiniGameContext> _miniGames = new ();
+    private readonly Dictionary<MiniGameMapKey, MiniGameContext> _miniGames = new();
 
     private readonly Timer _recoverTimer;
 
     private readonly IMapInitializer _mapInitializer;
 
+    private readonly AsyncLock _mapInitializerLock = new();
+
     private readonly Timer _tasksTimer;
 
-    private readonly AsyncReaderWriterLock _playerListLock = new ();
+    private readonly AsyncReaderWriterLock _playerListLock = new();
 
     /// <summary>
     /// Keeps the list of all players.
     /// </summary>
-    private readonly List<Player> _playerList = new ();
+    private readonly List<Player> _playerList = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameContext" /> class.
@@ -129,12 +131,12 @@ public class GameContext : Disposable, IGameContext
     public int PlayerCount => this._playerList.Count;
 
     /// <summary>
-    /// Sets the name of the meter of this class.
+    /// Gets the name of the meter of this class.
     /// </summary>
     internal static string MeterName => typeof(GameContext).FullName ?? nameof(GameContext);
 
     /// <inheritdoc/>
-    public GameMap? GetMap(ushort mapId, bool createIfNotExists = true)
+    public async ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true)
     {
         if (this._mapList.TryGetValue(mapId, out var map))
         {
@@ -147,7 +149,7 @@ public class GameContext : Disposable, IGameContext
         }
 
         GameMap? createdMap;
-        lock (this._mapInitializer)
+        using (await this._mapInitializerLock.LockAsync())
         {
             if (this._mapList.TryGetValue(mapId, out map))
             {
@@ -174,7 +176,7 @@ public class GameContext : Disposable, IGameContext
         }
 
         // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
-        this._mapInitializer.InitializeStateAsync(createdMap);
+        await this._mapInitializer.InitializeStateAsync(createdMap);
         this.GameMapCreated?.Invoke(this, createdMap);
         MapCounter.Add(1);
 
@@ -187,7 +189,7 @@ public class GameContext : Disposable, IGameContext
     /// <param name="miniGameDefinition">The mini game definition.</param>
     /// <param name="requester">The requesting player.</param>
     /// <returns>The hosted mini game instance.</returns>
-    public MiniGameContext GetMiniGame(MiniGameDefinition miniGameDefinition, Player requester)
+    public async ValueTask<MiniGameContext> GetMiniGameAsync(MiniGameDefinition miniGameDefinition, Player requester)
     {
         var miniGameKey = MiniGameMapKey.Create(miniGameDefinition, requester);
 
@@ -196,7 +198,7 @@ public class GameContext : Disposable, IGameContext
             return miniGameContext;
         }
 
-        lock (this._mapInitializer)
+        using (await this._mapInitializerLock.LockAsync())
         {
             if (this._miniGames.TryGetValue(miniGameKey, out miniGameContext))
             {
@@ -222,7 +224,7 @@ public class GameContext : Disposable, IGameContext
         var createdMap = miniGameContext.Map;
 
         // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
-        this._mapInitializer.InitializeStateAsync(createdMap);
+        await this._mapInitializer.InitializeStateAsync(createdMap);
         this.GameMapCreated?.Invoke(this, createdMap);
         MiniGameCounter.Add(1);
         return miniGameContext;
@@ -317,13 +319,14 @@ public class GameContext : Disposable, IGameContext
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
+    protected override async ValueTask DisposeAsyncCore()
     {
-        base.Dispose(disposing);
-        this._recoverTimer.Dispose();
-        this._tasksTimer.Dispose();
+        await this._recoverTimer.DisposeAsync();
+        await this._tasksTimer.DisposeAsync();
+        await base.DisposeAsyncCore();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void ExecutePeriodicTasks(object? state)
     {
         try
@@ -339,6 +342,7 @@ public class GameContext : Disposable, IGameContext
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void RecoverTimerElapsed(object? state)
     {
         try
@@ -357,6 +361,7 @@ public class GameContext : Disposable, IGameContext
         catch
         {
             // This should never happen as we already handle Exceptions in player.RegenerateAsync.
+            // However, if the player disconnects in the meantime, it could happen :-).
         }
     }
 

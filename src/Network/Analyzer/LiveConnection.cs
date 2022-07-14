@@ -54,13 +54,13 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
         this._logger = loggerFactory.CreateLogger("Proxy_" + this._clientConnection);
         this._clientName = this._clientConnection.ToString()!;
         this.Name = this._clientName;
-        this._clientConnection.PacketReceived += this.ClientPacketReceived;
-        this._serverConnection.PacketReceived += this.ServerPacketReceived;
-        this._clientConnection.Disconnected += this.ClientDisconnected;
-        this._serverConnection.Disconnected += this.ServerDisconnected;
+        this._clientConnection.PacketReceived += this.ClientPacketReceivedAsync;
+        this._serverConnection.PacketReceived += this.ServerPacketReceivedAsync;
+        this._clientConnection.Disconnected += this.ClientDisconnectedAsync;
+        this._serverConnection.Disconnected += this.ServerDisconnectedAsync;
         this._logger.LogInformation("LiveConnection initialized.");
-        this._clientConnection.BeginReceive();
-        this._serverConnection.BeginReceive();
+        _ = this._clientConnection.BeginReceiveAsync();
+        _ = this._serverConnection.BeginReceiveAsync();
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
     /// <summary>
     /// Disconnects the connection to the server and therefore indirectly also to the client.
     /// </summary>
-    public ValueTask Disconnect()
+    public ValueTask DisconnectAsync()
     {
         return this._serverConnection.DisconnectAsync();
     }
@@ -144,27 +144,27 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
         this._invokeAction((Action)(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName))));
     }
 
-    private async ValueTask ServerDisconnected()
+    private async ValueTask ServerDisconnectedAsync()
     {
         this._logger.LogInformation("The server connection closed.");
         await this._clientConnection.DisconnectAsync();
         this.Name = this._clientName + " [Disconnected]";
     }
 
-    private async ValueTask ClientDisconnected()
+    private async ValueTask ClientDisconnectedAsync()
     {
         this._logger.LogInformation("The client connected closed");
         await this._serverConnection.DisconnectAsync();
         this.Name = this._clientName + " [Disconnected]";
     }
 
-    private async ValueTask ServerPacketReceived(ReadOnlySequence<byte> data)
+    private async ValueTask ServerPacketReceivedAsync(ReadOnlySequence<byte> data)
     {
         var dataAsArray = data.ToArray();
         await this.SendToClientAsync(dataAsArray);
     }
 
-    private async ValueTask ClientPacketReceived(ReadOnlySequence<byte> data)
+    private async ValueTask ClientPacketReceivedAsync(ReadOnlySequence<byte> data)
     {
         var dataAsArray = data.ToArray();
         await this.SendToServerAsync(dataAsArray);

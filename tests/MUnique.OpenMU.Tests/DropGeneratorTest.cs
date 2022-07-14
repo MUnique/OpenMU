@@ -20,11 +20,11 @@ public class DropGeneratorTest
     /// Tests if the drop fails because the randomizer returns a number which causes a fail.
     /// </summary>
     [Test]
-    public void TestDropFail()
+    public async ValueTask TestDropFailAsync()
     {
         var config = this.GetGameConfig();
         var generator = new DefaultDropGenerator(config, this.GetRandomizer(9999));
-        var item = generator.GenerateItemDrops(this.GetMonster(1), 0, TestHelper.CreatePlayer(), out _).FirstOrDefault();
+        var item = generator.GenerateItemDrops(this.GetMonster(1), 0, await TestHelper.CreatePlayerAsync(), out _).FirstOrDefault();
         Assert.That(item, Is.Null);
     }
 
@@ -32,7 +32,7 @@ public class DropGeneratorTest
     /// Tests the drops defined by a monster are getting considered.
     /// </summary>
     [Test]
-    public void TestItemDropItemByMonster()
+    public async ValueTask TestItemDropItemByMonsterAsync()
     {
         var config = this.GetGameConfig();
         var monster = this.GetMonster(1);
@@ -40,7 +40,7 @@ public class DropGeneratorTest
         monster.DropItemGroups.Add(3000, SpecialItemType.Ancient, true);
 
         var generator = new DefaultDropGenerator(config, this.GetRandomizer2(0, 0.5));
-        var item = generator.GenerateItemDrops(monster, 1, TestHelper.CreatePlayer(), out _).FirstOrDefault();
+        var item = generator.GenerateItemDrops(monster, 1, await TestHelper.CreatePlayerAsync(), out _).FirstOrDefault();
 
         Assert.That(item, Is.Not.Null);
 

@@ -15,7 +15,7 @@ public abstract class PacketPipeReaderBase
     private readonly byte[] _headerBuffer = new byte[3];
 
     /// <summary>
-    /// Gets or sets the <see cref="PipeReader"/> from which the packets can be read from at <see cref="ReadSource"/>.
+    /// Gets or sets the <see cref="PipeReader"/> from which the packets can be read from at <see cref="ReadSourceAsync"/>.
     /// </summary>
     protected PipeReader Source { get; set; } = null!; // will be set in derived classes
 
@@ -29,14 +29,14 @@ public abstract class PacketPipeReaderBase
     /// <summary>
     /// Called when the <see cref="Source"/> completed.
     /// </summary>
-    /// <param name="exception">The exception, if any occured; Otherwise, <c>null</c>.</param>
+    /// <param name="exception">The exception, if any occurred; Otherwise, <c>null</c>.</param>
     protected abstract ValueTask OnCompleteAsync(Exception? exception);
 
     /// <summary>
     /// Reads from the <see cref="Source"/> until it's completed or cancelled.
     /// </summary>
     /// <returns>The task.</returns>
-    protected async Task ReadSource()
+    protected async Task ReadSourceAsync()
     {
         if (this.Source is null)
         {
@@ -47,7 +47,7 @@ public abstract class PacketPipeReaderBase
         {
             while (true)
             {
-                var completed = await this.ReadBuffer().ConfigureAwait(false);
+                var completed = await this.ReadBufferAsync().ConfigureAwait(false);
 
                 // Stop reading if there's no more data coming
                 if (completed)
@@ -65,7 +65,7 @@ public abstract class PacketPipeReaderBase
         await this.OnCompleteAsync(null).ConfigureAwait(false);
     }
 
-    private async Task<bool> ReadBuffer()
+    private async Task<bool> ReadBufferAsync()
     {
         ReadResult result = await this.Source.ReadAsync().ConfigureAwait(false);
         ReadOnlySequence<byte> buffer = result.Buffer;

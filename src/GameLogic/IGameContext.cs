@@ -88,7 +88,7 @@ public interface IGameContext
     /// <returns>
     /// The hosted GameMap instance.
     /// </returns>
-    GameMap? GetMap(ushort mapId, bool createIfNotExists = true);
+    ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true);
 
     /// <summary>
     /// Gets the mini game map which is meant to be hosted by the game.
@@ -98,7 +98,7 @@ public interface IGameContext
     /// <returns>
     /// The state of the mini game which contains the hosted GameMap instance.
     /// </returns>
-    MiniGameContext GetMiniGame(MiniGameDefinition miniGameDefinition, Player requester);
+    ValueTask<MiniGameContext> GetMiniGameAsync(MiniGameDefinition miniGameDefinition, Player requester);
 
     /// <summary>
     /// Removes the mini game instance from the context.

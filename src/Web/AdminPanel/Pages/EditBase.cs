@@ -177,12 +177,19 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Saves the changes.
     /// </summary>
-    protected Task SaveChanges()
+    protected async Task SaveChangesAsync()
     {
         string text;
         try
         {
-            text = this._persistenceContext?.SaveChanges() ?? false ? "The changes have been saved." : "There were no changes to save.";
+            if (this._persistenceContext is { } context)
+            {
+                text = await context.SaveChangesAsync() ? "The changes have been saved." : "There were no changes to save.";
+            }
+            else
+            {
+                text = "Failed, context not initialized";
+            }
         }
         catch (Exception ex)
         {
@@ -190,7 +197,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             text = $"An unexpected error occured: {ex.Message}.";
         }
 
-        return this.ModalService.ShowMessageAsync("Save", text);
+        await this.ModalService.ShowMessageAsync("Save", text);
     }
 
     private string? GetDownloadMarkup()

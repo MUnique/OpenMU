@@ -31,7 +31,7 @@ public class OnlineChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatCommandArg
     {
         var totalCharactersCount = 0;
         var totalGameMastersCount = 0;
-        await gameMasterPlayer.GameContext.ForEachPlayerAsync(async player =>
+        await gameMasterPlayer.GameContext.ForEachPlayerAsync(player =>
         {
             switch (player.SelectedCharacter?.CharacterStatus)
             {
@@ -42,6 +42,8 @@ public class OnlineChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatCommandArg
                     Interlocked.Increment(ref totalGameMastersCount);
                     break;
             }
+
+            return Task.CompletedTask;
         });
 
         await this.ShowMessageToAsync(gameMasterPlayer, $"[{this.Key}] {totalGameMastersCount} GM(s) and {totalCharactersCount} player(s) online");

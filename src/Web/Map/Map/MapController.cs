@@ -113,7 +113,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     public async ValueTask DisposeAsync()
     {
         this._disposeCts.Cancel();
-        this._gameServer.UnregisterMapObserver(this._mapId, this.Id);
+        await this._gameServer.UnregisterMapObserverAsync(this._mapId, this.Id);
         this._adapterToWorldView.Dispose();
         try
         {

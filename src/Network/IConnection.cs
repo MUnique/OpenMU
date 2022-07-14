@@ -59,7 +59,7 @@ public interface IConnection : IDisposable
     /// Begins receiving from the client.
     /// </summary>
     /// <returns>The async task.</returns>
-    Task BeginReceive();
+    Task BeginReceiveAsync();
 
     /// <summary>
     /// Disconnects this instance.

@@ -183,11 +183,6 @@ internal class PlugInProxyTypeGenerator
         return methodCallStatement;
     }
 
-    private async ValueTask Foo()
-    {
-
-    }
-
     private MethodDeclarationSyntax ImplementMethod(Type type, MethodInfo method)
     {
         const string forEachVariableName = "plugIn";

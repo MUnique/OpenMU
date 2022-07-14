@@ -63,7 +63,7 @@ public partial class ItemTable<TItem>
         this._isCollapsed = !this._isCollapsed;
     }
 
-    private async Task OnAddClick()
+    private async Task OnAddClickAsync()
     {
         var modal = this._modal.Show<ModalObjectSelection<TItem>>($"Select {typeof(TItem).Name}");
         var result = await modal.Result;
@@ -75,7 +75,7 @@ public partial class ItemTable<TItem>
         }
     }
 
-    private async Task OnCreateClick()
+    private async Task OnCreateClickAsync()
     {
         var item = this.PersistenceContext.CreateNew<TItem>();
         var parameters = new ModalParameters();
@@ -101,7 +101,7 @@ public partial class ItemTable<TItem>
         }
     }
 
-    private async Task OnRemoveClick(TItem item)
+    private async Task OnRemoveClickAsync(TItem item)
     {
         this.Value?.Remove(item);
 

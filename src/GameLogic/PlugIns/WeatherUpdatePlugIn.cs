@@ -56,11 +56,19 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     }
 
     /// <inheritdoc />
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     public async void ObjectAddedToMap(GameMap map, ILocateable addedObject)
     {
-        if (addedObject is Player player)
+        try
         {
-            await this.TrySendPlayerUpdateAsync(player);
+            if (addedObject is Player player)
+            {
+                await this.TrySendPlayerUpdateAsync(player);
+            }
+        }
+        catch
+        {
+            // must be catched because it's an async void method.
         }
     }
 

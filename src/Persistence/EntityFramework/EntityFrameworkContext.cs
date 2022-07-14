@@ -20,7 +20,7 @@ public class EntityFrameworkContext : EntityFrameworkContextBase
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="changePublisher">The change publisher.</param>
     public EntityFrameworkContext(DbContext context, ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
-        : base(context, new RepositoryManager(loggerFactory, changePublisher), true, changePublisher)
+        : base(context, new RepositoryManager(loggerFactory, changePublisher), true, changePublisher, loggerFactory.CreateLogger<EntityFrameworkContext>())
     {
         this.RepositoryManager.RegisterRepositories();
     }
@@ -29,11 +29,12 @@ public class EntityFrameworkContext : EntityFrameworkContextBase
     /// Initializes a new instance of the <see cref="EntityFrameworkContext" /> class.
     /// </summary>
     /// <param name="context">The db context.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="repositoryManager">The repository manager.</param>
     /// <param name="isOwner">If set to <c>true</c>, this instance owns the <see cref="EntityFrameworkContextBase.Context" />. That means it will be disposed when this instance will be disposed.</param>
     /// <param name="changePublisher">The change publisher.</param>
-    public EntityFrameworkContext(DbContext context, RepositoryManager repositoryManager, bool isOwner, IConfigurationChangePublisher? changePublisher)
-        : base(context, repositoryManager, isOwner, changePublisher)
+    public EntityFrameworkContext(DbContext context, ILoggerFactory loggerFactory, RepositoryManager repositoryManager, bool isOwner, IConfigurationChangePublisher? changePublisher)
+        : base(context, repositoryManager, isOwner, changePublisher, loggerFactory.CreateLogger<EntityFrameworkContext>())
     {
     }
 }

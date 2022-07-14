@@ -58,7 +58,7 @@ public class ChatRoomTests
     /// Tries to join a null client. This should fail with an <see cref="ArgumentNullException"/>.
     /// </summary>
     [Test]
-    public async ValueTask TryJoinNullClient()
+    public async ValueTask TryJoinNullClientAsync()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -72,7 +72,7 @@ public class ChatRoomTests
     /// Tries to join the room with an unauthenticated client. This should fail.
     /// </summary>
     [Test]
-    public async ValueTask TryJoinWithUnauthenticatedClient()
+    public async ValueTask TryJoinWithUnauthenticatedClientAsync()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -87,7 +87,7 @@ public class ChatRoomTests
     /// Tries to join the room with a client with a wrong authentication token. This should fail.
     /// </summary>
     [Test]
-    public async ValueTask TryJoinWithAuthenticatedClientButWrongToken()
+    public async ValueTask TryJoinWithAuthenticatedClientButWrongTokenAsync()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -103,7 +103,7 @@ public class ChatRoomTests
     /// Tries to join the room with an authenticated client. This should be successful.
     /// </summary>
     [Test]
-    public async ValueTask TryJoinWithAuthenticatedClient()
+    public async ValueTask TryJoinWithAuthenticatedClientAsync()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -119,7 +119,7 @@ public class ChatRoomTests
     /// Tests if <see cref="IChatClient.SendChatRoomClientListAsync"/> is called after a client successfully joined a room.
     /// </summary>
     [Test]
-    public async ValueTask ChatRoomClientListSent()
+    public async ValueTask ChatRoomClientListSentAsync()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -136,7 +136,7 @@ public class ChatRoomTests
     /// Tests if <see cref="ChatRoom.ConnectedClients"/> returns the successfully authenticated and joined client.
     /// </summary>
     [Test]
-    public async ValueTask ConnectedClients()
+    public async ValueTask ConnectedClientsAsync()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -154,7 +154,7 @@ public class ChatRoomTests
     /// Tests if <see cref="IChatClient.SendChatRoomClientUpdateAsync"/> is called as soon as another client joined the room.
     /// </summary>
     [Test]
-    public async ValueTask SendJoinedMessage()
+    public async ValueTask SendJoinedMessageAsync()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -182,7 +182,7 @@ public class ChatRoomTests
     /// Tests if <see cref="IChatClient.SendChatRoomClientUpdateAsync"/> is called as soon as another client left the room.
     /// </summary>
     [Test]
-    public async ValueTask SendLeftMessage()
+    public async ValueTask SendLeftMessageAsync()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());
@@ -212,7 +212,7 @@ public class ChatRoomTests
     /// Tests if <see cref="IChatClient.SendMessageAsync"/> is called as soon as a message is sent through the room.
     /// </summary>
     [Test]
-    public async ValueTask SendMessage()
+    public async ValueTask SendMessageAsync()
     {
         const ushort roomId = 4711;
         const string chatMessage = "foobar1234567890";
@@ -242,7 +242,7 @@ public class ChatRoomTests
     /// Tests if <see cref="ChatRoom.RoomClosed"/> is fired as soon as all connected clients left the room.
     /// </summary>
     [Test]
-    public async ValueTask RoomClosedEvent()
+    public async ValueTask RoomClosedEventAsync()
     {
         const ushort roomId = 4711;
         var room = new ChatRoom(roomId, new NullLogger<ChatRoom>());

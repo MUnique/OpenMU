@@ -79,7 +79,7 @@ public class QuestCompletionAction
         }
 
         questState!.LastFinishedQuest = activeQuest;
-        questState.Clear(player.PersistenceContext);
+        await questState.ClearAsync(player.PersistenceContext);
         await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletedAsync(activeQuest)).ConfigureAwait(false);
     }
 

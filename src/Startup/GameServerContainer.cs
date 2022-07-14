@@ -88,7 +88,7 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
 
     /// <inheritdoc />
 #pragma warning disable CS1998
-    protected override async Task StartAsyncCore(CancellationToken cancellationToken)
+    protected override async Task StartInnerAsync(CancellationToken cancellationToken)
 #pragma warning restore CS1998
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
@@ -109,7 +109,7 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
     }
 
     /// <inheritdoc />
-    protected override async Task StopAsyncCore(CancellationToken cancellationToken)
+    protected override async Task StopInnerAsync(CancellationToken cancellationToken)
     {
         foreach (var gameServer in this._gameServers.Values)
         {

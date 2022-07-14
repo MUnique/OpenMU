@@ -32,7 +32,7 @@ public sealed class GameServerRegistry : IDisposable
         this._connectServer = connectServer;
         this._logger = logger;
 
-        Task.Run(async () =>
+        async Task RunCleanupLoop()
         {
             try
             {
@@ -42,7 +42,9 @@ public sealed class GameServerRegistry : IDisposable
             {
                 this._logger.LogError(ex, "Error in cleanup loop");
             }
-        });
+        }
+
+        _ = RunCleanupLoop();
     }
 
     /// <inheritdoc />

@@ -15,7 +15,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// <summary>
 /// Adapts the incoming calls from the <see cref="IBucketMapObserver"/> to the available view plugins.
 /// </summary>
-public sealed class ObserverToWorldViewAdapter : IBucketMapObserver, IDisposable
+public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObserver
 {
     private readonly AsyncReaderWriterLock _observingLock = new ();
     private readonly ISet<IObservable> _observingObjects = new HashSet<IObservable>();
@@ -69,7 +69,7 @@ public sealed class ObserverToWorldViewAdapter : IBucketMapObserver, IDisposable
         }
         else if (item is DroppedItem droppedItem)
         {
-            await this._adaptee.InvokeViewPlugInAsync<IShowDroppedItemsPlugIn>(p => p.ShowDroppedItemsAsync(droppedItem.GetAsEnumerable(), droppedItem.IsFreshDrop));
+            await this._adaptee.InvokeViewPlugInAsync<IShowDroppedItemsPlugIn>(p => p.ShowDroppedItemsAsync(droppedItem.GetAsEnumerable(), true));
         }
         else if (item is DroppedMoney droppedMoney)
         {
@@ -216,28 +216,6 @@ public sealed class ObserverToWorldViewAdapter : IBucketMapObserver, IDisposable
         newItems.ForEach(item => item.AddObserverAsync(this._adaptee));
     }
 
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (this._isDisposed)
-        {
-            return;
-        }
-
-        if (this.ObservingBuckets.Count > 0)
-        {
-            Debug.Fail($"ObservingBuckets not empty when this instance is disposed. Count: {this.ObservingBuckets.Count}. Maybe observer wasn't correctly removed from the game map.");
-            this.ObservingBuckets.Clear();
-        }
-
-        if (this._observingObjects.Count > 0)
-        {
-            this.ClearObservingObjectsListAsync().AsTask().WaitWithoutException();
-        }
-
-        this._isDisposed = true;
-    }
-
     /// <summary>
     /// Clears the observing object list.
     /// </summary>
@@ -247,6 +225,23 @@ public sealed class ObserverToWorldViewAdapter : IBucketMapObserver, IDisposable
         {
             this._observingObjects.Clear();
         }
+    }
+
+    /// <inheritdoc/>
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        if (this.ObservingBuckets.Count > 0)
+        {
+            Debug.Fail($"ObservingBuckets not empty when this instance is disposed. Count: {this.ObservingBuckets.Count}. Maybe observer wasn't correctly removed from the game map.");
+            this.ObservingBuckets.Clear();
+        }
+
+        if (this._observingObjects.Count > 0)
+        {
+            await this.ClearObservingObjectsListAsync();
+        }
+
+        await base.DisposeAsyncCore();
     }
 
     private bool ObjectWillBeOutOfScope(IObservable observable)

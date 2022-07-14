@@ -33,7 +33,7 @@ public class ManagableServerRegistry : IServerProvider, IDisposable
         this._daprClient = daprClient;
         this._logger = logger;
 
-        Task.Run(async () =>
+        async Task RunTimeoutLoop()
         {
             try
             {
@@ -43,7 +43,9 @@ public class ManagableServerRegistry : IServerProvider, IDisposable
             {
                 this._logger.LogError(ex, "Error in cleanup loop");
             }
-        });
+        }
+
+        _ = RunTimeoutLoop();
     }
 
     /// <inheritdoc />

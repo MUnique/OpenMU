@@ -102,7 +102,7 @@ internal sealed class Program : IDisposable
         };
 
         using var program = new Program();
-        await program.Initialize(args).ConfigureAwait(false);
+        await program.InitializeAsync(args).ConfigureAwait(false);
         while (!exitToken.IsCancellationRequested)
         {
             await Task.Delay(100).ConfigureAwait(false);
@@ -120,10 +120,10 @@ internal sealed class Program : IDisposable
     /// Initializes a new instance of the <see cref="Program"/> class.
     /// </summary>
     /// <param name="args">The command line args.</param>
-    public async Task Initialize(string[] args)
+    public async Task InitializeAsync(string[] args)
     {
         this._logger.Information("Creating host...");
-        this._serverHost = await this.CreateHost(args).ConfigureAwait(false);
+        this._serverHost = await this.CreateHostAsync(args).ConfigureAwait(false);
 
         if (args.Contains("-autostart") || !this.IsAdminPanelEnabled(args))
         {
@@ -190,7 +190,7 @@ internal sealed class Program : IDisposable
         }
     }
 
-    private async Task<IHost> CreateHost(string[] args)
+    private async Task<IHost> CreateHostAsync(string[] args)
     {
         // Ensure GameLogic and GameServer Assemblies are loaded
         _ = GameLogic.Rand.NextInt(1, 2);
@@ -216,7 +216,7 @@ internal sealed class Program : IDisposable
                     .AddIpResolver(args)
                     .AddSingleton(this._gameServers)
                     .AddSingleton(this._gameServers.Values)
-                    .AddSingleton(s => 
+                    .AddSingleton(s =>
                         this.DeterminePersistenceContextProviderAsync(
                             args,
                             s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."))

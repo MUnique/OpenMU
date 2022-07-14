@@ -56,13 +56,13 @@ public sealed class FriendServerTest
     /// The player should have a friend list entry.
     /// </summary>
     [Test]
-    public async ValueTask FriendAddRequestOffline()
+    public async ValueTask FriendAddRequestOfflineAsync()
     {
-        await this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
         var added = await this._friendServer.FriendRequestAsync(this._player1.Name, this._player2.Name);
         Assert.That(added, Is.True);
         this._gameServer2.Verify(g => g.FriendRequestAsync(this._player1.Name, this._player2.Name), Times.Never);
-        await this.CheckFriendItemsAfterRequest();
+        await this.CheckFriendItemsAfterRequestAsync();
     }
 
     /// <summary>
@@ -70,25 +70,25 @@ public sealed class FriendServerTest
     /// The online friend should have got a friend request, the player should have a friend list entry.
     /// </summary>
     [Test]
-    public async ValueTask FriendAddRequestOnline()
+    public async ValueTask FriendAddRequestOnlineAsync()
     {
-        await this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        await this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
         var added = await this._friendServer.FriendRequestAsync(this._player1.Name, this._player2.Name);
         Assert.That(added, Is.True);
         this._gameServer2.Verify(g => g.FriendRequestAsync(this._player1.Name, this._player2.Name), Times.Once);
 
-        await this.CheckFriendItemsAfterRequest();
+        await this.CheckFriendItemsAfterRequestAsync();
     }
 
     /// <summary>
     /// Tests if a friend is not added twice when the player sends two friend requests for the same friend.
     /// </summary>
     [Test]
-    public async ValueTask FriendAddRequestRepeated()
+    public async ValueTask FriendAddRequestRepeatedAsync()
     {
-        await this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        await this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
 
         var added = await this._friendServer.FriendRequestAsync(this._player1.Name, this._player2.Name);
         Assert.That(added, Is.True);
@@ -102,10 +102,10 @@ public sealed class FriendServerTest
     /// Tests if both friends have each other in the friend list with visible server number, after the friend accepted friendship.
     /// </summary>
     [Test]
-    public async ValueTask FriendAddRequestAccept()
+    public async ValueTask FriendAddRequestAcceptAsync()
     {
-        await this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        await this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
 
         await this._friendServer.FriendRequestAsync(this._player1.Name, this._player2.Name);
 
@@ -134,10 +134,10 @@ public sealed class FriendServerTest
     /// Also checks if the friend which declined, does not get the friend list entry.
     /// </summary>
     [Test]
-    public async ValueTask FriendAddRequestDecline()
+    public async ValueTask FriendAddRequestDeclineAsync()
     {
-        await this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        await this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
         await this._friendServer.FriendRequestAsync(this._player1.Name, this._player2.Name);
 
         await this._friendServer.FriendResponseAsync(this._player2.Name, this._player1.Name, false);
@@ -157,10 +157,10 @@ public sealed class FriendServerTest
     /// Tests that a friend response without a corresponding request does not create friend list entries.
     /// </summary>
     [Test]
-    public async ValueTask FriendResponseWithoutRequest()
+    public async ValueTask FriendResponseWithoutRequestAsync()
     {
-        await this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        await this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
 
         await this._friendServer.FriendResponseAsync(this._player2.Name, this._player1.Name, true);
 
@@ -172,10 +172,10 @@ public sealed class FriendServerTest
     /// Tests if a friend can get deleted from the friend list, but the friend still has the player.
     /// </summary>
     [Test]
-    public async ValueTask FriendDelete()
+    public async ValueTask FriendDeleteAsync()
     {
-        await this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        await this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
         await this._friendServer.FriendRequestAsync(this._player1.Name, this._player2.Name);
         await this._friendServer.FriendResponseAsync(this._player2.Name, this._player1.Name, true);
 
@@ -190,10 +190,10 @@ public sealed class FriendServerTest
     /// player2 on gameServer2.
     /// </summary>
     [Test]
-    public async ValueTask TestOnlineList()
+    public async ValueTask TestOnlineListAsync()
     {
-        await this.PlayerEnteredGame(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
-        await this.PlayerEnteredGame(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player1.Id, this._player1.Name, this._gameServer1.Object.Id);
+        await this.PlayerEnteredGameAsync(this._player2.Id, this._player2.Name, this._gameServer2.Object.Id);
         await this._friendServer.FriendRequestAsync(this._player1.Name, this._player2.Name);
         await this._friendServer.FriendResponseAsync(this._player2.Name, this._player1.Name, true);
         await this._friendServer.PlayerLeftGameAsync(this._player1.Id, this._player1.Name);
@@ -210,12 +210,12 @@ public sealed class FriendServerTest
         this._gameServer2.Verify(gs => gs.FriendOnlineStateChangedAsync(this._player2.Name, this._player1.Name, FriendServer.FriendServer.OfflineServerId), Times.Once);
     }
 
-    private async ValueTask PlayerEnteredGame(Guid playerId, string playerName, int serverId)
+    private async ValueTask PlayerEnteredGameAsync(Guid playerId, string playerName, int serverId)
     {
         await this._friendServer.PlayerEnteredGameAsync((byte)serverId, playerId, playerName);
     }
 
-    private async ValueTask CheckFriendItemsAfterRequest()
+    private async ValueTask CheckFriendItemsAfterRequestAsync()
     {
         var context = this._persistenceContextProvider.CreateNewFriendServerContext();
         var friendItem = (await context.GetFriendsAsync(this._player1.Id)).FirstOrDefault();

@@ -30,6 +30,6 @@ internal class TradeAcceptHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         TradeRequestResponse message = packet;
-        await this._acceptAction.HandleTradeAccept(player, message.TradeAccepted);
+        await this._acceptAction.HandleTradeAcceptAsync(player, message.TradeAccepted);
     }
 }

@@ -84,7 +84,7 @@ public class ResetCharacterAction
         this._player.Attributes[Stats.Level] = configuration.LevelAfterReset;
         this._player.SelectedCharacter.Experience = 0;
         this.UpdateStats(configuration);
-        this.MoveHome();
+        await this.MoveHomeAsync();
         await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection);
     }
 
@@ -140,11 +140,11 @@ public class ResetCharacterAction
         this._player.SelectedCharacter!.LevelUpPoints = calculatedPointsPerReset;
     }
 
-    private void MoveHome()
+    private async ValueTask MoveHomeAsync()
     {
         var homeMapDef = this._player.SelectedCharacter!.CharacterClass!.HomeMap;
         if (homeMapDef is { }
-            && this._player.GameContext.GetMap((ushort)homeMapDef.Number) is { SafeZoneSpawnGate: { } spawnGate })
+            && await this._player.GameContext.GetMapAsync((ushort)homeMapDef.Number) is { SafeZoneSpawnGate: { } spawnGate })
         {
             this._player.SelectedCharacter.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
             this._player.SelectedCharacter.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);

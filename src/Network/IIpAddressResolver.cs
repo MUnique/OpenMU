@@ -15,5 +15,5 @@ public interface IIpAddressResolver
     /// Gets the resolved IPv4.
     /// </summary>
     /// <returns>The resolved IPv4.</returns>
-    IPAddress ResolveIPv4();
+    ValueTask<IPAddress> ResolveIPv4Async();
 }

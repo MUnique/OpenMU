@@ -86,6 +86,7 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
     /// </summary>
     protected abstract ValueTask TickAsync();
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void SafeTick()
     {
         try

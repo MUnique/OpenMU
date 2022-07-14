@@ -32,11 +32,6 @@ public sealed class Party : Disposable
     private readonly AsyncLock _distributionLock = new AsyncLock();
 
     /// <summary>
-    /// Gets the name of the meter of this class.
-    /// </summary>
-    internal static string MeterName => typeof(Party).FullName ?? nameof(Party);
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Party" /> class.
     /// </summary>
     /// <param name="maxPartySize">Maximum size of the party.</param>
@@ -49,7 +44,7 @@ public sealed class Party : Disposable
         this.PartyList = new List<IPartyMember>(maxPartySize);
         this._distributionList = new List<Player>(this.MaxPartySize);
         var updateInterval = new TimeSpan(0, 0, 0, 0, 500);
-        this._healthUpdate = new Timer(this.HealthUpdate_Elapsed, null, updateInterval, updateInterval);
+        this._healthUpdate = new Timer(this.HealthUpdateElapsed, null, updateInterval, updateInterval);
         PartyCount.Add(1);
     }
 
@@ -67,6 +62,11 @@ public sealed class Party : Disposable
     /// Gets the party master.
     /// </summary>
     public IPartyMember? PartyMaster { get; private set; }
+
+    /// <summary>
+    /// Gets the name of the meter of this class.
+    /// </summary>
+    internal static string MeterName => typeof(Party).FullName ?? nameof(Party);
 
     /// <summary>
     /// Kicks the player from the party.
@@ -269,7 +269,8 @@ public sealed class Party : Disposable
         await this.SendPartyListAsync();
     }
 
-    private async void HealthUpdate_Elapsed(object? state)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void HealthUpdateElapsed(object? state)
     {
         try
         {

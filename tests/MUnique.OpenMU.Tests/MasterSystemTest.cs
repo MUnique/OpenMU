@@ -29,9 +29,9 @@ public class MasterSystemTest
     /// Setups the test data.
     /// </summary>
     [SetUp]
-    public void Setup()
+    public async Task SetupAsync()
     {
-        this._player = TestHelper.CreatePlayer();
+        this._player = await TestHelper.CreatePlayerAsync();
         var context = this._player.GameContext;
         this._skillRank1 = this.CreateSkill(1, 1, 1, null, this._player.SelectedCharacter!.CharacterClass!);
         this._skillRank2 = this.CreateSkill(2, 2, 1, null, this._player.SelectedCharacter!.CharacterClass!);
@@ -47,9 +47,9 @@ public class MasterSystemTest
     /// Tests if the adding of master points failes because of insufficient level up points.
     /// </summary>
     [Test]
-    public void FailedInsufficientLevelUpPoints()
+    public async Task FailedInsufficientLevelUpPointsAsync()
     {
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter!.LearnedSkills, Is.Empty);
     }
 
@@ -57,10 +57,10 @@ public class MasterSystemTest
     /// Tests if the adding of master points succeeds.
     /// </summary>
     [Test]
-    public void Succeeded()
+    public async Task SucceededAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Is.Not.Empty);
     }
 
@@ -68,10 +68,10 @@ public class MasterSystemTest
     /// Tests if the adding of master points fails because of an insufficient reached skill rank.
     /// </summary>
     [Test]
-    public void RankNotSufficient()
+    public async Task RankNotSufficientAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Is.Empty);
     }
 
@@ -79,12 +79,12 @@ public class MasterSystemTest
     /// Tests if the adding of master points fails because the skill of the previous rank does not have the required level 10.
     /// </summary>
     [Test]
-    public void PreviousRankTooLowLevel()
+    public async Task PreviousRankTooLowLevelAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 9;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(1));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.First().Skill, Is.SameAs(this._skillRank1));
     }
@@ -93,12 +93,12 @@ public class MasterSystemTest
     /// Tests if the adding of master points succeeds because the skill of the previous rank has the required level 10.
     /// </summary>
     [Test]
-    public void PreviousRankEnoughLevels()
+    public async Task PreviousRankEnoughLevelsAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank1), Is.True);
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank2), Is.True);
@@ -108,15 +108,15 @@ public class MasterSystemTest
     /// Tests if the adding of master points succeeds when a skill has a minium level of 10 and the character has enough master points.
     /// </summary>
     [Test]
-    public void MinimumLevel10WithEnoughPoints()
+    public async Task MinimumLevel10WithEnoughPointsAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         this._player.SelectedCharacter.LearnedSkills.Last().Level = 10;
         this._player.SelectedCharacter.MasterLevelUpPoints = 10;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank3);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank3);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(3));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank3), Is.True);
     }
@@ -125,15 +125,15 @@ public class MasterSystemTest
     /// Tests if the adding of master points succeeds when a skill has a minimum level of 10 and the character has not enough master points.
     /// </summary>
     [Test]
-    public void MinimumLevel10WithoutEnoughPoints()
+    public async Task MinimumLevel10WithoutEnoughPointsAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         this._player.SelectedCharacter.LearnedSkills.Last().Level = 10;
         this._player.SelectedCharacter.MasterLevelUpPoints = 9;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank3);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank3);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank3), Is.False);
     }
@@ -142,10 +142,10 @@ public class MasterSystemTest
     /// Tests if adding a point to a new skill results in the skill having level 1.
     /// </summary>
     [Test]
-    public void AddedSkillGotLevel()
+    public async Task AddedSkillGotLevelAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.LearnedSkills.First().Level, Is.EqualTo(1));
     }
 
@@ -153,11 +153,11 @@ public class MasterSystemTest
     /// Tests if adding a point to a skill increases its level by one.
     /// </summary>
     [Test]
-    public void AddLevelToLearnedSkill()
+    public async Task AddLevelToLearnedSkillAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.LearnedSkills.First().Level, Is.EqualTo(2));
     }
 
@@ -165,14 +165,14 @@ public class MasterSystemTest
     /// Tests if adding a point to a new skill fails because the required skill is not learned yet.
     /// </summary>
     [Test]
-    public void RequiredSkillNotLearned()
+    public async Task RequiredSkillNotLearnedAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
 
         this._skillRank2.MasterDefinition!.RequiredMasterSkills.Add(new Skill());
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(1));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank2), Is.False);
     }
@@ -181,13 +181,13 @@ public class MasterSystemTest
     /// Tests if adding a point to a new skill not fails because the required skill has been learned.
     /// </summary>
     [Test]
-    public void RequiredSkillLearned()
+    public async Task RequiredSkillLearnedAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 2;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 10;
         this._skillRank2.MasterDefinition!.RequiredMasterSkills.Add(this._skillRank1);
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.LearnedSkills, Has.Count.EqualTo(2));
         Assert.That(this._player.SelectedCharacter.LearnedSkills.Any(l => l.Skill == this._skillRank2), Is.True);
     }
@@ -196,10 +196,10 @@ public class MasterSystemTest
     /// Tests if adding master points decreases the available master points.
     /// </summary>
     [Test]
-    public void MasterLevelUpPointDecreasedWhenLearned()
+    public async Task MasterLevelUpPointDecreasedWhenLearnedAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(0));
     }
 
@@ -207,10 +207,10 @@ public class MasterSystemTest
     /// Tests if a failed adding of master points does not decrease the available master points.
     /// </summary>
     [Test]
-    public void MasterLevelUpPointNotDecreasedWhenNotLearned()
+    public async Task MasterLevelUpPointNotDecreasedWhenNotLearnedAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 1;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank2);
         Assert.That(this._player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
     }
 
@@ -218,13 +218,13 @@ public class MasterSystemTest
     /// Tests if the adding of master points fails when the maximum level (20) of a skill has been reached.
     /// </summary>
     [Test]
-    public void MasterLevelMaximumReached()
+    public async Task MasterLevelMaximumReachedAsync()
     {
         this._player.SelectedCharacter!.MasterLevelUpPoints = 3;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         this._player.SelectedCharacter.LearnedSkills.First().Level = 19;
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
-        this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
+        await this._addAction.AddMasterPointAsync(this._player, (ushort)this._skillIdRank1);
         Assert.That(this._player.SelectedCharacter.LearnedSkills.First().Level, Is.EqualTo(20));
         Assert.That(this._player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
     }

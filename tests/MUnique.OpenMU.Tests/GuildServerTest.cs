@@ -16,7 +16,7 @@ public class GuildServerTest : GuildTestBase
     /// Tests if the entrance of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]
-    public async ValueTask GuildMemberEnterGame()
+    public async ValueTask GuildMemberEnterGameAsync()
     {
         const byte serverId = 1;
         await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
@@ -30,7 +30,7 @@ public class GuildServerTest : GuildTestBase
     /// Tests if the exit of the last guild member removes (not deletes ;)) the guild from the guild server.
     /// </summary>
     [Test]
-    public async ValueTask LastGuildMemberLeaveGame()
+    public async ValueTask LastGuildMemberLeaveGameAsync()
     {
         const byte serverId = 1;
         await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
@@ -44,7 +44,7 @@ public class GuildServerTest : GuildTestBase
     /// Tests if the exit of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]
-    public async ValueTask GuildMemberLeaveGame()
+    public async ValueTask GuildMemberLeaveGameAsync()
     {
         const byte serverId = 1;
 
@@ -61,7 +61,7 @@ public class GuildServerTest : GuildTestBase
     /// Tests if the removal of the whole guild is forwarded to all game servers when the guild master kicks himself.
     /// </summary>
     [Test]
-    public async ValueTask GuildPlayerKickDeletesGuild()
+    public async ValueTask GuildPlayerKickDeletesGuildAsync()
     {
         const byte serverId = 1;
         await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
@@ -74,7 +74,7 @@ public class GuildServerTest : GuildTestBase
     /// Tests if the removal of guild members is forwarded to all game servers.
     /// </summary>
     [Test]
-    public async ValueTask GuildPlayerKickRemovesPlayerFromGuild()
+    public async ValueTask GuildPlayerKickRemovesPlayerFromGuildAsync()
     {
         const byte serverId = 1;
         const string testMemberName = "TestMember";

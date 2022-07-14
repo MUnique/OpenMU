@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Network;
 
 using System.Net;
+using System.Threading.Tasks;
 
 /// <summary>
 /// Resolver which always returns the provided custom ip address.
@@ -23,5 +24,5 @@ public class CustomIpResolver : IIpAddressResolver
     }
 
     /// <inheritdoc />
-    public IPAddress ResolveIPv4() => this._address;
+    public ValueTask<IPAddress> ResolveIPv4Async() => ValueTask.FromResult(this._address);
 }

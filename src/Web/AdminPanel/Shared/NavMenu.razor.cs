@@ -42,15 +42,15 @@ public partial class NavMenu
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        this.SetupService.DatabaseInitialized += this.OnDatabaseInitialized;
+        this.SetupService.DatabaseInitialized += this.OnDatabaseInitializedAsync;
         _ = Task.Run(this.LoadGameConfigurationAsync);
     }
 
-    private void OnDatabaseInitialized(object? sender, EventArgs args)
+    private async ValueTask OnDatabaseInitializedAsync()
     {
         // We have to reload, because the old links are not correct anymore.
         this.GameConfiguration = null;
-        Task.Run(this.LoadGameConfigurationAsync);
+        await this.LoadGameConfigurationAsync();
     }
 
     private async Task LoadGameConfigurationAsync()

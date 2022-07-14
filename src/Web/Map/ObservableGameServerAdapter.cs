@@ -11,10 +11,10 @@ using MUnique.OpenMU.GameLogic;
 /// <summary>
 /// Adapter which takes an <see cref="IGameServerContext"/> and adapts it to a <see cref="IObservableGameServer"/>.
 /// </summary>
-public class ObservableGameServerAdapter : IObservableGameServer
+public class ObservableGameServerAdapter : Disposable, IObservableGameServer
 {
     private readonly IGameServerContext _gameContext;
-    private readonly IList<IGameMapInfo> _gameMapInfos;
+    private readonly List<IGameMapInfo> _gameMapInfos = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableGameServerAdapter"/> class.
@@ -23,9 +23,6 @@ public class ObservableGameServerAdapter : IObservableGameServer
     public ObservableGameServerAdapter(IGameServerContext gameContext)
     {
         this._gameContext = gameContext;
-        this._gameMapInfos ??= this._gameContext.Maps.Select(this.CreateMapAdapter).ToList<IGameMapInfo>();
-        this._gameContext.GameMapCreated += this.OnGameMapCreated;
-        this._gameContext.GameMapRemoved += this.OnGameMapRemoved;
     }
 
     /// <inheritdoc />
@@ -37,13 +34,28 @@ public class ObservableGameServerAdapter : IObservableGameServer
     /// <inheritdoc/>
     public IList<IGameMapInfo> Maps => this._gameMapInfos;
 
+    /// <summary>
+    /// Initializes this instance.
+    /// </summary>
+    public async ValueTask InitializeAsync()
+    {
+        foreach (var map in this._gameContext.Maps)
+        {
+            var mapAdapter = await this.CreateMapAdapterAsync(map);
+            this._gameMapInfos.Add(mapAdapter);
+        }
+
+        this._gameContext.GameMapCreated += this.OnGameMapCreated;
+        this._gameContext.GameMapRemoved += this.OnGameMapRemoved;
+    }
+
     /// <inheritdoc/>
-    public void RegisterMapObserver(Guid mapId, ILocateable worldObserver)
+    public async ValueTask RegisterMapObserverAsync(Guid mapId, ILocateable worldObserver)
     {
         var map = this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId);
         if (map != null)
         {
-            map.AddAsync(worldObserver);
+            await map.AddAsync(worldObserver);
         }
         else
         {
@@ -53,12 +65,12 @@ public class ObservableGameServerAdapter : IObservableGameServer
     }
 
     /// <inheritdoc/>
-    public void UnregisterMapObserver(Guid mapId, ushort worldObserverId)
+    public async ValueTask UnregisterMapObserverAsync(Guid mapId, ushort worldObserverId)
     {
         if (this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId) is { } map
             && map.GetObject(worldObserverId) is { } observer)
         {
-            map.RemoveAsync(observer);
+            await map.RemoveAsync(observer);
         }
     }
 
@@ -66,6 +78,14 @@ public class ObservableGameServerAdapter : IObservableGameServer
     public override string ToString()
     {
         return this._gameContext.ToString() ?? string.Empty;
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        this._gameContext.GameMapCreated -= this.OnGameMapCreated;
+        this._gameContext.GameMapRemoved -= this.OnGameMapRemoved;
     }
 
     /// <summary>
@@ -90,17 +110,25 @@ public class ObservableGameServerAdapter : IObservableGameServer
         this.RaisePropertyChanged(nameof(this.Maps));
     }
 
-    private void OnGameMapCreated(object? sender, GameMap gameMap)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnGameMapCreated(object? sender, GameMap gameMap)
     {
-        if (this._gameMapInfos.FirstOrDefault(i => i.Id == gameMap.Id) is not null)
+        try
         {
-            // we already know this map - should never happen.
-            return;
-        }
+            if (this._gameMapInfos.FirstOrDefault(i => i.Id == gameMap.Id) is not null)
+            {
+                // we already know this map - should never happen.
+                return;
+            }
 
-        var map = this.CreateMapAdapter(gameMap);
-        this._gameMapInfos.Add(map);
-        this.RaisePropertyChanged(nameof(this.Maps));
+            var map = await this.CreateMapAdapterAsync(gameMap);
+            this._gameMapInfos.Add(map);
+            this.RaisePropertyChanged(nameof(this.Maps));
+        }
+        catch
+        {
+            // must be catched because it's an async void method.
+        }
     }
 
     private void OnMapPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -108,9 +136,10 @@ public class ObservableGameServerAdapter : IObservableGameServer
         this.RaisePropertyChanged(nameof(this.Maps));
     }
 
-    private GameMapInfoAdapter CreateMapAdapter(GameMap gameMap)
+    private async ValueTask<GameMapInfoAdapter> CreateMapAdapterAsync(GameMap gameMap)
     {
         var mapAdapter = new GameMapInfoAdapter(gameMap, this._gameContext);
+        await mapAdapter.InitializeAsync();
         mapAdapter.PropertyChanged += this.OnMapPropertyChanged;
         return mapAdapter;
     }

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
@@ -17,8 +18,9 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="repositoryManager">The repository manager.</param>
-    public PlayerContext(DbContext context, RepositoryManager repositoryManager)
-        : base(context, repositoryManager)
+    /// <param name="logger">The logger.</param>
+    public PlayerContext(DbContext context, RepositoryManager repositoryManager, ILogger<PlayerContext> logger)
+        : base(context, repositoryManager, logger)
     {
     }
 

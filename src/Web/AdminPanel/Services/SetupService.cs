@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.Web.AdminPanel.Services;
 
 using System.Threading;
+using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
@@ -38,7 +37,7 @@ public class SetupService
     /// <summary>
     /// Occurs when the database got initialized.
     /// </summary>
-    public event EventHandler? DatabaseInitialized;
+    public event AsyncEventHandler? DatabaseInitialized;
 
     /// <summary>
     /// Gets a value indicating whether this application can connect to database.
@@ -86,20 +85,23 @@ public class SetupService
     /// Installs the updates asynchronous.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public Task InstallUpdatesAsync(CancellationToken cancellationToken)
+    public async Task InstallUpdatesAsync(CancellationToken cancellationToken)
     {
-        this._contextProvider.ApplyAllPendingUpdatesAsync();
-        return this._contextProvider.WaitForUpdatedDatabase(cancellationToken);
+        await this._contextProvider.ApplyAllPendingUpdatesAsync();
+        await this._contextProvider.WaitForUpdatedDatabaseAsync(cancellationToken);
     }
 
     /// <summary>
     /// Creates the database.
     /// </summary>
     /// <param name="dataInitialization">The data initialization action.</param>
-    public void CreateDatabase(Action dataInitialization)
+    public async Task CreateDatabaseAsync(Func<Task> dataInitialization)
     {
-        this._contextProvider.ReCreateDatabaseAsync();
-        dataInitialization();
-        this.DatabaseInitialized?.Invoke(this, EventArgs.Empty);
+        await this._contextProvider.ReCreateDatabaseAsync();
+        await dataInitialization();
+        if (this.DatabaseInitialized is { } eventHandler)
+        {
+            await eventHandler.Invoke();
+        }
     }
 }

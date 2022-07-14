@@ -19,7 +19,7 @@ public class StorageTest
     /// Tests the adding of a small item to the upper left corner of the storage.
     /// </summary>
     [Test]
-    public async ValueTask AddItem1X1TopLeft()
+    public async ValueTask AddItem1X1TopLeftAsync()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
@@ -34,7 +34,7 @@ public class StorageTest
     /// Tests adding a 2x2 item to the right bottom corner of the storage.
     /// </summary>
     [Test]
-    public async ValueTask AddItem2X2AtRightBottom()
+    public async ValueTask AddItem2X2AtRightBottomAsync()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
@@ -50,7 +50,7 @@ public class StorageTest
     /// Tests if the adding of the item fails because the same slot is already in use by another item.
     /// </summary>
     [Test]
-    public async ValueTask AddItemFailSpaceInUse()
+    public async ValueTask AddItemFailSpaceInUseAsync()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
@@ -66,7 +66,7 @@ public class StorageTest
     /// Tests if the adding of the item one line below another 2x2 item fails.
     /// </summary>
     [Test]
-    public async ValueTask AddItemFailSpaceInUseVertical()
+    public async ValueTask AddItemFailSpaceInUseVerticalAsync()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
@@ -89,7 +89,7 @@ public class StorageTest
     /// because the left part of the item would hang over.
     /// </summary>
     [Test]
-    public async ValueTask AddItem2X1FailRightBorder()
+    public async ValueTask AddItem2X1FailRightBorderAsync()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
@@ -103,7 +103,7 @@ public class StorageTest
     /// because the bottom part of the item would hang over.
     /// </summary>
     [Test]
-    public async ValueTask AddItem1X2FailBottom()
+    public async ValueTask AddItem1X2FailBottomAsync()
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;

@@ -16,7 +16,7 @@ public class TradeAcceptAction : BaseTradeAction
     /// </summary>
     /// <param name="tradeAccepter">The trader which answers the trade request.</param>
     /// <param name="accept">Indicates if the trader accepted the trade request.</param>
-    public async ValueTask HandleTradeAccept(ITrader tradeAccepter, bool accept)
+    public async ValueTask HandleTradeAcceptAsync(ITrader tradeAccepter, bool accept)
     {
         var tradePartner = tradeAccepter.TradingPartner;
         if (accept && tradePartner != null)

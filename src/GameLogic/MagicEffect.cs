@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
@@ -39,7 +41,7 @@ public class MagicEffect : AsyncDisposable
         this.PowerUpElements = powerUps;
         this.Definition = definition;
         this.Duration = duration;
-        this._finishTimer = new Timer(this.DisposeAsync().AsTimerCallback(), null, (int)this.Duration.TotalMilliseconds, Timeout.Infinite);
+        this._finishTimer = new Timer(this.OnTimerTimeout, null, (int)this.Duration.TotalMilliseconds, Timeout.Infinite);
     }
 
     /// <summary>
@@ -104,6 +106,19 @@ public class MagicEffect : AsyncDisposable
         this.EffectTimeOut = null;
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnTimerTimeout(object? state)
+    {
+        try
+        {
+            await this.DisposeAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.Fail(ex.Message, ex.StackTrace);
+        }
     }
 
     private async ValueTask OnEffectTimeOutAsync()

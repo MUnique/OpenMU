@@ -14,7 +14,7 @@ using System.IO.Pipelines;
 public class PipelinedXor32Encryptor : PacketPipeReaderBase, IPipelinedEncryptor
 {
     private readonly PipeWriter _target;
-    private readonly Pipe _pipe = new ();
+    private readonly Pipe _pipe = new();
     private readonly byte[] _xor32Key;
 
     /// <summary>
@@ -41,7 +41,7 @@ public class PipelinedXor32Encryptor : PacketPipeReaderBase, IPipelinedEncryptor
         this.Source = this._pipe.Reader;
         this._target = target;
         this._xor32Key = xor32Key;
-        this.ReadSource().ConfigureAwait(false);
+        _ = this.ReadSourceAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

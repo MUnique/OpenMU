@@ -57,12 +57,12 @@ public class PlugInProxyTypeGeneratorTest
     /// Tests if multiple plugins are executed.
     /// </summary>
     [Test]
-    public void MultiplePlugInsAreExecuted()
+    public async ValueTask MultiplePlugInsAreExecutedAsync()
     {
         var generator = new PlugInProxyTypeGenerator();
         var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
 
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
         var firstMock = new Mock<IExamplePlugIn>();
@@ -83,7 +83,7 @@ public class PlugInProxyTypeGeneratorTest
     /// Tests if multiple plugins are executed.
     /// </summary>
     [Test]
-    public async ValueTask MultipleAsyncPlugInsAreExecuted()
+    public async ValueTask MultipleAsyncPlugInsAreExecutedAsync()
     {
         var generator = new PlugInProxyTypeGenerator();
         var proxy = generator.GenerateProxy<IAsyncPlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
@@ -110,12 +110,12 @@ public class PlugInProxyTypeGeneratorTest
     /// Tests if inactive plugins are not executed.
     /// </summary>
     [Test]
-    public void InactivePlugInsAreNotExecuted()
+    public async ValueTask InactivePlugInsAreNotExecutedAsync()
     {
         var generator = new PlugInProxyTypeGenerator();
         var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
 
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
         var firstMock = new Mock<IExamplePlugIn>();
@@ -137,12 +137,12 @@ public class PlugInProxyTypeGeneratorTest
     /// next plugins are not executed anymore.
     /// </summary>
     [Test]
-    public void CancelEventArgsAreRespected()
+    public async ValueTask CancelEventArgsAreRespectedAsync()
     {
         var generator = new PlugInProxyTypeGenerator();
         var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
 
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var command = "test";
         var args = new MyEventArgs();
         var firstMock = new Mock<IExamplePlugIn>();

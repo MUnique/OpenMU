@@ -30,8 +30,8 @@ public class InMemoryRepositoryAdapter<T> : RepositoryAdapter<T>, IMemoryReposit
     }
 
     /// <inheritdoc />
-    public void Remove(Guid key)
+    public ValueTask RemoveAsync(Guid key)
     {
-        this._repository.Remove(key);
+        return this._repository.RemoveAsync(key);
     }
 }

@@ -37,7 +37,7 @@ public class ConnectServerController : ControllerBase
     /// <param name="data">The data.</param>
     [HttpPost("GameServerHeartbeat")]
     [Topic("pubsub", "GameServerHeartbeat")]
-    public async Task GameServerHeartbeat([FromBody] GameServerHeartbeatArguments data)
+    public async Task GameServerHeartbeatAsync([FromBody] GameServerHeartbeatArguments data)
     {
         try
         {

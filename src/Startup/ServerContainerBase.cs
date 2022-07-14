@@ -31,30 +31,30 @@ public abstract class ServerContainerBase : IHostedService
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await this.StartAsyncCore(cancellationToken);
-        this._setupService.DatabaseInitialized += this.OnDatabaseInitialized;
+        await this.StartInnerAsync(cancellationToken);
+        this._setupService.DatabaseInitialized += this.OnDatabaseInitializedAsync;
     }
 
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await this.StopAsyncCore(cancellationToken);
-        this._setupService.DatabaseInitialized -= this.OnDatabaseInitialized;
+        await this.StopInnerAsync(cancellationToken);
+        this._setupService.DatabaseInitialized -= this.OnDatabaseInitializedAsync;
     }
 
     /// <summary>
     /// Starts the hosted service.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    protected abstract Task StartAsyncCore(CancellationToken cancellationToken);
+    protected abstract Task StartInnerAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Stops the hosted service.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    protected abstract Task StopAsyncCore(CancellationToken cancellationToken);
+    protected abstract Task StopInnerAsync(CancellationToken cancellationToken);
 
-    private async void OnDatabaseInitialized(object? sender, EventArgs e)
+    private async ValueTask OnDatabaseInitializedAsync()
     {
         try
         {

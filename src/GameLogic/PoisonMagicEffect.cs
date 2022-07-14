@@ -51,7 +51,8 @@ public sealed class PoisonMagicEffect : MagicEffect
         this._damageTimer.Dispose();
     }
 
-    private void OnDamageTimerElapsed(object? sender, ElapsedEventArgs e)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnDamageTimerElapsed(object? sender, ElapsedEventArgs e)
     {
         try
         {
@@ -66,7 +67,7 @@ public sealed class PoisonMagicEffect : MagicEffect
                 return;
             }
 
-            this.Owner.ApplyPoisonDamageAsync(this.Attacker, (uint)damage);
+            await this.Owner.ApplyPoisonDamageAsync(this.Attacker, (uint)damage);
         }
         catch (Exception ex)
         {

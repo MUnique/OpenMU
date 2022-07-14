@@ -62,18 +62,20 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
     public Task StartAsync(CancellationToken cancellationToken)
     {
         this._heartbeatCancellationTokenSource = new CancellationTokenSource();
-        this._heartbeatTask = Task.Run(
-            async () =>
+
+        async Task RunHeartbeatTask()
+        {
+            try
             {
-                try
-                {
-                    await this.HeartbeatLoop(this._heartbeatCancellationTokenSource.Token);
-                }
-                catch (Exception ex)
-                {
-                    this._logger.LogError(ex, "Error in heartbeat loop.");
-                }
-            });
+                await this.HeartbeatLoopAsync(this._heartbeatCancellationTokenSource.Token);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error in heartbeat loop.");
+            }
+        }
+
+        this._heartbeatTask = RunHeartbeatTask();
         return Task.CompletedTask;
     }
 
@@ -89,7 +91,7 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
         }
     }
 
-    private async Task HeartbeatLoop(CancellationToken cancellationToken)
+    private async Task HeartbeatLoopAsync(CancellationToken cancellationToken)
     {
         var stopWatch = new Stopwatch();
         stopWatch.Start();
@@ -123,6 +125,7 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Exceptions are catched.")]
     private async void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         try

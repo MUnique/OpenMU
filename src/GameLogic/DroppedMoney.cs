@@ -35,7 +35,7 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
         this._pickupLock = new();
         this.Position = position;
         this.CurrentMap = map;
-        this._removeTimer = new Timer(this.DisposeAsync().AsTimerCallback(), null, map.ItemDropDuration * 1000, Timeout.Infinite);
+        this._removeTimer = new Timer(this.OnTimerTimeout, null, map.ItemDropDuration * 1000, Timeout.Infinite);
     }
 
     /// <summary>
@@ -114,5 +114,18 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
         }
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnTimerTimeout(object? state)
+    {
+        try
+        {
+            await this.DisposeAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.Fail(ex.Message, ex.StackTrace);
+        }
     }
 }

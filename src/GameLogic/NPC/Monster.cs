@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISupportWalk, IMovable
 {
-    private readonly AsyncLock _moveLock = new ();
+    private readonly AsyncLock _moveLock = new();
     private readonly INpcIntelligence _intelligence;
     private readonly Walker _walker;
 

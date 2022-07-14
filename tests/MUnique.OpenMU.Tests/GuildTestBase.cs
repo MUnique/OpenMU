@@ -53,7 +53,7 @@ public class GuildTestBase
     /// Setups the test objects.
     /// </summary>
     [SetUp]
-    public virtual async ValueTask Setup()
+    public virtual async ValueTask SetupAsync()
     {
         this.GameServer0 = new Mock<IGameServer>();
         this.GameServer1 = new Mock<IGameServer>();

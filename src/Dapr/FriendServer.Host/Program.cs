@@ -21,6 +21,6 @@ services.AddSingleton<IFriendServer, FriendServer>()
 
 var app = builder.BuildAndConfigure();
 
-await app.WaitForUpdatedDatabase();
+await app.WaitForUpdatedDatabaseAsync();
 
 app.Run();

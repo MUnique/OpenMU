@@ -83,7 +83,7 @@ public class ExDbClient
         this._connection.PacketReceived += this.ExDbPacketReceivedAsync;
         this._connection.Disconnected += this.ConnectAsync;
         await this.SendHelloAsync();
-        await this._connection!.BeginReceive();
+        await this._connection!.BeginReceiveAsync();
     }
 
     private async ValueTask SendHelloAsync()

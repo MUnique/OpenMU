@@ -71,7 +71,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// Waits until all database updates are applied.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public async Task WaitForUpdatedDatabase(CancellationToken cancellationToken = default)
+    public async Task WaitForUpdatedDatabaseAsync(CancellationToken cancellationToken = default)
     {
         while (!await this.DatabaseExistsAsync()
                || !await this.IsDatabaseUpToDateAsync())
@@ -154,43 +154,43 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <inheritdoc />
     public IContext CreateNewContext()
     {
-        return new CachingEntityFrameworkContext(new EntityDataContext(), this.CachingRepositoryManager);
+        return new CachingEntityFrameworkContext(new EntityDataContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IContext CreateNewContext(DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        return new CachingEntityFrameworkContext(new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager);
+        return new CachingEntityFrameworkContext(new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IPlayerContext CreateNewPlayerContext(DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        return new PlayerContext(new AccountContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager);
+        return new PlayerContext(new AccountContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager, this._loggerFactory.CreateLogger<PlayerContext>());
     }
 
     /// <inheritdoc />
     public IContext CreateNewConfigurationContext()
     {
-        return new CachingEntityFrameworkContext(new ConfigurationContext(), this.CachingRepositoryManager);
+        return new CachingEntityFrameworkContext(new ConfigurationContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IContext CreateNewTradeContext()
     {
-        return new CachingEntityFrameworkContext(new TradeContext(), this.CachingRepositoryManager);
+        return new CachingEntityFrameworkContext(new TradeContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IFriendServerContext CreateNewFriendServerContext()
     {
-        return new FriendServerContext(new FriendContext(), this.CachingRepositoryManager);
+        return new FriendServerContext(new FriendContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<FriendServerContext>());
     }
 
     /// <inheritdoc/>
     public IGuildServerContext CreateNewGuildContext()
     {
-        return new GuildServerContext(new GuildContext(), this.CachingRepositoryManager);
+        return new GuildServerContext(new GuildContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<GuildServerContext>());
     }
 
     /// <inheritdoc />

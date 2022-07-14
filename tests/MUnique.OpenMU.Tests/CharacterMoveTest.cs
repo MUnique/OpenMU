@@ -22,7 +22,7 @@ public class CharacterMoveTest
     /// Tests if handling a walk packet results in the correct target coordinates.
     /// </summary>
     [Test]
-    public async ValueTask TestWalkTargetIsCorrect()
+    public async ValueTask TestWalkTargetIsCorrectAsync()
     {
         var player = await this.DoTheWalkAsync();
         Assert.That(player.WalkTarget, Is.EqualTo(EndPoint));
@@ -32,7 +32,7 @@ public class CharacterMoveTest
     /// Tests if handling a walk packet results in the correct walk directions.
     /// </summary>
     [Test]
-    public async ValueTask TestWalkStepsAreCorrect()
+    public async ValueTask TestWalkStepsAreCorrectAsync()
     {
         var player = await this.DoTheWalkAsync();
 
@@ -61,7 +61,7 @@ public class CharacterMoveTest
     private async ValueTask<Player> DoTheWalkAsync()
     {
         var packet = new byte[] { 0xC1, 0x08, (byte)PacketType.Walk, 147, 120, 0x44, 0x33, 0x44 };
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var moveHandler = new CharacterWalkHandlerPlugIn();
         await moveHandler.HandlePacketAsync(player, packet);
 

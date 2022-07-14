@@ -12,7 +12,7 @@ using MUnique.OpenMU.Pathfinding;
 /// <summary>
 /// The implementation of a non-player-character (Monster) which can not be attacked or attack.
 /// </summary>
-public class NonPlayerCharacter : IObservable, IRotatable, ILocateable, IHasBucketInformation, IDisposable
+public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILocateable, IHasBucketInformation
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NonPlayerCharacter"/> class.
@@ -109,22 +109,11 @@ public class NonPlayerCharacter : IObservable, IRotatable, ILocateable, IHasBuck
         return $"{this.Definition.Designation} - Id: {this.Id} - Position: {this.Position}";
     }
 
-    /// <inheritdoc/>
-    public void Dispose()
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsyncCore()
     {
-        this.Dispose(true);
-
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// Releases unmanaged and - optionally - managed resources.
-    /// </summary>
-    /// <param name="managed"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "<ObserverLock>k__BackingField", Justification = "Can't access backing field.")]
-    protected virtual void Dispose(bool managed)
-    {
-        this.CurrentMap?.RemoveAsync(this); //TODO await
+        await this.CurrentMap.RemoveAsync(this);
+        await base.DisposeAsyncCore();
     }
 
     /// <summary>

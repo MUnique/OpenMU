@@ -10,7 +10,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A plugin interface for features.
 /// A feature plugin can be used to implicitly group dependent plugins.
-/// For example, you can check if a feature plugin is active by calling <see cref="PlugInManager.IsPlugInActive" />.
+/// For example, you can check if a feature plugin is active by calling <see cref="PlugInManager.IsPlugInActive(System.Type)" />.
 /// Additionally, feature plugins can be used as a common configuration sink by implementing <see cref="ISupportCustomConfiguration{TCustomConfig}"/>.
 /// </summary>
 [Guid("D786314A-4168-4FCF-93F8-A350AD0E752E")]

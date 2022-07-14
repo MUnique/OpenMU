@@ -5,8 +5,9 @@
 namespace MUnique.OpenMU.ServerClients;
 
 using System.ComponentModel;
-using MUnique.OpenMU.Interfaces;
 using Dapr.Client;
+using Nito.AsyncEx.Synchronous;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Implementation of an <see cref="IGameServer"/> which accesses another game server remotely over Dapr.
@@ -31,6 +32,13 @@ public class GameServer : IGameServer
         this._client = daprClient;
         this._targetAppId = $"gameServer{serverId}";
         this.Description = $"Game Server {serverId}";
+
+        async Task InitAsync()
+        {
+            this._configurationId = await this._client.InvokeMethodAsync<Guid>(this._targetAppId, $"get{nameof(this.ConfigurationId)}");
+        }
+
+        _ = InitAsync();
     }
 
     /// <inheritdoc />
@@ -40,7 +48,7 @@ public class GameServer : IGameServer
     public int Id { get; }
 
     /// <inheritdoc />
-    public Guid ConfigurationId => this._configurationId ??= this._client.InvokeMethodAsync<Guid>(this._targetAppId, $"get{nameof(this.ConfigurationId)}").Result;
+    public Guid ConfigurationId { get; private set; }
 
     /// <inheritdoc />
     public string Description { get; }
@@ -49,7 +57,7 @@ public class GameServer : IGameServer
     public ServerType Type => ServerType.GameServer;
 
     /// <inheritdoc />
-    public ServerState ServerState => this._client.InvokeMethodAsync<ServerState>(this._targetAppId, nameof(this.ServerState)).Result;
+    public ServerState ServerState => this._client.InvokeMethodAsync<ServerState>(this._targetAppId, nameof(this.ServerState)).WaitAndUnwrapException();
 
     /// <inheritdoc />
     public int MaximumConnections { get; } // TODO

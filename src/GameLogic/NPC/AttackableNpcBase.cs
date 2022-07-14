@@ -22,7 +22,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     private readonly IEventStateProvider? _eventStateProvider;
     private readonly IDropGenerator _dropGenerator;
     private readonly PlugInManager _plugInManager;
-    private Timer? _respawnTimer;
     private int _health;
 
     /// <summary>
@@ -123,7 +122,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     public override void Initialize()
     {
         base.Initialize();
-        this._respawnTimer?.Dispose();
         this.Health = this.SpawnArea.MaximumHealthOverride ?? (int)this.Attributes[Stats.MaximumHealth];
         this.IsAlive = true;
     }
@@ -134,7 +132,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         if (managed)
         {
             this.Died = null;
-            this._respawnTimer?.Dispose();
             this.IsAlive = false;
         }
 
@@ -147,35 +144,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     protected virtual void OnRemoveFromMap()
     {
         // can be overwritten to do additional stuff.
-    }
-
-    private async ValueTask RemoveFromMapAndDisposeAsync()
-    {
-        await this.CurrentMap.RemoveAsync(this);
-        this.Dispose();
-        this.OnRemoveFromMap();
-    }
-
-    /// <summary>
-    /// Respawns this instance on the map.
-    /// </summary>
-    private async ValueTask RespawnAsync()
-    {
-        try
-        {
-            if (!this.ShouldRespawn)
-            {
-                await this.RemoveFromMapAndDisposeAsync();
-                return;
-            }
-
-            this.Initialize();
-            await this.CurrentMap.RespawnAsync(this);
-        }
-        catch (Exception ex)
-        {
-            Debug.Fail(ex.Message, ex.StackTrace);
-        }
     }
 
     /// <summary>
@@ -229,6 +197,35 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     protected virtual void RegisterHit(IAttacker attacker)
     {
         // can be overwritten
+    }
+
+    private async ValueTask RemoveFromMapAndDisposeAsync()
+    {
+        await this.CurrentMap.RemoveAsync(this);
+        this.Dispose();
+        this.OnRemoveFromMap();
+    }
+
+    /// <summary>
+    /// Respawns this instance on the map.
+    /// </summary>
+    private async ValueTask RespawnAsync()
+    {
+        try
+        {
+            if (!this.ShouldRespawn)
+            {
+                await this.RemoveFromMapAndDisposeAsync();
+                return;
+            }
+
+            this.Initialize();
+            await this.CurrentMap.RespawnAsync(this);
+        }
+        catch (Exception ex)
+        {
+            Debug.Fail(ex.Message, ex.StackTrace);
+        }
     }
 
     private bool TryHit(uint damage, IAttacker attacker)

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Components;
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
@@ -90,9 +91,9 @@ public partial class MapEditor : IDisposable
         }
         catch (Exception ex)
         {
-            
+            Debug.Fail(ex.Message, ex.StackTrace);
         }
-        
+
         await base.OnInitializedAsync();
     }
 
@@ -111,7 +112,7 @@ public partial class MapEditor : IDisposable
         }
     }
 
-    private Task? OnCancel()
+    private Task? OnCancelAsync()
     {
         this._focusedObject = null;
         return null;
@@ -230,7 +231,7 @@ public partial class MapEditor : IDisposable
         this._focusedObject = obj;
     }
 
-    private async Task<(byte X, byte Y)?> OnGetObjectCoordinates(MouseEventArgs args)
+    private async Task<(byte X, byte Y)?> OnGetObjectCoordinatesAsync(MouseEventArgs args)
     {
         if (args.Buttons == 1)
         {
@@ -250,14 +251,14 @@ public partial class MapEditor : IDisposable
         this._resizerPosition = position;
     }
 
-    private async Task OnMouseMove(MouseEventArgs args)
+    private async Task OnMouseMoveAsync(MouseEventArgs args)
     {
         if (this._resizerPosition is null)
         {
             return;
         }
 
-        if (await this.OnGetObjectCoordinates(args) is { } coordinates)
+        if (await this.OnGetObjectCoordinatesAsync(args) is { } coordinates)
         {
             var (x, y) = coordinates;
 
@@ -386,7 +387,7 @@ public partial class MapEditor : IDisposable
         this._focusedObject = exitGate;
     }
 
-    private void CancelCreation()
+    private async Task CancelCreationAsync()
     {
         if (!this._createMode)
         {
@@ -394,10 +395,10 @@ public partial class MapEditor : IDisposable
         }
 
         this._createMode = false;
-        this.RemoveFocusedObject();
+        await this.RemoveFocusedObjectAsync();
     }
 
-    private void RemoveFocusedObject()
+    private async Task RemoveFocusedObjectAsync()
     {
         switch (this._focusedObject)
         {
@@ -414,7 +415,7 @@ public partial class MapEditor : IDisposable
                 return;
         }
 
-        this.PersistenceContext.DeleteAsync(this._focusedObject);
+        await this.PersistenceContext.DeleteAsync(this._focusedObject);
         this._focusedObject = null;
     }
 

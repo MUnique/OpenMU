@@ -19,7 +19,7 @@ public sealed class Edit : EditBase
     {
         builder.OpenComponent(++currentSequence, typeof(AutoForm<>).MakeGenericType(this.Type!));
         builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.Model), this.Model);
-        builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChanges));
+        builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
         builder.CloseComponent();
     }
 }

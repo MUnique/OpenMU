@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx;
-
 namespace MUnique.OpenMU.GameLogic.NPC;
 
 using MUnique.OpenMU.GameLogic.Views.World;
+using Nito.AsyncEx;
 
 /// <summary>
 /// An AI which attacks all targets in an area, when it's triggered by one target.

@@ -82,7 +82,7 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
-    public Task WaitForUpdatedDatabase(CancellationToken cancellationToken = default)
+    public Task WaitForUpdatedDatabaseAsync(CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }

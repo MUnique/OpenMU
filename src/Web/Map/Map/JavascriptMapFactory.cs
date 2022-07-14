@@ -29,7 +29,7 @@ public sealed class JavascriptMapFactory : IMapFactory
     }
 
     /// <inheritdoc />
-    public async ValueTask<IMapController> CreateMap(IObservableGameServer gameServer, Guid mapId)
+    public async ValueTask<IMapController> CreateMapAsync(IObservableGameServer gameServer, Guid mapId)
     {
         MapController? mapController = null;
         try
@@ -37,7 +37,7 @@ public sealed class JavascriptMapFactory : IMapFactory
             var appId = this.GenerateMapAppIdentifier(gameServer.Id, mapId);
             await this._jsRuntime.InvokeVoidAsync("CreateMap", gameServer.Id, mapId, this.GetMapContainerIdentifier(gameServer.Id, mapId), appId);
             mapController = new MapController(this._jsRuntime, this._loggerFactory, appId, gameServer, mapId);
-            gameServer.RegisterMapObserver(mapId, mapController);
+            await gameServer.RegisterMapObserverAsync(mapId, mapController);
         }
         catch
         {

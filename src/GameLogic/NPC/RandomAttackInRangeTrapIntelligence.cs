@@ -30,12 +30,12 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
                 || this._currentTarget.IsAtSafezone()
                 || !await this.IsTargetInObserversAsync())
             {
-                this._currentTarget = await this.SearchNextTarget();
+                this._currentTarget = await this.SearchNextTargetAsync();
             }
         }
         else
         {
-            this._currentTarget = await this.SearchNextTarget();
+            this._currentTarget = await this.SearchNextTargetAsync();
         }
 
         // no target?
@@ -52,7 +52,7 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
         }
     }
 
-    private async ValueTask<IAttackable?> SearchNextTarget()
+    private async ValueTask<IAttackable?> SearchNextTargetAsync()
     {
         List<IWorldObserver> tempObservers;
         using (await this.Trap.ObserverLock.ReaderLockAsync())

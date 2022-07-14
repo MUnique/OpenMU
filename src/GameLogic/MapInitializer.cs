@@ -193,7 +193,7 @@ public class MapInitializer : IMapInitializer
         catch (Exception ex)
         {
             this._logger.LogError(ex, $"Object {spawnArea} couldn't be initialized.", spawnArea);
-            npc.Dispose();
+            await npc.DisposeAsync();
         }
     }
 

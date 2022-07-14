@@ -172,7 +172,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// Shows the custom plug in configuration in a modal dialog.
     /// </summary>
     /// <param name="item">The item.</param>
-    public async Task ShowPlugInConfig(PlugInConfigurationViewItem item)
+    public async Task ShowPlugInConfigAsync(PlugInConfigurationViewItem item)
     {
         if (item.ConfigurationType is null)
         {

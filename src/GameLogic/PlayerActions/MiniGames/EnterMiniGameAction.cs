@@ -56,7 +56,7 @@ public class EnterMiniGameAction
         }
 
         var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
-        var miniGame = player.GameContext.GetMiniGame(miniGameDefinition, player);
+        var miniGame = await player.GameContext.GetMiniGameAsync(miniGameDefinition, player);
         var enterResult = await miniGame.TryEnterAsync(player);
         if (enterResult == EnterResult.Success)
         {

@@ -29,6 +29,6 @@ internal class ChangeOnlineStateHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         SetFriendOnlineState message = packet;
-        this._changeAction.SetOnlineState(player, message.OnlineState);
+        await this._changeAction.SetOnlineStateAsync(player, message.OnlineState);
     }
 }

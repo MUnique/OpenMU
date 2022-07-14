@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic;
 internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
 {
     private readonly GameMap _map;
+    private readonly IGameContext _gameContext;
     private readonly ConcurrentDictionary<Player, IPlayerInfo> _players = new();
 
     /// <summary>
@@ -24,16 +25,7 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
     public GameMapInfoAdapter(GameMap map, IGameContext gameContext)
     {
         this._map = map;
-        gameContext.ForEachPlayerAsync(async p =>
-        {
-            if (p.CurrentMap == this._map)
-            {
-                this._players.TryAdd(p, new PlayerInfo(p));
-            }
-        });
-
-        this._map.ObjectAdded += this.OnMapObjectAddedAsync;
-        this._map.ObjectRemoved += this.OnMapObjectRemovedAsync;
+        this._gameContext = gameContext;
     }
 
     /// <inheritdoc/>
@@ -56,6 +48,23 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
 
     /// <inheritdoc/>
     public int PlayerCount => this._players.Count();
+
+    /// <summary>
+    /// Initializes the adapter.
+    /// </summary>
+    public async ValueTask InitializeAsync()
+    {
+        await this._gameContext.ForEachPlayerAsync(async p =>
+        {
+            if (p.CurrentMap == this._map)
+            {
+                this._players.TryAdd(p, new PlayerInfo(p));
+            }
+        });
+
+        this._map.ObjectAdded += this.OnMapObjectAddedAsync;
+        this._map.ObjectRemoved += this.OnMapObjectRemovedAsync;
+    }
 
     /// <inheritdoc />
     public void Dispose()

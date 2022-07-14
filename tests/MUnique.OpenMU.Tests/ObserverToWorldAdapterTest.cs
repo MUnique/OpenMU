@@ -24,7 +24,7 @@ public class ObserverToWorldAdapterTest
     /// Tests if a <see cref="ILocateable"/> is only reported once to the <see cref="INewNpcsInScopePlugIn"/> when it's already known to it.
     /// </summary>
     [Test]
-    public async ValueTask LocateableAddedAlreadyExists()
+    public async ValueTask LocateableAddedAlreadyExistsAsync()
     {
         var worldObserver = new Mock<IWorldObserver>();
         var view = new Mock<INewNpcsInScopePlugIn>();
@@ -50,7 +50,7 @@ public class ObserverToWorldAdapterTest
     /// Tests if a <see cref="ILocateable"/> is not reported as out of scope to the view plugins when its new bucket is still observed.
     /// </summary>
     [Test]
-    public async ValueTask LocateableNotOutOfScopeWhenMovedToObservedBucket()
+    public async ValueTask LocateableNotOutOfScopeWhenMovedToObservedBucketAsync()
     {
         var worldObserver = new Mock<IWorldObserver>();
         var view1 = new Mock<INewNpcsInScopePlugIn>();

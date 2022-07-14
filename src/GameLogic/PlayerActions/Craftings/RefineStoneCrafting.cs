@@ -121,18 +121,28 @@ public class RefineStoneCrafting : SimpleItemCraftingHandler
     protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> referencedItems, Player player, byte socketSlot)
     {
         var higherRefineStoneItems = referencedItems
-            .FirstOrDefault(r => r.ItemRequirement.Reference == HigherRefineStoneReference)?.Items;
+            .FirstOrDefault(r => r.ItemRequirement.Reference == HigherRefineStoneReference)?.Items.Count() ?? 0;
 
         var lowerRefineStoneItems = referencedItems
-            .FirstOrDefault(r => r.ItemRequirement.Reference == LowerRefineStoneReference)?.Items;
+            .FirstOrDefault(r => r.ItemRequirement.Reference == LowerRefineStoneReference)?.Items.Count() ?? 0;
 
-        return this.CreateRefineStones(higherRefineStoneItems?.Count() ?? 0, 50, 44, player)
-            .Concat(this.CreateRefineStones(lowerRefineStoneItems?.Count() ?? 0, 20, 43, player))
-            .ToList();
+        var result = new List<Item>();
+        if (higherRefineStoneItems > 0)
+        {
+            result.AddRange(await this.CreateRefineStonesAsync(higherRefineStoneItems, 20, 44, player));
+        }
+
+        if (lowerRefineStoneItems > 0)
+        {
+            result.AddRange(await this.CreateRefineStonesAsync(lowerRefineStoneItems, 50, 43, player));
+        }
+
+        return result;
     }
 
-    private IEnumerable<Item> CreateRefineStones(int count, int chance, byte refineStoneNumber, Player player)
+    private async Task<List<Item>> CreateRefineStonesAsync(int count, int chance, byte refineStoneNumber, Player player)
     {
+        var createdItems = new List<Item>();
         for (int i = 0; i < count; i++)
         {
             if (Rand.NextRandomBool(chance))
@@ -140,9 +150,11 @@ public class RefineStoneCrafting : SimpleItemCraftingHandler
                 var refineStone = player.PersistenceContext.CreateNew<Item>();
                 refineStone.Definition = player.GameContext.Configuration.Items.First(item => item.Group == 14 && item.Number == refineStoneNumber);
                 refineStone.Durability = 1;
-                player.TemporaryStorage!.AddItemAsync(refineStone);
-                yield return refineStone;
+                await player.TemporaryStorage!.AddItemAsync(refineStone);
+                createdItems.Add(refineStone);
             }
         }
+
+        return createdItems;
     }
 }

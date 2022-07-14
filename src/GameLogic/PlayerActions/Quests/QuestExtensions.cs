@@ -16,13 +16,13 @@ public static class QuestExtensions
     /// </summary>
     /// <param name="questState">State of the quest.</param>
     /// <param name="persistenceContext">The persistence context of the player.</param>
-    public static void Clear(this CharacterQuestState questState, IContext persistenceContext)
+    public static async ValueTask ClearAsync(this CharacterQuestState questState, IContext persistenceContext)
     {
         questState.ActiveQuest = null;
         questState.ClientActionPerformed = false;
         foreach (var requirementState in questState.RequirementStates)
         {
-            persistenceContext.DeleteAsync(requirementState);
+            await persistenceContext.DeleteAsync(requirementState);
         }
 
         questState.RequirementStates.Clear();

@@ -35,7 +35,7 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
     }
 
     /// <inheritdoc />
-    protected override ValueTask<IAttackable?> SearchNextTarget()
+    protected override ValueTask<IAttackable?> SearchNextTargetAsync()
     {
         var currentMap = this.Owner.CurrentMap;
 

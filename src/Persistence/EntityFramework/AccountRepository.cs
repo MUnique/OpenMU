@@ -19,9 +19,9 @@ internal class AccountRepository : CachingGenericRepository<Account>
     /// Initializes a new instance of the <see cref="AccountRepository" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger.</param>
-    public AccountRepository(CachingRepositoryManager repositoryManager, ILogger<AccountRepository> logger)
-        : base(repositoryManager, logger)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public AccountRepository(CachingRepositoryManager repositoryManager, ILoggerFactory loggerFactory)
+        : base(repositoryManager, loggerFactory)
     {
     }
 
@@ -61,10 +61,10 @@ internal class AccountRepository : CachingGenericRepository<Account>
     internal async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password)
     {
         using var context = this.GetContext();
-        return await this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
+        return await this.LoadAccountByLoginNameByJsonQueryAsync(loginName, password, context);
     }
 
-    private async ValueTask<Account?> LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContextBase context)
+    private async ValueTask<Account?> LoadAccountByLoginNameByJsonQueryAsync(string loginName, string password, EntityFrameworkContextBase context)
     {
         var accountInfo = await context.Context.Set<Account>()
             .Select(a => new { a.Id, a.LoginName, a.PasswordHash })

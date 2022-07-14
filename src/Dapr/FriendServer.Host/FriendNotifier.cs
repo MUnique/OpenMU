@@ -21,9 +21,10 @@ public class FriendNotifier : IFriendNotifier
     private readonly IReadOnlyDictionary<int, string> _appIds;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FriendNotifier"/> class.
+    /// Initializes a new instance of the <see cref="FriendNotifier" /> class.
     /// </summary>
     /// <param name="daprClient">The dapr client.</param>
+    /// <param name="logger">The logger.</param>
     public FriendNotifier(DaprClient daprClient, ILogger<FriendNotifier> logger)
     {
         this._daprClient = daprClient;

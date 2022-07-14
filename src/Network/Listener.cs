@@ -63,7 +63,7 @@ public class Listener
     {
         this._clientListener = new TcpListener(IPAddress.Any, this._port);
         this._clientListener.Start(backlog);
-        this._clientListener.BeginAcceptSocket(this.OnAcceptAsync, null);
+        this._clientListener.BeginAcceptSocket(this.OnAccept, null);
     }
 
     /// <summary>
@@ -100,60 +100,68 @@ public class Listener
         return new Connection(socketConnection, this.CreateDecryptor(socketConnection.Input), this.CreateEncryptor(socketConnection.Output), this._loggerFactory.CreateLogger<Connection>());
     }
 
-    private async void OnAcceptAsync(IAsyncResult result)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Exceptions are catched.")]
+    private async void OnAccept(IAsyncResult result)
     {
-        Socket socket;
         try
         {
-            if (this._clientListener is null)
+            Socket socket;
+            try
             {
+                if (this._clientListener is null)
+                {
+                    return;
+                }
+
+                socket = this._clientListener.EndAcceptSocket(result);
+            }
+            catch (ObjectDisposedException)
+            {
+                // this exception is expected when the clientListener got disposed. In this case we don't want to spam the log.
+                return;
+            }
+            catch (SocketException ex) when (ex.ErrorCode == (int)SocketError.OperationAborted)
+            {
+                this._logger.LogDebug(ex, "The listener was stopped.");
+                return;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error accepting the client socket");
                 return;
             }
 
-            socket = this._clientListener.EndAcceptSocket(result);
-        }
-        catch (ObjectDisposedException)
-        {
-            // this exception is expected when the clientListener got disposed. In this case we don't want to spam the log.
-            return;
-        }
-        catch (SocketException ex) when (ex.ErrorCode == (int)SocketError.OperationAborted)
-        {
-            this._logger.LogDebug(ex, "The listener was stopped.");
-            return;
+            // Accept the next client:
+            if (this._clientListener?.Server.IsBound ?? false)
+            {
+                // todo: refactor to use AcceptSocketAsync
+                this._clientListener.BeginAcceptSocket(this.OnAccept, null);
+            }
+
+            ClientAcceptingEventArgs? cancel = null;
+            if (this.ClientAccepting is { } clientAccepting)
+            {
+                await clientAccepting.Invoke(cancel = new ClientAcceptingEventArgs(socket));
+            }
+
+            if (cancel is null || !cancel.Cancel)
+            {
+                socket.NoDelay = true; // todo: option?
+                var connection = this.CreateConnection(socket);
+
+                if (this.ClientAccepted is { } clientAccepted)
+                {
+                    await clientAccepted.Invoke(new ClientAcceptedEventArgs(connection));
+                }
+            }
+            else
+            {
+                socket.Dispose();
+            }
         }
         catch (Exception ex)
         {
-            this._logger.LogError(ex, "Error accepting the client socket");
-            return;
-        }
-
-        // Accept the next client:
-        if (this._clientListener?.Server.IsBound ?? false)
-        {
-            // todo: refactor to use AcceptSocketAsync
-            this._clientListener.BeginAcceptSocket(this.OnAcceptAsync, null);
-        }
-
-        ClientAcceptingEventArgs? cancel = null;
-        if (this.ClientAccepting is { } clientAccepting)
-        {
-            await clientAccepting.Invoke(cancel = new ClientAcceptingEventArgs(socket));
-        }
-
-        if (cancel is null || !cancel.Cancel)
-        {
-            socket.NoDelay = true; // todo: option?
-            var connection = this.CreateConnection(socket);
-
-            if (this.ClientAccepted is { } clientAccepted)
-            {
-                await clientAccepted.Invoke(new ClientAcceptedEventArgs(connection));
-            }
-        }
-        else
-        {
-            socket.Dispose();
+            this._logger.LogError(ex, "Unexpected error in OnAccept.");
         }
     }
 }

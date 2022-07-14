@@ -30,7 +30,7 @@ public class GameMapTest
     /// Tests if the discovery of players works when a new player is entering the map in the view range.
     /// </summary>
     [Test]
-    public async ValueTask TestPlayerEntersMap()
+    public async ValueTask TestPlayerEntersMapAsync()
     {
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
@@ -49,7 +49,7 @@ public class GameMapTest
     /// that the players get notified about each other as soon as they are in view range.
     /// </summary>
     [Test]
-    public async ValueTask TestPlayerMovesInMap()
+    public async ValueTask TestPlayerMovesInMapAsync()
     {
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
@@ -72,7 +72,7 @@ public class GameMapTest
     /// that the players get notified about it.
     /// </summary>
     [Test]
-    public async ValueTask PlayerMovesOutOfRange()
+    public async ValueTask PlayerMovesOutOfRangeAsync()
     {
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
@@ -92,7 +92,7 @@ public class GameMapTest
     /// that the players get notified about it.
     /// </summary>
     [Test]
-    public async ValueTask PlayerMovesOutAndIntoTheRange()
+    public async ValueTask PlayerMovesOutAndIntoTheRangeAsync()
     {
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
@@ -123,7 +123,7 @@ public class GameMapTest
     /// Tests the performance of the movements. Not a standard test.
     /// </summary>
     /// [Test]
-    public async ValueTask TestPerformanceMove()
+    public async ValueTask TestPerformanceMoveAsync()
     {
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
@@ -148,7 +148,7 @@ public class GameMapTest
     /// Tests if the players in view range get notified when another player leaves the map.
     /// </summary>
     [Test]
-    public async ValueTask TestPlayerLeavesMap()
+    public async ValueTask TestPlayerLeavesMapAsync()
     {
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();

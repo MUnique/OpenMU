@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.FriendServer;
 
 using System.Threading;
@@ -117,7 +119,10 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     public void OnNext(OnlineFriend value)
     {
         // Send update to this player
-        this._gameServer.FriendOnlineStateChangedAsync(this.ServerId, this.PlayerName, value.PlayerName, value.ServerId == FriendServer.InvisibleServerId ? FriendServer.OfflineServerId : value.ServerId);
+        this._gameServer
+            .FriendOnlineStateChangedAsync(this.ServerId, this.PlayerName, value.PlayerName, value.ServerId == FriendServer.InvisibleServerId ? FriendServer.OfflineServerId : value.ServerId)
+            .AsTask()
+            .WaitWithoutException();
     }
 
     /// <summary>
@@ -168,7 +173,10 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     public void RemoveSubscriber(OnlineFriend friend)
     {
         this.Unsubscribe(friend);
-        this._gameServer.FriendOnlineStateChangedAsync(friend.ServerId, friend.PlayerName, this.PlayerName, FriendServer.OfflineServerId);
+        this._gameServer
+            .FriendOnlineStateChangedAsync(friend.ServerId, friend.PlayerName, this.PlayerName, FriendServer.OfflineServerId)
+            .AsTask()
+            .WaitWithoutException();
     }
 
     /// <inheritdoc/>

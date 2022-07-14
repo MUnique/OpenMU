@@ -11,13 +11,13 @@ using System.IO.Pipelines;
 /// </summary>
 public class SimpleModulusKeyGenerator
 {
-    private readonly Random _randomizer = new ();
+    private readonly Random _randomizer = new();
 
     /// <summary>
     /// Generates a new pair of keys.
     /// </summary>
     /// <returns>The generated pair of new keys.</returns>
-    public async Task<SimpleModulusKeys> GenerateKeys()
+    public async Task<SimpleModulusKeys> GenerateKeysAsync()
     {
         var result = new SimpleModulusKeys();
         do
@@ -31,7 +31,7 @@ public class SimpleModulusKeyGenerator
                 result.XorKey[i] = xorKey;
             }
         }
-        while (!await this.ValidateResult(result).ConfigureAwait(false));
+        while (!await this.ValidateResultAsync(result).ConfigureAwait(false));
 
         return result;
     }
@@ -113,12 +113,12 @@ public class SimpleModulusKeyGenerator
         return !GetFactors(b).Any(primeFactorsOfA.Contains);
     }
 
-    private async Task<bool> ValidateResult(SimpleModulusKeys result)
+    private async Task<bool> ValidateResultAsync(SimpleModulusKeys result)
     {
-        return await this.ValidateKeys(result.GetEncryptionKeys(), result.GetDecryptionKeys()).ConfigureAwait(false);
+        return await this.ValidateKeysAsync(result.GetEncryptionKeys(), result.GetDecryptionKeys()).ConfigureAwait(false);
     }
 
-    private async Task<bool> ValidateKeys(uint[] encryptionKeys, uint[] decryptionKeys)
+    private async Task<bool> ValidateKeysAsync(uint[] encryptionKeys, uint[] decryptionKeys)
     {
         var packet = Convert.FromBase64String("w7kxFgK8hYpGGLgdXe7ZpTZViB+r3sRI3YSqZs7/Mh5Vmh2mXqs+3dqkvURmXrL57ASs+FkJz/236Tl9ER67R+WZyMLRMkeLF6tEBiB/4X7SsXrKUznES8of73RxwMy76HZezJbvJ7m9IOGuxcjcNwe6q1+k8fOs1Hz3sULSGlbfiB6qIBXo4onADTNYFoYCQrdtthVsF/aDsvcZ93V36gaKzzyqMhby0sjV4+TAU7719W6LZWNAcnA=");
         var pipe = new Pipe();

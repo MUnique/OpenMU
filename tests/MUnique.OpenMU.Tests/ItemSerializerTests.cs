@@ -28,7 +28,7 @@ public class ItemSerializerTests
     /// Sets up the test environment by initializing configuration data and a <see cref="IPersistenceContextProvider"/>.
     /// </summary>
     [OneTimeSetUp]
-    public async ValueTask Setup()
+    public async ValueTask SetupAsync()
     {
         this._contextProvider = new InMemoryPersistenceContextProvider();
         await new DataInitialization(this._contextProvider, new NullLoggerFactory()).CreateInitialDataAsync(3, true);

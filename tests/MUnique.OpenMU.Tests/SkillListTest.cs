@@ -23,9 +23,9 @@ public class SkillListTest
     /// Tests if the created skill list contains a skill that was learned by the character before.
     /// </summary>
     [Test]
-    public async ValueTask LearnedSkill()
+    public async ValueTask LearnedSkillAsync()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         player.SelectedCharacter!.LearnedSkills.Add(this.CreateSkillEntry(LearnedSkillId));
         var skillList = new SkillList(player);
         Assert.That(skillList.ContainsSkill(LearnedSkillId), Is.True);
@@ -35,9 +35,9 @@ public class SkillListTest
     /// Tests if skills of equipped items are getting added to the skill list.
     /// </summary>
     [Test]
-    public async ValueTask ItemSkill()
+    public async ValueTask ItemSkillAsync()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var item = this.CreateItemWithSkill();
         item.Durability = 1;
         await player.Inventory!.AddItemAsync(0, item);
@@ -49,9 +49,9 @@ public class SkillListTest
     /// Tests if the skill of an item that gets equipped afterwards, is getting added to the skill list.
     /// </summary>
     [Test]
-    public async ValueTask ItemSkillAddedLater()
+    public async ValueTask ItemSkillAddedLaterAsync()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var skillList = player.SkillList as SkillList;
         await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill());
 
@@ -62,9 +62,9 @@ public class SkillListTest
     /// Tests the removal of item skills.
     /// </summary>
     [Test]
-    public async ValueTask ItemSkillRemoved()
+    public async ValueTask ItemSkillRemovedAsync()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         var item = this.CreateItemWithSkill();
         item.Durability = 1;
         await player.Inventory!.AddItemAsync(0, item);
@@ -77,9 +77,9 @@ public class SkillListTest
     /// Tests if the skill list does not contain non-learned skills.
     /// </summary>
     [Test]
-    public void NonLearnedSkill()
+    public async ValueTask NonLearnedSkillAsync()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync();
         Assert.That(player.SkillList!.ContainsSkill(NonLearnedSkillId), Is.False);
     }
 

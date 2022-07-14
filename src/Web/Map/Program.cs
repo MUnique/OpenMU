@@ -45,13 +45,13 @@ public class Program
         public IList<IGameMapInfo> Maps { get; } = new List<IGameMapInfo>();
 
         /// <inheritdoc />
-        public void RegisterMapObserver(Guid mapId, ILocateable worldObserver)
+        public ValueTask RegisterMapObserverAsync(Guid mapId, ILocateable worldObserver)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
-        public void UnregisterMapObserver(Guid mapId, ushort worldObserverId)
+        public ValueTask UnregisterMapObserverAsync(Guid mapId, ushort worldObserverId)
         {
             throw new NotImplementedException();
         }

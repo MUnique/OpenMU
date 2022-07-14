@@ -354,16 +354,26 @@ public partial class MainForm : Form
         }
     }
 
-    private void OnDisconnectClientClick(object sender, EventArgs e)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnDisconnectClientClick(object sender, EventArgs e)
     {
-        var index = this.connectedClientsListBox.SelectedIndex;
-        if (index < 0)
+        try
         {
-            return;
-        }
+            var index = this.connectedClientsListBox.SelectedIndex;
+            if (index < 0)
+            {
+                return;
+            }
 
-        var proxy = this._proxiedConnections[index] as LiveConnection;
-        proxy?.Disconnect();
+            if (this._proxiedConnections[index] is LiveConnection proxy)
+            {
+                await proxy.DisconnectAsync();
+            }
+        }
+        catch
+        {
+            // Must be catched because the method is async void.
+        }
     }
 
     private void OnLoadFromFileClick(object sender, EventArgs e)

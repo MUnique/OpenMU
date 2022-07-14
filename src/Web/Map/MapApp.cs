@@ -82,10 +82,13 @@ public sealed class MapApp : IHostedService, IDisposable
     }
 
     /// <inheritdoc />
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         this._logger.LogInformation($"Stopping Map app for game server {this._gameServer.Id}");
-        return this._host?.StopAsync(cancellationToken) ?? Task.CompletedTask;
+        if (this._host is { } host)
+        {
+            await host.StopAsync(cancellationToken);
+        }
     }
 
     /// <inheritdoc />

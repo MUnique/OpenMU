@@ -19,9 +19,9 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
     /// Initializes a new instance of the <see cref="GameServerDefinitionRepository" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger.</param>
-    public GameServerDefinitionRepository(RepositoryManager repositoryManager, ILogger<GameServerDefinitionRepository> logger)
-        : base(repositoryManager, logger)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public GameServerDefinitionRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory)
+        : base(repositoryManager, loggerFactory)
     {
     }
 

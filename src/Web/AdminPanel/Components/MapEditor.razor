@@ -32,18 +32,18 @@
         @if (this._createMode)
         {
             <button id="applyCreate" type="button" class="btn btn-primary" @onclick="@(_ => this._createMode = false)"><span class="oi oi-circle-check"></span></button>
-            <button id="cancelCreate" type="button" class="btn btn-secondary" @onclick="@this.CancelCreation"><span class="oi oi-circle-x"></span></button>
+            <button id="cancelCreate" type="button" class="btn btn-secondary" @onclick="@this.CancelCreationAsync"><span class="oi oi-circle-x"></span></button>
         }
         else if (this._focusedObject is not null)
         {
-            <button id="removeFocused" type="button" class="btn btn-secondary" @onclick="@this.RemoveFocusedObject"><span class="oi oi-x"></span> Remove</button>
+            <button id="removeFocused" type="button" class="btn btn-secondary" @onclick="@this.RemoveFocusedObjectAsync"><span class="oi oi-x"></span> Remove</button>
         }
     </div>
 </div>
 
 @if (this._terrainImage is { })
 {
-    <div class="map-host" width="@(_scale * 255)" height="@(_scale * 255)" @onmousemove="@this.OnMouseMove" @onmouseup="() => _resizerPosition = null">
+    <div class="map-host" width="@(_scale * 255)" height="@(_scale * 255)" @onmousemove="@this.OnMouseMoveAsync" @onmouseup="() => _resizerPosition = null">
         <img src="@(this._terrainImage.ToBase64String(PngFormat.Instance))"
              width="@(_scale * 255)"
              height="@(_scale * 255)"

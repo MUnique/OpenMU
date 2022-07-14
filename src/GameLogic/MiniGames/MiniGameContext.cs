@@ -721,7 +721,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     {
         if (changeEvent.TerrainChanges.Any())
         {
-            await this.UpdateClientTerrain(changeEvent.TerrainChanges);
+            await this.UpdateClientTerrainAsync(changeEvent.TerrainChanges);
             this.UpdateServerTerrain(changeEvent.TerrainChanges);
         }
 
@@ -757,7 +757,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
     }
 
-    private async ValueTask UpdateClientTerrain(ICollection<MiniGameTerrainChange> changes)
+    private async ValueTask UpdateClientTerrainAsync(ICollection<MiniGameTerrainChange> changes)
     {
         var groupedChanges = changes
             .GroupBy(

@@ -34,7 +34,7 @@ public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCom
             return;
         }
 
-        var exitGate = this.GetExitGate(gameMaster, arguments.MapIdOrName!, arguments.Coordinates);
+        var exitGate = await this.GetExitGateAsync(gameMaster, arguments.MapIdOrName!, arguments.Coordinates);
         await gameServerContext.ForEachGuildPlayerAsync(guildId, async guildPlayer =>
         {
             await guildPlayer.WarpToAsync(exitGate);

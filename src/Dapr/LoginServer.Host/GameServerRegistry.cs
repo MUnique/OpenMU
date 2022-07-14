@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.LoginServer.Host;
 
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// The registry for game servers.
@@ -18,7 +20,7 @@ public sealed class GameServerRegistry : IDisposable
     private readonly CancellationTokenSource _disposeCts = new();
     private readonly ILogger<GameServerRegistry> _logger;
     private readonly Dictionary<ushort, DateTime> _entries = new();
-    private readonly SemaphoreSlim _semaphore = new(1);
+    private readonly AsyncLock _lock = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerRegistry"/> class.
@@ -28,7 +30,7 @@ public sealed class GameServerRegistry : IDisposable
     {
         this._logger = logger;
 
-        Task.Run(async () =>
+        async Task RunCleanupLoop()
         {
             try
             {
@@ -38,30 +40,31 @@ public sealed class GameServerRegistry : IDisposable
             {
                 this._logger.LogError(ex, "Error in cleanup loop");
             }
-        });
+        }
+
+        _ = RunCleanupLoop();
     }
 
     /// <summary>
     /// Occurs when a game server was added to the registry.
     /// </summary>
-    public event EventHandler<ushort>? GameServerAdded;
+    public event AsyncEventHandler<ushort>? GameServerAdded;
 
     /// <summary>
     /// Occurs when a new (=freshly started) game server was added to the registry.
     /// </summary>
-    public event EventHandler<ushort>? NewGameServerAdded;
+    public event AsyncEventHandler<ushort>? NewGameServerAdded;
 
     /// <summary>
     /// Occurs when a game server was removed from the registry.
     /// </summary>
-    public event EventHandler<ushort>? GameServerRemoved;
+    public event AsyncEventHandler<ushort>? GameServerRemoved;
 
     /// <inheritdoc />
     public void Dispose()
     {
         this._disposeCts.Cancel();
         this._disposeCts.Dispose();
-        this._semaphore.Dispose();
     }
 
     /// <summary>
@@ -71,29 +74,22 @@ public sealed class GameServerRegistry : IDisposable
     /// <param name="upTime">The up-time of the server.</param>
     public async Task UpdateRegistrationAsync(ushort gameServerId, TimeSpan upTime)
     {
-        await this._semaphore.WaitAsync();
-        try
+        using var l = await this._lock.LockAsync();
+        var timestamp = DateTime.UtcNow;
+        if (this._entries.TryAdd(gameServerId, timestamp))
         {
-            var timestamp = DateTime.UtcNow;
-            if (this._entries.TryAdd(gameServerId, timestamp))
+            if (upTime <= this._newServerUptimeLimit)
             {
-                if (upTime <= this._newServerUptimeLimit)
-                {
-                    this.NewGameServerAdded?.Invoke(this, gameServerId);
-                }
-                else
-                {
-                    this.GameServerAdded?.Invoke(this, gameServerId);
-                }
+                this.NewGameServerAdded?.SafeInvokeAsync( gameServerId);
             }
             else
             {
-                this._entries[gameServerId] = timestamp;
+                this.GameServerAdded?.SafeInvokeAsync(gameServerId);
             }
         }
-        finally
+        else
         {
-            this._semaphore.Release(1);
+            this._entries[gameServerId] = timestamp;
         }
     }
 
@@ -103,29 +99,22 @@ public sealed class GameServerRegistry : IDisposable
         while (!this._disposeCts.IsCancellationRequested)
         {
             await Task.Delay(2000, cancellationToken);
-            await this._semaphore.WaitAsync(cancellationToken);
-            try
+            using var l = await this._lock.LockAsync();
+            foreach (var serverId in this._entries.Keys)
             {
-                foreach (var serverId in this._entries.Keys)
+                var lastUpdate = this._entries[serverId];
+                var diff = DateTime.UtcNow - lastUpdate;
+                if (diff > this._timeout)
                 {
-                    var lastUpdate = this._entries[serverId];
-                    var diff = DateTime.UtcNow - lastUpdate;
-                    if (diff > this._timeout)
-                    {
-                        this._logger.LogInformation("Difference of {0} higher than timeout for server {1}", diff, serverId);
-                        this.GameServerRemoved?.Invoke(this, serverId);
-                        tempRemoved.Add(serverId);
-                    }
-                }
-
-                foreach (var serverId in tempRemoved)
-                {
-                    this._entries.Remove(serverId, out _);
+                    this._logger.LogInformation("Difference of {0} higher than timeout for server {1}", diff, serverId);
+                    this.GameServerRemoved?.SafeInvokeAsync(serverId);
+                    tempRemoved.Add(serverId);
                 }
             }
-            finally
+
+            foreach (var serverId in tempRemoved)
             {
-                this._semaphore.Release(1);
+                this._entries.Remove(serverId, out _);
             }
         }
     }

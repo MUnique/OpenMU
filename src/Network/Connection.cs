@@ -67,7 +67,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public EndPoint? EndPoint => this._remoteEndPoint;
 
     /// <inheritdoc />
-    public PipeWriter Output => this._outputWriter ??= new AutoFlushPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, this.OutputLock, this._logger, OutgoingBytesCounter);
+    public PipeWriter Output => this._outputWriter ??= new ExtendedPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, OutgoingBytesCounter);
 
     /// <inheritdoc />
     public SemaphoreSlim OutputLock { get; }
@@ -86,12 +86,12 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public override string ToString() => this._remoteEndPoint?.ToString() ?? $"{base.ToString()} {this.GetHashCode()}";
 
     /// <inheritdoc/>
-    public async Task BeginReceive()
+    public async Task BeginReceiveAsync()
     {
         try
         {
             ConnectionCounter.Add(1);
-            await this.ReadSource().ConfigureAwait(false);
+            await this.ReadSourceAsync().ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -120,8 +120,8 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger.LogDebug("Disconnecting...");
         if (this._duplexPipe is not null)
         {
-            this.Source.Complete();
-            this.Output.Complete();
+            await this.Source.CompleteAsync();
+            await this.Output.CompleteAsync();
             (this._duplexPipe as IDisposable)?.Dispose();
             this._duplexPipe = null;
         }
@@ -129,7 +129,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger.LogDebug("Disconnected");
         this._disconnected = true;
 
-        await this.Disconnected.SafeInvoke().ConfigureAwait(false);
+        await this.Disconnected.SafeInvokeAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -180,7 +180,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
                 .Start();
         try
         {
-            await this.PacketReceived.SafeInvoke(packet);
+            await this.PacketReceived.SafeInvokeAsync(packet);
         }
         finally
         {

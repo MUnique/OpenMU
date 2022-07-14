@@ -31,7 +31,7 @@ public class GuildWarAnswerAction
         if (guildWarContext.WarType == GuildWarType.Soccer
             && player.GameContext.Configuration.Maps.FirstOrDefault(m => m.BattleZone?.Type == BattleType.Soccer) is { } definition)
         {
-            soccerMap = (SoccerGameMap?)player.GameContext.GetMap(definition.Number.ToUnsigned());
+            soccerMap = (SoccerGameMap?)await player.GameContext.GetMapAsync(definition.Number.ToUnsigned());
         }
 
         var soccerInitFailed = false;
@@ -56,19 +56,30 @@ public class GuildWarAnswerAction
         var playerTeam = this.GetTeamPlayers(player);
         var requesterTeam = this.GetTeamPlayers(requester);
         var score = guildWarContext.Score;
-        score.PropertyChanged += (_, args) =>
+#pragma warning disable VSTHRD101 // Avoid unsupported async delegates
+        score.PropertyChanged += async (_, args) =>
         {
-            if (args.PropertyName == nameof(score.HasEnded))
+            try
             {
+                if (args.PropertyName != nameof(score.HasEnded))
+                {
+                    return;
+                }
+
                 guildWarContext.State = GuildWarState.Ended;
                 requesterGuildWarContext.State = GuildWarState.Ended;
                 if (player.GameContext is IGameServerContext gameContext && score.Winners.HasValue)
                 {
                     var winner = score.Winners == player.GuildWarContext.Team ? player.GuildStatus!.GuildId : requester.GuildStatus!.GuildId;
-                    gameContext.GuildServer.IncreaseGuildScoreAsync(winner);
+                    await gameContext.GuildServer.IncreaseGuildScoreAsync(winner);
                 }
             }
+            catch
+            {
+                // must be catched because it's async void.
+            }
         };
+#pragma warning restore VSTHRD101 // Avoid unsupported async delegates
 
         foreach (var guildPlayer in playerTeam)
         {

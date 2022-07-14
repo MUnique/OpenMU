@@ -100,7 +100,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     /// <param name="map">The name or id of the map.</param>
     /// <param name="coordinates">The coordinates X and Y.</param>
     /// <returns>The ExitGate.</returns>
-    protected ExitGate GetExitGate(Player gameMaster, string map, Point coordinates)
+    protected async ValueTask<ExitGate> GetExitGateAsync(Player gameMaster, string map, Point coordinates)
     {
         if (coordinates.X == default && coordinates.Y == default)
         {
@@ -109,7 +109,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
         }
 
         var mapDefinition = ushort.TryParse(map, out var mapId)
-            ? gameMaster.GameContext.GetMap(mapId)?.Definition
+            ? (await gameMaster.GameContext.GetMapAsync(mapId))?.Definition
             : gameMaster.GameContext.Configuration.Maps.FirstOrDefault(x => x.Name.Equals(map, StringComparison.OrdinalIgnoreCase));
 
         if (mapDefinition == null)

@@ -134,31 +134,39 @@ public sealed class BloodCastleContext : MiniGameContext
     }
 
     /// <inheritdoc />
-    protected override void OnDestructibleDied(object? sender, DeathInformation e)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    protected override async void OnDestructibleDied(object? sender, DeathInformation e)
     {
-        base.OnDestructibleDied(sender, e);
-        var destructible = sender as Destructible;
-        if (destructible is null)
+        try
         {
-            return;
-        }
-
-        if (destructible.Definition.Number == StatueOfSaintNumber)
-        {
-            var message = e.KillerName + " has destroyed the Crystal Statue!";
-            this.ForEachPlayerAsync(async player =>
+            base.OnDestructibleDied(sender, e);
+            var destructible = sender as Destructible;
+            if (destructible is null)
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(
-                        p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter));
-            }).ConfigureAwait(false);
+                return;
+            }
+
+            if (destructible.Definition.Number == StatueOfSaintNumber)
+            {
+                var message = e.KillerName + " has destroyed the Crystal Statue!";
+                await this.ForEachPlayerAsync(async player =>
+                {
+                    await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).
+                        ConfigureAwait(false);
+                }).ConfigureAwait(false);
+            }
+            else if (destructible.Definition.Number == CastleGateNumber)
+            {
+                this._gateDestroyed = true;
+            }
+            else
+            {
+                // we don't have others, so nothing to do
+            }
         }
-        else if (destructible.Definition.Number == CastleGateNumber)
+        catch (Exception ex)
         {
-            this._gateDestroyed = true;
-        }
-        else
-        {
-            // we don't have others, so nothing to do
+            this.Logger.LogError(ex, "Unexpected error in OnDestructibleDied.");
         }
     }
 

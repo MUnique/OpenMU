@@ -228,7 +228,7 @@ public class GuildServer : IGuildServer
         var member = kvp.Value;
         if (member.PlayerPosition == GuildPosition.GuildMaster)
         {
-            this.DeleteGuild(guildContainer);
+            await this.DeleteGuildAsync(guildContainer);
             return;
         }
 
@@ -261,13 +261,13 @@ public class GuildServer : IGuildServer
     /// by player interaction.
     /// </summary>
     /// <param name="guildContainer">The container of the guild which should be deleted.</param>
-    private void DeleteGuild(GuildContainer guildContainer)
+    private async ValueTask DeleteGuildAsync(GuildContainer guildContainer)
     {
-        guildContainer.DatabaseContext.DeleteAsync(guildContainer.Guild);
-        guildContainer.DatabaseContext.SaveChanges();
+        await guildContainer.DatabaseContext.DeleteAsync(guildContainer.Guild);
+        await guildContainer.DatabaseContext.SaveChangesAsync();
         this.RemoveGuildContainer(guildContainer);
 
-        this._changePublisher.GuildDeletedAsync(guildContainer.Id);
+        await this._changePublisher.GuildDeletedAsync(guildContainer.Id);
 
         // TODO: Inform gameServers that guildwar/hostility ended
     }

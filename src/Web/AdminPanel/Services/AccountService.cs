@@ -75,7 +75,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     /// <summary>
     /// Creates a new Account in a modal dialog.
     /// </summary>
-    public async Task CreateNewInModalDialog()
+    public async Task CreateNewInModalDialogAsync()
     {
         var accountParameters = new AccountCreationParameters();
         var parameters = new ModalParameters();

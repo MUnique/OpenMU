@@ -30,6 +30,6 @@ internal class ConsumeItemHandlerPlugIn075 : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         ConsumeItemRequest075 message = packet;
-        await this._consumeAction.HandleConsumeRequest(player, message.ItemSlot, message.TargetSlot, FruitUsage.Undefined);
+        await this._consumeAction.HandleConsumeRequestAsync(player, message.ItemSlot, message.TargetSlot, FruitUsage.Undefined);
     }
 }

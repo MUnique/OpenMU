@@ -24,7 +24,7 @@ public class ItemConsumeAction
     /// <param name="inventorySlot">The inventory slot.</param>
     /// <param name="inventoryTargetSlot">The inventory target slot.</param>
     /// <param name="fruitUsage">The fruit usage.</param>
-    public async ValueTask HandleConsumeRequest(Player player, byte inventorySlot, byte inventoryTargetSlot, FruitUsage fruitUsage)
+    public async ValueTask HandleConsumeRequestAsync(Player player, byte inventorySlot, byte inventoryTargetSlot, FruitUsage fruitUsage)
     {
         var item = player.Inventory?.GetItem(inventorySlot);
         if (item?.Definition is null)

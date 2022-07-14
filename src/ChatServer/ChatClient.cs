@@ -55,7 +55,7 @@ internal class ChatClient : IChatClient
         this._connection.Disconnected += this.LogOffAsync;
 
         this.LastActivity = DateTime.Now;
-        this._connection.BeginReceive();
+        _ = this._connection.BeginReceiveAsync();
     }
 
     /// <summary>

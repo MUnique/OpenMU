@@ -111,6 +111,7 @@ public class SoccerGameMap : GameMap
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void OnScoreChanged(object? sender, PropertyChangedEventArgs e)
     {
         try

@@ -36,7 +36,7 @@ public class ChatServerContainer : ServerContainerBase
     }
 
     /// <inheritdoc />
-    protected override async Task StartAsyncCore(CancellationToken cancellationToken)
+    protected override async Task StartInnerAsync(CancellationToken cancellationToken)
     {
         var definitions = await this._persistenceContextProvider.CreateNewConfigurationContext().GetAsync<ChatServerDefinition>();
         if (definitions.FirstOrDefault() is { } definition)
@@ -52,7 +52,7 @@ public class ChatServerContainer : ServerContainerBase
     }
 
     /// <inheritdoc />
-    protected override async Task StopAsyncCore(CancellationToken cancellationToken)
+    protected override async Task StopInnerAsync(CancellationToken cancellationToken)
     {
         await this._chatServer.StopAsync(cancellationToken);
     }

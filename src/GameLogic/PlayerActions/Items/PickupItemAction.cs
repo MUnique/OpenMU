@@ -56,11 +56,6 @@ public class PickupItemAction
                 await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
                 break;
         }
-
-        if (droppedLocateable is not null)
-        {
-            await player.OnPickedUpItemAsync(droppedLocateable).ConfigureAwait(false);
-        }
     }
 
     private bool CanPickup(Player player, ILocateable droppedLocateable)
@@ -92,7 +87,13 @@ public class PickupItemAction
             return (false, null);
         }
 
-        return await droppedItem.TryPickUpByAsync(player);
+        var result = await droppedItem.TryPickUpByAsync(player);
+        if (result.Success)
+        {
+            await player.OnPickedUpItemAsync(droppedItem).ConfigureAwait(false);
+        }
+
+        return result;
     }
 
     private async ValueTask<bool> TryPickupMoneyAsync(Player player, DroppedMoney droppedMoney)

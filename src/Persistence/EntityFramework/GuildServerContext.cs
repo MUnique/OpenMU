@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Microsoft.Extensions.Logging;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +19,9 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
     /// </summary>
     /// <param name="guildContext">The guild context.</param>
     /// <param name="repositoryManager">The repository manager.</param>
-    public GuildServerContext(GuildContext guildContext, RepositoryManager repositoryManager)
-        : base(guildContext, repositoryManager)
+    /// <param name="logger">The logger.</param>
+    public GuildServerContext(GuildContext guildContext, RepositoryManager repositoryManager, ILogger<GuildServerContext> logger)
+        : base(guildContext, repositoryManager, logger)
     {
     }
 

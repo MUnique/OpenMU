@@ -3,6 +3,7 @@
 // </copyright>
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Logging;
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
@@ -22,19 +23,24 @@ public class EntityFrameworkContextBase : IContext
     private readonly bool _isOwner;
     private readonly IConfigurationChangePublisher? _changePublisher;
     private readonly AsyncLock _lock = new AsyncLock();
+    private readonly ILogger _logger;
     private bool _isDisposed;
 
-    /// <summary>Initializes a new instance of the <see cref="EntityFrameworkContextBase" /> class.</summary>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EntityFrameworkContextBase" /> class.
+    /// </summary>
     /// <param name="context">The db context.</param>
     /// <param name="repositoryManager">The repository manager.</param>
     /// <param name="isOwner">If set to <c>true</c>, this instance owns the <see cref="Context" />. That means it will be disposed when this instance will be disposed.</param>
     /// <param name="changePublisher">The change publisher.</param>
-    protected EntityFrameworkContextBase(DbContext context, RepositoryManager repositoryManager, bool isOwner, IConfigurationChangePublisher? changePublisher)
+    /// <param name="logger">The logger.</param>
+    protected EntityFrameworkContextBase(DbContext context, RepositoryManager repositoryManager, bool isOwner, IConfigurationChangePublisher? changePublisher, ILogger logger)
     {
         this.Context = context;
         this.RepositoryManager = repositoryManager;
         this._isOwner = isOwner;
         this._changePublisher = changePublisher;
+        this._logger = logger;
         if (this._changePublisher is { })
         {
             this.Context.SavedChanges += this.OnSavedChanges;
@@ -204,7 +210,8 @@ public class EntityFrameworkContextBase : IContext
         }
     }
 
-    private void OnSavedChanges(object? sender, SavedChangesEventArgs e)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnSavedChanges(object? sender, SavedChangesEventArgs e)
     {
         try
         {
@@ -216,19 +223,19 @@ public class EntityFrameworkContextBase : IContext
 
             var changedEntries = this.Context.ChangeTracker.Entries()
                 .Where(entity => entity.State == EntityState.Unchanged
-                                && entity.Metadata.ClrType.IsConfigurationType()).ToList();
+                                 && entity.Metadata.ClrType.IsConfigurationType()).ToList();
             foreach (var entry in changedEntries)
             {
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        this._changePublisher.ConfigurationAdded(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity);
+                        await this._changePublisher.ConfigurationAddedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity);
                         break;
                     case EntityState.Deleted:
-                        this._changePublisher.ConfigurationRemoved(entry.Metadata.ClrType, entry.Entity.GetId());
+                        await this._changePublisher.ConfigurationRemovedAsync(entry.Metadata.ClrType, entry.Entity.GetId());
                         break;
                     case EntityState.Modified:
-                        this._changePublisher.ConfigurationChanged(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity);
+                        await this._changePublisher.ConfigurationChangedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity);
                         break;
                     default:
                         // no change publishing required.
@@ -236,9 +243,20 @@ public class EntityFrameworkContextBase : IContext
                 }
             }
         }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error publishing changes.");
+        }
         finally
         {
-            this.Context.ChangeTracker.AcceptAllChanges();
+            try
+            {
+                this.Context.ChangeTracker.AcceptAllChanges();
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Unexpected error when accepting all saved changes.");
+            }
         }
     }
 }

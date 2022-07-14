@@ -17,9 +17,9 @@ internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
     /// Initializes a new instance of the <see cref="LetterBodyRepository" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger.</param>
-    public LetterBodyRepository(RepositoryManager repositoryManager, ILogger<LetterBodyRepository> logger)
-        : base(repositoryManager, logger)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public LetterBodyRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory)
+        : base(repositoryManager, loggerFactory)
     {
     }
 

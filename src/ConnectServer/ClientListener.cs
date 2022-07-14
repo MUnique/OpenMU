@@ -117,7 +117,7 @@ internal class ClientListener
         client.Connection.Disconnected += async () => await this.OnClientDisconnectAsync(client).ConfigureAwait(false);
         this._logger.LogDebug("Client connected: {0}, current client count: {1}", connection.EndPoint, this.Clients.Count);
         await client.SendHelloAsync();
-        _ = Task.Run(() => client.Connection.BeginReceive());
+        _ = Task.Run(() => client.Connection.BeginReceiveAsync());
         this.ConnectedClientsChanged?.Invoke(this, EventArgs.Empty);
     }
 

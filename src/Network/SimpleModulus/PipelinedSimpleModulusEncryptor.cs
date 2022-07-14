@@ -60,7 +60,7 @@ public class PipelinedSimpleModulusEncryptor : PipelinedSimpleModulusBase, IPipe
         this._encryptionKeys = encryptionKeys;
         this.Source = this.Pipe.Reader;
         this._inputBuffer = new byte[this.DecryptedBlockSize];
-        this.ReadSource().ConfigureAwait(false);
+        _ = this.ReadSourceAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

@@ -34,7 +34,7 @@ public interface IMigratableDatabaseContextProvider : IPersistenceContextProvide
     /// Waits until all database updates are applied.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    Task WaitForUpdatedDatabase(CancellationToken cancellationToken = default);
+    Task WaitForUpdatedDatabaseAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Determines whether this instance can connect to the database.

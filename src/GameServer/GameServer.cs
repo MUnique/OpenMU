@@ -129,7 +129,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     public void AddListener(IGameServerListener listener)
     {
         this._listeners.Add(listener);
-        listener.PlayerConnected += this.OnPlayerConnected;
+        listener.PlayerConnected += this.OnPlayerConnectedAsync;
     }
 
     /// <inheritdoc />
@@ -156,7 +156,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         {
             foreach (var listener in this._listeners)
             {
-                listener.Start();
+                await listener.StartAsync();
             }
 
             this.ServerState = ServerState.Started;
@@ -414,7 +414,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         await player.InvokeViewPlugInAsync<IGuildKickResultPlugIn>(p => p.GuildKickResultAsync(GuildKickSuccess.KickSucceeded)).ConfigureAwait(false);
     }
 
-    private async ValueTask OnPlayerConnected(PlayerConnectedEventArgs e)
+    private async ValueTask OnPlayerConnectedAsync(PlayerConnectedEventArgs e)
     {
         var player = e.ConntectedPlayer;
         await this._gameContext.AddPlayerAsync(player);

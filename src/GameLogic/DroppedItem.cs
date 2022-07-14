@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Threading;
@@ -14,7 +12,7 @@ using MUnique.OpenMU.Pathfinding;
 /// <summary>
 /// An item which got dropped on the ground of a map.
 /// </summary>
-public sealed class DroppedItem : IDisposable, ILocateable
+public sealed class DroppedItem : AsyncDisposable, ILocateable
 {
     private static readonly TimeSpan TimeUntilDropIsFree = TimeSpan.FromSeconds(10);
 
@@ -85,9 +83,6 @@ public sealed class DroppedItem : IDisposable, ILocateable
     /// <inheritdoc/>
     public GameMap CurrentMap { get; }
 
-    /// <inheritdoc/>
-    public bool IsFreshDrop => !this._itemIsPersistent;
-
     /// <summary>
     /// Tries to pick the item up by the specified player.
     /// </summary>
@@ -141,36 +136,38 @@ public sealed class DroppedItem : IDisposable, ILocateable
     {
         return $"{this.Id}: {this.Item} at {this.CurrentMap.Definition.Name} ({this.Position})";
     }
-
     /// <inheritdoc/>
-    public void Dispose()
+    protected override async ValueTask DisposeAsyncCore()
     {
         var timer = this._removeTimer;
         if (timer != null)
         {
             this._removeTimer = null;
-            timer.Dispose();
-            this.CurrentMap.RemoveAsync(this).AsTask().WaitWithoutException(); //todo
+            await timer.DisposeAsync().ConfigureAwait(false);
+            await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
             this._dropper = null;
             this._owners = null;
         }
+
+        await base.DisposeAsyncCore();
     }
 
-    private void DisposeAndDelete(object? state)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void DisposeAndDelete(object? state)
     {
         var player = this._dropper;
         try
         {
-            this.Dispose();
+            await this.DisposeAsync();
             if (player != null)
             {
-                this.DeleteItem(player);
+                await this.DeleteItemAsync(player);
             }
         }
         catch (Exception ex)
         {
             // we have to catch all errors, because it runs under a pooled thread without an additional safety net ;-)
-            player?.Logger.LogError(ex, "Error during DroppedItem.DisposeAndDelete");
+            player?.Logger.LogError(ex, "Error during DroppedItem.DisposeAndDeleteAsync");
         }
     }
 
@@ -216,10 +213,10 @@ public sealed class DroppedItem : IDisposable, ILocateable
         }
 
         player.Logger.LogInformation("Item '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
-        this.Dispose();
+        await this.DisposeAsync();
         if (this._dropper != null && !this._dropper.PlayerState.Finished)
         {
-            this._dropper.PersistenceContext.SaveChanges(); // Otherwise, if the item got modified since last save point by the dropper, changes would not be saved by the picking up player!
+            await this._dropper.PersistenceContext.SaveChangesAsync(); // Otherwise, if the item got modified since last save point by the dropper, changes would not be saved by the picking up player!
             this._itemIsPersistent = this._dropper.PersistenceContext.Detach(this.Item);
         }
 
@@ -251,7 +248,7 @@ public sealed class DroppedItem : IDisposable, ILocateable
         return true;
     }
 
-    private void DeleteItem(Player player)
+    private async ValueTask DeleteItemAsync(Player player)
     {
         player.Logger.LogInformation("Item '{0}' which was dropped by player '{1}' is getting deleted.", this, player);
         if (!player.PlayerState.Finished && this.Item is not TemporaryItem)
@@ -272,8 +269,8 @@ public sealed class DroppedItem : IDisposable, ILocateable
             // So we use a new temporary persistence context instead.
             // We use a trade-context as it just focuses on the items. Otherwise, we would track a lot more items.
             using var context = repositoryManager.CreateNewTradeContext();
-            context.DeleteAsync(this.Item);
-            context.SaveChanges();
+            await context.DeleteAsync(this.Item);
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {

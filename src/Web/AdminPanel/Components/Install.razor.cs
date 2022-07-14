@@ -69,19 +69,13 @@ public sealed partial class Install
     /// <summary>
     /// Starts the installation.
     /// </summary>
-    private async Task StartInstallation()
+    private async Task StartInstallationAsync()
     {
-        var task = Task.Run(() =>
-        {
-            this.SetupService.CreateDatabase(() =>
-                this.SelectedVersion!.CreateInitialDataAsync((byte)this.GameServerCount, this.CreateTestAccounts));
-        });
-
         this.IsInstalling = true;
         this.StateHasChanged();
         try
         {
-            await task;
+            await this.SetupService.CreateDatabaseAsync(() => this.SelectedVersion!.CreateInitialDataAsync((byte)this.GameServerCount, this.CreateTestAccounts));
         }
         finally
         {

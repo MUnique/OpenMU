@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -14,12 +16,13 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServerContext
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="FriendServerContext"/> class.
+    /// Initializes a new instance of the <see cref="FriendServerContext" /> class.
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="repositoryManager">The repositoryManager.</param>
-    public FriendServerContext(FriendContext context, RepositoryManager repositoryManager)
-        : base(context, repositoryManager)
+    /// <param name="logger">The logger.</param>
+    public FriendServerContext(FriendContext context, RepositoryManager repositoryManager, ILogger<FriendServerContext> logger)
+        : base(context, repositoryManager, logger)
     {
     }
 

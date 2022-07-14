@@ -105,9 +105,10 @@ public static class ObservableExtensions
     /// <summary>
     /// Executes the action for all observing players of the observable.
     /// </summary>
+    /// <typeparam name="T">The actual type of the observable.</typeparam>
     /// <param name="observable">The observable.</param>
     /// <param name="action">The action.</param>
-    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action"/> should be done for <paramref name="observable"/> too.</param>
+    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action" /> should be done for <paramref name="observable" /> too.</param>
     public static void ForEachObserving<T>(this IObservable observable, Action<T> action, bool includeThis)
         where T : class, IWorldObserver
     {

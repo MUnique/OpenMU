@@ -2,19 +2,18 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.PlugIns;
-using Nito.AsyncEx;
-
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections.Concurrent;
 using System.Threading;
+using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// The game map which contains instances of players, npcs, drops, and more.

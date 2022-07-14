@@ -22,7 +22,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task AuthenticationSuccess()
+    public async Task AuthenticationSuccessAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();
@@ -43,7 +43,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task AuthenticationFailedByWrongToken()
+    public async Task AuthenticationFailedByWrongTokenAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();
@@ -64,7 +64,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task AuthenticationFailedForSecondConnection()
+    public async Task AuthenticationFailedForSecondConnectionAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();
@@ -95,7 +95,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task SetNickname()
+    public async Task SetNicknameAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();
@@ -116,7 +116,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task SetClientIndex()
+    public async Task SetClientIndexAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();
@@ -139,7 +139,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task SentMessageEncryptedProperly()
+    public async Task SentMessageEncryptedProperlyAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var duplexPipe = new DuplexPipe();
@@ -157,7 +157,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task RoomClientListSentAfterJoin()
+    public async Task RoomClientListSentAfterJoinAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();
@@ -182,7 +182,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task RoomClientListSentForSecondClient()
+    public async Task RoomClientListSentForSecondClientAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();
@@ -223,7 +223,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task ClientJoinedPacketSent()
+    public async Task ClientJoinedPacketSentAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();
@@ -262,7 +262,7 @@ public class ChatClientTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task ClientLoggedOff()
+    public async Task ClientLoggedOffAsync()
     {
         var manager = new ChatRoomManager(new NullLoggerFactory());
         var roomId = manager.CreateChatRoom();

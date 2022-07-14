@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
+using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Network.Xor;
 using MUnique.OpenMU.PlugIns;
 
@@ -41,39 +42,40 @@ public class LogInHandlerPlugIn : ISubPacketHandlerPlugIn
             if (packet.Length > 28 + 3)
             {
                 LoginShortPassword message = packet;
-                this.HandleLogin(player, message.Username, message.Password, message.TickCount, message.ClientVersion);
+                await this.HandleLoginAsync(player, this.Decrypt(message.Username), this.Decrypt(message.Password), message.TickCount, ClientVersionResolver.Resolve(message.ClientVersion));
             }
             else
             {
                 // we have some version like 0.75 which just uses three bytes as version identifier
                 Login075 message = packet;
-                this.HandleLogin(player, message.Username, message.Password, message.TickCount, message.ClientVersion);
+                await this.HandleLoginAsync(player, this.Decrypt(message.Username), this.Decrypt(message.Password), message.TickCount, ClientVersionResolver.Resolve(message.ClientVersion));
             }
         }
         else
         {
             LoginLongPassword message = packet;
-            this.HandleLogin(player, message.Username, message.Password, message.TickCount, message.ClientVersion);
+            await this.HandleLoginAsync(player, this.Decrypt(message.Username), this.Decrypt(message.Password), message.TickCount, ClientVersionResolver.Resolve(message.ClientVersion));
         }
     }
 
-    private void HandleLogin(Player player, Span<byte> userNameSpan, Span<byte> passwordSpan, uint tickCount, Span<byte> version)
+    private string Decrypt(Span<byte> stringSpan)
     {
-        this._decryptor.Decrypt(userNameSpan);
-        this._decryptor.Decrypt(passwordSpan);
-        var username = userNameSpan.ExtractString(0, 10, Encoding.UTF8);
-        var password = passwordSpan.ExtractString(0, 20, Encoding.UTF8);
+        this._decryptor.Decrypt(stringSpan);
+        return stringSpan.ExtractString(0, stringSpan.Length, Encoding.UTF8);
+    }
+
+    private async ValueTask HandleLoginAsync(Player player, string username, string password, uint tickCount, ClientVersion version)
+    {
         if (player.Logger.IsEnabled(LogLevel.Debug))
         {
-            player.Logger.LogDebug($"User tries to log in. username:{username}, version:{version.AsString()}, tickCount:{tickCount} ");
+            player.Logger.LogDebug($"User tries to log in. username:{username}, version:{version}, tickCount:{tickCount} ");
         }
 
-        this._loginAction.LoginAsync(player, username, password);
+        await this._loginAction.LoginAsync(player, username, password);
         if (player is RemotePlayer remotePlayer)
         {
             // Set Version in RemotePlayer so that the right plugins will be selected
-            var clientVersion = ClientVersionResolver.Resolve(version);
-            remotePlayer.ClientVersion = clientVersion;
+            remotePlayer.ClientVersion = version;
         }
     }
 }

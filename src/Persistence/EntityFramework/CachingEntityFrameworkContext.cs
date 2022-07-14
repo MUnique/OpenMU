@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Implementation of <see cref="IContext"/> for the entity framework <see cref="PersistenceContextProvider"/>.
@@ -16,8 +17,9 @@ internal class CachingEntityFrameworkContext : EntityFrameworkContextBase
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="repositoryManager">The repository manager.</param>
-    public CachingEntityFrameworkContext(DbContext context, RepositoryManager repositoryManager)
-        : base(context, repositoryManager, true, null)
+    /// <param name="logger">The logger.</param>
+    public CachingEntityFrameworkContext(DbContext context, RepositoryManager repositoryManager, ILogger<CachingEntityFrameworkContext> logger)
+        : base(context, repositoryManager, true, null, logger)
     {
     }
 
@@ -27,8 +29,9 @@ internal class CachingEntityFrameworkContext : EntityFrameworkContextBase
     /// <param name="context">The context.</param>
     /// <param name="repositoryManager">The repository manager.</param>
     /// <param name="isOwner">if set to <c>true</c> this instance owns the <paramref name="context" />.</param>
-    public CachingEntityFrameworkContext(DbContext context, RepositoryManager repositoryManager, bool isOwner)
-        : base(context, repositoryManager, isOwner, null)
+    /// <param name="logger">The logger.</param>
+    public CachingEntityFrameworkContext(DbContext context, RepositoryManager repositoryManager, bool isOwner, ILogger<CachingEntityFrameworkContext> logger)
+        : base(context, repositoryManager, isOwner, null, logger)
     {
     }
 }

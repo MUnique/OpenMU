@@ -28,17 +28,17 @@ public class GuildActionTest : GuildTestBase
 
     /// <inheritdoc/>
     [SetUp]
-    public override async ValueTask Setup()
+    public override async ValueTask SetupAsync()
     {
-        await base.Setup();
+        await base.SetupAsync();
 
         var gameServerContext = this.CreateGameServer();
-        this._guildMasterPlayer = TestHelper.CreatePlayer(gameServerContext);
+        this._guildMasterPlayer = await TestHelper.CreatePlayerAsync(gameServerContext);
         this._guildMasterPlayer.SelectedCharacter!.Id = this.GuildMaster.Id;
         this._guildMasterPlayer.SelectedCharacter.Name = this.GuildMaster.Name;
         await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, 0);
         this._guildMasterPlayer.Attributes![Stats.Level] = 100;
-        this._player = TestHelper.CreatePlayer(gameServerContext);
+        this._player = await TestHelper.CreatePlayerAsync(gameServerContext);
         await this._player.CurrentMap!.AddAsync(this._guildMasterPlayer);
         this._player.SelectedCharacter!.Name = "Player";
         this._player.SelectedCharacter.Id = Guid.NewGuid();
@@ -68,7 +68,7 @@ public class GuildActionTest : GuildTestBase
     /// Tests if a guild request from a player to a guild master gets forwarded to the guild masters view.
     /// </summary>
     [Test]
-    public async ValueTask GuildRequest()
+    public async ValueTask GuildRequestAsync()
     {
         var guildRequestAction = new GuildRequestAction();
         await guildRequestAction.RequestGuildAsync(this._player, this._guildMasterPlayer.Id);
@@ -80,9 +80,9 @@ public class GuildActionTest : GuildTestBase
     /// Tests if the guild member object gets created when the guild master accepts the request.
     /// </summary>
     [Test]
-    public async ValueTask GuildRequestAccept()
+    public async ValueTask GuildRequestAcceptAsync()
     {
-        await this.RequestGuildAndRespond(true);
+        await this.RequestGuildAndRespondAsync(true);
 
         Assert.That(this._player.GuildStatus, Is.Not.Null);
         Assert.That(this._player.GuildStatus!.GuildId, Is.Not.EqualTo(0));
@@ -93,9 +93,9 @@ public class GuildActionTest : GuildTestBase
     /// Tests if the guild member objects does not get created when the guild master refuses the request.
     /// </summary>
     [Test]
-    public async ValueTask GuildRequestRefuse()
+    public async ValueTask GuildRequestRefuseAsync()
     {
-        await this.RequestGuildAndRespond(false);
+        await this.RequestGuildAndRespondAsync(false);
         Assert.That(this._player.GuildStatus, Is.Null);
         Mock.Get(this._player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g!.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.Refused), Times.Once);
     }
@@ -104,7 +104,7 @@ public class GuildActionTest : GuildTestBase
     /// Tests if the guild creation dialog gets displayed when a player requests it.
     /// </summary>
     [Test]
-    public async ValueTask GuildCreationDialog()
+    public async ValueTask GuildCreationDialogAsync()
     {
         var action = new GuildMasterAnswerAction();
         this._player.OpenedNpc = new NonPlayerCharacter(null!, null!, null!);
@@ -116,7 +116,7 @@ public class GuildActionTest : GuildTestBase
     /// Tests if a guild does get created correctly, when a player executes the creation action.
     /// </summary>
     [Test]
-    public async ValueTask GuildCreate()
+    public async ValueTask GuildCreateAsync()
     {
         var action = new GuildCreateAction();
         await action.CreateGuildAsync(this._player, "Foobar2", Array.Empty<byte>());
@@ -131,9 +131,9 @@ public class GuildActionTest : GuildTestBase
     /// Tests if the guild list request gets answered correctly.
     /// </summary>
     [Test]
-    public async ValueTask GetGuildList()
+    public async ValueTask GetGuildListAsync()
     {
-        await this.RequestGuildAndRespond(true);
+        await this.RequestGuildAndRespondAsync(true);
         var action = new GuildListRequestAction();
         await action.RequestGuildListAsync(this._player);
         var guildList = await this.GuildServer.GetGuildListAsync(this._player.GuildStatus!.GuildId);
@@ -141,7 +141,7 @@ public class GuildActionTest : GuildTestBase
         Assert.That(guildList.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name), Is.True);
     }
 
-    private async ValueTask RequestGuildAndRespond(bool acceptRequest)
+    private async ValueTask RequestGuildAndRespondAsync(bool acceptRequest)
     {
         var guildRequestAction = new GuildRequestAction();
         await guildRequestAction.RequestGuildAsync(this._player, this._guildMasterPlayer.Id);

@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections;
-
 namespace MUnique.OpenMU.Persistence.InMemory;
+
+using System.Collections;
 
 /// <summary>
 /// A repository which lives on memory only.
@@ -39,9 +39,9 @@ public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     }
 
     /// <inheritdoc />
-    public void Remove(Guid key)
+    public async ValueTask RemoveAsync(Guid key)
     {
-        this.DeleteAsync(key);
+        await this.DeleteAsync(key);
     }
 
     /// <inheritdoc/>

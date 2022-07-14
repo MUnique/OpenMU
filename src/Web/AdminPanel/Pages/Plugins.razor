@@ -40,7 +40,7 @@
 
                 @if (item.ConfigurationType is { })
                 {
-                    <Button class="btn-secondary" @onclick="() => this._plugInController.ShowPlugInConfig(item)"><span class="oi oi-cog" aria-hidden="true"></span></Button>
+                    <Button class="btn-secondary" @onclick="() => this._plugInController.ShowPlugInConfigAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></Button>
                 }
             </td>
         </ItemTemplate>

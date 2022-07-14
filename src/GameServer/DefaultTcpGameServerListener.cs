@@ -62,7 +62,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
     private ClientVersion ClientVersion => new (this._endPoint.Client!.Season, this._endPoint.Client.Episode, this._endPoint.Client.Language);
 
     /// <inheritdoc/>
-    public void Start()
+    public async ValueTask StartAsync()
     {
         if (this._listener is { IsBound: true })
         {
@@ -81,14 +81,14 @@ public class DefaultTcpGameServerListener : IGameServerListener
         this._logger.LogInformation("Starting Server Listener, port {port}", port);
         this._listener = new Listener(port, this.CreateDecryptor, this.CreateEncryptor, this._loggerFactory);
         this._listener.ClientAccepted += this.OnClientAcceptedAsync;
-        this._listener.ClientAccepting += this.OnClientAccepting;
+        this._listener.ClientAccepting += this.OnClientAcceptingAsync;
         if (this._endPoint.AlternativePublishedPort > 0)
         {
             port = this._endPoint.AlternativePublishedPort;
             this._logger.LogWarning("GameServer endpoint of port {0} has registered an alternative public port of {1}.", this._endPoint.NetworkPort, port);
         }
 
-        this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(this._addressResolver.ResolveIPv4(), port));
+        this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(await this._addressResolver.ResolveIPv4Async(), port));
         this._listener.Start();
         this._logger.LogInformation("Server listener started.");
     }
@@ -125,7 +125,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
             : new PipelinedDecryptor(arg);
     }
 
-    private async ValueTask OnClientAccepting(ClientAcceptingEventArgs e)
+    private async ValueTask OnClientAcceptingAsync(ClientAcceptingEventArgs e)
     {
         if (this._gameContext.PlayerCount >= this._gameContext.ServerConfiguration.MaximumPlayers)
         {
@@ -151,7 +151,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
         await this.OnPlayerConnectedAsync(remotePlayer);
 
         // we don't want to await the call.
-        _ = Task.Run(connection.BeginReceive);
+        _ = Task.Run(connection.BeginReceiveAsync);
     }
 
     private async ValueTask OnPlayerConnectedAsync(Player player)

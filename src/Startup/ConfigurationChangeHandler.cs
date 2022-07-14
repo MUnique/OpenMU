@@ -28,7 +28,7 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
     }
 
     /// <inheritdoc />
-    public void ConfigurationChanged(Type type, Guid id, object configuration)
+    public async Task ConfigurationChangedAsync(Type type, Guid id, object configuration)
     {
         if (configuration is PlugInConfiguration plugInConfiguration)
         {
@@ -37,12 +37,12 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
 
         if (configuration is ConnectServerDefinition connectServerDefinition)
         {
-            this.OnConnectServerDefinitionChanged(id, connectServerDefinition);
+            await this.OnConnectServerDefinitionChangedAsync(id, connectServerDefinition);
         }
     }
 
     /// <inheritdoc />
-    public void ConfigurationAdded(Type type, Guid id, object configuration)
+    public async Task ConfigurationAddedAsync(Type type, Guid id, object configuration)
     {
         if (configuration is not PlugInConfiguration plugInConfiguration)
         {
@@ -53,7 +53,7 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
     }
 
     /// <inheritdoc />
-    public void ConfigurationRemoved(Type type, Guid id)
+    public async Task ConfigurationRemovedAsync(Type type, Guid id)
     {
         if (type.IsAssignableTo(typeof(PlugInConfiguration)))
         {
@@ -61,16 +61,16 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
         }
     }
 
-    private void OnConnectServerDefinitionChanged(Guid id, ConnectServerDefinition connectServerDefinition)
+    private async ValueTask OnConnectServerDefinitionChangedAsync(Guid id, ConnectServerDefinition connectServerDefinition)
     {
         foreach (var connectServer in this._connectServerContainer)
         {
             if (connectServer.ServerState == ServerState.Started)
             {
-                connectServer.ShutdownAsync();
+                await connectServer.ShutdownAsync();
 
                 //// todo: is applying new settings required?
-                connectServer.StartAsync();
+                await connectServer.StartAsync();
             }
         }
     }

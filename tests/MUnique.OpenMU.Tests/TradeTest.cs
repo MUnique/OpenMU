@@ -25,7 +25,7 @@ public class TradeTest
     /// Tests the trade request.
     /// </summary>
     [Test]
-    public async ValueTask TestTradeRequest()
+    public async ValueTask TestTradeRequestAsync()
     {
         var player = this.CreateTrader(PlayerState.EnteredWorld); // The player which will send the trade request
         var tradePartner = this.CreateTrader(PlayerState.EnteredWorld); // The player which will receive the trade request
@@ -44,14 +44,14 @@ public class TradeTest
     /// Tests the trade response.
     /// </summary>
     [Test]
-    public async ValueTask TestTradeResponse()
+    public async ValueTask TestTradeResponseAsync()
     {
         var requester = this.CreateTrader(PlayerState.TradeRequested);
         var responder = this.CreateTrader(PlayerState.TradeRequested);
         requester.TradingPartner = responder;
         responder.TradingPartner = requester;
         var responseHandler = new TradeAcceptAction();
-        await responseHandler.HandleTradeAccept(responder, true);
+        await responseHandler.HandleTradeAcceptAsync(responder, true);
         Assert.AreEqual(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
         Assert.AreEqual(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
         Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()).Verify(view => view!.ShowTradeRequestAnswerAsync(true), Times.Once);
@@ -61,7 +61,7 @@ public class TradeTest
     /// Tests the cancellation of a trade.
     /// </summary>
     [Test]
-    public async ValueTask TradeCancelTest()
+    public async ValueTask TradeCancelTestAsync()
     {
         var trader1 = this.CreateTrader(PlayerState.TradeOpened);
         var trader2 = this.CreateTrader(PlayerState.TradeOpened);
@@ -80,7 +80,7 @@ public class TradeTest
     /// Tests the finishing of a trade.
     /// </summary>
     [Test]
-    public async ValueTask TradeFinishTest()
+    public async ValueTask TradeFinishTestAsync()
     {
         var trader1 = this.CreateTrader(PlayerState.TradeOpened);
         var trader2 = this.CreateTrader(PlayerState.TradeOpened);
@@ -111,10 +111,10 @@ public class TradeTest
     /// Tests a trade of items.
     /// </summary>
     [Test]
-    public async ValueTask TradeItems()
+    public async ValueTask TradeItemsAsync()
     {
-        var trader1 = TestHelper.CreatePlayer();
-        var trader2 = TestHelper.CreatePlayer();
+        var trader1 = await TestHelper.CreatePlayerAsync();
+        var trader2 = await TestHelper.CreatePlayerAsync();
         var tradeRequestAction = new TradeRequestAction();
         var tradeResponseAction = new TradeAcceptAction();
 
@@ -123,7 +123,7 @@ public class TradeTest
         await trader1.Inventory!.AddItemAsync(20, item1);
         await trader1.Inventory.AddItemAsync(21, item2);
         await tradeRequestAction.RequestTradeAsync(trader1, trader2);
-        await tradeResponseAction.HandleTradeAccept(trader2, true);
+        await tradeResponseAction.HandleTradeAcceptAsync(trader2, true);
         var itemMoveAction = new MoveItemAction();
         await itemMoveAction.MoveItemAsync(trader1, 20, Storages.Inventory, 0, Storages.Trade);
         await itemMoveAction.MoveItemAsync(trader1, 21, Storages.Inventory, 2, Storages.Trade);

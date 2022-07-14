@@ -53,7 +53,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// <inheritdoc/>
     public void Start()
     {
-        this._aiTimer = new Timer(_ => this.SafeTickAsync(), null, this.Npc.Definition.AttackDelay, this.Npc.Definition.AttackDelay);
+        this._aiTimer = new Timer(_ => this.SafeTick(), null, this.Npc.Definition.AttackDelay, this.Npc.Definition.AttackDelay);
     }
 
     /// <inheritdoc/>
@@ -86,7 +86,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// Searches the next target in view range.
     /// </summary>
     /// <returns>The next target.</returns>
-    protected virtual async ValueTask<IAttackable?> SearchNextTarget()
+    protected virtual async ValueTask<IAttackable?> SearchNextTargetAsync()
     {
         List<IWorldObserver> tempObservers;
         using (await this.Npc.ObserverLock.ReaderLockAsync())
@@ -104,9 +104,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             .WhereActive()
             .ToList();
         possibleTargets.AddRange(summons);
-        var closestTarget = possibleTargets
-            .OrderBy(a => a.GetDistanceTo(this.Npc))
-            .FirstOrDefault();
+        var closestTarget = possibleTargets.MinBy(a => a.GetDistanceTo(this.Npc));
 
         return closestTarget;
 
@@ -129,11 +127,12 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         }
     }
 
-    private async void SafeTickAsync()
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void SafeTick()
     {
         try
         {
-            await this.Tick();
+            await this.TickAsync();
         }
         catch (Exception ex)
         {
@@ -141,7 +140,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         }
     }
 
-    private async ValueTask Tick()
+    private async ValueTask TickAsync()
     {
         if (!this.Monster.IsAlive)
         {
@@ -168,12 +167,12 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
                 || !target.IsInRange(this.Monster.Position, this.Npc.Definition.ViewRange)
                 || (target is IWorldObserver && !await this.IsTargetInObserversAsync(target)))
             {
-                target = this.CurrentTarget = await this.SearchNextTarget();
+                target = this.CurrentTarget = await this.SearchNextTargetAsync();
             }
         }
         else
         {
-            target = this.CurrentTarget = await this.SearchNextTarget();
+            target = this.CurrentTarget = await this.SearchNextTargetAsync();
         }
 
         // no target?

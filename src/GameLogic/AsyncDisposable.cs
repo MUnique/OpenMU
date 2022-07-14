@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameLogic;
+﻿// <copyright file="AsyncDisposable.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic;
 
 /// <summary>
 /// Base class for classes which want to implement <see cref="IAsyncDisposable"/>.
@@ -42,6 +46,7 @@ public class AsyncDisposable : Disposable, IAsyncDisposable
     /// Performs application-defined tasks associated with freeing, releasing, or
     /// resetting unmanaged resources asynchronously.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "This naming is suggested by microsoft itself.")]
     protected virtual ValueTask DisposeAsyncCore()
     {
         return ValueTask.CompletedTask;

@@ -87,7 +87,7 @@ public sealed class Walker : IDisposable
 
         var cts = new CancellationTokenSource();
         this._walkCts = cts;
-        _ = Task.Run(async () => await this.WalkLoop(cts.Token), cts.Token);
+        _ = Task.Run(async () => await this.WalkLoopAsync(cts.Token), cts.Token);
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public sealed class Walker : IDisposable
         }
     }
 
-    private async Task WalkLoop(CancellationToken cancellationToken)
+    private async Task WalkLoopAsync(CancellationToken cancellationToken)
     {
         var delay = this._stepDelay().Subtract(TimeSpan.FromMilliseconds(50));
 

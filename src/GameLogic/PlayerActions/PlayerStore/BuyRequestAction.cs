@@ -94,7 +94,7 @@ public class BuyRequestAction
                     item.StorePrice = null;
                     await player.Inventory!.AddItemAsync(item);
                     requestedPlayer.PersistenceContext.Detach(item);
-                    itemContext.SaveChanges();
+                    await itemContext.SaveChangesAsync().ConfigureAwait(false);
                     player.PersistenceContext.Attach(item);
                     await player.InvokeViewPlugInAsync<IItemBoughtFromPlayerShopPlugIn>(p => p.ItemBoughtFromPlayerShopAsync(item)).ConfigureAwait(false);
                     await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);

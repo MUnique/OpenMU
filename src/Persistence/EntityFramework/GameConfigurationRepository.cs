@@ -22,10 +22,10 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     /// Initializes a new instance of the <see cref="GameConfigurationRepository" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="changePublisher">The change publisher.</param>
-    public GameConfigurationRepository(RepositoryManager repositoryManager, ILogger<GameConfigurationRepository> logger, IConfigurationChangePublisher? changePublisher)
-        : base(repositoryManager, logger, changePublisher)
+    public GameConfigurationRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
+        : base(repositoryManager, loggerFactory, changePublisher)
     {
         this._objectLoader = new GameConfigurationJsonObjectLoader();
     }

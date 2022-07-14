@@ -25,7 +25,7 @@ public static class TestHelper
     /// Gets the player.
     /// </summary>
     /// <returns>The test player.</returns>
-    public static Player CreatePlayer()
+    public static async ValueTask<Player> CreatePlayerAsync()
     {
         var gameConfig = new Mock<GameConfiguration>();
         gameConfig.SetupAllProperties();
@@ -44,7 +44,7 @@ public static class TestHelper
         var mapInitializer = new MapInitializer(gameConfig.Object, new NullLogger<MapInitializer>(), NullDropGenerator.Instance);
         var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null), NullDropGenerator.Instance);
         mapInitializer.PlugInManager = gameContext.PlugInManager;
-        return CreatePlayer(gameContext);
+        return await CreatePlayerAsync(gameContext);
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public static class TestHelper
     /// <returns>
     /// The test player.
     /// </returns>
-    public static Player CreatePlayer(IGameContext gameContext)
+    public static async ValueTask<Player> CreatePlayerAsync(IGameContext gameContext)
     {
         var characterMock = new Mock<Character>();
         characterMock.SetupAllProperties();
@@ -67,7 +67,7 @@ public static class TestHelper
 
         var character = characterMock.Object;
         character.Inventory = inventoryMock.Object;
-        character.CurrentMap = gameContext.GetMap(0)?.Definition;
+        character.CurrentMap = (await gameContext.GetMapAsync(0))?.Definition;
         var characterClassMock = new Mock<CharacterClass>();
         characterClassMock.Setup(c => c.StatAttributes).Returns(
             new List<StatAttributeDefinition>

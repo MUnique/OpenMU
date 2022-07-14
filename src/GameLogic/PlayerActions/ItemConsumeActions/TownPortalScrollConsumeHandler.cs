@@ -23,7 +23,7 @@ public class TownPortalScrollConsumeHandler : BaseConsumeHandler
         {
             var targetMapDef = player.CurrentMap!.Definition.SafezoneMap ?? player.SelectedCharacter!.CharacterClass!.HomeMap;
             if (targetMapDef is { }
-                && player.GameContext.GetMap((ushort)targetMapDef.Number) is { SafeZoneSpawnGate: { } spawnGate })
+                && await player.GameContext.GetMapAsync((ushort)targetMapDef.Number) is { SafeZoneSpawnGate: { } spawnGate })
             {
                 await player.WarpToAsync(spawnGate);
                 return true;

@@ -6,7 +6,7 @@
         <span class="" id="targetMapLabel">Target map:</span>
     </div>
     <div class="form-control border-0 mb-3 ml-1">
-        <select title="Target map" @onchange=this.OnMapSelected id="targetMapSelect" autocomplete="off">
+        <select title="Target map" @onchange=this.OnMapSelectedAsync id="targetMapSelect" autocomplete="off">
             @foreach (var map in this.LookupController.GetSuggestionsAsync<GameMapDefinition>(string.Empty, this.PersistenceContext).Result.OrderBy(c => c.Number))
             {
                 <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>Map: @map.ToString()</option>
@@ -27,7 +27,7 @@
             <div class="@this.GetCssClass(exitGate)"
                  title="@exitGate.ToString()"
                  style="@this.GetSizeAndPositionStyle(exitGate)"
-                 @onclick="@(_ => this.OnSelected(exitGate))">
+                 @onclick="@(_ => this.OnSelectedAsync(exitGate))">
             </div>
         }
     </div>

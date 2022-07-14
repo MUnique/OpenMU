@@ -32,7 +32,7 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
     {
         try
         {
-            await this.ObjectMovedAsyncInner(movedObject, moveType).ConfigureAwait(false);
+            await this.ObjectMovedAsyncInnerAsync(movedObject, moveType).ConfigureAwait(false);
         }
         catch (TaskCanceledException)
         {
@@ -44,7 +44,7 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
         }
     }
 
-    private async Task ObjectMovedAsyncInner(ILocateable movedObject, MoveType moveType)
+    private async Task ObjectMovedAsyncInnerAsync(ILocateable movedObject, MoveType moveType)
     {
         Point targetPoint = movedObject.Position;
         object? steps = null;

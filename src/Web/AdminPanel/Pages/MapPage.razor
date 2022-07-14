@@ -1,4 +1,5 @@
 ﻿@page "/gameServer/{gameServerId:int}/map/{mapId:guid}"
+@implements IDisposable
 
 @using MUnique.OpenMU.Web.Map.Components
 @using MUnique.OpenMU.Web.Map
@@ -45,14 +46,21 @@
     public int GameServerId { get; set; }
 
     /// <inheritdoc />
-    protected override Task OnInitializedAsync()
+    public void Dispose()
     {
-        
+        (this._gameServer as IDisposable)?.Dispose();
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
         var gameServer = this.Servers.OfType<IGameServer>().First(gs => gs.Id == this.GameServerId);
         var context = (gameServer as IGameServerContextProvider)?.Context ?? throw new InvalidOperationException("This map page just works in a All-In-One deployment.");
-        this._gameServer = new ObservableGameServerAdapter(context);
-        
+        var adapter = new ObservableGameServerAdapter(context);
+        await adapter.InitializeAsync();
+
+        this._gameServer = adapter;
         this._map = this._gameServer.Maps.First(m => m.Id == this.MapId);
-        return base.OnInitializedAsync();
+        await base.OnInitializedAsync();
     }
 }

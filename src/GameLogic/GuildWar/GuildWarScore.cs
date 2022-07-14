@@ -29,7 +29,7 @@ public class GuildWarScore : INotifyPropertyChanged
     public string FirstGuildName { get; init; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the name of the second guild.
+    /// Gets the name of the second guild.
     /// </summary>
     public string SecondGuildName { get; init; } = string.Empty;
 
@@ -46,10 +46,10 @@ public class GuildWarScore : INotifyPropertyChanged
     /// <summary>
     /// Gets a value indicating whether the guild war has ended.
     /// </summary>
-    public bool HasEnded => this._firstGuildScore >= MaximumScore || this._secondGuildScore >= MaximumScore;
+    public bool HasEnded => this._firstGuildScore >= this.MaximumScore || this._secondGuildScore >= this.MaximumScore;
 
     /// <summary>
-    /// Gets or sets the maximum score.
+    /// Gets the maximum score.
     /// </summary>
     public byte MaximumScore { get; init; }
 

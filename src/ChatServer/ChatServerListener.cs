@@ -50,8 +50,8 @@ public class ChatServerListener
     public void Start()
     {
         this._chatClientListener = new Listener(this._endpoint.NetworkPort, this.CreateDecryptor, _ => null, this._loggerFactory);
-        this._chatClientListener.ClientAccepted += async args => await this.ClientAccepted.SafeInvoke(args);
-        this._chatClientListener.ClientAccepting += async args => await this.ClientAccepting.SafeInvoke(args);
+        this._chatClientListener.ClientAccepted += async args => await this.ClientAccepted.SafeInvokeAsync(args);
+        this._chatClientListener.ClientAccepting += async args => await this.ClientAccepting.SafeInvokeAsync(args);
         this._chatClientListener.Start();
     }
 

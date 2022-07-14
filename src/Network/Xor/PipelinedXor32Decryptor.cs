@@ -13,7 +13,7 @@ using System.IO.Pipelines;
 /// </summary>
 public class PipelinedXor32Decryptor : PacketPipeReaderBase, IPipelinedDecryptor
 {
-    private readonly Pipe _pipe = new ();
+    private readonly Pipe _pipe = new();
     private readonly byte[] _xor32Key;
 
     /// <summary>
@@ -39,7 +39,7 @@ public class PipelinedXor32Decryptor : PacketPipeReaderBase, IPipelinedDecryptor
 
         this.Source = source;
         this._xor32Key = xor32Key;
-        this.ReadSource().ConfigureAwait(false);
+        _ = this.ReadSourceAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

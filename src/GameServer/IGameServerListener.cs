@@ -24,7 +24,7 @@ public interface IGameServerListener
     /// <summary>
     /// Starts this listener.
     /// </summary>
-    void Start();
+    ValueTask StartAsync();
 
     /// <summary>
     /// Stops this listener.

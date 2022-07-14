@@ -21,59 +21,59 @@ internal class TestInitializationWithEfCore
     /// </summary>
     [Test]
     [Ignore("This is not a real test which should run automatically.")]
-    public async Task SetupDatabaseAndTestLoadingData()
+    public async Task SetupDatabaseAndTestLoadingDataAsync()
     {
         var manager = new PersistenceContextProvider(new NullLoggerFactory(), null);
-        manager.ReCreateDatabase();
-        await this.TestDataInitialization(new PersistenceContextProvider(new NullLoggerFactory(), null));
+        await manager.ReCreateDatabaseAsync();
+        await this.TestDataInitializationAsync(new PersistenceContextProvider(new NullLoggerFactory(), null));
     }
 
     /// <summary>
     /// Tests the data initialization using the in-memory persistence.
     /// </summary>
     [Test]
-    public async Task TestDataInitializationInMemory()
+    public async Task TestDataInitializationInMemoryAsync()
     {
-        await this.TestDataInitialization(new InMemoryPersistenceContextProvider());
+        await this.TestDataInitializationAsync(new InMemoryPersistenceContextProvider());
     }
 
     /// <summary>
     /// Tests the data initialization using the in-memory persistence.
     /// </summary>
     [Test]
-    public async Task TestSeason6Data()
+    public async Task TestSeason6DataAsync()
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
         await dataInitialization.CreateInitialDataAsync(1, true);
-        await this.TestIfItemsFitIntoInventories(contextProvider);
+        await this.TestIfItemsFitIntoInventoriesAsync(contextProvider);
     }
 
     /// <summary>
     /// Tests the data initialization using the in-memory persistence.
     /// </summary>
     [Test]
-    public async Task Test075Data()
+    public async Task Test075DataAsync()
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new Version075.DataInitialization(contextProvider, new NullLoggerFactory());
         await dataInitialization.CreateInitialDataAsync(1, true);
-        await this.TestIfItemsFitIntoInventories(contextProvider);
+        await this.TestIfItemsFitIntoInventoriesAsync(contextProvider);
     }
 
     /// <summary>
     /// Tests the data initialization using the in-memory persistence.
     /// </summary>
     [Test]
-    public async Task Test095dData()
+    public async Task Test095dDataAsync()
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new Version095d.DataInitialization(contextProvider, new NullLoggerFactory());
         await dataInitialization.CreateInitialDataAsync(1, true);
-        await this.TestIfItemsFitIntoInventories(contextProvider);
+        await this.TestIfItemsFitIntoInventoriesAsync(contextProvider);
     }
 
-    private async Task TestDataInitialization(IPersistenceContextProvider contextProvider)
+    private async Task TestDataInitializationAsync(IPersistenceContextProvider contextProvider)
     {
         var initialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
         await initialization.CreateInitialDataAsync(3, true);
@@ -90,7 +90,7 @@ internal class TestInitializationWithEfCore
         Assert.That(account1!.LoginName, Is.EqualTo("test1"));
     }
 
-    private async Task TestIfItemsFitIntoInventories(IPersistenceContextProvider contextProvider)
+    private async Task TestIfItemsFitIntoInventoriesAsync(IPersistenceContextProvider contextProvider)
     {
         using var configContext = contextProvider.CreateNewConfigurationContext();
         var config = (await configContext.GetAsync<GameConfiguration>()).First();

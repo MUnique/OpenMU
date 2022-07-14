@@ -61,6 +61,7 @@ public partial class PacketSenderForm : Form
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void SendButtonClick(object? sender, EventArgs e)
     {
         try

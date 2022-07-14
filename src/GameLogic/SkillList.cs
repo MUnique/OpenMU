@@ -48,7 +48,7 @@ public class SkillList : ISkillList
             .Where(item => item.HasSkill)
             .Where(item => (item.Definition ?? throw Error.NotInitializedProperty(item, nameof(item.Definition))).Skill != null)
             .ForEach(item => this.AddItemSkillAsync(item.Definition!.Skill!).AsTask().WaitAndUnwrapException());
-        this._player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChanged;
+        this._player.Inventory.EquippedItemsChanged += this.Inventory_WearingItemsChangedAsync;
         foreach (var skill in this._learnedSkills.Where(s => s.Skill!.SkillType == SkillType.PassiveBoost))
         {
             this.CreatePowerUpForPassiveSkill(skill);
@@ -155,7 +155,7 @@ public class SkillList : ISkillList
         _ = new PowerUpWrapper(new PassiveSkillBoostPowerUp(skillEntry), masterDefinition.TargetAttribute, this._player.Attributes!);
     }
 
-    private async ValueTask Inventory_WearingItemsChanged(ItemEventArgs eventArgs)
+    private async ValueTask Inventory_WearingItemsChangedAsync(ItemEventArgs eventArgs)
     {
         var item = eventArgs.Item;
         if (!item.HasSkill || item.Definition?.Skill is null)

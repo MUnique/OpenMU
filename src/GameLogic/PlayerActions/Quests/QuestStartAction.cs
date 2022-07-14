@@ -70,7 +70,7 @@ public class QuestStartAction
             }
         }
 
-        questState.Clear(player.PersistenceContext);
+        await questState.ClearAsync(player.PersistenceContext);
         questState.ActiveQuest = quest;
         await player.InvokeViewPlugInAsync<IQuestStartedPlugIn>(p => p.QuestStartedAsync(quest)).ConfigureAwait(false);
     }

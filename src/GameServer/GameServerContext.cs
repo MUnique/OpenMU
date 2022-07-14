@@ -118,15 +118,15 @@ public class GameServerContext : GameContext, IGameServerContext
     public override async ValueTask AddPlayerAsync(Player player)
     {
         await base.AddPlayerAsync(player);
-        player.PlayerLeftWorld += this.PlayerLeftWorld;
-        player.PlayerEnteredWorld += this.PlayerEnteredWorld;
+        player.PlayerLeftWorld += this.PlayerLeftWorldAsync;
+        player.PlayerEnteredWorld += this.PlayerEnteredWorldAsync;
     }
 
     /// <inheritdoc/>
     public override async ValueTask RemovePlayerAsync(Player player)
     {
-        player.PlayerEnteredWorld -= this.PlayerEnteredWorld;
-        player.PlayerLeftWorld -= this.PlayerLeftWorld;
+        player.PlayerEnteredWorld -= this.PlayerEnteredWorldAsync;
+        player.PlayerLeftWorld -= this.PlayerLeftWorldAsync;
         await base.RemovePlayerAsync(player);
     }
 
@@ -169,7 +169,7 @@ public class GameServerContext : GameContext, IGameServerContext
         guildList.Remove(guildMember);
     }
 
-    private async ValueTask PlayerEnteredWorld(Player player)
+    private async ValueTask PlayerEnteredWorldAsync(Player player)
     {
         if (player is not { SelectedCharacter: { } selectedCharacter })
         {
@@ -179,7 +179,7 @@ public class GameServerContext : GameContext, IGameServerContext
         await this.EventPublisher.PlayerEnteredGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name);
     }
 
-    private async ValueTask PlayerLeftWorld(Player player)
+    private async ValueTask PlayerLeftWorldAsync(Player player)
     {
         if (player is not { SelectedCharacter: { } selectedCharacter })
         {

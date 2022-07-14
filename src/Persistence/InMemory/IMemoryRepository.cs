@@ -20,5 +20,5 @@ public interface IMemoryRepository : IRepository
     /// Removes the object with the specified key.
     /// </summary>
     /// <param name="key">The key.</param>
-    void Remove(Guid key);
+    ValueTask RemoveAsync(Guid key);
 }

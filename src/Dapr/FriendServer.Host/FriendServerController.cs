@@ -40,7 +40,7 @@ public class FriendServerController : ControllerBase
     /// <param name="data">The data.</param>
     [Topic("pubsub", nameof(IEventPublisher.PlayerEnteredGameAsync))]
     [HttpPost(nameof(IEventPublisher.PlayerEnteredGameAsync))]
-    public async Task PlayerEnteredGame([FromBody] PlayerOnlineStateArguments data)
+    public async Task PlayerEnteredGameAsync([FromBody] PlayerOnlineStateArguments data)
     {
         await this._friendServer.PlayerEnteredGameAsync(data.ServerId, data.CharacterId, data.CharacterName);
     }
