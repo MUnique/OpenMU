@@ -87,8 +87,8 @@ public class SetupService
     /// <param name="cancellationToken">The cancellation token.</param>
     public async Task InstallUpdatesAsync(CancellationToken cancellationToken)
     {
-        await this._contextProvider.ApplyAllPendingUpdatesAsync();
-        await this._contextProvider.WaitForUpdatedDatabaseAsync(cancellationToken);
+        await this._contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
+        await this._contextProvider.WaitForUpdatedDatabaseAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -97,11 +97,11 @@ public class SetupService
     /// <param name="dataInitialization">The data initialization action.</param>
     public async Task CreateDatabaseAsync(Func<Task> dataInitialization)
     {
-        await this._contextProvider.ReCreateDatabaseAsync();
-        await dataInitialization();
+        await this._contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
+        await dataInitialization().ConfigureAwait(false);
         if (this.DatabaseInitialized is { } eventHandler)
         {
-            await eventHandler.Invoke();
+            await eventHandler.Invoke().ConfigureAwait(false);
         }
     }
 }

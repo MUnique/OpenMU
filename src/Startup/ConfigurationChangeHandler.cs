@@ -37,7 +37,7 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
 
         if (configuration is ConnectServerDefinition connectServerDefinition)
         {
-            await this.OnConnectServerDefinitionChangedAsync(id, connectServerDefinition);
+            await this.OnConnectServerDefinitionChangedAsync(id, connectServerDefinition).ConfigureAwait(false);
         }
     }
 
@@ -67,10 +67,10 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
         {
             if (connectServer.ServerState == ServerState.Started)
             {
-                await connectServer.ShutdownAsync();
+                await connectServer.ShutdownAsync().ConfigureAwait(false);
 
                 //// todo: is applying new settings required?
-                await connectServer.StartAsync();
+                await connectServer.StartAsync().ConfigureAwait(false);
             }
         }
     }

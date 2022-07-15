@@ -34,6 +34,6 @@ public class PostChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
-        await player.GameContext.SendGlobalMessageAsync(message, Interfaces.MessageType.BlueNormal);
+        await player.GameContext.SendGlobalMessageAsync(message, Interfaces.MessageType.BlueNormal).ConfigureAwait(false);
     }
 }

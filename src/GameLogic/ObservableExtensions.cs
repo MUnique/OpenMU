@@ -161,7 +161,7 @@ public static class ObservableExtensions
 
                 try
                 {
-                    await action(obs);
+                    await action(obs).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

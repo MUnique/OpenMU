@@ -60,7 +60,7 @@ internal sealed class GameMapInfoAdapter : IGameMapInfo, IDisposable
             {
                 this._players.TryAdd(p, new PlayerInfo(p));
             }
-        });
+        }).ConfigureAwait(false);
 
         this._map.ObjectAdded += this.OnMapObjectAddedAsync;
         this._map.ObjectRemoved += this.OnMapObjectRemovedAsync;

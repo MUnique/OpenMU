@@ -35,7 +35,7 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
         if (client.ServerInfoRequestCount >= this._connectServer.Settings.MaxIpRequests)
         {
             this._logger.LogDebug($"Client {client.Address}:{client.Port} reached max ip requests.");
-            await client.Connection.DisconnectAsync();
+            await client.Connection.DisconnectAsync().ConfigureAwait(false);
         }
 
         if (this._connectServer.ConnectInfos.TryGetValue(serverId, out var connectInfo))

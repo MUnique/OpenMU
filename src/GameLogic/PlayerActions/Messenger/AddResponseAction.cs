@@ -33,7 +33,7 @@ public class AddResponseAction
                 await player.InvokeViewPlugInAsync<IFriendAddedPlugIn>(p => p.FriendAddedAsync(requesterName)).ConfigureAwait(false);
             }
 
-            await friendServer.FriendResponseAsync(character.Name, requesterName, accepted);
+            await friendServer.FriendResponseAsync(character.Name, requesterName, accepted).ConfigureAwait(false);
         }
     }
 }

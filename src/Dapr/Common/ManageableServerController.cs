@@ -31,7 +31,7 @@ public class ManageableServerController
     [HttpPost(nameof(IManageableServer.ShutdownAsync))]
     public async Task ShutdownAsync()
     {
-        await this._manageableServer.ShutdownAsync();
+        await this._manageableServer.ShutdownAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -40,6 +40,6 @@ public class ManageableServerController
     [HttpPost(nameof(IManageableServer.StartAsync))]
     public async Task StartAsync()
     {
-        await this._manageableServer.StartAsync();
+        await this._manageableServer.StartAsync().ConfigureAwait(false);
     }
 }

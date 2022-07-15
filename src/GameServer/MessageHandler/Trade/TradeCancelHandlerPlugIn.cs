@@ -28,6 +28,6 @@ internal class TradeCancelHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        await this._cancelHandler.CancelTradeAsync(player);
+        await this._cancelHandler.CancelTradeAsync(player).ConfigureAwait(false);
     }
 }

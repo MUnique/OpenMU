@@ -92,8 +92,8 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
 #pragma warning restore CS1998
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
-        await this.LoadGameClientDefinitionsAsync(persistenceContext);
-        foreach (var gameServerDefinition in await persistenceContext.GetAsync<GameServerDefinition>())
+        await this.LoadGameClientDefinitionsAsync(persistenceContext).ConfigureAwait(false);
+        foreach (var gameServerDefinition in await persistenceContext.GetAsync<GameServerDefinition>().ConfigureAwait(false))
         {
             using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
             var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager);
@@ -113,7 +113,7 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
     {
         foreach (var gameServer in this._gameServers.Values)
         {
-            await gameServer.StopAsync(cancellationToken);
+            await gameServer.StopAsync(cancellationToken).ConfigureAwait(false);
             this._servers.Remove(gameServer);
         }
 
@@ -122,7 +122,7 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
 
     private async ValueTask LoadGameClientDefinitionsAsync(IContext persistenceContext)
     {
-        var versions = (await persistenceContext.GetAsync<GameClientDefinition>()).ToList();
+        var versions = (await persistenceContext.GetAsync<GameClientDefinition>().ConfigureAwait(false)).ToList();
         foreach (var gameClientDefinition in versions)
         {
             ClientVersionResolver.Register(

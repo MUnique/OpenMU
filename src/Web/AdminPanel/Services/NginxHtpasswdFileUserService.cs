@@ -62,7 +62,7 @@ public class NginxHtpasswdFileUserService : UserServiceBase
         var accountsRemaining = lines.Count(l => !l.StartsWith('#') && l.Contains(':'));
         if (accountsRemaining > 0)
         {
-            await File.WriteAllLinesAsync(HtpasswdFilePath, lines);
+            await File.WriteAllLinesAsync(HtpasswdFilePath, lines).ConfigureAwait(false);
         }
         else
         {
@@ -87,7 +87,7 @@ public class NginxHtpasswdFileUserService : UserServiceBase
             if (line.StartsWith(userPrefix, StringComparison.InvariantCulture))
             {
                 lines[i] = this.GenerateEntry(user, newPassword);
-                await File.WriteAllLinesAsync(HtpasswdFilePath, lines);
+                await File.WriteAllLinesAsync(HtpasswdFilePath, lines).ConfigureAwait(false);
                 break;
             }
         }

@@ -84,7 +84,7 @@ public class FruitConsumeHandler : BaseConsumeHandler
             await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(p => p.ShowResponseAsync(isAdding ? FruitConsumptionResult.PlusFailed : FruitConsumptionResult.MinusFailed, 0, statAttribute)).ConfigureAwait(false);
         }
 
-        await this.ConsumeSourceItemAsync(player, item);
+        await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
         return true;
     }
 

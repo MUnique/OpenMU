@@ -21,8 +21,8 @@ public class TradeButtonAction : BaseTradeAction
     public async ValueTask TradeButtonChangedAsync(ITrader trader, TradeButtonState tradeButtonState)
     {
         using var loggerScope = (trader as Player)?.Logger.BeginScope(this.GetType());
-        var success = (tradeButtonState == TradeButtonState.Checked && trader.PlayerState.TryAdvanceTo(PlayerState.TradeButtonPressed))
-                      || (tradeButtonState == TradeButtonState.Unchecked && trader.PlayerState.TryAdvanceTo(PlayerState.TradeOpened));
+        var success = (tradeButtonState == TradeButtonState.Checked && await trader.PlayerState.TryAdvanceToAsync(PlayerState.TradeButtonPressed).ConfigureAwait(false))
+                      || (tradeButtonState == TradeButtonState.Unchecked && await trader.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false));
         if (!success)
         {
             return;
@@ -34,11 +34,11 @@ public class TradeButtonAction : BaseTradeAction
             && tradingPartner is not null
             && tradingPartner.PlayerState.CurrentState == PlayerState.TradeButtonPressed)
         {
-            TradeResult result = await this.InternalFinishTradeAsync(trader, tradingPartner);
+            TradeResult result = await this.InternalFinishTradeAsync(trader, tradingPartner).ConfigureAwait(false);
             if (result != TradeResult.Success)
             {
-                await this.CancelTradeAsync(tradingPartner);
-                await this.CancelTradeAsync(trader);
+                await this.CancelTradeAsync(tradingPartner).ConfigureAwait(false);
+                await this.CancelTradeAsync(trader).ConfigureAwait(false);
                 (trader as Player)?.Logger.LogDebug($"Cancelled the trade because of unfinished state. trader: {trader.Name}, partner:{tradingPartner.Name}");
             }
 
@@ -59,7 +59,7 @@ public class TradeButtonAction : BaseTradeAction
     {
         if (trader.TradingPartner?.TemporaryStorage?.Items.Any() ?? false)
         {
-            return await trader.Inventory!.TryTakeAllAsync(trader.TradingPartner.TemporaryStorage!);
+            return await trader.Inventory!.TryTakeAllAsync(trader.TradingPartner.TemporaryStorage!).ConfigureAwait(false);
         }
 
         return true;
@@ -67,8 +67,8 @@ public class TradeButtonAction : BaseTradeAction
 
     private async ValueTask<TradeResult> InternalFinishTradeAsync(ITrader trader, ITrader tradingPartner)
     {
-        using var context = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld);
-        using var partnerContext = tradingPartner.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld);
+        using var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        using var partnerContext = await tradingPartner.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
         using var itemContext = trader.GameContext.PersistenceContextProvider.CreateNewTradeContext();
         if (!context.Allowed || !partnerContext.Allowed)
         {
@@ -83,10 +83,10 @@ public class TradeButtonAction : BaseTradeAction
         this.AttachItemsToPersistenceContext(traderItems, itemContext);
         this.AttachItemsToPersistenceContext(tradePartnerItems, itemContext);
 
-        if (!await TryAddItemsOfTradingPartnerAsync(trader) || !await TryAddItemsOfTradingPartnerAsync(tradingPartner))
+        if (!await TryAddItemsOfTradingPartnerAsync(trader).ConfigureAwait(false) || !await TryAddItemsOfTradingPartnerAsync(tradingPartner).ConfigureAwait(false))
         {
-            await this.SendMessageAsync(trader, "Inventory is full.");
-            await this.SendMessageAsync(tradingPartner, "Inventory is full.");
+            await this.SendMessageAsync(trader, "Inventory is full.").ConfigureAwait(false);
+            await this.SendMessageAsync(tradingPartner, "Inventory is full.").ConfigureAwait(false);
             return TradeResult.FailedByFullInventory;
         }
 
@@ -94,7 +94,7 @@ public class TradeButtonAction : BaseTradeAction
         {
             this.DetachItemsFromPersistenceContext(traderItems, trader.PersistenceContext);
             this.DetachItemsFromPersistenceContext(tradePartnerItems, trader.TradingPartner!.PersistenceContext);
-            await itemContext.SaveChangesAsync();
+            await itemContext.SaveChangesAsync().ConfigureAwait(false);
             this.AttachItemsToPersistenceContext(traderItems, trader.TradingPartner.PersistenceContext);
             this.AttachItemsToPersistenceContext(tradePartnerItems, trader.PersistenceContext);
             trader.Money += trader.TradingPartner.TradingMoney;
@@ -109,8 +109,8 @@ public class TradeButtonAction : BaseTradeAction
         }
         catch (Exception exception)
         {
-            await this.SendMessageAsync(trader, "An unexpected error occured during closing the trade.");
-            await this.SendMessageAsync(tradingPartner, "An unexpected error occured during closing the trade.");
+            await this.SendMessageAsync(trader, "An unexpected error occured during closing the trade.").ConfigureAwait(false);
+            await this.SendMessageAsync(tradingPartner, "An unexpected error occured during closing the trade.").ConfigureAwait(false);
             context.Allowed = false;
             partnerContext.Allowed = false;
             (trader as Player)?.Logger.LogError(exception, $"An unexpected error occured during closing the trade. trader: {trader.Name}, partner:{tradingPartner.Name}");

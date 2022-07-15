@@ -31,7 +31,7 @@ internal abstract class TalkNpcHandlerPlugInBase : IPacketHandlerPlugIn
         TalkToNpcRequest message = packet;
         if (player.CurrentMap?.GetObject(message.NpcId) is NonPlayerCharacter npc)
         {
-            await this.TalkNpcAction.TalkToNpcAsync(player, npc);
+            await this.TalkNpcAction.TalkToNpcAsync(player, npc).ConfigureAwait(false);
         }
     }
 }

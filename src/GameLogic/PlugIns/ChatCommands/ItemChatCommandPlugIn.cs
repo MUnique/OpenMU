@@ -34,8 +34,8 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
             var item = CreateItem(gameMaster, arguments);
             var dropCoordinates = gameMaster.CurrentMap.Terrain.GetRandomCoordinate(gameMaster.Position, 1);
             var droppedItem = new DroppedItem(item, dropCoordinates, gameMaster.CurrentMap, gameMaster);
-            await gameMaster.CurrentMap.AddAsync(droppedItem);
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {item} created");
+            await gameMaster.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
+            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {item} created").ConfigureAwait(false);
         }
     }
 

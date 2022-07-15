@@ -29,12 +29,12 @@ internal class PartyRequestHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PartyInviteRequest message = packet;
-        var toRequest = await player.GetObservingPlayerWithIdAsync(message.TargetPlayerId);
+        var toRequest = await player.GetObservingPlayerWithIdAsync(message.TargetPlayerId).ConfigureAwait(false);
         if (toRequest is null)
         {
             return;
         }
 
-        await this._action.HandlePartyRequestAsync(player, toRequest);
+        await this._action.HandlePartyRequestAsync(player, toRequest).ConfigureAwait(false);
     }
 }

@@ -35,6 +35,6 @@ public class ShowSkillAnimationPlugIn : JsViewPlugInBase, IShowSkillAnimationPlu
     /// <inheritdoc />
     public async ValueTask ShowSkillAnimationAsync(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied)
     {
-        await this.InvokeAsync(attacker.Id, target?.Id ?? 0, skillNumber);
+        await this.InvokeAsync(attacker.Id, target?.Id ?? 0, skillNumber).ConfigureAwait(false);
     }
 }

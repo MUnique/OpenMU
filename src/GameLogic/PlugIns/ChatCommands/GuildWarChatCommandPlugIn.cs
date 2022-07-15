@@ -30,6 +30,6 @@ public class GuildWarChatCommandPlugIn : ChatCommandPlugInBase<GuildWarChatComma
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player guildMaster, GuildWarChatCommandArgs arguments)
     {
-        await this._action.RequestWarAsync(guildMaster, arguments.GuildName);
+        await this._action.RequestWarAsync(guildMaster, arguments.GuildName).ConfigureAwait(false);
     }
 }

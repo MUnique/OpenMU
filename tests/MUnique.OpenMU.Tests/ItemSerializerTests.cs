@@ -31,8 +31,8 @@ public class ItemSerializerTests
     public async ValueTask SetupAsync()
     {
         this._contextProvider = new InMemoryPersistenceContextProvider();
-        await new DataInitialization(this._contextProvider, new NullLoggerFactory()).CreateInitialDataAsync(3, true);
-        this._gameConfiguration = (await this._contextProvider.CreateNewConfigurationContext().GetAsync<GameConfiguration>()).First();
+        await new DataInitialization(this._contextProvider, new NullLoggerFactory()).CreateInitialDataAsync(3, true).ConfigureAwait(false);
+        this._gameConfiguration = (await this._contextProvider.CreateNewConfigurationContext().GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
         this._itemSerializer = new ItemSerializer();
     }
 

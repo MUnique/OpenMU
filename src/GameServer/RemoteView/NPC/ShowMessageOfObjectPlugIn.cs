@@ -28,6 +28,6 @@ public class ShowMessageOfObjectPlugIn : IShowMessageOfObjectPlugIn
     /// <inheritdoc />
     public async ValueTask ShowMessageOfObjectAsync(string message, IIdentifiable sender)
     {
-        await this._player.Connection.SendObjectMessageAsync(sender.Id, message);
+        await this._player.Connection.SendObjectMessageAsync(sender.Id, message).ConfigureAwait(false);
     }
 }

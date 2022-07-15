@@ -41,7 +41,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
             return;
         }
 
-        var (shopPlayers, guildPlayers) = await this.SendCharactersAsync(newPlayers, isSpawned);
+        var (shopPlayers, guildPlayers) = await this.SendCharactersAsync(newPlayers, isSpawned).ConfigureAwait(false);
 
         if (shopPlayers != null)
         {
@@ -70,11 +70,11 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         {
             if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)
             {
-                await this.SendCharacterAsync(newPlayer, isSpawned);
+                await this.SendCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
             }
             else
             {
-                await this.SendTransformedCharacterAsync(newPlayer, isSpawned);
+                await this.SendTransformedCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
             }
 
             if (newPlayer.ShopStorage?.StoreOpen ?? false)

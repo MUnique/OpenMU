@@ -29,7 +29,7 @@ internal abstract class CharacterWalkBaseHandlerPlugIn : IPacketHandlerPlugIn
         }
 
         WalkRequest request = packet;
-        await this.WalkAsync(player, request, new Point(request.SourceX, request.SourceY));
+        await this.WalkAsync(player, request, new Point(request.SourceX, request.SourceY)).ConfigureAwait(false);
     }
 
     private async ValueTask WalkAsync(Player player, WalkRequest request, Point sourcePoint)
@@ -40,7 +40,7 @@ internal abstract class CharacterWalkBaseHandlerPlugIn : IPacketHandlerPlugIn
             var steps = this.GetSteps(sourcePoint, this.DecodePayload(request, out _));
             var target = this.GetTarget(steps.Span, sourcePoint);
 
-            await player.WalkToAsync(target, steps);
+            await player.WalkToAsync(target, steps).ConfigureAwait(false);
         }
         else
         {

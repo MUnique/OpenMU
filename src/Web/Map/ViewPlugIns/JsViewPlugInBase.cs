@@ -59,7 +59,7 @@ public abstract class JsViewPlugInBase
         {
             try
             {
-                await this.JsRuntime.InvokeVoidAsync(this.JsMethodName, this.CancellationToken, args);
+                await this.JsRuntime.InvokeVoidAsync(this.JsMethodName, this.CancellationToken, args).ConfigureAwait(false);
                 tryAgain = false;
             }
             catch (TaskCanceledException)

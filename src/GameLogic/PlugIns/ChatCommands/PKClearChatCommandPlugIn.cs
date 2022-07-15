@@ -37,9 +37,9 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
 
         if (!targetPlayer.Name.Equals(gameMaster.Name))
         {
-            await this.ShowMessageToAsync(targetPlayer, $"Your player kills have been cleaned by the game master.");
+            await this.ShowMessageToAsync(targetPlayer, $"Your player kills have been cleaned by the game master.").ConfigureAwait(false);
         }
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {targetPlayer.Name} kills have been cleaned.");
+        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {targetPlayer.Name} kills have been cleaned.").ConfigureAwait(false);
     }
 }

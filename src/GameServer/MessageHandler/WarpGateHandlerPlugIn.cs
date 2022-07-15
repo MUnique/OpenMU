@@ -45,7 +45,7 @@ internal class WarpGateHandlerPlugIn : IPacketHandlerPlugIn
 
         if (gateNumber == 0)
         {
-            await this._teleportAction.TryTeleportWithSkillAsync(player, new Point(request.TeleportTargetX, request.TeleportTargetY));
+            await this._teleportAction.TryTeleportWithSkillAsync(player, new Point(request.TeleportTargetX, request.TeleportTargetY)).ConfigureAwait(false);
             return;
         }
 
@@ -56,6 +56,6 @@ internal class WarpGateHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        await this._warpAction.EnterGateAsync(player, gate);
+        await this._warpAction.EnterGateAsync(player, gate).ConfigureAwait(false);
     }
 }

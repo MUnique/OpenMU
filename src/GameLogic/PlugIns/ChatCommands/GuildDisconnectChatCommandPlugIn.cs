@@ -27,7 +27,7 @@ public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisco
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, GuildDisconnectChatCommandArgs arguments)
     {
-        var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!);
+        var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!).ConfigureAwait(false);
         if (gameMaster.GameContext is not IGameServerContext gameServerContext)
         {
             return;
@@ -35,12 +35,12 @@ public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisco
 
         await gameServerContext.ForEachGuildPlayerAsync(guildId, async guildPlayer =>
         {
-            await guildPlayer.DisconnectAsync();
+            await guildPlayer.DisconnectAsync().ConfigureAwait(false);
 
             if (!guildPlayer.Name.Equals(gameMaster.Name))
             {
-                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been disconnected.");
+                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been disconnected.").ConfigureAwait(false);
             }
-        });
+        }).ConfigureAwait(false);
     }
 }

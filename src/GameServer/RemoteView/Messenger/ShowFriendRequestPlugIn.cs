@@ -27,6 +27,6 @@ public class ShowFriendRequestPlugIn : IShowFriendRequestPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowFriendRequestAsync(string requester)
     {
-        await this._player.Connection.SendFriendRequestAsync(requester);
+        await this._player.Connection.SendFriendRequestAsync(requester).ConfigureAwait(false);
     }
 }

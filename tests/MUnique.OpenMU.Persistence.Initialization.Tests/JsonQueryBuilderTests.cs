@@ -19,6 +19,15 @@ using GameConfiguration = MUnique.OpenMU.Persistence.EntityFramework.Model.GameC
 internal class JsonQueryBuilderTests
 {
     /// <summary>
+    /// Sets up this instance.
+    /// </summary>
+    [OneTimeSetUp]
+    public void Setup()
+    {
+        ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+    }
+
+    /// <summary>
     /// Tests the json query builder for the <see cref="GameConfiguration"/> type.
     /// </summary>
     [Test]
@@ -84,7 +93,7 @@ internal class JsonQueryBuilderTests
         stopwatch.Start();
         try
         {
-            result = await builder.LoadAllObjectsAsync<EntityFramework.Model.GameConfiguration>(installationContext);
+            result = await builder.LoadAllObjectsAsync<EntityFramework.Model.GameConfiguration>(installationContext).ConfigureAwait(false);
             result = result.ToList();
         }
         finally

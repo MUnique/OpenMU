@@ -84,7 +84,7 @@ public class EntityFrameworkContextBase : IContext
         // Otherwise, we can accept them.
         var acceptChanges = this._changePublisher is null;
 
-        await this.Context.SaveChangesAsync(acceptChanges);
+        await this.Context.SaveChangesAsync(acceptChanges).ConfigureAwait(false);
 
         return true;
     }
@@ -150,7 +150,7 @@ public class EntityFrameworkContextBase : IContext
     {
         using var l = await this._lock.LockAsync();
         using var context = this.RepositoryManager.ContextStack.UseContext(this);
-        return await this.RepositoryManager.GetRepository<T>().GetByIdAsync(id);
+        return await this.RepositoryManager.GetRepository<T>().GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -159,7 +159,7 @@ public class EntityFrameworkContextBase : IContext
     {
         using var l = await this._lock.LockAsync();
         using var context = this.RepositoryManager.ContextStack.UseContext(this);
-        return await this.RepositoryManager.GetRepository<T>().GetAllAsync();
+        return await this.RepositoryManager.GetRepository<T>().GetAllAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -229,13 +229,13 @@ public class EntityFrameworkContextBase : IContext
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        await this._changePublisher.ConfigurationAddedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity);
+                        await this._changePublisher.ConfigurationAddedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity).ConfigureAwait(false);
                         break;
                     case EntityState.Deleted:
-                        await this._changePublisher.ConfigurationRemovedAsync(entry.Metadata.ClrType, entry.Entity.GetId());
+                        await this._changePublisher.ConfigurationRemovedAsync(entry.Metadata.ClrType, entry.Entity.GetId()).ConfigureAwait(false);
                         break;
                     case EntityState.Modified:
-                        await this._changePublisher.ConfigurationChangedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity);
+                        await this._changePublisher.ConfigurationChangedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity).ConfigureAwait(false);
                         break;
                     default:
                         // no change publishing required.

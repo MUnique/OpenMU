@@ -28,14 +28,14 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
             // Old Target out of Range?
             if (!this._currentTarget.IsActive()
                 || this._currentTarget.IsAtSafezone()
-                || !await this.IsTargetInObserversAsync())
+                || !await this.IsTargetInObserversAsync().ConfigureAwait(false))
             {
-                this._currentTarget = await this.SearchNextTargetAsync();
+                this._currentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
             }
         }
         else
         {
-            this._currentTarget = await this.SearchNextTargetAsync();
+            this._currentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
         }
 
         // no target?
@@ -48,7 +48,7 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
         ushort dist = (ushort)this._currentTarget.GetDistanceTo(this.Trap);
         if (this.Trap.Definition.AttackRange + 1 >= dist)
         {
-            await this.Trap.AttackAsync(this._currentTarget);  // yes, attack
+            await this.Trap.AttackAsync(this._currentTarget).ConfigureAwait(false);  // yes, attack
         }
     }
 

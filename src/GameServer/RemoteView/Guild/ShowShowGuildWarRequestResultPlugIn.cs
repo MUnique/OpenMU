@@ -27,6 +27,6 @@ public class ShowShowGuildWarRequestResultPlugIn : IShowShowGuildWarRequestResul
     /// <inheritdoc/>
     public async ValueTask ShowResultAsync(GameLogic.Views.Guild.GuildWarRequestResult result)
     {
-        await this._player.Connection.SendGuildWarRequestResultAsync(result.Convert());
+        await this._player.Connection.SendGuildWarRequestResultAsync(result.Convert()).ConfigureAwait(false);
     }
 }

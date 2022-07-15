@@ -22,16 +22,16 @@ public class LogoutAction
         player.Party?.KickMySelfAsync(player);
         player.SelectedCharacter = null;
         player.MagicEffectList.ClearAllEffects();
-        player.PersistenceContext.SaveChanges();
+        await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
         if (logoutType == LogoutType.CloseGame)
         {
-            await player.DisconnectAsync();
+            await player.DisconnectAsync().ConfigureAwait(false);
         }
         else
         {
             if (logoutType == LogoutType.BackToCharacterSelection)
             {
-                player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
+                await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
             }
 
             await player.InvokeViewPlugInAsync<ILogoutPlugIn>(p => p.LogoutAsync(logoutType)).ConfigureAwait(false);

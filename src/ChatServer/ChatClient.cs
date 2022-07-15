@@ -141,11 +141,11 @@ internal class ChatClient : IChatClient
         {
             if (updateType == ChatRoomClientUpdateType.Joined)
             {
-                await this._connection.SendChatRoomClientJoinedAsync(updatedClientId, updatedClientName);
+                await this._connection.SendChatRoomClientJoinedAsync(updatedClientId, updatedClientName).ConfigureAwait(false);
             }
             else
             {
-                await this._connection.SendChatRoomClientLeftAsync(updatedClientId, updatedClientName);
+                await this._connection.SendChatRoomClientLeftAsync(updatedClientId, updatedClientName).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -166,13 +166,13 @@ internal class ChatClient : IChatClient
         this._logger.LogDebug($"Client {this._connection} is going to be disconnected.");
         if (this._room != null)
         {
-            await this._room.LeaveAsync(this);
+            await this._room.LeaveAsync(this).ConfigureAwait(false);
             this._room = null;
         }
 
         if (this._connection is { } connection)
         {
-            await connection.DisconnectAsync();
+            await connection.DisconnectAsync().ConfigureAwait(false);
         }
 
         this._connection = null;
@@ -209,7 +209,7 @@ internal class ChatClient : IChatClient
         switch (this._packetBuffer[2])
         {
             case 0:
-                await this.AuthenticateAsync(packet);
+                await this.AuthenticateAsync(packet).ConfigureAwait(false);
                 break;
             case 1:
             case 2:
@@ -226,7 +226,7 @@ internal class ChatClient : IChatClient
                         this._logger.LogDebug($"Message received from {this.Index}: \"{message}\"");
                     }
 
-                    await this._room.SendMessageAsync(this.Index, message);
+                    await this._room.SendMessageAsync(this.Index, message).ConfigureAwait(false);
                 }
 
                 break;
@@ -239,7 +239,7 @@ internal class ChatClient : IChatClient
 
             case var value:
                 this._logger.LogError($"Received unknown packet of type {value}: {packet.Span.AsString()}");
-                await this.LogOffAsync();
+                await this.LogOffAsync().ConfigureAwait(false);
                 break;
         }
     }
@@ -270,7 +270,7 @@ internal class ChatClient : IChatClient
         }
 
         this.AuthenticationToken = tokenAsString;
-        if (await requestedRoom.TryJoinAsync(this))
+        if (await requestedRoom.TryJoinAsync(this).ConfigureAwait(false))
         {
             this._room = requestedRoom;
         }

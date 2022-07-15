@@ -38,7 +38,7 @@ public class GuildMasterAnswerAction
         {
             await player.InvokeViewPlugInAsync<IShowGuildCreationDialogPlugIn>(p => p.ShowGuildCreationDialogAsync()).ConfigureAwait(false);
         }
-        else if (player.OpenedNpc?.Definition.NpcWindow == NpcWindow.GuildMaster && player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld))
+        else if (player.OpenedNpc?.Definition.NpcWindow == NpcWindow.GuildMaster && await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
         {
             player.OpenedNpc = null;
         }

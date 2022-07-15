@@ -446,7 +446,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
-        await this.DecreaseItemDurabilityAfterHitAsync(hitInfo);
+        await this.DecreaseItemDurabilityAfterHitAsync(hitInfo).ConfigureAwait(false);
 
         (attacker as Player)?.AfterHitTargetAsync();
     }
@@ -457,7 +457,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public async ValueTask AfterHitTargetAsync()
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
-        await this.DecreaseWeaponDurabilityAfterHitAsync();
+        await this.DecreaseWeaponDurabilityAfterHitAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -487,7 +487,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.IsTeleporting = true;
         try
         {
-            await this._walker.StopAsync();
+            await this._walker.StopAsync().ConfigureAwait(false);
 
             var previous = this.Position;
             this.Position = target;
@@ -508,7 +508,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 this.Position = previous;
                 if (this.CurrentMap is { } map)
                 {
-                    await map.MoveAsync(this, target, this._moveLock, MoveType.Teleport);
+                    await map.MoveAsync(this, target, this._moveLock, MoveType.Teleport).ConfigureAwait(false);
                 }
             }
         }
@@ -678,7 +678,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="gate">The gate to which the player should be moved.</param>
     public async ValueTask WarpToAsync(ExitGate gate)
     {
-        if (!await this.TryRemoveFromCurrentMapAsync())
+        if (!await this.TryRemoveFromCurrentMapAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -688,7 +688,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (this.PlayerState.CurrentState != GameLogic.PlayerState.Disconnected)
         {
-            await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync());
+            await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
         }
 
         // after this, the Client will send us a F3 12 packet, to tell us it loaded
@@ -699,7 +699,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Moves the player to the safe zone.
     /// </summary>
-    public async ValueTask WarpToSafezoneAsync() => await this.WarpToAsync(await this.GetSpawnGateOfCurrentMapAsync());
+    public async ValueTask WarpToSafezoneAsync() => await this.WarpToAsync(await this.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
     /// <summary>
     /// Respawns the player to the specified gate.
@@ -707,7 +707,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="gate">The gate at which the player should be respawned.</param>
     public async ValueTask RespawnAtAsync(ExitGate gate)
     {
-        if (!await this.TryRemoveFromCurrentMapAsync())
+        if (!await this.TryRemoveFromCurrentMapAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -720,16 +720,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             // Older clients use separate packet for the respawn, while newer don't.
             // It requires a slightly different logic.
-            this.CurrentMap = await this.GameContext.GetMapAsync(this.SelectedCharacter!.CurrentMap!.Number.ToUnsigned()) ?? throw new InvalidOperationException("Current map not found.");
-            await respawnPlugIn.RespawnAsync();
-            this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
+            this.CurrentMap = await this.GameContext.GetMapAsync(this.SelectedCharacter!.CurrentMap!.Number.ToUnsigned()).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
+            await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
+            await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
             this.IsAlive = true;
-            await this.CurrentMap!.AddAsync(this);
+            await this.CurrentMap!.AddAsync(this).ConfigureAwait(false);
         }
         else
         {
             this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
-            await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync());
+            await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
             // the map and is ready to receive the new meet player/monster etc.
@@ -755,16 +755,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
         else
         {
-            this.CurrentMap = await this.GameContext.GetMapAsync(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned());
+            this.CurrentMap = await this.GameContext.GetMapAsync(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned()).ConfigureAwait(false);
         }
 
-        this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.EnteredWorld);
+        await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
         this.IsAlive = true;
-        await this.CurrentMap!.AddAsync(this);
+        await this.CurrentMap!.AddAsync(this).ConfigureAwait(false);
 
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
-            await this.CurrentMap.AddAsync(summon);
+            await this.CurrentMap.AddAsync(summon).ConfigureAwait(false);
         }
     }
 
@@ -792,11 +792,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (isMasterClass)
         {
-            await this.AddMasterExperienceAsync((int)experience, killedObject);
+            await this.AddMasterExperienceAsync((int)experience, killedObject).ConfigureAwait(false);
         }
         else
         {
-            await this.AddExperienceAsync((int)experience, killedObject);
+            await this.AddExperienceAsync((int)experience, killedObject).ConfigureAwait(false);
         }
 
         return (int)experience;
@@ -900,8 +900,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public async ValueTask MoveAsync(Point target)
     {
         this.Logger.LogDebug("MoveAsync: Player is moving to {0}", target);
-        await this._walker.StopAsync();
-        await this.CurrentMap!.MoveAsync(this, target, this._moveLock, MoveType.Instant);
+        await this._walker.StopAsync().ConfigureAwait(false);
+        await this.CurrentMap!.MoveAsync(this, target, this._moveLock, MoveType.Instant).ConfigureAwait(false);
         this.Logger.LogDebug("MoveAsync: Observer Count: {0}", this.Observers.Count);
     }
 
@@ -918,12 +918,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        await this._walker.StopAsync();
+        await this._walker.StopAsync().ConfigureAwait(false);
         if (currentMap.Terrain.WalkMap[target.X, target.Y])
         {
             this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
-            await this._walker.WalkToAsync(target, steps);
-            await currentMap.MoveAsync(this, target, this._moveLock, MoveType.Walk);
+            await this._walker.WalkToAsync(target, steps).ConfigureAwait(false);
+            await currentMap.MoveAsync(this, target, this._moveLock, MoveType.Walk).ConfigureAwait(false);
             this.Logger.LogDebug("WalkToAsync: Observer Count: {0}", this.Observers.Count);
         }
         else
@@ -975,7 +975,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
             await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
 
-            await this.RegenerateHeroStateAsync();
+            await this.RegenerateHeroStateAsync().ConfigureAwait(false);
         }
         catch (InvalidOperationException)
         {
@@ -996,20 +996,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask DisconnectAsync()
     {
-        if (this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.Disconnected))
+        if (await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Disconnected).ConfigureAwait(false))
         {
             try
             {
-                await this.InternalDisconnectAsync();
+                await this.InternalDisconnectAsync().ConfigureAwait(false);
                 if (this.PlayerDisconnected is { } disconnectedEventHandler)
                 {
                     this.PlayerDisconnected = null;
-                    await disconnectedEventHandler(this);
+                    await disconnectedEventHandler(this).ConfigureAwait(false);
                 }
             }
             finally
             {
-                this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.Finished);
+                await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Finished).ConfigureAwait(false);
             }
         }
     }
@@ -1142,7 +1142,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager);
         this.Summon = (monster, intelligence);
         monster.Initialize();
-        await gameMap.AddAsync(monster);
+        await gameMap.AddAsync(monster).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1174,19 +1174,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
 
         this.PersistenceContext.Dispose();
-        await this.RemoveFromCurrentMapAsync();
+        await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         if (this.Party is { } party)
         {
-            await party.KickMySelfAsync(this);
+            await party.KickMySelfAsync(this).ConfigureAwait(false);
         }
 
-        await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync();
+        await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
         this._observerToWorldViewAdapter.Dispose();
         this._walker.Dispose();
         this.MagicEffectList.Dispose();
     
 
-        await base.DisposeAsyncCore();
+        await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1208,13 +1208,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (moveToNextSafezone)
         {
-            await this.WarpToSafezoneAsync();
+            await this.WarpToSafezoneAsync().ConfigureAwait(false);
         }
 
-        await this.RemoveFromCurrentMapAsync();
+        await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         if (this.Party is { } party)
         {
-            await party.KickMySelfAsync(this);
+            await party.KickMySelfAsync(this).ConfigureAwait(false);
         }
     }
 
@@ -1235,14 +1235,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
-        await currentMap.RemoveAsync(this);
+        await currentMap.RemoveAsync(this).ConfigureAwait(false);
         this.IsAlive = false;
         this.IsTeleporting = false;
-        await this._walker.StopAsync();
-        await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync();
+        await this._walker.StopAsync().ConfigureAwait(false);
+        await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
-            await currentMap.RemoveAsync(summon);
+            await currentMap.RemoveAsync(summon).ConfigureAwait(false);
         }
 
         return true;
@@ -1266,7 +1266,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         if (this.CurrentMap != null)
         {
-            await this.CurrentMap.RemoveAsync(this);
+            await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
             this.CurrentMap = null;
         }
     }
@@ -1337,7 +1337,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         var spawnTargetMapDefinition = this.CurrentMap.Definition.SafezoneMap ?? this.CurrentMap.Definition;
-        var targetMap = await this.GameContext.GetMapAsync((ushort)spawnTargetMapDefinition.Number, false);
+        var targetMap = await this.GameContext.GetMapAsync((ushort)spawnTargetMapDefinition.Number, false).ConfigureAwait(false);
         return targetMap?.SafeZoneSpawnGate
                ?? spawnTargetMapDefinition.GetSafezoneGate()
                ?? throw new InvalidOperationException($"Game map {spawnTargetMapDefinition} has no spawn gate.");
@@ -1370,7 +1370,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (this.Attributes[Stats.CurrentHealth] < 1)
         {
             this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
-            await this.OnDeathAsync(attacker);
+            await this.OnDeathAsync(attacker).ConfigureAwait(false);
         }
 
         if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison))
@@ -1390,10 +1390,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             _ = Task.Run(async () =>
             {
-                await Task.Delay(500);
+                await Task.Delay(500).ConfigureAwait(false);
                 if (attackableAttacker.IsAlive)
                 {
-                    await attackableAttacker.ReflectDamageAsync(this, (uint)reflectedDamage);
+                    await attackableAttacker.ReflectDamageAsync(this, (uint)reflectedDamage).ConfigureAwait(false);
                 }
             });
         }
@@ -1401,12 +1401,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask OnDeathAsync(IAttacker killer)
     {
-        if (!this.PlayerState.TryAdvanceTo(GameLogic.PlayerState.Dead))
+        if (!await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
         {
             return;
         }
 
-        await this._walker.StopAsync();
+        await this._walker.StopAsync().ConfigureAwait(false);
         this.IsAlive = false;
         this._respawnAfterDeathCts = new CancellationTokenSource();
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, killer), true).ConfigureAwait(false);
@@ -1414,7 +1414,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (killer is Player killerAfterKilled
             && !(killerAfterKilled.GuildWarContext?.Score is { } score && score == this.GuildWarContext?.Score))
         {
-            await killerAfterKilled.AfterKilledPlayerAsync();
+            await killerAfterKilled.AfterKilledPlayerAsync().ConfigureAwait(false);
         }
 
         // TODO: Drop items
@@ -1424,13 +1424,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
             if (this.Summon?.Item1 is { } summon)
             {
-                await summon.CurrentMap.RemoveAsync(summon);
+                await summon.CurrentMap.RemoveAsync(summon).ConfigureAwait(false);
                 summon.Dispose();
                 this.Summon = null;
             }
 
             this.SetReclaimableAttributesToMaximum();
-            await this.RespawnAtAsync(await this.GetSpawnGateOfCurrentMapAsync());
+            await this.RespawnAtAsync(await this.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         _ = RespawnAsync(this._respawnAfterDeathCts.Token);
@@ -1480,7 +1480,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes[Stats.AmmunitionAmount] = (float)(this.GetAmmunitionItem()?.Durability ?? 0);
         ammoAttribute.ValueChanged += this.OnAmmunitionAmountChanged;
 
-        await this.ClientReadyAfterMapChangeAsync();
+        await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
 
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
     }
@@ -1548,7 +1548,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 ammoItem.Durability = value;
                 if (ammoItem.Durability == 0)
                 {
-                    await this.Inventory!.RemoveItemAsync(ammoItem);
+                    await this.Inventory!.RemoveItemAsync(ammoItem).ConfigureAwait(false);
                     await this.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(ammoItem.ItemSlot)).ConfigureAwait(false);
                     this.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(ammoItem);
                 }
@@ -1585,12 +1585,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var randomArmorItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsDefensiveItem).SelectRandom();
         if (randomArmorItem is { })
         {
-            await this.DecreaseDefenseItemDurabilityAsync(randomArmorItem, hitInfo);
+            await this.DecreaseDefenseItemDurabilityAsync(randomArmorItem, hitInfo).ConfigureAwait(false);
         }
 
         if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is { } pet)
         {
-            await this.DecreaseDefenseItemDurabilityAsync(pet, hitInfo);
+            await this.DecreaseDefenseItemDurabilityAsync(pet, hitInfo).ConfigureAwait(false);
         }
     }
 

@@ -87,7 +87,7 @@ public sealed class Walker : IDisposable
 
         var cts = new CancellationTokenSource();
         this._walkCts = cts;
-        _ = Task.Run(async () => await this.WalkLoopAsync(cts.Token), cts.Token);
+        _ = Task.Run(async () => await this.WalkLoopAsync(cts.Token).ConfigureAwait(false), cts.Token);
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ public sealed class Walker : IDisposable
         while (!cancellationToken.IsCancellationRequested)
         {
             var sw = Stopwatch.StartNew();
-            await this.WalkStepAsync(cancellationToken);
+            await this.WalkStepAsync(cancellationToken).ConfigureAwait(false);
 
             var nextDelay = delay - lastOffset;
             if (nextDelay > TimeSpan.Zero)
@@ -203,7 +203,7 @@ public sealed class Walker : IDisposable
 
             if (stop)
             {
-                await this.StopAsync();
+                await this.StopAsync().ConfigureAwait(false);
                 return;
             }
 

@@ -30,6 +30,6 @@ public class QuestCancelRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         QuestCancelRequest request = packet;
-        await this._questCancelAction.CancelQuestAsync(player, (short)request.QuestGroup, (short)request.QuestNumber);
+        await this._questCancelAction.CancelQuestAsync(player, (short)request.QuestGroup, (short)request.QuestNumber).ConfigureAwait(false);
     }
 }

@@ -44,7 +44,7 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._appIds[serverId], nameof(IGameServer.FriendRequestAsync), new RequestArguments(requester, receiver));
+            await this._daprClient.InvokeMethodAsync(this._appIds[serverId], nameof(IGameServer.FriendRequestAsync), new RequestArguments(requester, receiver)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -58,7 +58,7 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceivedAsync), letter);
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceivedAsync), letter).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -74,7 +74,7 @@ public class FriendNotifier : IFriendNotifier
             // todo: find out if this is correct when logging out
             if (this._appIds.TryGetValue(playerServerId, out var gameServer))
             {
-                await this._daprClient.InvokeMethodAsync(gameServer, nameof(IGameServer.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, friendServerId));
+                await this._daprClient.InvokeMethodAsync(gameServer, nameof(IGameServer.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, friendServerId)).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -88,7 +88,7 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._appIds[serverId], nameof(IGameServer.ChatRoomCreatedAsync), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName));
+            await this._daprClient.InvokeMethodAsync(this._appIds[serverId], nameof(IGameServer.ChatRoomCreatedAsync), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -103,7 +103,7 @@ public class FriendNotifier : IFriendNotifier
         {
             if (this._appIds.TryGetValue(serverId, out var gameServer))
             {
-                await this._daprClient.InvokeMethodAsync(gameServer, nameof(IGameServer.InitializeMessengerAsync), initializationData);
+                await this._daprClient.InvokeMethodAsync(gameServer, nameof(IGameServer.InitializeMessengerAsync), initializationData).ConfigureAwait(false);
             }
         }
         catch (Exception ex)

@@ -108,7 +108,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
         item.Durability = 1;
         if (player.TemporaryStorage is { } temporaryStorage)
         {
-            await temporaryStorage!.AddItemAsync(item);
+            await temporaryStorage!.AddItemAsync(item).ConfigureAwait(false);
         }
 
         return new List<Item> { item };

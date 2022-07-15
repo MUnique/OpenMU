@@ -42,19 +42,19 @@ public class LogInHandlerPlugIn : ISubPacketHandlerPlugIn
             if (packet.Length > 28 + 3)
             {
                 LoginShortPassword message = packet;
-                await this.HandleLoginAsync(player, this.Decrypt(message.Username), this.Decrypt(message.Password), message.TickCount, ClientVersionResolver.Resolve(message.ClientVersion));
+                await this.HandleLoginAsync(player, this.Decrypt(message.Username), this.Decrypt(message.Password), message.TickCount, ClientVersionResolver.Resolve(message.ClientVersion)).ConfigureAwait(false);
             }
             else
             {
                 // we have some version like 0.75 which just uses three bytes as version identifier
                 Login075 message = packet;
-                await this.HandleLoginAsync(player, this.Decrypt(message.Username), this.Decrypt(message.Password), message.TickCount, ClientVersionResolver.Resolve(message.ClientVersion));
+                await this.HandleLoginAsync(player, this.Decrypt(message.Username), this.Decrypt(message.Password), message.TickCount, ClientVersionResolver.Resolve(message.ClientVersion)).ConfigureAwait(false);
             }
         }
         else
         {
             LoginLongPassword message = packet;
-            await this.HandleLoginAsync(player, this.Decrypt(message.Username), this.Decrypt(message.Password), message.TickCount, ClientVersionResolver.Resolve(message.ClientVersion));
+            await this.HandleLoginAsync(player, this.Decrypt(message.Username), this.Decrypt(message.Password), message.TickCount, ClientVersionResolver.Resolve(message.ClientVersion)).ConfigureAwait(false);
         }
     }
 
@@ -71,7 +71,7 @@ public class LogInHandlerPlugIn : ISubPacketHandlerPlugIn
             player.Logger.LogDebug($"User tries to log in. username:{username}, version:{version}, tickCount:{tickCount} ");
         }
 
-        await this._loginAction.LoginAsync(player, username, password);
+        await this._loginAction.LoginAsync(player, username, password).ConfigureAwait(false);
         if (player is RemotePlayer remotePlayer)
         {
             // Set Version in RemotePlayer so that the right plugins will be selected

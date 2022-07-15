@@ -47,16 +47,16 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
             {
                 if (!selectedCharacter.CanIncreaseStats())
                 {
-                    await player.ShowMessageAsync("Cancelled adding points. No more points available.");
+                    await player.ShowMessageAsync("Cancelled adding points. No more points available.").ConfigureAwait(false);
                     break;
                 }
 
-                await this._action.IncreaseStatsAsync(player, attribute);
+                await this._action.IncreaseStatsAsync(player, attribute).ConfigureAwait(false);
             }
         }
         catch (ArgumentException e)
         {
-            await player.ShowMessageAsync(e.Message);
+            await player.ShowMessageAsync(e.Message).ConfigureAwait(false);
         }
     }
 

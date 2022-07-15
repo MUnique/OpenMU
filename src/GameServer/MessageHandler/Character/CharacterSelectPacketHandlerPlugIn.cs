@@ -30,6 +30,6 @@ internal class CharacterSelectPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         SelectCharacter message = packet;
-        await this._characterSelectAction.SelectCharacterAsync(player, message.Name);
+        await this._characterSelectAction.SelectCharacterAsync(player, message.Name).ConfigureAwait(false);
     }
 }

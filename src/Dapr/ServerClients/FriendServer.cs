@@ -34,7 +34,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceivedAsync), letter);
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.LetterReceivedAsync), letter).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -47,7 +47,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.FriendResponseAsync), new FriendResponseArguments(characterName, friendName, accepted));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.FriendResponseAsync), new FriendResponseArguments(characterName, friendName, accepted)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -74,7 +74,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.SetPlayerVisibilityStateAsync), new PlayerFriendOnlineStateArguments(characterId, characterName, serverId, isVisible));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.SetPlayerVisibilityStateAsync), new PlayerFriendOnlineStateArguments(characterId, characterName, serverId, isVisible)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -87,7 +87,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(this.FriendRequestAsync), new RequestArguments(playerName, friendName));
+            return await this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(this.FriendRequestAsync), new RequestArguments(playerName, friendName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -101,7 +101,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.DeleteFriendAsync), new RequestArguments(name, friendName));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.DeleteFriendAsync), new RequestArguments(name, friendName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -114,7 +114,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateChatRoomAsync), new RequestArguments(playerName, friendName));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateChatRoomAsync), new RequestArguments(playerName, friendName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -127,7 +127,7 @@ public class FriendServer : IFriendServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<ChatRoomInvitationArguments, bool>(this._targetAppId, nameof(this.InviteFriendToChatRoomAsync), new ChatRoomInvitationArguments(selectedCharacterName, friendName, roomNumber));
+            return await this._daprClient.InvokeMethodAsync<ChatRoomInvitationArguments, bool>(this._targetAppId, nameof(this.InviteFriendToChatRoomAsync), new ChatRoomInvitationArguments(selectedCharacterName, friendName, roomNumber)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

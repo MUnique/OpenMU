@@ -29,11 +29,11 @@ public class DisconnectChatCommandPlugIn : ChatCommandPlugInBase<DisconnectChatC
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, DisconnectChatCommandArgs arguments)
     {
         var player = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
-        await player.DisconnectAsync();
+        await player.DisconnectAsync().ConfigureAwait(false);
 
         if (!player.Name.Equals(gameMaster.Name))
         {
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {player.Name} has been disconnected.");
+            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {player.Name} has been disconnected.").ConfigureAwait(false);
         }
     }
 }

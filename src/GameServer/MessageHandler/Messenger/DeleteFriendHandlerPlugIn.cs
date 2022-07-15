@@ -29,6 +29,6 @@ internal class DeleteFriendHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         FriendDelete message = packet;
-        await this._deleteAction.DeleteFriendAsync(player, message.FriendName);
+        await this._deleteAction.DeleteFriendAsync(player, message.FriendName).ConfigureAwait(false);
     }
 }

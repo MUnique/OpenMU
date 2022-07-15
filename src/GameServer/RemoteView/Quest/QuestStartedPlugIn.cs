@@ -41,14 +41,14 @@ public class QuestStartedPlugIn : IQuestStartedPlugIn
 
         if (quest.Group == QuestConstants.LegacyQuestGroup)
         {
-            await this._player.Connection.SendLegacySetQuestStateResponseAsync((byte)quest.Number, 0, this._player.GetLegacyQuestStateByte());
+            await this._player.Connection.SendLegacySetQuestStateResponseAsync((byte)quest.Number, 0, this._player.GetLegacyQuestStateByte()).ConfigureAwait(false);
         }
         else
         {
             var state = this._player.GetQuestState(quest.Group);
             if (state?.ActiveQuest == quest)
             {
-                await this._player.Connection.SendQuestStepInfoAsync((ushort)quest.Number, (ushort)quest.Group);
+                await this._player.Connection.SendQuestStepInfoAsync((ushort)quest.Number, (ushort)quest.Group).ConfigureAwait(false);
                 await this._player.InvokeViewPlugInAsync<IQuestProgressPlugIn>(p => p.ShowQuestProgressAsync(quest, true)).ConfigureAwait(false);
             }
         }

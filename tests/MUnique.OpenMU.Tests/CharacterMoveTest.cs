@@ -24,7 +24,7 @@ public class CharacterMoveTest
     [Test]
     public async ValueTask TestWalkTargetIsCorrectAsync()
     {
-        var player = await this.DoTheWalkAsync();
+        var player = await this.DoTheWalkAsync().ConfigureAwait(false);
         Assert.That(player.WalkTarget, Is.EqualTo(EndPoint));
     }
 
@@ -34,11 +34,11 @@ public class CharacterMoveTest
     [Test]
     public async ValueTask TestWalkStepsAreCorrectAsync()
     {
-        var player = await this.DoTheWalkAsync();
+        var player = await this.DoTheWalkAsync().ConfigureAwait(false);
 
         // the next check is questionable - there is a timer which is removing a direction every 500ms. If the test runs "too slow", the count is 3 ;-)
         Memory<WalkingStep> steps = new WalkingStep[16];
-        var count = await player.GetStepsAsync(steps);
+        var count = await player.GetStepsAsync(steps).ConfigureAwait(false);
         Assert.That(count, Is.EqualTo(4));
 
         steps = steps.Slice(0, count);
@@ -61,9 +61,9 @@ public class CharacterMoveTest
     private async ValueTask<Player> DoTheWalkAsync()
     {
         var packet = new byte[] { 0xC1, 0x08, (byte)PacketType.Walk, 147, 120, 0x44, 0x33, 0x44 };
-        var player = await TestHelper.CreatePlayerAsync();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var moveHandler = new CharacterWalkHandlerPlugIn();
-        await moveHandler.HandlePacketAsync(player, packet);
+        await moveHandler.HandlePacketAsync(player, packet).ConfigureAwait(false);
 
         return player;
     }

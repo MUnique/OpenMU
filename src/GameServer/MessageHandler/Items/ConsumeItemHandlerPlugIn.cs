@@ -31,7 +31,7 @@ internal class ConsumeItemHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         ConsumeItemRequest message = packet;
-        await this._consumeAction.HandleConsumeRequestAsync(player, message.ItemSlot, message.TargetSlot, Convert(message.FruitConsumption));
+        await this._consumeAction.HandleConsumeRequestAsync(player, message.ItemSlot, message.TargetSlot, Convert(message.FruitConsumption)).ConfigureAwait(false);
     }
 
     private static FruitUsage Convert(ConsumeItemRequest.FruitUsage fruitConsumption)

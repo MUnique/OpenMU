@@ -53,7 +53,7 @@ public class GuildRequestAnswerAction
 
         if (accept)
         {
-            await guildServer.CreateGuildMemberAsync(player.GuildStatus.GuildId, lastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id);
+            await guildServer.CreateGuildMemberAsync(player.GuildStatus.GuildId, lastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id).ConfigureAwait(false);
         }
 
         await lastGuildRequester.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused)).ConfigureAwait(false);

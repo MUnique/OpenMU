@@ -101,8 +101,8 @@ public class MagicEffect : AsyncDisposable
     /// <inheritdoc/>
     protected override async ValueTask DisposeAsyncCore()
     {
-        await this._finishTimer.DisposeAsync();
-        await this.OnEffectTimeOutAsync();
+        await this._finishTimer.DisposeAsync().ConfigureAwait(false);
+        await this.OnEffectTimeOutAsync().ConfigureAwait(false);
         this.EffectTimeOut = null;
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
@@ -113,7 +113,7 @@ public class MagicEffect : AsyncDisposable
     {
         try
         {
-            await this.DisposeAsync();
+            await this.DisposeAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -127,12 +127,12 @@ public class MagicEffect : AsyncDisposable
         {
             if (this.EffectTimeOut is { } eventHandler)
             {
-                await eventHandler(this);
+                await eventHandler(this).ConfigureAwait(false);
             }
 
             if (!this.IsDisposed && !this.IsDisposing)
             {
-                await this.DisposeAsync();
+                await this.DisposeAsync().ConfigureAwait(false);
             }
         }
         catch (Exception ex)

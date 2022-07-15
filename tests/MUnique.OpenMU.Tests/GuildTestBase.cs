@@ -66,9 +66,9 @@ public class GuildTestBase
 
         this.GameServers = new Dictionary<int, IGameServer> { { 0, this.GameServer0.Object }, { 1, this.GameServer1.Object } };
         this.GuildServer = new OpenMU.GuildServer.GuildServer(new GuildChangeToGameServerPublisher(this.GameServers), this.PersistenceContextProvider, new NullLogger<GuildServer>());
-        await this.GuildServer.CreateGuildAsync(GuildName, this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0);
-        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName);
-        await this.GuildServer.GuildMemberLeftGameAsync(guildId, this.GuildMaster.Id, 0);
+        await this.GuildServer.CreateGuildAsync(GuildName, this.GuildMaster.Name, this.GuildMaster.Id, new byte[16], 0).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.GuildMemberLeftGameAsync(guildId, this.GuildMaster.Id, 0).ConfigureAwait(false);
     }
 
     /// <summary>

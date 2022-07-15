@@ -23,7 +23,7 @@ public class DeleteCharacterAction
     public async ValueTask DeleteCharacterAsync(Player player, string characterName, string securityCode)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
-        var result = await this.DeleteCharacterRequestAsync(player, characterName, securityCode);
+        var result = await this.DeleteCharacterRequestAsync(player, characterName, securityCode).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IShowCharacterDeleteResponsePlugIn>(p => p.ShowCharacterDeleteResponseAsync(result)).ConfigureAwait(false);
     }
 
@@ -51,7 +51,7 @@ public class DeleteCharacterAction
             return CharacterDeleteResult.WrongSecurityCode;
         }
 
-        if (player.GameContext is IGameServerContext gameServerContext && await gameServerContext.GuildServer.GetGuildPositionAsync(character.Id) != GuildPosition.Undefined)
+        if (player.GameContext is IGameServerContext gameServerContext && await gameServerContext.GuildServer.GetGuildPositionAsync(character.Id).ConfigureAwait(false) != GuildPosition.Undefined)
         {
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Can't delete a guild member. Remove the character from guild first.", MessageType.BlueNormal)).ConfigureAwait(false);
             return CharacterDeleteResult.Unsuccessful;
@@ -59,7 +59,7 @@ public class DeleteCharacterAction
 
         player.Account.Characters.Remove(character);
         player.GameContext.PlugInManager.GetPlugInPoint<ICharacterDeletedPlugIn>()?.CharacterDeleted(player, character);
-        await player.PersistenceContext.DeleteAsync(character);
+        await player.PersistenceContext.DeleteAsync(character).ConfigureAwait(false);
         return CharacterDeleteResult.Successful;
     }
 }

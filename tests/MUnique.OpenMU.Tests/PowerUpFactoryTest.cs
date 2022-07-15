@@ -32,7 +32,7 @@ public class PowerUpFactoryTest
     [Test]
     public async ValueTask ItemOptionsAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithOption();
         var result = factory.GetPowerUps(item, player.Attributes!);
@@ -45,7 +45,7 @@ public class PowerUpFactoryTest
     [Test]
     public async ValueTask ItemBasePowerUpLevel0Async()
     {
-        var player = await TestHelper.CreatePlayerAsync();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithBasePowerUp();
         var result = factory.GetPowerUps(item, player.Attributes!);
@@ -58,7 +58,7 @@ public class PowerUpFactoryTest
     [Test]
     public async ValueTask ItemBasePowerUpLevel3Async()
     {
-        var player = await TestHelper.CreatePlayerAsync();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithBasePowerUp();
         item.Level = 3;
@@ -72,7 +72,7 @@ public class PowerUpFactoryTest
     [Test]
     public async ValueTask NoPowerUpsWhenItemBrokenAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithBasePowerUp();
         item.Durability = 0;
@@ -86,7 +86,7 @@ public class PowerUpFactoryTest
     [Test]
     public async ValueTask NoPowerUpsWhenItemUnwearableAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithBasePowerUp();
         item.ItemSlot = UnwearableSlot;
@@ -100,7 +100,7 @@ public class PowerUpFactoryTest
     [Test]
     public async ValueTask NoPowerUpsInItemAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItem();
         var result = factory.GetPowerUps(item, player.Attributes!);

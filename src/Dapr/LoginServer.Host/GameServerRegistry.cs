@@ -34,7 +34,7 @@ public sealed class GameServerRegistry : IDisposable
         {
             try
             {
-                await this.CleanupLoopAsync(this._disposeCts.Token);
+                await this.CleanupLoopAsync(this._disposeCts.Token).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -80,7 +80,7 @@ public sealed class GameServerRegistry : IDisposable
         {
             if (upTime <= this._newServerUptimeLimit)
             {
-                this.NewGameServerAdded?.SafeInvokeAsync( gameServerId);
+                this.NewGameServerAdded?.SafeInvokeAsync(gameServerId);
             }
             else
             {
@@ -98,7 +98,7 @@ public sealed class GameServerRegistry : IDisposable
         var tempRemoved = new List<ushort>();
         while (!this._disposeCts.IsCancellationRequested)
         {
-            await Task.Delay(2000, cancellationToken);
+            await Task.Delay(2000, cancellationToken).ConfigureAwait(false);
             using var l = await this._lock.LockAsync();
             foreach (var serverId in this._entries.Keys)
             {

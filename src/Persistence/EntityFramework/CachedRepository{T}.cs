@@ -37,7 +37,7 @@ public class CachedRepository<T> : IRepository<T>
     /// <inheritdoc/>
     async ValueTask<IEnumerable> IRepository.GetAllAsync()
     {
-        return await this.GetAllAsync();
+        return await this.GetAllAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -52,7 +52,7 @@ public class CachedRepository<T> : IRepository<T>
         {
             while (this._loading)
             {
-                await Task.Delay(10);
+                await Task.Delay(10).ConfigureAwait(false);
             }
 
             return this._cache.Values;
@@ -61,7 +61,7 @@ public class CachedRepository<T> : IRepository<T>
         this._loading = true;
         try
         {
-            IEnumerable<T> values = await this.BaseRepository.GetAllAsync();
+            IEnumerable<T> values = await this.BaseRepository.GetAllAsync().ConfigureAwait(false);
             foreach (var obj in values)
             {
                 if (!this._cache.ContainsKey(obj.Id))
@@ -83,7 +83,7 @@ public class CachedRepository<T> : IRepository<T>
     /// <inheritdoc/>
     public async ValueTask<T?> GetByIdAsync(Guid id)
     {
-        await this.GetAllAsync();
+        await this.GetAllAsync().ConfigureAwait(false);
         this._cache.TryGetValue(id, out var result);
         return result;
     }
@@ -91,7 +91,7 @@ public class CachedRepository<T> : IRepository<T>
     /// <inheritdoc/>
     async ValueTask<object?> IRepository.GetByIdAsync(Guid id)
     {
-        return await this.GetByIdAsync(id);
+        return await this.GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -99,7 +99,7 @@ public class CachedRepository<T> : IRepository<T>
     {
         if (obj is IIdentifiable identifiable)
         {
-            return await this.DeleteAsync(identifiable.Id);
+            return await this.DeleteAsync(identifiable.Id).ConfigureAwait(false);
         }
 
         return false;
@@ -108,7 +108,7 @@ public class CachedRepository<T> : IRepository<T>
     /// <inheritdoc/>
     public async ValueTask<bool> DeleteAsync(Guid id)
     {
-        if (await this.BaseRepository.DeleteAsync(id))
+        if (await this.BaseRepository.DeleteAsync(id).ConfigureAwait(false))
         {
             this.RemoveFromCache(id);
             return true;

@@ -44,7 +44,7 @@ public class UpdateMasterStatsPlugIn : IUpdateMasterStatsPlugIn
             (ushort)this._player.Attributes[Stats.MaximumHealth],
             (ushort)this._player.Attributes[Stats.MaximumMana],
             (ushort)this._player.Attributes[Stats.MaximumShield],
-            (ushort)this._player.Attributes[Stats.MaximumAbility]);
+            (ushort)this._player.Attributes[Stats.MaximumAbility]).ConfigureAwait(false);
 
         await this._player.InvokeViewPlugInAsync<IUpdateMasterSkillsPlugIn>(p => p.UpdateMasterSkillsAsync()).ConfigureAwait(false);
     }

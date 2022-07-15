@@ -31,6 +31,6 @@ public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn
 
         eventArgs.HasBeenHandled = true;
         var resetAction = new ResetCharacterAction(player, npc);
-        await resetAction.ResetCharacterAsync();
+        await resetAction.ResetCharacterAsync().ConfigureAwait(false);
     }
 }

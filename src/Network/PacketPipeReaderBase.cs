@@ -84,7 +84,7 @@ public abstract class PacketPipeReaderBase
                     // Notify our source, that we don't intend to read anymore.
                     await this.Source.CompleteAsync(exception).ConfigureAwait(false);
 
-                    await this.OnCompleteAsync(exception);
+                    await this.OnCompleteAsync(exception).ConfigureAwait(false);
                     throw exception;
                 }
             }
@@ -108,7 +108,7 @@ public abstract class PacketPipeReaderBase
         if (result.IsCanceled || result.IsCompleted)
         {
             // Not possible to advance any further, e.g. because of a disconnected network connection.
-            await this.OnCompleteAsync(null);
+            await this.OnCompleteAsync(null).ConfigureAwait(false);
         }
         else
         {

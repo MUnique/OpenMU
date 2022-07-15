@@ -31,11 +31,11 @@ internal class ItemRepairHandlerPlugIn : IPacketHandlerPlugIn
         RepairItemRequest message = packet;
         if (message.ItemSlot == 0xFF)
         {
-            await this._repairAction.RepairAllItemsAsync(player);
+            await this._repairAction.RepairAllItemsAsync(player).ConfigureAwait(false);
         }
         else
         {
-            await this._repairAction.RepairItemAsync(player, message.ItemSlot);
+            await this._repairAction.RepairItemAsync(player, message.ItemSlot).ConfigureAwait(false);
         }
     }
 }

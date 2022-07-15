@@ -31,7 +31,7 @@ public class AttackSingleWhenPressedTrapIntelligence : TrapIntelligenceBase
 
         foreach (var player in playersOnTrap)
         {
-            await this.Trap.AttackAsync(player);
+            await this.Trap.AttackAsync(player).ConfigureAwait(false);
         }
     }
 }

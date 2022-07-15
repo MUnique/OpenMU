@@ -53,7 +53,7 @@ internal class AreaSkillHitHandlerMultiTargetPlugInBase
             if (target is IObservable observable
                 && observable.Observers.Contains(player))
             {
-                await this._skillHitAction.AttackTargetAsync(player, target, skillEntry);
+                await this._skillHitAction.AttackTargetAsync(player, target, skillEntry).ConfigureAwait(false);
             }
             else
             {

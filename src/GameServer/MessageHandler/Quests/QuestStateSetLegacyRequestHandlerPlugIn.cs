@@ -39,19 +39,19 @@ public class QuestStateSetLegacyRequestHandlerPlugIn : IPacketHandlerPlugIn
                 var state = player.GetQuestState(QuestConstants.LegacyQuestGroup, request.QuestNumber);
                 if (state is null)
                 {
-                    await this._questStartAction.StartQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                    await this._questStartAction.StartQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber).ConfigureAwait(false);
                 }
                 else
                 {
-                    await this._questCompletionAction.CompleteQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                    await this._questCompletionAction.CompleteQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber).ConfigureAwait(false);
                 }
 
                 break;
             case LegacyQuestState.Complete:
-                await this._questCompletionAction.CompleteQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                await this._questCompletionAction.CompleteQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber).ConfigureAwait(false);
                 break;
             case LegacyQuestState.Inactive:
-                await this._questCancelAction.CancelQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                await this._questCancelAction.CancelQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber).ConfigureAwait(false);
                 break;
             default:
                 player.Logger.LogError($"Invalid state value {request.NewState}, quest number {request.QuestNumber}, player {player}.");

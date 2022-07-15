@@ -28,6 +28,6 @@ public class ShowPartyRequestPlugIn : IShowPartyRequestPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowPartyRequestAsync(IPartyMember requester)
     {
-        await this._player.Connection.SendPartyRequestAsync(requester.Id);
+        await this._player.Connection.SendPartyRequestAsync(requester.Id).ConfigureAwait(false);
     }
 }

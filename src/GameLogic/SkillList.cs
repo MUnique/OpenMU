@@ -74,7 +74,7 @@ public class SkillList : ISkillList
         var skillEntry = this._player.PersistenceContext.CreateNew<SkillEntry>();
         skillEntry.Skill = skill;
         skillEntry.Level = 0;
-        await this.AddLearnedSkillAsync(skillEntry);
+        await this.AddLearnedSkillAsync(skillEntry).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -166,11 +166,11 @@ public class SkillList : ISkillList
         var inventory = this._player.Inventory;
         if (inventory!.EquippedItems.Contains(item))
         {
-            await this.AddItemSkillAsync(item.Definition.Skill);
+            await this.AddItemSkillAsync(item.Definition.Skill).ConfigureAwait(false);
         }
         else
         {
-            await this.RemoveItemSkillAsync(item.Definition.Skill.Number.ToUnsigned());
+            await this.RemoveItemSkillAsync(item.Definition.Skill.Number.ToUnsigned()).ConfigureAwait(false);
         }
     }
 

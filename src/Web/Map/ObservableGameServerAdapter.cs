@@ -41,7 +41,7 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
     {
         foreach (var map in this._gameContext.Maps)
         {
-            var mapAdapter = await this.CreateMapAdapterAsync(map);
+            var mapAdapter = await this.CreateMapAdapterAsync(map).ConfigureAwait(false);
             this._gameMapInfos.Add(mapAdapter);
         }
 
@@ -55,7 +55,7 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
         var map = this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId);
         if (map != null)
         {
-            await map.AddAsync(worldObserver);
+            await map.AddAsync(worldObserver).ConfigureAwait(false);
         }
         else
         {
@@ -70,7 +70,7 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
         if (this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId) is { } map
             && map.GetObject(worldObserverId) is { } observer)
         {
-            await map.RemoveAsync(observer);
+            await map.RemoveAsync(observer).ConfigureAwait(false);
         }
     }
 
@@ -121,7 +121,7 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
                 return;
             }
 
-            var map = await this.CreateMapAdapterAsync(gameMap);
+            var map = await this.CreateMapAdapterAsync(gameMap).ConfigureAwait(false);
             this._gameMapInfos.Add(map);
             this.RaisePropertyChanged(nameof(this.Maps));
         }
@@ -139,7 +139,7 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
     private async ValueTask<GameMapInfoAdapter> CreateMapAdapterAsync(GameMap gameMap)
     {
         var mapAdapter = new GameMapInfoAdapter(gameMap, this._gameContext);
-        await mapAdapter.InitializeAsync();
+        await mapAdapter.InitializeAsync().ConfigureAwait(false);
         mapAdapter.PropertyChanged += this.OnMapPropertyChanged;
         return mapAdapter;
     }

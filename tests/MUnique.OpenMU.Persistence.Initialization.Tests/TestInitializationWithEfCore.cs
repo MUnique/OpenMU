@@ -24,8 +24,8 @@ internal class TestInitializationWithEfCore
     public async Task SetupDatabaseAndTestLoadingDataAsync()
     {
         var manager = new PersistenceContextProvider(new NullLoggerFactory(), null);
-        await manager.ReCreateDatabaseAsync();
-        await this.TestDataInitializationAsync(new PersistenceContextProvider(new NullLoggerFactory(), null));
+        await manager.ReCreateDatabaseAsync().ConfigureAwait(false);
+        await this.TestDataInitializationAsync(new PersistenceContextProvider(new NullLoggerFactory(), null)).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ internal class TestInitializationWithEfCore
     [Test]
     public async Task TestDataInitializationInMemoryAsync()
     {
-        await this.TestDataInitializationAsync(new InMemoryPersistenceContextProvider());
+        await this.TestDataInitializationAsync(new InMemoryPersistenceContextProvider()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -45,8 +45,8 @@ internal class TestInitializationWithEfCore
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
-        await dataInitialization.CreateInitialDataAsync(1, true);
-        await this.TestIfItemsFitIntoInventoriesAsync(contextProvider);
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+        await this.TestIfItemsFitIntoInventoriesAsync(contextProvider).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -57,8 +57,8 @@ internal class TestInitializationWithEfCore
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new Version075.DataInitialization(contextProvider, new NullLoggerFactory());
-        await dataInitialization.CreateInitialDataAsync(1, true);
-        await this.TestIfItemsFitIntoInventoriesAsync(contextProvider);
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+        await this.TestIfItemsFitIntoInventoriesAsync(contextProvider).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -69,23 +69,23 @@ internal class TestInitializationWithEfCore
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new Version095d.DataInitialization(contextProvider, new NullLoggerFactory());
-        await dataInitialization.CreateInitialDataAsync(1, true);
-        await this.TestIfItemsFitIntoInventoriesAsync(contextProvider);
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+        await this.TestIfItemsFitIntoInventoriesAsync(contextProvider).ConfigureAwait(false);
     }
 
     private async Task TestDataInitializationAsync(IPersistenceContextProvider contextProvider)
     {
         var initialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
-        await initialization.CreateInitialDataAsync(3, true);
+        await initialization.CreateInitialDataAsync(3, true).ConfigureAwait(false);
 
         // Loading game configuration
         using var context = contextProvider.CreateNewConfigurationContext();
-        var gameConfiguraton = (await context.GetAsync<DataModel.Configuration.GameConfiguration>()).FirstOrDefault();
+        var gameConfiguraton = (await context.GetAsync<DataModel.Configuration.GameConfiguration>().ConfigureAwait(false)).FirstOrDefault();
         Assert.That(gameConfiguraton, Is.Not.Null);
 
         // Testing loading of an account
         using var accountContext = contextProvider.CreateNewPlayerContext(gameConfiguraton!);
-        var account1 = await accountContext.GetAccountByLoginNameAsync("test1", "test1");
+        var account1 = await accountContext.GetAccountByLoginNameAsync("test1", "test1").ConfigureAwait(false);
         Assert.That(account1, Is.Not.Null);
         Assert.That(account1!.LoginName, Is.EqualTo("test1"));
     }
@@ -93,10 +93,10 @@ internal class TestInitializationWithEfCore
     private async Task TestIfItemsFitIntoInventoriesAsync(IPersistenceContextProvider contextProvider)
     {
         using var configContext = contextProvider.CreateNewConfigurationContext();
-        var config = (await configContext.GetAsync<GameConfiguration>()).First();
+        var config = (await configContext.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
 
         using var context = contextProvider.CreateNewPlayerContext(config);
-        var characters = (await context.GetAccountsOrderedByLoginNameAsync(0, 100)).SelectMany(a => a.Characters).ToList();
+        var characters = (await context.GetAccountsOrderedByLoginNameAsync(0, 100).ConfigureAwait(false)).SelectMany(a => a.Characters).ToList();
         Assert.That(characters, Is.Not.Empty);
         byte inventorySize = (byte)(InventoryConstants.EquippableSlotsCount + 64);
         foreach (var character in characters)

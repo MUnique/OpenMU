@@ -56,12 +56,12 @@ public class EnterMiniGameAction
         }
 
         var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
-        var miniGame = await player.GameContext.GetMiniGameAsync(miniGameDefinition, player);
-        var enterResult = await miniGame.TryEnterAsync(player);
+        var miniGame = await player.GameContext.GetMiniGameAsync(miniGameDefinition, player).ConfigureAwait(false);
+        var enterResult = await miniGame.TryEnterAsync(player).ConfigureAwait(false);
         if (enterResult == EnterResult.Success)
         {
-            await this.ConsumeTicketItemAsync(ticketItem, player);
-            await player.WarpToAsync(entrance);
+            await this.ConsumeTicketItemAsync(ticketItem, player).ConfigureAwait(false);
+            await player.WarpToAsync(entrance).ConfigureAwait(false);
         }
         else
         {
@@ -86,11 +86,11 @@ public class EnterMiniGameAction
             var slot = ticketItem.ItemSlot;
             if (player.Inventory is { } inventory)
             {
-                await inventory.RemoveItemAsync(ticketItem);
+                await inventory.RemoveItemAsync(ticketItem).ConfigureAwait(false);
             }
 
-            await player.PersistenceContext.DeleteAsync(ticketItem);
-            await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot));
+            await player.PersistenceContext.DeleteAsync(ticketItem).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
         }
         else
         {

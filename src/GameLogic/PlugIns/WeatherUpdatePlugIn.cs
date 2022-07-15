@@ -42,7 +42,7 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
                 this._weatherStates[map] = (weather, variation);
             }
 
-            await gameContext.ForEachPlayerAsync(this.TrySendPlayerUpdateAsync);
+            await gameContext.ForEachPlayerAsync(this.TrySendPlayerUpdateAsync).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -63,7 +63,7 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         {
             if (addedObject is Player player)
             {
-                await this.TrySendPlayerUpdateAsync(player);
+                await this.TrySendPlayerUpdateAsync(player).ConfigureAwait(false);
             }
         }
         catch

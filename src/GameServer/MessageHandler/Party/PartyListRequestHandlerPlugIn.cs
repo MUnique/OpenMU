@@ -28,6 +28,6 @@ internal class PartyListRequestHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        await this._action.RequestPartyListAsync(player);
+        await this._action.RequestPartyListAsync(player).ConfigureAwait(false);
     }
 }

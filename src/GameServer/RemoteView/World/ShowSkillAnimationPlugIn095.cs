@@ -40,6 +40,6 @@ public class ShowSkillAnimationPlugIn095 : IShowSkillAnimationPlugIn
     {
         var playerId = attacker.GetId(this._player);
         var targetId = target.GetId(this._player);
-        await this._player.Connection.SendSkillAnimation095Async((byte)skillNumber, playerId, targetId, effectApplied);
+        await this._player.Connection.SendSkillAnimation095Async((byte)skillNumber, playerId, targetId, effectApplied).ConfigureAwait(false);
     }
 }

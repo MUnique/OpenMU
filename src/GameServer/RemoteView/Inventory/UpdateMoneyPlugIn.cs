@@ -27,6 +27,6 @@ public class UpdateMoneyPlugIn : IUpdateMoneyPlugIn
     /// <inheritdoc/>
     public async ValueTask UpdateMoneyAsync()
     {
-        await this._player.Connection.SendInventoryMoneyUpdateAsync((uint)this._player.Money);
+        await this._player.Connection.SendInventoryMoneyUpdateAsync((uint)this._player.Money).ConfigureAwait(false);
     }
 }

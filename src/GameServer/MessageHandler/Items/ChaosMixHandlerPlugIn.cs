@@ -31,6 +31,6 @@ internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
         ChaosMachineMixRequest message = packet;
         var socketSlot = packet.Length > 4 ? message.SocketSlot : (byte)0;
         var mixType = packet.Length > 3 ? message.MixType : ChaosMachineMixRequest.ChaosMachineMixType.ChaosWeapon;
-        await this._mixAction.MixItemsAsync(player, (byte)mixType, socketSlot);
+        await this._mixAction.MixItemsAsync(player, (byte)mixType, socketSlot).ConfigureAwait(false);
     }
 }

@@ -30,6 +30,6 @@ internal class CharacterDeletePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         DeleteCharacter message = packet;
-        await this._deleteCharacterAction.DeleteCharacterAsync(player, message.Name, message.SecurityCode);
+        await this._deleteCharacterAction.DeleteCharacterAsync(player, message.Name, message.SecurityCode).ConfigureAwait(false);
     }
 }

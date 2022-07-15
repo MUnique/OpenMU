@@ -40,13 +40,13 @@ public class RemoveSeedSphereCrafting : SimpleItemCraftingHandler
         }
 
         socketItem.ItemOptions.Remove(socketOption);
-        await player.PersistenceContext.DeleteAsync(socketOption);
+        await player.PersistenceContext.DeleteAsync(socketOption).ConfigureAwait(false);
 
         if (socketOption.Index < 3
             && socketItem.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketBonusOption) is { } bonusOption)
         {
             socketItem.ItemOptions.Remove(bonusOption);
-            await player.PersistenceContext.DeleteAsync(bonusOption);
+            await player.PersistenceContext.DeleteAsync(bonusOption).ConfigureAwait(false);
         }
 
         return new List<Item> { socketItem };

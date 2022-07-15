@@ -42,6 +42,6 @@ public class MasterSkillLevelChangedPlugIn : IMasterSkillLevelChangedPlugIn
             (ushort)skillEntry.Skill.Number,
             (byte)skillEntry.Level,
             skillEntry.CalculateDisplayValue(),
-            skillEntry.CalculateNextDisplayValue());
+            skillEntry.CalculateNextDisplayValue()).ConfigureAwait(false);
     }
 }

@@ -33,7 +33,7 @@ internal class ServerListRequestHandler : IPacketHandler<Client>
         if (client.ServerListRequestCount >= this._connectServer.Settings.MaxServerListRequests)
         {
             this._logger.LogDebug("Client {0}:{1} reached maxListRequests", client.Address, client.Port);
-            await client.Connection.DisconnectAsync();
+            await client.Connection.DisconnectAsync().ConfigureAwait(false);
         }
 
         client.ServerListRequestCount++;

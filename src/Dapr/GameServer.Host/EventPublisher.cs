@@ -39,7 +39,7 @@ public class EventPublisher : IEventPublisher
                 .PublishEventAsync(
                     PubSubName,
                     nameof(IEventPublisher.PlayerEnteredGameAsync),
-                    new PlayerOnlineStateArguments(characterId, characterName, serverId));
+                    new PlayerOnlineStateArguments(characterId, characterName, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -56,7 +56,7 @@ public class EventPublisher : IEventPublisher
                 .PublishEventAsync(
                     PubSubName,
                     nameof(IEventPublisher.PlayerLeftGameAsync),
-                    new PlayerOnlineStateArguments(characterId, characterName, serverId, guildId));
+                    new PlayerOnlineStateArguments(characterId, characterName, serverId, guildId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -73,7 +73,7 @@ public class EventPublisher : IEventPublisher
                 .PublishEventAsync(
                     PubSubName,
                     nameof(IGameServer.GuildChatMessageAsync),
-                    new GuildMessageArguments(guildId, sender, message));
+                    new GuildMessageArguments(guildId, sender, message)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -90,7 +90,7 @@ public class EventPublisher : IEventPublisher
                 .PublishEventAsync(
                     PubSubName,
                     nameof(IGameServer.AllianceChatMessageAsync),
-                    new GuildMessageArguments(guildId, sender, message));
+                    new GuildMessageArguments(guildId, sender, message)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

@@ -48,7 +48,7 @@ public class TerrainController : Controller
 
         // TODO: Do this without creating an ObservableGameServerAdapter, because that's a very expensive operation.
         using var gameServer = new ObservableGameServerAdapter(server.Context);
-        await gameServer.InitializeAsync();
+        await gameServer.InitializeAsync().ConfigureAwait(false);
         var map = gameServer.Maps.FirstOrDefault(m => m.Id == mapId);
         if (map is null)
         {

@@ -46,10 +46,10 @@ public class JsonObjectLoader
         var queryString = this._queryBuilder.BuildJsonQueryForEntity(type);
         using var command = context.Database.GetDbConnection().CreateCommand();
         command.CommandText = queryString;
-        using var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
         if (reader.HasRows)
         {
-            while (await reader.ReadAsync())
+            while (await reader.ReadAsync().ConfigureAwait(false))
             {
                 using var textReader = reader.GetTextReader(2);
                 if (this._deserializer.Deserialize<T>(textReader, this._referenceResolver) is { } item)
@@ -88,8 +88,8 @@ public class JsonObjectLoader
         idParameter.Value = id;
 
         command.Parameters.Add(idParameter);
-        using var reader = await command.ExecuteReaderAsync();
-        if (reader.HasRows && await reader.ReadAsync())
+        using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+        if (reader.HasRows && await reader.ReadAsync().ConfigureAwait(false))
         {
             using var textReader = reader.GetTextReader(2);
             return this._deserializer.Deserialize<T>(textReader, this._referenceResolver);

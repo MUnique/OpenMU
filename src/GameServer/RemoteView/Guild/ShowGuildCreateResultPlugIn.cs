@@ -27,6 +27,6 @@ public class ShowGuildCreateResultPlugIn : IShowGuildCreateResultPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowGuildCreateResultAsync(GuildCreateErrorDetail errorDetail)
     {
-        await this._player.Connection.SendGuildCreationResultAsync(errorDetail == GuildCreateErrorDetail.None, errorDetail.Convert());
+        await this._player.Connection.SendGuildCreationResultAsync(errorDetail == GuildCreateErrorDetail.None, errorDetail.Convert()).ConfigureAwait(false);
     }
 }

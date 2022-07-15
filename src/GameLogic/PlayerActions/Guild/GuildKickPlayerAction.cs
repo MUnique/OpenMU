@@ -62,10 +62,10 @@ public class GuildKickPlayerAction
         {
             var guildId = player.GuildStatus.GuildId;
             await player.InvokeViewPlugInAsync<IGuildKickResultPlugIn>(p => p.GuildKickResultAsync(GuildKickSuccess.GuildDisband)).ConfigureAwait(false);
-            await guildServer.KickMemberAsync(guildId, nickname);
+            await guildServer.KickMemberAsync(guildId, nickname).ConfigureAwait(false);
             return;
         }
 
-        await guildServer.KickMemberAsync(player.GuildStatus!.GuildId, nickname);
+        await guildServer.KickMemberAsync(player.GuildStatus!.GuildId, nickname).ConfigureAwait(false);
     }
 }

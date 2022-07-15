@@ -37,6 +37,6 @@ internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        await this._attackAction.AttackAsync(player, message.ExtraTargetId, message.SkillId, new Point(message.TargetX, message.TargetY), message.Rotation);
+        await this._attackAction.AttackAsync(player, message.ExtraTargetId, message.SkillId, new Point(message.TargetX, message.TargetY), message.Rotation).ConfigureAwait(false);
     }
 }

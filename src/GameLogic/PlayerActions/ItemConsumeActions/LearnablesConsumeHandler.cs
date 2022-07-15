@@ -30,9 +30,9 @@ public class LearnablesConsumeHandler : IItemConsumeHandler
             return false;
         }
 
-        await player.SkillList.AddLearnedSkillAsync(skill);
-        await player.Inventory!.RemoveItemAsync(item);
-        await player.PersistenceContext.DeleteAsync(item);
+        await player.SkillList.AddLearnedSkillAsync(skill).ConfigureAwait(false);
+        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         return true;
     }
 

@@ -59,11 +59,11 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
             var target = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(this.Owner.Position, 2);
             if (this.Monster.Observers.Contains(this.Owner))
             {
-                await this.Monster.WalkToAsync(target);
+                await this.Monster.WalkToAsync(target).ConfigureAwait(false);
             }
             else
             {
-                await this.Monster.MoveAsync(target);
+                await this.Monster.MoveAsync(target).ConfigureAwait(false);
             }
 
             return false;

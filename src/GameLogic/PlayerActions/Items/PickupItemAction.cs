@@ -23,7 +23,7 @@ public class PickupItemAction
         switch (droppedLocateable)
         {
             case DroppedMoney droppedMoney:
-                if (!await this.TryPickupMoneyAsync(player, droppedMoney))
+                if (!await this.TryPickupMoneyAsync(player, droppedMoney).ConfigureAwait(false))
                 {
                     await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
                 }
@@ -31,7 +31,7 @@ public class PickupItemAction
                 break;
             case DroppedItem droppedItem:
             {
-                var (success, stackTarget) = await this.TryPickupItemAsync(player, droppedItem);
+                var (success, stackTarget) = await this.TryPickupItemAsync(player, droppedItem).ConfigureAwait(false);
                 if (success)
                 {
                     if (stackTarget != null)
@@ -87,7 +87,7 @@ public class PickupItemAction
             return (false, null);
         }
 
-        var result = await droppedItem.TryPickUpByAsync(player);
+        var result = await droppedItem.TryPickUpByAsync(player).ConfigureAwait(false);
         if (result.Success)
         {
             await player.OnPickedUpItemAsync(droppedItem).ConfigureAwait(false);
@@ -98,6 +98,6 @@ public class PickupItemAction
 
     private async ValueTask<bool> TryPickupMoneyAsync(Player player, DroppedMoney droppedMoney)
     {
-        return this.CanPickup(player, droppedMoney) && await droppedMoney.TryPickUpByAsync(player);
+        return this.CanPickup(player, droppedMoney) && await droppedMoney.TryPickUpByAsync(player).ConfigureAwait(false);
     }
 }

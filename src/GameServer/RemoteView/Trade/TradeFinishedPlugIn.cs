@@ -29,7 +29,7 @@ public class TradeFinishedPlugIn : ITradeFinishedPlugIn
     /// <inheritdoc />
     public async ValueTask TradeFinishedAsync(TradeResult tradeResult)
     {
-        await this._player.Connection.SendTradeFinishedAsync(Convert(tradeResult));
+        await this._player.Connection.SendTradeFinishedAsync(Convert(tradeResult)).ConfigureAwait(false);
 
         if (tradeResult != TradeResult.TimedOut)
         {

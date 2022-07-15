@@ -27,6 +27,6 @@ public class ShowGuildCreationDialogPlugIn : IShowGuildCreationDialogPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowGuildCreationDialogAsync()
     {
-        await this._player.Connection.SendShowGuildCreationDialogAsync();
+        await this._player.Connection.SendShowGuildCreationDialogAsync().ConfigureAwait(false);
     }
 }

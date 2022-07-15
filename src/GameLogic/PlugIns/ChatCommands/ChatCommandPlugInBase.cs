@@ -27,11 +27,11 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
         try
         {
             var arguments = command.ParseArguments<T>();
-            await this.DoHandleCommandAsync(player, arguments);
+            await this.DoHandleCommandAsync(player, arguments).ConfigureAwait(false);
         }
         catch (ArgumentException argEx)
         {
-            await this.ShowMessageToAsync(player, $"[{this.Key}] {argEx.Message}");
+            await this.ShowMessageToAsync(player, $"[{this.Key}] {argEx.Message}").ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -83,7 +83,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     protected async ValueTask<uint> GetGuildIdByNameAsync(Player player, string guildName)
     {
         var guildServer = (player.GameContext as IGameServerContext)!.GuildServer;
-        var guildId = await guildServer.GetGuildIdByNameAsync(guildName);
+        var guildId = await guildServer.GetGuildIdByNameAsync(guildName).ConfigureAwait(false);
 
         if (guildId == default)
         {
@@ -109,7 +109,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
         }
 
         var mapDefinition = ushort.TryParse(map, out var mapId)
-            ? (await gameMaster.GameContext.GetMapAsync(mapId))?.Definition
+            ? (await gameMaster.GameContext.GetMapAsync(mapId).ConfigureAwait(false))?.Definition
             : gameMaster.GameContext.Configuration.Maps.FirstOrDefault(x => x.Name.Equals(map, StringComparison.OrdinalIgnoreCase));
 
         if (mapDefinition == null)

@@ -38,6 +38,6 @@ internal class UnlockVaultPlugIn : ISubPacketHandlerPlugIn
         }
 
         ExtractValues();
-        await this._unlockVaultAction.UnlockVaultAsync(player, pin);
+        await this._unlockVaultAction.UnlockVaultAsync(player, pin).ConfigureAwait(false);
     }
 }

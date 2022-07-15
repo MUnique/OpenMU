@@ -39,12 +39,12 @@ internal class ServerListHandler : IPacketHandler<Client>
         var packetSubType = packet.Span[3];
         if (this._packetHandlers.TryGetValue(packetSubType, out var packetHandler))
         {
-            await packetHandler.HandlePacketAsync(client, packet);
+            await packetHandler.HandlePacketAsync(client, packet).ConfigureAwait(false);
         }
         else if (this._connectServerSettings.DisconnectOnUnknownPacket)
         {
             this._logger.LogInformation("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
-            await client.Connection.DisconnectAsync();
+            await client.Connection.DisconnectAsync().ConfigureAwait(false);
         }
         else
         {

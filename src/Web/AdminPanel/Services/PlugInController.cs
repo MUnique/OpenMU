@@ -131,7 +131,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         {
             using var context = this._persistenceContextProvider.CreateNewContext();
             var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
-            foreach (var gameConfig in await context.GetAsync<GameConfiguration>())
+            foreach (var gameConfig in await context.GetAsync<GameConfiguration>().ConfigureAwait(false))
             {
                 var rest = count - result.Count;
                 if (rest == 0)
@@ -193,13 +193,13 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
             item.PlugInName,
             parameters,
             options);
-        var result = await modal.Result;
+        var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
             using var context = this._persistenceContextProvider.CreateNewContext();
             context.Attach(item.Configuration);
             item.Configuration.SetConfiguration(configuration!);
-            context.SaveChanges();
+            await context.SaveChangesAsync().ConfigureAwait(false);
             this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
     }

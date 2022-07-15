@@ -87,19 +87,19 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         using (var temporaryContext = this._persistenceContextProvider.CreateNewContext())
         {
             this.GameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
-            await temporaryContext.SaveChangesAsync();
+            await temporaryContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         using var contextWithConfiguration = this._persistenceContextProvider.CreateNewContext(this.GameConfiguration);
         this.Context = contextWithConfiguration;
         this.CreateGameClientDefinition();
-        await this.CreateChatServerDefinitionAsync();
+        await this.CreateChatServerDefinitionAsync().ConfigureAwait(false);
         this.GameConfigurationInitializer.Initialize();
 
         var gameServerConfiguration = this.CreateGameServerConfiguration(this.GameConfiguration.Maps);
-        await this.CreateGameServerDefinitionsAsync(gameServerConfiguration, numberOfGameServers);
-        await this.CreateConnectServerDefinitionAsync();
-        await this.Context.SaveChangesAsync();
+        await this.CreateGameServerDefinitionsAsync(gameServerConfiguration, numberOfGameServers).ConfigureAwait(false);
+        await this.CreateConnectServerDefinitionAsync().ConfigureAwait(false);
+        await this.Context.SaveChangesAsync().ConfigureAwait(false);
 
         this.GameMapsInitializer.SetSafezoneMaps();
 
@@ -140,7 +140,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             }
         });
 
-        await this.Context.SaveChangesAsync();
+        await this.Context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -150,7 +150,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
 
     private async ValueTask CreateConnectServerDefinitionAsync()
     {
-        var client = (await this.Context.GetAsync<GameClientDefinition>()).First();
+        var client = (await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false)).First();
         var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
         connectServer.Client = client;
         connectServer.ClientListenerPort = 44405;
@@ -180,7 +180,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             server.GameConfiguration = this.GameConfiguration;
             server.ServerConfiguration = gameServerConfiguration;
 
-            foreach (var client in await this.Context.GetAsync<GameClientDefinition>())
+            foreach (var client in await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false))
             {
                 var endPoint = this.Context.CreateNew<GameServerEndpoint>();
                 endPoint.Client = client;
@@ -196,7 +196,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         server.ServerId = 0;
         server.Description = "Chat Server";
 
-        var client = (await this.Context!.GetAsync<GameClientDefinition>()).First();
+        var client = (await this.Context!.GetAsync<GameClientDefinition>().ConfigureAwait(false)).First();
         var endPoint = this.Context.CreateNew<ChatServerEndpoint>();
         endPoint.Client = client;
         endPoint.NetworkPort = 55980;

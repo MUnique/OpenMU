@@ -36,6 +36,6 @@ public class UpdateMaximumHealthPlugIn : IUpdateMaximumHealthPlugIn
 
         await this._player.Connection.SendMaximumHealthAndShieldAsync(
             (ushort)this._player.Attributes[Stats.MaximumHealth],
-            (ushort)this._player.Attributes[Stats.MaximumShield]);
+            (ushort)this._player.Attributes[Stats.MaximumShield]).ConfigureAwait(false);
     }
 }

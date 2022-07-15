@@ -44,7 +44,7 @@ public class QuestProceedRequestHandlerPlugIn : ISubPacketHandlerPlugIn
             }
             else
             {
-                await this._questStartAction.StartQuestAsync(player, (short)request.QuestGroup, (short)request.QuestNumber);
+                await this._questStartAction.StartQuestAsync(player, (short)request.QuestGroup, (short)request.QuestNumber).ConfigureAwait(false);
             }
         }
         else

@@ -59,12 +59,12 @@ public class GameServerInitializer
         }
 
         using var context = this._contextProvider.CreateNewConfigurationContext();
-        await this.LoadGameClientDefinitionsAsync(context);
+        await this.LoadGameClientDefinitionsAsync(context).ConfigureAwait(false);
     }
 
     private async ValueTask LoadGameClientDefinitionsAsync(IContext persistenceContext)
     {
-        var versions = (await persistenceContext.GetAsync<GameClientDefinition>()).ToList();
+        var versions = (await persistenceContext.GetAsync<GameClientDefinition>().ConfigureAwait(false)).ToList();
         foreach (var gameClientDefinition in versions)
         {
             ClientVersionResolver.Register(

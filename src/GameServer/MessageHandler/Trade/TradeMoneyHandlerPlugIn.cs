@@ -29,6 +29,6 @@ internal class TradeMoneyHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         SetTradeMoney message = packet;
-        await this._tradeAction.TradeMoneyAsync(player, message.Amount);
+        await this._tradeAction.TradeMoneyAsync(player, message.Amount).ConfigureAwait(false);
     }
 }

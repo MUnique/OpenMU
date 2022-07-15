@@ -111,13 +111,13 @@ internal class ManageableServerClient : IManageableServer
     /// <inheritdoc/>
     public async ValueTask StartAsync()
     {
-        await this.StartAsync(default);
+        await this.StartAsync(default).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async ValueTask ShutdownAsync()
     {
-        await this.StopAsync(default);
+        await this.StopAsync(default).ConfigureAwait(false);
     }
 
     /// <summary>

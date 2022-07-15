@@ -56,7 +56,7 @@ public class GuildServer : IGuildServer
     public async ValueTask<bool> GuildExistsAsync(string guildName)
     {
         using var context = this._persistenceContextProvider.CreateNewGuildContext();
-        return await context.GuildWithNameExistsAsync(guildName);
+        return await context.GuildWithNameExistsAsync(guildName).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -85,7 +85,7 @@ public class GuildServer : IGuildServer
         if (this._guildDictionary.TryGetValue(guildId, out var guildContainer))
         {
             guildContainer.Guild.Score++;
-            await guildContainer.DatabaseContext.SaveChangesAsync();
+            await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 
@@ -103,13 +103,13 @@ public class GuildServer : IGuildServer
         masterGuildMemberInfo.GuildId = guild.Id;
         guild.Members.Add(masterGuildMemberInfo);
 
-        if (await context.SaveChangesAsync())
+        if (await context.SaveChangesAsync().ConfigureAwait(false))
         {
             var container = this.CreateGuildContainer(guild, context);
             container.SetServerId(masterId, serverId);
             container.Members[masterId].PlayerName = masterName;
             var status = new GuildMemberStatus(container.Id, GuildPosition.GuildMaster);
-            await this._changePublisher.AssignGuildToPlayerAsync(serverId, masterName, status);
+            await this._changePublisher.AssignGuildToPlayerAsync(serverId, masterName, status).ConfigureAwait(false);
             return true;
         }
 
@@ -135,9 +135,9 @@ public class GuildServer : IGuildServer
                 guildMember.GuildId = guild.Guild.Id;
                 guild.Guild.Members.Add(guildMember);
 
-                await guild.DatabaseContext.SaveChangesAsync();
+                await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
                 guild.Members.Add(characterId, new GuildListEntry { PlayerName = characterName, PlayerPosition = guildMember.Status, ServerId = serverId });
-                await this._changePublisher.AssignGuildToPlayerAsync(serverId, characterName, new GuildMemberStatus(guildId, guildMember.Status));
+                await this._changePublisher.AssignGuildToPlayerAsync(serverId, characterName, new GuildMemberStatus(guildId, guildMember.Status)).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -158,7 +158,7 @@ public class GuildServer : IGuildServer
                 if (guildMember != null)
                 {
                     guildMember.Status = role;
-                    await guild.DatabaseContext.SaveChangesAsync();
+                    await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
                     var listEntry = guild.Members[characterId];
                     listEntry.PlayerPosition = role;
                 }
@@ -174,12 +174,12 @@ public class GuildServer : IGuildServer
     public async ValueTask PlayerEnteredGameAsync(Guid characterId, string characterName, byte serverId)
     {
         using var tempContext = this._persistenceContextProvider.CreateNewGuildContext();
-        var guildMember = await tempContext.GetByIdAsync<GuildMember>(characterId); // we use the same id for Character.Id and GuildMemberInfo.Id
+        var guildMember = await tempContext.GetByIdAsync<GuildMember>(characterId).ConfigureAwait(false); // we use the same id for Character.Id and GuildMemberInfo.Id
         if (guildMember is not null)
         {
-            var guildId = await this.GuildMemberEnterGameAsync(guildMember.GuildId, guildMember.Id, serverId);
+            var guildId = await this.GuildMemberEnterGameAsync(guildMember.GuildId, guildMember.Id, serverId).ConfigureAwait(false);
             var status = new GuildMemberStatus(guildId, guildMember.Status);
-            await this._changePublisher.AssignGuildToPlayerAsync(serverId, characterName, status);
+            await this._changePublisher.AssignGuildToPlayerAsync(serverId, characterName, status).ConfigureAwait(false);
         }
     }
 
@@ -228,7 +228,7 @@ public class GuildServer : IGuildServer
         var member = kvp.Value;
         if (member.PlayerPosition == GuildPosition.GuildMaster)
         {
-            await this.DeleteGuildAsync(guildContainer);
+            await this.DeleteGuildAsync(guildContainer).ConfigureAwait(false);
             return;
         }
 
@@ -237,18 +237,18 @@ public class GuildServer : IGuildServer
         var guildMember = guildContainer.Guild.Members.FirstOrDefault(m => m.Id == kvp.Key);
         if (guildMember != null)
         {
-            await guildContainer.DatabaseContext.DeleteAsync(guildMember);
-            await guildContainer.DatabaseContext.SaveChangesAsync();
+            await guildContainer.DatabaseContext.DeleteAsync(guildMember).ConfigureAwait(false);
+            await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        await this._changePublisher.GuildPlayerKickedAsync(playerName);
+        await this._changePublisher.GuildPlayerKickedAsync(playerName).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async ValueTask<GuildPosition> GetGuildPositionAsync(Guid characterId)
     {
         using var tempContext = this._persistenceContextProvider.CreateNewGuildContext();
-        var guildMember = await tempContext.GetByIdAsync<GuildMember>(characterId); // we use the same id for Character.Id and GuildMemberInfo.Id
+        var guildMember = await tempContext.GetByIdAsync<GuildMember>(characterId).ConfigureAwait(false); // we use the same id for Character.Id and GuildMemberInfo.Id
         return guildMember?.Status ?? GuildPosition.Undefined;
     }
 
@@ -263,18 +263,18 @@ public class GuildServer : IGuildServer
     /// <param name="guildContainer">The container of the guild which should be deleted.</param>
     private async ValueTask DeleteGuildAsync(GuildContainer guildContainer)
     {
-        await guildContainer.DatabaseContext.DeleteAsync(guildContainer.Guild);
-        await guildContainer.DatabaseContext.SaveChangesAsync();
+        await guildContainer.DatabaseContext.DeleteAsync(guildContainer.Guild).ConfigureAwait(false);
+        await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
         this.RemoveGuildContainer(guildContainer);
 
-        await this._changePublisher.GuildDeletedAsync(guildContainer.Id);
+        await this._changePublisher.GuildDeletedAsync(guildContainer.Id).ConfigureAwait(false);
 
         // TODO: Inform gameServers that guildwar/hostility ended
     }
 
     private async ValueTask<uint> GuildMemberEnterGameAsync(Guid guildId, Guid characterId, byte serverId)
     {
-        var guild = await this.GetOrCreateGuildContainerAsync(guildId);
+        var guild = await this.GetOrCreateGuildContainerAsync(guildId).ConfigureAwait(false);
         if (guild is null)
         {
             throw new ArgumentException($"Guild not found. Id: {guildId}", nameof(guildId));
@@ -289,7 +289,7 @@ public class GuildServer : IGuildServer
         if (!this._guildIdMapping.TryGetValue(guildId, out var shortGuildId) || !this._guildDictionary.TryGetValue(shortGuildId, out var guild))
         {
             var context = this._persistenceContextProvider.CreateNewGuildContext();
-            var guildinfo = await context.GetByIdAsync<Guild>(guildId);
+            var guildinfo = await context.GetByIdAsync<Guild>(guildId).ConfigureAwait(false);
             if (guildinfo is null)
             {
                 this._logger.LogWarning("GuildMemberEnter: Guild {0} not found", guildId);
@@ -298,7 +298,7 @@ public class GuildServer : IGuildServer
             }
 
             guild = this.CreateGuildContainer(guildinfo, context);
-            await guild.LoadMemberNamesAsync();
+            await guild.LoadMemberNamesAsync().ConfigureAwait(false);
         }
 
         return guild;

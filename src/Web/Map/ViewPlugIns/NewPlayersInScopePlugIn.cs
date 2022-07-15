@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Collections.Concurrent;
+
 namespace MUnique.OpenMU.Web.Map.ViewPlugIns;
 
 using Microsoft.JSInterop;
@@ -14,8 +16,8 @@ using MUnique.OpenMU.Web.Map.Map;
 /// </summary>
 public class NewPlayersInScopePlugIn : JsViewPlugInBase, INewPlayersInScopePlugIn
 {
-    private readonly IDictionary<int, ILocateable> _objects;
-    private readonly Action _objectsChangedCallback;
+    private readonly ConcurrentDictionary<int, Player> _players;
+    private readonly Action _playersChangedCallback;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NewPlayersInScopePlugIn" /> class.
@@ -24,13 +26,13 @@ public class NewPlayersInScopePlugIn : JsViewPlugInBase, INewPlayersInScopePlugI
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="worldAccessor">The world accessor.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <param name="objects">The objects.</param>
-    /// <param name="objectsChangedCallback">The objects changed callback.</param>
-    public NewPlayersInScopePlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken, IDictionary<int, ILocateable> objects, Action objectsChangedCallback)
+    /// <param name="players">The objects.</param>
+    /// <param name="playersChangedCallback">The players changed callback.</param>
+    public NewPlayersInScopePlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken, ConcurrentDictionary<int, Player> players, Action playersChangedCallback)
         : base(jsRuntime, loggerFactory, $"{worldAccessor}.addOrUpdatePlayer", cancellationToken)
     {
-        this._objects = objects;
-        this._objectsChangedCallback = objectsChangedCallback;
+        this._players = players;
+        this._playersChangedCallback = playersChangedCallback;
     }
 
     /// <inheritdoc />
@@ -40,21 +42,21 @@ public class NewPlayersInScopePlugIn : JsViewPlugInBase, INewPlayersInScopePlugI
         {
             foreach (var player in newObjects)
             {
-                this._objects.TryAdd(player.Id, player);
+                this._players.TryAdd(player.Id, player);
 
                 if (this.CancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
 
-                await this.InvokeAsync(player.CreateMapObject());
+                await this.InvokeAsync(player.CreateMapObject()).ConfigureAwait(false);
             }
 
-            this._objectsChangedCallback?.Invoke();
+            this._playersChangedCallback?.Invoke();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            this.Logger.LogError(e, $"Error in {nameof(this.NewPlayersInScopeAsync)}");
+            this.Logger.LogError(ex, $"Error in {nameof(this.NewPlayersInScopeAsync)}");
         }
     }
 }

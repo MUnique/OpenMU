@@ -40,16 +40,16 @@ public class ItemConsumptionTest
         var contextProvider = new InMemoryPersistenceContextProvider();
         var consumeHandler = new BlessJewelConsumeHandler(contextProvider);
 
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var upgradeableItem = this.GetItemWithPossibleOption();
         upgradeableItem.Level = itemLevel;
         var upgradableItemSlot = (byte)(ItemSlot + 1);
-        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem);
+        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem).ConfigureAwait(false);
         var bless = this.GetItem();
-        await player.Inventory.AddItemAsync(ItemSlot, bless);
+        await player.Inventory.AddItemAsync(ItemSlot, bless).ConfigureAwait(false);
         bless.Durability = 1;
 
-        var consumed = await consumeHandler.ConsumeItemAsync(player, bless, upgradeableItem, FruitUsage.Undefined);
+        var consumed = await consumeHandler.ConsumeItemAsync(player, bless, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(consumed, Is.EqualTo(consumptionExpectation));
         Assert.That(upgradeableItem.Level, consumed ? Is.EqualTo(itemLevel + 1) : Is.EqualTo(itemLevel));
@@ -94,16 +94,16 @@ public class ItemConsumptionTest
         randomizer.Setup(r => r.NextRandomBool(50)).Returns(success);
         var consumeHandler = new SoulJewelConsumeHandler(contextProvider, randomizer.Object);
 
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var upgradeableItem = this.GetItemWithPossibleOption();
         upgradeableItem.Level = itemLevel;
         var upgradableItemSlot = (byte)(ItemSlot + 1);
-        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem);
+        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem).ConfigureAwait(false);
         var soul = this.GetItem();
-        await player.Inventory.AddItemAsync(ItemSlot, soul);
+        await player.Inventory.AddItemAsync(ItemSlot, soul).ConfigureAwait(false);
         soul.Durability = 1;
 
-        var consumed = await consumeHandler.ConsumeItemAsync(player, soul, upgradeableItem, FruitUsage.Undefined);
+        var consumed = await consumeHandler.ConsumeItemAsync(player, soul, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(consumed, Is.EqualTo(consumptionExpectation));
         Assert.That(upgradeableItem.Level, Is.EqualTo(expectedItemLevel));
@@ -124,18 +124,18 @@ public class ItemConsumptionTest
         var contextProvider = new InMemoryPersistenceContextProvider();
         var consumeHandler = new LifeJewelConsumeHandler(contextProvider);
         consumeHandler.Configuration.SuccessChance = 1;
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var upgradeableItem = this.GetItemWithPossibleOption();
         var upgradableItemSlot = (byte)(ItemSlot + 1);
-        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem);
+        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem).ConfigureAwait(false);
         bool jolConsumed = false;
         for (int i = 0; i < numberOfOptions; i++)
         {
             var item = this.GetItem();
-            await player.Inventory.AddItemAsync(ItemSlot, item);
+            await player.Inventory.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
             item.Durability = 1;
 
-            jolConsumed = await consumeHandler.ConsumeItemAsync(player, item, upgradeableItem, FruitUsage.Undefined);
+            jolConsumed = await consumeHandler.ConsumeItemAsync(player, item, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
         }
 
         Assert.That(jolConsumed, Is.EqualTo(consumptionExpectation));
@@ -155,27 +155,27 @@ public class ItemConsumptionTest
         var contextProvider = new InMemoryPersistenceContextProvider();
         var consumeHandler = new LifeJewelConsumeHandler(contextProvider);
         consumeHandler.Configuration.SuccessChance = 1;
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var upgradeableItem = this.GetItemWithPossibleOption();
         var upgradableItemSlot = (byte)(ItemSlot + 1);
-        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem);
+        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem).ConfigureAwait(false);
 
         // we're adding 3 options first
         for (int i = 0; i < 3; i++)
         {
             var item = this.GetItem();
-            await player.Inventory.AddItemAsync(ItemSlot, item);
+            await player.Inventory.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
             item.Durability = 1;
 
-            await consumeHandler.ConsumeItemAsync(player, item, upgradeableItem, FruitUsage.Undefined);
+            await consumeHandler.ConsumeItemAsync(player, item, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
         }
 
         // then adding fails, so one option needs to be removed
         consumeHandler.Configuration.SuccessChance = 0;
         var jol = this.GetItem();
-        await player.Inventory.AddItemAsync(ItemSlot, jol);
+        await player.Inventory.AddItemAsync(ItemSlot, jol).ConfigureAwait(false);
         jol.Durability = 1;
-        var jolConsumed = await consumeHandler.ConsumeItemAsync(player, jol, upgradeableItem, FruitUsage.Undefined);
+        var jolConsumed = await consumeHandler.ConsumeItemAsync(player, jol, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(jolConsumed, Is.True);
         Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
@@ -191,24 +191,24 @@ public class ItemConsumptionTest
         var contextProvider = new InMemoryPersistenceContextProvider();
         var consumeHandler = new LifeJewelConsumeHandler(contextProvider);
         consumeHandler.Configuration.SuccessChance = 1;
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var upgradeableItem = this.GetItemWithPossibleOption();
         var upgradableItemSlot = (byte)(ItemSlot + 1);
-        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem);
+        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem).ConfigureAwait(false);
 
         var jol = this.GetItem();
-        await player.Inventory.AddItemAsync(ItemSlot, jol);
+        await player.Inventory.AddItemAsync(ItemSlot, jol).ConfigureAwait(false);
         jol.Durability = 1;
 
-        await consumeHandler.ConsumeItemAsync(player, jol, upgradeableItem, FruitUsage.Undefined);
+        await consumeHandler.ConsumeItemAsync(player, jol, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
 
         // then adding fails, so one option needs to be removed
         consumeHandler.Configuration.SuccessChance = 0;
         var jol2 = this.GetItem();
-        await player.Inventory.AddItemAsync(ItemSlot, jol2);
+        await player.Inventory.AddItemAsync(ItemSlot, jol2).ConfigureAwait(false);
         jol2.Durability = 1;
-        var jolConsumed = await consumeHandler.ConsumeItemAsync(player, jol2, upgradeableItem, FruitUsage.Undefined);
+        var jolConsumed = await consumeHandler.ConsumeItemAsync(player, jol2, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(jolConsumed, Is.True);
         Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(0));
@@ -246,11 +246,11 @@ public class ItemConsumptionTest
     [Test]
     public async ValueTask ShieldPotionAsync()
     {
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
-        await player.Inventory!.AddItemAsync(ItemSlot, item);
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
         var consumeHandler = new BigShieldPotionConsumeHandler();
-        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined);
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(player.Attributes!.GetValueOfAttribute(Stats.CurrentShield), Is.GreaterThan(0.0f));
     }
@@ -262,11 +262,11 @@ public class ItemConsumptionTest
     public async ValueTask FailByWrongPlayerStateAsync()
     {
         var consumeHandler = new BaseConsumeHandler();
-        var player = await this.GetPlayerAsync();
-        player.PlayerState.TryAdvanceTo(PlayerState.TradeRequested);
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.TradeRequested).ConfigureAwait(false);
         var item = this.GetItem();
-        await player.Inventory!.AddItemAsync(ItemSlot, item);
-        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined);
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(success, Is.False);
     }
 
@@ -277,11 +277,11 @@ public class ItemConsumptionTest
     public async ValueTask ItemDurabilityDecreaseAsync()
     {
         var consumeHandler = new BaseConsumeHandler();
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
-        await player.Inventory!.AddItemAsync(ItemSlot, item);
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
         item.Durability = 3;
-        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined);
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(item.Durability, Is.EqualTo(2));
         Assert.That(player.Inventory.Items.Any(), Is.True);
@@ -294,10 +294,10 @@ public class ItemConsumptionTest
     public async ValueTask ItemRemovalAsync()
     {
         var consumeHandler = new BaseConsumeHandler();
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
-        await player.Inventory!.AddItemAsync(ItemSlot, item);
-        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined);
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(item.Durability, Is.EqualTo(0));
         Assert.That(player.Inventory.Items.Any(), Is.False);
@@ -310,10 +310,10 @@ public class ItemConsumptionTest
     public async ValueTask DrinkAlcoholFailAsync()
     {
         var consumeHandler = new AlcoholConsumeHandler();
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
         item.Durability = 0;
-        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined);
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(success, Is.False);
         Mock.Get(player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()).Verify(view => view!.DrinkAlcoholAsync(), Times.Never);
@@ -326,10 +326,10 @@ public class ItemConsumptionTest
     public async ValueTask DrinkAlcoholSuccessAsync()
     {
         var consumeHandler = new AlcoholConsumeHandler();
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
-        await player.Inventory!.AddItemAsync(ItemSlot, item);
-        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined);
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(success, Is.True);
         Assert.That(player.Inventory.Items.Any(), Is.False);
@@ -342,11 +342,11 @@ public class ItemConsumptionTest
     [Test]
     public async ValueTask HealthRecoverAsync()
     {
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
-        await player.Inventory!.AddItemAsync(ItemSlot, item);
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
         var consumeHandler = new BigHealthPotionConsumeHandler();
-        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined);
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(player.Attributes!.GetValueOfAttribute(Stats.CurrentHealth), Is.GreaterThan(0.0f));
     }
@@ -357,11 +357,11 @@ public class ItemConsumptionTest
     [Test]
     public async ValueTask ManaRecoverAsync()
     {
-        var player = await this.GetPlayerAsync();
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
-        await player.Inventory!.AddItemAsync(ItemSlot, item);
+        await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
         var consumeHandler = new BigManaPotionConsumeHandler();
-        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined);
+        var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(player.Attributes!.GetValueOfAttribute(Stats.CurrentMana), Is.GreaterThan(0.0f));
     }
@@ -377,7 +377,7 @@ public class ItemConsumptionTest
 
     private async ValueTask<Player> GetPlayerAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
 
         player.SelectedCharacter!.Attributes.Add(new StatAttribute(Stats.Level, 100));
         player.SelectedCharacter.Attributes.Add(new StatAttribute(Stats.CurrentHealth, 0));

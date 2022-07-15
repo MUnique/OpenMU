@@ -54,7 +54,7 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
             targetPoint = walker.WalkTarget;
             walkDelay = (int)walker.StepDelay.TotalMilliseconds;
             var walkingSteps = new WalkingStep[16];
-            var stepCount = await walker.GetStepsAsync(walkingSteps);
+            var stepCount = await walker.GetStepsAsync(walkingSteps).ConfigureAwait(false);
             var walkSteps = walkingSteps.AsSpan().Slice(0, stepCount).ToArray()
                 .Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
 
@@ -72,6 +72,6 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
             steps = walkSteps;
         }
 
-        await this.InvokeAsync(movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps!);
+        await this.InvokeAsync(movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps!).ConfigureAwait(false);
     }
 }

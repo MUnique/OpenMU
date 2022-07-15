@@ -32,7 +32,7 @@ public class CreateCharacterAction
         var characterClass = player.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.Number == characterClassId);
         if (characterClass is not null)
         {
-            var character = await this.CreateCharacterAsync(player, characterName, characterClass);
+            var character = await this.CreateCharacterAsync(player, characterName, characterClass).ConfigureAwait(false);
             if (character != null)
             {
                 await player.InvokeViewPlugInAsync<IShowCreatedCharacterPlugIn>(p => p.ShowCreatedCharacterAsync(character)).ConfigureAwait(false);
@@ -94,7 +94,7 @@ public class CreateCharacterAction
         try
         {
             // todo: test if character name exists, before doing all this
-            await player.PersistenceContext.SaveChangesAsync();
+            await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

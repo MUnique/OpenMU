@@ -24,7 +24,7 @@ public class GuildListRequestAction
 
         if ((player.GameContext as IGameServerContext)?.GuildServer is { } guildServer)
         {
-            var players = await guildServer.GetGuildListAsync(player.GuildStatus.GuildId);
+            var players = await guildServer.GetGuildListAsync(player.GuildStatus.GuildId).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowGuildListPlugIn>(p => p.ShowGuildListAsync(players)).ConfigureAwait(false);
         }
     }

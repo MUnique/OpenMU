@@ -49,7 +49,7 @@ public sealed class DevilSquareContext : MiniGameContext
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
         }
 
-        await base.OnGameStartAsync(players);
+        await base.OnGameStartAsync(players).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -67,7 +67,7 @@ public sealed class DevilSquareContext : MiniGameContext
         {
             rank++;
             state.Rank = rank;
-            var (bonusScore, givenMoney) = await this.GiveRewardsAndGetBonusScoreAsync(state.Player, rank);
+            var (bonusScore, givenMoney) = await this.GiveRewardsAndGetBonusScoreAsync(state.Player, rank).ConfigureAwait(false);
             state.AddScore(bonusScore);
             scoreList.Add((
                 state.Player.Name,
@@ -78,8 +78,8 @@ public sealed class DevilSquareContext : MiniGameContext
 
         this._highScoreTable = scoreList.AsReadOnly();
 
-        await this.SaveRankingAsync(sortedFinishers.Select(state => (state.Rank, state.Player.SelectedCharacter!, state.Score)));
-        await base.GameEndedAsync(finishers);
+        await this.SaveRankingAsync(sortedFinishers.Select(state => (state.Rank, state.Player.SelectedCharacter!, state.Score))).ConfigureAwait(false);
+        await base.GameEndedAsync(finishers).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

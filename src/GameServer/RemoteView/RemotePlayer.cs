@@ -96,10 +96,10 @@ public class RemotePlayer : Player, IClientVersionProvider
     /// <inheritdoc/>
     protected override async ValueTask InternalDisconnectAsync()
     {
-        await base.InternalDisconnectAsync();
+        await base.InternalDisconnectAsync().ConfigureAwait(false);
         if (this.Connection is { Connected: true })
         {
-            await this.Connection.DisconnectAsync();
+            await this.Connection.DisconnectAsync().ConfigureAwait(false);
             this.Connection.Dispose();
             this.Connection = null;
         }
@@ -140,7 +140,7 @@ public class RemotePlayer : Player, IClientVersionProvider
                     this.Logger.LogDebug("[C->S] {0}", buffer.ToArray().AsString());
                 }
 
-                await this.MainPacketHandler.HandlePacketAsync(this, buffer);
+                await this.MainPacketHandler.HandlePacketAsync(this, buffer).ConfigureAwait(false);
             }
             finally
             {

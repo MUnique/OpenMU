@@ -29,6 +29,6 @@ internal class PartyKickHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PartyPlayerKickRequest message = packet;
-        await this._action.KickPlayerAsync(player, message.PlayerIndex);
+        await this._action.KickPlayerAsync(player, message.PlayerIndex).ConfigureAwait(false);
     }
 }

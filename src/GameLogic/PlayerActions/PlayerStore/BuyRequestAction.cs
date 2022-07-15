@@ -86,13 +86,13 @@ public class BuyRequestAction
                 {
                     using var itemContext = requestedPlayer.GameContext.PersistenceContextProvider.CreateNewTradeContext();
                     itemContext.Attach(item);
-                    await requestedPlayer.ShopStorage.RemoveItemAsync(item);
+                    await requestedPlayer.ShopStorage.RemoveItemAsync(item).ConfigureAwait(false);
                     await requestedPlayer.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
-                    await requestedPlayer.InvokeViewPlugInAsync<IItemSoldByPlayerShopPlugIn>(p => p.ItemSoldByPlayerShopAsync(slot, player));
-                    await requestedPlayer.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot));
+                    await requestedPlayer.InvokeViewPlugInAsync<IItemSoldByPlayerShopPlugIn>(p => p.ItemSoldByPlayerShopAsync(slot, player)).ConfigureAwait(false);
+                    await requestedPlayer.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
                     item.ItemSlot = (byte)freeslot;
                     item.StorePrice = null;
-                    await player.Inventory!.AddItemAsync(item);
+                    await player.Inventory!.AddItemAsync(item).ConfigureAwait(false);
                     requestedPlayer.PersistenceContext.Detach(item);
                     await itemContext.SaveChangesAsync().ConfigureAwait(false);
                     player.PersistenceContext.Attach(item);
@@ -119,7 +119,7 @@ public class BuyRequestAction
             }
             else
             {
-                await this._closeStoreAction.CloseStoreAsync(requestedPlayer);
+                await this._closeStoreAction.CloseStoreAsync(requestedPlayer).ConfigureAwait(false);
             }
         }
     }

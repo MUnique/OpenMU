@@ -74,19 +74,19 @@ public class TargetedSkillAction
         }
 
         // enough mana, ag etc?
-        if (!await player.TryConsumeForSkillAsync(skill))
+        if (!await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
         {
             return;
         }
 
         if (skill.MovesToTarget)
         {
-            await player.MoveAsync(target.Position);
+            await player.MoveAsync(target.Position).ConfigureAwait(false);
         }
 
         if (skill.MovesTarget)
         {
-            await target.MoveRandomlyAsync();
+            await target.MoveRandomlyAsync().ConfigureAwait(false);
         }
 
         var effectApplied = false;
@@ -95,12 +95,12 @@ public class TargetedSkillAction
             if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
                 && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is { } monsterDefinition)
             {
-                await player.CreateSummonedMonsterAsync(monsterDefinition);
+                await player.CreateSummonedMonsterAsync(monsterDefinition).ConfigureAwait(false);
             }
         }
         else
         {
-            effectApplied = await this.ApplySkillAsync(player, target, skillEntry!);
+            effectApplied = await this.ApplySkillAsync(player, target, skillEntry!).ConfigureAwait(false);
         }
 
         await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, skill, effectApplied), true).ConfigureAwait(false);
@@ -116,14 +116,14 @@ public class TargetedSkillAction
         {
             if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
             {
-                await target.AttackByAsync(player, skillEntry);
-                success = await target.TryApplyElementalEffectsAsync(player, skillEntry) || success;
+                await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
+                success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
             }
             else if (skill.MagicEffectDef != null)
             {
                 if (skill.SkillType == SkillType.Buff)
                 {
-                    await target.ApplyMagicEffectAsync(player, skillEntry);
+                    await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
                     success = true;
                 }
                 else if (skill.SkillType == SkillType.Regeneration)

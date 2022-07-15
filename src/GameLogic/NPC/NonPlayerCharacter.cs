@@ -112,8 +112,8 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
-        await this.CurrentMap.RemoveAsync(this);
-        await base.DisposeAsyncCore();
+        await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
+        await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
     /// <summary>

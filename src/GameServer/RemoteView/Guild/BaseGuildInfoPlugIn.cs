@@ -73,7 +73,7 @@ public abstract class BaseGuildInfoPlugIn<T>
             return guildInfo;
         }
 
-        var guild = await this.Player.GameServerContext.GuildServer.GetGuildAsync(guildId);
+        var guild = await this.Player.GameServerContext.GuildServer.GetGuildAsync(guildId).ConfigureAwait(false);
         if (guild is null)
         {
             return Memory<byte>.Empty;

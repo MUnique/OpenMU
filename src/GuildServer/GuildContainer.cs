@@ -73,7 +73,7 @@ internal class GuildContainer
     /// </summary>
     public async ValueTask LoadMemberNamesAsync()
     {
-        var memberNames = await this.DatabaseContext.GetMemberNamesAsync(this.Guild.Id);
+        var memberNames = await this.DatabaseContext.GetMemberNamesAsync(this.Guild.Id).ConfigureAwait(false);
         foreach (var member in this.Members.Where(m => m.Value.PlayerName is null))
         {
             if (memberNames.TryGetValue(member.Key, out var name))

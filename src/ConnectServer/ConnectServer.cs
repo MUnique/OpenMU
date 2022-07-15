@@ -116,13 +116,13 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await this.StartAsync();
+        await this.StartAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await this.ShutdownAsync();
+        await this.ShutdownAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

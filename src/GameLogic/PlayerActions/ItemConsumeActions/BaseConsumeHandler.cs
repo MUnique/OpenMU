@@ -19,7 +19,7 @@ public class BaseConsumeHandler : IItemConsumeHandler
             return false;
         }
 
-        await this.ConsumeSourceItemAsync(player, item);
+        await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
 
         return true;
     }
@@ -40,10 +40,10 @@ public class BaseConsumeHandler : IItemConsumeHandler
         {
             if (player.Inventory is { } inventory)
             {
-                await inventory.RemoveItemAsync(item);
+                await inventory.RemoveItemAsync(item).ConfigureAwait(false);
             }
 
-            await player.PersistenceContext.DeleteAsync(item);
+            await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         }
     }
 

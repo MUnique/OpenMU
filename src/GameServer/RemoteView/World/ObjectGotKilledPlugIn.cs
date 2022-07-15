@@ -38,7 +38,7 @@ public class ObjectGotKilledPlugIn : IObjectGotKilledPlugIn
 
         var killedId = killed.GetId(this._player);
         var killerId = killer.GetId(this._player);
-        await connection.SendObjectGotKilledAsync(killedId, skill?.Number.ToUnsigned() ?? 0, killerId);
+        await connection.SendObjectGotKilledAsync(killedId, skill?.Number.ToUnsigned() ?? 0, killerId).ConfigureAwait(false);
         if (this._player == killed && killer is Player killerPlayer)
         {
             await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal)).ConfigureAwait(false);

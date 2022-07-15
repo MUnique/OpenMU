@@ -97,7 +97,7 @@ public partial class ExitGatePicker
         this.SelectedGate = exitGate;
         if (this.SelectedGateChanged is { } eventCallback)
         {
-            await eventCallback.InvokeAsync(exitGate);
+            await eventCallback.InvokeAsync(exitGate).ConfigureAwait(false);
         }
     }
 
@@ -105,7 +105,7 @@ public partial class ExitGatePicker
     {
         if (Guid.TryParse(args.Value as string, out var mapId))
         {
-            this.Map = await this.PersistenceContext.GetByIdAsync<GameMapDefinition>(mapId);
+            this.Map = await this.PersistenceContext.GetByIdAsync<GameMapDefinition>(mapId).ConfigureAwait(false);
         }
     }
 }

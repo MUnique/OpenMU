@@ -91,7 +91,7 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
     {
         try
         {
-            await this.TickAsync();
+            await this.TickAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

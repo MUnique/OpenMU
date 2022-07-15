@@ -70,7 +70,7 @@ internal class FtpRequestHandler : IPacketHandler<Client>
                 this._logger.LogDebug("Client {0}:{1} reached maxFtpRequests", client.Address, client.Port);
             }
 
-            await client.Connection.DisconnectAsync();
+            await client.Connection.DisconnectAsync().ConfigureAwait(false);
             return;
         }
 

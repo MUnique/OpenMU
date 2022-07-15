@@ -29,6 +29,6 @@ public class BuffRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     /// <inheritdoc />
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        await this._buffRequestAction.RequestBuffAsync(player);
+        await this._buffRequestAction.RequestBuffAsync(player).ConfigureAwait(false);
     }
 }

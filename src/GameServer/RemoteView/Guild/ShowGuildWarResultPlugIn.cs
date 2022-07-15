@@ -27,6 +27,6 @@ public class ShowGuildWarResultPlugIn: IShowGuildWarResultPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowResultAsync(string hostileGuildName, GuildWarResult result)
     {
-        await this._player.Connection.SendGuildWarEndedAsync(result.Convert(), hostileGuildName);
+        await this._player.Connection.SendGuildWarEndedAsync(result.Convert(), hostileGuildName).ConfigureAwait(false);
     }
 }

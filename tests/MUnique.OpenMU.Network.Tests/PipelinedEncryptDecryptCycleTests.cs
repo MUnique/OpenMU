@@ -128,7 +128,7 @@ public class PipelinedEncryptDecryptCycleTests
         var encryptor = new PipelinedXor32Encryptor(new PipelinedSimpleModulusEncryptor(pipe.Writer, PipelinedSimpleModulusEncryptor.DefaultClientKey).Writer);
         var decryptor = new PipelinedXor32Decryptor(new PipelinedSimpleModulusDecryptor(pipe.Reader).Reader);
         encryptor.Writer.Write(packet);
-        await encryptor.Writer.FlushAsync();
+        await encryptor.Writer.FlushAsync().ConfigureAwait(false);
         var readResult = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
 
         var result = readResult.Buffer.ToArray();

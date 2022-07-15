@@ -88,7 +88,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
             this._logger.LogWarning("GameServer endpoint of port {0} has registered an alternative public port of {1}.", this._endPoint.NetworkPort, port);
         }
 
-        this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(await this._addressResolver.ResolveIPv4Async(), port));
+        this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false), port));
         this._listener.Start();
         this._logger.LogInformation("Server listener started.");
     }
@@ -144,11 +144,11 @@ public class DefaultTcpGameServerListener : IGameServerListener
         var remotePlayer = new RemotePlayer(this._gameContext, connection, this.ClientVersion);
         connection.Disconnected += async () =>
         {
-            await remotePlayer.DisconnectAsync();
+            await remotePlayer.DisconnectAsync().ConfigureAwait(false);
             this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.PlayerCount);
         };
 
-        await this.OnPlayerConnectedAsync(remotePlayer);
+        await this.OnPlayerConnectedAsync(remotePlayer).ConfigureAwait(false);
 
         // we don't want to await the call.
         _ = Task.Run(connection.BeginReceiveAsync);
@@ -159,7 +159,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
         var eventHandler = this.PlayerConnected;
         if (eventHandler != null)
         {
-            await eventHandler(new PlayerConnectedEventArgs(player));
+            await eventHandler(new PlayerConnectedEventArgs(player)).ConfigureAwait(false);
         }
         else
         {

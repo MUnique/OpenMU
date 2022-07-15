@@ -30,7 +30,7 @@ public class ChatViewPlugIn : IChatViewPlugIn
     /// <inheritdoc/>
     public async ValueTask ChatMessageAsync(string message, string sender, ChatMessageType type)
     {
-        await this._player.Connection.SendChatMessageAsync(ConvertChatMessageType(type), sender, message);
+        await this._player.Connection.SendChatMessageAsync(ConvertChatMessageType(type), sender, message).ConfigureAwait(false);
     }
 
     private static ChatMessage.ChatMessageType ConvertChatMessageType(ChatMessageType type)

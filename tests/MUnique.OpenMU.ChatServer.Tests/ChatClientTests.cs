@@ -33,7 +33,7 @@ public class ChatClientTests
         room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
 
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket);
+        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket).ConfigureAwait(false);
 
         Assert.That(room.ConnectedClients, Contains.Item(client));
     }
@@ -53,7 +53,7 @@ public class ChatClientTests
         var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
         room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450674"));
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket);
+        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket).ConfigureAwait(false);
 
         Assert.That(room.ConnectedClients.Contains(client), Is.False);
         Assert.That(connection.Connected, Is.False);
@@ -74,7 +74,7 @@ public class ChatClientTests
         var duplexPipe1 = new DuplexPipe();
         var connection1 = new Connection(duplexPipe1, null, null, new NullLogger<Connection>());
         var client1 = new ChatClient(connection1, manager, new NullLogger<ChatClient>());
-        await duplexPipe1.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket);
+        await duplexPipe1.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket).ConfigureAwait(false);
 
         var duplexPipe2 = new DuplexPipe();
         var connection2 = new Connection(duplexPipe2, null, null, new NullLogger<Connection>());
@@ -82,7 +82,7 @@ public class ChatClientTests
         var disconnectedRaised = false;
         client2.Disconnected += (_, _) => disconnectedRaised = true;
 
-        await duplexPipe2.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket);
+        await duplexPipe2.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket).ConfigureAwait(false);
 
         Assert.That(room.ConnectedClients, Has.Count.EqualTo(1));
         Assert.That(room.ConnectedClients, Contains.Item(client1));
@@ -106,7 +106,7 @@ public class ChatClientTests
 
         room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket);
+        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket).ConfigureAwait(false);
 
         Assert.That(client.Nickname, Is.EqualTo("Bob"));
     }
@@ -129,7 +129,7 @@ public class ChatClientTests
         room!.RegisterClient(authInfo);
 
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket);
+        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket).ConfigureAwait(false);
 
         Assert.That(client.Index, Is.EqualTo(authInfo.Index));
     }
@@ -146,8 +146,8 @@ public class ChatClientTests
         var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         var client = new ChatClient(connection, manager, new NullLogger<ChatClient>());
         var expectedPacket = new byte[] { 0xC1, 0x0C, 0x04, 0x01, 0x06, 0xBD, 0x8E, 0xEA, 0xBD, 0x8E, 0xEA, 0xFC };
-        await client.SendMessageAsync(1, "AAAAAA");
-        var sendResult = await duplexPipe.SendPipe.Reader.ReadAsync();
+        await client.SendMessageAsync(1, "AAAAAA").ConfigureAwait(false);
+        var sendResult = await duplexPipe.SendPipe.Reader.ReadAsync().ConfigureAwait(false);
         var sentPacket = sendResult.Buffer.ToArray();
         Assert.That(sentPacket, Is.EqualTo(expectedPacket));
     }
@@ -168,10 +168,10 @@ public class ChatClientTests
         room!.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Bob", ChatServerHost, "128450673"));
 
         var authenticationPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket);
+        await duplexPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket).ConfigureAwait(false);
 
         var expectedPacket = new byte[] { 0xC2, 0x00, 0x13, 0x02, 0x00, 0x00, 0x01, 0x00, 0x00, 0x42, 0x6F, 0x62, 0, 0, 0, 0, 0, 0, 0 };
-        var readResult = await duplexPipe.SendPipe.Reader.ReadAsync();
+        var readResult = await duplexPipe.SendPipe.Reader.ReadAsync().ConfigureAwait(false);
         var result = readResult.Buffer.ToArray();
         Assert.That(result, Is.EquivalentTo(expectedPacket));
         Assert.That(client.Nickname, Is.EqualTo("Bob"));
@@ -194,13 +194,13 @@ public class ChatClientTests
         room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", ChatServerHost, "94371960"));
 
         var authenticationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-        await duplexPipe1.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket1);
+        await duplexPipe1.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket1).ConfigureAwait(false);
 
         var duplexPipe2 = new DuplexPipe();
         var connection2 = new Connection(duplexPipe2, null, null, new NullLogger<Connection>());
         var client2 = new ChatClient(connection2, manager, new NullLogger<ChatClient>());
         var authenticationPacket2 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
-        await duplexPipe2.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket2);
+        await duplexPipe2.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket2).ConfigureAwait(false);
 
         var expectedPacket = new byte[]
         {
@@ -209,9 +209,9 @@ public class ChatClientTests
             0x01, 0x41, 0x6C, 0x69, 0x63, 0x65, 0, 0, 0, 0, 0,
         };
 
-        await duplexPipe2.SendPipe.Writer.WaitForFlushAsync();
+        await duplexPipe2.SendPipe.Writer.WaitForFlushAsync().ConfigureAwait(false);
 
-        var readResult = await duplexPipe2.SendPipe.Reader.ReadAsync();
+        var readResult = await duplexPipe2.SendPipe.Reader.ReadAsync().ConfigureAwait(false);
         var result = readResult.Buffer.ToArray();
         Assert.That(result, Is.EquivalentTo(expectedPacket));
         Assert.That(client1.Nickname, Is.EqualTo("Bob"));
@@ -235,20 +235,20 @@ public class ChatClientTests
         room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", ChatServerHost, "94371960"));
 
         var authenticationPacket1 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-        await duplexPipe1.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket1);
+        await duplexPipe1.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket1).ConfigureAwait(false);
 
         var duplexPipe2 = new DuplexPipe();
         var connection2 = new Connection(duplexPipe2, null, null, new NullLogger<Connection>());
         var client2 = new ChatClient(connection2, manager, new NullLogger<ChatClient>());
         var authenticationPacket2 = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
-        await duplexPipe2.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket2);
+        await duplexPipe2.ReceivePipe.Writer.WriteAndWaitForFlushAsync(authenticationPacket2).ConfigureAwait(false);
 
         var expectedPacket = new byte[]
         {
             0xC1, 0x0F, 0x01, 0x00, 0x01, 0x41, 0x6C, 0x69, 0x63, 0x65, 0, 0, 0, 0, 0,
         }.AsString();
 
-        var readResult = await duplexPipe1.SendPipe.Reader.ReadAsync();
+        var readResult = await duplexPipe1.SendPipe.Reader.ReadAsync().ConfigureAwait(false);
         var received = readResult.Buffer.ToArray().AsString();
 
         Assert.That(received, Contains.Substring(expectedPacket));
@@ -273,27 +273,27 @@ public class ChatClientTests
         room.RegisterClient(new ChatServerAuthenticationInfo(room.GetNextClientIndex(), roomId, "Alice", ChatServerHost, "94371960"));
 
         var bobsAuthPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xCD, 0xFD, 0x93, 0xC8, 0xFA, 0x9B, 0xCA, 0xF8, 0x98, 0xFC };
-        await bobsPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(bobsAuthPacket);
-        await bobsPipe.ReceivePipe.Writer.WaitForFlushAsync();
+        await bobsPipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(bobsAuthPacket).ConfigureAwait(false);
+        await bobsPipe.ReceivePipe.Writer.WaitForFlushAsync().ConfigureAwait(false);
 
         var alicePipe = new DuplexPipe();
         var aliceConnection = new Connection(alicePipe, null, null, new NullLogger<Connection>());
         var aliceClient = new ChatClient(aliceConnection, manager, new NullLogger<ChatClient>());
         var aliceAuthPacket = new byte[] { 0xC1, 0x10, 0x00, 0x00, (byte)roomId, (byte)(roomId >> 8), 0xC5, 0xFB, 0x98, 0xCB, 0xFE, 0x92, 0xCA, 0xFF, 0xAB, 0xFC };
-        await alicePipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(aliceAuthPacket);
+        await alicePipe.ReceivePipe.Writer.WriteAndWaitForFlushAsync(aliceAuthPacket).ConfigureAwait(false);
 
-        await bobsClient.LogOffAsync();
+        await bobsClient.LogOffAsync().ConfigureAwait(false);
 
-        await Task.Delay(100);
+        await Task.Delay(100).ConfigureAwait(false);
 
         var expectedPacket = new byte[]
         {
             0xC1, 0x0F, 0x01, 0x01, 0x00, 0x42, 0x6F, 0x62, 0, 0, 0, 0, 0, 0, 0,
         }.AsString();
 
-        await alicePipe.SendPipe.Writer.WaitForFlushAsync();
+        await alicePipe.SendPipe.Writer.WaitForFlushAsync().ConfigureAwait(false);
 
-        var readResult = await alicePipe.SendPipe.Reader.ReadAsync();
+        var readResult = await alicePipe.SendPipe.Reader.ReadAsync().ConfigureAwait(false);
         var packets = readResult.Buffer.ToArray().AsString();
         Assert.That(packets, Contains.Substring(expectedPacket));
         Assert.That(room.ConnectedClients, Has.Count.EqualTo(1));

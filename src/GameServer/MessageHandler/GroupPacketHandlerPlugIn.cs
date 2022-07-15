@@ -37,7 +37,7 @@ internal abstract class GroupPacketHandlerPlugIn : PacketHandlerPlugInContainer<
     {
         var subTypeIndex = packet.Span[0] % 2 == 1 ? 3 : 4;
         var subPacketType = packet.Span[subTypeIndex];
-        await this.HandlePacketAsync(player, packet, this[subPacketType]);
+        await this.HandlePacketAsync(player, packet, this[subPacketType]).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

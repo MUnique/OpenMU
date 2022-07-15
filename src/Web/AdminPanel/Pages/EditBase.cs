@@ -168,10 +168,10 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                     this._modalDisposable = this.ModalService.ShowLoadingIndicator();
                     this.StateHasChanged();
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
-        await base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         {
             if (this._persistenceContext is { } context)
             {
-                text = await context.SaveChangesAsync() ? "The changes have been saved." : "There were no changes to save.";
+                text = await context.SaveChangesAsync().ConfigureAwait(false) ? "The changes have been saved." : "There were no changes to save.";
             }
             else
             {
@@ -197,7 +197,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             text = $"An unexpected error occured: {ex.Message}.";
         }
 
-        await this.ModalService.ShowMessageAsync("Save", text);
+        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(false);
     }
 
     private string? GetDownloadMarkup()
@@ -261,10 +261,10 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                 {
                     this._loadingState = DataLoadingState.Error;
                     this.Logger?.LogError(ex, $"Could not load {this.Type.FullName} with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    await this.InvokeAsync(() => this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details."));
+                    await this.InvokeAsync(() => this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details.")).ConfigureAwait(false);
                 }
 
-                await this.InvokeAsync(this.StateHasChanged);
+                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
             }
         }
         catch (TargetInvocationException ex) when (ex.InnerException is ObjectDisposedException)

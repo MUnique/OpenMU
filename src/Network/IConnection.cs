@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Network;
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
-using System.Threading;
+using Nito.AsyncEx;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -51,9 +51,9 @@ public interface IConnection : IDisposable
     PipeWriter Output { get; }
 
     /// <summary>
-    /// Gets a <see cref="SemaphoreSlim"/> to synchronize writes to the <see cref="Output"/>.
+    /// Gets an <see cref="AsyncLock"/> to synchronize writes to the <see cref="Output"/>.
     /// </summary>
-    SemaphoreSlim OutputLock { get; }
+    AsyncLock OutputLock { get; }
 
     /// <summary>
     /// Begins receiving from the client.

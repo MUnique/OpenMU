@@ -44,6 +44,6 @@ public class AttackAreaWhenPressedTrapIntelligence : TrapIntelligenceBase
             await this.Trap.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this.Trap, targetsInRange.FirstOrDefault(), attackSkill, true), true).ConfigureAwait(false);
         }
 
-        await targetsInRange.Select(this.Trap.AttackAsync).WhenAll();
+        await targetsInRange.Select(this.Trap.AttackAsync).WhenAll().ConfigureAwait(false);
     }
 }

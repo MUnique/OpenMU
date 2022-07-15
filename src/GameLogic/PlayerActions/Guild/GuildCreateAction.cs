@@ -33,13 +33,13 @@ public class GuildCreateAction
             return;
         }
 
-        if (await guildServer.GuildExistsAsync(guildName))
+        if (await guildServer.GuildExistsAsync(guildName).ConfigureAwait(false))
         {
             await creator.InvokeViewPlugInAsync<IShowGuildCreateResultPlugIn>(p => p.ShowGuildCreateResultAsync(GuildCreateErrorDetail.GuildAlreadyExist)).ConfigureAwait(false);
             return;
         }
 
-        if (await guildServer.CreateGuildAsync(guildName, creator.SelectedCharacter!.Name, creator.SelectedCharacter.Id, guildEmblem, ((IGameServerContext)creator.GameContext).Id))
+        if (await guildServer.CreateGuildAsync(guildName, creator.SelectedCharacter!.Name, creator.SelectedCharacter.Id, guildEmblem, ((IGameServerContext)creator.GameContext).Id).ConfigureAwait(false))
         {
             await creator.InvokeViewPlugInAsync<IShowGuildCreateResultPlugIn>(p => p.ShowGuildCreateResultAsync(GuildCreateErrorDetail.None)).ConfigureAwait(false);
             creator.Logger.LogInformation("Guild created: [{0}], Master: [{1}]", guildName, creator.SelectedCharacter.Name);

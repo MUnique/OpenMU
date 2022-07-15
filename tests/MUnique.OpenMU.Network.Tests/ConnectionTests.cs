@@ -28,7 +28,7 @@ public class ConnectionTests
         _ = connection.BeginReceiveAsync();
         try
         {
-            await duplexPipe.ReceivePipe.Writer.WriteAsync(malformedData);
+            await duplexPipe.ReceivePipe.Writer.WriteAsync(malformedData).ConfigureAwait(false);
         }
         catch
         {

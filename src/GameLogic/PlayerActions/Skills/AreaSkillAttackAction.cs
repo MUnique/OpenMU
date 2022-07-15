@@ -31,14 +31,14 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (!await player.TryConsumeForSkillAsync(skill))
+        if (!await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
         {
             return;
         }
 
         if (skill.SkillType == SkillType.AreaSkillAutomaticHits)
         {
-            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill);
+            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill).ConfigureAwait(false);
         }
 
         await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
@@ -56,7 +56,7 @@ public class AreaSkillAttackAction
         var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
         foreach (var target in attackablesInRange)
         {
-            await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter);
+            await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter).ConfigureAwait(false);
 
             if (target == extraTarget)
             {
@@ -67,7 +67,7 @@ public class AreaSkillAttackAction
 
         if (isExtraTargetDefined && extraTarget is not null && player.IsInRange(extraTarget.Position, skill.Range + 2))
         {
-            await this.ApplySkillAsync(player, skillEntry, extraTarget, targetAreaCenter);
+            await this.ApplySkillAsync(player, skillEntry, extraTarget, targetAreaCenter).ConfigureAwait(false);
         }
     }
 
@@ -77,11 +77,11 @@ public class AreaSkillAttackAction
 
         if (target.CheckSkillTargetRestrictions(player, skillEntry.Skill))
         {
-            await target.AttackByAsync(player, skillEntry);
-            await target.TryApplyElementalEffectsAsync(player, skillEntry);
+            await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
+            await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
             if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number) is { } strategy)
             {
-                await strategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter);
+                await strategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter).ConfigureAwait(false);
             }
         }
     }

@@ -31,14 +31,14 @@ public abstract class ServerContainerBase : IHostedService
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await this.StartInnerAsync(cancellationToken);
+        await this.StartInnerAsync(cancellationToken).ConfigureAwait(false);
         this._setupService.DatabaseInitialized += this.OnDatabaseInitializedAsync;
     }
 
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await this.StopInnerAsync(cancellationToken);
+        await this.StopInnerAsync(cancellationToken).ConfigureAwait(false);
         this._setupService.DatabaseInitialized -= this.OnDatabaseInitializedAsync;
     }
 
@@ -58,8 +58,8 @@ public abstract class ServerContainerBase : IHostedService
     {
         try
         {
-            await this.StopAsync(default);
-            await this.StartAsync(default);
+            await this.StopAsync(default).ConfigureAwait(false);
+            await this.StartAsync(default).ConfigureAwait(false);
         }
         catch (Exception exception)
         {

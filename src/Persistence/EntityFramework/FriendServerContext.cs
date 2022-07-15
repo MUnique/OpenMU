@@ -30,8 +30,8 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
     public async ValueTask<Interfaces.Friend> CreateNewFriendAsync(string characterName, string friendName)
     {
         var item = this.CreateNew<Model.Friend>();
-        item.CharacterId = await this.GetCharacterIdByNameAsync(characterName) ?? Guid.Empty;
-        item.FriendId = await this.GetCharacterIdByNameAsync(friendName) ?? Guid.Empty;
+        item.CharacterId = await this.GetCharacterIdByNameAsync(characterName).ConfigureAwait(false) ?? Guid.Empty;
+        item.FriendId = await this.GetCharacterIdByNameAsync(friendName).ConfigureAwait(false) ?? Guid.Empty;
 
         return item;
     }
@@ -39,13 +39,13 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
     /// <inheritdoc/>
     public async ValueTask DeleteAsync(string characterName, string friendName)
     {
-        this.Context.RemoveRange(await this.FindItems(characterName, friendName).ToListAsync());
+        this.Context.RemoveRange(await this.FindItems(characterName, friendName).ToListAsync().ConfigureAwait(false));
     }
 
     /// <inheritdoc/>
     public async ValueTask<Interfaces.Friend?> GetFriendByNamesAsync(string characterName, string friendName)
     {
-        return await this.FindItems(characterName, friendName).FirstOrDefaultAsync();
+        return await this.FindItems(characterName, friendName).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -61,7 +61,7 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
                 FriendId = friend.FriendId,
                 Accepted = friend.Accepted,
                 RequestOpen = friend.RequestOpen,
-            }).ToListAsync();
+            }).ToListAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -70,7 +70,7 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
         return await (from friend in this.Context.Set<Model.Friend>()
             where friend.CharacterId == characterId
             join friendCharacter in this.Context.Set<CharacterName>() on friend.FriendId equals friendCharacter.Id
-            select friendCharacter.Name).ToListAsync();
+            select friendCharacter.Name).ToListAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -79,7 +79,7 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
         return await (from friend in this.Context.Set<Model.Friend>()
             where friend.RequestOpen == true && friend.FriendId == characterId
             join requester in this.Context.Set<CharacterName>() on friend.CharacterId equals requester.Id
-            select requester.Name).ToListAsync();
+            select requester.Name).ToListAsync().ConfigureAwait(false);
     }
 
     private IQueryable<Model.Friend> FindItems(string characterName, string friendName)
@@ -91,5 +91,5 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
             select friend;
     }
 
-    private async ValueTask<Guid?> GetCharacterIdByNameAsync(string name) => await this.Context.Set<CharacterName>().Where(character => character.Name == name).Select(character => character.Id).FirstOrDefaultAsync();
+    private async ValueTask<Guid?> GetCharacterIdByNameAsync(string name) => await this.Context.Set<CharacterName>().Where(character => character.Name == name).Select(character => character.Id).FirstOrDefaultAsync().ConfigureAwait(false);
 }

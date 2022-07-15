@@ -33,6 +33,6 @@ internal class TargetedSkillHandlerPlugIn075 : TargetedSkillHandlerPlugIn
             return;
         }
 
-        await this.HandleAsync(player, (ushort)skill.Number, message.TargetId);
+        await this.HandleAsync(player, (ushort)skill.Number, message.TargetId).ConfigureAwait(false);
     }
 }

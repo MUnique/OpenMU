@@ -30,7 +30,7 @@ public abstract class RecoverConsumeHandler : BaseConsumeHandler
     /// <inheritdoc/>
     public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage))
+        if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
             this.Recover(player);
             return true;

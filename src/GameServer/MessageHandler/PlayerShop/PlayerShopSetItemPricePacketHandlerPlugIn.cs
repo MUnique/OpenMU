@@ -32,6 +32,6 @@ internal class PlayerShopSetItemPricePacketHandlerPlugIn : ISubPacketHandlerPlug
     {
         PlayerShopSetItemPrice message = packet;
         player.Logger.LogDebug("Player [{0}] sets price of slot {1} to {2}", player.SelectedCharacter?.Name, message.ItemSlot, message.Price);
-        await this._setPriceAction.SetPriceAsync(player, message.ItemSlot, (int)message.Price);
+        await this._setPriceAction.SetPriceAsync(player, message.ItemSlot, (int)message.Price).ConfigureAwait(false);
     }
 }

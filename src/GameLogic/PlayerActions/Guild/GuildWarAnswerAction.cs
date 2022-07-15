@@ -31,7 +31,7 @@ public class GuildWarAnswerAction
         if (guildWarContext.WarType == GuildWarType.Soccer
             && player.GameContext.Configuration.Maps.FirstOrDefault(m => m.BattleZone?.Type == BattleType.Soccer) is { } definition)
         {
-            soccerMap = (SoccerGameMap?)await player.GameContext.GetMapAsync(definition.Number.ToUnsigned());
+            soccerMap = (SoccerGameMap?)await player.GameContext.GetMapAsync(definition.Number.ToUnsigned()).ConfigureAwait(false);
         }
 
         var soccerInitFailed = false;
@@ -71,7 +71,7 @@ public class GuildWarAnswerAction
                 if (player.GameContext is IGameServerContext gameContext && score.Winners.HasValue)
                 {
                     var winner = score.Winners == player.GuildWarContext.Team ? player.GuildStatus!.GuildId : requester.GuildStatus!.GuildId;
-                    await gameContext.GuildServer.IncreaseGuildScoreAsync(winner);
+                    await gameContext.GuildServer.IncreaseGuildScoreAsync(winner).ConfigureAwait(false);
                 }
             }
             catch
@@ -99,9 +99,9 @@ public class GuildWarAnswerAction
 
         if (guildWarContext.WarType == GuildWarType.Soccer && soccerMap is { })
         {
-            await this.MovePartyToArenaAsync(player.GuildWarContext.Team, playerTeam, soccerMap);
-            await this.MovePartyToArenaAsync(requester.GuildWarContext.Team, requesterTeam, soccerMap);
-            await soccerMap.StartBattleAsync(score);
+            await this.MovePartyToArenaAsync(player.GuildWarContext.Team, playerTeam, soccerMap).ConfigureAwait(false);
+            await this.MovePartyToArenaAsync(requester.GuildWarContext.Team, requesterTeam, soccerMap).ConfigureAwait(false);
+            await soccerMap.StartBattleAsync(score).ConfigureAwait(false);
         }
     }
 
@@ -115,7 +115,7 @@ public class GuildWarAnswerAction
             {
                 if (playerReference.TryGetTarget(out var p))
                 {
-                    await OnScoreChangedAsync(score, p, soccerMap, args);
+                    await OnScoreChangedAsync(score, p, soccerMap, args).ConfigureAwait(false);
                 }
                 else
                 {
@@ -146,7 +146,7 @@ public class GuildWarAnswerAction
                         var spawnGates = soccerMap.Definition.ExitGates.Where(g => g.IsSpawnGate);
                         if (spawnGates.Any())
                         {
-                            await player.WarpToAsync(spawnGates.SelectRandom()!);
+                            await player.WarpToAsync(spawnGates.SelectRandom()!).ConfigureAwait(false);
                         }
                     }
 
@@ -195,7 +195,7 @@ public class GuildWarAnswerAction
 
         foreach (var member in members)
         {
-            await member.WarpToAsync(exitGate);
+            await member.WarpToAsync(exitGate).ConfigureAwait(false);
             if (increaseX)
             {
                 exitGate.X1++;

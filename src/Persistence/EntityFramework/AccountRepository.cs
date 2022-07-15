@@ -30,14 +30,14 @@ internal class AccountRepository : CachingGenericRepository<Account>
     {
         ((CachingRepositoryManager)this.RepositoryManager).EnsureCachesForCurrentGameConfiguration();
         using var context = this.GetContext();
-        await context.Context.Database.OpenConnectionAsync();
+        await context.Context.Database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
             var account = context.Context.ChangeTracker.Entries<Account>().FirstOrDefault(a => a.Entity.Id == id)?.Entity;
             if (account is null)
             {
                 var objectLoader = new AccountJsonObjectLoader();
-                account = await objectLoader.LoadObjectAsync<Account>(id, context.Context);
+                account = await objectLoader.LoadObjectAsync<Account>(id, context.Context).ConfigureAwait(false);
                 if (account != null && !(context.Context.Entry(account) is { } entry && entry.State != EntityState.Detached))
                 {
                     context.Context.Attach(account);
@@ -48,7 +48,7 @@ internal class AccountRepository : CachingGenericRepository<Account>
         }
         finally
         {
-            await context.Context.Database.CloseConnectionAsync();
+            await context.Context.Database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
 
@@ -61,7 +61,7 @@ internal class AccountRepository : CachingGenericRepository<Account>
     internal async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password)
     {
         using var context = this.GetContext();
-        return await this.LoadAccountByLoginNameByJsonQueryAsync(loginName, password, context);
+        return await this.LoadAccountByLoginNameByJsonQueryAsync(loginName, password, context).ConfigureAwait(false);
     }
 
     private async ValueTask<Account?> LoadAccountByLoginNameByJsonQueryAsync(string loginName, string password, EntityFrameworkContextBase context)
@@ -69,11 +69,11 @@ internal class AccountRepository : CachingGenericRepository<Account>
         var accountInfo = await context.Context.Set<Account>()
             .Select(a => new { a.Id, a.LoginName, a.PasswordHash })
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.LoginName == loginName);
+            .FirstOrDefaultAsync(a => a.LoginName == loginName).ConfigureAwait(false);
 
         if (accountInfo != null && BCrypt.Verify(password, accountInfo.PasswordHash))
         {
-            return await this.GetByIdAsync(accountInfo.Id);
+            return await this.GetByIdAsync(accountInfo.Id).ConfigureAwait(false);
         }
 
         return null;

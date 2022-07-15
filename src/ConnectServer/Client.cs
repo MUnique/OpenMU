@@ -127,7 +127,7 @@ internal sealed class Client : IDisposable
         if (sequence.Length > this._receiveBuffer.Length)
         {
             this._logger.LogInformation($"Client {this.Address}:{this.Port} will be disconnected because it sent a packet which was too big (size of {sequence.Length}");
-            await this.Connection.DisconnectAsync();
+            await this.Connection.DisconnectAsync().ConfigureAwait(false);
         }
 
         sequence.CopyTo(this._receiveBuffer);

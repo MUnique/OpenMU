@@ -22,19 +22,19 @@ public class PartyRequestAction
     {
         if (toRequest.Party != null || toRequest.LastPartyRequester != null)
         {
-            await this.SendMessageToPlayerAsync(player, $"{player.Name} is already in a party.", MessageType.BlueNormal);
+            await this.SendMessageToPlayerAsync(player, $"{player.Name} is already in a party.", MessageType.BlueNormal).ConfigureAwait(false);
         }
         else if (player.Party is null || (player.Party != null && Equals(player.Party.PartyMaster, player)))
         {
-            if (toRequest.PlayerState.TryAdvanceTo(PlayerState.PartyRequest))
+            if (await toRequest.PlayerState.TryAdvanceToAsync(PlayerState.PartyRequest).ConfigureAwait(false))
             {
-                await this.SendPartyRequestAsync(toRequest, player);
-                await this.SendMessageToPlayerAsync(player, $"Requested {toRequest.Name} for Party.", MessageType.BlueNormal);
+                await this.SendPartyRequestAsync(toRequest, player).ConfigureAwait(false);
+                await this.SendMessageToPlayerAsync(player, $"Requested {toRequest.Name} for Party.", MessageType.BlueNormal).ConfigureAwait(false);
             }
         }
         else
         {
-            await this.SendMessageToPlayerAsync(player, "You are not the Party Master.", MessageType.BlueNormal);
+            await this.SendMessageToPlayerAsync(player, "You are not the Party Master.", MessageType.BlueNormal).ConfigureAwait(false);
         }
     }
 

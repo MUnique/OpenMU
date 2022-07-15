@@ -40,42 +40,42 @@ public class ResetCharacterAction
         var resetFeature = this._player.GameContext.FeaturePlugIns.GetPlugIn<ResetFeaturePlugIn>();
         if (resetFeature is null)
         {
-            await this.ShowMessageAsync("Reset is not enabled.");
+            await this.ShowMessageAsync("Reset is not enabled.").ConfigureAwait(false);
             return;
         }
 
         if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld && this._npc is null)
         {
-            await this.ShowMessageAsync("Cannot do reset with any windows opened.");
+            await this.ShowMessageAsync("Cannot do reset with any windows opened.").ConfigureAwait(false);
             return;
         }
 
         if (this._player.Attributes is null || this._player.SelectedCharacter is null)
         {
-            await this.ShowMessageAsync("Not entered the game.");
+            await this.ShowMessageAsync("Not entered the game.").ConfigureAwait(false);
             return;
         }
 
         var configuration = resetFeature.Configuration;
         if (configuration is null)
         {
-            await this.ShowMessageAsync("Reset is not configured.");
+            await this.ShowMessageAsync("Reset is not configured.").ConfigureAwait(false);
             return;
         }
 
         if (this._player.Level < configuration.RequiredLevel)
         {
-            await this.ShowMessageAsync($"Required level for reset is {configuration.RequiredLevel}.");
+            await this.ShowMessageAsync($"Required level for reset is {configuration.RequiredLevel}.").ConfigureAwait(false);
             return;
         }
 
         if (configuration.ResetLimit > 0 && (this.GetResetCount() + 1) > configuration.ResetLimit)
         {
-            await this.ShowMessageAsync($"Maximum resets of {configuration.ResetLimit} reached.");
+            await this.ShowMessageAsync($"Maximum resets of {configuration.ResetLimit} reached.").ConfigureAwait(false);
             return;
         }
 
-        if (!await this.TryConsumeMoneyAsync(configuration))
+        if (!await this.TryConsumeMoneyAsync(configuration).ConfigureAwait(false))
         {
             return;
         }
@@ -84,8 +84,8 @@ public class ResetCharacterAction
         this._player.Attributes[Stats.Level] = configuration.LevelAfterReset;
         this._player.SelectedCharacter.Experience = 0;
         this.UpdateStats(configuration);
-        await this.MoveHomeAsync();
-        await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection);
+        await this.MoveHomeAsync().ConfigureAwait(false);
+        await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection).ConfigureAwait(false);
     }
 
     private ValueTask ShowMessageAsync(string message)
@@ -115,7 +115,7 @@ public class ResetCharacterAction
 
         if (!this._player.TryRemoveMoney(calculatedRequiredZen))
         {
-            await this.ShowMessageAsync($"You don't have enough money for reset, required zen is {calculatedRequiredZen}");
+            await this.ShowMessageAsync($"You don't have enough money for reset, required zen is {calculatedRequiredZen}").ConfigureAwait(false);
             return false;
         }
 
@@ -144,7 +144,7 @@ public class ResetCharacterAction
     {
         var homeMapDef = this._player.SelectedCharacter!.CharacterClass!.HomeMap;
         if (homeMapDef is { }
-            && await this._player.GameContext.GetMapAsync((ushort)homeMapDef.Number) is { SafeZoneSpawnGate: { } spawnGate })
+            && await this._player.GameContext.GetMapAsync((ushort)homeMapDef.Number).ConfigureAwait(false) is { SafeZoneSpawnGate: { } spawnGate })
         {
             this._player.SelectedCharacter.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
             this._player.SelectedCharacter.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);

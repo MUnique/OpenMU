@@ -75,7 +75,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
                 break;
 
             case MoveType.Walk:
-                await this.ObjectWalkedAsync(obj);
+                await this.ObjectWalkedAsync(obj).ConfigureAwait(false);
                 break;
         }
     }
@@ -139,7 +139,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         {
             if (this.SendWalkDirections)
             {
-                stepsLength = await supportWalk.GetDirectionsAsync(steps);
+                stepsLength = await supportWalk.GetDirectionsAsync(steps).ConfigureAwait(false);
                 if (stepsLength > 0)
                 {
                     // The last one is the rotation
@@ -156,7 +156,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
             targetPoint = obj.Position;
         }
 
-        await this.SendWalkAsync(connection, objectId, targetPoint, steps, rotation, stepsLength);
+        await this.SendWalkAsync(connection, objectId, targetPoint, steps, rotation, stepsLength).ConfigureAwait(false);
     }
 
     private void SetStepData(ObjectWalkedRef walkPacket, Span<Direction> steps, int stepsSize)

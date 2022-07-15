@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading;
-
 namespace MUnique.OpenMU.ConnectServer;
 
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
 using MUnique.OpenMU.ConnectServer.PacketHandler;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
@@ -19,7 +18,7 @@ internal class ClientListener
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<ClientListener> _logger;
-    private readonly SemaphoreSlim _clientListLock = new (1);
+    private readonly AsyncLock _clientListLock = new();
     private readonly IConnectServerSettings _connectServerSettings;
     private readonly IPacketHandler<Client> _packetHandler;
     private Listener? _listener;
@@ -104,19 +103,14 @@ internal class ClientListener
         client.Port = ipEndpoint?.Port ?? 0;
         client.Timeout = this._connectServerSettings.Timeout;
 
-        await this._clientListLock.WaitAsync();
-        try
+        using (await this._clientListLock.LockAsync().ConfigureAwait(false))
         {
             this.Clients.Add(client);
-        }
-        finally
-        {
-            this._clientListLock.Release();
         }
 
         client.Connection.Disconnected += async () => await this.OnClientDisconnectAsync(client).ConfigureAwait(false);
         this._logger.LogDebug("Client connected: {0}, current client count: {1}", connection.EndPoint, this.Clients.Count);
-        await client.SendHelloAsync();
+        await client.SendHelloAsync().ConfigureAwait(false);
         _ = Task.Run(() => client.Connection.BeginReceiveAsync());
         this.ConnectedClientsChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -129,14 +123,9 @@ internal class ClientListener
         }
 
         this._logger.LogDebug("Connection to Client {0}:{1} disconnected.", client.Address, client.Port);
-        await this._clientListLock.WaitAsync();
-        try
+        using (await this._clientListLock.LockAsync().ConfigureAwait(false))
         {
             this.Clients.Remove(client);
-        }
-        finally
-        {
-            this._clientListLock.Release();
         }
 
         this.ConnectedClientsChanged?.Invoke(this, EventArgs.Empty);

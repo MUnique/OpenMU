@@ -27,7 +27,7 @@ public class ShowLoginResultPlugIn : IShowLoginResultPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowLoginResultAsync(LoginResult loginResult)
     {
-        await this._player.Connection.SendLoginResponseAsync(ConvertResult(loginResult));
+        await this._player.Connection.SendLoginResponseAsync(ConvertResult(loginResult)).ConfigureAwait(false);
     }
 
     private static LoginResponse.LoginResult ConvertResult(LoginResult loginResult)

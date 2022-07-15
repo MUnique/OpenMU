@@ -31,9 +31,9 @@ public class InMemoryEventPublisher : IEventPublisher
     /// <inheritdoc />
     public async ValueTask PlayerEnteredGameAsync(byte serverId, Guid characterId, string characterName)
     {
-        await this._guildServer.PlayerEnteredGameAsync(characterId, characterName, serverId);
+        await this._guildServer.PlayerEnteredGameAsync(characterId, characterName, serverId).ConfigureAwait(false);
 
-        await this._friendServer.PlayerEnteredGameAsync(serverId, characterId, characterName);
+        await this._friendServer.PlayerEnteredGameAsync(serverId, characterId, characterName).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -41,10 +41,10 @@ public class InMemoryEventPublisher : IEventPublisher
     {
         if (guildId > 0)
         {
-            await this._guildServer.GuildMemberLeftGameAsync(guildId, characterId, serverId);
+            await this._guildServer.GuildMemberLeftGameAsync(guildId, characterId, serverId).ConfigureAwait(false);
         }
 
-        await this._friendServer.PlayerLeftGameAsync(characterId, characterName);
+        await this._friendServer.PlayerLeftGameAsync(characterId, characterName).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -52,7 +52,7 @@ public class InMemoryEventPublisher : IEventPublisher
     {
         foreach (var gameServer in this._gameServers)
         {
-            await gameServer.Value.GuildChatMessageAsync(guildId, sender, message);
+            await gameServer.Value.GuildChatMessageAsync(guildId, sender, message).ConfigureAwait(false);
         }
     }
 
@@ -61,7 +61,7 @@ public class InMemoryEventPublisher : IEventPublisher
     {
         foreach (var gameServer in this._gameServers)
         {
-            await gameServer.Value.AllianceChatMessageAsync(guildId, sender, message);
+            await gameServer.Value.AllianceChatMessageAsync(guildId, sender, message).ConfigureAwait(false);
         }
     }
 }

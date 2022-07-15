@@ -44,6 +44,6 @@ internal class PlayerShopRequestItemListPacketHandlerPlugIn : ISubPacketHandlerP
             return;
         }
 
-        await this._requestListAction.RequestStoreItemListAsync(player, requestedPlayer);
+        await this._requestListAction.RequestStoreItemListAsync(player, requestedPlayer).ConfigureAwait(false);
     }
 }

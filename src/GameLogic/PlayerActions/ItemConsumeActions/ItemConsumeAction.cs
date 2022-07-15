@@ -52,7 +52,7 @@ public class ItemConsumeAction
             }
         }
 
-        if (!await consumeHandler.ConsumeItemAsync(player, item, targetItem, fruitUsage))
+        if (!await consumeHandler.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
             await player.InvokeViewPlugInAsync<IRequestedItemConsumptionFailedPlugIn>(p => p.RequestedItemConsumptionFailedAsync()).ConfigureAwait(false);
             return;
@@ -60,7 +60,7 @@ public class ItemConsumeAction
 
         if (item.Durability == 0)
         {
-            await player.Inventory.RemoveItemAsync(item);
+            await player.Inventory.RemoveItemAsync(item).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<Views.Inventory.IItemRemovedPlugIn>(p => p.RemoveItemAsync(inventorySlot)).ConfigureAwait(false);
         }
         else

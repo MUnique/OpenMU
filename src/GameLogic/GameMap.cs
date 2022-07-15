@@ -131,7 +131,7 @@ public class GameMap
     /// <param name="locateable">The locateable.</param>
     public async ValueTask RemoveAsync(ILocateable locateable)
     {
-        await this._areaOfInterestManager.RemoveObjectAsync(locateable);
+        await this._areaOfInterestManager.RemoveObjectAsync(locateable).ConfigureAwait(false);
         if (this._objectsInMap.Remove(locateable.Id) && locateable.Id != 0)
         {
             if (locateable is DroppedItem
@@ -152,7 +152,7 @@ public class GameMap
 
             if (this.ObjectRemoved is { } eventHandler)
             {
-                await eventHandler((this, locateable));
+                await eventHandler((this, locateable)).ConfigureAwait(false);
             }
         }
     }
@@ -186,10 +186,10 @@ public class GameMap
         }
 
         this._objectsInMap.Add(locateable.Id, locateable);
-        await this._areaOfInterestManager.AddObjectAsync(locateable);
+        await this._areaOfInterestManager.AddObjectAsync(locateable).ConfigureAwait(false);
         if (this.ObjectAdded is { } eventHandler)
         {
-            await eventHandler((this, locateable));
+            await eventHandler((this, locateable)).ConfigureAwait(false);
         }
     }
 
@@ -211,8 +211,8 @@ public class GameMap
     /// <param name="locateable">The locateable.</param>
     public async ValueTask RespawnAsync(ILocateable locateable)
     {
-        await this._areaOfInterestManager.RemoveObjectAsync(locateable);
-        await this._areaOfInterestManager.AddObjectAsync(locateable);
+        await this._areaOfInterestManager.RemoveObjectAsync(locateable).ConfigureAwait(false);
+        await this._areaOfInterestManager.AddObjectAsync(locateable).ConfigureAwait(false);
     }
 
     /// <summary>

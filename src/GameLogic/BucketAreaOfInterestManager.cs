@@ -38,11 +38,11 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
             bucketInfo.NewBucket = newBucket;
         }
 
-        await newBucket.AddAsync(obj);
+        await newBucket.AddAsync(obj).ConfigureAwait(false);
 
         if (obj is IBucketMapObserver observingPlayer)
         {
-            await this.UpdateObservingBucketsAsync(obj.Position, observingPlayer);
+            await this.UpdateObservingBucketsAsync(obj.Position, observingPlayer).ConfigureAwait(false);
         }
     }
 
@@ -70,7 +70,7 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
         }
         else
         {
-            await this.Map[obj.Position].RemoveAsync(obj);
+            await this.Map[obj.Position].RemoveAsync(obj).ConfigureAwait(false);
         }
 
         if (obj is IBucketMapObserver observingPlayer)
@@ -83,7 +83,7 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
 
             if (observingPlayer.ObservingBuckets.Any(b => b.Count > 0))
             {
-                await observingPlayer.LocateablesOutOfScopeAsync(observingPlayer.ObservingBuckets.SelectMany(o => o));
+                await observingPlayer.LocateablesOutOfScopeAsync(observingPlayer.ObservingBuckets.SelectMany(o => o)).ConfigureAwait(false);
             }
 
             observingPlayer.ObservingBuckets.Clear();
@@ -93,7 +93,7 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
     /// <inheritdoc/>
     public async ValueTask MoveObjectAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType)
     {
-        var differentBucket = await this.MoveObjectOnMapAsync(obj, target, moveLock, moveType);
+        var differentBucket = await this.MoveObjectOnMapAsync(obj, target, moveLock, moveType).ConfigureAwait(false);
 
         if (obj is IObservable observable)
         {
@@ -103,7 +103,7 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
         var observingPlayer = obj as IBucketMapObserver;
         if (differentBucket && observingPlayer != null)
         {
-            await this.UpdateObservingBucketsAsync(target, observingPlayer);
+            await this.UpdateObservingBucketsAsync(target, observingPlayer).ConfigureAwait(false);
         }
     }
 
@@ -139,12 +139,12 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
         newbuckets.ForEach(player.ObservingBuckets.Add);
         if (oldbuckets.Any(b => b.Count > 0))
         {
-            await player.LocateablesOutOfScopeAsync(oldbuckets.SelectMany(o => o));
+            await player.LocateablesOutOfScopeAsync(oldbuckets.SelectMany(o => o)).ConfigureAwait(false);
         }
 
         if (newbuckets.Any(b => b.Count > 0))
         {
-            await player.NewLocateablesInScopeAsync(newbuckets.SelectMany(o => o));
+            await player.NewLocateablesInScopeAsync(newbuckets.SelectMany(o => o)).ConfigureAwait(false);
         }
     }
 
@@ -198,7 +198,7 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
                 await oldBucket.RemoveAsync(obj).ConfigureAwait(false);
             }
 
-            await newBucket.AddAsync(obj);
+            await newBucket.AddAsync(obj).ConfigureAwait(false);
         }
 
         return true;

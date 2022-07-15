@@ -45,7 +45,7 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
 
         foreach (var guildPlayer in guildPlayers)
         {
-            await this.SendGuildInfoIfRequiredAsync(guildPlayer);
+            await this.SendGuildInfoIfRequiredAsync(guildPlayer).ConfigureAwait(false);
         }
 
         int Write()
@@ -79,7 +79,7 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
             return;
         }
 
-        await this.SendGuildInfoIfRequiredAsync(guildPlayer);
+        await this.SendGuildInfoIfRequiredAsync(guildPlayer).ConfigureAwait(false);
 
         // C2 00 11
         // 65
@@ -127,7 +127,7 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
             return;
         }
 
-        var data = await this.GetGuildDataAsync(guildStatus.GuildId);
+        var data = await this.GetGuildDataAsync(guildStatus.GuildId).ConfigureAwait(false);
         if (data.Length == 0)
         {
             return;
@@ -149,7 +149,7 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
             return data.Length;
         }
 
-        await connection.SendAsync(Write);
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     private void SetGuildPlayerBlock(AssignCharacterToGuild075Ref.GuildMemberRelationRef playerBlock, Player guildPlayer)

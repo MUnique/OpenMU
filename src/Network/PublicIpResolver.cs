@@ -35,7 +35,7 @@ public class PublicIpResolver : IIpAddressResolver
     {
         if (this._lastRequest + this._maximumCachedAddressLifetime < DateTime.Now)
         {
-            this._publicIPv4 = await this.InternalGetIPv4Async();
+            this._publicIPv4 = await this.InternalGetIPv4Async().ConfigureAwait(false);
             this._lastRequest = DateTime.Now;
         }
 
@@ -47,7 +47,7 @@ public class PublicIpResolver : IIpAddressResolver
         const string url = "https://api.ipify.org/?format=text";
         this._logger.LogDebug("Start Requesting public ip from {url}", url);
         using var client = new System.Net.Http.HttpClient();
-        var response = await client.GetStringAsync(url);
+        var response = await client.GetStringAsync(url).ConfigureAwait(false);
 
         var match = Regex.Match(response, @".*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*");
         if (match.Success)

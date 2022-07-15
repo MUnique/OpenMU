@@ -64,7 +64,7 @@ public class ShowHitPlugIn : IShowHitPlugIn
                 this.GetDamageKind(hitInfo.Attributes),
                 hitInfo.Attributes.HasFlag(DamageAttributes.Double),
                 hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
-                shieldDamage);
+                shieldDamage).ConfigureAwait(false);
 
             remainingShieldDamage -= shieldDamage;
             remainingHealthDamage -= healthDamage;

@@ -29,6 +29,6 @@ internal class GuildWarResponseHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildWarResponse response = packet;
-        await this._answerAction.ProcessAnswerAsync(player, response.Accepted);
+        await this._answerAction.ProcessAnswerAsync(player, response.Accepted).ConfigureAwait(false);
     }
 }

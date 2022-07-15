@@ -27,6 +27,6 @@ public class ShowGuildMasterDialogPlugIn : IShowGuildMasterDialogPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowGuildMasterDialogAsync()
     {
-        await this._player.Connection.SendShowGuildMasterDialogAsync();
+        await this._player.Connection.SendShowGuildMasterDialogAsync().ConfigureAwait(false);
     }
 }

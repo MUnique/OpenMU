@@ -35,15 +35,15 @@ public sealed class JavascriptMapFactory : IMapFactory
         try
         {
             var appId = this.GenerateMapAppIdentifier(gameServer.Id, mapId);
-            await this._jsRuntime.InvokeVoidAsync("CreateMap", gameServer.Id, mapId, this.GetMapContainerIdentifier(gameServer.Id, mapId), appId);
+            await this._jsRuntime.InvokeVoidAsync("CreateMap", gameServer.Id, mapId, this.GetMapContainerIdentifier(gameServer.Id, mapId), appId).ConfigureAwait(false);
             mapController = new MapController(this._jsRuntime, this._loggerFactory, appId, gameServer, mapId);
-            await gameServer.RegisterMapObserverAsync(mapId, mapController);
+            await gameServer.RegisterMapObserverAsync(mapId, mapController).ConfigureAwait(false);
         }
         catch
         {
             if (mapController != null)
             {
-                await mapController.DisposeAsync();
+                await mapController.DisposeAsync().ConfigureAwait(false);
             }
 
             throw;

@@ -36,6 +36,6 @@ public class UpdateMaximumManaPlugIn : IUpdateMaximumManaPlugIn
 
         await this._player.Connection.SendMaximumManaAndAbilityAsync(
             (ushort)this._player.Attributes[Stats.MaximumMana],
-            (ushort)this._player.Attributes[Stats.MaximumAbility]);
+            (ushort)this._player.Attributes[Stats.MaximumAbility]).ConfigureAwait(false);
     }
 }

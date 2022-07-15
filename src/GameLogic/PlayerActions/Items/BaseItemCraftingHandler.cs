@@ -39,7 +39,7 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         var success = Rand.NextRandomBool(successRate);
         if (success)
         {
-            if (await this.DoTheMixAsync(items, player, socketSlot) is { } item)
+            if (await this.DoTheMixAsync(items, player, socketSlot).ConfigureAwait(false) is { } item)
             {
                 return (CraftingResult.Success, item);
             }
@@ -49,7 +49,7 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
 
         foreach (var i in items)
         {
-            await this.RequiredItemChangeAsync(player, i, false);
+            await this.RequiredItemChangeAsync(player, i, false).ConfigureAwait(false);
         }
 
         return (CraftingResult.Failed, null);
@@ -96,10 +96,10 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     {
         foreach (var requiredItemLink in requiredItems)
         {
-            await this.RequiredItemChangeAsync(player, requiredItemLink, true);
+            await this.RequiredItemChangeAsync(player, requiredItemLink, true).ConfigureAwait(false);
         }
 
-        var resultItems = await this.CreateOrModifyResultItemsAsync(requiredItems, player, socketSlot);
+        var resultItems = await this.CreateOrModifyResultItemsAsync(requiredItems, player, socketSlot).ConfigureAwait(false);
         return resultItems.LastOrDefault();
     }
 
@@ -120,8 +120,8 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                 foreach (var item in itemLink.Items)
                 {
                     player.Logger.LogDebug("Item {0} is getting destroyed.", item);
-                    await player.TemporaryStorage!.RemoveItemAsync(item);
-                    await player.PersistenceContext.DeleteAsync(item);
+                    await player.TemporaryStorage!.RemoveItemAsync(item).ConfigureAwait(false);
+                    await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
                     point?.ItemDestroyed(item);
                 }
 

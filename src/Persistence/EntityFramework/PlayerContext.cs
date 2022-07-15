@@ -31,7 +31,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
         {
             if (this.RepositoryManager.GetRepository<LetterBody, LetterBodyRepository>() is { } repository)
             {
-                return await repository.GetBodyByHeaderIdAsync(headerId);
+                return await repository.GetBodyByHeaderIdAsync(headerId).ConfigureAwait(false);
             }
         }
 
@@ -46,7 +46,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
             return false;
         }
 
-        persistentHeader.Receiver = await this.Context.Set<Character>().FirstOrDefaultAsync(c => c.Name == letterHeader.ReceiverName);
+        persistentHeader.Receiver = await this.Context.Set<Character>().FirstOrDefaultAsync(c => c.Name == letterHeader.ReceiverName).ConfigureAwait(false);
         return persistentHeader.Receiver != null;
     }
 
@@ -57,7 +57,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
         {
             if (this.RepositoryManager.GetRepository<Account, AccountRepository>() is { } accountRepository)
             {
-                return await accountRepository.GetAccountByLoginNameAsync(loginName, password);
+                return await accountRepository.GetAccountByLoginNameAsync(loginName, password).ConfigureAwait(false);
             }
         }
 
@@ -69,7 +69,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     {
         using (this.RepositoryManager.ContextStack.UseContext(this))
         {
-            return await this.Context.Set<Account>().OrderBy(a => a.LoginName).Skip(skip).Take(count).ToListAsync();
+            return await this.Context.Set<Account>().OrderBy(a => a.LoginName).Skip(skip).Take(count).ToListAsync().ConfigureAwait(false);
         }
     }
 }

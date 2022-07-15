@@ -32,6 +32,6 @@ internal abstract class CharacterMoveBaseHandlerPlugIn : IPacketHandlerPlugIn
         // So, we just allow it for developers when the debugger is attached.
         // When handling a skill which moves to the target, we'll handle the move on server-side, instead.
         InstantMoveRequest moveRequest = packet;
-        await player.MoveAsync(new Point(moveRequest.TargetX, moveRequest.TargetY));
+        await player.MoveAsync(new Point(moveRequest.TargetX, moveRequest.TargetY)).ConfigureAwait(false);
     }
 }

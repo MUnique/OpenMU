@@ -19,7 +19,7 @@ public class ChangeOnlineStateAction
         player.OnlineAsFriend = online;
         if (player.GameContext is IGameServerContext gameServerContext && player.SelectedCharacter is { } character)
         {
-            await gameServerContext.FriendServer.SetPlayerVisibilityStateAsync(gameServerContext.Id, character.Id, player.SelectedCharacter.Name, player.OnlineAsFriend);
+            await gameServerContext.FriendServer.SetPlayerVisibilityStateAsync(gameServerContext.Id, character.Id, player.SelectedCharacter.Name, player.OnlineAsFriend).ConfigureAwait(false);
         }
     }
 }

@@ -19,7 +19,7 @@ public class CloseNpcDialogAction
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var npc = player.OpenedNpc;
-        if (npc != null && player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld))
+        if (npc != null && await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
         {
             player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {player.OpenedNpc}");
             player.OpenedNpc = null;

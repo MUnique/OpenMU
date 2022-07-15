@@ -86,12 +86,12 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <param name="target">The target.</param>
     public async ValueTask AttackAsync(IAttackable target)
     {
-        await target.AttackByAsync(this, null);
+        await target.AttackByAsync(this, null).ConfigureAwait(false);
 
         await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowMonsterAttackAnimationAsync(this, target, this.GetDirectionTo(target)), true).ConfigureAwait(false);
         if (this.Definition.AttackSkill is { } attackSkill)
         {
-            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration);
+            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration).ConfigureAwait(false);
 
             await this.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this, target, attackSkill, true), true).ConfigureAwait(false);
         }
@@ -142,7 +142,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
             i++;
         }
 
-        await this.WalkToAsync(new Point(targetNode.X, targetNode.Y), steps);
+        await this.WalkToAsync(new Point(targetNode.X, targetNode.Y), steps).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -158,9 +158,9 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <param name="steps">The steps.</param>
     public async ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps)
     {
-        await this._walker.StopAsync();
-        await this._walker.WalkToAsync(target, steps);
-        await this.MoveAsync(target, MoveType.Walk);
+        await this._walker.StopAsync().ConfigureAwait(false);
+        await this._walker.WalkToAsync(target, steps).ConfigureAwait(false);
+        await this.MoveAsync(target, MoveType.Walk).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -209,7 +209,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
                 To = target,
                 Direction = current.GetDirectionTo(target),
             };
-            await this.WalkToAsync(target, steps);
+            await this.WalkToAsync(target, steps).ConfigureAwait(false);
         }
     }
 
@@ -230,10 +230,10 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     {
         if (type == MoveType.Instant || type == MoveType.Teleport)
         {
-            await this._walker.StopAsync();
+            await this._walker.StopAsync().ConfigureAwait(false);
         }
 
-        await this.CurrentMap.MoveAsync(this, target, this._moveLock, type);
+        await this.CurrentMap.MoveAsync(this, target, this._moveLock, type).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -263,8 +263,8 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <inheritdoc />
     protected override async ValueTask OnDeathAsync(IAttacker attacker)
     {
-        await this._walker.StopAsync();
-        await base.OnDeathAsync(attacker);
+        await this._walker.StopAsync().ConfigureAwait(false);
+        await base.OnDeathAsync(attacker).ConfigureAwait(false);
     }
 
     private static WalkingStep GetStep(PathResultNode node)

@@ -109,7 +109,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
 
         if (stackTarget != null)
         {
-            if (await this.TryStackOnItemAsync(player, stackTarget))
+            if (await this.TryStackOnItemAsync(player, stackTarget).ConfigureAwait(false))
             {
                 return (true, stackTarget);
             }
@@ -128,7 +128,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
             return (false, stackTarget);
         }
 
-        return (await this.TryPickUpAsync(player), stackTarget);
+        return (await this.TryPickUpAsync(player).ConfigureAwait(false), stackTarget);
     }
 
     /// <inheritdoc/>
@@ -149,7 +149,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
             this._owners = null;
         }
 
-        await base.DisposeAsyncCore();
+        await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -158,10 +158,10 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
         var player = this._dropper;
         try
         {
-            await this.DisposeAsync();
+            await this.DisposeAsync().ConfigureAwait(false);
             if (player != null)
             {
-                await this.DeleteItemAsync(player);
+                await this.DeleteItemAsync(player).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -195,7 +195,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
                 return false;
             }
 
-            if (!await player.Inventory!.AddItemAsync((byte)slot, this.Item))
+            if (!await player.Inventory!.AddItemAsync((byte)slot, this.Item).ConfigureAwait(false))
             {
                 player.Logger.LogDebug("Item could not be added to the inventory, Player {0}, Item {1}", player, this);
                 return false;
@@ -213,10 +213,10 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
         }
 
         player.Logger.LogInformation("Item '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
-        await this.DisposeAsync();
+        await this.DisposeAsync().ConfigureAwait(false);
         if (this._dropper != null && !this._dropper.PlayerState.Finished)
         {
-            await this._dropper.PersistenceContext.SaveChangesAsync(); // Otherwise, if the item got modified since last save point by the dropper, changes would not be saved by the picking up player!
+            await this._dropper.PersistenceContext.SaveChangesAsync().ConfigureAwait(false); // Otherwise, if the item got modified since last save point by the dropper, changes would not be saved by the picking up player!
             this._itemIsPersistent = this._dropper.PersistenceContext.Detach(this.Item);
         }
 
@@ -269,8 +269,8 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
             // So we use a new temporary persistence context instead.
             // We use a trade-context as it just focuses on the items. Otherwise, we would track a lot more items.
             using var context = repositoryManager.CreateNewTradeContext();
-            await context.DeleteAsync(this.Item);
-            await context.SaveChangesAsync();
+            await context.DeleteAsync(this.Item).ConfigureAwait(false);
+            await context.SaveChangesAsync().ConfigureAwait(false);
         }
         catch (Exception e)
         {

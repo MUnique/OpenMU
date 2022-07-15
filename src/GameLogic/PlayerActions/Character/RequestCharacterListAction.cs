@@ -17,7 +17,7 @@ public class RequestCharacterListAction
     /// <param name="player">The player who requests the character list.</param>
     public async ValueTask RequestCharacterListAsync(Player player)
     {
-        if (player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection))
+        if (await player.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false))
         {
             await player.InvokeViewPlugInAsync<IShowCharacterListPlugIn>(p => p.ShowCharacterListAsync()).ConfigureAwait(false);
         }

@@ -37,7 +37,7 @@ public class ManagableServerRegistry : IServerProvider, IDisposable
         {
             try
             {
-                await this.TimeoutLoopAsync(this._disposeCts.Token);
+                await this.TimeoutLoopAsync(this._disposeCts.Token).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -100,7 +100,7 @@ public class ManagableServerRegistry : IServerProvider, IDisposable
     {
         while (!this._disposeCts.IsCancellationRequested)
         {
-            await Task.Delay(2000, cancellationToken);
+            await Task.Delay(2000, cancellationToken).ConfigureAwait(false);
 
             foreach (var server in this._serverClients.Values)
             {

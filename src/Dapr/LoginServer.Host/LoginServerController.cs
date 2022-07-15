@@ -46,7 +46,7 @@ public class LoginServerController : ControllerBase
     {
         try
         {
-            return await this._loginServer.TryLoginAsync(data.AccountName, data.ServerId);
+            return await this._loginServer.TryLoginAsync(data.AccountName, data.ServerId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -64,7 +64,7 @@ public class LoginServerController : ControllerBase
     {
         try
         {
-            await this._loginServer.LogOffAsync(data.AccountName, data.ServerId);
+            await this._loginServer.LogOffAsync(data.AccountName, data.ServerId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

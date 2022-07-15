@@ -28,6 +28,6 @@ internal class CraftingDialogCloseRequestHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        await this._closeNpcDialogAction.CloseNpcDialogAsync(player);
+        await this._closeNpcDialogAction.CloseNpcDialogAsync(player).ConfigureAwait(false);
     }
 }

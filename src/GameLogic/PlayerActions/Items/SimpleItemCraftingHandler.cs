@@ -153,7 +153,7 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
                 continue;
             }
 
-            resultList.AddRange(await this.CreateResultItemsAsync(player, requiredItems, craftingResultItem));
+            resultList.AddRange(await this.CreateResultItemsAsync(player, requiredItems, craftingResultItem).ConfigureAwait(false));
         }
 
         return resultList;
@@ -187,7 +187,7 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
                 resultItem.HasSkill = true;
             }
 
-            await player.TemporaryStorage!.AddItemAsync(resultItem);
+            await player.TemporaryStorage!.AddItemAsync(resultItem).ConfigureAwait(false);
             resultList.Add(resultItem);
         }
 

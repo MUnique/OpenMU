@@ -31,11 +31,11 @@ public class ShowEffectPlugIn : IShowEffectPlugIn
     {
         if (effectType == IShowEffectPlugIn.EffectType.Swirl)
         {
-            await this._player.Connection.SendShowSwirlAsync(target.GetId(this._player));
+            await this._player.Connection.SendShowSwirlAsync(target.GetId(this._player)).ConfigureAwait(false);
         }
         else
         {
-            await this._player.Connection.SendShowEffectAsync(target.GetId(this._player), Convert(effectType));
+            await this._player.Connection.SendShowEffectAsync(target.GetId(this._player), Convert(effectType)).ConfigureAwait(false);
         }
     }
 

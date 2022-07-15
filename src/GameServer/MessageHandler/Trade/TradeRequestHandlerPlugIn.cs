@@ -31,13 +31,13 @@ internal class TradeRequestHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         TradeRequest message = packet;
-        var partner = await player.GetObservingPlayerWithIdAsync(message.PlayerId);
+        var partner = await player.GetObservingPlayerWithIdAsync(message.PlayerId).ConfigureAwait(false);
         if (partner is null)
         {
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Trade partner not found.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
-        await this._requestAction.RequestTradeAsync(player, partner);
+        await this._requestAction.RequestTradeAsync(player, partner).ConfigureAwait(false);
     }
 }

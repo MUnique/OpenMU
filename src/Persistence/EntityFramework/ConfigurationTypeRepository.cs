@@ -52,7 +52,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// <inheritdoc/>
     async ValueTask<IEnumerable> IRepository.GetAllAsync()
     {
-        return await this.GetAllAsync();
+        return await this.GetAllAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -84,19 +84,19 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// <inheritdoc />
     public async ValueTask<bool> DeleteAsync(Guid id)
     {
-        var obj = await this.GetByIdAsync(id);
+        var obj = await this.GetByIdAsync(id).ConfigureAwait(false);
         if (obj is null)
         {
             return false;
         }
 
-        return await this.DeleteAsync(obj);
+        return await this.DeleteAsync(obj).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     async ValueTask<object?> IRepository.GetByIdAsync(Guid id)
     {
-        return await this.GetByIdAsync(id);
+        return await this.GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <summary>

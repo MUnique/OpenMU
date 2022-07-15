@@ -49,6 +49,6 @@ builder.AddOpenTelemetryMetrics(metricsRegistry);
 
 var app = builder.BuildAndConfigure(true);
 
-await app.WaitForUpdatedDatabaseAsync();
+await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
 
 app.Run();

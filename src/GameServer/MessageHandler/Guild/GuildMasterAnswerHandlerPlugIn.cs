@@ -29,6 +29,6 @@ internal class GuildMasterAnswerHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildMasterAnswer answer = packet;
-        await this._answerAction.ProcessAnswerAsync(player, answer.ShowCreationDialog ? GuildMasterAnswerAction.Answer.ShowDialog : GuildMasterAnswerAction.Answer.Cancel);
+        await this._answerAction.ProcessAnswerAsync(player, answer.ShowCreationDialog ? GuildMasterAnswerAction.Answer.ShowDialog : GuildMasterAnswerAction.Answer.Cancel).ConfigureAwait(false);
     }
 }

@@ -30,6 +30,6 @@ public class GuildBattleSoccerChatCommandPlugIn : ChatCommandPlugInBase<GuildWar
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player guildMaster, GuildWarChatCommandArgs arguments)
     {
-        await this._action.RequestBattleSoccerAsync(guildMaster, arguments.GuildName);
+        await this._action.RequestBattleSoccerAsync(guildMaster, arguments.GuildName).ConfigureAwait(false);
     }
 }

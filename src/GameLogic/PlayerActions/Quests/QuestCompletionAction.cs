@@ -68,18 +68,18 @@ public class QuestCompletionAction
             foreach (var item in items)
             {
                 await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
-                await player.Inventory.RemoveItemAsync(item);
-                await player.PersistenceContext.DeleteAsync(item);
+                await player.Inventory.RemoveItemAsync(item).ConfigureAwait(false);
+                await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
             }
         }
 
         foreach (var reward in activeQuest.Rewards)
         {
-            await AddRewardAsync(player, reward);
+            await AddRewardAsync(player, reward).ConfigureAwait(false);
         }
 
         questState!.LastFinishedQuest = activeQuest;
-        await questState.ClearAsync(player.PersistenceContext);
+        await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletedAsync(activeQuest)).ConfigureAwait(false);
     }
 
@@ -102,7 +102,7 @@ public class QuestCompletionAction
             case QuestRewardType.Item:
                 var item = player.PersistenceContext.CreateNew<Item>();
                 item.AssignValues(reward.ItemReward ?? throw new InvalidOperationException($"Reward {reward.GetId()} is defined as item reward, but has no item assigned"));
-                if (await player.Inventory!.AddItemAsync(item))
+                if (await player.Inventory!.AddItemAsync(item).ConfigureAwait(false))
                 {
                     await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
                 }
@@ -140,7 +140,7 @@ public class QuestCompletionAction
                 await player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
                 break;
             case QuestRewardType.Experience:
-                await player.AddExperienceAsync(reward.Value, null);
+                await player.AddExperienceAsync(reward.Value, null).ConfigureAwait(false);
                 break;
             case QuestRewardType.Money:
                 player.TryAddMoney(reward.Value);

@@ -37,12 +37,12 @@ public class ObserverToWorldAdapterTest
         {
             Position = new Point(128, 128),
         };
-        await map.AddAsync(nonPlayer);
-        await adapter.LocateableAddedAsync(nonPlayer);
+        await map.AddAsync(nonPlayer).ConfigureAwait(false);
+        await adapter.LocateableAddedAsync(nonPlayer).ConfigureAwait(false);
         adapter.ObservingBuckets.Add(nonPlayer.NewBucket!);
         nonPlayer.OldBucket = nonPlayer.NewBucket; // oldbucket would be set, if it got moved on the map
 
-        await adapter.LocateableAddedAsync(nonPlayer);
+        await adapter.LocateableAddedAsync(nonPlayer).ConfigureAwait(false);
         view.Verify(v => v.NewNpcsInScopeAsync(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer)), true), Times.Once);
     }
 
@@ -67,19 +67,19 @@ public class ObserverToWorldAdapterTest
         {
             Position = new Point(128, 128),
         };
-        await map.AddAsync(nonPlayer1);
+        await map.AddAsync(nonPlayer1).ConfigureAwait(false);
         var nonPlayer2 = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
         {
             Position = new Point(100, 128),
         };
-        await map.AddAsync(nonPlayer2);
+        await map.AddAsync(nonPlayer2).ConfigureAwait(false);
         adapter.ObservingBuckets.Add(nonPlayer1.NewBucket!);
         adapter.ObservingBuckets.Add(nonPlayer2.NewBucket!);
 
-        await adapter.LocateableAddedAsync(nonPlayer1);
-        await adapter.LocateableAddedAsync(nonPlayer2);
+        await adapter.LocateableAddedAsync(nonPlayer1).ConfigureAwait(false);
+        await adapter.LocateableAddedAsync(nonPlayer2).ConfigureAwait(false);
 
-        await map.MoveAsync(nonPlayer1, nonPlayer2.Position, new AsyncLock(), MoveType.Instant);
+        await map.MoveAsync(nonPlayer1, nonPlayer2.Position, new AsyncLock(), MoveType.Instant).ConfigureAwait(false);
 
         view1.Verify(v => v.NewNpcsInScopeAsync(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer1)), true), Times.Once);
         view1.Verify(v => v.NewNpcsInScopeAsync(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer2)), true), Times.Once);

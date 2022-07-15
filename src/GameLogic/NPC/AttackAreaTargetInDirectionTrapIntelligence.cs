@@ -35,13 +35,13 @@ public class AttackAreaTargetInDirectionTrapIntelligence : TrapIntelligenceBase
         bool hasAttacked = false;
         foreach (var target in targetsInRange)
         {
-            await this.Trap.AttackAsync(target);
+            await this.Trap.AttackAsync(target).ConfigureAwait(false);
             hasAttacked = true;
         }
 
         if (hasAttacked && this.Trap.Definition.AttackSkill is { } attackSkill)
         {
-            await this.Trap.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this.Trap, null, attackSkill, true), true);
+            await this.Trap.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this.Trap, null, attackSkill, true), true).ConfigureAwait(false);
         }
     }
 }

@@ -25,6 +25,6 @@ internal class CharacterClientReadyPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     /// <inheritdoc />
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        await player.ClientReadyAfterMapChangeAsync();
+        await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
     }
 }

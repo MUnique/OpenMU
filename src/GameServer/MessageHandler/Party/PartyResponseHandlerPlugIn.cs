@@ -29,6 +29,6 @@ internal class PartyResponseHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PartyInviteResponse message = packet;
-        await this._action.HandleResponseAsync(player, message.Accepted);
+        await this._action.HandleResponseAsync(player, message.Accepted).ConfigureAwait(false);
     }
 }

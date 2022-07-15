@@ -22,7 +22,7 @@ public class InvalidPacketHeaderExceptionTest
     [Test]
     public async Task ThrownAsync()
     {
-        await this.TestExceptionAsync(e => { });
+        await this.TestExceptionAsync(e => { }).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public class InvalidPacketHeaderExceptionTest
     [Test]
     public async Task TestHeaderAsync()
     {
-        await this.TestExceptionAsync(e => Assert.That(e.Header, Is.EquivalentTo(new byte[] { 0x00, 0x00, 0x00 })));
+        await this.TestExceptionAsync(e => Assert.That(e.Header, Is.EquivalentTo(new byte[] { 0x00, 0x00, 0x00 }))).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class InvalidPacketHeaderExceptionTest
     [Test]
     public async Task TestPositionAsync()
     {
-        await this.TestExceptionAsync(e => Assert.That(e.Position, Is.EqualTo(3)));
+        await this.TestExceptionAsync(e => Assert.That(e.Position, Is.EqualTo(3))).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public class InvalidPacketHeaderExceptionTest
     [Test]
     public async Task TestBufferContentAsync()
     {
-        await this.TestExceptionAsync(e => Assert.That(e.BufferContent, Is.EquivalentTo(this._malformedData)));
+        await this.TestExceptionAsync(e => Assert.That(e.BufferContent, Is.EquivalentTo(this._malformedData))).ConfigureAwait(false);
     }
 
     private async ValueTask TestExceptionAsync(Action<InvalidPacketHeaderException> check)

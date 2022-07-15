@@ -31,6 +31,6 @@ internal class CharacterStatIncreasePacketHandlerPlugIn : ISubPacketHandlerPlugI
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         IncreaseCharacterStatPoint message = packet;
-        await this._increaseStatsAction.IncreaseStatsAsync(player, message.StatType.GetAttributeDefinition());
+        await this._increaseStatsAction.IncreaseStatsAsync(player, message.StatType.GetAttributeDefinition()).ConfigureAwait(false);
     }
 }

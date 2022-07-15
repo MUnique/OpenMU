@@ -27,7 +27,7 @@ public class GuildChangeToGameServerPublisher : IGuildChangePublisher
     {
         foreach (var gameServer in this._gameServers.Values)
         {
-            await gameServer.GuildPlayerKickedAsync(playerName);
+            await gameServer.GuildPlayerKickedAsync(playerName).ConfigureAwait(false);
         }
     }
 
@@ -36,7 +36,7 @@ public class GuildChangeToGameServerPublisher : IGuildChangePublisher
     {
         foreach (var gameServer in this._gameServers.Values)
         {
-            await gameServer.GuildDeletedAsync(guildId);
+            await gameServer.GuildDeletedAsync(guildId).ConfigureAwait(false);
         }
     }
 
@@ -45,7 +45,7 @@ public class GuildChangeToGameServerPublisher : IGuildChangePublisher
     {
         if (this._gameServers.TryGetValue(serverId, out var gameServer))
         {
-            await gameServer.AssignGuildToPlayerAsync(characterName, status);
+            await gameServer.AssignGuildToPlayerAsync(characterName, status).ConfigureAwait(false);
         }
     }
 }

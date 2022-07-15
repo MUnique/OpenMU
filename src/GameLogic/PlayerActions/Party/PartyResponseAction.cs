@@ -29,7 +29,7 @@ public class PartyResponseAction
             return;
         }
 
-        player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
 
         if (!accepted)
         {
@@ -46,14 +46,14 @@ public class PartyResponseAction
         if (player.LastPartyRequester.Party != null)
         {
             // The Requester got a party already, so add him to his party
-            await player.LastPartyRequester.Party.AddAsync(player);
+            await player.LastPartyRequester.Party.AddAsync(player).ConfigureAwait(false);
         }
         else
         {
             var master = player.LastPartyRequester;
             var party = new Party(player.GameContext.Configuration.MaximumPartySize, player.GameContext.LoggerFactory.CreateLogger<Party>());
-            await party.AddAsync(master);
-            await party.AddAsync(player);
+            await party.AddAsync(master).ConfigureAwait(false);
+            await party.AddAsync(player).ConfigureAwait(false);
         }
 
         player.LastPartyRequester = null;

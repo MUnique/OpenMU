@@ -66,7 +66,7 @@ public partial class ItemTable<TItem>
     private async Task OnAddClickAsync()
     {
         var modal = this._modal.Show<ModalObjectSelection<TItem>>($"Select {typeof(TItem).Name}");
-        var result = await modal.Result;
+        var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled && result.Data is TItem item)
         {
             this.Value ??= new List<TItem>();
@@ -87,16 +87,16 @@ public partial class ItemTable<TItem>
         };
 
         var modal = this._modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).Name}", parameters, options);
-        var result = await modal.Result;
+        var result = await modal.Result.ConfigureAwait(false);
         if (result.Cancelled)
         {
-            await this.PersistenceContext.DeleteAsync(item);
+            await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         }
         else
         {
             this.Value ??= new List<TItem>();
             this.Value.Add(item);
-            await this.PersistenceContext.SaveChangesAsync();
+            await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
             this.StateHasChanged();
         }
     }
@@ -109,9 +109,9 @@ public partial class ItemTable<TItem>
         if (!this.ValueExpression!.GetAccessedMemberType().IsConfigurationType()
             && !typeof(TItem).IsConfigurationType())
         {
-            await this.PersistenceContext.DeleteAsync(item);
+            await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         }
 
-        await this.PersistenceContext.SaveChangesAsync();
+        await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
     }
 }

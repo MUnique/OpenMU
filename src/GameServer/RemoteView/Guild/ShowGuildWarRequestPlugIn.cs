@@ -27,6 +27,6 @@ public class ShowGuildWarRequestPlugIn : IShowGuildWarRequestPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowRequestAsync(string requestingGuildName, GameLogic.GuildWar.GuildWarType warType)
     {
-        await this._player.Connection.SendGuildWarRequestAsync(requestingGuildName, warType.Convert());
+        await this._player.Connection.SendGuildWarRequestAsync(requestingGuildName, warType.Convert()).ConfigureAwait(false);
     }
 }

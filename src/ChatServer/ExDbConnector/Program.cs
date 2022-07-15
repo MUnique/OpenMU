@@ -60,7 +60,7 @@ internal class Program
             pluginManager.DiscoverAndRegisterPlugInsOf<INetworkEncryptionFactoryPlugIn>();
             var chatServer = new ChatServer(addressResolver, loggerFactory, pluginManager);
             chatServer.Initialize(configuration);
-            await chatServer.StartAsync();
+            await chatServer.StartAsync().ConfigureAwait(false);
             var exDbClient = new ExDbClient(exDbHost, exDbPort, chatServer, chatServerListenerPort, loggerFactory);
             _logger.LogInformation("ChatServer started and ready");
             while (Console.ReadLine() != "exit")
@@ -68,8 +68,8 @@ internal class Program
                 // keep application running
             }
 
-            await exDbClient.DisconnectAsync();
-            await chatServer.ShutdownAsync();
+            await exDbClient.DisconnectAsync().ConfigureAwait(false);
+            await chatServer.ShutdownAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

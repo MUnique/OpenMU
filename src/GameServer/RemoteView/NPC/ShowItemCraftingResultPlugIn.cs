@@ -37,7 +37,7 @@ public class ShowItemCraftingResultPlugIn : IShowItemCraftingResultPlugIn
             this._player.ItemSerializer.SerializeItem(itemData, createdItem);
         }
 
-        await this._player.Connection.SendItemCraftingResultAsync(Convert(result), itemData);
+        await this._player.Connection.SendItemCraftingResultAsync(Convert(result), itemData).ConfigureAwait(false);
     }
 
     private static ItemCraftingResult.CraftingResult Convert(CraftingResult result)

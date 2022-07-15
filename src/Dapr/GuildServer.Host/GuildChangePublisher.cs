@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Microsoft.Extensions.Logging;
-
 namespace MUnique.OpenMU.GuildServer.Host;
 
 using global::Dapr.Client;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.ServerClients;
 
@@ -34,7 +33,7 @@ public class GuildChangePublisher : IGuildChangePublisher
     {
         try
         {
-            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildPlayerKickedAsync), playerName);
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildPlayerKickedAsync), playerName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -47,7 +46,7 @@ public class GuildChangePublisher : IGuildChangePublisher
     {
         try
         {
-            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildDeletedAsync), guildId);
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildDeletedAsync), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -60,7 +59,7 @@ public class GuildChangePublisher : IGuildChangePublisher
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync($"gameServer{serverId + 1}", nameof(IGameServer.AssignGuildToPlayerAsync), new GuildMemberAssignArguments(characterName, status));
+            await this._daprClient.InvokeMethodAsync($"gameServer{serverId + 1}", nameof(IGameServer.AssignGuildToPlayerAsync), new GuildMemberAssignArguments(characterName, status)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

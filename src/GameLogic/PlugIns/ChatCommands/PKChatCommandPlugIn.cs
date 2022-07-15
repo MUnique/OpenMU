@@ -53,6 +53,6 @@ public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
             targetPlayer.SelectedCharacter!.PlayerKillCount,
             Math.Round(TimeSpan.FromSeconds(targetPlayer.SelectedCharacter!.StateRemainingSeconds).TotalMinutes));
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {message}");
+        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {message}").ConfigureAwait(false);
     }
 }

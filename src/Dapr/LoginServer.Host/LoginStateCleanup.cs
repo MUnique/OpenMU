@@ -62,7 +62,7 @@ public sealed class LoginStateCleanup : IHostedService
     {
         try
         {
-            await this._loginServer.RemoveServerAsync((byte)serverId);
+            await this._loginServer.RemoveServerAsync((byte)serverId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -70,11 +70,11 @@ public sealed class LoginStateCleanup : IHostedService
         }
     }
 
-    private async ValueTask OnGameServerRemovedAsync( ushort serverId)
+    private async ValueTask OnGameServerRemovedAsync(ushort serverId)
     {
         try
         {
-            await this._loginServer.RemoveServerAsync((byte)serverId);
+            await this._loginServer.RemoveServerAsync((byte)serverId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

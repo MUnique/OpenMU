@@ -24,7 +24,7 @@ public class DropGeneratorTest
     {
         var config = this.GetGameConfig();
         var generator = new DefaultDropGenerator(config, this.GetRandomizer(9999));
-        var item = generator.GenerateItemDrops(this.GetMonster(1), 0, await TestHelper.CreatePlayerAsync(), out _).FirstOrDefault();
+        var item = generator.GenerateItemDrops(this.GetMonster(1), 0, await TestHelper.CreatePlayerAsync().ConfigureAwait(false), out _).FirstOrDefault();
         Assert.That(item, Is.Null);
     }
 
@@ -40,7 +40,7 @@ public class DropGeneratorTest
         monster.DropItemGroups.Add(3000, SpecialItemType.Ancient, true);
 
         var generator = new DefaultDropGenerator(config, this.GetRandomizer2(0, 0.5));
-        var item = generator.GenerateItemDrops(monster, 1, await TestHelper.CreatePlayerAsync(), out _).FirstOrDefault();
+        var item = generator.GenerateItemDrops(monster, 1, await TestHelper.CreatePlayerAsync().ConfigureAwait(false), out _).FirstOrDefault();
 
         Assert.That(item, Is.Not.Null);
 

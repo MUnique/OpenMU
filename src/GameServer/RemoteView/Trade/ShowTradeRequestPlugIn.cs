@@ -28,6 +28,6 @@ public class ShowTradeRequestPlugIn : IShowTradeRequestPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowTradeRequestAsync(ITrader requester)
     {
-        await this._player.Connection.SendTradeRequestAsync(requester.Name);
+        await this._player.Connection.SendTradeRequestAsync(requester.Name).ConfigureAwait(false);
     }
 }

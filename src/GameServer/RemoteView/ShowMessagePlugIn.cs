@@ -35,7 +35,7 @@ public class ShowMessagePlugIn : IShowMessagePlugIn
             while (rest.Length > 0)
             {
                 var partSize = Encoding.UTF8.GetCharacterCountOfMaxByteCount(rest, maxMessageLength);
-                await this.ShowMessageAsync(rest.Substring(0, partSize), messageType);
+                await this.ShowMessageAsync(rest.Substring(0, partSize), messageType).ConfigureAwait(false);
                 rest = rest.Length > partSize ? rest.Substring(startIndex: partSize) : string.Empty;
             }
 
@@ -44,7 +44,7 @@ public class ShowMessagePlugIn : IShowMessagePlugIn
 
         const string messagePrefix = "000000000";
         var content = this._player.ClientVersion.Season > 0 ? messagePrefix + message : message;
-        await this._player.Connection.SendServerMessageAsync(ConvertMessageType(messageType), content);
+        await this._player.Connection.SendServerMessageAsync(ConvertMessageType(messageType), content).ConfigureAwait(false);
     }
 
     private static ServerMessage.MessageType ConvertMessageType(OpenMU.Interfaces.MessageType messageType)

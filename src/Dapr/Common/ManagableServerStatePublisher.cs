@@ -12,8 +12,10 @@ using System.Threading.Tasks;
 using global::Dapr.Client;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.Interfaces;
+using Nito.AsyncEx;
 using Nito.AsyncEx.Synchronous;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A state publisher for a <see cref="IManageableServer"/>,
@@ -29,7 +31,7 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
     private readonly ILogger<ManagableServerStatePublisher> _logger;
     private readonly DaprClient _daprClient;
     private readonly IManageableServer _server;
-    private readonly SemaphoreSlim _semaphore = new(1);
+    private readonly AsyncLock _lock = new();
 
     private readonly ServerStateData _data;
 
@@ -55,7 +57,6 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
     public void Dispose()
     {
         this.StopAsync(default).WaitAndUnwrapException();
-        this._semaphore.Dispose();
     }
 
     /// <inheritdoc />
@@ -67,7 +68,7 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
         {
             try
             {
-                await this.HeartbeatLoopAsync(this._heartbeatCancellationTokenSource.Token);
+                await this.HeartbeatLoopAsync(this._heartbeatCancellationTokenSource.Token).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -87,7 +88,7 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
         if (this._heartbeatTask is { } heartbeatTask)
         {
             this._heartbeatTask = null;
-            await heartbeatTask;
+            await heartbeatTask.ConfigureAwait(false);
         }
     }
 
@@ -105,7 +106,8 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
 
     private async Task PublishCurrentStateAsync()
     {
-        if (!await this._semaphore.WaitAsync(TimeSpan.FromSeconds(1)))
+        using var asyncLock = await this._lock.LockAsync(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+        if (asyncLock is null)
         {
             return;
         }
@@ -113,15 +115,11 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
         try
         {
             this._data.UpdateState(this._server);
-            await this._daprClient.PublishEventAsync("pubsub", TopicName, this._data);
+            await this._daprClient.PublishEventAsync("pubsub", TopicName, this._data).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error sending server status update");
-        }
-        finally
-        {
-            this._semaphore.Release();
         }
     }
 
@@ -132,7 +130,7 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
         {
             if (e.PropertyName == nameof(IManageableServer.ServerState))
             {
-                await this.PublishCurrentStateAsync();
+                await this.PublishCurrentStateAsync().ConfigureAwait(false);
             }
         }
         catch (Exception ex)

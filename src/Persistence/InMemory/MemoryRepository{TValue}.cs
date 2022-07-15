@@ -41,7 +41,7 @@ public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     /// <inheritdoc />
     public async ValueTask RemoveAsync(Guid key)
     {
-        await this.DeleteAsync(key);
+        await this.DeleteAsync(key).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -54,7 +54,7 @@ public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     /// <inheritdoc/>
     async ValueTask<object?> IRepository.GetByIdAsync(Guid id)
     {
-        return await this.GetByIdAsync(id);
+        return await this.GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

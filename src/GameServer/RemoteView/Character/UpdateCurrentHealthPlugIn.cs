@@ -35,6 +35,6 @@ public class UpdateCurrentHealthPlugIn : IUpdateCurrentHealthPlugIn
 
         await this._player.Connection.SendCurrentHealthAndShieldAsync(
             (ushort)Math.Max(this._player.Attributes[Stats.CurrentHealth], 0f),
-            (ushort)Math.Max(this._player.Attributes[Stats.CurrentShield], 0f));
+            (ushort)Math.Max(this._player.Attributes[Stats.CurrentShield], 0f)).ConfigureAwait(false);
     }
 }

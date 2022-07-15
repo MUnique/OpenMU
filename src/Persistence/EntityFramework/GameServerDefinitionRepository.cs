@@ -33,7 +33,7 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
             var entityEntry = currentContext.Entry(obj);
             foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded && c.Metadata is INavigation))
             {
-                await this.LoadCollectionAsync(entityEntry, (INavigation)collection.Metadata, currentContext);
+                await this.LoadCollectionAsync(entityEntry, (INavigation)collection.Metadata, currentContext).ConfigureAwait(false);
                 collection.IsLoaded = true;
             }
 
@@ -41,7 +41,7 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
             {
                 definition.RawGameConfiguration =
                     await this.RepositoryManager.GetRepository<GameConfiguration>()
-                        .GetByIdAsync(definition.GameConfigurationId.Value);
+                        .GetByIdAsync(definition.GameConfigurationId.Value).ConfigureAwait(false);
 
                 if (currentContext is EntityDataContext context)
                 {
@@ -52,7 +52,7 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
             if (definition.ServerConfigurationId.HasValue)
             {
                 definition.ServerConfiguration = await this.RepositoryManager.GetRepository<GameServerConfiguration>()
-                    .GetByIdAsync(definition.ServerConfigurationId.Value);
+                    .GetByIdAsync(definition.ServerConfigurationId.Value).ConfigureAwait(false);
             }
         }
     }

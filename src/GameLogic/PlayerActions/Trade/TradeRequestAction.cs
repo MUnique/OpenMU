@@ -24,14 +24,14 @@ public class TradeRequestAction
             return false;
         }
 
-        if (!partner.PlayerState.TryAdvanceTo(PlayerState.TradeRequested))
+        if (!await partner.PlayerState.TryAdvanceToAsync(PlayerState.TradeRequested).ConfigureAwait(false))
         {
             return false;
         }
 
-        if (!player.PlayerState.TryAdvanceTo(PlayerState.TradeRequested))
+        if (!await player.PlayerState.TryAdvanceToAsync(PlayerState.TradeRequested).ConfigureAwait(false))
         {
-            partner.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+            await partner.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
             return false;
         }
 

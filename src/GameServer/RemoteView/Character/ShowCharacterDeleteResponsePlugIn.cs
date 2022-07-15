@@ -27,7 +27,7 @@ public class ShowCharacterDeleteResponsePlugIn : IShowCharacterDeleteResponsePlu
     /// <inheritdoc/>
     public async ValueTask ShowCharacterDeleteResponseAsync(CharacterDeleteResult result)
     {
-        await this._player.Connection.SendCharacterDeleteResponseAsync(ConvertResult(result));
+        await this._player.Connection.SendCharacterDeleteResponseAsync(ConvertResult(result)).ConfigureAwait(false);
     }
 
     private static CharacterDeleteResponse.CharacterDeleteResult ConvertResult(CharacterDeleteResult result)

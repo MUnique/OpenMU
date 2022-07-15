@@ -55,10 +55,10 @@ public abstract class UserServiceBase : IUserService
         };
 
         var modal = this._modalService.Show<ModalCreateNew<UserCreationParameters>>("Create User", parameters, options);
-        var result = await modal.Result;
+        var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
-            await this.CreateUserAsync(userParameters.LoginName, userParameters.Password);
+            await this.CreateUserAsync(userParameters.LoginName, userParameters.Password).ConfigureAwait(false);
         }
     }
 
@@ -77,10 +77,10 @@ public abstract class UserServiceBase : IUserService
         };
 
         var modal = this._modalService.Show<ModalCreateNew<UserPasswordChangeParameters>>("Enter the new password", parameters, options);
-        var result = await modal.Result;
+        var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
-            await this.ChangePasswordAsync(user, userParameters.Password);
+            await this.ChangePasswordAsync(user, userParameters.Password).ConfigureAwait(false);
         }
     }
 

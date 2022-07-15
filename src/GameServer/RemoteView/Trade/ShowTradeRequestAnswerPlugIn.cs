@@ -31,6 +31,6 @@ public class ShowTradeRequestAnswerPlugIn : IShowTradeRequestAnswerPlugIn
             tradeAccepted,
             this._player.TradingPartner?.Name ?? string.Empty,
             (ushort)(tradeAccepted ? this._player.TradingPartner?.Level ?? 0 : 0),
-            tradeAccepted ? this._player.TradingPartner?.GuildStatus?.GuildId ?? 0 : 0);
+            tradeAccepted ? this._player.TradingPartner?.GuildStatus?.GuildId ?? 0 : 0).ConfigureAwait(false);
     }
 }

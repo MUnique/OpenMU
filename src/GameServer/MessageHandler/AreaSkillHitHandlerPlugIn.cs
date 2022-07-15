@@ -53,7 +53,7 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
             {
                 if (player.SkillList.GetSkill(message.SkillId) is { } skillEntry)
                 {
-                    await this._skillHitAction.AttackTargetAsync(player, target, skillEntry);
+                    await this._skillHitAction.AttackTargetAsync(player, target, skillEntry).ConfigureAwait(false);
                 }
             }
             else

@@ -35,10 +35,10 @@ public class GameMapTest
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
         player1.Object.Position = new Point(100, 100);
-        await map.AddAsync(player1.Object);
+        await map.AddAsync(player1.Object).ConfigureAwait(false);
         var player2 = this.GetPlayer();
         player2.Object.Position = new Point(101, 100);
-        await map.AddAsync(player2.Object);
+        await map.AddAsync(player2.Object).ConfigureAwait(false);
         player1.Verify(p => p.NewLocateablesInScopeAsync(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
         player2.Verify(p => p.NewLocateablesInScopeAsync(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player1.Object))), Times.Once);
         player1.Verify(p => p.LocateableAddedAsync(It.IsAny<ILocateable>()), Times.Once);
@@ -54,12 +54,12 @@ public class GameMapTest
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
 
-        await map.AddAsync(player1.Object);
+        await map.AddAsync(player1.Object).ConfigureAwait(false);
         var player2 = this.GetPlayer();
         player2.Object.Position = new Point(101, 100);
-        await map.AddAsync(player2.Object);
+        await map.AddAsync(player2.Object).ConfigureAwait(false);
 
-        await map.MoveAsync(player1.Object, new Point(100, 100), new AsyncLock(), 0);
+        await map.MoveAsync(player1.Object, new Point(100, 100), new AsyncLock(), 0).ConfigureAwait(false);
 
         player1.Verify(p => p.NewLocateablesInScopeAsync(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
         player1.Verify(p => p.NewLocateablesInScopeAsync(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player1.Object))), Times.Once);
@@ -77,12 +77,12 @@ public class GameMapTest
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
         player1.Object.Position = new Point(101, 100);
-        await map.AddAsync(player1.Object);
+        await map.AddAsync(player1.Object).ConfigureAwait(false);
         var player2 = this.GetPlayer();
         player2.Object.Position = new Point(101, 100);
-        await map.AddAsync(player2.Object);
+        await map.AddAsync(player2.Object).ConfigureAwait(false);
 
-        await map.MoveAsync(player1.Object, new Point(100, 130), new AsyncLock(), 0);
+        await map.MoveAsync(player1.Object, new Point(100, 130), new AsyncLock(), 0).ConfigureAwait(false);
         player1.Verify(p => p.LocateablesOutOfScopeAsync(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
         player2.Verify(p => p.LocateableRemovedAsync(It.IsAny<ILocateable>()), Times.Once);
     }
@@ -97,10 +97,10 @@ public class GameMapTest
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
         player1.Object.Position = new Point(101, 100);
-        await map.AddAsync(player1.Object);
+        await map.AddAsync(player1.Object).ConfigureAwait(false);
         var player2 = this.GetPlayer();
         player2.Object.Position = new Point(101, 100);
-        await map.AddAsync(player2.Object);
+        await map.AddAsync(player2.Object).ConfigureAwait(false);
 
         player1.Verify(p => p.NewLocateablesInScopeAsync(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
         player2.Verify(p => p.NewLocateablesInScopeAsync(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player1.Object))), Times.Once);
@@ -108,13 +108,13 @@ public class GameMapTest
         player1.Invocations.Clear();
         player2.Invocations.Clear();
 
-        await map.MoveAsync(player1.Object, new Point(100, 130), new AsyncLock(), 0);
+        await map.MoveAsync(player1.Object, new Point(100, 130), new AsyncLock(), 0).ConfigureAwait(false);
         player1.Verify(p => p.LocateablesOutOfScopeAsync(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player2.Object))), Times.Once);
         player2.Verify(p => p.LocateableRemovedAsync(It.IsAny<ILocateable>()), Times.Once);
         player1.Invocations.Clear();
         player2.Invocations.Clear();
 
-        await map.MoveAsync(player2.Object, new Point(101, 130), new AsyncLock(), 0);
+        await map.MoveAsync(player2.Object, new Point(101, 130), new AsyncLock(), 0).ConfigureAwait(false);
         player2.Verify(p => p.NewLocateablesInScopeAsync(It.Is<IEnumerable<ILocateable>>(n => n.Contains(player1.Object))), Times.Once);
         player1.Verify(p => p.LocateableAddedAsync(It.IsAny<ILocateable>()), Times.Once);
     }
@@ -127,17 +127,17 @@ public class GameMapTest
     {
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
-        await map.AddAsync(player1.Object);
+        await map.AddAsync(player1.Object).ConfigureAwait(false);
         var player2 = this.GetPlayer();
         player2.Object.Position = new Point(101, 100);
-        await map.AddAsync(player2.Object);
+        await map.AddAsync(player2.Object).ConfigureAwait(false);
 
         var sw = new System.Diagnostics.Stopwatch();
         sw.Start();
         var moveLock = new AsyncLock();
         for (int i = 0; i < 1000; i++)
         {
-            await map.MoveAsync(player1.Object, new Point((byte)(100 + (i % 30)), (byte)(100 + (i % 30))), moveLock, 0);
+            await map.MoveAsync(player1.Object, new Point((byte)(100 + (i % 30)), (byte)(100 + (i % 30))), moveLock, 0).ConfigureAwait(false);
         }
 
         sw.Stop();
@@ -153,11 +153,11 @@ public class GameMapTest
         var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
         var player1 = this.GetPlayer();
         player1.Object.Position = new Point(100, 100);
-        await map.AddAsync(player1.Object);
+        await map.AddAsync(player1.Object).ConfigureAwait(false);
         var player2 = this.GetPlayer();
         player2.Object.Position = new Point(101, 100);
-        await map.AddAsync(player2.Object);
-        await map.RemoveAsync(player2.Object);
+        await map.AddAsync(player2.Object).ConfigureAwait(false);
+        await map.RemoveAsync(player2.Object).ConfigureAwait(false);
         Assert.AreEqual(player2.Object.ObservingBuckets.Count, 0);
         player1.Verify(p => p.LocateableRemovedAsync(It.IsAny<ILocateable>()), Times.Once);
         player2.Verify(p => p.LocateableRemovedAsync(It.IsAny<ILocateable>()), Times.Once);

@@ -27,6 +27,6 @@ public class ShowCharacterCreationFailedPlugIn : IShowCharacterCreationFailedPlu
     /// <inheritdoc/>
     public async ValueTask ShowCharacterCreationFailedAsync()
     {
-        await this._player.Connection.SendCharacterCreationFailedAsync();
+        await this._player.Connection.SendCharacterCreationFailedAsync().ConfigureAwait(false);
     }
 }

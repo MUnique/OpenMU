@@ -35,6 +35,6 @@ public class TeleportPlugIn075 : ITeleportPlugIn
 
         var mapNumber = (byte)this._player.SelectedCharacter.CurrentMap.Number;
         var position = this._player.Position;
-        await this._player.Connection.SendMapChanged075Async(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte(), isMapChange: false);
+        await this._player.Connection.SendMapChanged075Async(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte(), isMapChange: false).ConfigureAwait(false);
     }
 }

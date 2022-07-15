@@ -69,7 +69,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
         }
         else if (item is DroppedItem droppedItem)
         {
-            await this._adaptee.InvokeViewPlugInAsync<IShowDroppedItemsPlugIn>(p => p.ShowDroppedItemsAsync(droppedItem.GetAsEnumerable(), true));
+            await this._adaptee.InvokeViewPlugInAsync<IShowDroppedItemsPlugIn>(p => p.ShowDroppedItemsAsync(droppedItem.GetAsEnumerable(), true)).ConfigureAwait(false);
         }
         else if (item is DroppedMoney droppedMoney)
         {
@@ -90,7 +90,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
                 }
             }
 
-            await observable.AddObserverAsync(this._adaptee);
+            await observable.AddObserverAsync(this._adaptee).ConfigureAwait(false);
         }
     }
 
@@ -121,18 +121,18 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
                 this._observingObjects.Remove(observable);
             }
 
-            await observable.RemoveObserverAsync(this._adaptee);
+            await observable.RemoveObserverAsync(this._adaptee).ConfigureAwait(false);
         }
 
         if (item is DroppedItem || item is DroppedMoney)
         {
-            await this._adaptee.InvokeViewPlugInAsync<IDroppedItemsDisappearedPlugIn>(p => p.DroppedItemsDisappearedAsync(item.GetAsEnumerable().Select(i => i.Id)));
+            await this._adaptee.InvokeViewPlugInAsync<IDroppedItemsDisappearedPlugIn>(p => p.DroppedItemsDisappearedAsync(item.GetAsEnumerable().Select(i => i.Id))).ConfigureAwait(false);
         }
         else
         {
             if (item.IsActive())
             {
-                await this._adaptee.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(item.GetAsEnumerable()));
+                await this._adaptee.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(item.GetAsEnumerable())).ConfigureAwait(false);
             }
         }
     }
@@ -238,10 +238,10 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
 
         if (this._observingObjects.Count > 0)
         {
-            await this.ClearObservingObjectsListAsync();
+            await this.ClearObservingObjectsListAsync().ConfigureAwait(false);
         }
 
-        await base.DisposeAsyncCore();
+        await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
     private bool ObjectWillBeOutOfScope(IObservable observable)

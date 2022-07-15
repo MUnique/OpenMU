@@ -60,7 +60,7 @@ public abstract class ItemModifyConsumeHandler : BaseConsumeHandler
             return false;
         }
 
-        await this.ConsumeSourceItemAsync(player, item);
+        await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
 
         await player.InvokeViewPlugInAsync<IItemUpgradedPlugIn>(p => p.ItemUpgradedAsync(targetItem)).ConfigureAwait(false);
         return true;

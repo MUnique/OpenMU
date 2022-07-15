@@ -74,7 +74,7 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
     protected override async Task StartInnerAsync(CancellationToken cancellationToken)
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
-        foreach (var connectServerDefinition in await persistenceContext.GetAsync<ConnectServerDefinition>())
+        foreach (var connectServerDefinition in await persistenceContext.GetAsync<ConnectServerDefinition>().ConfigureAwait(false))
         {
             var connectServer = this._connectServerFactory.CreateConnectServer(connectServerDefinition);
             this._servers.Add(connectServer);
@@ -103,7 +103,7 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
     {
         foreach (var connectServer in this._connectServers)
         {
-            await connectServer.StopAsync(cancellationToken);
+            await connectServer.StopAsync(cancellationToken).ConfigureAwait(false);
             this._servers.Remove(connectServer);
         }
 

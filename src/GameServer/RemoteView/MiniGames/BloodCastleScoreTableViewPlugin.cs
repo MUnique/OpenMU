@@ -27,6 +27,6 @@ public class BloodCastleScoreTableViewPlugin : IBloodCastleScoreTableViewPlugin
     /// <inheritdoc />
     public async ValueTask ShowScoreTableAsync(bool success, string playerName, int totalScore, int bonusExp, int bonusMoney)
     {
-        await this._player.Connection.SendBloodCastleScoreAsync(success, playerName, (uint)totalScore, (uint)bonusExp, (uint)bonusMoney);
+        await this._player.Connection.SendBloodCastleScoreAsync(success, playerName, (uint)totalScore, (uint)bonusExp, (uint)bonusMoney).ConfigureAwait(false);
     }
 }

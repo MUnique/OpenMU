@@ -21,9 +21,9 @@ public class WarpGateAction
     /// <param name="gate">The enter gate.</param>
     public async ValueTask EnterGateAsync(Player player, EnterGate gate)
     {
-        if (await this.IsWarpLegitAsync(player, gate))
+        if (await this.IsWarpLegitAsync(player, gate).ConfigureAwait(false))
         {
-            await player.WarpToAsync(gate.TargetGate!);
+            await player.WarpToAsync(gate.TargetGate!).ConfigureAwait(false);
         }
         else
         {

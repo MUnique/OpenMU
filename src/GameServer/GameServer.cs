@@ -137,14 +137,14 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         if (this.ServerState == ServerState.Stopped)
         {
-            await this.StartAsync();
+            await this.StartAsync().ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await this.ShutdownAsync();
+        await this.ShutdownAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -156,7 +156,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         {
             foreach (var listener in this._listeners)
             {
-                await listener.StartAsync();
+                await listener.StartAsync().ConfigureAwait(false);
             }
 
             this.ServerState = ServerState.Started;
@@ -194,9 +194,9 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         {
             playerList.Add(player);
             return Task.CompletedTask;
-        });
+        }).ConfigureAwait(false);
 
-        await playerList.Select(player => player.DisconnectAsync().AsTask()).WhenAll();
+        await playerList.Select(player => player.DisconnectAsync().AsTask()).WhenAll().ConfigureAwait(false);
 
         this.ServerState = ServerState.Stopped;
         this._logger.LogInformation("Server shutted down.");
@@ -251,7 +251,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         // The letter we get here might not be of the right type to be attached
         // to the players context and letter collection.
         // So, we simply load it from the database.
-        var loadedLetter = await player.PersistenceContext.GetByIdAsync<LetterHeader>(letter.Id);
+        var loadedLetter = await player.PersistenceContext.GetByIdAsync<LetterHeader>(letter.Id).ConfigureAwait(false);
         if (loadedLetter is null)
         {
             // something went wrong here, this should never happen.
@@ -282,7 +282,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         if (player != null)
         {
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You got disconnected by a game master.", MessageType.BlueNormal)).ConfigureAwait(false);
-            await player.DisconnectAsync();
+            await player.DisconnectAsync().ConfigureAwait(false);
             return true;
         }
 
@@ -297,7 +297,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         {
             player.Account.State = AccountState.TemporarilyBanned;
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Your account has been temporarily banned by a game master.", MessageType.BlueNormal)).ConfigureAwait(false);
-            await player.DisconnectAsync();
+            await player.DisconnectAsync().ConfigureAwait(false);
             return true;
         }
 
@@ -315,7 +315,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
         player.GuildStatus = guildStatus;
         await player.ForEachWorldObserverAsync<IAssignPlayersToGuildPlugIn>(p => p.AssignPlayerToGuildAsync(player, true), true).ConfigureAwait(false);
-        await this.Context.RegisterGuildMemberAsync(player);
+        await this.Context.RegisterGuildMemberAsync(player).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -363,8 +363,8 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <inheritdoc/>
     public async ValueTask GuildDeletedAsync(uint guildId)
     {
-        await this._gameContext.RemoveGuildAsync(guildId);
-        await this._gameContext.ForEachGuildPlayerAsync(guildId, p => this.RemovePlayerFromGuildAsync(p, false).AsTask());
+        await this._gameContext.RemoveGuildAsync(guildId).ConfigureAwait(false);
+        await this._gameContext.ForEachGuildPlayerAsync(guildId, p => this.RemovePlayerFromGuildAsync(p, false).AsTask()).ConfigureAwait(false);
 
         //// todo: alliance things?
     }
@@ -378,7 +378,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
             return;
         }
 
-        await this.RemovePlayerFromGuildAsync(player);
+        await this.RemovePlayerFromGuildAsync(player).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -406,7 +406,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         if (unregisterFromContext && player.GuildStatus?.GuildId is { } guildId)
         {
-            await this._gameContext.UnregisterGuildMemberAsync(player);
+            await this._gameContext.UnregisterGuildMemberAsync(player).ConfigureAwait(false);
         }
 
         await player.ForEachWorldObserverAsync<IPlayerLeftGuildPlugIn>(p => p.PlayerLeftGuildAsync(player), true).ConfigureAwait(false);
@@ -417,17 +417,17 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     private async ValueTask OnPlayerConnectedAsync(PlayerConnectedEventArgs e)
     {
         var player = e.ConntectedPlayer;
-        await this._gameContext.AddPlayerAsync(player);
+        await this._gameContext.AddPlayerAsync(player).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IShowLoginWindowPlugIn>(p => p.ShowLoginWindowAsync()).ConfigureAwait(false);
-        player.PlayerState.TryAdvanceTo(PlayerState.LoginScreen);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         e.ConntectedPlayer.PlayerDisconnected += this.OnPlayerDisconnectedAsync;
         this.OnPropertyChanged(nameof(this.CurrentConnections));
     }
 
     private async ValueTask OnPlayerDisconnectedAsync(Player remotePlayer)
     {
-        await this.SaveSessionOfPlayerAsync(remotePlayer);
-        await this.SetOfflineAtLoginServerAsync(remotePlayer);
+        await this.SaveSessionOfPlayerAsync(remotePlayer).ConfigureAwait(false);
+        await this.SetOfflineAtLoginServerAsync(remotePlayer).ConfigureAwait(false);
         remotePlayer.Dispose();
         this.OnPropertyChanged(nameof(this.CurrentConnections));
     }
@@ -438,7 +438,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         {
             if (player.Account?.LoginName is { } loginName)
             {
-                await this.Context.LoginServer.LogOffAsync(loginName, this.Id);
+                await this.Context.LoginServer.LogOffAsync(loginName, this.Id).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -451,7 +451,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         try
         {
-            if (!await player.PersistenceContext.SaveChangesAsync())
+            if (!await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false))
             {
                 this._logger.LogWarning($"Could not save session of player {player}");
             }

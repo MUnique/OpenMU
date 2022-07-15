@@ -73,7 +73,7 @@ public class PipelinedEncryptorTests
         var pipe = new Pipe();
         var encryptor = new PipelinedSimpleModulusEncryptor(pipe.Writer);
         encryptor.Writer.Write(new byte[] { 0xC1, 0x03, 0x01 });
-        encryptor.Writer.Complete();
+        await encryptor.Writer.CompleteAsync().ConfigureAwait(false);
         var result = await pipe.Reader.ReadAsync().ConfigureAwait(false);
         Assert.That(result.IsCompleted, Is.True);
     }
@@ -88,8 +88,8 @@ public class PipelinedEncryptorTests
         var pipe = new Pipe();
         var encryptor = new PipelinedSimpleModulusEncryptor(pipe.Writer);
         var reading = pipe.Reader.ReadAsync();
-        encryptor.Writer.Complete();
-        var result = await reading;
+        await encryptor.Writer.CompleteAsync().ConfigureAwait(false);
+        var result = await reading.ConfigureAwait(false);
         await Task.Delay(10).ConfigureAwait(false);
         Assert.That(result.IsCompleted, Is.True);
     }

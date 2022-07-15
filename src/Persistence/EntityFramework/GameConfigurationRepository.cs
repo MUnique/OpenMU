@@ -40,10 +40,10 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         }
 
         var database = currentContext.Context.Database;
-        await database.OpenConnectionAsync();
+        await database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
-            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context) is { } config)
+            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context).ConfigureAwait(false) is { } config)
             {
                 currentContext.Attach(config);
                 return config;
@@ -53,7 +53,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         }
         finally
         {
-            await database.CloseConnectionAsync();
+            await database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
 
@@ -67,16 +67,16 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         }
 
         var database = currentContext.Context.Database;
-        await database.OpenConnectionAsync();
+        await database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
-            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context)).ToList();
+            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context).ConfigureAwait(false)).ToList();
             configs.ForEach(currentContext.Attach);
             return configs;
         }
         finally
         {
-            await database.CloseConnectionAsync();
+            await database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
 }

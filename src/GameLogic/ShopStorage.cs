@@ -38,6 +38,6 @@ public class ShopStorage : Storage, IShopStorage
             return false;
         }
 
-        return await base.AddItemAsync(slot, item);
+        return await base.AddItemAsync(slot, item).ConfigureAwait(false);
     }
 }

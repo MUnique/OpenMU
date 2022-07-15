@@ -30,6 +30,6 @@ public class QuestSelectRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         QuestSelectRequest request = packet;
-        await this._questSelectAction.SelectQuestAsync(player, (short)request.QuestGroup, (short)request.QuestNumber);
+        await this._questSelectAction.SelectQuestAsync(player, (short)request.QuestGroup, (short)request.QuestNumber).ConfigureAwait(false);
     }
 }

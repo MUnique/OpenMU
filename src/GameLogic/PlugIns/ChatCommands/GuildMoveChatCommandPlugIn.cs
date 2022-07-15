@@ -27,23 +27,23 @@ public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCom
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, GuildMoveChatCommandArgs arguments)
     {
-        var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!);
+        var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!).ConfigureAwait(false);
 
         if (gameMaster.GameContext is not IGameServerContext gameServerContext)
         {
             return;
         }
 
-        var exitGate = await this.GetExitGateAsync(gameMaster, arguments.MapIdOrName!, arguments.Coordinates);
+        var exitGate = await this.GetExitGateAsync(gameMaster, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
         await gameServerContext.ForEachGuildPlayerAsync(guildId, async guildPlayer =>
         {
-            await guildPlayer.WarpToAsync(exitGate);
+            await guildPlayer.WarpToAsync(exitGate).ConfigureAwait(false);
 
             if (!guildPlayer.Name.Equals(gameMaster.Name))
             {
-                await this.ShowMessageToAsync(guildPlayer, "You have been moved by the game master.");
-                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been moved to {exitGate!.Map!.Name} at {guildPlayer.Position.X}, {guildPlayer.Position.Y}");
+                await this.ShowMessageToAsync(guildPlayer, "You have been moved by the game master.").ConfigureAwait(false);
+                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been moved to {exitGate!.Map!.Name} at {guildPlayer.Position.X}, {guildPlayer.Position.Y}").ConfigureAwait(false);
             }
-        });
+        }).ConfigureAwait(false);
     }
 }

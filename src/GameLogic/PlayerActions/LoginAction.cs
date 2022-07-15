@@ -23,7 +23,7 @@ public class LoginAction
         Account? account;
         try
         {
-            account = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password);
+            account = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -49,9 +49,9 @@ public class LoginAction
         {
             try
             {
-                using var context = player.PlayerState.TryBeginAdvanceTo(PlayerState.Authenticated);
+                using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
                 if (context.Allowed && player.GameContext is IGameServerContext gameServerContext &&
-                    await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id))
+                    await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
                 {
                     player.Account = account;
                     player.Logger.LogDebug("Login successful, username: [{0}]", username);

@@ -38,6 +38,6 @@ public class DeActivateMagicEffectPlugIn075 : IDeactivateMagicEffectPlugIn
 
         // We assume, that the magic effect number is equal to the skill number.
         // In early versions, the magic effect number is not used elsewhere.
-        await this._player.Connection.SendMagicEffectCancelled075Async((byte)effect.Definition.Number, affectedObject.GetId(this._player));
+        await this._player.Connection.SendMagicEffectCancelled075Async((byte)effect.Definition.Number, affectedObject.GetId(this._player)).ConfigureAwait(false);
     }
 }

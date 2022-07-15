@@ -34,9 +34,9 @@ public class HitAction
         }
 
         player.Rotation = lookingDirection;
-        await target.AttackByAsync(player, null);
+        await target.AttackByAsync(player, null).ConfigureAwait(false);
         if (player.Attributes?[Stats.TransformationSkin] is { } skin and not 0
-            && await this.ApplySkinnedMonstersSkillAsync(player, target, (short)skin) is var (skill, effectApplied))
+            && await this.ApplySkinnedMonstersSkillAsync(player, target, (short)skin).ConfigureAwait(false) is var (skill, effectApplied))
         {
             await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, skill, effectApplied), true).ConfigureAwait(false);
             return;
@@ -70,13 +70,13 @@ public class HitAction
             var magicEffect = effectDefinition.PowerUpDefinition.TargetAttribute == Stats.IsPoisoned
                 ? new PoisonMagicEffect(powerUp, effectDefinition, TimeSpan.FromSeconds(powerUpDuration.Value), player, target)
                 : new MagicEffect(powerUp, effectDefinition, TimeSpan.FromSeconds(powerUpDuration.Value));
-            await target.MagicEffectList.AddEffectAsync(magicEffect);
+            await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
             effectApplied = true;
         }
 
         if (modifier == Stats.LightningResistance)
         {
-            await target.MoveRandomlyAsync();
+            await target.MoveRandomlyAsync().ConfigureAwait(false);
         }
 
         return (skill, effectApplied);

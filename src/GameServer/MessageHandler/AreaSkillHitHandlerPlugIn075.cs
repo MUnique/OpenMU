@@ -44,7 +44,7 @@ internal class AreaSkillHitHandlerPlugIn075 : AreaSkillHitHandlerMultiTargetPlug
 
         for (var i = 0; i < message.TargetCount; i++)
         {
-            await this.AttackTargetAsync(player, skillEntry, message[i].TargetId);
+            await this.AttackTargetAsync(player, skillEntry, message[i].TargetId).ConfigureAwait(false);
         }
     }
 }

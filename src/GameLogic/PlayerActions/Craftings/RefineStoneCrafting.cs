@@ -129,12 +129,12 @@ public class RefineStoneCrafting : SimpleItemCraftingHandler
         var result = new List<Item>();
         if (higherRefineStoneItems > 0)
         {
-            result.AddRange(await this.CreateRefineStonesAsync(higherRefineStoneItems, 20, 44, player));
+            result.AddRange(await this.CreateRefineStonesAsync(higherRefineStoneItems, 20, 44, player).ConfigureAwait(false));
         }
 
         if (lowerRefineStoneItems > 0)
         {
-            result.AddRange(await this.CreateRefineStonesAsync(lowerRefineStoneItems, 50, 43, player));
+            result.AddRange(await this.CreateRefineStonesAsync(lowerRefineStoneItems, 50, 43, player).ConfigureAwait(false));
         }
 
         return result;
@@ -150,7 +150,7 @@ public class RefineStoneCrafting : SimpleItemCraftingHandler
                 var refineStone = player.PersistenceContext.CreateNew<Item>();
                 refineStone.Definition = player.GameContext.Configuration.Items.First(item => item.Group == 14 && item.Number == refineStoneNumber);
                 refineStone.Durability = 1;
-                await player.TemporaryStorage!.AddItemAsync(refineStone);
+                await player.TemporaryStorage!.AddItemAsync(refineStone).ConfigureAwait(false);
                 createdItems.Add(refineStone);
             }
         }

@@ -11,10 +11,7 @@
     </tr>
     </thead>
     <tbody>
-    @* todo: this leads to problems, because the list may have changed during enumeration.
-             additionally, ObjectsChanged also fires when monsters have changed (e.g. by being killed),
-             so we do a lot of unneeded iterations here.*@
-    @foreach (var player in this.MapController.Objects.Values.OfType<Player>())
+    @foreach (var player in this.MapController.Players.Values)
     {
         <tr>
             <td>@player.Name</td>
@@ -40,6 +37,6 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        this.MapController.ObjectsChanged += (_, _) => this.InvokeAsync(this.StateHasChanged);
+        this.MapController.PlayersChanged += (_, _) => this.InvokeAsync(this.StateHasChanged);
     }
 }

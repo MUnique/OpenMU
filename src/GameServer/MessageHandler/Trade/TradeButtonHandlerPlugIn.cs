@@ -35,6 +35,6 @@ internal class TradeButtonHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        await this._buttonAction.TradeButtonChangedAsync(player, (TradeButtonState)message.NewState);
+        await this._buttonAction.TradeButtonChangedAsync(player, (TradeButtonState)message.NewState).ConfigureAwait(false);
     }
 }

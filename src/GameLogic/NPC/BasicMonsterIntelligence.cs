@@ -53,6 +53,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// <inheritdoc/>
     public void Start()
     {
+        // TODO: Optimize this: start timer when first observer is added. stop timer when last observer is removed.
         this._aiTimer = new Timer(_ => this.SafeTick(), null, this.Npc.Definition.AttackDelay, this.Npc.Definition.AttackDelay);
     }
 
@@ -91,6 +92,11 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         List<IWorldObserver> tempObservers;
         using (await this.Npc.ObserverLock.ReaderLockAsync())
         {
+            if (this.Npc.Observers.Count == 0)
+            {
+                return null;
+            }
+
             tempObservers = new List<IWorldObserver>(this.Npc.Observers);
         }
 
@@ -132,7 +138,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     {
         try
         {
-            await this.TickAsync();
+            await this.TickAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -152,7 +158,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             return;
         }
 
-        if (!await this.CanAttackAsync())
+        if (!await this.CanAttackAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -165,23 +171,23 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
                 || target.IsTeleporting
                 || target.IsAtSafezone()
                 || !target.IsInRange(this.Monster.Position, this.Npc.Definition.ViewRange)
-                || (target is IWorldObserver && !await this.IsTargetInObserversAsync(target)))
+                || (target is IWorldObserver && !await this.IsTargetInObserversAsync(target).ConfigureAwait(false)))
             {
-                target = this.CurrentTarget = await this.SearchNextTargetAsync();
+                target = this.CurrentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
             }
         }
         else
         {
-            target = this.CurrentTarget = await this.SearchNextTargetAsync();
+            target = this.CurrentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
         }
 
         // no target?
         if (target is null)
         {
             // we move around randomly, so the monster does not look dead when watched from distance.
-            if (await this.IsObservedByAttackerAsync())
+            if (await this.IsObservedByAttackerAsync().ConfigureAwait(false))
             {
-                await this.Monster.RandomMoveAsync();
+                await this.Monster.RandomMoveAsync().ConfigureAwait(false);
             }
 
             return;
@@ -190,7 +196,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         // Target in Attack Range?
         if (target.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange + 1) && !this.Monster.IsAtSafezone())
         {
-            await this.Monster.AttackAsync(target);  // yes, attack
+            await this.Monster.AttackAsync(target).ConfigureAwait(false);  // yes, attack
         }
 
         // Target in View Range?
@@ -198,12 +204,12 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         {
             // no, walk to the target
             var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, this.Monster.Definition.AttackRange);
-            await this.Monster.WalkToAsync(walkTarget);
+            await this.Monster.WalkToAsync(walkTarget).ConfigureAwait(false);
         }
         else
         {
             // we move around randomly, so the monster does not look dead when watched from distance.
-            await this.Monster.RandomMoveAsync();
+            await this.Monster.RandomMoveAsync().ConfigureAwait(false);
         }
     }
 }

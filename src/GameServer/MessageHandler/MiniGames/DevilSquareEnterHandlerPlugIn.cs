@@ -41,6 +41,6 @@ internal class DevilSquareEnterHandlerPlugIn : IPacketHandlerPlugIn
         DevilSquareEnterRequest request = packet;
         var actualLevel = request.SquareLevel + 1;
         var ticketIndex = request.TicketItemInventoryIndex - InventoryConstants.EquippableSlotsCount;
-        await this._enterAction.TryEnterMiniGameAsync(player, MiniGameType.DevilSquare, actualLevel, (byte)ticketIndex);
+        await this._enterAction.TryEnterMiniGameAsync(player, MiniGameType.DevilSquare, actualLevel, (byte)ticketIndex).ConfigureAwait(false);
     }
 }

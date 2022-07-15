@@ -91,7 +91,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                await this.InitializeSpawnAsync(createdMap, spawnArea);
+                await this.InitializeSpawnAsync(createdMap, spawnArea).ConfigureAwait(false);
             }
         }
 
@@ -119,7 +119,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                await this.InitializeSpawnAsync(createdMap, spawnArea, eventStateProvider);
+                await this.InitializeSpawnAsync(createdMap, spawnArea, eventStateProvider).ConfigureAwait(false);
             }
         }
 
@@ -144,7 +144,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                await this.InitializeSpawnAsync(createdMap, spawnArea, eventStateProvider);
+                await this.InitializeSpawnAsync(createdMap, spawnArea, eventStateProvider).ConfigureAwait(false);
             }
         }
 
@@ -188,12 +188,12 @@ public class MapInitializer : IMapInitializer
         try
         {
             npc.Initialize();
-            await createdMap.AddAsync(npc);
+            await createdMap.AddAsync(npc).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, $"Object {spawnArea} couldn't be initialized.", spawnArea);
-            await npc.DisposeAsync();
+            await npc.DisposeAsync().ConfigureAwait(false);
         }
     }
 

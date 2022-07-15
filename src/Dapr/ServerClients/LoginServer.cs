@@ -34,7 +34,7 @@ public class LoginServer : ILoginServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<LoginArguments, bool>(this._targetAppId, nameof(this.TryLoginAsync), new LoginArguments(accountName, serverId));
+            return await this._daprClient.InvokeMethodAsync<LoginArguments, bool>(this._targetAppId, nameof(this.TryLoginAsync), new LoginArguments(accountName, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -48,7 +48,7 @@ public class LoginServer : ILoginServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.LogOffAsync), new LoginArguments(accountName, serverId));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.LogOffAsync), new LoginArguments(accountName, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

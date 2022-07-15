@@ -180,7 +180,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     protected async ValueTask ForEachPlayerAsync(Func<Player, Task> playerAction)
     {
         using var @lock = await this._enterLock.LockAsync().ConfigureAwait(false);
-        await this._enteredPlayers.Select(playerAction).WhenAll();
+        await this._enteredPlayers.Select(playerAction).WhenAll().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -196,7 +196,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
         foreach (var changeEvent in startEvents)
         {
-            await this.ApplyChangeEventAsync(changeEvent);
+            await this.ApplyChangeEventAsync(changeEvent).ConfigureAwait(false);
         }
 
         this._remainingEvents.AddRange(
@@ -262,7 +262,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     {
         foreach (var player in finishers)
         {
-            await this.ShowScoreAsync(player);
+            await this.ShowScoreAsync(player).ConfigureAwait(false);
         }
     }
 
@@ -356,7 +356,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         var rewards = this.Definition.Rewards.Where(r => this.DoesRewardApply(player, rank, r));
         foreach (var reward in rewards)
         {
-            var result = await this.GiveRewardAsync(player, reward);
+            var result = await this.GiveRewardAsync(player, reward).ConfigureAwait(false);
             bonusScore += result.BonusScore;
             givenMoney += result.GivenMoney;
         }
@@ -392,7 +392,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
                 entry.Timestamp = timestamp;
             }
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -405,28 +405,28 @@ public class MiniGameContext : Disposable, IEventStateProvider
         switch (reward.RewardType)
         {
             case MiniGameRewardType.Experience:
-                await player.AddExperienceAsync(reward.RewardAmount, null);
+                await player.AddExperienceAsync(reward.RewardAmount, null).ConfigureAwait(false);
                 break;
             case MiniGameRewardType.ExperiencePerRemainingSeconds:
                 var seconds = (int)this.RemainingTime.TotalSeconds;
                 if (seconds > 0)
                 {
-                    await player.AddExperienceAsync(seconds * reward.RewardAmount, null);
+                    await player.AddExperienceAsync(seconds * reward.RewardAmount, null).ConfigureAwait(false);
                 }
 
                 break;
             case MiniGameRewardType.Money:
                 if (!player.TryAddMoney(reward.RewardAmount))
                 {
-                    await player.ShowMessageAsync("Couldn't add reward money, inventory is full.");
+                    await player.ShowMessageAsync("Couldn't add reward money, inventory is full.").ConfigureAwait(false);
                 }
 
                 return (0, reward.RewardAmount);
             case MiniGameRewardType.Item:
-                await this.GiveItemRewardAsync(player, reward);
+                await this.GiveItemRewardAsync(player, reward).ConfigureAwait(false);
                 break;
             case MiniGameRewardType.ItemDrop:
-                await this.GiveItemRewardAsync(player, reward, true);
+                await this.GiveItemRewardAsync(player, reward, true).ConfigureAwait(false);
                 break;
             case MiniGameRewardType.Score:
                 return (reward.RewardAmount, 0);
@@ -460,11 +460,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
             var droppedItem = new DroppedItem(item, player.RandomPosition, this.Map, player, player.GetAsEnumerable());
 
-            var shouldDrop = drop || !(player.Inventory is not null && await player.Inventory.AddItemAsync(item));
+            var shouldDrop = drop || !(player.Inventory is not null && await player.Inventory.AddItemAsync(item).ConfigureAwait(false));
             if (shouldDrop)
             {
                 this.Logger.LogInformation($"Reward {item} for {player} has been dropped by players coordinates {player.Position}.");
-                await this.Map.AddAsync(droppedItem);
+                await this.Map.AddAsync(droppedItem).ConfigureAwait(false);
             }
         }
     }
@@ -506,11 +506,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
             this.Logger.LogInformation("Starting next wave: {0}", spawnWave.Description);
             if (spawnWave.Message is { } message)
             {
-                await this.ShowMessageAsync(message);
+                await this.ShowMessageAsync(message).ConfigureAwait(false);
             }
 
             this._currentSpawnWaves.Add(spawnWave.WaveNumber);
-            await this._mapInitializer.InitializeNpcsOnWaveStartAsync(this.Map, this, spawnWave.WaveNumber);
+            await this._mapInitializer.InitializeNpcsOnWaveStartAsync(this.Map, this, spawnWave.WaveNumber).ConfigureAwait(false);
             await Task.Delay(spawnWave.EndTime - spawnWave.StartTime, cancellationToken).ConfigureAwait(false);
             this.Logger.LogInformation("Wave ended: {0}", spawnWave.Description);
         }
@@ -584,8 +584,8 @@ public class MiniGameContext : Disposable, IEventStateProvider
             players = this._enteredPlayers.ToList();
         }
 
-        await this.OnGameStartAsync(players);
-        await this._mapInitializer.InitializeNpcsOnEventStartAsync(this.Map, this);
+        await this.OnGameStartAsync(players).ConfigureAwait(false);
+        await this._mapInitializer.InitializeNpcsOnEventStartAsync(this.Map, this).ConfigureAwait(false);
         _ = Task.Run(() => this.RunSpawnWavesAsync(this.GameEndedToken), this.GameEndedToken);
     }
 
@@ -608,7 +608,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
 
         this._currentSpawnWaves.Clear();
-        await this.Map.ClearEventSpawnedNpcsAsync();
+        await this.Map.ClearEventSpawnedNpcsAsync().ConfigureAwait(false);
 
         List<Player> players;
         using (await this._enterLock.LockAsync().ConfigureAwait(false))
@@ -616,7 +616,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
             players = this._enteredPlayers.ToList();
         }
 
-        await this.GameEndedAsync(players);
+        await this.GameEndedAsync(players).ConfigureAwait(false);
     }
 
     private GameMap CreateMap()
@@ -652,7 +652,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
         foreach (var player in players)
         {
-            await player.WarpToSafezoneAsync();
+            await player.WarpToSafezoneAsync().ConfigureAwait(false);
         }
     }
 
@@ -721,7 +721,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     {
         if (changeEvent.TerrainChanges.Any())
         {
-            await this.UpdateClientTerrainAsync(changeEvent.TerrainChanges);
+            await this.UpdateClientTerrainAsync(changeEvent.TerrainChanges).ConfigureAwait(false);
             this.UpdateServerTerrain(changeEvent.TerrainChanges);
         }
 
@@ -729,13 +729,13 @@ public class MiniGameContext : Disposable, IEventStateProvider
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                await this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this);
+                await this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this).ConfigureAwait(false);
             }
         }
 
         if (changeEvent.Message is { } message)
         {
-            await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(string.Format(message, triggeredBy), Interfaces.MessageType.GoldenCenter)).AsTask());
+            await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(string.Format(message, triggeredBy), Interfaces.MessageType.GoldenCenter)).AsTask()).ConfigureAwait(false);
         }
     }
 
@@ -770,9 +770,9 @@ public class MiniGameContext : Disposable, IEventStateProvider
         {
             foreach (var group in groupedChanges)
             {
-                await player.InvokeViewPlugInAsync<IChangeTerrainAttributesViewPlugin>(p => p.ChangeAttributesAsync(group.Key.TerrainAttribute, group.Key.SetTerrainAttribute, group.Areas));
+                await player.InvokeViewPlugInAsync<IChangeTerrainAttributesViewPlugin>(p => p.ChangeAttributesAsync(group.Key.TerrainAttribute, group.Key.SetTerrainAttribute, group.Areas)).ConfigureAwait(false);
             }
-        });
+        }).ConfigureAwait(false);
     }
 
     private void CheckKillForEventChanges(IAttackable killedObject)

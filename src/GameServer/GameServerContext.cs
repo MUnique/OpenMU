@@ -98,7 +98,7 @@ public class GameServerContext : GameContext, IGameServerContext
         }
 
         using var readLock = await playerList.Lock.ReaderLockAsync();
-        await playerList.Select(action).WhenAll();
+        await playerList.Select(action).WhenAll().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -111,13 +111,13 @@ public class GameServerContext : GameContext, IGameServerContext
 
         // TODO: iterate other guilds of the alliance as well; maybe introduce another dictionary with alliance players
         using var readLock = await playerList.Lock.ReaderLockAsync();
-        await playerList.Select(action).WhenAll();
+        await playerList.Select(action).WhenAll().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public override async ValueTask AddPlayerAsync(Player player)
     {
-        await base.AddPlayerAsync(player);
+        await base.AddPlayerAsync(player).ConfigureAwait(false);
         player.PlayerLeftWorld += this.PlayerLeftWorldAsync;
         player.PlayerEnteredWorld += this.PlayerEnteredWorldAsync;
     }
@@ -127,7 +127,7 @@ public class GameServerContext : GameContext, IGameServerContext
     {
         player.PlayerEnteredWorld -= this.PlayerEnteredWorldAsync;
         player.PlayerLeftWorld -= this.PlayerLeftWorldAsync;
-        await base.RemovePlayerAsync(player);
+        await base.RemovePlayerAsync(player).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -176,7 +176,7 @@ public class GameServerContext : GameContext, IGameServerContext
             return;
         }
 
-        await this.EventPublisher.PlayerEnteredGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name);
+        await this.EventPublisher.PlayerEnteredGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name).ConfigureAwait(false);
     }
 
     private async ValueTask PlayerLeftWorldAsync(Player player)
@@ -186,14 +186,14 @@ public class GameServerContext : GameContext, IGameServerContext
             return;
         }
 
-        await this.EventPublisher.PlayerLeftGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name, player.GuildStatus?.GuildId ?? 0);
+        await this.EventPublisher.PlayerLeftGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name, player.GuildStatus?.GuildId ?? 0).ConfigureAwait(false);
 
         if (player.GuildStatus is null)
         {
             return;
         }
 
-        await this.UnregisterGuildMemberAsync(player);
+        await this.UnregisterGuildMemberAsync(player).ConfigureAwait(false);
         player.GuildStatus = null;
     }
 

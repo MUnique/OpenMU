@@ -29,6 +29,6 @@ internal class BuyNpcItemHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         BuyItemFromNpcRequest message = packet;
-        await this._buyAction.BuyItemAsync(player, message.ItemSlot);
+        await this._buyAction.BuyItemAsync(player, message.ItemSlot).ConfigureAwait(false);
     }
 }

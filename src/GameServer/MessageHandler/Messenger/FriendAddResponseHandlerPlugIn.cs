@@ -29,6 +29,6 @@ internal class FriendAddResponseHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         FriendAddResponse message = packet;
-        await this._responseAction.ProceedResponseAsync(player, message.FriendRequesterName, message.Accepted);
+        await this._responseAction.ProceedResponseAsync(player, message.FriendRequesterName, message.Accepted).ConfigureAwait(false);
     }
 }

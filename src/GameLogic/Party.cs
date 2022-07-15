@@ -78,7 +78,7 @@ public sealed class Party : Disposable
         {
             if (this.PartyList[i].Id == sender.Id)
             {
-                await this.ExitPartyAsync(this.PartyList[i], (byte)i);
+                await this.ExitPartyAsync(this.PartyList[i], (byte)i).ConfigureAwait(false);
                 return;
             }
         }
@@ -91,7 +91,7 @@ public sealed class Party : Disposable
     public async ValueTask KickPlayerAsync(byte index)
     {
         var toKick = this.PartyList[index];
-        await this.ExitPartyAsync(toKick, index);
+        await this.ExitPartyAsync(toKick, index).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public sealed class Party : Disposable
 
         this.PartyList.Add(newPartyMate);
         newPartyMate.Party = this;
-        await this.SendPartyListAsync();
+        await this.SendPartyListAsync().ConfigureAwait(false);
         return true;
     }
 
@@ -150,7 +150,7 @@ public sealed class Party : Disposable
         using var _ = await this._distributionLock.LockAsync();
         try
         {
-            return await this.InternalDistributeExperienceAfterKillAsync(killedObject, killer);
+            return await this.InternalDistributeExperienceAfterKillAsync(killedObject, killer).ConfigureAwait(false);
         }
         finally
         {
@@ -235,12 +235,12 @@ public sealed class Party : Disposable
             if (player.SelectedCharacter?.CharacterClass?.IsMasterClass ?? false)
             {
                 var exp = (int)(randomizedTotalExperiencePerLevel * (player.Attributes![Stats.MasterLevel] + player.Attributes![Stats.Level]) * player.Attributes[Stats.MasterExperienceRate]);
-                await player.AddMasterExperienceAsync(exp, killedObject);
+                await player.AddMasterExperienceAsync(exp, killedObject).ConfigureAwait(false);
             }
             else
             {
                 var exp = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * player.Attributes[Stats.ExperienceRate]);
-                await player.AddExperienceAsync(exp, killedObject);
+                await player.AddExperienceAsync(exp, killedObject).ConfigureAwait(false);
             }
         }
 
@@ -266,7 +266,7 @@ public sealed class Party : Disposable
             this._logger.LogDebug(ex, "Error when calling PartyMemberRemoved. Already disconnected?");
         }
 
-        await this.SendPartyListAsync();
+        await this.SendPartyListAsync().ConfigureAwait(false);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -312,7 +312,7 @@ public sealed class Party : Disposable
         {
             try
             {
-                await this.PartyList[i].InvokeViewPlugInAsync<IUpdatePartyListPlugIn>(p => p.UpdatePartyListAsync());
+                await this.PartyList[i].InvokeViewPlugInAsync<IUpdatePartyListPlugIn>(p => p.UpdatePartyListAsync()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

@@ -141,7 +141,7 @@ public class Listener
             ClientAcceptingEventArgs? cancel = null;
             if (this.ClientAccepting is { } clientAccepting)
             {
-                await clientAccepting.Invoke(cancel = new ClientAcceptingEventArgs(socket));
+                await clientAccepting.Invoke(cancel = new ClientAcceptingEventArgs(socket)).ConfigureAwait(false);
             }
 
             if (cancel is null || !cancel.Cancel)
@@ -151,7 +151,7 @@ public class Listener
 
                 if (this.ClientAccepted is { } clientAccepted)
                 {
-                    await clientAccepted.Invoke(new ClientAcceptedEventArgs(connection));
+                    await clientAccepted.Invoke(new ClientAcceptedEventArgs(connection)).ConfigureAwait(false);
                 }
             }
             else

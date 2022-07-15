@@ -41,7 +41,7 @@ public class ChatServerController : ControllerBase
     {
         try
         {
-            return await this._chatServer.RegisterClientAsync(data.RoomId, data.ClientName);
+            return await this._chatServer.RegisterClientAsync(data.RoomId, data.ClientName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -59,7 +59,7 @@ public class ChatServerController : ControllerBase
     {
         try
         {
-            return await this._chatServer.CreateChatRoomAsync();
+            return await this._chatServer.CreateChatRoomAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

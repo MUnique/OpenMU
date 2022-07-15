@@ -50,7 +50,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         try
         {
             using var installationContext = new EntityDataContext();
-            return !(await installationContext.Database.GetPendingMigrationsAsync()).Any();
+            return !(await installationContext.Database.GetPendingMigrationsAsync().ConfigureAwait(false)).Any();
         }
         catch
         {
@@ -64,7 +64,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     public async Task ApplyAllPendingUpdatesAsync()
     {
         using var installationContext = new EntityDataContext();
-        await installationContext.Database.MigrateAsync();
+        await installationContext.Database.MigrateAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -74,17 +74,17 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     public async Task WaitForUpdatedDatabaseAsync(CancellationToken cancellationToken = default)
     {
         while (!await this.DatabaseExistsAsync()
-               || !await this.IsDatabaseUpToDateAsync())
+.ConfigureAwait(false) || !await this.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
-            await Task.Delay(3000, cancellationToken);
+            await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
         }
 
-        while (!await this.ConfigurationExistsAsync(cancellationToken))
+        while (!await this.ConfigurationExistsAsync(cancellationToken).ConfigureAwait(false))
         {
-            await Task.Delay(3000, cancellationToken);
+            await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
         }
 
-        await Task.Delay(5000, cancellationToken);
+        await Task.Delay(5000, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         try
         {
             await using var installationContext = new EntityDataContext();
-            return (await installationContext.Database.GetAppliedMigrationsAsync()).Any();
+            return (await installationContext.Database.GetAppliedMigrationsAsync().ConfigureAwait(false)).Any();
         }
         catch
         {
@@ -131,7 +131,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     public async Task<bool> CanConnectToDatabaseAsync()
     {
         await using var installationContext = new EntityDataContext();
-        return await installationContext.Database.CanConnectAsync();
+        return await installationContext.Database.CanConnectAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -141,10 +141,10 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     {
         await using (var installationContext = new EntityDataContext())
         {
-            await installationContext.Database.EnsureDeletedAsync();
+            await installationContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
         }
 
-        await this.ApplyAllPendingUpdatesAsync();
+        await this.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
 
         // We create a new repository manager, so that the previously loaded data is not effective anymore.
         this.CachingRepositoryManager = new CachingRepositoryManager(this._loggerFactory);

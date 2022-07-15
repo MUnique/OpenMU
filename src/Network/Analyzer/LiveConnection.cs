@@ -118,7 +118,7 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
         var packet = new Packet(DateTime.UtcNow - this.StartTimestamp, data, true);
         this._logger.LogInformation(packet.ToString());
         this._serverConnection.Output.Write(data);
-        await this._serverConnection.Output.FlushAsync();
+        await this._serverConnection.Output.FlushAsync().ConfigureAwait(false);
         this._invokeAction((Action)(() => this.PacketList.Add(packet)));
     }
 
@@ -129,7 +129,7 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
     public async ValueTask SendToClientAsync(byte[] data)
     {
         this._clientConnection.Output.Write(data);
-        await this._clientConnection.Output.FlushAsync();
+        await this._clientConnection.Output.FlushAsync().ConfigureAwait(false);
         var packet = new Packet(DateTime.UtcNow - this.StartTimestamp, data, false);
         this._logger.LogInformation(packet.ToString());
         this._invokeAction((Action)(() => this.PacketList.Add(packet)));
@@ -147,26 +147,26 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
     private async ValueTask ServerDisconnectedAsync()
     {
         this._logger.LogInformation("The server connection closed.");
-        await this._clientConnection.DisconnectAsync();
+        await this._clientConnection.DisconnectAsync().ConfigureAwait(false);
         this.Name = this._clientName + " [Disconnected]";
     }
 
     private async ValueTask ClientDisconnectedAsync()
     {
         this._logger.LogInformation("The client connected closed");
-        await this._serverConnection.DisconnectAsync();
+        await this._serverConnection.DisconnectAsync().ConfigureAwait(false);
         this.Name = this._clientName + " [Disconnected]";
     }
 
     private async ValueTask ServerPacketReceivedAsync(ReadOnlySequence<byte> data)
     {
         var dataAsArray = data.ToArray();
-        await this.SendToClientAsync(dataAsArray);
+        await this.SendToClientAsync(dataAsArray).ConfigureAwait(false);
     }
 
     private async ValueTask ClientPacketReceivedAsync(ReadOnlySequence<byte> data)
     {
         var dataAsArray = data.ToArray();
-        await this.SendToServerAsync(dataAsArray);
+        await this.SendToServerAsync(dataAsArray).ConfigureAwait(false);
     }
 }

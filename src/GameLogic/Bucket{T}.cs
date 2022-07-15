@@ -55,7 +55,7 @@ public sealed class Bucket<T> : IEnumerable<T>
 
         if (this.ItemAdded is { } eventHandler)
         {
-            await eventHandler(item);
+            await eventHandler(item).ConfigureAwait(false);
         }
     }
 
@@ -74,7 +74,7 @@ public sealed class Bucket<T> : IEnumerable<T>
 
         if (result && this.ItemRemoved is { } eventHandler)
         {
-            await eventHandler(item);
+            await eventHandler(item).ConfigureAwait(false);
         }
 
         return result;

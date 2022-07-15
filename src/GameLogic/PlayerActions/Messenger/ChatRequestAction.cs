@@ -27,7 +27,7 @@ public class ChatRequestAction
         var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
         if (friendServer is { })
         {
-            await friendServer.CreateChatRoomAsync(character.Name, friendName);
+            await friendServer.CreateChatRoomAsync(character.Name, friendName).ConfigureAwait(false);
         }
     }
 
@@ -49,7 +49,7 @@ public class ChatRequestAction
         var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
         if (friendServer is { })
         {
-            var result = await friendServer.InviteFriendToChatRoomAsync(character.Name, friendName, roomId);
+            var result = await friendServer.InviteFriendToChatRoomAsync(character.Name, friendName, roomId).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowFriendInvitationResultPlugIn>(p => p.ShowFriendInvitationResultAsync(result, requestId)).ConfigureAwait(false);
         }
     }

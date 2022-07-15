@@ -29,7 +29,7 @@ public class ConnectServerHostedServiceWrapper : IHostedService
     /// <inheritdoc/>
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await this._connectServer.StartAsync(cancellationToken);
+        await this._connectServer.StartAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

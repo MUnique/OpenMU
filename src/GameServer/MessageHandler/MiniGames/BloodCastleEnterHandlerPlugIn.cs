@@ -42,6 +42,6 @@ internal class BloodCastleEnterHandlerPlugIn : IPacketHandlerPlugIn
         BloodCastleEnterRequest request = packet;
         var actualLevel = request.CastleLevel;
         var ticketIndex = request.TicketItemInventoryIndex;
-        await this._enterAction.TryEnterMiniGameAsync(player, MiniGameType.BloodCastle, actualLevel, (byte)ticketIndex);
+        await this._enterAction.TryEnterMiniGameAsync(player, MiniGameType.BloodCastle, actualLevel, (byte)ticketIndex).ConfigureAwait(false);
     }
 }

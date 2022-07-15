@@ -14,7 +14,6 @@ public delegate ValueTask AsyncEventHandler<T>(T eventArgs);
 /// <summary>
 /// Event handler without arguments which is awaitable.
 /// </summary>
-/// <typeparam name="T">The type of the event args.</typeparam>
 public delegate ValueTask AsyncEventHandler();
 
 /// <summary>

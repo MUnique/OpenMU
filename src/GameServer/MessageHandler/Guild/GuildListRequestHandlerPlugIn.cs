@@ -28,6 +28,6 @@ internal class GuildListRequestHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        await this._requestAction.RequestGuildListAsync(player);
+        await this._requestAction.RequestGuildListAsync(player).ConfigureAwait(false);
     }
 }

@@ -182,9 +182,9 @@ internal sealed class ChatRoom : IDisposable
                     chatClient.Nickname = authenticationInformation.ClientName;
                     chatClient.Index = authenticationInformation.Index;
                     this._registeredClients.Remove(authenticationInformation);
-                    await this.SendChatRoomClientUpdateAsync(chatClient, ChatRoomClientUpdateType.Joined);
+                    await this.SendChatRoomClientUpdateAsync(chatClient, ChatRoomClientUpdateType.Joined).ConfigureAwait(false);
                     this._connectedClients.Add(chatClient);
-                    await chatClient.SendChatRoomClientListAsync(this._connectedClients);
+                    await chatClient.SendChatRoomClientListAsync(this._connectedClients).ConfigureAwait(false);
                     return true;
                 }
             }
@@ -231,7 +231,7 @@ internal sealed class ChatRoom : IDisposable
             roomIsEmpty = this._connectedClients.Count < 1;
             if (!roomIsEmpty)
             {
-                await this.SendChatRoomClientUpdateAsync(chatClient, ChatRoomClientUpdateType.Left);
+                await this.SendChatRoomClientUpdateAsync(chatClient, ChatRoomClientUpdateType.Left).ConfigureAwait(false);
             }
         }
         finally
@@ -262,7 +262,7 @@ internal sealed class ChatRoom : IDisposable
         {
             foreach (var connectedClient in this._connectedClients)
             {
-                await connectedClient.SendMessageAsync(senderId, message);
+                await connectedClient.SendMessageAsync(senderId, message).ConfigureAwait(false);
             }
         }
         finally
@@ -275,7 +275,7 @@ internal sealed class ChatRoom : IDisposable
     {
         foreach (var client in this._connectedClients)
         {
-            await client.SendChatRoomClientUpdateAsync(updatedClient.Index, updatedClient.Nickname ?? string.Empty, updateType);
+            await client.SendChatRoomClientUpdateAsync(updatedClient.Index, updatedClient.Nickname ?? string.Empty, updateType).ConfigureAwait(false);
         }
     }
 }

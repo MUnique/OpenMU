@@ -41,7 +41,7 @@ public class TraceChatCommandPlugIn : ChatCommandPlugInBase<TraceChatCommandArgs
                 Y2 = (byte)(character.PositionY + 2),
             };
 
-            await gameMaster.WarpToAsync(characterLocation);
+            await gameMaster.WarpToAsync(characterLocation).ConfigureAwait(false);
         }
     }
 }

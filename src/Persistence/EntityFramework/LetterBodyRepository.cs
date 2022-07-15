@@ -31,10 +31,10 @@ internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
     public async ValueTask<LetterBody?> GetBodyByHeaderIdAsync(Guid headerId)
     {
         using var context = this.GetContext();
-        var letterBody = await context.Context.Set<LetterBody>().FirstOrDefaultAsync(body => body.HeaderId == headerId);
+        var letterBody = await context.Context.Set<LetterBody>().FirstOrDefaultAsync(body => body.HeaderId == headerId).ConfigureAwait(false);
         if (letterBody != null)
         {
-            await this.LoadDependentDataAsync(letterBody, context.Context);
+            await this.LoadDependentDataAsync(letterBody, context.Context).ConfigureAwait(false);
         }
 
         return letterBody;

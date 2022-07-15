@@ -16,7 +16,7 @@ public class LocalIpResolver : IIpAddressResolver
     {
         if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
         {
-            var localHostEntry = await Dns.GetHostEntryAsync(Dns.GetHostName());
+            var localHostEntry = await Dns.GetHostEntryAsync(Dns.GetHostName()).ConfigureAwait(false);
             var localAddress = localHostEntry.AddressList
                 .FirstOrDefault(address => address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
             if (localAddress != null)

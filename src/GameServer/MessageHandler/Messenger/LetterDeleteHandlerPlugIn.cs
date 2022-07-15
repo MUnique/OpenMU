@@ -41,7 +41,7 @@ internal class LetterDeleteHandlerPlugIn : IPacketHandlerPlugIn
         if (letterIndex < player.SelectedCharacter?.Letters.Count)
         {
             var letter = player.SelectedCharacter!.Letters[letterIndex];
-            await this._deleteAction.DeleteLetterAsync(player, letter);
+            await this._deleteAction.DeleteLetterAsync(player, letter).ConfigureAwait(false);
         }
     }
 }

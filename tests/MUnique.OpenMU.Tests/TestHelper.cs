@@ -44,7 +44,7 @@ public static class TestHelper
         var mapInitializer = new MapInitializer(gameConfig.Object, new NullLogger<MapInitializer>(), NullDropGenerator.Instance);
         var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null), NullDropGenerator.Instance);
         mapInitializer.PlugInManager = gameContext.PlugInManager;
-        return await CreatePlayerAsync(gameContext);
+        return await CreatePlayerAsync(gameContext).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ public static class TestHelper
 
         var character = characterMock.Object;
         character.Inventory = inventoryMock.Object;
-        character.CurrentMap = (await gameContext.GetMapAsync(0))?.Definition;
+        character.CurrentMap = (await gameContext.GetMapAsync(0).ConfigureAwait(false))?.Definition;
         var characterClassMock = new Mock<CharacterClass>();
         characterClassMock.Setup(c => c.StatAttributes).Returns(
             new List<StatAttributeDefinition>
@@ -123,9 +123,9 @@ public static class TestHelper
         }
 
         var player = new TestPlayer(gameContext) { Account = new Account() };
-        player.PlayerState.TryAdvanceTo(PlayerState.LoginScreen);
-        player.PlayerState.TryAdvanceTo(PlayerState.Authenticated);
-        player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+        await player.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
         player.SelectedCharacter = character;
 
         return player;

@@ -58,9 +58,9 @@ public class StateMachineTest
     /// Tests if the transition to the next allowed state is successful.
     /// </summary>
     [Test]
-    public void TransitionToNextState()
+    public async ValueTask TransitionToNextStateAsync()
     {
-        var success = this._stateMachine.TryAdvanceTo(this._nextState);
+        var success = await this._stateMachine.TryAdvanceToAsync(this._nextState).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(this._stateMachine.CurrentState, Is.EqualTo(this._nextState));
         Assert.That(this._stateMachine.Finished, Is.False);
@@ -70,9 +70,9 @@ public class StateMachineTest
     /// Tests if the transition to an isolated state fails.
     /// </summary>
     [Test]
-    public void TransitionToIsolatedState()
+    public async ValueTask TransitionToIsolatedStateAsync()
     {
-        var success = this._stateMachine.TryAdvanceTo(this._isolatedState);
+        var success = await this._stateMachine.TryAdvanceToAsync(this._isolatedState).ConfigureAwait(false);
         Assert.That(success, Is.False);
         Assert.That(this._stateMachine.CurrentState, Is.EqualTo(this._initialState));
     }
@@ -81,10 +81,10 @@ public class StateMachineTest
     /// Tests if the transition to the finished state succeeds and if the state machine takes notice of it.
     /// </summary>
     [Test]
-    public void TransitionToFinishedState()
+    public async ValueTask TransitionToFinishedStateAsync()
     {
-        this._stateMachine.TryAdvanceTo(this._nextState);
-        var success = this._stateMachine.TryAdvanceTo(this._finishedState);
+        await this._stateMachine.TryAdvanceToAsync(this._nextState).ConfigureAwait(false);
+        var success = await this._stateMachine.TryAdvanceToAsync(this._finishedState).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(this._stateMachine.CurrentState, Is.EqualTo(this._finishedState));
         Assert.That(this._stateMachine.Finished, Is.True);
@@ -94,14 +94,14 @@ public class StateMachineTest
     /// Tests if the state change event does get raised with the next state in the event arguments.
     /// </summary>
     [Test]
-    public void ChangesEventStateObject()
+    public async ValueTask ChangesEventStateObjectAsync()
     {
         State? stateInEvent = null;
         this._stateMachine.StateChanges += (_, args) =>
         {
             stateInEvent = args.NextState;
         };
-        this._stateMachine.TryAdvanceTo(this._nextState);
+        await this._stateMachine.TryAdvanceToAsync(this._nextState).ConfigureAwait(false);
         Assert.That(stateInEvent, Is.EqualTo(this._nextState));
     }
 
@@ -109,13 +109,13 @@ public class StateMachineTest
     /// Tests the cancellation of state changes.
     /// </summary>
     [Test]
-    public void ChangesEventCancels()
+    public async ValueTask ChangesEventCancelsAsync()
     {
         this._stateMachine.StateChanges += (_, args) =>
         {
             args.Cancel = true;
         };
-        var success = this._stateMachine.TryAdvanceTo(this._nextState);
+        var success = await this._stateMachine.TryAdvanceToAsync(this._nextState).ConfigureAwait(false);
         Assert.That(success, Is.False);
         Assert.That(this._stateMachine.CurrentState, Is.EqualTo(this._initialState));
     }
@@ -124,11 +124,11 @@ public class StateMachineTest
     /// Tests if the state change event does get raised.
     /// </summary>
     [Test]
-    public void ChangedEvent()
+    public async ValueTask ChangedEventAsync()
     {
         var stateChangeEventCalled = false;
         this._stateMachine.StateChanged += (_, _) => stateChangeEventCalled = true;
-        this._stateMachine.TryAdvanceTo(this._nextState);
+        await this._stateMachine.TryAdvanceToAsync(this._nextState).ConfigureAwait(false);
         Assert.That(stateChangeEventCalled, Is.True);
     }
 }

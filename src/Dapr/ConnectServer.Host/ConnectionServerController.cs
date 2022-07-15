@@ -41,7 +41,7 @@ public class ConnectServerController : ControllerBase
     {
         try
         {
-            await this._registry.UpdateRegistrationAsync(data.ServerInfo, IPEndPoint.Parse(data.PublicEndPoint));
+            await this._registry.UpdateRegistrationAsync(data.ServerInfo, IPEndPoint.Parse(data.PublicEndPoint)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

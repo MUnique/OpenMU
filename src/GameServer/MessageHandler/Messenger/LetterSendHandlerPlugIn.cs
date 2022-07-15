@@ -39,6 +39,6 @@ internal class LetterSendHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        await this._sendAction.SendLetterAsync(player, message.Receiver, message.Message, message.Title, message.Rotation, message.Animation, message.LetterId);
+        await this._sendAction.SendLetterAsync(player, message.Receiver, message.Message, message.Title, message.Rotation, message.Animation, message.LetterId).ConfigureAwait(false);
     }
 }

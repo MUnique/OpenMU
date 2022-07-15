@@ -37,7 +37,7 @@ public class BaseTradeAction
     protected async ValueTask CancelTradeAsync(ITrader trader)
     {
         CancelledTrades.Add(1);
-        using (var context = trader.PlayerState.TryBeginAdvanceTo(PlayerState.EnteredWorld))
+        using (var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
         {
             if (!context.Allowed)
             {
@@ -51,7 +51,7 @@ public class BaseTradeAction
                 trader.BackupInventory.RestoreItemStates();
                 foreach (var item in trader.BackupInventory.Items)
                 {
-                    await trader.Inventory.AddItemAsync(item.ItemSlot, item);
+                    await trader.Inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false);
                 }
 
                 trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;

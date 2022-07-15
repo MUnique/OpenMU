@@ -59,7 +59,7 @@ public class ChangeTerrainAttributesViewPlugIn : IChangeTerrainAttributesViewPlu
             return size;
         }
 
-        await connection.SendAsync(Write);
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     private static ChangeTerrainAttributes.TerrainAttributeType Convert(TerrainAttributeType type)

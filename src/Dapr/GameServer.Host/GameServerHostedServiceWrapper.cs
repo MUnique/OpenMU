@@ -36,11 +36,11 @@ public class GameServerHostedServiceWrapper : IHostedService
     {
         if (!this._isInitialized)
         {
-            await this._initializer.InitializeAsync();
+            await this._initializer.InitializeAsync().ConfigureAwait(false);
             this._isInitialized = true;
         }
 
-        await this._gameServer.StartAsync(cancellationToken);
+        await this._gameServer.StartAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

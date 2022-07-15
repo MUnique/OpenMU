@@ -40,7 +40,7 @@ public class PersistentObjectsLookupController : ILookupController
             return Enumerable.Empty<T>();
         }
 
-        var values = await effectiveContext.GetAsync<T>();
+        var values = await effectiveContext.GetAsync<T>().ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(text))
         {

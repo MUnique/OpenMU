@@ -39,7 +39,7 @@ public sealed class PersistentLoginServer : ILoginServer
     public async Task RemoveServerAsync(byte serverId)
     {
         var indexName = $"serverindex-{serverId}";
-        var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong);
+        var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong).ConfigureAwait(false);
         if (serverIndex is null || serverIndex.Count == 0)
         {
             return;
@@ -47,15 +47,15 @@ public sealed class PersistentLoginServer : ILoginServer
 
         foreach (var accountName in serverIndex)
         {
-            await this.SetAccountOfflineAsync(accountName);
+            await this.SetAccountOfflineAsync(accountName).ConfigureAwait(false);
         }
 
         serverIndex.Clear();
 
-        if (!await this._daprClient.TrySaveStateAsync(StoreName, indexName, serverIndex, eTag))
+        if (!await this._daprClient.TrySaveStateAsync(StoreName, indexName, serverIndex, eTag).ConfigureAwait(false))
         {
             // try again, if it failed
-            await this.RemoveServerAsync(serverId);
+            await this.RemoveServerAsync(serverId).ConfigureAwait(false);
         }
     }
 
@@ -64,7 +64,7 @@ public sealed class PersistentLoginServer : ILoginServer
     {
         try
         {
-            var (currentServerId, eTag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong);
+            var (currentServerId, eTag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong).ConfigureAwait(false);
             if (currentServerId is >= 0)
             {
                 return false;
@@ -74,12 +74,12 @@ public sealed class PersistentLoginServer : ILoginServer
             {
                 // Never logged in, so first insert a fresh state and try again.
                 // We never want to have the same account logged in twice, because that may lead to game mechanic exploits.
-                await this._daprClient.SaveStateAsync<int?>(StoreName, accountName, OfflineServerId, new StateOptions { Concurrency = ConcurrencyMode.FirstWrite, Consistency = ConsistencyMode.Strong });
-                return await this.TryLoginAsync(accountName, serverId);
+                await this._daprClient.SaveStateAsync<int?>(StoreName, accountName, OfflineServerId, new StateOptions { Concurrency = ConcurrencyMode.FirstWrite, Consistency = ConsistencyMode.Strong }).ConfigureAwait(false);
+                return await this.TryLoginAsync(accountName, serverId).ConfigureAwait(false);
             }
 
-            var success = await this._daprClient.TrySaveStateAsync(StoreName, accountName, serverId, eTag);
-            await this.AddToIndexAsync(accountName, serverId);
+            var success = await this._daprClient.TrySaveStateAsync(StoreName, accountName, serverId, eTag).ConfigureAwait(false);
+            await this.AddToIndexAsync(accountName, serverId).ConfigureAwait(false);
             return success;
         }
         catch (Exception ex)
@@ -94,8 +94,8 @@ public sealed class PersistentLoginServer : ILoginServer
     {
         try
         {
-            await this.SetAccountOfflineAsync(accountName);
-            await this.RemoveFromIndexAsync(accountName, serverId);
+            await this.SetAccountOfflineAsync(accountName).ConfigureAwait(false);
+            await this.RemoveFromIndexAsync(accountName, serverId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -106,21 +106,21 @@ public sealed class PersistentLoginServer : ILoginServer
     private async Task AddToIndexAsync(string accountName, byte serverId)
     {
         var indexName = $"serverindex-{serverId}";
-        var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong);
+        var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong).ConfigureAwait(false);
         if (serverIndex is null)
         {
             serverIndex = new HashSet<string>();
             serverIndex.Add(accountName);
-            await this._daprClient.SaveStateAsync(StoreName, indexName, serverIndex);
+            await this._daprClient.SaveStateAsync(StoreName, indexName, serverIndex).ConfigureAwait(false);
             return;
         }
 
         if (serverIndex.Add(accountName))
         {
-            if (!await this._daprClient.TrySaveStateAsync(StoreName, indexName, serverIndex, eTag))
+            if (!await this._daprClient.TrySaveStateAsync(StoreName, indexName, serverIndex, eTag).ConfigureAwait(false))
             {
                 // try again, if it failed
-                await this.AddToIndexAsync(accountName, serverId);
+                await this.AddToIndexAsync(accountName, serverId).ConfigureAwait(false);
             }
         }
     }
@@ -128,7 +128,7 @@ public sealed class PersistentLoginServer : ILoginServer
     private async Task RemoveFromIndexAsync(string accountName, byte serverId)
     {
         var indexName = $"serverindex-{serverId}";
-        var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong);
+        var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong).ConfigureAwait(false);
         if (serverIndex is null)
         {
             return;
@@ -136,10 +136,10 @@ public sealed class PersistentLoginServer : ILoginServer
 
         if (serverIndex.Remove(accountName))
         {
-            if (!await this._daprClient.TrySaveStateAsync(StoreName, indexName, serverIndex, eTag))
+            if (!await this._daprClient.TrySaveStateAsync(StoreName, indexName, serverIndex, eTag).ConfigureAwait(false))
             {
                 // try again, if it failed
-                await this.RemoveFromIndexAsync(accountName, serverId);
+                await this.RemoveFromIndexAsync(accountName, serverId).ConfigureAwait(false);
             }
         }
     }
@@ -148,13 +148,13 @@ public sealed class PersistentLoginServer : ILoginServer
     {
         try
         {
-            var (currentServerId, eTag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong);
+            var (currentServerId, eTag) = await this._daprClient.GetStateAndETagAsync<int?>(StoreName, accountName, ConsistencyMode.Strong).ConfigureAwait(false);
             if (currentServerId == OfflineServerId)
             {
                 return;
             }
 
-            await this._daprClient.TrySaveStateAsync<int?>(StoreName, accountName, OfflineServerId, eTag);
+            await this._daprClient.TrySaveStateAsync<int?>(StoreName, accountName, OfflineServerId, eTag).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

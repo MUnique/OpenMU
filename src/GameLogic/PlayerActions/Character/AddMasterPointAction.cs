@@ -53,11 +53,11 @@ public class AddMasterPointAction
             if (this.CheckRequisitions(player, skill))
             {
                 player.Logger.LogDebug("Adding master skill, skillId: {0}, player {1}", skill.Number, player);
-                await player.SkillList!.AddLearnedSkillAsync(skill);
+                await player.SkillList!.AddLearnedSkillAsync(skill).ConfigureAwait(false);
                 learnedSkill = player.SkillList?.GetSkill(skillId);
                 if (learnedSkill is { })
                 {
-                    await this.AddMasterPointToLearnedSkillAsync(player, learnedSkill);
+                    await this.AddMasterPointToLearnedSkillAsync(player, learnedSkill).ConfigureAwait(false);
                 }
                 else
                 {
@@ -67,7 +67,7 @@ public class AddMasterPointAction
         }
         else
         {
-            await this.AddMasterPointToLearnedSkillAsync(player, learnedSkill);
+            await this.AddMasterPointToLearnedSkillAsync(player, learnedSkill).ConfigureAwait(false);
         }
     }
 

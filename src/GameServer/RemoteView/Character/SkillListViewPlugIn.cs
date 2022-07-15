@@ -51,14 +51,14 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     public virtual async ValueTask AddSkillAsync(Skill skill)
     {
         var skillIndex = this.AddSkillToList(skill);
-        await this._player.Connection.SendSkillAddedAsync(skillIndex, (ushort)skill.Number, 0);
+        await this._player.Connection.SendSkillAddedAsync(skillIndex, (ushort)skill.Number, 0).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public virtual async ValueTask RemoveSkillAsync(Skill skill)
     {
         var skillIndex = this.SkillList.IndexOf(skill);
-        await this._player.Connection.SendSkillRemovedAsync((byte)skillIndex, (ushort)skill.Number);
+        await this._player.Connection.SendSkillRemovedAsync((byte)skillIndex, (ushort)skill.Number).ConfigureAwait(false);
         this.SkillList[skillIndex] = null;
     }
 

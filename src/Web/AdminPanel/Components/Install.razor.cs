@@ -75,7 +75,7 @@ public sealed partial class Install
         this.StateHasChanged();
         try
         {
-            await this.SetupService.CreateDatabaseAsync(() => this.SelectedVersion!.CreateInitialDataAsync((byte)this.GameServerCount, this.CreateTestAccounts));
+            await this.SetupService.CreateDatabaseAsync(() => this.SelectedVersion!.CreateInitialDataAsync((byte)this.GameServerCount, this.CreateTestAccounts)).ConfigureAwait(false);
         }
         finally
         {

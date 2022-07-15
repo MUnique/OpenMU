@@ -28,6 +28,6 @@ internal class CharacterListRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     /// <inheritdoc />
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        await this._requestCharacterListAction.RequestCharacterListAsync(player);
+        await this._requestCharacterListAction.RequestCharacterListAsync(player).ConfigureAwait(false);
     }
 }

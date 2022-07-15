@@ -41,10 +41,10 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
         }
 
         var unlockFlags = CreateUnlockFlags(account);
-        await this.SendCharacterListAsync(connection, account, unlockFlags);
+        await this.SendCharacterListAsync(connection, account, unlockFlags).ConfigureAwait(false);
         if (unlockFlags > CharacterCreationUnlockFlags.None)
         {
-            await connection.SendCharacterClassCreationUnlockAsync(unlockFlags);
+            await connection.SendCharacterClassCreationUnlockAsync(unlockFlags).ConfigureAwait(false);
         }
     }
 
@@ -63,7 +63,7 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
         int i = 0;
         foreach (var character in account.Characters)
         {
-            guildPositions[i] = await this._player.GameServerContext.GuildServer.GetGuildPositionAsync(character.Id);
+            guildPositions[i] = await this._player.GameServerContext.GuildServer.GetGuildPositionAsync(character.Id).ConfigureAwait(false);
             i++;
         }
 

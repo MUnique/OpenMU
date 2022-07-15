@@ -31,6 +31,6 @@ public class LogOutHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         LogOut message = packet;
-        await this._logoutAction.LogoutAsync(player, (LogoutType)message.Type);
+        await this._logoutAction.LogoutAsync(player, (LogoutType)message.Type).ConfigureAwait(false);
     }
 }

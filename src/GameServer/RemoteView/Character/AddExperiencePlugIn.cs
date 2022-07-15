@@ -43,7 +43,7 @@ public class AddExperiencePlugIn : IAddExperiencePlugIn
             // On a normal exp server this should never be an issue, but with higher settings, it fixes the problem that the exp bar
             // shows less exp than the player actually gained.
             ushort sendExp = remainingExperience > ushort.MaxValue ? ushort.MaxValue : (ushort)remainingExperience;
-            await this._player.Connection.SendExperienceGainedAsync(id, sendExp, damage);
+            await this._player.Connection.SendExperienceGainedAsync(id, sendExp, damage).ConfigureAwait(false);
             damage = 0; // don't send damage again
             remainingExperience -= sendExp;
         }

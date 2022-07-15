@@ -30,6 +30,6 @@ internal class DropItemHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         DropItemRequest message = packet;
-        await this._dropAction.DropItemAsync(player, message.ItemSlot, new Point(message.TargetX, message.TargetY));
+        await this._dropAction.DropItemAsync(player, message.ItemSlot, new Point(message.TargetX, message.TargetY)).ConfigureAwait(false);
     }
 }

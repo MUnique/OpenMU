@@ -44,7 +44,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     {
         try
         {
-            return (await this._playerContext.GetAccountsOrderedByLoginNameAsync(offset, count)).ToList();
+            return (await this._playerContext.GetAccountsOrderedByLoginNameAsync(offset, count).ConfigureAwait(false)).ToList();
         }
         catch (NotImplementedException)
         {
@@ -59,7 +59,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     public async ValueTask BanAsync(Account account)
     {
         account.State = AccountState.Banned;
-        await this._playerContext.SaveChangesAsync();
+        await this._playerContext.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     public async ValueTask UnbanAsync(Account account)
     {
         account.State = AccountState.Normal;
-        await this._playerContext.SaveChangesAsync();
+        await this._playerContext.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
         };
 
         var modal = this._modalService.Show<ModalCreateNew<AccountCreationParameters>>($"Create {nameof(Account)}", parameters, options);
-        var result = await modal.Result;
+        var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
             var item = this._playerContext.CreateNew<Account>();
@@ -96,7 +96,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
             item.State = accountParameters.State;
             item.SecurityCode = accountParameters.SecurityCode;
             item.RegistrationDate = DateTime.UtcNow;
-            await this._playerContext.SaveChangesAsync();
+            await this._playerContext.SaveChangesAsync().ConfigureAwait(false);
             this.RaiseDataChanged();
         }
     }

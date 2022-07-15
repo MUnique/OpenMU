@@ -30,6 +30,6 @@ internal class CharacterFocusPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         FocusCharacter message = packet;
-        await this._focusCharacterAction.FocusCharacterAsync(player, message.Name);
+        await this._focusCharacterAction.FocusCharacterAsync(player, message.Name).ConfigureAwait(false);
     }
 }

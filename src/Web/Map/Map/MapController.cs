@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Map.Map;
 
+using System.Collections.Concurrent;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
@@ -49,9 +50,9 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
         viewPlugIns.RegisterPlugIn<IObjectGotKilledPlugIn>(new ObjectGotKilledPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
         viewPlugIns.RegisterPlugIn<IObjectMovedPlugIn>(new ObjectMovedPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
         viewPlugIns.RegisterPlugIn<IShowAnimationPlugIn>(new ShowAnimationPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
-        viewPlugIns.RegisterPlugIn<IObjectsOutOfScopePlugIn>(new ObjectsOutOfScopePlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token, this.Objects, () => this.ObjectsChanged?.Invoke(this, EventArgs.Empty)));
-        viewPlugIns.RegisterPlugIn<INewPlayersInScopePlugIn>(new NewPlayersInScopePlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token, this.Objects, () => this.ObjectsChanged?.Invoke(this, EventArgs.Empty)));
-        viewPlugIns.RegisterPlugIn<INewNpcsInScopePlugIn>(new NewNpcsInScopePlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token, this.Objects, () => this.ObjectsChanged?.Invoke(this, EventArgs.Empty)));
+        viewPlugIns.RegisterPlugIn<IObjectsOutOfScopePlugIn>(new ObjectsOutOfScopePlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token, this.Players, () => this.PlayersChanged?.Invoke(this, EventArgs.Empty)));
+        viewPlugIns.RegisterPlugIn<INewPlayersInScopePlugIn>(new NewPlayersInScopePlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token, this.Players, () => this.PlayersChanged?.Invoke(this, EventArgs.Empty)));
+        viewPlugIns.RegisterPlugIn<INewNpcsInScopePlugIn>(new NewNpcsInScopePlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
         viewPlugIns.RegisterPlugIn<IShowSkillAnimationPlugIn>(new ShowSkillAnimationPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
         viewPlugIns.RegisterPlugIn<IShowAreaSkillAnimationPlugIn>(new ShowAreaSkillAnimationPlugIn(this._jsRuntime, loggerFactory, worldAccessor, this._disposeCts.Token));
 
@@ -59,7 +60,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     }
 
     /// <inheritdoc />
-    public event EventHandler? ObjectsChanged;
+    public event EventHandler? PlayersChanged;
 
     /// <inheritdoc />
     public ILogger Logger { get; }
@@ -83,7 +84,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns { get; }
 
     /// <inheritdoc />
-    public IDictionary<int, ILocateable> Objects { get; } = new Dictionary<int, ILocateable>();
+    public ConcurrentDictionary<int, Player> Players { get; } = new();
 
     /// <inheritdoc/>
     public ValueTask LocateableAddedAsync(ILocateable item)
@@ -113,11 +114,11 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     public async ValueTask DisposeAsync()
     {
         this._disposeCts.Cancel();
-        await this._gameServer.UnregisterMapObserverAsync(this._mapId, this.Id);
+        await this._gameServer.UnregisterMapObserverAsync(this._mapId, this.Id).ConfigureAwait(false);
         this._adapterToWorldView.Dispose();
         try
         {
-            await this._jsRuntime.InvokeVoidAsync("DisposeMap", this._identifier);
+            await this._jsRuntime.InvokeVoidAsync("DisposeMap", this._identifier).ConfigureAwait(false);
         }
         finally
         {

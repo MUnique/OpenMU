@@ -27,6 +27,6 @@ public class TeleportChatCommandPlugIn : ChatCommandPlugInBase<CoordinatesComman
     /// <inheritdoc/>
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CoordinatesCommandArgs arguments)
     {
-        await gameMaster.MoveAsync(arguments.Coordinates);
+        await gameMaster.MoveAsync(arguments.Coordinates).ConfigureAwait(false);
     }
 }

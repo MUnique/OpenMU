@@ -39,7 +39,7 @@ public class ItemCraftAction
         (CraftingResult, Item?) result;
         try
         {
-            result = await craftingHandler.DoMixAsync(player, socketSlot);
+            result = await craftingHandler.DoMixAsync(player, socketSlot).ConfigureAwait(false);
         }
         catch
         {

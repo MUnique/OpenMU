@@ -43,7 +43,7 @@ public class ItemStackAction
         {
             foreach (Item jewel in jewels)
             {
-                await player.Inventory.RemoveItemAsync(jewel);
+                await player.Inventory.RemoveItemAsync(jewel).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(jewel.ItemSlot)).ConfigureAwait(false);
             }
 
@@ -51,7 +51,7 @@ public class ItemStackAction
             stacked.Definition = mix.MixedJewel;
             stacked.Level = (byte)(stackSize / 10);
             stacked.Durability = 1;
-            await player.Inventory.AddItemAsync(stacked);
+            await player.Inventory.AddItemAsync(stacked).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(stacked)).ConfigureAwait(false);
         }
         else
@@ -70,7 +70,7 @@ public class ItemStackAction
     {
         if (!this.IsCorrectNpcOpened(player))
         {
-            await player.DisconnectAsync();
+            await player.DisconnectAsync().ConfigureAwait(false);
             return;
         }
 
@@ -102,7 +102,7 @@ public class ItemStackAction
             return;
         }
 
-        await player.Inventory.RemoveItemAsync(stacked);
+        await player.Inventory.RemoveItemAsync(stacked).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
         foreach (var freeSlot in freeSlots)
         {
@@ -110,7 +110,7 @@ public class ItemStackAction
             jewel.Definition = mix.SingleJewel;
             jewel.Durability = 1;
             jewel.ItemSlot = freeSlot;
-            await player.Inventory.AddItemAsync(freeSlot, jewel);
+            await player.Inventory.AddItemAsync(freeSlot, jewel).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(jewel)).ConfigureAwait(false);
         }
     }

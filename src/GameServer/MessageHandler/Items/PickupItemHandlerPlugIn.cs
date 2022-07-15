@@ -31,6 +31,6 @@ internal class PickupItemHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PickupItemRequest message = packet;
-        await this._pickupAction.PickupItemAsync(player, message.ItemId);
+        await this._pickupAction.PickupItemAsync(player, message.ItemId).ConfigureAwait(false);
     }
 }

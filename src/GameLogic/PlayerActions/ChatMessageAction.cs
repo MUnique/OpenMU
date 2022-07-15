@@ -60,7 +60,7 @@ public class ChatMessageAction
 
                 if (sender.SelectedCharacter!.CharacterStatus >= commandHandler.MinCharacterStatusRequirement)
                 {
-                    await commandHandler.HandleCommandAsync(sender, message);
+                    await commandHandler.HandleCommandAsync(sender, message).ConfigureAwait(false);
                 }
                 else
                 {
@@ -108,7 +108,7 @@ public class ChatMessageAction
                     && (sender.GameContext as IGameServerContext)?.EventPublisher is { } publisher)
                 {
                     // TODO: Use DI to get the IEventPublisher
-                    await publisher.AllianceMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    await publisher.AllianceMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message).ConfigureAwait(false);
                 }
 
                 break;
@@ -119,7 +119,7 @@ public class ChatMessageAction
                 if (sender.GuildStatus != null
                     && (sender.GameContext as IGameServerContext)?.EventPublisher is { } publisher)
                 {
-                    await publisher.GuildMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message);
+                    await publisher.GuildMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter.Name, message).ConfigureAwait(false);
                 }
 
                 break;
@@ -129,7 +129,7 @@ public class ChatMessageAction
             {
                 if (sender.SelectedCharacter.CharacterStatus >= CharacterStatus.GameMaster)
                 {
-                    await sender.GameContext.SendGlobalNotificationAsync(message);
+                    await sender.GameContext.SendGlobalNotificationAsync(message).ConfigureAwait(false);
                 }
 
                 break;

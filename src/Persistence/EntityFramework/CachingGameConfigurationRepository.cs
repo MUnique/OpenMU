@@ -38,10 +38,10 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
 
         var database = currentContext.Context.Database;
-        await database.OpenConnectionAsync();
+        await database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
-            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context) is { } config)
+            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context).ConfigureAwait(false) is { } config)
             {
                 this.SetExperienceTables(config);
                 return config;
@@ -51,7 +51,7 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
         finally
         {
-            await database.CloseConnectionAsync();
+            await database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
 
@@ -64,16 +64,16 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
 
         var database = currentContext.Context.Database;
-        await database.OpenConnectionAsync();
+        await database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
-            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context)).ToList();
+            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context).ConfigureAwait(false)).ToList();
             configs.ForEach(this.SetExperienceTables);
             return configs;
         }
         finally
         {
-            await database.CloseConnectionAsync();
+            await database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
 

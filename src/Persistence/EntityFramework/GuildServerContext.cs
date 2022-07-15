@@ -28,7 +28,7 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
     /// <inheritdoc/>
     public async ValueTask<bool> GuildWithNameExistsAsync(string name)
     {
-        return await this.Context.Set<Guild>().AnyAsync(guild => guild.Name == name);
+        return await this.Context.Set<Guild>().AnyAsync(guild => guild.Name == name).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -38,6 +38,6 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
             join character in this.Context.Set<CharacterName>() on member.Id equals character.Id
             where member.GuildId == guildId
             select new { character.Id, character.Name })
-            .ToDictionaryAsync(member => member.Id, member => member.Name);
+            .ToDictionaryAsync(member => member.Id, member => member.Name).ConfigureAwait(false);
     }
 }

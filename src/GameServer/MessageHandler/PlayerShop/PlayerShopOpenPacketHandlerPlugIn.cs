@@ -30,6 +30,6 @@ internal class PlayerShopOpenPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PlayerShopOpen message = packet;
-        await this._openStoreAction.OpenStoreAsync(player, message.StoreName);
+        await this._openStoreAction.OpenStoreAsync(player, message.StoreName).ConfigureAwait(false);
     }
 }

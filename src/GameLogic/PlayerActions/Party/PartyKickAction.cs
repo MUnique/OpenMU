@@ -28,7 +28,7 @@ public class PartyKickAction
                 return;
             }
 
-            await party.KickPlayerAsync(index);
+            await party.KickPlayerAsync(index).ConfigureAwait(false);
         }
     }
 }

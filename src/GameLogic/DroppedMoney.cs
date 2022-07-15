@@ -85,7 +85,7 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
         }
 
         player.Logger.LogInformation("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
-        await this.DisposeAsync();
+        await this.DisposeAsync().ConfigureAwait(false);
 
         return true;
     }
@@ -104,8 +104,8 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
             try
             {
                 this._removeTimer = null;
-                await timer.DisposeAsync();
-                await this.CurrentMap.RemoveAsync(this);
+                await timer.DisposeAsync().ConfigureAwait(false);
+                await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -121,7 +121,7 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     {
         try
         {
-            await this.DisposeAsync();
+            await this.DisposeAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

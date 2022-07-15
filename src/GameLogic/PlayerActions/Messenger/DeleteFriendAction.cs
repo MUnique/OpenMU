@@ -21,7 +21,7 @@ public class DeleteFriendAction
         var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
         if (friendServer != null && player.SelectedCharacter is { } character)
         {
-            await friendServer.DeleteFriendAsync(character.Name, friendName);
+            await friendServer.DeleteFriendAsync(character.Name, friendName).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IFriendDeletedPlugIn>(p => p.FriendDeletedAsync(friendName)).ConfigureAwait(false);
         }
     }

@@ -52,7 +52,7 @@ public class MoveItemAction
         var toStorageInfo = this.GetStorageInfo(player, toStorage);
         var toItemStorage = toStorageInfo?.Storage;
 
-        var movement = await this.CanMoveAsync(player, item, toSlot, fromSlot, toStorageInfo, fromStorageInfo);
+        var movement = await this.CanMoveAsync(player, item, toSlot, fromSlot, toStorageInfo, fromStorageInfo).ConfigureAwait(false);
         if (movement != Movement.None)
         {
             var cancelEventArgs = new CancelEventArgs();
@@ -66,13 +66,13 @@ public class MoveItemAction
         switch (movement)
         {
             case Movement.Normal:
-                await this.MoveNormalAsync(player, fromSlot, toSlot, toStorage, fromItemStorage!, item, toItemStorage!);
+                await this.MoveNormalAsync(player, fromSlot, toSlot, toStorage, fromItemStorage!, item, toItemStorage!).ConfigureAwait(false);
                 break;
             case Movement.PartiallyStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
-                await this.PartiallyStackAsync(player, item, targetItem);
+                await this.PartiallyStackAsync(player, item, targetItem).ConfigureAwait(false);
                 break;
             case Movement.CompleteStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
-                await this.FullStackAsync(player, item, targetItem);
+                await this.FullStackAsync(player, item, targetItem).ConfigureAwait(false);
                 break;
             default:
                 await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
@@ -105,10 +105,10 @@ public class MoveItemAction
 
     private async ValueTask MoveNormalAsync(Player player, byte fromSlot, byte toSlot, Storages toStorage, IStorage fromItemStorage, Item item, IStorage toItemStorage)
     {
-        await fromItemStorage.RemoveItemAsync(item);
-        if (!await toItemStorage.AddItemAsync(toSlot, item))
+        await fromItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
+        if (!await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false))
         {
-            await fromItemStorage.AddItemAsync(item);
+            await fromItemStorage.AddItemAsync(item).ConfigureAwait(false);
 
             await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
             return;

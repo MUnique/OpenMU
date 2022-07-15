@@ -129,13 +129,13 @@ public sealed class ChatServer : IChatServer, IDisposable
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await this.StartAsync();
+        await this.StartAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await this.ShutdownAsync();
+        await this.ShutdownAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ public sealed class ChatServer : IChatServer, IDisposable
         {
             try
             {
-                await client.LogOffAsync();
+                await client.LogOffAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -325,7 +325,7 @@ public sealed class ChatServer : IChatServer, IDisposable
                 if (client.LastActivity < bottomDateTimeMargin)
                 {
                     this._logger.LogDebug($"Disconnecting client {client}, because of activity timeout. LastActivity: {client.LastActivity}");
-                    await client.LogOffAsync();
+                    await client.LogOffAsync().ConfigureAwait(false);
                 }
             }
         }

@@ -46,7 +46,7 @@ public class TradeMoneyAction
         {
             // Send the Money Packet to the Trading Partner
             await tradingPartner.InvokeViewPlugInAsync<ISetTradeMoneyPlugIn>(p => p.SetTradeMoneyAsync(moneyAmount)).ConfigureAwait(false);
-            tradingPartner.PlayerState.TryAdvanceTo(PlayerState.TradeOpened);
+            await tradingPartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false);
             await tradingPartner.InvokeViewPlugInAsync<IChangeTradeButtonStatePlugIn>(p => p.ChangeTradeButtonStateAsync(TradeButtonState.Red)).ConfigureAwait(false);
         }
     }

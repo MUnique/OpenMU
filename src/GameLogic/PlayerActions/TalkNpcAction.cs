@@ -31,7 +31,7 @@ public class TalkNpcAction
 
         if (this.AdvancePlayerState(npc))
         {
-            if (!player.PlayerState.TryAdvanceTo(PlayerState.NpcDialogOpened))
+            if (!await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false))
             {
                 return;
             }
@@ -52,7 +52,7 @@ public class TalkNpcAction
         }
         else
         {
-            await this.ShowDialogOfOpenedNpcAsync(player);
+            await this.ShowDialogOfOpenedNpcAsync(player).ConfigureAwait(false);
         }
     }
 
@@ -75,19 +75,19 @@ public class TalkNpcAction
                 {
                     if (player.CurrentMiniGame is BloodCastleContext bloodCastle && player.OpenedNpc.Definition.Number == 232)
                     {
-                        await bloodCastle.TalkToNpcArchangelAsync(player);
+                        await bloodCastle.TalkToNpcArchangelAsync(player).ConfigureAwait(false);
                     }
                     else
                     {
                         await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Talking to this NPC ({npcStats.Number}, {npcStats.Designation}) is not implemented yet.", MessageType.BlueNormal)).ConfigureAwait(false);
                     }
 
-                    player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                    await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
                 }
                 else if (!eventArgs.LeavesDialogOpen)
                 {
                     player.OpenedNpc = null;
-                    player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                    await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
                 }
                 else
                 {
@@ -101,19 +101,19 @@ public class TalkNpcAction
                 await player.InvokeViewPlugInAsync<IShowVaultPlugIn>(p => p.ShowVaultAsync()).ConfigureAwait(false);
                 break;
             case NpcWindow.GuildMaster:
-                if (await this.IsPlayedAllowedToCreateGuildAsync(player))
+                if (await this.IsPlayedAllowedToCreateGuildAsync(player).ConfigureAwait(false))
                 {
                     await player.InvokeViewPlugInAsync<IShowGuildMasterDialogPlugIn>(p => p.ShowGuildMasterDialogAsync()).ConfigureAwait(false);
                 }
                 else
                 {
                     player.OpenedNpc = null;
-                    player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+                    await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
                 }
 
                 break;
             case NpcWindow.LegacyQuest:
-                await this.ShowLegacyQuestDialogAsync(player);
+                await this.ShowLegacyQuestDialogAsync(player).ConfigureAwait(false);
                 break;
             default:
                 await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
@@ -130,7 +130,7 @@ public class TalkNpcAction
         {
             await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("I have no quests for you.", player.OpenedNpc)).ConfigureAwait(false);
             player.OpenedNpc = null;
-            player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
             return;
         }
 
@@ -140,7 +140,7 @@ public class TalkNpcAction
                 "I have nothing to do for you. Come back with more power.",
                 player.OpenedNpc)).ConfigureAwait(false);
             player.OpenedNpc = null;
-            player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
             return;
         }
 
@@ -153,7 +153,7 @@ public class TalkNpcAction
                 "I have nothing to do for you. You solved all my quests already.",
                 player.OpenedNpc)).ConfigureAwait(false);
             player.OpenedNpc = null;
-            player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
             return;
         }
 

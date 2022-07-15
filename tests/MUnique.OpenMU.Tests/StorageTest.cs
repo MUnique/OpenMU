@@ -24,7 +24,7 @@ public class StorageTest
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
         var item = this.GetItem(1, 1);
-        var added = await storage.AddItemAsync(12, item);
+        var added = await storage.AddItemAsync(12, item).ConfigureAwait(false);
         Assert.That(added, Is.True);
         Assert.That(storage.Items.Contains(item), Is.True);
         Assert.That(storage.FreeSlots.Contains((byte)12), Is.False);
@@ -40,7 +40,7 @@ public class StorageTest
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
         var item = this.GetItem(2, 2);
         byte slot = 12 + (6 * 8) + 6;
-        var added = await storage.AddItemAsync(slot, item);
+        var added = await storage.AddItemAsync(slot, item).ConfigureAwait(false);
         Assert.That(added, Is.True);
         Assert.That(storage.Items.Contains(item), Is.True);
         Assert.That(storage.FreeSlots.Contains(slot), Is.False);
@@ -54,9 +54,9 @@ public class StorageTest
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
-        await storage.AddItemAsync(12, this.GetItem(1, 1));
+        await storage.AddItemAsync(12, this.GetItem(1, 1)).ConfigureAwait(false);
         var item = this.GetItem(1, 1);
-        var added = await storage.AddItemAsync(12, item);
+        var added = await storage.AddItemAsync(12, item).ConfigureAwait(false);
         Assert.That(added, Is.False);
         Assert.That(storage.Items.Contains(item), Is.False);
         Assert.That(storage.FreeSlots.Contains((byte)12), Is.False);
@@ -71,10 +71,10 @@ public class StorageTest
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
         var addedItem = this.GetItem(2, 2);
-        await storage.AddItemAsync(12, addedItem);
-        var added = await storage.AddItemAsync(13, this.GetItem(1, 1));
+        await storage.AddItemAsync(12, addedItem).ConfigureAwait(false);
+        var added = await storage.AddItemAsync(13, this.GetItem(1, 1)).ConfigureAwait(false);
         Assert.That(added, Is.False);
-        added = await storage.AddItemAsync(12 + 8, this.GetItem(1, 1));
+        added = await storage.AddItemAsync(12 + 8, this.GetItem(1, 1)).ConfigureAwait(false);
         Assert.That(added, Is.False);
         Assert.That(storage.Items.Count(), Is.EqualTo(1));
         Assert.That(storage.Items.Contains(addedItem), Is.True);
@@ -93,7 +93,7 @@ public class StorageTest
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
-        var added = await storage.AddItemAsync(12 + 7, this.GetItem(2, 1));
+        var added = await storage.AddItemAsync(12 + 7, this.GetItem(2, 1)).ConfigureAwait(false);
         Assert.That(added, Is.False);
         Assert.That(storage.FreeSlots.Contains((byte)(12 + 7)), Is.True);
     }
@@ -107,7 +107,7 @@ public class StorageTest
     {
         var itemStorage = this.CreateItemStorage();
         var storage = new Storage(12 + 64, 12, 0, itemStorage) as IStorage;
-        var added = await storage.AddItemAsync(12 + (7 * 8), this.GetItem(1, 2));
+        var added = await storage.AddItemAsync(12 + (7 * 8), this.GetItem(1, 2)).ConfigureAwait(false);
         Assert.That(added, Is.False);
         Assert.That(storage.FreeSlots.Contains((byte)(12 + (7 * 8))), Is.True);
     }

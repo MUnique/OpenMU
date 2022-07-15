@@ -101,7 +101,7 @@ public sealed class BloodCastleContext : MiniGameContext
             return;
         }
 
-        if (!await this.TryRemoveQuestItemFromPlayerAsync(player))
+        if (!await this.TryRemoveQuestItemFromPlayerAsync(player).ConfigureAwait(false))
         {
             await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(1, 0x18)).ConfigureAwait(false);
             return;
@@ -120,17 +120,17 @@ public sealed class BloodCastleContext : MiniGameContext
             if (this.IsEventRunning)
             {
                 // Drop it, so that the remaining players can pick it up.
-                await this.TryDropQuestItemFromPlayerAsync(player);
+                await this.TryDropQuestItemFromPlayerAsync(player).ConfigureAwait(false);
             }
             else
             {
-                await this.TryRemoveQuestItemFromPlayerAsync(player);
+                await this.TryRemoveQuestItemFromPlayerAsync(player).ConfigureAwait(false);
             }
 
-            await this.UpdateStateAsync(BloodCastleStatus.Ended, player);
+            await this.UpdateStateAsync(BloodCastleStatus.Ended, player).ConfigureAwait(false);
         }
 
-        await base.OnObjectRemovedFromMapAsync(args);
+        await base.OnObjectRemovedFromMapAsync(args).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -173,14 +173,14 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <inheritdoc/>
     protected override async ValueTask OnPlayerPickedUpItemAsync((Player Picker, ILocateable DroppedItem) args)
     {
-        await base.OnPlayerPickedUpItemAsync(args);
+        await base.OnPlayerPickedUpItemAsync(args).ConfigureAwait(false);
         if (args.DroppedItem is DroppedItem { Item.Definition: { } definition } && definition.IsArchangelQuestItem())
         {
             this._questItemOwner = args.Picker;
             var message = args.Picker.Name + " has acquired the " + definition.Name;
             await this.ForEachPlayerAsync(
                 player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(
-                    p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).AsTask());
+                    p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).AsTask()).ConfigureAwait(false);
         }
     }
 
@@ -192,14 +192,14 @@ public sealed class BloodCastleContext : MiniGameContext
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
         }
 
-        _ = Task.Run(async () => await this.ShowRemainingTimeLoopAsync(this.GameEndedToken), this.GameEndedToken);
-        await base.OnGameStartAsync(players);
+        _ = Task.Run(async () => await this.ShowRemainingTimeLoopAsync(this.GameEndedToken).ConfigureAwait(false), this.GameEndedToken);
+        await base.OnGameStartAsync(players).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
-        await this.UpdateStateForAllAsync(BloodCastleStatus.Ended);
+        await this.UpdateStateForAllAsync(BloodCastleStatus.Ended).ConfigureAwait(false);
 
         var sortedFinishers = finishers
             .Select(f => this._gameStates[f.Name])
@@ -213,7 +213,7 @@ public sealed class BloodCastleContext : MiniGameContext
         {
             rank++;
             state.Rank = rank;
-            var (bonusScore, givenMoney) = await this.GiveRewardsAndGetBonusScoreAsync(state.Player, rank);
+            var (bonusScore, givenMoney) = await this.GiveRewardsAndGetBonusScoreAsync(state.Player, rank).ConfigureAwait(false);
             state.AddScore(bonusScore);
 
             scoreList.Add((
@@ -222,13 +222,13 @@ public sealed class BloodCastleContext : MiniGameContext
                 this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0,
                 givenMoney));
 
-            await this.TryRemoveQuestItemFromPlayerAsync(state.Player);
+            await this.TryRemoveQuestItemFromPlayerAsync(state.Player).ConfigureAwait(false);
         }
 
         this._highScoreTable = scoreList.AsReadOnly();
 
-        await this.SaveRankingAsync(sortedFinishers.Select(state => (state.Rank, state.Player.SelectedCharacter!, state.Score)));
-        await base.GameEndedAsync(finishers);
+        await this.SaveRankingAsync(sortedFinishers.Select(state => (state.Rank, state.Player.SelectedCharacter!, state.Score))).ConfigureAwait(false);
+        await base.GameEndedAsync(finishers).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -261,19 +261,19 @@ public sealed class BloodCastleContext : MiniGameContext
             var maximumGameDuration = this.Definition.GameDuration;
             this._remainingTime = maximumGameDuration;
 
-            await this.UpdateStateForAllAsync(BloodCastleStatus.Started);
+            await this.UpdateStateForAllAsync(BloodCastleStatus.Started).ConfigureAwait(false);
             while (!cancellationToken.IsCancellationRequested
                    && this._remainingTime >= TimeSpan.Zero
                    && await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
             {
                 if (this._remainingTime < maximumGameDuration && !this._gateDestroyed)
                 {
-                    await this.UpdateStateForAllAsync(BloodCastleStatus.GateNotDestroyed);
+                    await this.UpdateStateForAllAsync(BloodCastleStatus.GateNotDestroyed).ConfigureAwait(false);
                 }
 
                 if (this._remainingTime < maximumGameDuration && this._gateDestroyed)
                 {
-                    await this.UpdateStateForAllAsync(BloodCastleStatus.GateDestroyed);
+                    await this.UpdateStateForAllAsync(BloodCastleStatus.GateDestroyed).ConfigureAwait(false);
                 }
 
                 this._remainingTime = this._remainingTime.Subtract(timerInterval);
@@ -314,8 +314,8 @@ public sealed class BloodCastleContext : MiniGameContext
             return false;
         }
 
-        await player.Inventory!.RemoveItemAsync(item);
-        await player.PersistenceContext.DeleteAsync(item);
+        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
 
         this._questItem = null;
@@ -332,8 +332,8 @@ public sealed class BloodCastleContext : MiniGameContext
         }
 
         var dropped = new DroppedItem(item, player.Position, this.Map, player);
-        await this.Map.AddAsync(dropped);
-        await player.Inventory!.RemoveItemAsync(item);
+        await this.Map.AddAsync(dropped).ConfigureAwait(false);
+        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(item.ItemSlot, true)).ConfigureAwait(false);
 
         this._questItemOwner = null;

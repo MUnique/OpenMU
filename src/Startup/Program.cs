@@ -129,17 +129,17 @@ internal sealed class Program : IDisposable
         {
             foreach (var chatServer in this._servers.OfType<ChatServer>())
             {
-                await chatServer.StartAsync();
+                await chatServer.StartAsync().ConfigureAwait(false);
             }
 
             foreach (var gameServer in this._gameServers.Values)
             {
-                await gameServer.StartAsync();
+                await gameServer.StartAsync().ConfigureAwait(false);
             }
 
             foreach (var connectServer in this._servers.OfType<IConnectServer>())
             {
-                await connectServer.StartAsync();
+                await connectServer.StartAsync().ConfigureAwait(false);
             }
         }
     }
@@ -198,7 +198,7 @@ internal sealed class Program : IDisposable
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
         var addAdminPanel = this.IsAdminPanelEnabled(args);
-        await new ConfigFileDatabaseConnectionStringProvider().InitializeAsync(default);
+        await new ConfigFileDatabaseConnectionStringProvider().InitializeAsync(default).ConfigureAwait(false);
 
         var builder = WebApplication.CreateBuilder(args);
 
@@ -258,7 +258,7 @@ internal sealed class Program : IDisposable
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        await host.StartAsync();
+        await host.StartAsync().ConfigureAwait(false);
         stopwatch.Stop();
         this._logger.Information($"Host started, elapsed time: {stopwatch.Elapsed}");
         return host;
@@ -309,11 +309,11 @@ internal sealed class Program : IDisposable
         if (args.Contains("-demo"))
         {
             contextProvider = new InMemoryPersistenceContextProvider();
-            await this.InitializeDataAsync(version, loggerFactory, contextProvider);
+            await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
         }
         else
         {
-            contextProvider = await this.PrepareRepositoryManagerAsync(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory);
+            contextProvider = await this.PrepareRepositoryManagerAsync(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory).ConfigureAwait(false);
         }
 
         return contextProvider;
@@ -322,19 +322,19 @@ internal sealed class Program : IDisposable
     private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryManagerAsync(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
     {
         var contextProvider = new PersistenceContextProvider(loggerFactory, null);
-        if (reinit || !await contextProvider.DatabaseExistsAsync())
+        if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))
         {
             this._logger.Information("The database is getting (re-)initialized...");
-            await contextProvider.ReCreateDatabaseAsync();
-            await this.InitializeDataAsync(version, loggerFactory, contextProvider);
+            await contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
+            await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
             this._logger.Information("...initialization finished.");
         }
-        else if (!await contextProvider.IsDatabaseUpToDateAsync())
+        else if (!await contextProvider.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
             if (autoupdate)
             {
                 Console.WriteLine("The database needs to be updated before the server can be started. Updating...");
-                await contextProvider.ApplyAllPendingUpdatesAsync();
+                await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
                 Console.WriteLine("The database has been successfully updated.");
             }
             else
@@ -343,7 +343,7 @@ internal sealed class Program : IDisposable
                 var key = Console.ReadLine()?.ToLowerInvariant();
                 if (key == "y")
                 {
-                    await contextProvider.ApplyAllPendingUpdatesAsync();
+                    await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
                     Console.WriteLine("The database has been successfully updated.");
                 }
                 else
@@ -370,6 +370,6 @@ internal sealed class Program : IDisposable
         var plugInManager = new PlugInManager(null, loggerFactory, serviceContainer);
         plugInManager.DiscoverAndRegisterPlugInsOf<IDataInitializationPlugIn>();
         var initialization = plugInManager.GetStrategy<IDataInitializationPlugIn>(version) ?? throw new Exception("Data initialization plugin not found");
-        await initialization.CreateInitialDataAsync(3, true);
+        await initialization.CreateInitialDataAsync(3, true).ConfigureAwait(false);
     }
 }

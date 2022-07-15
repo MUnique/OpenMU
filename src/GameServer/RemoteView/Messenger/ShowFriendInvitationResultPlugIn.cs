@@ -27,6 +27,6 @@ public class ShowFriendInvitationResultPlugIn : IShowFriendInvitationResultPlugI
     /// <inheritdoc/>
     public async ValueTask ShowFriendInvitationResultAsync(bool success, uint requestId)
     {
-        await this._player.Connection.SendFriendInvitationResultAsync(success, requestId);
+        await this._player.Connection.SendFriendInvitationResultAsync(success, requestId).ConfigureAwait(false);
     }
 }

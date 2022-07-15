@@ -176,7 +176,7 @@ public class GameContext : AsyncDisposable, IGameContext
         }
 
         // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
-        await this._mapInitializer.InitializeStateAsync(createdMap);
+        await this._mapInitializer.InitializeStateAsync(createdMap).ConfigureAwait(false);
         this.GameMapCreated?.Invoke(this, createdMap);
         MapCounter.Add(1);
 
@@ -224,7 +224,7 @@ public class GameContext : AsyncDisposable, IGameContext
         var createdMap = miniGameContext.Map;
 
         // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
-        await this._mapInitializer.InitializeStateAsync(createdMap);
+        await this._mapInitializer.InitializeStateAsync(createdMap).ConfigureAwait(false);
         this.GameMapCreated?.Invoke(this, createdMap);
         MiniGameCounter.Add(1);
         return miniGameContext;
@@ -301,7 +301,7 @@ public class GameContext : AsyncDisposable, IGameContext
 
         using (await this._playerListLock.ReaderLockAsync())
         {
-            await this._playerList.Select(action).WhenAll();
+            await this._playerList.Select(action).WhenAll().ConfigureAwait(false);
         }
     }
 
@@ -315,15 +315,15 @@ public class GameContext : AsyncDisposable, IGameContext
     public async ValueTask SendGlobalNotificationAsync(string message)
     {
         var sendingMessage = message.TrimStart('!');
-        await this.SendGlobalMessageAsync(sendingMessage, MessageType.GoldenCenter);
+        await this.SendGlobalMessageAsync(sendingMessage, MessageType.GoldenCenter).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     protected override async ValueTask DisposeAsyncCore()
     {
-        await this._recoverTimer.DisposeAsync();
-        await this._tasksTimer.DisposeAsync();
-        await base.DisposeAsyncCore();
+        await this._recoverTimer.DisposeAsync().ConfigureAwait(false);
+        await this._tasksTimer.DisposeAsync().ConfigureAwait(false);
+        await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -333,7 +333,7 @@ public class GameContext : AsyncDisposable, IGameContext
         {
             if (this.PlugInManager.GetPlugInPoint<IPeriodicTaskPlugIn>() is { } plugInPoint)
             {
-                await plugInPoint.ExecuteTaskAsync(this);
+                await plugInPoint.ExecuteTaskAsync(this).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -355,7 +355,7 @@ public class GameContext : AsyncDisposable, IGameContext
                 }
 
                 return Task.CompletedTask;
-            });
+            }).ConfigureAwait(false);
 
         }
         catch

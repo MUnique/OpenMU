@@ -29,6 +29,6 @@ public class ResetChatCommandPlugIn : IChatCommandPlugIn
     public async ValueTask HandleCommandAsync(Player player, string command)
     {
         var resetAction = new ResetCharacterAction(player);
-        await resetAction.ResetCharacterAsync();
+        await resetAction.ResetCharacterAsync().ConfigureAwait(false);
     }
 }

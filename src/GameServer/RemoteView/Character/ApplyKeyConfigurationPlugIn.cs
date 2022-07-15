@@ -39,6 +39,6 @@ public class ApplyKeyConfigurationPlugIn : IApplyKeyConfigurationPlugIn
             return;
         }
 
-        await connection.SendApplyKeyConfigurationAsync(keyConfiguration);
+        await connection.SendApplyKeyConfigurationAsync(keyConfiguration).ConfigureAwait(false);
     }
 }

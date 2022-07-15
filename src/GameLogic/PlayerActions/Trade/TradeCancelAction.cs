@@ -21,8 +21,8 @@ public class TradeCancelAction : BaseTradeAction
         var tradingPartner = trader.TradingPartner;
         if (tradingPartner != null)
         {
-            await base.CancelTradeAsync(tradingPartner);
-            await base.CancelTradeAsync(trader);
+            await base.CancelTradeAsync(tradingPartner).ConfigureAwait(false);
+            await base.CancelTradeAsync(trader).ConfigureAwait(false);
             await trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
             await tradingPartner.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
         }

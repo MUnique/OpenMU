@@ -56,7 +56,7 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill)
     {
         var direction = attacker.GetDirectionTo(this);
-        await this.MoveToDirectionAsync(direction, skill is { });
+        await this.MoveToDirectionAsync(direction, skill is { }).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -77,7 +77,7 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     public async ValueTask MoveAsync(Point target)
     {
         var old = this.Position;
-        await this.CurrentMap.MoveAsync(this, target, this._moveLock, MoveType.Instant);
+        await this.CurrentMap.MoveAsync(this, target, this._moveLock, MoveType.Instant).ConfigureAwait(false);
         if (this.Moved is { } eventHandler)
         {
             await eventHandler((From: old, To: target)).ConfigureAwait(false);
@@ -104,7 +104,7 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
 
         if (finalTarget != this.Position)
         {
-            await this.MoveAsync(finalTarget);
+            await this.MoveAsync(finalTarget).ConfigureAwait(false);
         }
     }
 }

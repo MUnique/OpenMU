@@ -35,6 +35,6 @@ public class UpdateCurrentManaPlugIn : IUpdateCurrentManaPlugIn
 
         await this._player.Connection.SendCurrentManaAndAbilityAsync(
             (ushort)this._player.Attributes[Stats.CurrentMana],
-            (ushort)this._player.Attributes[Stats.CurrentAbility]);
+            (ushort)this._player.Attributes[Stats.CurrentAbility]).ConfigureAwait(false);
     }
 }

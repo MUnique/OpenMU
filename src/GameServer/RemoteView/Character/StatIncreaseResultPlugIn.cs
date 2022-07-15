@@ -44,6 +44,6 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
                     ? (ushort)this._player.Attributes![Stats.MaximumHealth]
                     : default,
             (ushort)this._player.Attributes![Stats.MaximumShield],
-            (ushort)this._player.Attributes[Stats.MaximumAbility]);
+            (ushort)this._player.Attributes[Stats.MaximumAbility]).ConfigureAwait(false);
     }
 }

@@ -49,6 +49,6 @@ internal class PlayerShopBuyRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn
             return;
         }
 
-        await this._buyAction.BuyItemAsync(player, requestedPlayer, message.ItemSlot);
+        await this._buyAction.BuyItemAsync(player, requestedPlayer, message.ItemSlot).ConfigureAwait(false);
     }
 }

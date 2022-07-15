@@ -49,7 +49,7 @@ public class UpdateLevelPlugIn : IUpdateLevelPlugIn
                 (ushort)charStats[Stats.MaximumHealth],
                 (ushort)charStats[Stats.MaximumMana],
                 (ushort)charStats[Stats.MaximumShield],
-                (ushort)charStats[Stats.MaximumAbility]);
+                (ushort)charStats[Stats.MaximumAbility]).ConfigureAwait(false);
 
             await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Congratulations, you are Master Level {charStats[Stats.MasterLevel]} now.", MessageType.BlueNormal)).ConfigureAwait(false);
         }
@@ -65,7 +65,7 @@ public class UpdateLevelPlugIn : IUpdateLevelPlugIn
                 (ushort)selectedCharacter.UsedFruitPoints,
                 selectedCharacter.GetMaximumFruitPoints(),
                 (ushort)selectedCharacter.UsedNegFruitPoints,
-                selectedCharacter.GetMaximumFruitPoints());
+                selectedCharacter.GetMaximumFruitPoints()).ConfigureAwait(false);
 
             await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Congratulations, you are Level {charStats[Stats.Level]} now.", MessageType.BlueNormal)).ConfigureAwait(false);
         }

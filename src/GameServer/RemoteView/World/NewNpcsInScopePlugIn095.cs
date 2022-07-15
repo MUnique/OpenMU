@@ -42,12 +42,12 @@ public class NewNpcsInScopePlugIn095 : INewNpcsInScopePlugIn
         var npcs = newObjects.Except(summons).ToList();
         if (npcs.Any())
         {
-            await NpcsInScopeAsync(isSpawned, connection, npcs);
+            await NpcsInScopeAsync(isSpawned, connection, npcs).ConfigureAwait(false);
         }
 
         if (summons.Any())
         {
-            await SummonedMonstersInScopeAsync(isSpawned, connection, summons);
+            await SummonedMonstersInScopeAsync(isSpawned, connection, summons).ConfigureAwait(false);
         }
     }
 

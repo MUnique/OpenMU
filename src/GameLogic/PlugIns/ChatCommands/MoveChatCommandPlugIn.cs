@@ -34,13 +34,13 @@ public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
         if (isGameMasterWarpingCharacter)
         {
             var targetPlayer = this.GetPlayerByCharacterName(sender, arguments.Target!);
-            var exitGate = await this.GetExitGateAsync(sender, arguments.MapIdOrName!, arguments.Coordinates);
-            await targetPlayer.WarpToAsync(exitGate);
+            var exitGate = await this.GetExitGateAsync(sender, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
+            await targetPlayer.WarpToAsync(exitGate).ConfigureAwait(false);
 
             if (!targetPlayer.Name.Equals(sender.Name))
             {
-                await this.ShowMessageToAsync(targetPlayer, "You have been moved by the game master.");
-                await this.ShowMessageToAsync(sender, $"[{this.Key}] {targetPlayer.Name} has been moved to {exitGate!.Map!.Name} at {targetPlayer.Position.X}, {targetPlayer.Position.Y}");
+                await this.ShowMessageToAsync(targetPlayer, "You have been moved by the game master.").ConfigureAwait(false);
+                await this.ShowMessageToAsync(sender, $"[{this.Key}] {targetPlayer.Name} has been moved to {exitGate!.Map!.Name} at {targetPlayer.Position.X}, {targetPlayer.Position.Y}").ConfigureAwait(false);
             }
         }
         else
@@ -48,7 +48,7 @@ public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
             var warpInfo = this.GetWarpInfo(sender, arguments.Target!);
             if (warpInfo != null)
             {
-                await new WarpAction().WarpToAsync(sender, warpInfo);
+                await new WarpAction().WarpToAsync(sender, warpInfo).ConfigureAwait(false);
             }
         }
     }

@@ -70,7 +70,7 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
         var typeIndex = packet.Span[0] % 2 == 1 ? 2 : 3;
         var packetType = packet.Span[typeIndex];
         var handler = this[packetType];
-        await this.HandlePacketAsync(player, packet, handler);
+        await this.HandlePacketAsync(player, packet, handler).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -118,7 +118,7 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
             return;
         }
 
-        await handler.HandlePacketAsync(player, packet);
+        await handler.HandlePacketAsync(player, packet).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

@@ -28,7 +28,7 @@ public class RestoreItemCrafting : SimpleItemCraftingHandler
         var item = requiredItems.First().Items.First();
         var johOptionLink = item.ItemOptions.First(link => link.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption);
         item.ItemOptions.Remove(johOptionLink);
-        await player.PersistenceContext.DeleteAsync(johOptionLink);
+        await player.PersistenceContext.DeleteAsync(johOptionLink).ConfigureAwait(false);
         return new List<Item> { item };
     }
 }

@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx;
+
 namespace MUnique.OpenMU.Network;
 
 using System.Diagnostics;
@@ -51,7 +53,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger = logger;
         this.Source = decryptionPipe?.Reader ?? this._duplexPipe!.Input;
         this._remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
-        this.OutputLock = new SemaphoreSlim(1);
+        this.OutputLock = new();
     }
 
     /// <inheritdoc />
@@ -70,7 +72,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public PipeWriter Output => this._outputWriter ??= new ExtendedPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, OutgoingBytesCounter);
 
     /// <inheritdoc />
-    public SemaphoreSlim OutputLock { get; }
+    public AsyncLock OutputLock { get; }
 
     /// <summary>
     /// Gets the name of the meter.
@@ -120,8 +122,8 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger.LogDebug("Disconnecting...");
         if (this._duplexPipe is not null)
         {
-            await this.Source.CompleteAsync();
-            await this.Output.CompleteAsync();
+            await this.Source.CompleteAsync().ConfigureAwait(false);
+            await this.Output.CompleteAsync().ConfigureAwait(false);
             (this._duplexPipe as IDisposable)?.Dispose();
             this._duplexPipe = null;
         }
@@ -180,7 +182,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
                 .Start();
         try
         {
-            await this.PacketReceived.SafeInvokeAsync(packet);
+            await this.PacketReceived.SafeInvokeAsync(packet).ConfigureAwait(false);
         }
         finally
         {

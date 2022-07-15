@@ -53,6 +53,6 @@ public class EarthShakeSkillPlugIn : IAreaSkillPlugIn
             currentDistance = startingPoint.EuclideanDistanceTo(currentTarget);
         }
 
-        await movableTarget.MoveAsync(currentTarget);
+        await movableTarget.MoveAsync(currentTarget).ConfigureAwait(false);
     }
 }

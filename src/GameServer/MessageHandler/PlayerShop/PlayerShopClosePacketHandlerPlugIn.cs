@@ -29,6 +29,6 @@ internal class PlayerShopClosePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        await this._closeStoreAction.CloseStoreAsync(player);
+        await this._closeStoreAction.CloseStoreAsync(player).ConfigureAwait(false);
     }
 }

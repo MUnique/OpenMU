@@ -52,11 +52,11 @@ public class NewPlayersInScopePlugIn075 : INewPlayersInScopePlugIn
         {
             if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)
             {
-                await this.SendAddToScopeMessageAsync(isSpawned, connection, newPlayer);
+                await this.SendAddToScopeMessageAsync(isSpawned, connection, newPlayer).ConfigureAwait(false);
             }
             else
             {
-                await this.SendAddTransformedToScopeMessageAsync(isSpawned, connection, newPlayer);
+                await this.SendAddTransformedToScopeMessageAsync(isSpawned, connection, newPlayer).ConfigureAwait(false);
             }
 
             if (newPlayer.GuildStatus != null)

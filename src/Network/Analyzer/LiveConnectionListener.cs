@@ -90,7 +90,7 @@ public class LiveConnectionListener : Listener
         try
         {
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            await serverSocket.ConnectAsync(this.TargetHost, this.TargetPort);
+            await serverSocket.ConnectAsync(this.TargetHost, this.TargetPort).ConfigureAwait(false);
             var socketConnection = SocketConnection.Create(serverSocket);
 
             var decryptor = this.GetDecryptor(socketConnection.Input, DataDirection.ServerToClient);
@@ -103,7 +103,7 @@ public class LiveConnectionListener : Listener
         catch (Exception exception)
         {
             this._logger.LogError(exception, "Error while connecting to the server. Disconnecting the client.");
-            await clientConnection.DisconnectAsync();
+            await clientConnection.DisconnectAsync().ConfigureAwait(false);
         }
     }
 }

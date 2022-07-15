@@ -45,7 +45,7 @@ internal abstract class HitHandlerPlugInBase : IPacketHandlerPlugIn
         }
         else
         {
-            await this._hitAction.HitAsync(player, target, message.AttackAnimation, message.LookingDirection.ParseAsDirection());
+            await this._hitAction.HitAsync(player, target, message.AttackAnimation, message.LookingDirection.ParseAsDirection()).ConfigureAwait(false);
         }
     }
 }

@@ -87,14 +87,14 @@ public partial class MapEditor : IDisposable
         this.NotificationService.PropertyChanged += this.OnPropertyChanged;
         try
         {
-            this.Maps = (await this.PersistenceContext.GetAsync<GameMapDefinition>()).OrderBy(c => c.Number).ToList();
+            this.Maps = (await this.PersistenceContext.GetAsync<GameMapDefinition>().ConfigureAwait(false)).OrderBy(c => c.Number).ToList();
         }
         catch (Exception ex)
         {
             Debug.Fail(ex.Message, ex.StackTrace);
         }
 
-        await base.OnInitializedAsync();
+        await base.OnInitializedAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -237,7 +237,7 @@ public partial class MapEditor : IDisposable
         {
             // For GetMapHostBoundingClientRect(), see map.js
             // Warning: it's NOT working with the Edge Browser! BoundingClientRect gets all values with 0.
-            var mapClientRect = await this.JsRuntime.InvokeAsync<BoundingClientRect>("GetMapHostBoundingClientRect");
+            var mapClientRect = await this.JsRuntime.InvokeAsync<BoundingClientRect>("GetMapHostBoundingClientRect").ConfigureAwait(false);
             var x = (args.ClientY - mapClientRect.Top) / this._scale;
             var y = (args.ClientX - mapClientRect.Left) / this._scale;
             return ((byte)x, (byte)y);
@@ -258,7 +258,7 @@ public partial class MapEditor : IDisposable
             return;
         }
 
-        if (await this.OnGetObjectCoordinatesAsync(args) is { } coordinates)
+        if (await this.OnGetObjectCoordinatesAsync(args).ConfigureAwait(false) is { } coordinates)
         {
             var (x, y) = coordinates;
 
@@ -395,7 +395,7 @@ public partial class MapEditor : IDisposable
         }
 
         this._createMode = false;
-        await this.RemoveFocusedObjectAsync();
+        await this.RemoveFocusedObjectAsync().ConfigureAwait(false);
     }
 
     private async Task RemoveFocusedObjectAsync()
@@ -415,7 +415,7 @@ public partial class MapEditor : IDisposable
                 return;
         }
 
-        await this.PersistenceContext.DeleteAsync(this._focusedObject);
+        await this.PersistenceContext.DeleteAsync(this._focusedObject).ConfigureAwait(false);
         this._focusedObject = null;
     }
 

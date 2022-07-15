@@ -59,22 +59,22 @@ public class DropItemAction
         if (droppedMoneyAmount is { })
         {
             var droppedMoney = new DroppedMoney(droppedMoneyAmount.Value, player.Position, player.CurrentMap!);
-            await player.CurrentMap!.AddAsync(droppedMoney);
+            await player.CurrentMap!.AddAsync(droppedMoney).ConfigureAwait(false);
         }
 
         if (item is { })
         {
             var droppedItem = new DroppedItem(item, player.Position, player.CurrentMap!, player);
-            await player.CurrentMap!.AddAsync(droppedItem);
+            await player.CurrentMap!.AddAsync(droppedItem).ConfigureAwait(false);
         }
 
         if (dropEffect is { } && dropEffect != ItemDropEffect.Undefined)
         {
-            await this.ShowDropEffectAsync(player, dropEffect.Value);
+            await this.ShowDropEffectAsync(player, dropEffect.Value).ConfigureAwait(false);
         }
 
-        await this.RemoveItemFromInventoryAsync(player, sourceItem);
-        await player.PersistenceContext.DeleteAsync(sourceItem);
+        await this.RemoveItemFromInventoryAsync(player, sourceItem).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(sourceItem).ConfigureAwait(false);
     }
 
     private async ValueTask ShowDropEffectAsync(Player player, ItemDropEffect dropEffect)
@@ -95,13 +95,13 @@ public class DropItemAction
             ? player.GetAsEnumerable()
             : player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
         var droppedItem = new DroppedItem(item, target, player.CurrentMap!, player, owners);
-        await player.CurrentMap!.AddAsync(droppedItem);
-        await this.RemoveItemFromInventoryAsync(player, item);
+        await player.CurrentMap!.AddAsync(droppedItem).ConfigureAwait(false);
+        await this.RemoveItemFromInventoryAsync(player, item).ConfigureAwait(false);
     }
 
     private async ValueTask RemoveItemFromInventoryAsync(Player player, Item item)
     {
-        await player.Inventory!.RemoveItemAsync(item);
+        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(item.ItemSlot, true)).ConfigureAwait(false);
     }
 }

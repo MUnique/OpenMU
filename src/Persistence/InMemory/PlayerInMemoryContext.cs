@@ -23,21 +23,21 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     /// <inheritdoc/>
     public async ValueTask<MUnique.OpenMU.DataModel.Entities.LetterBody?> GetLetterBodyByHeaderIdAsync(Guid headerId)
     {
-        var allLetters = await this.Manager.GetRepository<LetterBody>().GetAllAsync();
+        var allLetters = await this.Manager.GetRepository<LetterBody>().GetAllAsync().ConfigureAwait(false);
         return allLetters.FirstOrDefault(body => body.Header.Id == headerId);
     }
 
     /// <inheritdoc/>
     public async ValueTask<MUnique.OpenMU.DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password)
     {
-        var allAccounts = await this.Manager.GetRepository<Account>().GetAllAsync();
+        var allAccounts = await this.Manager.GetRepository<Account>().GetAllAsync().ConfigureAwait(false);
         return allAccounts.FirstOrDefault(account => account.LoginName == loginName && BCrypt.Net.BCrypt.Verify(password, account.PasswordHash));
     }
 
     /// <inheritdoc/>
     public async ValueTask<IEnumerable<MUnique.OpenMU.DataModel.Entities.Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count)
     {
-        var allAccounts = await this.Manager.GetRepository<Account>().GetAllAsync();
+        var allAccounts = await this.Manager.GetRepository<Account>().GetAllAsync().ConfigureAwait(false);
         return allAccounts.OrderBy(a => a.LoginName).Skip(skip).Take(count);
     }
 

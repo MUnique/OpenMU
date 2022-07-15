@@ -28,6 +28,6 @@ public class ShowGuildJoinRequestPlugIn : IShowGuildJoinRequestPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowGuildJoinRequestAsync(Player requester)
     {
-        await this._player.Connection.SendGuildJoinRequestAsync(requester.Id);
+        await this._player.Connection.SendGuildJoinRequestAsync(requester.Id).ConfigureAwait(false);
     }
 }

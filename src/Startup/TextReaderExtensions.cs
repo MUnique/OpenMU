@@ -22,7 +22,7 @@ public static class TextReaderExtensions
     public static async Task<string?> ReadLineAsync(this TextReader reader, CancellationToken cancellationToken)
     {
         using var taskSource = new CancellationTokenTaskSource<string?>(cancellationToken);
-        var result = await await Task.WhenAny(taskSource.Task, reader.ReadLineAsync());
+        var result = await (await Task.WhenAny(taskSource.Task, reader.ReadLineAsync()).ConfigureAwait(false)).ConfigureAwait(false);
         return result;
     }
 }

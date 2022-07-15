@@ -30,6 +30,6 @@ internal class CharacterCreatePacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         CreateCharacter message = packet;
-        await this._createCharacterAction.CreateCharacterAsync(player, message.Name, (byte)message.Class);
+        await this._createCharacterAction.CreateCharacterAsync(player, message.Name, (byte)message.Class).ConfigureAwait(false);
     }
 }

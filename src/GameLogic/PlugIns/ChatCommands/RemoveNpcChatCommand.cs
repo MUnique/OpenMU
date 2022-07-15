@@ -31,11 +31,11 @@ internal class RemoveNpcChatCommand : ChatCommandPlugInBase<IdCommandArgs>
         var monster = gameMaster.ObservingBuckets.SelectMany(b => b).OfType<NonPlayerCharacter>().FirstOrDefault(m => m.Id == arguments.Id);
         if (monster is null)
         {
-            await this.ShowMessageToAsync(gameMaster, $"NPC with id {arguments.Id} not found.");
+            await this.ShowMessageToAsync(gameMaster, $"NPC with id {arguments.Id} not found.").ConfigureAwait(false);
             return;
         }
 
         monster.Dispose();
-        await this.ShowMessageToAsync(gameMaster, $"NPC with id {arguments.Id} removed.");
+        await this.ShowMessageToAsync(gameMaster, $"NPC with id {arguments.Id} removed.").ConfigureAwait(false);
     }
 }

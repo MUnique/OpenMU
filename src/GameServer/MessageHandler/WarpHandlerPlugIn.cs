@@ -36,7 +36,7 @@ internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
         var warpInfo = player.GameContext.Configuration.WarpList?.FirstOrDefault(info => info.Index == warpInfoIndex);
         if (warpInfo != null)
         {
-            await this._warpAction.WarpToAsync(player, warpInfo);
+            await this._warpAction.WarpToAsync(player, warpInfo).ConfigureAwait(false);
         }
         else
         {

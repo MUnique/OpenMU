@@ -56,7 +56,7 @@ public class ExDbClient
     {
         if (this._connection is { } connection)
         {
-            await connection.DisconnectAsync();
+            await connection.DisconnectAsync().ConfigureAwait(false);
         }
     }
 
@@ -68,7 +68,7 @@ public class ExDbClient
         {
             try
             {
-                await socket.ConnectAsync(this._host, this._port);
+                await socket.ConnectAsync(this._host, this._port).ConfigureAwait(false);
             }
             catch
             {
@@ -82,8 +82,8 @@ public class ExDbClient
         this._connection = new Connection(SocketConnection.Create(socket), null, null, this._loggerFactory.CreateLogger<Connection>());
         this._connection.PacketReceived += this.ExDbPacketReceivedAsync;
         this._connection.Disconnected += this.ConnectAsync;
-        await this.SendHelloAsync();
-        await this._connection!.BeginReceiveAsync();
+        await this.SendHelloAsync().ConfigureAwait(false);
+        await this._connection!.BeginReceiveAsync().ConfigureAwait(false);
     }
 
     private async ValueTask SendHelloAsync()
@@ -103,7 +103,7 @@ public class ExDbClient
             return length;
         }
 
-        await this._connection!.SendAsync(Write);
+        await this._connection!.SendAsync(Write).ConfigureAwait(false);
         this._logger.LogInformation("Sent registration packet to ExDB-Server");
     }
 
@@ -128,10 +128,10 @@ public class ExDbClient
             switch (code)
             {
                 case 0xA0:
-                    await this.ReadChatRoomCreationAsync(packet);
+                    await this.ReadChatRoomCreationAsync(packet).ConfigureAwait(false);
                     break;
                 case 0xA1:
-                    await this.ReadChatRoomInvitationAsync(packet);
+                    await this.ReadChatRoomInvitationAsync(packet).ConfigureAwait(false);
                     break;
                 default:
                     this._logger.LogWarning($"Unknown packet received from ExDB-Server, code: {code}");
@@ -173,9 +173,9 @@ public class ExDbClient
 
         Extract(packet.Span);
         this._logger.LogDebug($"Received request to invite {clientName} to chat room {roomId}, Client-ID: {clientPlayerId}, Server-ID: {clientServerId}");
-        if (await this._chatServer.RegisterClientAsync(roomId, clientName) is { } authentication)
+        if (await this._chatServer.RegisterClientAsync(roomId, clientName).ConfigureAwait(false) is { } authentication)
         {
-            await this.SendAuthenticationAsync(authentication, null, clientPlayerId, clientServerId, type);
+            await this.SendAuthenticationAsync(authentication, null, clientPlayerId, clientServerId, type).ConfigureAwait(false);
         }
     }
 
@@ -213,18 +213,18 @@ public class ExDbClient
         }
 
         Extract(packet.Span);
-        var roomId = await this._chatServer.CreateChatRoomAsync();
+        var roomId = await this._chatServer.CreateChatRoomAsync().ConfigureAwait(false);
         this._logger.LogDebug($"Received request to create chat room for {clientName} and {friendName}; Room-ID: {roomId}; Client-ID: {clientPlayerId}; Server-ID: {clientServerId}; Friend-ID: {friendPlayerId}; Friend-Server: {friendServerId}");
-        var requesterAuthentication = await this._chatServer.RegisterClientAsync(roomId, clientName);
-        var friendAuthentication = await this._chatServer.RegisterClientAsync(roomId, friendName);
+        var requesterAuthentication = await this._chatServer.RegisterClientAsync(roomId, clientName).ConfigureAwait(false);
+        var friendAuthentication = await this._chatServer.RegisterClientAsync(roomId, friendName).ConfigureAwait(false);
         if (requesterAuthentication is not null)
         {
-            await this.SendAuthenticationAsync(requesterAuthentication, friendAuthentication, clientPlayerId, clientServerId, requesterAuthentication.Index);
+            await this.SendAuthenticationAsync(requesterAuthentication, friendAuthentication, clientPlayerId, clientServerId, requesterAuthentication.Index).ConfigureAwait(false);
         }
 
         if (friendAuthentication is not null)
         {
-            await this.SendAuthenticationAsync(friendAuthentication, requesterAuthentication, friendPlayerId, friendServerId, friendAuthentication.Index);
+            await this.SendAuthenticationAsync(friendAuthentication, requesterAuthentication, friendPlayerId, friendServerId, friendAuthentication.Index).ConfigureAwait(false);
         }
     }
 

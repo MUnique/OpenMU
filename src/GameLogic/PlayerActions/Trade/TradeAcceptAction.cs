@@ -21,29 +21,29 @@ public class TradeAcceptAction : BaseTradeAction
         var tradePartner = tradeAccepter.TradingPartner;
         if (accept && tradePartner != null)
         {
-            if (!tradeAccepter.PlayerState.TryAdvanceTo(PlayerState.TradeOpened) || !tradePartner.PlayerState.TryAdvanceTo(PlayerState.TradeOpened))
+            if (!await tradeAccepter.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false) || !await tradePartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
             {
                 ////Something bad happened here...
-                await this.CancelTradeAsync(tradeAccepter);
-                await this.CancelTradeAsync(tradePartner);
+                await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
+                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
                 await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
                 await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
             }
             else
             {
-                await this.OpenTradeAsync(tradeAccepter);
-                await this.OpenTradeAsync(tradePartner);
+                await this.OpenTradeAsync(tradeAccepter).ConfigureAwait(false);
+                await this.OpenTradeAsync(tradePartner).ConfigureAwait(false);
             }
         }
         else
         {
             if (tradePartner != null)
             {
-                await this.CancelTradeAsync(tradePartner);
+                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
                 await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
             }
 
-            await this.CancelTradeAsync(tradeAccepter);
+            await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
             await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
         }
     }

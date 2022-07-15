@@ -21,7 +21,7 @@ public class AddFriendAction
         var friendServer = (player.GameContext as IGameServerContext)?.FriendServer;
         if (friendServer != null && player.SelectedCharacter is { } character)
         {
-            bool isNewFriend = await friendServer.FriendRequestAsync(character.Name, friendName);
+            bool isNewFriend = await friendServer.FriendRequestAsync(character.Name, friendName).ConfigureAwait(false);
             if (isNewFriend)
             {
                 await player.InvokeViewPlugInAsync<IFriendAddedPlugIn>(p => p.FriendAddedAsync(friendName)).ConfigureAwait(false);

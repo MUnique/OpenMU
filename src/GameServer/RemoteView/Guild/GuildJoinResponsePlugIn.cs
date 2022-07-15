@@ -27,6 +27,6 @@ public class GuildJoinResponsePlugIn : IGuildJoinResponsePlugIn
     /// <inheritdoc/>
     public async ValueTask ShowGuildJoinResponseAsync(GuildRequestAnswerResult result)
     {
-        await this._player.Connection.SendGuildJoinResponseAsync(result.Convert());
+        await this._player.Connection.SendGuildJoinResponseAsync(result.Convert()).ConfigureAwait(false);
     }
 }

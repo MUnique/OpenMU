@@ -27,7 +27,7 @@ public class FriendNotifierToGameServer : IFriendNotifier
     {
         if (this._gameServers.TryGetValue(serverId, out var gameServer))
         {
-            await gameServer.FriendRequestAsync(requester, receiver);
+            await gameServer.FriendRequestAsync(requester, receiver).ConfigureAwait(false);
         }
     }
 
@@ -36,7 +36,7 @@ public class FriendNotifierToGameServer : IFriendNotifier
     {
         foreach (var gameServer in this._gameServers.Values)
         {
-            await gameServer.LetterReceivedAsync(letter);
+            await gameServer.LetterReceivedAsync(letter).ConfigureAwait(false);
         }
     }
 
@@ -45,7 +45,7 @@ public class FriendNotifierToGameServer : IFriendNotifier
     {
         if (this._gameServers.TryGetValue(playerServerId, out var gameServer))
         {
-            await gameServer.FriendOnlineStateChangedAsync(player, friend, friendServerId);
+            await gameServer.FriendOnlineStateChangedAsync(player, friend, friendServerId).ConfigureAwait(false);
         }
     }
 
@@ -54,7 +54,7 @@ public class FriendNotifierToGameServer : IFriendNotifier
     {
         if (this._gameServers.TryGetValue(serverId, out var gameServer))
         {
-            await gameServer.ChatRoomCreatedAsync(playerAuthenticationInfo, friendName);
+            await gameServer.ChatRoomCreatedAsync(playerAuthenticationInfo, friendName).ConfigureAwait(false);
         }
     }
 
@@ -63,7 +63,7 @@ public class FriendNotifierToGameServer : IFriendNotifier
     {
         if (this._gameServers.TryGetValue(serverId, out var gameServer))
         {
-            await gameServer.InitializeMessengerAsync(initializationData);
+            await gameServer.InitializeMessengerAsync(initializationData).ConfigureAwait(false);
         }
     }
 }

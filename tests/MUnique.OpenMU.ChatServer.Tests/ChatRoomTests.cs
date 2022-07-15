@@ -80,7 +80,7 @@ public class ChatRoomTests
         var authenticationInfo = new ChatServerAuthenticationInfo(clientId, roomId, "Bob", ChatServerHost, "123456789");
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
-        Assert.That(await room.TryJoinAsync(chatClient.Object), Is.False);
+        Assert.That(await room.TryJoinAsync(chatClient.Object).ConfigureAwait(false), Is.False);
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public class ChatRoomTests
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns("987654321");
-        Assert.That(await room.TryJoinAsync(chatClient.Object), Is.False);
+        Assert.That(await room.TryJoinAsync(chatClient.Object).ConfigureAwait(false), Is.False);
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public class ChatRoomTests
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
-        Assert.That(await room.TryJoinAsync(chatClient.Object), Is.True);
+        Assert.That(await room.TryJoinAsync(chatClient.Object).ConfigureAwait(false), Is.True);
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public class ChatRoomTests
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
-        await room.TryJoinAsync(chatClient.Object);
+        await room.TryJoinAsync(chatClient.Object).ConfigureAwait(false);
         chatClient.Verify(c => c.SendChatRoomClientListAsync(room.ConnectedClients), Times.Once);
     }
 
@@ -145,7 +145,7 @@ public class ChatRoomTests
         room.RegisterClient(authenticationInfo);
         var chatClient = new Mock<IChatClient>();
         chatClient.Setup(c => c.AuthenticationToken).Returns(authenticationInfo.AuthenticationToken);
-        await room.TryJoinAsync(chatClient.Object);
+        await room.TryJoinAsync(chatClient.Object).ConfigureAwait(false);
         Assert.That(room.ConnectedClients, Has.Count.EqualTo(1));
         Assert.That(room.ConnectedClients, Contains.Item(chatClient.Object));
     }
@@ -172,8 +172,8 @@ public class ChatRoomTests
         chatClient1.SetupAllProperties();
         chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
-        await room.TryJoinAsync(chatClient0.Object);
-        await room.TryJoinAsync(chatClient1.Object);
+        await room.TryJoinAsync(chatClient0.Object).ConfigureAwait(false);
+        await room.TryJoinAsync(chatClient1.Object).ConfigureAwait(false);
 
         chatClient0.Verify(c => c.SendChatRoomClientUpdateAsync(clientId1, authenticationInfo1.ClientName, ChatRoomClientUpdateType.Joined), Times.Once);
     }
@@ -201,10 +201,10 @@ public class ChatRoomTests
         chatClient1.SetupAllProperties();
         chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
-        await room.TryJoinAsync(chatClient0.Object);
-        await room.TryJoinAsync(chatClient1.Object);
+        await room.TryJoinAsync(chatClient0.Object).ConfigureAwait(false);
+        await room.TryJoinAsync(chatClient1.Object).ConfigureAwait(false);
 
-        await room.LeaveAsync(chatClient0.Object);
+        await room.LeaveAsync(chatClient0.Object).ConfigureAwait(false);
         chatClient1.Verify(c => c.SendChatRoomClientUpdateAsync(clientId0, authenticationInfo0.ClientName, ChatRoomClientUpdateType.Left), Times.Once);
     }
 
@@ -230,10 +230,10 @@ public class ChatRoomTests
         var chatClient1 = new Mock<IChatClient>();
         chatClient1.Setup(c => c.AuthenticationToken).Returns(authenticationInfo1.AuthenticationToken);
 
-        await room.TryJoinAsync(chatClient0.Object);
-        await room.TryJoinAsync(chatClient1.Object);
+        await room.TryJoinAsync(chatClient0.Object).ConfigureAwait(false);
+        await room.TryJoinAsync(chatClient1.Object).ConfigureAwait(false);
 
-        await room.SendMessageAsync(clientId1, chatMessage);
+        await room.SendMessageAsync(clientId1, chatMessage).ConfigureAwait(false);
         chatClient0.Verify(c => c.SendMessageAsync(clientId1, chatMessage), Times.Once);
         chatClient1.Verify(c => c.SendMessageAsync(clientId1, chatMessage), Times.Once);
     }
@@ -261,10 +261,10 @@ public class ChatRoomTests
 
         var eventCalled = false;
         room.RoomClosed += (sender, e) => eventCalled = true;
-        await room.TryJoinAsync(chatClient0.Object);
-        await room.TryJoinAsync(chatClient1.Object);
-        await room.LeaveAsync(chatClient0.Object);
-        await room.LeaveAsync(chatClient1.Object);
+        await room.TryJoinAsync(chatClient0.Object).ConfigureAwait(false);
+        await room.TryJoinAsync(chatClient1.Object).ConfigureAwait(false);
+        await room.LeaveAsync(chatClient0.Object).ConfigureAwait(false);
+        await room.LeaveAsync(chatClient1.Object).ConfigureAwait(false);
         Assert.That(eventCalled, Is.True);
     }
 }

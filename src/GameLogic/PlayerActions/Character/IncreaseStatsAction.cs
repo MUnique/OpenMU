@@ -27,7 +27,7 @@ public class IncreaseStatsAction
         var selectedCharacter = player.SelectedCharacter;
         if (!selectedCharacter.CanIncreaseStats())
         {
-            await this.PublishIncreaseResultAsync(player, statAttributeDefinition, false);
+            await this.PublishIncreaseResultAsync(player, statAttributeDefinition, false).ConfigureAwait(false);
             return;
         }
 
@@ -40,11 +40,11 @@ public class IncreaseStatsAction
                 selectedCharacter.LevelUpPoints--;
             }
 
-            await this.PublishIncreaseResultAsync(player, statAttributeDefinition, true);
+            await this.PublishIncreaseResultAsync(player, statAttributeDefinition, true).ConfigureAwait(false);
             return;
         }
 
-        await this.PublishIncreaseResultAsync(player, statAttributeDefinition, false);
+        await this.PublishIncreaseResultAsync(player, statAttributeDefinition, false).ConfigureAwait(false);
     }
 
     private ValueTask PublishIncreaseResultAsync(Player player, AttributeDefinition statAttributeDefinition, bool success)

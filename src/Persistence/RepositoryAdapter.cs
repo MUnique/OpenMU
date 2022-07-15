@@ -45,13 +45,13 @@ public class RepositoryAdapter<T> : IRepository<T>
     /// <inheritdoc />
     public async ValueTask<IEnumerable<T>> GetAllAsync()
     {
-        return (IEnumerable<T>)await this._repository.GetAllAsync();
+        return (IEnumerable<T>)await this._repository.GetAllAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async ValueTask<T?> GetByIdAsync(Guid id)
     {
-        return (T?)await this._repository.GetByIdAsync(id);
+        return (T?)await this._repository.GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

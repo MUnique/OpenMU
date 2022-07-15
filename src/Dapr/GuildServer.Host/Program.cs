@@ -18,6 +18,6 @@ services.AddSingleton<IGuildServer, GuildServer>()
     .AddPeristenceProvider();
 
 var app = builder.BuildAndConfigure();
-await app.WaitForUpdatedDatabaseAsync();
+await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
 
 app.Run();

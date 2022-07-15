@@ -31,10 +31,10 @@ internal class MoveMonsterChatCommand : ChatCommandPlugInBase<MoveMonsterCommand
         var monster = gameMaster.ObservingBuckets.SelectMany(b => b).OfType<Monster>().FirstOrDefault(m => m.Id == arguments.Id);
         if (monster is null)
         {
-            await this.ShowMessageToAsync(gameMaster, $"Monster with id {arguments.Id} not found.");
+            await this.ShowMessageToAsync(gameMaster, $"Monster with id {arguments.Id} not found.").ConfigureAwait(false);
             return;
         }
 
-        await monster.MoveAsync(arguments.Coordinates);
+        await monster.MoveAsync(arguments.Coordinates).ConfigureAwait(false);
     }
 }

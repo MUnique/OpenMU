@@ -46,9 +46,9 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     /// <inheritdoc/>
     public async ValueTask<bool> DeleteAsync(Guid id)
     {
-        if (await this.GetByIdAsync(id) is { } item)
+        if (await this.GetByIdAsync(id).ConfigureAwait(false) is { } item)
         {
-            return await this.DeleteAsync(item);
+            return await this.DeleteAsync(item).ConfigureAwait(false);
         }
 
         return false;
@@ -64,15 +64,15 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     /// <inheritdoc/>
     async ValueTask<IEnumerable> IRepository.GetAllAsync()
     {
-        return await this.GetAllAsync();
+        return await this.GetAllAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public virtual async ValueTask<IEnumerable<T>> GetAllAsync()
     {
         using var context = this.GetContext();
-        var result = await context.Context.Set<T>().ToListAsync();
-        await this.LoadDependentDataAsync(result, context.Context);
+        var result = await context.Context.Set<T>().ToListAsync().ConfigureAwait(false);
+        await this.LoadDependentDataAsync(result, context.Context).ConfigureAwait(false);
         var newItems = context.Context.ChangeTracker.Entries<T>().Where(e => e.State == EntityState.Added).Select(e => e.Entity);
         result.AddRange(newItems);
         return result;
@@ -82,14 +82,14 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     public virtual async ValueTask<T?> GetByIdAsync(Guid id)
     {
         using var context = this.GetContext();
-        var result = await context.Context.Set<T>().FindAsync(id);
+        var result = await context.Context.Set<T>().FindAsync(id).ConfigureAwait(false);
         if (result is null)
         {
             this._logger.LogDebug($"Object with id {id} could not be found.");
         }
         else
         {
-            await this.LoadDependentDataAsync(result, context.Context);
+            await this.LoadDependentDataAsync(result, context.Context).ConfigureAwait(false);
         }
 
         return result;
@@ -98,15 +98,15 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     /// <inheritdoc/>
     async ValueTask<object?> IRepository.GetByIdAsync(Guid id)
     {
-        return await this.GetByIdAsync(id);
+        return await this.GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async ValueTask<IEnumerable> LoadByPropertyAsync(IProperty property, object propertyValue)
     {
         using var context = this.GetContext();
-        var result = (await this.LoadByPropertyInternalAsync(property, propertyValue, context.Context)).OfType<T>().ToList();
-        await this.LoadDependentDataAsync(result, context.Context);
+        var result = (await this.LoadByPropertyInternalAsync(property, propertyValue, context.Context).ConfigureAwait(false)).OfType<T>().ToList();
+        await this.LoadDependentDataAsync(result, context.Context).ConfigureAwait(false);
         return result;
     }
 
@@ -141,7 +141,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
                 }
                 else
                 {
-                    await this.LoadNavigationPropertyAsync(entityEntry, navigation);
+                    await this.LoadNavigationPropertyAsync(entityEntry, navigation).ConfigureAwait(false);
                 }
             }
         }
@@ -150,7 +150,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
         {
             if (collection.Metadata is INavigation metadata)
             {
-                await this.LoadCollectionAsync(entityEntry, metadata, currentContext);
+                await this.LoadCollectionAsync(entityEntry, metadata, currentContext).ConfigureAwait(false);
                 collection.IsLoaded = true;
             }
         }
@@ -165,7 +165,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     {
         foreach (var obj in loadedObjects)
         {
-            await this.LoadDependentDataAsync(obj, currentContext);
+            await this.LoadDependentDataAsync(obj, currentContext).ConfigureAwait(false);
         }
     }
 
@@ -203,7 +203,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
             var foreignKeyValue = entityEntry.Property(navigation.ForeignKey.PrincipalKey.Properties[0].Name).CurrentValue;
             if (foreignKeyValue is { })
             {
-                var items = await repository.LoadByPropertyAsync(foreignKeyProperty, foreignKeyValue);
+                var items = await repository.LoadByPropertyAsync(foreignKeyProperty, foreignKeyValue).ConfigureAwait(false);
                 foreach (var obj in items)
                 {
                     if (!loadStatusAware.Contains(obj))
@@ -260,7 +260,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
 
             if (repository != null)
             {
-                if (!navigation.TrySetClrValue(entityEntry.Entity, await repository.GetByIdAsync(id)))
+                if (!navigation.TrySetClrValue(entityEntry.Entity, await repository.GetByIdAsync(id).ConfigureAwait(false)))
                 {
                     this._logger.LogError($"Could not find setter for navigation {navigation}");
                 }
@@ -282,12 +282,12 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     {
         if (property.ClrType == typeof(Guid))
         {
-            return await context.Set<T>().Where(o => EF.Property<Guid>(o, property.Name) == (Guid)propertyValue).ToListAsync();
+            return await context.Set<T>().Where(o => EF.Property<Guid>(o, property.Name) == (Guid)propertyValue).ToListAsync().ConfigureAwait(false);
         }
 
         if (property.ClrType == typeof(Guid?))
         {
-            return await context.Set<T>().Where(o => EF.Property<Guid?>(o, property.Name) == (Guid?)propertyValue).ToListAsync();
+            return await context.Set<T>().Where(o => EF.Property<Guid?>(o, property.Name) == (Guid?)propertyValue).ToListAsync().ConfigureAwait(false);
         }
 
         return Enumerable.Empty<object>();

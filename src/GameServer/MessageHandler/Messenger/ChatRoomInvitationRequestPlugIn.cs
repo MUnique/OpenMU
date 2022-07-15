@@ -30,6 +30,6 @@ public class ChatRoomInvitationRequestPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         ChatRoomInvitationRequest message = packet;
-        await this._chatRequestAction.InviteFriendToChatAsync(player, message.FriendName, message.RoomId, message.RequestId);
+        await this._chatRequestAction.InviteFriendToChatAsync(player, message.FriendName, message.RoomId, message.RequestId).ConfigureAwait(false);
     }
 }

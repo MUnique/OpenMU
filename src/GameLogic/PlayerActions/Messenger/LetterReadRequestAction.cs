@@ -28,7 +28,7 @@ public class LetterReadRequestAction
         var letter = player.SelectedCharacter?.Letters[letterIndex];
         if (letter != null)
         {
-            var letterBody = await player.PersistenceContext.GetLetterBodyByHeaderIdAsync(letter.Id);
+            var letterBody = await player.PersistenceContext.GetLetterBodyByHeaderIdAsync(letter.Id).ConfigureAwait(false);
             if (letterBody is not null)
             {
                 letter.ReadFlag = true;

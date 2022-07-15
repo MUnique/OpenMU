@@ -57,7 +57,7 @@ public class SeedSphereCrafting : SimpleItemCraftingHandler
         result.Definition = player.GameContext.Configuration.Items.Single(i => i.Number == resultSphereNumber && i.Group == 12);
         result.Level = seed.Level; // The level defines the kind of option
 
-        await player.TemporaryStorage!.AddItemAsync(result);
+        await player.TemporaryStorage!.AddItemAsync(result).ConfigureAwait(false);
         return new List<Item> { result };
     }
 }

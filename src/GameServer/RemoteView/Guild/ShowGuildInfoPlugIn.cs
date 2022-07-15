@@ -30,7 +30,7 @@ public class ShowGuildInfoPlugIn : BaseGuildInfoPlugIn<ShowGuildInfoPlugIn>, ISh
     /// <inheritdoc/>
     public async ValueTask ShowGuildInfoAsync(uint guildId)
     {
-        var data = await this.GetGuildDataAsync(guildId);
+        var data = await this.GetGuildDataAsync(guildId).ConfigureAwait(false);
         if (data.Length == 0)
         {
             return;
@@ -50,7 +50,7 @@ public class ShowGuildInfoPlugIn : BaseGuildInfoPlugIn<ShowGuildInfoPlugIn>, ISh
             return data.Length;
         }
 
-        await connection.SendAsync(Write);
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

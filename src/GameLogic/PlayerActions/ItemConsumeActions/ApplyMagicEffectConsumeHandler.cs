@@ -15,7 +15,7 @@ public class ApplyMagicEffectConsumeHandler : BaseConsumeHandler
     /// <inheritdoc />
     public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (!await base.ConsumeItemAsync(player, item, targetItem, fruitUsage))
+        if (!await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
             return false;
         }
@@ -35,7 +35,7 @@ public class ApplyMagicEffectConsumeHandler : BaseConsumeHandler
         var boost = player.Attributes!.CreateElement(boostDefinition);
 
         var effect = new MagicEffect(boost, effectDefinition, TimeSpan.FromSeconds(durationInSeconds));
-        await player.MagicEffectList.AddEffectAsync(effect);
+        await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
         return true;
     }
 }

@@ -23,7 +23,7 @@ public class QuestCancelAction
         if (questState?.ActiveQuest != null)
         {
             var quest = questState.ActiveQuest;
-            await questState.ClearAsync(player.PersistenceContext);
+            await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IQuestCancelledPlugIn>(p => p.QuestCancelledAsync(quest)).ConfigureAwait(false);
         }
     }

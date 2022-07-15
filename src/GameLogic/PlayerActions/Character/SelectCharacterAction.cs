@@ -20,7 +20,7 @@ public class SelectCharacterAction
         if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
         {
             player.Logger.LogError("Could not select character because of wrong current player state: {0}", player.PlayerState.CurrentState);
-            await player.DisconnectAsync();
+            await player.DisconnectAsync().ConfigureAwait(false);
             return;
         }
 
@@ -28,7 +28,7 @@ public class SelectCharacterAction
         if (player.SelectedCharacter is null)
         {
             player.Logger.LogError("Could not select character because character not found: [{0}]", characterName);
-            await player.DisconnectAsync();
+            await player.DisconnectAsync().ConfigureAwait(false);
         }
     }
 }

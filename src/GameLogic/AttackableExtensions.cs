@@ -146,7 +146,7 @@ public static class AttackableExtensions
             player.CreateMagicEffectPowerUp(skillEntry);
         }
 
-        await target.ApplyMagicEffectAsync(player, skillEntry.Skill!.MagicEffectDef!, skillEntry.BuffPowerUp!, skillEntry.PowerUpDuration!);
+        await target.ApplyMagicEffectAsync(player, skillEntry.Skill!.MagicEffectDef!, skillEntry.BuffPowerUp!, skillEntry.PowerUpDuration!).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -210,13 +210,13 @@ public static class AttackableExtensions
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number))
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(player, skillEntry);
+            await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
             applied = true;
         }
 
         if (modifier == Stats.LightningResistance)
         {
-            await target.MoveRandomlyAsync();
+            await target.MoveRandomlyAsync().ConfigureAwait(false);
             applied = true;
         }
 
@@ -256,13 +256,13 @@ public static class AttackableExtensions
             && duration is not null)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(attacker, effectDefinition, powerUp, duration);
+            await target.ApplyMagicEffectAsync(attacker, effectDefinition, powerUp, duration).ConfigureAwait(false);
             applied = true;
         }
 
         if (modifier == Stats.LightningResistance)
         {
-            await target.MoveRandomlyAsync();
+            await target.MoveRandomlyAsync().ConfigureAwait(false);
             applied = true;
         }
 
@@ -334,7 +334,7 @@ public static class AttackableExtensions
             var isNewYAllowed = newY is >= byte.MinValue and <= byte.MaxValue;
             if (isNewXAllowed && isNewYAllowed && terrain.AIgrid[newX, newY] == 1)
             {
-                await movable.MoveAsync(new Point((byte)newX, (byte)newY));
+                await movable.MoveAsync(new Point((byte)newX, (byte)newY)).ConfigureAwait(false);
             }
         }
     }
@@ -510,6 +510,6 @@ public static class AttackableExtensions
             ? new PoisonMagicEffect(powerUp, magicEffectDefinition, TimeSpan.FromSeconds(duration.Value), attacker, target)
             : new MagicEffect(powerUp, magicEffectDefinition, TimeSpan.FromSeconds(duration!.Value));
 
-        await target.MagicEffectList.AddEffectAsync(magicEffect);
+        await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
     }
 }

@@ -85,7 +85,7 @@ public class BuyNpcItemAction
             newItem.AssignValues(storeItem);
             newItem.ItemSlot = (byte)toSlot;
             await player.InvokeViewPlugInAsync<INpcItemBoughtPlugIn>(p => p.NpcItemBoughtAsync(newItem)).ConfigureAwait(false);
-            await player.Inventory.AddItemAsync(newItem);
+            await player.Inventory.AddItemAsync(newItem).ConfigureAwait(false);
             player.GameContext.PlugInManager.GetPlugInPoint<IItemBoughtFromMerchantPlugIn>()?.ItemBought(player, newItem, storeItem, player.OpenedNpc);
         }
 

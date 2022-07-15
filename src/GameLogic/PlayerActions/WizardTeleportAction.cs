@@ -28,7 +28,7 @@ public class WizardTeleportAction
             && player.CurrentMap!.Terrain.WalkMap[target.X, target.Y]
             && !player.CurrentMap.Terrain.SafezoneMap[target.X, target.Y]
             && player.IsInRange(target, skill.Range)
-            && await player.TryConsumeForSkillAsync(skill))
+            && await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
         {
             _ = Task.Run(() => player.TeleportAsync(target, skill));
         }

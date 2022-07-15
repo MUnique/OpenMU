@@ -36,6 +36,6 @@ public class ShowAreaSkillAnimationPlugIn : IShowAreaSkillAnimationPlugIn
     {
         var skillId = NumberConversionExtensions.ToUnsigned(skill.Number);
         var playerId = playerWhichPerformsSkill.GetId(this._player);
-        await this._player.Connection.SendAreaSkillAnimationAsync(skillId, playerId, point.X, point.Y, rotation);
+        await this._player.Connection.SendAreaSkillAnimationAsync(skillId, playerId, point.X, point.Y, rotation).ConfigureAwait(false);
     }
 }

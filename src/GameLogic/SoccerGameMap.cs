@@ -51,7 +51,7 @@ public class SoccerGameMap : GameMap
         this._score.PropertyChanged += this.OnScoreChanged;
 
         this.Ball.Initialize();
-        await this.RespawnAsync(this.Ball);
+        await this.RespawnAsync(this.Ball).ConfigureAwait(false);
         this.Ball.Moved += this.OnSoccerBallMovedAsync;
     }
 
@@ -88,7 +88,7 @@ public class SoccerGameMap : GameMap
         this._score = null;
         this.Ball.Moved -= this.OnSoccerBallMovedAsync;
         this.Ball.Initialize();
-        await this.RespawnAsync(this.Ball);
+        await this.RespawnAsync(this.Ball).ConfigureAwait(false);
 
         this.IsBattleOngoing = false;
     }
@@ -100,14 +100,14 @@ public class SoccerGameMap : GameMap
         {
             this._score!.IncreaseSecondGuildScore(20);
             this.Ball.Initialize();
-            await this.RespawnAsync(this.Ball);
+            await this.RespawnAsync(this.Ball).ConfigureAwait(false);
         }
         else if (!e.From.IsWithinBoundsOf(this.Definition.BattleZone.RightGoal!)
                  && e.To.IsWithinBoundsOf(this.Definition.BattleZone.RightGoal!))
         {
             this._score!.IncreaseFirstGuildScore(20);
             this.Ball.Initialize();
-            await this.RespawnAsync(this.Ball);
+            await this.RespawnAsync(this.Ball).ConfigureAwait(false);
         }
     }
 
@@ -118,7 +118,7 @@ public class SoccerGameMap : GameMap
         {
             if (e.PropertyName == nameof(this._score.HasEnded))
             {
-                await this.FinalizeBattleAsync();
+                await this.FinalizeBattleAsync().ConfigureAwait(false);
             }
         }
         catch (Exception ex)

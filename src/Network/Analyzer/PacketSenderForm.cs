@@ -81,11 +81,11 @@ public partial class PacketSenderForm : Form
 
                 if (this.toClientRadioButton.Checked)
                 {
-                    await this._connection.SendToClientAsync(data);
+                    await this._connection.SendToClientAsync(data).ConfigureAwait(false);
                 }
                 else
                 {
-                    await this._connection.SendToServerAsync(data);
+                    await this._connection.SendToServerAsync(data).ConfigureAwait(false);
                 }
             }
         }

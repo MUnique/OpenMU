@@ -47,13 +47,13 @@ public class LetterSendAction
             using (var context = player.GameContext.PersistenceContextProvider.CreateNewPlayerContext(player.GameContext.Configuration))
             {
                 letter = this.CreateLetter(context, player, receiver, message, title, rotation, animation);
-                if (!await context.CanSaveLetterAsync(letter))
+                if (!await context.CanSaveLetterAsync(letter).ConfigureAwait(false))
                 {
                     await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.ReceiverNotExists, letterId)).ConfigureAwait(false);
                     return;
                 }
 
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync().ConfigureAwait(false);
             }
 
             await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.Success, letterId)).ConfigureAwait(false);
@@ -70,7 +70,7 @@ public class LetterSendAction
         // Try to forward it to the player, if he is online
         if ((player.GameContext as IGameServerContext)?.FriendServer is { } friendServer)
         {
-            await friendServer.ForwardLetterAsync(letter);
+            await friendServer.ForwardLetterAsync(letter).ConfigureAwait(false);
         }
     }
 

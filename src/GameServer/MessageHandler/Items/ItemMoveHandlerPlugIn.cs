@@ -43,6 +43,6 @@ internal class ItemMoveHandlerPlugIn : IPacketHandlerPlugIn
         var toStorage = (ItemStorageKind)packet.Span[5 + itemSize];
         byte toSlot = packet.Span[6 + itemSize];
 
-        await this._moveAction.MoveItemAsync(player, message.FromSlot, message.FromStorage.Convert(), toSlot, toStorage.Convert());
+        await this._moveAction.MoveItemAsync(player, message.FromSlot, message.FromStorage.Convert(), toSlot, toStorage.Convert()).ConfigureAwait(false);
     }
 }

@@ -42,7 +42,7 @@ public class FriendServerController : ControllerBase
     [HttpPost(nameof(IEventPublisher.PlayerEnteredGameAsync))]
     public async Task PlayerEnteredGameAsync([FromBody] PlayerOnlineStateArguments data)
     {
-        await this._friendServer.PlayerEnteredGameAsync(data.ServerId, data.CharacterId, data.CharacterName);
+        await this._friendServer.PlayerEnteredGameAsync(data.ServerId, data.CharacterId, data.CharacterName).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class FriendServerController : ControllerBase
     [HttpPost(nameof(IEventPublisher.PlayerLeftGameAsync))]
     public async Task PlayerLeftGameAsync([FromBody] PlayerOnlineStateArguments data)
     {
-        await this._friendServer.PlayerLeftGameAsync(data.CharacterId, data.CharacterName);
+        await this._friendServer.PlayerLeftGameAsync(data.CharacterId, data.CharacterName).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class FriendServerController : ControllerBase
     [HttpPost(nameof(IFriendServer.SetPlayerVisibilityStateAsync))]
     public async Task SetPlayerInvisibilityStateAsync([FromBody] PlayerFriendOnlineStateArguments data)
     {
-        await this._friendServer.SetPlayerVisibilityStateAsync(data.ServerId, data.CharacterId, data.CharacterName, data.IsVisible);
+        await this._friendServer.SetPlayerVisibilityStateAsync(data.ServerId, data.CharacterId, data.CharacterName, data.IsVisible).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class FriendServerController : ControllerBase
     [HttpPost(nameof(IFriendServer.FriendResponseAsync))]
     public async Task FriendResponseAsync([FromBody] FriendResponseArguments data)
     {
-        await this._friendServer.FriendResponseAsync(data.CharacterName, data.FriendName, data.Accepted);
+        await this._friendServer.FriendResponseAsync(data.CharacterName, data.FriendName, data.Accepted).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -85,7 +85,7 @@ public class FriendServerController : ControllerBase
     [HttpPost(nameof(IFriendServer.FriendRequestAsync))]
     public async Task<bool> FriendRequestAsync([FromBody] RequestArguments data)
     {
-        return await this._friendServer.FriendRequestAsync(data.Requester, data.Receiver);
+        return await this._friendServer.FriendRequestAsync(data.Requester, data.Receiver).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public class FriendServerController : ControllerBase
     [HttpPost(nameof(IFriendServer.DeleteFriendAsync))]
     public async Task DeleteFriendAsync([FromBody] RequestArguments data)
     {
-        await this._friendServer.DeleteFriendAsync(data.Requester, data.Receiver);
+        await this._friendServer.DeleteFriendAsync(data.Requester, data.Receiver).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public class FriendServerController : ControllerBase
     [HttpPost(nameof(IFriendServer.CreateChatRoomAsync))]
     public async Task CreateChatRoomAsync([FromBody] RequestArguments data)
     {
-        await this._friendServer.CreateChatRoomAsync(data.Requester, data.Receiver);
+        await this._friendServer.CreateChatRoomAsync(data.Requester, data.Receiver).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -116,6 +116,6 @@ public class FriendServerController : ControllerBase
     [HttpPost(nameof(IFriendServer.InviteFriendToChatRoomAsync))]
     public async Task<bool> InviteFriendToChatRoomAsync([FromBody] ChatRoomInvitationArguments data)
     {
-        return await this._friendServer.InviteFriendToChatRoomAsync(data.CharacterName, data.FriendName, data.RoomNumber);
+        return await this._friendServer.InviteFriendToChatRoomAsync(data.CharacterName, data.FriendName, data.RoomNumber).ConfigureAwait(false);
     }
 }

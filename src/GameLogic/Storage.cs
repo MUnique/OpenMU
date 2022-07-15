@@ -114,7 +114,7 @@ public class Storage : IStorage
             return false;
         }
 
-        return await this.AddItemAsync((byte)freeSlot, item);
+        return await this.AddItemAsync((byte)freeSlot, item).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -168,7 +168,7 @@ public class Storage : IStorage
         // TODO: this should be a all-or-nothing action...
         foreach (var item in anotherStorage.Items)
         {
-            if (!await this.AddItemAsync(item))
+            if (!await this.AddItemAsync(item).ConfigureAwait(false))
             {
                 return false;
             }

@@ -27,7 +27,7 @@ public class UpdateVaultStatePlugIn : IUpdateVaultStatePlugIn
     /// <inheritdoc />
     public async ValueTask UpdateStateAsync()
     {
-        await this._player.Connection.SendVaultProtectionInformationAsync(this.GetVaultState());
+        await this._player.Connection.SendVaultProtectionInformationAsync(this.GetVaultState()).ConfigureAwait(false);
     }
 
     private VaultProtectionInformation.VaultProtectionState GetVaultState()

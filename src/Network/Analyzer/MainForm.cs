@@ -367,7 +367,7 @@ public partial class MainForm : Form
 
             if (this._proxiedConnections[index] is LiveConnection proxy)
             {
-                await proxy.DisconnectAsync();
+                await proxy.DisconnectAsync().ConfigureAwait(false);
             }
         }
         catch

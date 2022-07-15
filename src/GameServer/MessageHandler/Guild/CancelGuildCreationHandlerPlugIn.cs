@@ -28,6 +28,6 @@ internal class CancelGuildCreationHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        await this._answerAction.ProcessAnswerAsync(player, GuildMasterAnswerAction.Answer.Cancel);
+        await this._answerAction.ProcessAnswerAsync(player, GuildMasterAnswerAction.Answer.Cancel).ConfigureAwait(false);
     }
 }

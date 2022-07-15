@@ -29,7 +29,7 @@ public class ShowGuildWarDeclaredPlugIn : IShowGuildWarDeclaredPlugIn
     {
         if (this._player.GuildWarContext is { } guildWarContext)
         {
-            await this._player.Connection.SendGuildWarDeclaredAsync(guildWarContext.EnemyTeamName, guildWarContext.WarType.Convert(), (byte)guildWarContext.Team);
+            await this._player.Connection.SendGuildWarDeclaredAsync(guildWarContext.EnemyTeamName, guildWarContext.WarType.Convert(), (byte)guildWarContext.Team).ConfigureAwait(false);
         }
     }
 }

@@ -52,7 +52,7 @@ public class SellItemToNpcAction
             return;
         }
 
-        await this.SellItemAsync(player, item);
+        await this.SellItemAsync(player, item).ConfigureAwait(false);
     }
 
     private async ValueTask SellItemAsync(Player player, Item item)
@@ -62,7 +62,7 @@ public class SellItemToNpcAction
         if (player.TryAddMoney(sellingPrice))
         {
             player.Logger.LogDebug("Sold Item {0} for price: {1}", item, sellingPrice);
-            await player.Inventory!.RemoveItemAsync(item);
+            await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemSoldToNpcPlugIn>(p => p.ItemSoldToNpcAsync(true)).ConfigureAwait(false);
 
             player.GameContext.PlugInManager.GetPlugInPoint<IItemSoldToMerchantPlugIn>()?.ItemSold(player, item, player.OpenedNpc!);

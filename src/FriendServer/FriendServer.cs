@@ -59,21 +59,21 @@ public class FriendServer : IFriendServer
         bool friendIsNew;
         using (var context = this._persistenceContextProvider.CreateNewFriendServerContext())
         {
-            var friend = await context.GetFriendByNamesAsync(playerName, friendName);
+            var friend = await context.GetFriendByNamesAsync(playerName, friendName).ConfigureAwait(false);
             friendIsNew = friend is null;
             if (friendIsNew)
             {
-                friend = await context.CreateNewFriendAsync(playerName, friendName);
+                friend = await context.CreateNewFriendAsync(playerName, friendName).ConfigureAwait(false);
                 friend.Accepted = false;
                 friend.RequestOpen = true;
-                saveSuccess = await context.SaveChangesAsync();
+                saveSuccess = await context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
 
         if (saveSuccess && this.OnlineFriends.TryGetValue(friendName, out var onlineFriend))
         {
             // Friend is online, so we directly send him a request.
-            await this._friendNotifier.FriendRequestAsync(playerName, friendName, onlineFriend.ServerId);
+            await this._friendNotifier.FriendRequestAsync(playerName, friendName, onlineFriend.ServerId).ConfigureAwait(false);
         }
 
         return friendIsNew && saveSuccess;
@@ -88,8 +88,8 @@ public class FriendServer : IFriendServer
         }
 
         using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
-        await context.DeleteAsync(playerName, friendName);
-        await context.SaveChangesAsync();
+        await context.DeleteAsync(playerName, friendName).ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -97,7 +97,7 @@ public class FriendServer : IFriendServer
     {
         using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
 #pragma warning disable S2234 // The parameters are passed correctly
-        var requester = await context.GetFriendByNamesAsync(friendName, characterName);
+        var requester = await context.GetFriendByNamesAsync(friendName, characterName).ConfigureAwait(false);
 #pragma warning restore S2234
         if (requester is null)
         {
@@ -109,15 +109,15 @@ public class FriendServer : IFriendServer
 
         if (accepted)
         {
-            var responder = await context.GetFriendByNamesAsync(characterName, friendName) ?? await context.CreateNewFriendAsync(characterName, friendName);
+            var responder = await context.GetFriendByNamesAsync(characterName, friendName).ConfigureAwait(false) ?? await context.CreateNewFriendAsync(characterName, friendName).ConfigureAwait(false);
             responder.RequestOpen = false;
             responder.Accepted = true;
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
             this.AddSubscriptions(friendName, characterName);
         }
         else
         {
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 
@@ -143,15 +143,15 @@ public class FriendServer : IFriendServer
         //       Instead of calling the chat server directly here, we could publish a request
         //       to create the chat room to an pub/sub-system. An available chat server could then
         //       process the request and notify the corresponding game servers.
-        var roomId = await this._chatServer.CreateChatRoomAsync();
-        if (await this._chatServer.RegisterClientAsync(roomId, playerName) is { } authenticationInfoPlayer)
+        var roomId = await this._chatServer.CreateChatRoomAsync().ConfigureAwait(false);
+        if (await this._chatServer.RegisterClientAsync(roomId, playerName).ConfigureAwait(false) is { } authenticationInfoPlayer)
         {
-            await this._friendNotifier.ChatRoomCreatedAsync(player.ServerId, authenticationInfoPlayer, friendName);
+            await this._friendNotifier.ChatRoomCreatedAsync(player.ServerId, authenticationInfoPlayer, friendName).ConfigureAwait(false);
         }
 
-        if (await this._chatServer.RegisterClientAsync(roomId, friendName) is { } authenticationInfoFriend)
+        if (await this._chatServer.RegisterClientAsync(roomId, friendName).ConfigureAwait(false) is { } authenticationInfoFriend)
         {
-            await this._friendNotifier.ChatRoomCreatedAsync(friend.ServerId, authenticationInfoFriend, playerName);
+            await this._friendNotifier.ChatRoomCreatedAsync(friend.ServerId, authenticationInfoFriend, playerName).ConfigureAwait(false);
         }
     }
 
@@ -178,10 +178,10 @@ public class FriendServer : IFriendServer
             return false;
         }
 
-        var authenticationInfoFriend = await this._chatServer.RegisterClientAsync(roomId, friendName);
+        var authenticationInfoFriend = await this._chatServer.RegisterClientAsync(roomId, friendName).ConfigureAwait(false);
         if (authenticationInfoFriend is not null)
         {
-            await this._friendNotifier.ChatRoomCreatedAsync(friend.ServerId, authenticationInfoFriend, playerName);
+            await this._friendNotifier.ChatRoomCreatedAsync(friend.ServerId, authenticationInfoFriend, playerName).ConfigureAwait(false);
             return true;
         }
 
@@ -193,28 +193,28 @@ public class FriendServer : IFriendServer
     public async ValueTask PlayerEnteredGameAsync(byte serverId, Guid characterId, string characterName)
     {
         using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
-        var friends = await context.GetFriendNamesAsync(characterId);
-        var requesters = await context.GetOpenFriendRequesterNamesAsync(characterId);
+        var friends = await context.GetFriendNamesAsync(characterId).ConfigureAwait(false);
+        var requesters = await context.GetOpenFriendRequesterNamesAsync(characterId).ConfigureAwait(false);
         var initializationData = new MessengerInitializationData(
             characterName,
             friends.ToImmutableList(),
             requesters.ToImmutableList());
 
-        await this._friendNotifier.InitializeMessengerAsync(serverId, initializationData);
+        await this._friendNotifier.InitializeMessengerAsync(serverId, initializationData).ConfigureAwait(false);
 
-        await this.SetOnlineStateAsync(characterId, characterName, serverId, context);
+        await this.SetOnlineStateAsync(characterId, characterName, serverId, context).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async ValueTask PlayerLeftGameAsync(Guid characterId, string characterName)
     {
-        await this.SetOnlineStateAsync(characterId, characterName, OfflineServerId, null);
+        await this.SetOnlineStateAsync(characterId, characterName, OfflineServerId, null).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async ValueTask SetPlayerVisibilityStateAsync(byte serverId, Guid characterId, string characterName, bool isVisible)
     {
-        await this.SetOnlineStateAsync(characterId, characterName, isVisible ? serverId : InvisibleServerId, null);
+        await this.SetOnlineStateAsync(characterId, characterName, isVisible ? serverId : InvisibleServerId, null).ConfigureAwait(false);
     }
 
     private async ValueTask SetOnlineStateAsync(Guid characterId, string characterName, int serverId, IFriendServerContext? usedContext)
@@ -236,7 +236,7 @@ public class FriendServer : IFriendServer
 
             try
             {
-                var friends = await context.GetFriendsAsync(characterId);
+                var friends = await context.GetFriendsAsync(characterId).ConfigureAwait(false);
                 this.AddSubscriptions(observer, friends);
             }
             finally

@@ -41,15 +41,15 @@ public class EncryptionBenchmarks
         var readBuffer = new byte[256];
         for (int i = 0; i < PacketCount; i++)
         {
-            await pipelinedEncryptor.Writer.WriteAsync(this._c3Packet);
-            await pipelinedEncryptor.Writer.FlushAsync();
-            var readResult = await pipe.Reader.ReadAsync();
+            await pipelinedEncryptor.Writer.WriteAsync(this._c3Packet).ConfigureAwait(false);
+            await pipelinedEncryptor.Writer.FlushAsync().ConfigureAwait(false);
+            var readResult = await pipe.Reader.ReadAsync().ConfigureAwait(false);
             readResult.Buffer.CopyTo(readBuffer);
             //// In the server, I would process the readBuffer here
             pipe.Reader.AdvanceTo(readResult.Buffer.Start, readResult.Buffer.End);
         }
 
-        pipelinedEncryptor.Writer.Complete();
+        await pipelinedEncryptor.Writer.CompleteAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -64,14 +64,14 @@ public class EncryptionBenchmarks
         var readBuffer = new byte[256];
         for (int i = 0; i < PacketCount; i++)
         {
-            await pipelinedEncryptor.Writer.WriteAsync(this._c1Packet);
-            await pipelinedEncryptor.Writer.FlushAsync();
-            var readResult = await pipe.Reader.ReadAsync();
+            await pipelinedEncryptor.Writer.WriteAsync(this._c1Packet).ConfigureAwait(false);
+            await pipelinedEncryptor.Writer.FlushAsync().ConfigureAwait(false);
+            var readResult = await pipe.Reader.ReadAsync().ConfigureAwait(false);
             readResult.Buffer.CopyTo(readBuffer);
             //// In the client/server, I would process the readBuffer here
             pipe.Reader.AdvanceTo(readResult.Buffer.Start, readResult.Buffer.End);
         }
 
-        pipelinedEncryptor.Writer.Complete();
+        await pipelinedEncryptor.Writer.CompleteAsync().ConfigureAwait(false);
     }
 }

@@ -30,6 +30,6 @@ internal class SetVaultPinPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         SetVaultPin message = packet;
-        await this._setVaultPinAction.SetPinAsync(player, message.Pin.ToString(), message.Password);
+        await this._setVaultPinAction.SetPinAsync(player, message.Pin.ToString(), message.Password).ConfigureAwait(false);
     }
 }

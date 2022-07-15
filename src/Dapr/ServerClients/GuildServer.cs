@@ -35,7 +35,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.GuildExistsAsync), guildName);
+            return await this._daprClient.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.GuildExistsAsync), guildName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -49,7 +49,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, Guild?>(this._targetAppId, nameof(this.GetGuildAsync), guildId);
+            return await this._daprClient.InvokeMethodAsync<uint, Guild?>(this._targetAppId, nameof(this.GetGuildAsync), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -63,7 +63,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<string, uint>(this._targetAppId, nameof(this.GetGuildIdByNameAsync), guildName);
+            return await this._daprClient.InvokeMethodAsync<string, uint>(this._targetAppId, nameof(this.GetGuildIdByNameAsync), guildName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -77,7 +77,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<GuildCreationArguments, bool>(this._targetAppId, nameof(this.CreateGuildAsync), new GuildCreationArguments(name, masterName, masterId, logo, serverId));
+            return await this._daprClient.InvokeMethodAsync<GuildCreationArguments, bool>(this._targetAppId, nameof(this.CreateGuildAsync), new GuildCreationArguments(name, masterName, masterId, logo, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -91,7 +91,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateGuildMemberAsync), new GuildMemberCreationArguments(guildId, characterId, characterName, role, serverId));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateGuildMemberAsync), new GuildMemberCreationArguments(guildId, characterId, characterName, role, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -104,7 +104,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.ChangeGuildMemberPositionAsync), new GuildMemberRoleChangeArguments(guildId, characterId, role));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.ChangeGuildMemberPositionAsync), new GuildMemberRoleChangeArguments(guildId, characterId, role)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -131,7 +131,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, IImmutableList<GuildListEntry>>(this._targetAppId, nameof(this.GetGuildListAsync), guildId);
+            return await this._daprClient.InvokeMethodAsync<uint, IImmutableList<GuildListEntry>>(this._targetAppId, nameof(this.GetGuildListAsync), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -145,7 +145,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.KickMemberAsync), new GuildMemberArguments(guildId, playerName));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.KickMemberAsync), new GuildMemberArguments(guildId, playerName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -158,7 +158,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<Guid, GuildPosition>(this._targetAppId, nameof(this.GetGuildPositionAsync), characterId);
+            return await this._daprClient.InvokeMethodAsync<Guid, GuildPosition>(this._targetAppId, nameof(this.GetGuildPositionAsync), characterId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -172,7 +172,7 @@ public class GuildServer : IGuildServer
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.IncreaseGuildScoreAsync), guildId);
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.IncreaseGuildScoreAsync), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
