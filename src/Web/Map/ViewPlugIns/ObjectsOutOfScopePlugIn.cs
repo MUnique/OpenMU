@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections.Concurrent;
-
 namespace MUnique.OpenMU.Web.Map.ViewPlugIns;
 
+using System.Collections.Concurrent;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.World;

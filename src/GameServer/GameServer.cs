@@ -141,12 +141,6 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         }
     }
 
-    /// <inheritdoc />
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        await this.ShutdownAsync().ConfigureAwait(false);
-    }
-
     /// <inheritdoc/>
     public async ValueTask StartAsync()
     {
@@ -171,6 +165,12 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
             this.ServerState = ServerState.Stopped;
         }
+    }
+
+    /// <inheritdoc />
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await this.ShutdownAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -268,12 +268,6 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
         await player.InvokeViewPlugInAsync<IAddToLetterListPlugIn>(p => p.AddToLetterListAsync(letter, (ushort)letterIndex, true)).ConfigureAwait(false);
     }
-
-    ///// <inheritdoc/>
-    //public bool IsPlayerOnline(string playerName)
-    //{
-    //    return this._gameContext.GetPlayerByCharacterName(playerName) != null;
-    //}
 
     /// <inheritdoc />
     public async ValueTask<bool> DisconnectPlayerAsync(string playerName)

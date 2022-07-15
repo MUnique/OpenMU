@@ -61,13 +61,13 @@ public class ChatServer : IChatServer
     }
 
     /// <inheritdoc />
-    public Task StopAsync(CancellationToken cancellationToken)
+    public ValueTask StartAsync()
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc />
-    public ValueTask StartAsync()
+    public Task StopAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

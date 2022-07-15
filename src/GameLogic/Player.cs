@@ -47,8 +47,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private GameMap? _currentMap;
 
-    private IDisposable? _characterLoggingScope;
-
     private IDisposable? _accountLoggingScope;
 
     private Account? _account;
@@ -66,7 +64,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.MagicEffectList = new MagicEffectsList(this);
         this._appearanceData = new AppearanceDataAdapter(this);
-        this.PlayerEnteredWorld += this.OnPlayerEnteredWorldAsync;
         this.PlayerState.StateChanged += (sender, args) => this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChanged(this);
         this.PlayerState.StateChanges += (sender, args) => this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChanging(this, args);
         this._observerToWorldViewAdapter = new ObserverToWorldViewAdapter(this, this.InfoRange);
@@ -146,34 +143,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets or sets the selected character.
     /// </summary>
-    public Character? SelectedCharacter
-    {
-        get => this._selectedCharacter;
-
-        set
-        {
-            if (this._selectedCharacter == value)
-            {
-                return;
-            }
-
-            if (value is null)
-            {
-                this._appearanceData.RaiseAppearanceChanged();
-                this.PlayerLeftWorld?.Invoke(this).AsTask().WaitAndUnwrapException();
-                this._selectedCharacter = null;
-                this._characterLoggingScope?.Dispose();
-                this._characterLoggingScope = null;
-            }
-            else
-            {
-                this._selectedCharacter = value;
-                this._characterLoggingScope = this.Logger.BeginScope("Character: {Name}", this._selectedCharacter.Name);
-                this.PlayerEnteredWorld?.Invoke(this).AsTask().WaitAndUnwrapException();
-                this._appearanceData.RaiseAppearanceChanged();
-            }
-        }
-    }
+    public Character? SelectedCharacter => this._selectedCharacter;
 
     /// <summary>
     /// Gets or sets the pose of the currently selected character.
@@ -397,6 +367,32 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets the mini game, which the player has currently entered.
     /// </summary>
     public MiniGameContext? CurrentMiniGame { get; set; }
+
+    /// <summary>
+    /// Sets the selected character.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    public async ValueTask SetSelectedCharacterAsync(Character? character)
+    {
+        if (this._selectedCharacter == character)
+        {
+            return;
+        }
+
+        if (character is null)
+        {
+            this._appearanceData.RaiseAppearanceChanged();
+            await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
+            this._selectedCharacter = null;
+        }
+        else
+        {
+            this._selectedCharacter = character;
+            await this.OnPlayerEnteredWorldAsync().ConfigureAwait(false);
+            await this.PlayerEnteredWorld.SafeInvokeAsync(this).ConfigureAwait(false);
+            this._appearanceData.RaiseAppearanceChanged();
+        }
+    }
 
     /// <summary>
     /// Will be called when an item has been picked up by player.
@@ -1170,9 +1166,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return $"Account: [{accountName}], Character:[{characterName}]";
     }
 
+    /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
-
         this.PersistenceContext.Dispose();
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         if (this.Party is { } party)
@@ -1184,7 +1180,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._observerToWorldViewAdapter.Dispose();
         this._walker.Dispose();
         this.MagicEffectList.Dispose();
-    
+        this._respawnAfterDeathCts?.Dispose();
+
+        this.PlayerDisconnected = null;
+        this.PlayerEnteredWorld = null;
+        this.PlayerLeftWorld = null;
+        this.PlayerPickedUpItem = null;
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
@@ -1455,7 +1456,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return null;
     }
 
-    private async ValueTask OnPlayerEnteredWorldAsync(Player p)
+    private async ValueTask OnPlayerEnteredWorldAsync()
     {
         this.Attributes = new ItemAwareAttributeSystem(this.SelectedCharacter!);
         this.Inventory = new InventoryStorage(this, this.GameContext);

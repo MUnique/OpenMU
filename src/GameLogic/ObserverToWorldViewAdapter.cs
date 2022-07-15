@@ -2,13 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx;
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
-using System.Threading;
+using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.World;
 
@@ -20,8 +17,6 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
     private readonly AsyncReaderWriterLock _observingLock = new ();
     private readonly ISet<IObservable> _observingObjects = new HashSet<IObservable>();
     private readonly IWorldObserver _adaptee;
-
-    private bool _isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObserverToWorldViewAdapter" /> class.
@@ -43,7 +38,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
     /// <inheritdoc/>
     public async ValueTask LocateableAddedAsync(ILocateable item)
     {
-        if (this._isDisposed)
+        if (this.IsDisposed || this.IsDisposing)
         {
             return;
         }
@@ -97,7 +92,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
     /// <inheritdoc/>
     public async ValueTask LocateableRemovedAsync(ILocateable item)
     {
-        if (this._isDisposed)
+        if (this.IsDisposed || this.IsDisposing)
         {
             return;
         }
@@ -140,7 +135,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
     /// <inheritdoc/>
     public async ValueTask LocateablesOutOfScopeAsync(IEnumerable<ILocateable> oldObjects)
     {
-        if (this._isDisposed)
+        if (this.IsDisposed || this.IsDisposing)
         {
             return;
         }
@@ -177,7 +172,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
     /// <inheritdoc/>
     public async ValueTask NewLocateablesInScopeAsync(IEnumerable<ILocateable> newObjects)
     {
-        if (this._isDisposed)
+        if (this.IsDisposed || this.IsDisposing)
         {
             return;
         }

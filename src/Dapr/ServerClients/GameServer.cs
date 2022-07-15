@@ -16,7 +16,6 @@ public class GameServer : IGameServer
 {
     private readonly DaprClient _client;
     private readonly string _targetAppId;
-    private Guid? _configurationId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServer"/> class.
@@ -35,7 +34,7 @@ public class GameServer : IGameServer
 
         async Task InitAsync()
         {
-            this._configurationId = await this._client.InvokeMethodAsync<Guid>(this._targetAppId, $"get{nameof(this.ConfigurationId)}").ConfigureAwait(false);
+            this.ConfigurationId = await this._client.InvokeMethodAsync<Guid>(this._targetAppId, $"get{nameof(this.ConfigurationId)}").ConfigureAwait(false);
         }
 
         _ = InitAsync();

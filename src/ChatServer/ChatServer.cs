@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Net;
-
 namespace MUnique.OpenMU.ChatServer;
 
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Timers;
@@ -26,7 +25,6 @@ public sealed class ChatServer : IChatServer, IDisposable
     private readonly ILogger<ChatServer> _logger;
     private readonly ILoggerFactory _loggerFactory;
     private readonly PlugInManager _plugInManager;
-    private readonly IIpAddressResolver _addressResolver;
 
     private readonly RandomNumberGenerator _randomNumberGenerator;
 
@@ -56,10 +54,9 @@ public sealed class ChatServer : IChatServer, IDisposable
         this._loggerFactory = loggerFactory;
         this._plugInManager = plugInManager;
         this._logger = loggerFactory.CreateLogger<ChatServer>();
-        this._addressResolver = addressResolver;
         this._manager = new ChatRoomManager(loggerFactory);
         this._randomNumberGenerator = RandomNumberGenerator.Create();
-        this._resolveAddressTask = this._addressResolver.ResolveIPv4Async().AsTask();
+        this._resolveAddressTask = addressResolver.ResolveIPv4Async().AsTask();
     }
 
     /// <inheritdoc/>
@@ -132,6 +129,40 @@ public sealed class ChatServer : IChatServer, IDisposable
         await this.StartAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Starts the listener of this chat server instance.
+    /// </summary>
+    public async ValueTask StartAsync()
+    {
+        if (this.ServerState != ServerState.Stopped)
+        {
+            return;
+        }
+
+        this._logger.LogInformation("Begin starting");
+        var oldState = this.ServerState;
+        this.ServerState = OpenMU.Interfaces.ServerState.Starting;
+        try
+        {
+            this.CreateListeners();
+            foreach (var listener in this._listeners)
+            {
+                listener.Start();
+            }
+
+            this.CreateCleanupTimers();
+
+            this.ServerState = OpenMU.Interfaces.ServerState.Started;
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error while starting");
+            this.ServerState = oldState;
+        }
+
+        this._logger.LogInformation("Finished starting");
+    }
+
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
@@ -183,40 +214,6 @@ public sealed class ChatServer : IChatServer, IDisposable
             listener.ClientAccepting += this.ChatClientAcceptingAsync;
             this._listeners.Add(listener);
         }
-    }
-
-    /// <summary>
-    /// Starts the listener of this chat server instance.
-    /// </summary>
-    public async ValueTask StartAsync()
-    {
-        if (this.ServerState != ServerState.Stopped)
-        {
-            return;
-        }
-
-        this._logger.LogInformation("Begin starting");
-        var oldState = this.ServerState;
-        this.ServerState = OpenMU.Interfaces.ServerState.Starting;
-        try
-        {
-            this.CreateListeners();
-            foreach (var listener in this._listeners)
-            {
-                listener.Start();
-            }
-
-            this.CreateCleanupTimers();
-
-            this.ServerState = OpenMU.Interfaces.ServerState.Started;
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Error while starting");
-            this.ServerState = oldState;
-        }
-
-        this._logger.LogInformation("Finished starting");
     }
 
     /// <inheritdoc/>

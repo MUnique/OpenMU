@@ -103,15 +103,15 @@ internal class ManageableServerClient : IManageableServer
     }
 
     /// <inheritdoc/>
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(IManageableServer.ShutdownAsync), cancellationToken);
-    }
-
-    /// <inheritdoc/>
     public async ValueTask StartAsync()
     {
         await this.StartAsync(default).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(IManageableServer.ShutdownAsync), cancellationToken);
     }
 
     /// <inheritdoc/>

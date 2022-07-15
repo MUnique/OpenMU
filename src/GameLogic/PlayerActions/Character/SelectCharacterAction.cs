@@ -24,7 +24,7 @@ public class SelectCharacterAction
             return;
         }
 
-        player.SelectedCharacter = player.Account?.Characters.FirstOrDefault(c => c.Name.Equals(characterName));
+        await player.SetSelectedCharacterAsync(player.Account?.Characters.FirstOrDefault(c => c.Name.Equals(characterName))).ConfigureAwait(false);
         if (player.SelectedCharacter is null)
         {
             player.Logger.LogError("Could not select character because character not found: [{0}]", characterName);

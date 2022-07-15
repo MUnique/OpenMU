@@ -20,7 +20,7 @@ public class LogoutAction
     {
         player.CurrentMap?.RemoveAsync(player);
         player.Party?.KickMySelfAsync(player);
-        player.SelectedCharacter = null;
+        await player.SetSelectedCharacterAsync(null).ConfigureAwait(false);
         player.MagicEffectList.ClearAllEffects();
         await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
         if (logoutType == LogoutType.CloseGame)

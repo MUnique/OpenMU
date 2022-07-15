@@ -76,7 +76,7 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
             {
                 UnlockFlags = unlockFlags,
                 CharacterCount = (byte)account.Characters.Count,
-                IsVaultExtended = account.IsVaultExtended
+                IsVaultExtended = account.IsVaultExtended,
             };
 
             var j = 0;

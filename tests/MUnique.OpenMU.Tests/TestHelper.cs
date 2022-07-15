@@ -126,7 +126,7 @@ public static class TestHelper
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
-        player.SelectedCharacter = character;
+        await player.SetSelectedCharacterAsync(character).ConfigureAwait(false);
 
         return player;
     }
