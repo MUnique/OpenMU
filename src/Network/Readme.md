@@ -34,6 +34,16 @@ As you might know, every MU Online data packet has the following structure:
   difficult. However, this counter is not included in the packet given to the
   PacketReceived-EventHandler.
 
+There are two 'flavours' of packet structs in the ```MUnique.OpenMU.Network.Packets```
+project:
+  * ref-structs with names ending with 'Ref', which wrap ```Span<byte>```. They
+    are more of a help when sending packets. The benefit is, that they never
+    cause memory allocations on the heap.
+  * normal structs, which wrap ```Memory<byte>``` without the 'Ref' suffix. They
+    allow easier access in async code, where ref-structs are not allowed.
+
+You can cast the structs to Memory or Span back and forth implicitly for easy usage.
+
 ## Pipes
 
 For performance reasons, we make use of Pipes (System.IO.Pipelines) to process
@@ -69,29 +79,65 @@ the next packet, is activated.
 
 ## Sending data
 
-There is an extension method (```ConnectionExtensions.StartSafeWrite(this IConnection connection, byte packetType, int expectedPacketSize)```)
-to make it as easy as possible to safely send data by writing to a pipe in
-scenarios where multiple threads want to do that.
+There are extension methods for all known and "simple" network packets
+in the ```MUnique.OpenMU.Network.Packets``` project and their sub-namespaces 
+(e.g. ClientToServer) to make it as easy as possible to send data thread-safe.
 
 A simple example of the usage:
 
 ```csharp
-// The next line requests 5 bytes from the pipe writer of the connection,
-// locks the connection and sets the header bytes for packet type and
-// length (e.g. C1 05).
-// Disposing the writer is releasing the lock, so you don't want to keep
-// this open too long.
-using (var writer = connection.StartSafeWrite(0xC1, 5)) 
-{
-    var packet = writer.Span;
-    packet[2] = 0x40; // The packet type (e.g. 0x40 for 'show party request')
-    packet[3] = requester.Id.GetHighByte();
-    packet[4] = requester.Id.GetLowByte();
+// assuming 'connection' is your IConnection instance:
+await connection.SendPublicChatMessageAsync("Bob", "Hello Alice, how are you?").ConfigureAwait(false);
+```
 
-    // Commit advances the pipe writer by 5 bytes.
-    // An overload exists to advance it by a custom length for dynamically
-    // sized packets.
-    writer.Commit();
+For more complicated packets, e.g. when arrays of structures are involved, the
+following pattern in this example code is helpful:
+
+```csharp
+// Again, assume that connection is your IConnection instance. Additionally,
+// assume that objectIds is a list of objects which leave the scope of a player.
+
+public void SendObjectsOutOfScope(List<ushort> objectIds)
+{
+    // Write takes a span from the connection.Output and writes data into it
+    // by wrapping the ref packet struct around it.
+    int Write()
+    {
+        var count = objectIds.Length;
+        var size = MapObjectOutOfScopeRef.GetRequiredSize(count);
+        var span = connection.Output.GetSpan(size)[..size];
+        var packet = new MapObjectOutOfScopeRef(span)
+        {
+            ObjectCount = (byte)count,
+        };
+
+        for (int i = 0; i < count; i++)
+        {
+            var objectIdStruct = packet[i];
+            objectIdStruct.Id = objectIds[i];
+            i++;
+        }
+
+        return size;
+    }
+
+    // SendAsync is an extension method which takes the local non-async method 'Write'.
+    await connection.SendAsync(Write).ConfigureAwait(false);
+}
+```
+
+## Reading data
+
+Reading data is even easier. If you have a ```Memory<byte>``` of your data,
+just implicitly cast it to your wanted packet structure.
+
+Example:
+```csharp
+/// <inheritdoc/>
+public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
+{
+    ConsumeItemRequest message = packet;
+    await this._consumeAction.HandleConsumeRequestAsync(player, message.ItemSlot, message.TargetSlot, Convert(message.FruitConsumption)).ConfigureAwait(false);
 }
 ```
 
