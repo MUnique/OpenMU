@@ -157,9 +157,10 @@ public static class ArrayExtensions
     /// <returns>The sub type of the packet.</returns>
     public static byte? GetPacketSubType(this Span<byte> packet)
     {
-        if (packet.Length > packet.GetPacketHeaderSize())
+        var subTypeIndex = packet.GetPacketHeaderSize() + 1;
+        if (packet.Length > subTypeIndex)
         {
-            return packet[packet.GetPacketHeaderSize() + 1];
+            return packet[subTypeIndex];
         }
 
         return null;
