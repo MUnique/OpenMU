@@ -19,7 +19,7 @@ public class ItemStackAction
     /// <param name="player">The player which is stacking.</param>
     /// <param name="stackId">The id of the stacking.</param>
     /// <param name="stackSize">The size of the requested stack.</param>
-    public void StackItems(Player player, byte stackId, byte stackSize)
+    public async ValueTask StackItemsAsync(Player player, byte stackId, byte stackSize)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (!this.IsCorrectNpcOpened(player))
@@ -43,20 +43,20 @@ public class ItemStackAction
         {
             foreach (Item jewel in jewels)
             {
-                player.Inventory.RemoveItem(jewel);
-                player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(jewel.ItemSlot);
+                await player.Inventory.RemoveItemAsync(jewel).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(jewel.ItemSlot)).ConfigureAwait(false);
             }
 
             var stacked = player.PersistenceContext.CreateNew<Item>();
             stacked.Definition = mix.MixedJewel;
             stacked.Level = (byte)(stackSize / 10);
             stacked.Durability = 1;
-            player.Inventory.AddItem(stacked);
-            player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(stacked);
+            await player.Inventory.AddItemAsync(stacked).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(stacked)).ConfigureAwait(false);
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("You are lacking of Jewels.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You are lacking of Jewels.", MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 
@@ -66,10 +66,11 @@ public class ItemStackAction
     /// <param name="player">The player.</param>
     /// <param name="stackId">The stack identifier.</param>
     /// <param name="slot">The slot.</param>
-    public void UnstackItems(Player player, byte stackId, byte slot)
+    public async ValueTask UnstackItemsAsync(Player player, byte stackId, byte slot)
     {
         if (!this.IsCorrectNpcOpened(player))
         {
+            await player.DisconnectAsync().ConfigureAwait(false);
             return;
         }
 
@@ -82,13 +83,13 @@ public class ItemStackAction
         var stacked = player.Inventory?.GetItem(slot);
         if (stacked is null)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Stacked Jewel not found.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Stacked Jewel not found.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
         if (stacked.Definition != mix.SingleJewel)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Selected Item is not a stacked Jewel.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Selected Item is not a stacked Jewel.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
@@ -97,20 +98,20 @@ public class ItemStackAction
         var freeSlots = player.Inventory!.FreeSlots.Take(pieces).ToList();
         if (freeSlots.Count < pieces)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Inventory got not enough Space.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Inventory got not enough Space.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
-        player.Inventory.RemoveItem(stacked);
-        player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(slot);
+        await player.Inventory.RemoveItemAsync(stacked).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
         foreach (var freeSlot in freeSlots)
         {
             var jewel = player.PersistenceContext.CreateNew<Item>();
             jewel.Definition = mix.SingleJewel;
             jewel.Durability = 1;
             jewel.ItemSlot = freeSlot;
-            player.Inventory.AddItem(freeSlot, jewel);
-            player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(jewel);
+            await player.Inventory.AddItemAsync(freeSlot, jewel).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(jewel)).ConfigureAwait(false);
         }
     }
 
@@ -119,7 +120,6 @@ public class ItemStackAction
         if (player.OpenedNpc is null || player.OpenedNpc.Definition.NpcWindow != NpcWindow.Lahap)
         {
             player.Logger.LogWarning("Probably Hacker tried to Mix/Unmix Jewels without talking to Lahap. Dupe Method. Acc: [{0}] Character: [{1}]", player.Account?.LoginName, player.SelectedCharacter?.Name);
-            player.Disconnect();
             return false;
         }
 

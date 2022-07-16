@@ -38,18 +38,19 @@ public partial class NavMenu
     /// </summary>
     private string NavMenuCssClass => this._collapseNavMenu ? "collapse" : string.Empty;
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-        this.SetupService.DatabaseInitialized += this.OnDatabaseInitialized;
-        Task.Run(this.LoadGameConfigurationAsync);
+        await base.OnInitializedAsync().ConfigureAwait(false);
+        this.SetupService.DatabaseInitialized += this.OnDatabaseInitializedAsync;
+        _ = Task.Run(this.LoadGameConfigurationAsync);
     }
 
-    private void OnDatabaseInitialized(object? sender, EventArgs args)
+    private async ValueTask OnDatabaseInitializedAsync()
     {
         // We have to reload, because the old links are not correct anymore.
         this.GameConfiguration = null;
-        Task.Run(this.LoadGameConfigurationAsync);
+        await this.LoadGameConfigurationAsync().ConfigureAwait(false);
     }
 
     private async Task LoadGameConfigurationAsync()
@@ -60,12 +61,12 @@ public partial class NavMenu
         }
 
         this._isLoadingConfig = true;
-        await this.InvokeAsync(this.StateHasChanged);
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
 
         try
         {
             using var context = this.PersistenceContextProvider.CreateNewConfigurationContext();
-            this.GameConfiguration = context.Get<GameConfiguration>().FirstOrDefault();
+            this.GameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).FirstOrDefault();
         }
         catch
         {
@@ -74,7 +75,7 @@ public partial class NavMenu
 
         this._onlyShowSetup = this.GameConfiguration is null;
         this._isLoadingConfig = false;
-        await this.InvokeAsync(this.StateHasChanged);
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
     }
 
     private void ToggleNavMenu()

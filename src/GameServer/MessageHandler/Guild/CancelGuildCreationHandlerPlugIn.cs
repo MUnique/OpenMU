@@ -26,8 +26,8 @@ internal class CancelGuildCreationHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => CancelGuildCreation.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        this._answerAction.ProcessAnswer(player, GuildMasterAnswerAction.Answer.Cancel);
+        await this._answerAction.ProcessAnswerAsync(player, GuildMasterAnswerAction.Answer.Cancel).ConfigureAwait(false);
     }
 }

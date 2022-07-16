@@ -28,7 +28,7 @@ public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player gameMaster, PkChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, PkChatCommandArgs arguments)
     {
         if (arguments.Level < MinPkLevel || arguments.Level > MaxPkLevel)
         {
@@ -44,7 +44,7 @@ public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
         targetPlayer.SelectedCharacter!.State = HeroState.Normal + arguments.Level;
         targetPlayer.SelectedCharacter!.StateRemainingSeconds = (int)TimeSpan.FromHours(arguments.Count).TotalSeconds;
         targetPlayer.SelectedCharacter!.PlayerKillCount = arguments.Count;
-        targetPlayer.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<IUpdateCharacterHeroStatePlugIn>()?.UpdateCharacterHeroState(targetPlayer), true);
+        await targetPlayer.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(targetPlayer), true).ConfigureAwait(false);
 
         var message = string.Format(
             "The state of {0} has been changed to {1} with {2} murders for {3} minutes",
@@ -53,6 +53,6 @@ public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
             targetPlayer.SelectedCharacter!.PlayerKillCount,
             Math.Round(TimeSpan.FromSeconds(targetPlayer.SelectedCharacter!.StateRemainingSeconds).TotalMinutes));
 
-        this.ShowMessageTo(gameMaster, $"[{this.Key}] {message}");
+        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {message}").ConfigureAwait(false);
     }
 }

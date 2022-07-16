@@ -27,14 +27,14 @@ public class ShowSkillAnimationPlugIn : JsViewPlugInBase, IShowSkillAnimationPlu
     }
 
     /// <inheritdoc />
-    public void ShowSkillAnimation(IAttacker attacker, IAttackable? target, Skill skill, bool effectApplied)
+    public ValueTask ShowSkillAnimationAsync(IAttacker attacker, IAttackable? target, Skill skill, bool effectApplied)
     {
-        this.ShowSkillAnimation(attacker, target, skill.Number, effectApplied);
+        return this.ShowSkillAnimationAsync(attacker, target, skill.Number, effectApplied);
     }
 
     /// <inheritdoc />
-    public async void ShowSkillAnimation(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied)
+    public async ValueTask ShowSkillAnimationAsync(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied)
     {
-        await this.InvokeAsync(attacker.Id, target?.Id ?? 0, skillNumber);
+        await this.InvokeAsync(attacker.Id, target?.Id ?? 0, skillNumber).ConfigureAwait(false);
     }
 }

@@ -16,35 +16,35 @@ public class TradeAcceptAction : BaseTradeAction
     /// </summary>
     /// <param name="tradeAccepter">The trader which answers the trade request.</param>
     /// <param name="accept">Indicates if the trader accepted the trade request.</param>
-    public void HandleTradeAccept(ITrader tradeAccepter, bool accept)
+    public async ValueTask HandleTradeAcceptAsync(ITrader tradeAccepter, bool accept)
     {
         var tradePartner = tradeAccepter.TradingPartner;
         if (accept && tradePartner != null)
         {
-            if (!tradeAccepter.PlayerState.TryAdvanceTo(PlayerState.TradeOpened) || !tradePartner.PlayerState.TryAdvanceTo(PlayerState.TradeOpened))
+            if (!await tradeAccepter.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false) || !await tradePartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
             {
-                ////Something bad happend here...
-                this.CancelTrade(tradeAccepter);
-                this.CancelTrade(tradePartner);
-                tradePartner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(false);
-                tradeAccepter.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(false);
+                ////Something bad happened here...
+                await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
+                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
+                await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
+                await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
             }
             else
             {
-                this.OpenTrade(tradeAccepter);
-                this.OpenTrade(tradePartner);
+                await this.OpenTradeAsync(tradeAccepter).ConfigureAwait(false);
+                await this.OpenTradeAsync(tradePartner).ConfigureAwait(false);
             }
         }
         else
         {
             if (tradePartner != null)
             {
-                this.CancelTrade(tradePartner);
-                tradePartner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(false);
+                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
+                await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
             }
 
-            this.CancelTrade(tradeAccepter);
-            tradeAccepter.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(false);
+            await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
+            await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
         }
     }
 
@@ -52,10 +52,10 @@ public class TradeAcceptAction : BaseTradeAction
     /// Opens the trade.
     /// </summary>
     /// <param name="trader">Trader for which the trade should be opened.</param>
-    internal void OpenTrade(ITrader trader)
+    internal async ValueTask OpenTradeAsync(ITrader trader)
     {
         trader.BackupInventory = new BackupItemStorage(trader.Inventory!.ItemStorage);
         trader.TradingMoney = 0;
-        trader.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()?.ShowTradeRequestAnswer(true);
+        await trader.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(true)).ConfigureAwait(false);
     }
 }

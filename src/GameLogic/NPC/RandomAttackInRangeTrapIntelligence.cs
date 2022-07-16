@@ -21,21 +21,21 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
     }
 
     /// <inheritdoc />
-    protected override void Tick()
+    protected override async ValueTask TickAsync()
     {
         if (this._currentTarget != null)
         {
             // Old Target out of Range?
             if (!this._currentTarget.IsActive()
                 || this._currentTarget.IsAtSafezone()
-                || !this.IsTargetInObservers())
+                || !await this.IsTargetInObserversAsync().ConfigureAwait(false))
             {
-                this._currentTarget = this.SearchNextTarget();
+                this._currentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
             }
         }
         else
         {
-            this._currentTarget = this.SearchNextTarget();
+            this._currentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
         }
 
         // no target?
@@ -48,21 +48,16 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
         ushort dist = (ushort)this._currentTarget.GetDistanceTo(this.Trap);
         if (this.Trap.Definition.AttackRange + 1 >= dist)
         {
-            this.Trap.Attack(this._currentTarget);  // yes, attack
+            await this.Trap.AttackAsync(this._currentTarget).ConfigureAwait(false);  // yes, attack
         }
     }
 
-    private IAttackable? SearchNextTarget()
+    private async ValueTask<IAttackable?> SearchNextTargetAsync()
     {
         List<IWorldObserver> tempObservers;
-        this.Trap.ObserverLock.EnterReadLock();
-        try
+        using (await this.Trap.ObserverLock.ReaderLockAsync())
         {
             tempObservers = new List<IWorldObserver>(this.Trap.Observers);
-        }
-        finally
-        {
-            this.Trap.ObserverLock.ExitReadLock();
         }
 
         double closestDistance = 100;
@@ -86,16 +81,11 @@ public class RandomAttackInRangeTrapIntelligence : TrapIntelligenceBase
         return closest;
     }
 
-    private bool IsTargetInObservers()
+    private async ValueTask<bool> IsTargetInObserversAsync()
     {
-        this.Trap.ObserverLock.EnterReadLock();
-        try
+        using (await this.Trap.ObserverLock.ReaderLockAsync())
         {
             return this._currentTarget is IWorldObserver worldObserver && this.Trap.Observers.Contains(worldObserver);
-        }
-        finally
-        {
-            this.Trap.ObserverLock.ExitReadLock();
         }
     }
 }

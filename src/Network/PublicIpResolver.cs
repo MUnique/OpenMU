@@ -31,25 +31,24 @@ public class PublicIpResolver : IIpAddressResolver
     /// Gets the public IPv4 address with the help of the following api: https://www.ipify.org/.
     /// </summary>
     /// <returns>The public IPv4 address.</returns>
-    public IPAddress ResolveIPv4()
+    public async ValueTask<IPAddress> ResolveIPv4Async()
     {
         if (this._lastRequest + this._maximumCachedAddressLifetime < DateTime.Now)
         {
-            this._publicIPv4 = this.InternalGetIPv4();
+            this._publicIPv4 = await this.InternalGetIPv4Async().ConfigureAwait(false);
             this._lastRequest = DateTime.Now;
         }
 
         return this._publicIPv4!;
     }
 
-    private IPAddress InternalGetIPv4()
+    private async ValueTask<IPAddress> InternalGetIPv4Async()
     {
         const string url = "https://api.ipify.org/?format=text";
         this._logger.LogDebug("Start Requesting public ip from {url}", url);
         using var client = new System.Net.Http.HttpClient();
-        var task = client.GetStringAsync(url);
-        task.Wait();
-        var response = task.Result;
+        var response = await client.GetStringAsync(url).ConfigureAwait(false);
+
         var match = Regex.Match(response, @".*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*");
         if (match.Success)
         {

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Quest;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameServer.MessageHandler.Quests;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
@@ -29,7 +30,7 @@ public class LegacyQuestStateDialogPlugIn : ILegacyQuestStateDialogPlugIn
     }
 
     /// <inheritdoc />
-    public void Show()
+    public async ValueTask ShowAsync()
     {
         if (this._player.Connection is not { } connection || this._player.SelectedCharacter is null)
         {
@@ -38,23 +39,29 @@ public class LegacyQuestStateDialogPlugIn : ILegacyQuestStateDialogPlugIn
 
         var questState = this._player.SelectedCharacter.QuestStates.FirstOrDefault(s => s.Group == QuestConstants.LegacyQuestGroup);
         var quest = questState?.ActiveQuest ?? this._player.GetNextLegacyQuest();
-        connection.SendLegacyQuestStateDialog((byte)(quest?.Number ?? 0), this._player.GetLegacyQuestStateByte());
+        await connection.SendLegacyQuestStateDialogAsync((byte)(quest?.Number ?? 0), this._player.GetLegacyQuestStateByte()).ConfigureAwait(false);
 
         if (quest?.RequiredMonsterKills.Any() ?? false)
         {
-            using var writer = connection.StartWriteLegacyQuestMonsterKillInfo();
-            var packet = writer.Packet;
-            packet.QuestIndex = (byte)quest.Number;
-            int i = 0;
-            foreach (var requirement in quest.RequiredMonsterKills)
+            int Write()
             {
-                var monsterState = packet[i];
-                monsterState.MonsterNumber = (uint)requirement.Monster!.Number;
-                monsterState.KillCount = (uint)(questState?.RequirementStates.FirstOrDefault(r => r.Requirement == requirement)?.KillCount ?? 0);
-                i++;
+                var size = LegacyQuestMonsterKillInfoRef.Length;
+                var span = connection.Output.GetSpan(size)[..size];
+                var packet = new LegacyQuestMonsterKillInfoRef(span);
+                packet.QuestIndex = (byte)quest.Number;
+                int i = 0;
+                foreach (var requirement in quest.RequiredMonsterKills)
+                {
+                    var monsterState = packet[i];
+                    monsterState.MonsterNumber = (uint)requirement.Monster!.Number;
+                    monsterState.KillCount = (uint)(questState?.RequirementStates.FirstOrDefault(r => r.Requirement == requirement)?.KillCount ?? 0);
+                    i++;
+                }
+
+                return size;
             }
 
-            writer.Commit();
+            await connection.SendAsync(Write).ConfigureAwait(false);
         }
     }
 }

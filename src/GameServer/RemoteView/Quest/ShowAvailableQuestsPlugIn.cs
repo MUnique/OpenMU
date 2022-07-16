@@ -30,7 +30,7 @@ public class ShowAvailableQuestsPlugIn : IShowAvailableQuestsPlugIn
     }
 
     /// <inheritdoc />
-    public void ShowAvailableQuests()
+    public async ValueTask ShowAvailableQuestsAsync()
     {
         var connection = this._player.Connection;
         if (connection is null || this._player.OpenedNpc is null)
@@ -40,22 +40,27 @@ public class ShowAvailableQuestsPlugIn : IShowAvailableQuestsPlugIn
 
         var totalQuests = this._player.GetAvailableQuestsOfOpenedNpc().ToList();
         var questCount = totalQuests.Count;
-
-        using var writer = connection.StartSafeWrite(AvailableQuests.HeaderType, AvailableQuests.GetRequiredSize(questCount));
-        var message = new AvailableQuests(writer.Span)
+        int Write()
         {
-            QuestCount = (ushort)questCount,
-            QuestNpcNumber = (ushort)this._player.OpenedNpc.Definition.Number,
-        };
+            var size = AvailableQuestsRef.GetRequiredSize(questCount);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new AvailableQuestsRef(span)
+            {
+                QuestCount = (ushort)questCount,
+                QuestNpcNumber = (ushort)this._player.OpenedNpc.Definition.Number,
+            };
 
-        for (int i = 0; i < questCount; i++)
-        {
-            var block = message[i];
-            var quest = totalQuests[i];
-            block.Number = (ushort)quest.StartingNumber;
-            block.Group = (ushort)quest.Group;
+            for (int i = 0; i < questCount; i++)
+            {
+                var block = packet[i];
+                var quest = totalQuests[i];
+                block.Number = (ushort)quest.StartingNumber;
+                block.Group = (ushort)quest.Group;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

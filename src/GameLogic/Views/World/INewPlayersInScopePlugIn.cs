@@ -14,5 +14,5 @@ public interface INewPlayersInScopePlugIn : IViewPlugIn
     /// </summary>
     /// <param name="newObjects">The new objects.</param>
     /// <param name="isSpawned">If set to <c>true</c>, the players spawned on the map.</param>
-    void NewPlayersInScope(IEnumerable<Player> newObjects, bool isSpawned = true);
+    ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newObjects, bool isSpawned = true);
 }

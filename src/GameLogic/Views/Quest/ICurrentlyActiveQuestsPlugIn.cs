@@ -15,5 +15,5 @@ public interface ICurrentlyActiveQuestsPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the active quests.
     /// </summary>
-    void ShowActiveQuests();
+    ValueTask ShowActiveQuestsAsync();
 }

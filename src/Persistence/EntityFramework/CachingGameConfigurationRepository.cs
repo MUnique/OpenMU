@@ -22,15 +22,15 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     /// Initializes a new instance of the <see cref="CachingGameConfigurationRepository" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger for this class.</param>
-    public CachingGameConfigurationRepository(RepositoryManager repositoryManager, ILogger<CachingGameConfigurationRepository> logger)
-        : base(repositoryManager, logger)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public CachingGameConfigurationRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory)
+        : base(repositoryManager, loggerFactory)
     {
         this._objectLoader = new GameConfigurationJsonObjectLoader();
     }
 
     /// <inheritdoc />
-    public override GameConfiguration? GetById(Guid id)
+    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id)
     {
         if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
         {
@@ -38,10 +38,10 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
 
         var database = currentContext.Context.Database;
-        database.OpenConnection();
+        await database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
-            if (this._objectLoader.LoadObject<GameConfiguration>(id, currentContext.Context) is { } config)
+            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context).ConfigureAwait(false) is { } config)
             {
                 this.SetExperienceTables(config);
                 return config;
@@ -51,12 +51,12 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
         finally
         {
-            database.CloseConnection();
+            await database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc />
-    public override IEnumerable<GameConfiguration> GetAll()
+    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync()
     {
         if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
         {
@@ -64,16 +64,16 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
 
         var database = currentContext.Context.Database;
-        database.OpenConnection();
+        await database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
-            var configs = this._objectLoader.LoadAllObjects<GameConfiguration>(currentContext.Context).ToList();
+            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context).ConfigureAwait(false)).ToList();
             configs.ForEach(this.SetExperienceTables);
             return configs;
         }
         finally
         {
-            database.CloseConnection();
+            await database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
 

@@ -18,12 +18,12 @@ public class GuildWarAnswerAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="isWarAccepted">The answer.</param>
-    public void ProcessAnswer(Player player, bool isWarAccepted)
+    public async ValueTask ProcessAnswerAsync(Player player, bool isWarAccepted)
     {
         if (player.GuildWarContext is not { } guildWarContext
             || guildWarContext.Requester is not { } requester)
         {
-            player.ViewPlugIns.GetPlugIn<IShowShowGuildWarRequestResultPlugIn>()?.ShowResult(GuildWarRequestResult.GuildNotFound);
+            await player.InvokeViewPlugInAsync<IShowShowGuildWarRequestResultPlugIn>(p => p.ShowResultAsync(GuildWarRequestResult.GuildNotFound)).ConfigureAwait(false);
             return;
         }
 
@@ -31,14 +31,14 @@ public class GuildWarAnswerAction
         if (guildWarContext.WarType == GuildWarType.Soccer
             && player.GameContext.Configuration.Maps.FirstOrDefault(m => m.BattleZone?.Type == BattleType.Soccer) is { } definition)
         {
-            soccerMap = (SoccerGameMap?)player.GameContext.GetMap(definition.Number.ToUnsigned());
+            soccerMap = (SoccerGameMap?)await player.GameContext.GetMapAsync(definition.Number.ToUnsigned()).ConfigureAwait(false);
         }
 
         var soccerInitFailed = false;
         if (guildWarContext.WarType == GuildWarType.Soccer && (soccerMap is null || soccerMap.IsBattleOngoing))
         {
             soccerInitFailed = true;
-            player.ViewPlugIns.GetPlugIn<IShowShowGuildWarRequestResultPlugIn>()?.ShowResult(GuildWarRequestResult.Failed);
+            await player.InvokeViewPlugInAsync<IShowShowGuildWarRequestResultPlugIn>(p => p.ShowResultAsync(GuildWarRequestResult.Failed)).ConfigureAwait(false);
         }
 
         if (!isWarAccepted
@@ -56,41 +56,52 @@ public class GuildWarAnswerAction
         var playerTeam = this.GetTeamPlayers(player);
         var requesterTeam = this.GetTeamPlayers(requester);
         var score = guildWarContext.Score;
-        score.PropertyChanged += (_, args) =>
+#pragma warning disable VSTHRD101 // Avoid unsupported async delegates
+        score.PropertyChanged += async (_, args) =>
         {
-            if (args.PropertyName == nameof(score.HasEnded))
+            try
             {
+                if (args.PropertyName != nameof(score.HasEnded))
+                {
+                    return;
+                }
+
                 guildWarContext.State = GuildWarState.Ended;
                 requesterGuildWarContext.State = GuildWarState.Ended;
                 if (player.GameContext is IGameServerContext gameContext && score.Winners.HasValue)
                 {
                     var winner = score.Winners == player.GuildWarContext.Team ? player.GuildStatus!.GuildId : requester.GuildStatus!.GuildId;
-                    gameContext.GuildServer.IncreaseGuildScore(winner);
+                    await gameContext.GuildServer.IncreaseGuildScoreAsync(winner).ConfigureAwait(false);
                 }
             }
+            catch
+            {
+                // must be catched because it's async void.
+            }
         };
+#pragma warning restore VSTHRD101 // Avoid unsupported async delegates
 
         foreach (var guildPlayer in playerTeam)
         {
             guildPlayer.GuildWarContext = guildWarContext;
-            guildPlayer.ViewPlugIns.GetPlugIn<IShowGuildWarDeclaredPlugIn>()?.ShowDeclared();
-            guildPlayer.ViewPlugIns.GetPlugIn<IGuildWarScoreUpdatePlugIn>()?.UpdateScore();
+            await guildPlayer.InvokeViewPlugInAsync<IShowGuildWarDeclaredPlugIn>(p => p.ShowDeclaredAsync()).ConfigureAwait(false);
+            await guildPlayer.InvokeViewPlugInAsync<IGuildWarScoreUpdatePlugIn>(p => p.UpdateScoreAsync()).ConfigureAwait(false);
             RegisterScoreChangedEventWeakly(guildPlayer, score, soccerMap);
         }
 
         foreach (var guildPlayer in requesterTeam)
         {
             guildPlayer.GuildWarContext = requesterGuildWarContext;
-            guildPlayer.ViewPlugIns.GetPlugIn<IShowGuildWarDeclaredPlugIn>()?.ShowDeclared();
-            guildPlayer.ViewPlugIns.GetPlugIn<IGuildWarScoreUpdatePlugIn>()?.UpdateScore();
+            await guildPlayer.InvokeViewPlugInAsync<IShowGuildWarDeclaredPlugIn>(p => p.ShowDeclaredAsync()).ConfigureAwait(false);
+            await guildPlayer.InvokeViewPlugInAsync<IGuildWarScoreUpdatePlugIn>(p => p.UpdateScoreAsync()).ConfigureAwait(false);
             RegisterScoreChangedEventWeakly(guildPlayer, score, soccerMap);
         }
 
         if (guildWarContext.WarType == GuildWarType.Soccer && soccerMap is { })
         {
-            this.MovePartyToArena(player.GuildWarContext.Team, playerTeam, soccerMap);
-            this.MovePartyToArena(requester.GuildWarContext.Team, requesterTeam, soccerMap);
-            soccerMap.StartBattle(score);
+            await this.MovePartyToArenaAsync(player.GuildWarContext.Team, playerTeam, soccerMap).ConfigureAwait(false);
+            await this.MovePartyToArenaAsync(requester.GuildWarContext.Team, requesterTeam, soccerMap).ConfigureAwait(false);
+            await soccerMap.StartBattleAsync(score).ConfigureAwait(false);
         }
     }
 
@@ -98,22 +109,29 @@ public class GuildWarAnswerAction
     {
         var playerReference = new WeakReference<Player>(guildPlayer);
 
-        void OnScorePropertyChanged(object? sender, PropertyChangedEventArgs args)
+        async void OnScorePropertyChanged(object? sender, PropertyChangedEventArgs args)
         {
-            if (playerReference.TryGetTarget(out var p))
+            try
             {
-                OnScoreChanged(score, p, soccerMap, args);
+                if (playerReference.TryGetTarget(out var p))
+                {
+                    await OnScoreChangedAsync(score, p, soccerMap, args).ConfigureAwait(false);
+                }
+                else
+                {
+                    score.PropertyChanged -= OnScorePropertyChanged;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                score.PropertyChanged -= OnScorePropertyChanged;
+                guildPlayer.Logger.LogError(ex, "Error handling a changed guild war score.");
             }
         }
 
         score.PropertyChanged += OnScorePropertyChanged;
     }
 
-    private static void OnScoreChanged(GuildWarScore score, Player player, SoccerGameMap? soccerMap, PropertyChangedEventArgs args)
+    private static async ValueTask OnScoreChangedAsync(GuildWarScore score, Player player, SoccerGameMap? soccerMap, PropertyChangedEventArgs args)
     {
         try
         {
@@ -122,13 +140,13 @@ public class GuildWarAnswerAction
                 if (player.GuildWarContext is { } context)
                 {
                     var isWinner = context.Team == score.Winners;
-                    player.ViewPlugIns.GetPlugIn<IShowGuildWarResultPlugIn>()?.ShowResult(context.EnemyTeamName, isWinner ? GuildWarResult.Won : GuildWarResult.Lost);
+                    await player.InvokeViewPlugInAsync<IShowGuildWarResultPlugIn>(p => p.ShowResultAsync(context.EnemyTeamName, isWinner ? GuildWarResult.Won : GuildWarResult.Lost)).ConfigureAwait(false);
                     if (soccerMap is not null)
                     {
                         var spawnGates = soccerMap.Definition.ExitGates.Where(g => g.IsSpawnGate);
                         if (spawnGates.Any())
                         {
-                            player.WarpTo(spawnGates.SelectRandom()!);
+                            await player.WarpToAsync(spawnGates.SelectRandom()!).ConfigureAwait(false);
                         }
                     }
 
@@ -137,7 +155,7 @@ public class GuildWarAnswerAction
             }
             else
             {
-                player.ViewPlugIns.GetPlugIn<IGuildWarScoreUpdatePlugIn>()?.UpdateScore();
+                await player.InvokeViewPlugInAsync<IGuildWarScoreUpdatePlugIn>(p => p.UpdateScoreAsync()).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -156,7 +174,7 @@ public class GuildWarAnswerAction
         return new List<Player>(1) { guildMaster };
     }
 
-    private void MovePartyToArena(GuildWarTeam team, ICollection<Player> members, SoccerGameMap soccerMap)
+    private async ValueTask MovePartyToArenaAsync(GuildWarTeam team, ICollection<Player> members, SoccerGameMap soccerMap)
     {
         var ground = soccerMap.Definition.BattleZone?.Ground;
         if (ground is null)
@@ -177,7 +195,7 @@ public class GuildWarAnswerAction
 
         foreach (var member in members)
         {
-            member.WarpTo(exitGate);
+            await member.WarpToAsync(exitGate).ConfigureAwait(false);
             if (increaseX)
             {
                 exitGate.X1++;

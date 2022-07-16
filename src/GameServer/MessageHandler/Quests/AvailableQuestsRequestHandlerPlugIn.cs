@@ -25,8 +25,8 @@ public class AvailableQuestsRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => AvailableQuestsRequest.SubCode;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        player.ViewPlugIns.GetPlugIn<IShowAvailableQuestsPlugIn>()?.ShowAvailableQuests();
+        await player.InvokeViewPlugInAsync<IShowAvailableQuestsPlugIn>(p => p.ShowAvailableQuestsAsync()).ConfigureAwait(false);
     }
 }

@@ -12,5 +12,5 @@ public interface IBuyNpcItemFailedPlugIn : IViewPlugIn
     /// <summary>
     /// Notifies the client that the item could not be bought from the npc.
     /// </summary>
-    void BuyNpcItemFailed();
+    ValueTask BuyNpcItemFailedAsync();
 }

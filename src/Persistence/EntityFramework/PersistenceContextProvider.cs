@@ -45,12 +45,12 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <returns>
     ///   <c>true</c> if [is database up to date]; otherwise, <c>false</c>.
     /// </returns>
-    public bool IsDatabaseUpToDate()
+    public async Task<bool> IsDatabaseUpToDateAsync()
     {
         try
         {
             using var installationContext = new EntityDataContext();
-            return !installationContext.Database.GetPendingMigrations().Any();
+            return !(await installationContext.Database.GetPendingMigrationsAsync().ConfigureAwait(false)).Any();
         }
         catch
         {
@@ -61,30 +61,30 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <summary>
     /// Applies all pending updates to the database schema.
     /// </summary>
-    public void ApplyAllPendingUpdates()
+    public async Task ApplyAllPendingUpdatesAsync()
     {
         using var installationContext = new EntityDataContext();
-        installationContext.Database.Migrate();
+        await installationContext.Database.MigrateAsync().ConfigureAwait(false);
     }
 
     /// <summary>
     /// Waits until all database updates are applied.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token</param>
-    public async Task WaitForUpdatedDatabase(CancellationToken cancellationToken = default)
+    /// <param name="cancellationToken">The cancellation token.</param>
+    public async Task WaitForUpdatedDatabaseAsync(CancellationToken cancellationToken = default)
     {
-        while (!this.DatabaseExists()
-               || !this.IsDatabaseUpToDate())
+        while (!await this.DatabaseExistsAsync()
+.ConfigureAwait(false) || !await this.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
-            await Task.Delay(3000, cancellationToken);
+            await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
         }
 
-        while (!await this.ConfigurationExistsAsync(cancellationToken))
+        while (!await this.ConfigurationExistsAsync(cancellationToken).ConfigureAwait(false))
         {
-            await Task.Delay(3000, cancellationToken);
+            await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
         }
 
-        await Task.Delay(5000, cancellationToken);
+        await Task.Delay(5000, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -109,12 +109,12 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// Determines if the database exists already, by checking if any migration has been applied.
     /// </summary>
     /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
-    public bool DatabaseExists()
+    public async Task<bool> DatabaseExistsAsync()
     {
         try
         {
-            using var installationContext = new EntityDataContext();
-            return installationContext.Database.GetAppliedMigrations().Any();
+            await using var installationContext = new EntityDataContext();
+            return (await installationContext.Database.GetAppliedMigrationsAsync().ConfigureAwait(false)).Any();
         }
         catch
         {
@@ -128,23 +128,23 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <returns>
     ///   <c>true</c> if this instance can connect to the database; otherwise, <c>false</c>.
     /// </returns>
-    public bool CanConnectToDatabase()
+    public async Task<bool> CanConnectToDatabaseAsync()
     {
-        using var installationContext = new EntityDataContext();
-        return installationContext.Database.CanConnect();
+        await using var installationContext = new EntityDataContext();
+        return await installationContext.Database.CanConnectAsync().ConfigureAwait(false);
     }
 
     /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
-    public void ReCreateDatabase()
+    public async Task ReCreateDatabaseAsync()
     {
-        using (var installationContext = new EntityDataContext())
+        await using (var installationContext = new EntityDataContext())
         {
-            installationContext.Database.EnsureDeleted();
+            await installationContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
         }
 
-        this.ApplyAllPendingUpdates();
+        await this.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
 
         // We create a new repository manager, so that the previously loaded data is not effective anymore.
         this.CachingRepositoryManager = new CachingRepositoryManager(this._loggerFactory);
@@ -154,43 +154,43 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <inheritdoc />
     public IContext CreateNewContext()
     {
-        return new CachingEntityFrameworkContext(new EntityDataContext(), this.CachingRepositoryManager);
+        return new CachingEntityFrameworkContext(new EntityDataContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IContext CreateNewContext(DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        return new CachingEntityFrameworkContext(new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager);
+        return new CachingEntityFrameworkContext(new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IPlayerContext CreateNewPlayerContext(DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        return new PlayerContext(new AccountContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager);
+        return new PlayerContext(new AccountContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager, this._loggerFactory.CreateLogger<PlayerContext>());
     }
 
     /// <inheritdoc />
     public IContext CreateNewConfigurationContext()
     {
-        return new CachingEntityFrameworkContext(new ConfigurationContext(), this.CachingRepositoryManager);
+        return new CachingEntityFrameworkContext(new ConfigurationContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IContext CreateNewTradeContext()
     {
-        return new CachingEntityFrameworkContext(new TradeContext(), this.CachingRepositoryManager);
+        return new CachingEntityFrameworkContext(new TradeContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IFriendServerContext CreateNewFriendServerContext()
     {
-        return new FriendServerContext(new FriendContext(), this.CachingRepositoryManager);
+        return new FriendServerContext(new FriendContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<FriendServerContext>());
     }
 
     /// <inheritdoc/>
     public IGuildServerContext CreateNewGuildContext()
     {
-        return new GuildServerContext(new GuildContext(), this.CachingRepositoryManager);
+        return new GuildServerContext(new GuildContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<GuildServerContext>());
     }
 
     /// <inheritdoc />

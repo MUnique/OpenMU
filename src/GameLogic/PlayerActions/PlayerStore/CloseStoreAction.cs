@@ -15,18 +15,18 @@ public class CloseStoreAction
     /// Closes the store of the player.
     /// </summary>
     /// <param name="player">The player.</param>
-    public void CloseStore(Player player)
+    public async ValueTask CloseStoreAsync(Player player)
     {
         if (player.ShopStorage is null)
         {
             return;
         }
 
-        lock (player.ShopStorage.StoreLock)
+        using (await player.ShopStorage.StoreLock.LockAsync())
         {
             player.ShopStorage.StoreOpen = false;
         }
 
-        player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IPlayerShopClosedPlugIn>()?.PlayerShopClosed(player), true);
+        await player.ForEachWorldObserverAsync<IPlayerShopClosedPlugIn>(plugin => plugin.PlayerShopClosedAsync(player), true).ConfigureAwait(false);
     }
 }

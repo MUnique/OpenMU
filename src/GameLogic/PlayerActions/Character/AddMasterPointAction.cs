@@ -18,7 +18,7 @@ public class AddMasterPointAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="skillId">The skill identifier.</param>
-    public void AddMasterPoint(Player player, ushort skillId)
+    public async ValueTask AddMasterPointAsync(Player player, ushort skillId)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.SelectedCharacter is null)
@@ -53,11 +53,11 @@ public class AddMasterPointAction
             if (this.CheckRequisitions(player, skill))
             {
                 player.Logger.LogDebug("Adding master skill, skillId: {0}, player {1}", skill.Number, player);
-                player.SkillList!.AddLearnedSkill(skill);
+                await player.SkillList!.AddLearnedSkillAsync(skill).ConfigureAwait(false);
                 learnedSkill = player.SkillList?.GetSkill(skillId);
                 if (learnedSkill is { })
                 {
-                    this.AddMasterPointToLearnedSkill(player, learnedSkill);
+                    await this.AddMasterPointToLearnedSkillAsync(player, learnedSkill).ConfigureAwait(false);
                 }
                 else
                 {
@@ -67,11 +67,11 @@ public class AddMasterPointAction
         }
         else
         {
-            this.AddMasterPointToLearnedSkill(player, learnedSkill);
+            await this.AddMasterPointToLearnedSkillAsync(player, learnedSkill).ConfigureAwait(false);
         }
     }
 
-    private void AddMasterPointToLearnedSkill(Player player, SkillEntry learnedSkill)
+    private async ValueTask AddMasterPointToLearnedSkillAsync(Player player, SkillEntry learnedSkill)
     {
         learnedSkill.ThrowNotInitializedProperty(learnedSkill.Skill is null, nameof(learnedSkill.Skill));
         var requiredPoints = learnedSkill.Level == 0 ? learnedSkill.Skill.MasterDefinition!.MinimumLevel : 1;
@@ -80,7 +80,7 @@ public class AddMasterPointAction
             player.Logger.LogDebug("Adding {0} points to skill, skillId: {1}, player {2}", requiredPoints, learnedSkill.Skill.Number, player);
             learnedSkill.Level += requiredPoints;
             player.SelectedCharacter.MasterLevelUpPoints -= requiredPoints;
-            player.ViewPlugIns.GetPlugIn<IMasterSkillLevelChangedPlugIn>()?.MasterSkillLevelChanged(learnedSkill);
+            await player.InvokeViewPlugInAsync<IMasterSkillLevelChangedPlugIn>(p => p.MasterSkillLevelChangedAsync(learnedSkill)).ConfigureAwait(false);
         }
         else
         {

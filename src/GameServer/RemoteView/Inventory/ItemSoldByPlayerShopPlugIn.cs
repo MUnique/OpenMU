@@ -26,8 +26,8 @@ public class ItemSoldByPlayerShopPlugIn : IItemSoldByPlayerShopPlugIn
     public ItemSoldByPlayerShopPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ItemSoldByPlayerShop(byte slot, Player buyer)
+    public async ValueTask ItemSoldByPlayerShopAsync(byte slot, Player buyer)
     {
-        this._player.Connection?.SendPlayerShopItemSoldToPlayer(slot, buyer.SelectedCharacter!.Name);
+        await this._player.Connection.SendPlayerShopItemSoldToPlayerAsync(slot, buyer.SelectedCharacter!.Name).ConfigureAwait(false);
     }
 }

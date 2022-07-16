@@ -14,5 +14,5 @@ public interface IItemDurabilityChangedPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="causedByConsumption">Flag which indicates if the durability change was caused by consuming the item.</param>
-    void ItemDurabilityChanged(Item item, bool causedByConsumption);
+    ValueTask ItemDurabilityChangedAsync(Item item, bool causedByConsumption);
 }

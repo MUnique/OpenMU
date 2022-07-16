@@ -16,7 +16,7 @@ public class LetterReadRequestAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="letterIndex">Index of the letter.</param>
-    public void ReadRequest(Player player, ushort letterIndex)
+    public async ValueTask ReadRequestAsync(Player player, ushort letterIndex)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.SelectedCharacter?.Letters.Count < letterIndex)
@@ -28,11 +28,11 @@ public class LetterReadRequestAction
         var letter = player.SelectedCharacter?.Letters[letterIndex];
         if (letter != null)
         {
-            var letterBody = player.PersistenceContext.GetLetterBodyByHeaderId(letter.Id);
-            if (letterBody != null)
+            var letterBody = await player.PersistenceContext.GetLetterBodyByHeaderIdAsync(letter.Id).ConfigureAwait(false);
+            if (letterBody is not null)
             {
                 letter.ReadFlag = true;
-                player.ViewPlugIns.GetPlugIn<IShowLetterPlugIn>()?.ShowLetter(letterBody);
+                await player.InvokeViewPlugInAsync<IShowLetterPlugIn>(p => p.ShowLetterAsync(letterBody)).ConfigureAwait(false);
             }
         }
         else

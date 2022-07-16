@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Packets.ConnectServer;
 
 /// <summary>
 /// Handles the ftp related request. The client is sending its version, and the server answers
@@ -45,35 +46,72 @@ internal class FtpRequestHandler : IPacketHandler<Client>
     }
 
     /// <inheritdoc/>
-    public void HandlePacket(Client client, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Client client, Memory<byte> packet)
     {
         if (packet.Length < 6)
         {
             return;
         }
 
-        this._logger.LogDebug("Client {0}:{1} version: {2}.{3}.{4}", client.Address, client.Port, packet[3], packet[4], packet[5]);
+        void LogVersion(Span<byte> span)
+        {
+            this._logger.LogDebug($"Client {client.Address}:{client.Port} version: {span[3]}.{span[4]}.{span[5]}");
+        }
+
+        if (this._logger.IsEnabled(LogLevel.Debug))
+        {
+            LogVersion(packet.Span);
+        }
+
         if (client.FtpRequestCount >= this._connectServerSettings.MaxFtpRequests)
         {
-            this._logger.LogDebug("Client {0}:{1} reached maxFtpRequests", client.Address, client.Port);
-            client.Connection.Disconnect();
+            if (this._logger.IsEnabled(LogLevel.Debug))
+            {
+                this._logger.LogDebug("Client {0}:{1} reached maxFtpRequests", client.Address, client.Port);
+            }
+
+            await client.Connection.DisconnectAsync().ConfigureAwait(false);
             return;
         }
 
-        byte[] response;
-        if (VersionCompare(this._connectServerSettings.CurrentPatchVersion, 0, packet, 3, this._connectServerSettings.CurrentPatchVersion.Length) == VersionCompareResult.VersionTooLow)
+        int WritePatchPacket()
         {
-            response = this.GetPatchPacket();
+            if (this._patchPacket is { } cachedPacket)
+            {
+                var span = client.Connection.Output.GetSpan(cachedPacket.Length);
+                cachedPacket.CopyTo(span);
+            }
+            else
+            {
+                var length = ClientNeedsPatchRef.Length;
+                var span = client.Connection.Output.GetSpan(length)[..length];
+                var packet = new ClientNeedsPatchRef(span);
+                packet.PatchAddress = this._connectServerSettings.PatchAddress;
+                var addressSize = Encoding.UTF8.GetByteCount(this._connectServerSettings.PatchAddress);
+
+                Xor3Bytes(span.Slice(6), addressSize);
+                packet.PatchVersion = this._connectServerSettings.CurrentPatchVersion[2];
+
+                this._patchPacket = span.ToArray();
+            }
+
+            return this._patchPacket.Length;
+        }
+
+        int WriteOkayPacket()
+        {
+            var span = client.Connection.Output.GetSpan(PatchOk.Length)[..PatchOk.Length];
+            PatchOk.CopyTo(span);
+            return PatchOk.Length;
+        }
+
+        if (VersionCompare(this._connectServerSettings.CurrentPatchVersion, 0, packet.Span, 3, this._connectServerSettings.CurrentPatchVersion.Length) == VersionCompareResult.VersionTooLow)
+        {
+            await client.Connection.SendAsync(WritePatchPacket).ConfigureAwait(false);
         }
         else
         {
-            response = PatchOk;
-        }
-
-        using (var writer = client.Connection.StartSafeWrite(response[0], response.Length))
-        {
-            response.CopyTo(writer.Span);
-            writer.Commit();
+            await client.Connection.SendAsync(WriteOkayPacket).ConfigureAwait(false);
         }
 
         client.FtpRequestCount++;
@@ -106,33 +144,11 @@ internal class FtpRequestHandler : IPacketHandler<Client>
         return VersionCompareResult.VersionMatch;
     }
 
-    private static void Xor3Bytes(byte[] data, int size)
+    private static void Xor3Bytes(Span<byte> data, int size)
     {
         for (int i = 0; i < size; i++)
         {
             data[i] ^= Xor3Keys[i % 3];
         }
-    }
-
-    private byte[] GetPatchPacket()
-    {
-        if (this._patchPacket != null)
-        {
-            return this._patchPacket;
-        }
-
-        var packet = new byte[0x8A];
-        packet[0] = 0xC1;
-        packet[1] = 0x8A;
-        packet[2] = 0x05;
-        packet[3] = 0x01;
-        packet[4] = this._connectServerSettings.CurrentPatchVersion[2];
-
-        // adress starting at 6
-        var adressBytes = Encoding.ASCII.GetBytes(this._connectServerSettings.PatchAddress);
-        Xor3Bytes(adressBytes, adressBytes.Length);
-        Buffer.BlockCopy(adressBytes, 0, packet, 6, adressBytes.Length);
-        this._patchPacket = packet;
-        return packet;
     }
 }

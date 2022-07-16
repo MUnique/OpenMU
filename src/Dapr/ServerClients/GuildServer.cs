@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ServerClients;
 
+using System.Collections.Immutable;
 using Dapr.Client;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
@@ -30,11 +31,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public bool GuildExists(string guildName)
+    public async ValueTask<bool> GuildExistsAsync(string guildName)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.GuildExists), guildName).Result;
+            return await this._daprClient.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.GuildExistsAsync), guildName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -44,11 +45,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public Guild? GetGuild(uint guildId)
+    public async ValueTask<Guild?> GetGuildAsync(uint guildId)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<uint, Guild?>(this._targetAppId, nameof(this.GetGuild), guildId).Result;
+            return await this._daprClient.InvokeMethodAsync<uint, Guild?>(this._targetAppId, nameof(this.GetGuildAsync), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -58,11 +59,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public uint GetGuildIdByName(string guildName)
+    public async ValueTask<uint> GetGuildIdByNameAsync(string guildName)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<string, uint>(this._targetAppId, nameof(this.GetGuildIdByName), guildName).Result;
+            return await this._daprClient.InvokeMethodAsync<string, uint>(this._targetAppId, nameof(this.GetGuildIdByNameAsync), guildName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -72,11 +73,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public bool CreateGuild(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
+    public async ValueTask<bool> CreateGuildAsync(string name, string masterName, Guid masterId, byte[] logo, byte serverId)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<GuildCreationArguments, bool>(this._targetAppId, nameof(this.CreateGuild), new GuildCreationArguments(name, masterName, masterId, logo, serverId)).GetAwaiter().GetResult();
+            return await this._daprClient.InvokeMethodAsync<GuildCreationArguments, bool>(this._targetAppId, nameof(this.CreateGuildAsync), new GuildCreationArguments(name, masterName, masterId, logo, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -86,11 +87,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public void CreateGuildMember(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId)
+    public async ValueTask CreateGuildMemberAsync(uint guildId, Guid characterId, string characterName, GuildPosition role, byte serverId)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateGuildMember), new GuildMemberCreationArguments(guildId, characterId, characterName, role, serverId));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.CreateGuildMemberAsync), new GuildMemberCreationArguments(guildId, characterId, characterName, role, serverId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -99,11 +100,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public void ChangeGuildMemberPosition(uint guildId, Guid characterId, GuildPosition role)
+    public async ValueTask ChangeGuildMemberPositionAsync(uint guildId, Guid characterId, GuildPosition role)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.ChangeGuildMemberPosition), new GuildMemberRoleChangeArguments(guildId, characterId, role));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.ChangeGuildMemberPositionAsync), new GuildMemberRoleChangeArguments(guildId, characterId, role)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -112,37 +113,39 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public void PlayerEnteredGame(Guid characterId, string characterName, byte serverId)
+    public ValueTask PlayerEnteredGameAsync(Guid characterId, string characterName, byte serverId)
     {
         // Handled by EventPublisher, through pub/sub component.
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public void GuildMemberLeftGame(uint guildId, Guid guildMemberId, byte serverId)
+    public ValueTask GuildMemberLeftGameAsync(uint guildId, Guid guildMemberId, byte serverId)
     {
         // Handled by EventPublisher, through pub/sub component.
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public IEnumerable<GuildListEntry> GetGuildList(uint guildId)
+    public async ValueTask<IImmutableList<GuildListEntry>> GetGuildListAsync(uint guildId)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<uint, IEnumerable<GuildListEntry>>(this._targetAppId, nameof(this.GetGuildList), guildId).Result;
+            return await this._daprClient.InvokeMethodAsync<uint, IImmutableList<GuildListEntry>>(this._targetAppId, nameof(this.GetGuildListAsync), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when getting a guild list.");
-            return Enumerable.Empty<GuildListEntry>();
+            return ImmutableList<GuildListEntry>.Empty;
         }
     }
 
     /// <inheritdoc />
-    public void KickMember(uint guildId, string playerName)
+    public async ValueTask KickMemberAsync(uint guildId, string playerName)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.KickMember), new GuildMemberArguments(guildId, playerName));
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.KickMemberAsync), new GuildMemberArguments(guildId, playerName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -151,11 +154,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public GuildPosition GetGuildPosition(Guid characterId)
+    public async ValueTask<GuildPosition> GetGuildPositionAsync(Guid characterId)
     {
         try
         {
-            return this._daprClient.InvokeMethodAsync<Guid, GuildPosition>(this._targetAppId, nameof(this.GetGuildPosition), characterId).Result;
+            return await this._daprClient.InvokeMethodAsync<Guid, GuildPosition>(this._targetAppId, nameof(this.GetGuildPositionAsync), characterId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -165,11 +168,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public void IncreaseGuildScore(uint guildId)
+    public async ValueTask IncreaseGuildScoreAsync(uint guildId)
     {
         try
         {
-            this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.IncreaseGuildScore), guildId);
+            await this._daprClient.InvokeMethodAsync(this._targetAppId, nameof(this.IncreaseGuildScoreAsync), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

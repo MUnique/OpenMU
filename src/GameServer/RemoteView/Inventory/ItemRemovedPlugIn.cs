@@ -25,8 +25,8 @@ public class ItemRemovedPlugIn : IItemRemovedPlugIn
     public ItemRemovedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void RemoveItem(byte inventorySlot)
+    public async ValueTask RemoveItemAsync(byte inventorySlot)
     {
-        this._player.Connection?.SendItemRemoved(inventorySlot);
+        await this._player.Connection.SendItemRemovedAsync(inventorySlot).ConfigureAwait(false);
     }
 }

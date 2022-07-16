@@ -13,5 +13,5 @@ public interface IShowTradeRequestPlugIn : IViewPlugIn
     /// Shows the trade request.
     /// </summary>
     /// <param name="requester">The requester.</param>
-    void ShowTradeRequest(ITrader requester);
+    ValueTask ShowTradeRequestAsync(ITrader requester);
 }

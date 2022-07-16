@@ -31,12 +31,12 @@ public interface ISupportWalk : ILocateable
     /// </summary>
     /// <param name="steps">The steps.</param>
     /// <returns>The number of written steps.</returns>
-    int GetSteps(Span<WalkingStep> steps);
+    ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps);
 
     /// <summary>
     /// Gets the directions of the steps which are about to happen next by writing them into the given span.
     /// </summary>
     /// <param name="directions">The directions.</param>
     /// <returns>The number of written directions.</returns>
-    int GetDirections(Span<Direction> directions);
+    ValueTask<int> GetDirectionsAsync(Memory<Direction> directions);
 }

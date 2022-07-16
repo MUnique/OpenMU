@@ -27,7 +27,7 @@ public class ShowMerchantStoreItemListPlugIn : IShowMerchantStoreItemListPlugIn
     public ShowMerchantStoreItemListPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowMerchantStoreItemList(ICollection<Item> storeItems, StoreKind storeKind)
+    public async ValueTask ShowMerchantStoreItemListAsync(ICollection<Item> storeItems, StoreKind storeKind)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -35,25 +35,31 @@ public class ShowMerchantStoreItemListPlugIn : IShowMerchantStoreItemListPlugIn
             return;
         }
 
-        var itemSerializer = this._player.ItemSerializer;
-        int sizePerItem = StoredItem.GetRequiredSize(itemSerializer.NeededSpace);
-        using var writer = connection.StartSafeWrite(StoreItemList.HeaderType, StoreItemList.GetRequiredSize(storeItems.Count, sizePerItem));
-        var packet = new StoreItemList(writer.Span)
+        int Write()
         {
-            ItemCount = (byte)storeItems.Count,
-            Type = Convert(storeKind),
-        };
+            var itemSerializer = this._player.ItemSerializer;
+            int sizePerItem = StoredItemRef.GetRequiredSize(itemSerializer.NeededSpace);
+            var size = StoreItemListRef.GetRequiredSize(storeItems.Count, sizePerItem);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new StoreItemListRef(span)
+            {
+                ItemCount = (byte)storeItems.Count,
+                Type = Convert(storeKind),
+            };
 
-        int i = 0;
-        foreach (var item in storeItems)
-        {
-            var storedItem = packet[i, sizePerItem];
-            storedItem.ItemSlot = item.ItemSlot;
-            itemSerializer.SerializeItem(storedItem.ItemData, item);
-            i++;
+            int i = 0;
+            foreach (var item in storeItems)
+            {
+                var storedItem = packet[i, sizePerItem];
+                storedItem.ItemSlot = item.ItemSlot;
+                itemSerializer.SerializeItem(storedItem.ItemData, item);
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     private static StoreItemList.ItemWindow Convert(StoreKind storeKind)

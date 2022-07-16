@@ -25,8 +25,8 @@ public class GuildKickResultPlugIn : IGuildKickResultPlugIn
     public GuildKickResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void GuildKickResult(GuildKickSuccess successCode)
+    public async ValueTask GuildKickResultAsync(GuildKickSuccess successCode)
     {
-        this._player.Connection?.SendGuildKickResponse(successCode.Convert());
+        await this._player.Connection.SendGuildKickResponseAsync(successCode.Convert()).ConfigureAwait(false);
     }
 }

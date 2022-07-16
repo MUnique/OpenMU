@@ -28,9 +28,9 @@ public class LogOutHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => LogOut.SubCode;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         LogOut message = packet;
-        this._logoutAction.Logout(player, (LogoutType)message.Type);
+        await this._logoutAction.LogoutAsync(player, (LogoutType)message.Type).ConfigureAwait(false);
     }
 }

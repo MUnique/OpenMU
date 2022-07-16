@@ -36,31 +36,31 @@ public class LegacyQuestRewardPlugIn : ILegacyQuestRewardPlugIn
     }
 
     /// <inheritdoc />
-    public void Show(Player receiver, QuestRewardType reward, int value, AttributeDefinition? attributeReward)
+    public async ValueTask ShowAsync(Player receiver, QuestRewardType reward, int value, AttributeDefinition? attributeReward)
     {
         var receiverId = receiver.GetId(this._player);
         switch (reward)
         {
             case QuestRewardType.LevelUpPoints:
-                this._player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.LevelUpPoints, (byte)value);
+                await this._player.Connection.SendLegacyQuestRewardAsync(receiverId, LegacyQuestReward.QuestRewardType.LevelUpPoints, (byte)value).ConfigureAwait(false);
                 break;
             case QuestRewardType.CharacterEvolutionFirstToSecond:
-                this._player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.CharacterEvolutionFirstToSecond, (byte)(this._player.SelectedCharacter!.CharacterClass!.Number << 3));
+                await this._player.Connection.SendLegacyQuestRewardAsync(receiverId, LegacyQuestReward.QuestRewardType.CharacterEvolutionFirstToSecond, (byte)(this._player.SelectedCharacter!.CharacterClass!.Number << 3)).ConfigureAwait(false);
                 break;
             case QuestRewardType.CharacterEvolutionSecondToThird:
-                this._player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.CharacterEvolutionSecondToThird, (byte)(this._player.SelectedCharacter!.CharacterClass!.Number << 3));
+                await this._player.Connection.SendLegacyQuestRewardAsync(receiverId, LegacyQuestReward.QuestRewardType.CharacterEvolutionSecondToThird, (byte)(this._player.SelectedCharacter!.CharacterClass!.Number << 3)).ConfigureAwait(false);
                 break;
             case QuestRewardType.Attribute:
                 if (attributeReward == Stats.IsSkillComboAvailable)
                 {
-                    this._player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.ComboSkill, 0);
+                    await this._player.Connection.SendLegacyQuestRewardAsync(receiverId, LegacyQuestReward.QuestRewardType.ComboSkill, 0).ConfigureAwait(false);
                 }
 
                 if (attributeReward == Stats.PointsPerLevelUp)
                 {
                     var questLevel = this._player.GetQuestState(QuestConstants.LegacyQuestGroup)?.ActiveQuest?.MinimumCharacterLevel ?? 220;
                     var points = (this._player.Level - questLevel) * value;
-                    this._player.Connection?.SendLegacyQuestReward(receiverId, LegacyQuestReward.QuestRewardType.LevelUpPointsPerLevelIncrease, (byte)points);
+                    await this._player.Connection.SendLegacyQuestRewardAsync(receiverId, LegacyQuestReward.QuestRewardType.LevelUpPointsPerLevelIncrease, (byte)points).ConfigureAwait(false);
                 }
 
                 break;

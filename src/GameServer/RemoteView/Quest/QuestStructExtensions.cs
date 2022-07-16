@@ -23,7 +23,7 @@ public static class QuestStructExtensions
     /// </summary>
     /// <param name="questState">State of the quest.</param>
     /// <param name="player">The player.</param>
-    internal static void SendLegacyQuestState(this CharacterQuestState? questState, RemotePlayer player)
+    internal static async ValueTask SendLegacyQuestStateAsync(this CharacterQuestState? questState, RemotePlayer player)
     {
         var connection = player.Connection;
         if (connection is null)
@@ -32,31 +32,37 @@ public static class QuestStructExtensions
         }
 
         var questCount = 7;
-        using var writer = connection.StartSafeWrite(LegacyQuestStateList.HeaderType, LegacyQuestStateList.GetRequiredSize(questCount));
-        var message = new LegacyQuestStateList(writer.Span)
+        int Write()
         {
-            QuestCount = (byte)questCount,
-        };
-
-        if (questState != null)
-        {
-            for (int i = 0; i < (questState.LastFinishedQuest?.Number ?? 0); i++)
+            var size = LegacyQuestStateListRef.GetRequiredSize(questCount);
+            var span = connection.Output.GetSpan(size)[..size];
+            var message = new LegacyQuestStateListRef(span)
             {
-                message[i] = LegacyQuestState.Complete;
+                QuestCount = (byte)questCount,
+            };
+
+            if (questState != null)
+            {
+                for (int i = 0; i < (questState.LastFinishedQuest?.Number ?? 0); i++)
+                {
+                    message[i] = LegacyQuestState.Complete;
+                }
+
+                if (questState.ActiveQuest != null)
+                {
+                    message[questState.ActiveQuest.Number] = LegacyQuestState.Active;
+                }
             }
 
-            if (questState.ActiveQuest != null)
+            if (player.SelectedCharacter?.CharacterClass?.GetBaseClass(player.GameContext.Configuration).Number != (byte)CharacterClassNumber.DarkKnight)
             {
-                message[questState.ActiveQuest.Number] = LegacyQuestState.Active;
+                message.SecretOfDarkStoneState = LegacyQuestState.Undefined;
             }
+
+            return size;
         }
 
-        if (player.SelectedCharacter?.CharacterClass?.GetBaseClass(player.GameContext.Configuration).Number != (byte)CharacterClassNumber.DarkKnight)
-        {
-            message.SecretOfDarkStoneState = LegacyQuestState.Undefined;
-        }
-
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -65,7 +71,7 @@ public static class QuestStructExtensions
     /// <param name="message">The message.</param>
     /// <param name="questState">State of the quest.</param>
     /// <param name="player">The player.</param>
-    internal static void AssignActiveQuestData(this QuestState message, CharacterQuestState? questState, RemotePlayer player)
+    internal static void AssignActiveQuestData(this QuestStateRef message, CharacterQuestState? questState, RemotePlayer player)
     {
         var activeQuest = questState?.ActiveQuest;
         if (activeQuest is null)
@@ -111,7 +117,7 @@ public static class QuestStructExtensions
         message.RewardCount = (byte)r;
     }
 
-    private static void AssignTo(this QuestItemRequirement itemRequirement, QuestCondition condition, RemotePlayer player)
+    private static void AssignTo(this QuestItemRequirement itemRequirement, QuestConditionRef condition, RemotePlayer player)
     {
         condition.Type = ConditionType.Item;
         condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
@@ -122,7 +128,7 @@ public static class QuestStructExtensions
         player.ItemSerializer.SerializeItem(condition.RequiredItemData, temporaryItem);
     }
 
-    private static void AssignTo(this QuestMonsterKillRequirement killRequirement, QuestCondition condition, CharacterQuestState questState)
+    private static void AssignTo(this QuestMonsterKillRequirement killRequirement, QuestConditionRef condition, CharacterQuestState questState)
     {
         condition.Type = ConditionType.MonsterKills;
         condition.RequiredCount = (uint)killRequirement.MinimumNumber;
@@ -130,7 +136,7 @@ public static class QuestStructExtensions
         condition.CurrentCount = (uint)(questState.RequirementStates.FirstOrDefault(s => s.Requirement == killRequirement)?.KillCount ?? 0);
     }
 
-    private static void AssignTo(this QuestReward questReward, Network.Packets.ServerToClient.QuestReward rewardStruct, IItemSerializer itemSerializer)
+    private static void AssignTo(this QuestReward questReward, Network.Packets.ServerToClient.QuestRewardRef rewardStruct, IItemSerializer itemSerializer)
     {
         rewardStruct.Type = questReward.RewardType.Convert();
         rewardStruct.RewardCount = (uint)questReward.Value;

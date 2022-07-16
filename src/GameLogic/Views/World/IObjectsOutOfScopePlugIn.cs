@@ -13,5 +13,5 @@ public interface IObjectsOutOfScopePlugIn : IViewPlugIn
     /// Objects are out of scope.
     /// </summary>
     /// <param name="objects">The objects.</param>
-    void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects);
+    ValueTask ObjectsOutOfScopeAsync(IEnumerable<IIdentifiable> objects);
 }

@@ -29,10 +29,10 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => TargetedSkill.Code;
 
     /// <inheritdoc/>
-    public virtual void HandlePacket(Player player, Span<byte> packet)
+    public virtual async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         TargetedSkill message = packet;
-        this.Handle(player, message.SkillId, message.TargetId);
+        await this.HandleAsync(player, message.SkillId, message.TargetId).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
     /// <param name="player">The player.</param>
     /// <param name="skillId">The skill identifier.</param>
     /// <param name="targetId">The target identifier.</param>
-    protected void Handle(Player player, ushort skillId, ushort targetId)
+    protected async ValueTask HandleAsync(Player player, ushort skillId, ushort targetId)
     {
         if (player.SkillList is null || !player.SkillList.ContainsSkill(skillId))
         {
@@ -51,7 +51,7 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
         // The target can be the own player too, for example when using buff skills.
         if (player.GetObject(targetId) is IAttackable target)
         {
-            this._attackAction.PerformSkill(player, target, skillId);
+            await this._attackAction.PerformSkillAsync(player, target, skillId).ConfigureAwait(false);
         }
     }
 }

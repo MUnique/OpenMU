@@ -28,8 +28,8 @@ public class ShowMoneyDrop : IShowMoneyDropPlugIn
     public ShowMoneyDrop(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowMoney(ushort itemId, bool isFreshDrop, uint amount, Point point)
+    public ValueTask ShowMoneyAsync(ushort itemId, bool isFreshDrop, uint amount, Point point)
     {
-        this._player.Connection.SendMoneyDropped(itemId, isFreshDrop, point.X, point.Y, amount);
+        return this._player.Connection.SendMoneyDroppedAsync(itemId, isFreshDrop, point.X, point.Y, amount);
     }
 }

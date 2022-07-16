@@ -14,5 +14,5 @@ public interface IItemDropResultPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="slot">The slot from which the item has been dropped (or not).</param>
     /// <param name="success">If set to <c>true</c> the item has been dropped; otherwise not.</param>
-    void ItemDropResult(byte slot, bool success);
+    ValueTask ItemDropResultAsync(byte slot, bool success);
 }

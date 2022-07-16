@@ -94,12 +94,12 @@ public sealed class EditMap : ComponentBase, IDisposable
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
         if (this._model is null)
         {
             this._disposeCts = new CancellationTokenSource();
             var cts = this._disposeCts.Token;
-            Task.Run(() => this.LoadDataAsync(cts), cts);
+            _ = Task.Run(() => this.LoadDataAsync(cts), cts);
         }
     }
 
@@ -115,17 +115,17 @@ public sealed class EditMap : ComponentBase, IDisposable
             {
                 try
                 {
-                    this._model = this._persistenceContext.GetById<GameMapDefinition>(this.Id);
+                    this._model = await this._persistenceContext.GetByIdAsync<GameMapDefinition>(this.Id).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     this.Logger.LogError(ex, $"Could not load game map with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    await this.ModalService.ShowMessageAsync("Error", "Could not load the map data. Check the logs for details.");
+                    await this.ModalService.ShowMessageAsync("Error", "Could not load the map data. Check the logs for details.").ConfigureAwait(false);
                 }
 
-                await showModalTask;
+                await showModalTask.ConfigureAwait(false);
                 modal?.Dispose();
-                await this.InvokeAsync(this.StateHasChanged);
+                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
             }
         }
         catch (TargetInvocationException ex) when (ex.InnerException is ObjectDisposedException)

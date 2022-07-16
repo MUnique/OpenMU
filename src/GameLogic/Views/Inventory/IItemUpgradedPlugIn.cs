@@ -13,5 +13,5 @@ public interface IItemUpgradedPlugIn : IViewPlugIn
     /// Item has been upgraded.
     /// </summary>
     /// <param name="item">The item.</param>
-    void ItemUpgraded(Item item);
+    ValueTask ItemUpgradedAsync(Item item);
 }

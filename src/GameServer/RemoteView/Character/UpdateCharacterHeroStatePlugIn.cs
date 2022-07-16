@@ -27,11 +27,11 @@ public class UpdateCharacterHeroStatePlugIn : IUpdateCharacterHeroStatePlugIn
     public UpdateCharacterHeroStatePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateCharacterHeroState(Player affectedPlayer)
+    public async ValueTask UpdateCharacterHeroStateAsync(Player affectedPlayer)
     {
         if (affectedPlayer.SelectedCharacter is { } character)
         {
-            this._player.Connection?.SendHeroStateChanged(affectedPlayer.GetId(this._player), character.State.Convert());
+            await this._player.Connection.SendHeroStateChangedAsync(affectedPlayer.GetId(this._player), character.State.Convert()).ConfigureAwait(false);
         }
     }
 }

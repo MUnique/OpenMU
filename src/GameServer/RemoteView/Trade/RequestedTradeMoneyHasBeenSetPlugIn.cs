@@ -25,8 +25,8 @@ public class RequestedTradeMoneyHasBeenSetPlugIn : IRequestedTradeMoneyHasBeenSe
     public RequestedTradeMoneyHasBeenSetPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void RequestedTradeMoneyHasBeenSet()
+    public ValueTask RequestedTradeMoneyHasBeenSetAsync()
     {
-        this._player.Connection?.SendTradeMoneySetResponse();
+        return this._player.Connection.SendTradeMoneySetResponseAsync();
     }
 }

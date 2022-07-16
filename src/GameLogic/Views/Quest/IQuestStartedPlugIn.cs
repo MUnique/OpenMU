@@ -18,5 +18,5 @@ public interface IQuestStartedPlugIn : IViewPlugIn
     /// Informs the client that the specified quest has been the started.
     /// </summary>
     /// <param name="quest">The started quest.</param>
-    void QuestStarted(QuestDefinition quest);
+    ValueTask QuestStartedAsync(QuestDefinition quest);
 }

@@ -23,5 +23,5 @@ public interface IAreaSkillPlugIn : IStrategyPlugIn<short>
     /// <param name="target">The target.</param>
     /// <param name="skillEntry">The skill entry.</param>
     /// <param name="targetAreaCenter">The target area center.</param>
-    void AfterTargetGotAttacked(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter);
+    ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter);
 }

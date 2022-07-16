@@ -30,15 +30,15 @@ public class QuestCompletionResponsePlugIn : IQuestCompletionResponsePlugIn
     }
 
     /// <inheritdoc />
-    public void QuestCompleted(QuestDefinition quest)
+    public async ValueTask QuestCompletedAsync(QuestDefinition quest)
     {
         if (quest.Group == QuestConstants.LegacyQuestGroup)
         {
-            this._player.Connection.SendLegacySetQuestStateResponse((byte)quest.Number, 0, this._player.GetLegacyQuestStateByte());
+            await this._player.Connection.SendLegacySetQuestStateResponseAsync((byte)quest.Number, 0, this._player.GetLegacyQuestStateByte()).ConfigureAwait(false);
         }
         else
         {
-            this._player.Connection.SendQuestCompletionResponse((ushort)quest.Number, (ushort)quest.Group, true);
+            await this._player.Connection.SendQuestCompletionResponseAsync((ushort)quest.Number, (ushort)quest.Group, true).ConfigureAwait(false);
         }
     }
 }

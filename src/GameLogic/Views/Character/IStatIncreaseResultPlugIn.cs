@@ -16,5 +16,5 @@ public interface IStatIncreaseResultPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="statType">Type of the stat.</param>
     /// <param name="success">if set to <c>true</c> the increment was successful.</param>
-    void StatIncreaseResult(AttributeDefinition statType, bool success);
+    ValueTask StatIncreaseResultAsync(AttributeDefinition statType, bool success);
 }

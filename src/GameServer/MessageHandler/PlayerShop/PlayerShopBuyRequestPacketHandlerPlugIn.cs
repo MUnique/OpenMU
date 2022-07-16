@@ -30,7 +30,7 @@ internal class PlayerShopBuyRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => PlayerShopItemBuyRequest.SubCode;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         PlayerShopItemBuyRequest message = packet;
@@ -38,17 +38,17 @@ internal class PlayerShopBuyRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn
         if (player.CurrentMap?.GetObject(message.PlayerId) is not Player requestedPlayer)
         {
             player.Logger.LogDebug("Player not found: {0}", message.PlayerId);
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Open Store: Player not found.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
         if (message.PlayerName != requestedPlayer.SelectedCharacter?.Name)
         {
             player.Logger.LogDebug("Player Names dont match: {0} != {1}", message.PlayerName, requestedPlayer.SelectedCharacter?.Name);
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Player Names don't match. {message.PlayerName} <> {requestedPlayer.SelectedCharacter?.Name}", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Player Names don't match. {message.PlayerName} <> {requestedPlayer.SelectedCharacter?.Name}", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
-        this._buyAction.BuyItem(player, requestedPlayer, message.ItemSlot);
+        await this._buyAction.BuyItemAsync(player, requestedPlayer, message.ItemSlot).ConfigureAwait(false);
     }
 }

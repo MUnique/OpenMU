@@ -102,7 +102,7 @@ internal sealed class Program : IDisposable
         };
 
         using var program = new Program();
-        await program.Initialize(args).ConfigureAwait(false);
+        await program.InitializeAsync(args).ConfigureAwait(false);
         while (!exitToken.IsCancellationRequested)
         {
             await Task.Delay(100).ConfigureAwait(false);
@@ -120,26 +120,26 @@ internal sealed class Program : IDisposable
     /// Initializes a new instance of the <see cref="Program"/> class.
     /// </summary>
     /// <param name="args">The command line args.</param>
-    public async Task Initialize(string[] args)
+    public async Task InitializeAsync(string[] args)
     {
         this._logger.Information("Creating host...");
-        this._serverHost = await this.CreateHost(args).ConfigureAwait(false);
+        this._serverHost = await this.CreateHostAsync(args).ConfigureAwait(false);
 
         if (args.Contains("-autostart") || !this.IsAdminPanelEnabled(args))
         {
             foreach (var chatServer in this._servers.OfType<ChatServer>())
             {
-                chatServer.Start();
+                await chatServer.StartAsync().ConfigureAwait(false);
             }
 
             foreach (var gameServer in this._gameServers.Values)
             {
-                gameServer.Start();
+                await gameServer.StartAsync().ConfigureAwait(false);
             }
 
             foreach (var connectServer in this._servers.OfType<IConnectServer>())
             {
-                connectServer.Start();
+                await connectServer.StartAsync().ConfigureAwait(false);
             }
         }
     }
@@ -190,7 +190,7 @@ internal sealed class Program : IDisposable
         }
     }
 
-    private async Task<IHost> CreateHost(string[] args)
+    private async Task<IHost> CreateHostAsync(string[] args)
     {
         // Ensure GameLogic and GameServer Assemblies are loaded
         _ = GameLogic.Rand.NextInt(1, 2);
@@ -198,14 +198,14 @@ internal sealed class Program : IDisposable
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
         var addAdminPanel = this.IsAdminPanelEnabled(args);
-        await new ConfigFileDatabaseConnectionStringProvider().InitializeAsync(default);
+        await new ConfigFileDatabaseConnectionStringProvider().InitializeAsync(default).ConfigureAwait(false);
 
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Host.UseSerilog(this._logger);
         if (addAdminPanel)
         {
-            builder.AddAdminPanel();
+            builder.AddAdminPanel(includeMapApp: true);
         }
 
         builder.Host
@@ -216,7 +216,11 @@ internal sealed class Program : IDisposable
                     .AddIpResolver(args)
                     .AddSingleton(this._gameServers)
                     .AddSingleton(this._gameServers.Values)
-                    .AddSingleton(s => this.DeterminePersistenceContextProvider(args, s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered.")))
+                    .AddSingleton(s =>
+                        this.DeterminePersistenceContextProviderAsync(
+                            args,
+                            s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."))
+                            .WaitAndUnwrapException())
                     .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
                     .AddSingleton<ILoginServer, LoginServer>()
                     .AddSingleton<IGuildServer, GuildServer>()
@@ -232,11 +236,10 @@ internal sealed class Program : IDisposable
                     .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
                     .AddSingleton<PlugInManager>()
                     .AddSingleton<IServerProvider, LocalServerProvider>()
-                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
+                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
                     .AddHostedService<ChatServerContainer>()
                     .AddHostedService<GameServerContainer>()
                     .AddHostedService(provider => provider.GetService<ConnectServerContainer>());
-
             });
         var host = builder.Build();
 
@@ -255,7 +258,7 @@ internal sealed class Program : IDisposable
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        await host.StartAsync();
+        await host.StartAsync().ConfigureAwait(false);
         stopwatch.Stop();
         this._logger.Information($"Host started, elapsed time: {stopwatch.Elapsed}");
         return host;
@@ -298,7 +301,7 @@ internal sealed class Program : IDisposable
         return parameter.Substring(parameter.IndexOf(':') + 1);
     }
 
-    private IMigratableDatabaseContextProvider DeterminePersistenceContextProvider(string[] args, ILoggerFactory loggerFactory)
+    private async Task<IMigratableDatabaseContextProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory)
     {
         var version = this.GetVersionParameter(args);
 
@@ -306,32 +309,32 @@ internal sealed class Program : IDisposable
         if (args.Contains("-demo"))
         {
             contextProvider = new InMemoryPersistenceContextProvider();
-            this.InitializeData(version, loggerFactory, contextProvider);
+            await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
         }
         else
         {
-            contextProvider = this.PrepareRepositoryManager(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory);
+            contextProvider = await this.PrepareRepositoryManagerAsync(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory).ConfigureAwait(false);
         }
 
         return contextProvider;
     }
 
-    private IMigratableDatabaseContextProvider PrepareRepositoryManager(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
+    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryManagerAsync(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
     {
         var contextProvider = new PersistenceContextProvider(loggerFactory, null);
-        if (reinit || !contextProvider.DatabaseExists())
+        if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))
         {
             this._logger.Information("The database is getting (re-)initialized...");
-            contextProvider.ReCreateDatabase();
-            this.InitializeData(version, loggerFactory, contextProvider);
+            await contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
+            await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
             this._logger.Information("...initialization finished.");
         }
-        else if (!contextProvider.IsDatabaseUpToDate())
+        else if (!await contextProvider.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
             if (autoupdate)
             {
                 Console.WriteLine("The database needs to be updated before the server can be started. Updating...");
-                contextProvider.ApplyAllPendingUpdates();
+                await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
                 Console.WriteLine("The database has been successfully updated.");
             }
             else
@@ -340,7 +343,7 @@ internal sealed class Program : IDisposable
                 var key = Console.ReadLine()?.ToLowerInvariant();
                 if (key == "y")
                 {
-                    contextProvider.ApplyAllPendingUpdates();
+                    await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
                     Console.WriteLine("The database has been successfully updated.");
                 }
                 else
@@ -358,7 +361,7 @@ internal sealed class Program : IDisposable
         return contextProvider;
     }
 
-    private void InitializeData(string version, ILoggerFactory loggerFactory, IPersistenceContextProvider contextProvider)
+    private async Task InitializeDataAsync(string version, ILoggerFactory loggerFactory, IPersistenceContextProvider contextProvider)
     {
         var serviceContainer = new ServiceContainer();
         serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
@@ -367,6 +370,6 @@ internal sealed class Program : IDisposable
         var plugInManager = new PlugInManager(null, loggerFactory, serviceContainer);
         plugInManager.DiscoverAndRegisterPlugInsOf<IDataInitializationPlugIn>();
         var initialization = plugInManager.GetStrategy<IDataInitializationPlugIn>(version) ?? throw new Exception("Data initialization plugin not found");
-        initialization.CreateInitialData(3, true);
+        await initialization.CreateInitialDataAsync(3, true).ConfigureAwait(false);
     }
 }

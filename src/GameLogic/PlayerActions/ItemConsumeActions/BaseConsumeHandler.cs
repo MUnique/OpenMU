@@ -12,14 +12,14 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 public class BaseConsumeHandler : IItemConsumeHandler
 {
     /// <inheritdoc/>
-    public virtual bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public virtual async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
         if (!this.CheckPreconditions(player, item))
         {
             return false;
         }
 
-        this.ConsumeSourceItem(player, item);
+        await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
 
         return true;
     }
@@ -29,7 +29,7 @@ public class BaseConsumeHandler : IItemConsumeHandler
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="item">The item.</param>
-    protected void ConsumeSourceItem(Player player, Item item)
+    protected async ValueTask ConsumeSourceItemAsync(Player player, Item item)
     {
         if (item.Durability > 0)
         {
@@ -38,8 +38,12 @@ public class BaseConsumeHandler : IItemConsumeHandler
 
         if (item.Durability == 0)
         {
-            player.Inventory?.RemoveItem(item);
-            player.PersistenceContext.Delete(item);
+            if (player.Inventory is { } inventory)
+            {
+                await inventory.RemoveItemAsync(item).ConfigureAwait(false);
+            }
+
+            await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         }
     }
 

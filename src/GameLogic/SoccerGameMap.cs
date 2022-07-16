@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.ComponentModel;
+using System.Diagnostics;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Pathfinding;
@@ -26,7 +27,7 @@ public class SoccerGameMap : GameMap
     public SoccerGameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize)
         : base(mapDefinition, itemDropDuration, chunkSize)
     {
-        this.ObjectAdded += this.OnObjectAdded;
+        this.ObjectAdded += this.OnObjectAddedAsync;
     }
 
     /// <summary>
@@ -44,14 +45,14 @@ public class SoccerGameMap : GameMap
     /// Starts the battle.
     /// </summary>
     /// <param name="score">The score which will be updated.</param>
-    public void StartBattle(GuildWarScore score)
+    public async ValueTask StartBattleAsync(GuildWarScore score)
     {
         this._score = score;
         this._score.PropertyChanged += this.OnScoreChanged;
 
         this.Ball.Initialize();
-        this.Respawn(this.Ball);
-        this.Ball.Moved += this.OnSoccerBallMoved;
+        await this.RespawnAsync(this.Ball).ConfigureAwait(false);
+        this.Ball.Moved += this.OnSoccerBallMovedAsync;
     }
 
     /// <summary>
@@ -77,7 +78,7 @@ public class SoccerGameMap : GameMap
         this.IsBattleOngoing = true;
     }
 
-    private void FinalizeBattle()
+    private async ValueTask FinalizeBattleAsync()
     {
         if (this._score is { } finishedScore)
         {
@@ -85,40 +86,48 @@ public class SoccerGameMap : GameMap
         }
 
         this._score = null;
-        this.Ball.Moved -= this.OnSoccerBallMoved;
+        this.Ball.Moved -= this.OnSoccerBallMovedAsync;
         this.Ball.Initialize();
-        this.Respawn(this.Ball);
+        await this.RespawnAsync(this.Ball).ConfigureAwait(false);
 
         this.IsBattleOngoing = false;
     }
 
-    private void OnSoccerBallMoved(object? sender, (Point From, Point To) e)
+    private async ValueTask OnSoccerBallMovedAsync((Point From, Point To) e)
     {
         if (!e.From.IsWithinBoundsOf(this.Definition.BattleZone!.LeftGoal!)
             && e.To.IsWithinBoundsOf(this.Definition.BattleZone.LeftGoal!))
         {
             this._score!.IncreaseSecondGuildScore(20);
             this.Ball.Initialize();
-            this.Respawn(this.Ball);
+            await this.RespawnAsync(this.Ball).ConfigureAwait(false);
         }
         else if (!e.From.IsWithinBoundsOf(this.Definition.BattleZone.RightGoal!)
                  && e.To.IsWithinBoundsOf(this.Definition.BattleZone.RightGoal!))
         {
             this._score!.IncreaseFirstGuildScore(20);
             this.Ball.Initialize();
-            this.Respawn(this.Ball);
+            await this.RespawnAsync(this.Ball).ConfigureAwait(false);
         }
     }
 
-    private void OnScoreChanged(object? sender, PropertyChangedEventArgs e)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnScoreChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(this._score.HasEnded))
+        try
         {
-            this.FinalizeBattle();
+            if (e.PropertyName == nameof(this._score.HasEnded))
+            {
+                await this.FinalizeBattleAsync().ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.Fail(ex.Message, ex.StackTrace);
         }
     }
 
-    private void OnObjectAdded(object? sender, (GameMap Map, ILocateable Object) e)
+    private async ValueTask OnObjectAddedAsync((GameMap Map, ILocateable Object) e)
     {
         if (e.Object is SoccerBall soccerBall)
         {

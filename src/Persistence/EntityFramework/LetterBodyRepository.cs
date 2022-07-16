@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -16,9 +17,9 @@ internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
     /// Initializes a new instance of the <see cref="LetterBodyRepository" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger.</param>
-    public LetterBodyRepository(RepositoryManager repositoryManager, ILogger<LetterBodyRepository> logger)
-        : base(repositoryManager, logger)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public LetterBodyRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory)
+        : base(repositoryManager, loggerFactory)
     {
     }
 
@@ -27,13 +28,13 @@ internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
     /// </summary>
     /// <param name="headerId">The id of its header.</param>
     /// <returns>The body of the header.</returns>
-    public LetterBody? GetBodyByHeaderId(Guid headerId)
+    public async ValueTask<LetterBody?> GetBodyByHeaderIdAsync(Guid headerId)
     {
         using var context = this.GetContext();
-        var letterBody = context.Context.Set<LetterBody>().FirstOrDefault(body => body.HeaderId == headerId);
+        var letterBody = await context.Context.Set<LetterBody>().FirstOrDefaultAsync(body => body.HeaderId == headerId).ConfigureAwait(false);
         if (letterBody != null)
         {
-            this.LoadDependentData(letterBody, context.Context);
+            await this.LoadDependentDataAsync(letterBody, context.Context).ConfigureAwait(false);
         }
 
         return letterBody;

@@ -33,17 +33,19 @@ public class ManagableServerRegistry : IServerProvider, IDisposable
         this._daprClient = daprClient;
         this._logger = logger;
 
-        Task.Run(async () =>
+        async Task RunTimeoutLoop()
         {
             try
             {
-                await this.TimeoutLoopAsync(this._disposeCts.Token);
+                await this.TimeoutLoopAsync(this._disposeCts.Token).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 this._logger.LogError(ex, "Error in cleanup loop");
             }
-        });
+        }
+
+        _ = RunTimeoutLoop();
     }
 
     /// <inheritdoc />
@@ -98,7 +100,7 @@ public class ManagableServerRegistry : IServerProvider, IDisposable
     {
         while (!this._disposeCts.IsCancellationRequested)
         {
-            await Task.Delay(2000, cancellationToken);
+            await Task.Delay(2000, cancellationToken).ConfigureAwait(false);
 
             foreach (var server in this._serverClients.Values)
             {

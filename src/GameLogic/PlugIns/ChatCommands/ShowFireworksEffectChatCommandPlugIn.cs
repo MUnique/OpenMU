@@ -27,9 +27,9 @@ public class ShowFireworksEffectChatCommandPlugIn : ChatCommandPlugInBase<Coordi
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc/>
-    protected override void DoHandleCommand(Player gameMaster, CoordinatesCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CoordinatesCommandArgs arguments)
     {
         var coordinates = arguments.X == 0 ? gameMaster.Position : new Point(arguments.X, arguments.Y);
-        gameMaster.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IShowItemDropEffectPlugIn>()?.ShowEffect(ItemDropEffect.Fireworks, coordinates), true);
+        await gameMaster.ForEachWorldObserverAsync<IShowItemDropEffectPlugIn>(p => p.ShowEffectAsync(ItemDropEffect.Fireworks, coordinates), true).ConfigureAwait(false);
     }
 }

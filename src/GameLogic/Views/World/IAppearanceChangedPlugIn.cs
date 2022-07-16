@@ -14,5 +14,5 @@ public interface IAppearanceChangedPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="changedPlayer">The changed player.</param>
     /// <param name="changedItem">The changed item.</param>
-    void AppearanceChanged(Player changedPlayer, Item changedItem);
+    ValueTask AppearanceChangedAsync(Player changedPlayer, Item changedItem);
 }

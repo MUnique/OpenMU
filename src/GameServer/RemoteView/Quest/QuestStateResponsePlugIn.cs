@@ -30,11 +30,11 @@ public class QuestStateResponsePlugIn : IQuestStateResponsePlugIn
     public QuestStateResponsePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowQuestState(CharacterQuestState? questState)
+    public async ValueTask ShowQuestStateAsync(CharacterQuestState? questState)
     {
         if (questState is null || questState.Group == QuestConstants.LegacyQuestGroup)
         {
-            questState.SendLegacyQuestState(this._player);
+            await questState.SendLegacyQuestStateAsync(this._player).ConfigureAwait(false);
             return;
         }
 
@@ -44,13 +44,20 @@ public class QuestStateResponsePlugIn : IQuestStateResponsePlugIn
             return;
         }
 
-        using var writer = connection.StartSafeWrite(QuestState.HeaderType, QuestState.Length);
-        var message = new QuestState(writer.Span)
+        int Write()
         {
-            QuestGroup = (ushort)questState.Group,
-        };
+            var size = QuestStateRef.Length;
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new QuestStateRef(span)
+            {
+                QuestGroup = (ushort)questState.Group,
+            };
 
-        message.AssignActiveQuestData(questState, this._player);
-        writer.Commit();
+            packet.AssignActiveQuestData(questState, this._player);
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

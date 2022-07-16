@@ -15,7 +15,7 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 public abstract class BaseItemCraftingHandler : IItemCraftingHandler
 {
     /// <inheritdoc/>
-    public (CraftingResult, Item?) DoMix(Player player, byte socketSlot)
+    public async ValueTask<(CraftingResult Result, Item? Item)> DoMixAsync(Player player, byte socketSlot)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.TemporaryStorage is null)
@@ -34,12 +34,12 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             return (CraftingResult.NotEnoughMoney, null);
         }
 
-        player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
+        await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
 
         var success = Rand.NextRandomBool(successRate);
         if (success)
         {
-            if (this.DoTheMix(items, player, socketSlot) is { } item)
+            if (await this.DoTheMixAsync(items, player, socketSlot).ConfigureAwait(false) is { } item)
             {
                 return (CraftingResult.Success, item);
             }
@@ -47,7 +47,11 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             return (CraftingResult.Failed, null);
         }
 
-        items.ForEach(i => this.RequiredItemChange(player, i, false));
+        foreach (var i in items)
+        {
+            await this.RequiredItemChangeAsync(player, i, false).ConfigureAwait(false);
+        }
+
         return (CraftingResult.Failed, null);
     }
 
@@ -77,7 +81,7 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     /// <param name="player">The player.</param>
     /// <param name="socketSlot">The slot of the socket.</param>
     /// <returns>The created or modified items.</returns>
-    protected abstract IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot);
+    protected abstract ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot);
 
     /// <summary>
     /// Performs the crafting with the specified items.
@@ -88,14 +92,14 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     /// <returns>
     /// The created or modified item. If there are multiple, only the last one is returned.
     /// </returns>
-    private Item? DoTheMix(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    private async ValueTask<Item?> DoTheMixAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
     {
         foreach (var requiredItemLink in requiredItems)
         {
-            this.RequiredItemChange(player, requiredItemLink, true);
+            await this.RequiredItemChangeAsync(player, requiredItemLink, true).ConfigureAwait(false);
         }
 
-        var resultItems = this.CreateOrModifyResultItems(requiredItems, player, socketSlot);
+        var resultItems = await this.CreateOrModifyResultItemsAsync(requiredItems, player, socketSlot).ConfigureAwait(false);
         return resultItems.LastOrDefault();
     }
 
@@ -105,7 +109,7 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     /// <param name="player">The player.</param>
     /// <param name="itemLink">The item link.</param>
     /// <param name="success"><c>true</c>, if the crafting was successful; Otherwise, <c>false</c>.</param>
-    private void RequiredItemChange(Player player, CraftingRequiredItemLink itemLink, bool success)
+    private async ValueTask RequiredItemChangeAsync(Player player, CraftingRequiredItemLink itemLink, bool success)
     {
         var mixResult = success ? itemLink.ItemRequirement.SuccessResult : itemLink.ItemRequirement.FailResult;
 
@@ -116,8 +120,8 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                 foreach (var item in itemLink.Items)
                 {
                     player.Logger.LogDebug("Item {0} is getting destroyed.", item);
-                    player.TemporaryStorage!.RemoveItem(item);
-                    player.PersistenceContext.Delete(item);
+                    await player.TemporaryStorage!.RemoveItemAsync(item).ConfigureAwait(false);
+                    await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
                     point?.ItemDestroyed(item);
                 }
 

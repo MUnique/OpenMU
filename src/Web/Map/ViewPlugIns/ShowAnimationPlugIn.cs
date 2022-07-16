@@ -29,14 +29,14 @@ public class ShowAnimationPlugIn : JsViewPlugInBase, IShowAnimationPlugIn
     }
 
     /// <inheritdoc />
-    public async void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable? targetObj, Direction direction)
+    public async ValueTask ShowAnimationAsync(IIdentifiable animatingObj, byte animation, IIdentifiable? targetObj, Direction direction)
     {
-        await this.InvokeAsync(animatingObj.Id, animation, targetObj?.Id ?? 0, direction);
+        await this.InvokeAsync(animatingObj.Id, animation, targetObj?.Id ?? 0, direction).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public async void ShowMonsterAttackAnimation(IIdentifiable animatingObj, IIdentifiable? targetObj, Direction direction)
+    public async ValueTask ShowMonsterAttackAnimationAsync(IIdentifiable animatingObj, IIdentifiable? targetObj, Direction direction)
     {
-        await this.InvokeAsync(animatingObj.Id, MonsterAttackAnimation, targetObj?.Id ?? 0, direction);
+        await this.InvokeAsync(animatingObj.Id, MonsterAttackAnimation, targetObj?.Id ?? 0, direction).ConfigureAwait(false);
     }
 }

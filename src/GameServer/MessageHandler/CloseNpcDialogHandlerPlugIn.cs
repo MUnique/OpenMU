@@ -26,8 +26,8 @@ internal class CloseNpcDialogHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => CloseNpcRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        this._closeNpcDialogAction.CloseNpcDialog(player);
+        await this._closeNpcDialogAction.CloseNpcDialogAsync(player).ConfigureAwait(false);
     }
 }

@@ -13,5 +13,5 @@ public interface IDroppedItemsDisappearedPlugIn : IViewPlugIn
     /// The item drops disappeared from the ground.
     /// </summary>
     /// <param name="disappearedItemIds">The ids of the disappeared items.</param>
-    void DroppedItemsDisappeared(IEnumerable<ushort> disappearedItemIds);
+    ValueTask DroppedItemsDisappearedAsync(IEnumerable<ushort> disappearedItemIds);
 }

@@ -25,8 +25,8 @@ public class ShowShowGuildWarRequestResultPlugIn : IShowShowGuildWarRequestResul
     public ShowShowGuildWarRequestResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowResult(GameLogic.Views.Guild.GuildWarRequestResult result)
+    public async ValueTask ShowResultAsync(GameLogic.Views.Guild.GuildWarRequestResult result)
     {
-        this._player.Connection?.SendGuildWarRequestResult(result.Convert());
+        await this._player.Connection.SendGuildWarRequestResultAsync(result.Convert()).ConfigureAwait(false);
     }
 }

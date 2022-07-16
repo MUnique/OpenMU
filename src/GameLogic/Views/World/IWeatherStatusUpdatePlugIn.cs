@@ -14,5 +14,5 @@ public interface IWeatherStatusUpdatePlugIn : IViewPlugIn
     /// </summary>
     /// <param name="weather">The weather, usually a value between 0 and 2 (inclusive).</param>
     /// <param name="variation">The variation, usually a value between 0 and 9 (inclusive).</param>
-    void ShowWeather(byte weather, byte variation);
+    ValueTask ShowWeatherAsync(byte weather, byte variation);
 }

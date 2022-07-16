@@ -26,12 +26,12 @@ internal sealed class ShowNpcIdsChatCommand : IChatCommandPlugIn
     public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc/>
-    public void HandleCommand(Player player, string command)
+    public async ValueTask HandleCommandAsync(Player player, string command)
     {
         var monsters = player.ObservingBuckets.SelectMany(b => b).OfType<NonPlayerCharacter>().ToList();
         foreach (var monster in monsters)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessageOfObjectPlugIn>()?.ShowMessageOfObject($"{monster.Id}", monster);
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync($"{monster.Id}", monster)).ConfigureAwait(false);
         }
     }
 }

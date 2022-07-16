@@ -24,5 +24,5 @@ public interface IChatCommandPlugIn : IStrategyPlugIn<string>
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="command">The command.</param>
-    void HandleCommand(Player player, string command);
+    ValueTask HandleCommandAsync(Player player, string command);
 }

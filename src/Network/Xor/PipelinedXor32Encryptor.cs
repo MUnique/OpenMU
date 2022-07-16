@@ -14,7 +14,7 @@ using System.IO.Pipelines;
 public class PipelinedXor32Encryptor : PacketPipeReaderBase, IPipelinedEncryptor
 {
     private readonly PipeWriter _target;
-    private readonly Pipe _pipe = new ();
+    private readonly Pipe _pipe = new();
     private readonly byte[] _xor32Key;
 
     /// <summary>
@@ -41,16 +41,16 @@ public class PipelinedXor32Encryptor : PacketPipeReaderBase, IPipelinedEncryptor
         this.Source = this._pipe.Reader;
         this._target = target;
         this._xor32Key = xor32Key;
-        this.ReadSource().ConfigureAwait(false);
+        _ = this.ReadSourceAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public PipeWriter Writer => this._pipe.Writer;
 
     /// <inheritdoc />
-    protected override void OnComplete(Exception? exception)
+    protected override ValueTask OnCompleteAsync(Exception? exception)
     {
-        this._target.Complete(exception);
+        return this._target.CompleteAsync(exception);
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class PipelinedXor32Encryptor : PacketPipeReaderBase, IPipelinedEncryptor
     /// </summary>
     /// <param name="packet">The mu online packet.</param>
     /// <returns>The async task.</returns>
-    protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
+    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         this.EncryptAndWrite(packet);
         await this._target.FlushAsync().ConfigureAwait(false);

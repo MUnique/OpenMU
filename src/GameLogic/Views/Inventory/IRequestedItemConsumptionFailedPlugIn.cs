@@ -12,5 +12,5 @@ public interface IRequestedItemConsumptionFailedPlugIn : IViewPlugIn
     /// <summary>
     /// Shows that the requested item consumption failed.
     /// </summary>
-    void RequestedItemConsumptionFailed();
+    ValueTask RequestedItemConsumptionFailedAsync();
 }

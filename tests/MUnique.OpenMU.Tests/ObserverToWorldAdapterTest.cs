@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx;
+
 namespace MUnique.OpenMU.Tests;
 
 using Moq;
@@ -22,7 +24,7 @@ public class ObserverToWorldAdapterTest
     /// Tests if a <see cref="ILocateable"/> is only reported once to the <see cref="INewNpcsInScopePlugIn"/> when it's already known to it.
     /// </summary>
     [Test]
-    public void LocateableAddedAlreadyExists()
+    public async ValueTask LocateableAddedAlreadyExistsAsync()
     {
         var worldObserver = new Mock<IWorldObserver>();
         var view = new Mock<INewNpcsInScopePlugIn>();
@@ -35,20 +37,20 @@ public class ObserverToWorldAdapterTest
         {
             Position = new Point(128, 128),
         };
-        map.Add(nonPlayer);
-        adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
+        await map.AddAsync(nonPlayer).ConfigureAwait(false);
+        await adapter.LocateableAddedAsync(nonPlayer).ConfigureAwait(false);
         adapter.ObservingBuckets.Add(nonPlayer.NewBucket!);
         nonPlayer.OldBucket = nonPlayer.NewBucket; // oldbucket would be set, if it got moved on the map
 
-        adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer));
-        view.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer)), true), Times.Once);
+        await adapter.LocateableAddedAsync(nonPlayer).ConfigureAwait(false);
+        view.Verify(v => v.NewNpcsInScopeAsync(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer)), true), Times.Once);
     }
 
     /// <summary>
     /// Tests if a <see cref="ILocateable"/> is not reported as out of scope to the view plugins when its new bucket is still observed.
     /// </summary>
     [Test]
-    public void LocateableNotOutOfScopeWhenMovedToObservedBucket()
+    public async ValueTask LocateableNotOutOfScopeWhenMovedToObservedBucketAsync()
     {
         var worldObserver = new Mock<IWorldObserver>();
         var view1 = new Mock<INewNpcsInScopePlugIn>();
@@ -65,23 +67,23 @@ public class ObserverToWorldAdapterTest
         {
             Position = new Point(128, 128),
         };
-        map.Add(nonPlayer1);
+        await map.AddAsync(nonPlayer1).ConfigureAwait(false);
         var nonPlayer2 = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
         {
             Position = new Point(100, 128),
         };
-        map.Add(nonPlayer2);
+        await map.AddAsync(nonPlayer2).ConfigureAwait(false);
         adapter.ObservingBuckets.Add(nonPlayer1.NewBucket!);
         adapter.ObservingBuckets.Add(nonPlayer2.NewBucket!);
 
-        adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer1));
-        adapter.LocateableAdded(map, new BucketItemEventArgs<ILocateable>(nonPlayer2));
+        await adapter.LocateableAddedAsync(nonPlayer1).ConfigureAwait(false);
+        await adapter.LocateableAddedAsync(nonPlayer2).ConfigureAwait(false);
 
-        map.Move(nonPlayer1, nonPlayer2.Position, nonPlayer1, MoveType.Instant);
+        await map.MoveAsync(nonPlayer1, nonPlayer2.Position, new AsyncLock(), MoveType.Instant).ConfigureAwait(false);
 
-        view1.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer1)), true), Times.Once);
-        view1.Verify(v => v.NewNpcsInScope(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer2)), true), Times.Once);
-        view2.Verify(v => v.ObjectsOutOfScope(It.IsAny<IEnumerable<IIdentifiable>>()), Times.Never);
-        view3.Verify(v => v.ObjectMoved(It.Is<ILocateable>(arg => arg == nonPlayer1), MoveType.Instant), Times.Once);
+        view1.Verify(v => v.NewNpcsInScopeAsync(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer1)), true), Times.Once);
+        view1.Verify(v => v.NewNpcsInScopeAsync(It.Is<IEnumerable<NonPlayerCharacter>>(arg => arg.Contains(nonPlayer2)), true), Times.Once);
+        view2.Verify(v => v.ObjectsOutOfScopeAsync(It.IsAny<IEnumerable<IIdentifiable>>()), Times.Never);
+        view3.Verify(v => v.ObjectMovedAsync(It.Is<ILocateable>(arg => arg == nonPlayer1), MoveType.Instant), Times.Once);
     }
 }

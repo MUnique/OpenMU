@@ -20,6 +20,6 @@ builder.AddAdminPanel();
 
 var app = builder.BuildAndConfigure(true);
 
-await app.WaitForDatabaseConnectionInitialization().ConfigureAwait(false);
+await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);
 
 app.Run();

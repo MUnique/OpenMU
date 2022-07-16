@@ -8,6 +8,23 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F4</Code>
       <SubCode>03</SubCode>
+      <Name>ConnectionInfoRequest075</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client after the user clicked on an entry of the server list.</SentWhen>
+      <CausedReaction>The server will send a ConnectionInfo back to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ServerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F4</Code>
+      <SubCode>03</SubCode>
       <Name>ConnectionInfoRequest</Name>
       <Length>6</Length>
       <Direction>ClientToServer</Direction>

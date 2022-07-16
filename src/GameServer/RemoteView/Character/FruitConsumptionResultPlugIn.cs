@@ -27,9 +27,9 @@ public class FruitConsumptionResultPlugIn : IFruitConsumptionResponsePlugIn
     public FruitConsumptionResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowResponse(FruitConsumptionResult result, byte statPoints, AttributeDefinition statAttribute)
+    public async ValueTask ShowResponseAsync(FruitConsumptionResult result, byte statPoints, AttributeDefinition statAttribute)
     {
-        this._player.Connection.SendFruitConsumptionResponse(Convert(result), statPoints, Convert(statAttribute));
+        await this._player.Connection.SendFruitConsumptionResponseAsync(Convert(result), statPoints, Convert(statAttribute)).ConfigureAwait(false);
     }
 
     private static FruitConsumptionResponse.FruitConsumptionResult Convert(FruitConsumptionResult result)

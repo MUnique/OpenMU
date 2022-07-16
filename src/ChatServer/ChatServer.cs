@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.ChatServer;
 
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Timers;
@@ -24,25 +25,24 @@ public sealed class ChatServer : IChatServer, IDisposable
     private readonly ILogger<ChatServer> _logger;
     private readonly ILoggerFactory _loggerFactory;
     private readonly PlugInManager _plugInManager;
-    private readonly IIpAddressResolver _addressResolver;
 
     private readonly RandomNumberGenerator _randomNumberGenerator;
 
     private readonly IList<IChatClient> _connectedClients = new List<IChatClient>();
 
     private readonly IList<ChatServerListener> _listeners = new List<ChatServerListener>();
+    private readonly Task<IPAddress> _resolveAddressTask;
 
     private Timer? _clientCleanupTimer;
     private Timer? _roomCleanupTimer;
 
     private ChatServerSettings? _settings;
 
-    private string? _publicIp;
+    private string? _ipAddress;
 
     private bool _isDisposed;
 
     private ServerState _serverState;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatServer" /> class.
     /// </summary>
@@ -54,9 +54,9 @@ public sealed class ChatServer : IChatServer, IDisposable
         this._loggerFactory = loggerFactory;
         this._plugInManager = plugInManager;
         this._logger = loggerFactory.CreateLogger<ChatServer>();
-        this._addressResolver = addressResolver;
         this._manager = new ChatRoomManager(loggerFactory);
         this._randomNumberGenerator = RandomNumberGenerator.Create();
+        this._resolveAddressTask = addressResolver.ResolveIPv4Async().AsTask();
     }
 
     /// <inheritdoc/>
@@ -94,16 +94,10 @@ public sealed class ChatServer : IChatServer, IDisposable
     /// <inheritdoc/>
     public int CurrentConnections => this._connectedClients.Count;
 
-    /// <summary>
-    /// Gets the ip address of the server.
-    /// </summary>
-    /// <returns>The ip address of the server.</returns>
-    public string IpAddress => this._publicIp ??= this._addressResolver.ResolveIPv4().ToString();
-
     private ChatServerSettings Settings => this._settings ?? throw new InvalidOperationException("The server was not initialized before");
 
     /// <inheritdoc/>
-    public ChatServerAuthenticationInfo RegisterClient(ushort roomId, string clientName)
+    public async ValueTask<ChatServerAuthenticationInfo?> RegisterClientAsync(ushort roomId, string clientName)
     {
         var room = this._manager.GetChatRoom(roomId);
         if (room is null)
@@ -113,30 +107,66 @@ public sealed class ChatServer : IChatServer, IDisposable
             throw new ArgumentException(errorMessage, nameof(roomId));
         }
 
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
+        var ipAddress = this._ipAddress ??= (await this._resolveAddressTask.ConfigureAwait(false)).ToString();
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
+
         var index = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(index, roomId, clientName, this.IpAddress, this.GetRandomAuthenticationToken(index));
+        var authenticationInfo = new ChatServerAuthenticationInfo(index, roomId, clientName, ipAddress, this.GetRandomAuthenticationToken(index));
         room.RegisterClient(authenticationInfo);
         return authenticationInfo;
     }
 
     /// <inheritdoc/>
-    public ushort CreateChatRoom()
+    public ValueTask<ushort> CreateChatRoomAsync()
     {
-        return this._manager.CreateChatRoom();
+        return ValueTask.FromResult(this._manager.CreateChatRoom());
     }
 
     /// <inheritdoc />
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        this.Start();
-        return Task.CompletedTask;
+        await this.StartAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Starts the listener of this chat server instance.
+    /// </summary>
+    public async ValueTask StartAsync()
+    {
+        if (this.ServerState != ServerState.Stopped)
+        {
+            return;
+        }
+
+        this._logger.LogInformation("Begin starting");
+        var oldState = this.ServerState;
+        this.ServerState = OpenMU.Interfaces.ServerState.Starting;
+        try
+        {
+            this.CreateListeners();
+            foreach (var listener in this._listeners)
+            {
+                listener.Start();
+            }
+
+            this.CreateCleanupTimers();
+
+            this.ServerState = OpenMU.Interfaces.ServerState.Started;
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error while starting");
+            this.ServerState = oldState;
+        }
+
+        this._logger.LogInformation("Finished starting");
     }
 
     /// <inheritdoc />
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
-        this.Shutdown();
-        return Task.CompletedTask;
+        await this.ShutdownAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -180,48 +210,14 @@ public sealed class ChatServer : IChatServer, IDisposable
         foreach (var endpoint in this.Settings.Endpoints)
         {
             var listener = new ChatServerListener(endpoint, this._plugInManager, this._loggerFactory);
-            listener.ClientAccepted += this.ChatClientAccepted;
-            listener.ClientAccepting += this.ChatClientAccepting;
+            listener.ClientAccepted += this.ChatClientAcceptedAsync;
+            listener.ClientAccepting += this.ChatClientAcceptingAsync;
             this._listeners.Add(listener);
         }
     }
 
-    /// <summary>
-    /// Starts the listener of this chat server instance.
-    /// </summary>
-    public void Start()
-    {
-        if (this.ServerState != ServerState.Stopped)
-        {
-            return;
-        }
-
-        this._logger.LogInformation("Begin starting");
-        var oldState = this.ServerState;
-        this.ServerState = OpenMU.Interfaces.ServerState.Starting;
-        try
-        {
-            this.CreateListeners();
-            foreach (var listener in this._listeners)
-            {
-                listener.Start();
-            }
-
-            this.CreateCleanupTimers();
-
-            this.ServerState = OpenMU.Interfaces.ServerState.Started;
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Error while starting");
-            this.ServerState = oldState;
-        }
-
-        this._logger.LogInformation("Finished starting");
-    }
-
     /// <inheritdoc/>
-    public void Shutdown()
+    public async ValueTask ShutdownAsync()
     {
         if (this.ServerState != ServerState.Started)
         {
@@ -242,7 +238,14 @@ public sealed class ChatServer : IChatServer, IDisposable
         var clients = this._connectedClients.ToList();
         foreach (var client in clients)
         {
-            client.LogOff();
+            try
+            {
+                await client.LogOffAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error logging client off.");
+            }
         }
 
         this.ServerState = OpenMU.Interfaces.ServerState.Stopped;
@@ -279,7 +282,7 @@ public sealed class ChatServer : IChatServer, IDisposable
         return tokenAsString;
     }
 
-    private void ChatClientAccepting(object? sender, CancelEventArgs e)
+    private async ValueTask ChatClientAcceptingAsync(CancelEventArgs e)
     {
         if (this.Settings.MaximumConnections == int.MaxValue)
         {
@@ -289,15 +292,15 @@ public sealed class ChatServer : IChatServer, IDisposable
         e.Cancel = this.CurrentConnections >= this.Settings.MaximumConnections;
     }
 
-    private void ChatClientAccepted(object? sender, ClientAcceptedEventArgs e)
+    private async ValueTask ChatClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
         var chatClient = new ChatClient(e.AcceptedConnection, this._manager, this._loggerFactory.CreateLogger<ChatClient>());
         this._connectedClients.Add(chatClient);
         this.RaisePropertyChanged(nameof(this.CurrentConnections));
-        chatClient.Disconnected += this.ChatClient_Disconnected;
+        chatClient.Disconnected += this.ChatClientDisconnected;
     }
 
-    private void ChatClient_Disconnected(object? sender, EventArgs e)
+    private void ChatClientDisconnected(object? sender, EventArgs e)
     {
         if (sender is IChatClient client)
         {
@@ -307,7 +310,8 @@ public sealed class ChatServer : IChatServer, IDisposable
         this.RaisePropertyChanged(nameof(this.CurrentConnections));
     }
 
-    private void ClientCleanupInactiveClients(object? sender, ElapsedEventArgs e)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void ClientCleanupInactiveClients(object? sender, ElapsedEventArgs e)
     {
         try
         {
@@ -318,7 +322,7 @@ public sealed class ChatServer : IChatServer, IDisposable
                 if (client.LastActivity < bottomDateTimeMargin)
                 {
                     this._logger.LogDebug($"Disconnecting client {client}, because of activity timeout. LastActivity: {client.LastActivity}");
-                    client.LogOff();
+                    await client.LogOffAsync().ConfigureAwait(false);
                 }
             }
         }

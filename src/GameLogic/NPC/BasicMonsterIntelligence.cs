@@ -44,25 +44,16 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// </summary>
     protected IAttackable? CurrentTarget { get; private set; }
 
-    private bool IsObservedByAttacker
+    private async ValueTask<bool> IsObservedByAttackerAsync()
     {
-        get
-        {
-            this.Monster.ObserverLock.EnterReadLock();
-            try
-            {
-                return this.Monster.Observers.OfType<IAttacker>().Any();
-            }
-            finally
-            {
-                this.Monster.ObserverLock.ExitReadLock();
-            }
-        }
+        using var readerLock = await this.Monster.ObserverLock.ReaderLockAsync();
+        return this.Monster.Observers.OfType<IAttacker>().Any();
     }
 
     /// <inheritdoc/>
     public void Start()
     {
+        // TODO: Optimize this: start timer when first observer is added. stop timer when last observer is removed.
         this._aiTimer = new Timer(_ => this.SafeTick(), null, this.Npc.Definition.AttackDelay, this.Npc.Definition.AttackDelay);
     }
 
@@ -96,17 +87,17 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// Searches the next target in view range.
     /// </summary>
     /// <returns>The next target.</returns>
-    protected virtual IAttackable? SearchNextTarget()
+    protected virtual async ValueTask<IAttackable?> SearchNextTargetAsync()
     {
         List<IWorldObserver> tempObservers;
-        this.Npc.ObserverLock.EnterReadLock();
-        try
+        using (await this.Npc.ObserverLock.ReaderLockAsync())
         {
+            if (this.Npc.Observers.Count == 0)
+            {
+                return null;
+            }
+
             tempObservers = new List<IWorldObserver>(this.Npc.Observers);
-        }
-        finally
-        {
-            this.Npc.ObserverLock.ExitReadLock();
         }
 
         var possibleTargets = tempObservers.OfType<IAttackable>()
@@ -119,9 +110,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             .WhereActive()
             .ToList();
         possibleTargets.AddRange(summons);
-        var closestTarget = possibleTargets
-            .OrderBy(a => a.GetDistanceTo(this.Npc))
-            .FirstOrDefault();
+        var closestTarget = possibleTargets.MinBy(a => a.GetDistanceTo(this.Npc));
 
         return closestTarget;
 
@@ -134,26 +123,22 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// <returns>
     ///   <c>true</c> if this instance can attack; otherwise, <c>false</c>.
     /// </returns>
-    protected virtual bool CanAttack() => true;
+    protected virtual ValueTask<bool> CanAttackAsync() => ValueTask.FromResult(true);
 
-    private bool IsTargetInObservers(IAttackable target)
+    private async ValueTask<bool> IsTargetInObserversAsync(IAttackable target)
     {
-        this.Npc.ObserverLock.EnterReadLock();
-        try
+        using (await this.Npc.ObserverLock.ReaderLockAsync())
         {
             return target is IWorldObserver worldObserver && this.Npc.Observers.Contains(worldObserver);
         }
-        finally
-        {
-            this.Npc.ObserverLock.ExitReadLock();
-        }
     }
 
-    private void SafeTick()
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void SafeTick()
     {
         try
         {
-            this.Tick();
+            await this.TickAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -161,7 +146,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         }
     }
 
-    private void Tick()
+    private async ValueTask TickAsync()
     {
         if (!this.Monster.IsAlive)
         {
@@ -173,7 +158,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             return;
         }
 
-        if (!this.CanAttack())
+        if (!await this.CanAttackAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -186,23 +171,23 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
                 || target.IsTeleporting
                 || target.IsAtSafezone()
                 || !target.IsInRange(this.Monster.Position, this.Npc.Definition.ViewRange)
-                || (target is IWorldObserver && !this.IsTargetInObservers(target)))
+                || (target is IWorldObserver && !await this.IsTargetInObserversAsync(target).ConfigureAwait(false)))
             {
-                target = this.CurrentTarget = this.SearchNextTarget();
+                target = this.CurrentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
             }
         }
         else
         {
-            target = this.CurrentTarget = this.SearchNextTarget();
+            target = this.CurrentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
         }
 
         // no target?
         if (target is null)
         {
             // we move around randomly, so the monster does not look dead when watched from distance.
-            if (this.IsObservedByAttacker)
+            if (await this.IsObservedByAttackerAsync().ConfigureAwait(false))
             {
-                this.Monster.RandomMove();
+                await this.Monster.RandomMoveAsync().ConfigureAwait(false);
             }
 
             return;
@@ -211,7 +196,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         // Target in Attack Range?
         if (target.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange + 1) && !this.Monster.IsAtSafezone())
         {
-            this.Monster.Attack(target);  // yes, attack
+            await this.Monster.AttackAsync(target).ConfigureAwait(false);  // yes, attack
         }
 
         // Target in View Range?
@@ -219,12 +204,12 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         {
             // no, walk to the target
             var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, this.Monster.Definition.AttackRange);
-            this.Monster.WalkTo(walkTarget);
+            await this.Monster.WalkToAsync(walkTarget).ConfigureAwait(false);
         }
         else
         {
             // we move around randomly, so the monster does not look dead when watched from distance.
-            this.Monster.RandomMove();
+            await this.Monster.RandomMoveAsync().ConfigureAwait(false);
         }
     }
 }

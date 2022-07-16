@@ -12,5 +12,5 @@ public interface IShowGuildMasterDialogPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the guild master dialog which is shown after talking with the guild master npc, if the player is allowed to create a guild.
     /// </summary>
-    void ShowGuildMasterDialog();
+    ValueTask ShowGuildMasterDialogAsync();
 }

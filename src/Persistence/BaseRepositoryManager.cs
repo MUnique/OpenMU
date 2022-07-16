@@ -22,7 +22,25 @@ public class BaseRepositoryManager
     public virtual IRepository<T> GetRepository<T>()
         where T : class
     {
-        return (IRepository<T>)this.GetRepository(typeof(T));
+        var repository = this.GetRepository(typeof(T));
+
+        // TODO: Not always an adapter is required. Also, the adapter could be cached.
+        return new RepositoryAdapter<T>(repository);
+    }
+
+    /// <summary>
+    /// Gets the repository of the specified generic type.
+    /// </summary>
+    /// <typeparam name="T">The generic type.</typeparam>
+    /// <typeparam name="TRepository">The type of the repository.</typeparam>
+    /// <returns>
+    /// The repository of the specified generic type.
+    /// </returns>
+    public TRepository GetRepository<T, TRepository>()
+        where T : class
+        where TRepository : IRepository
+    {
+        return (TRepository)this.GetRepository(typeof(T));
     }
 
     /// <summary>
@@ -59,6 +77,11 @@ public class BaseRepositoryManager
             if (this.Repositories.TryGetValue(currentSearchType, out var repository))
             {
                 return repository as IRepository;
+            }
+
+            if (currentSearchType.Name != currentSearchType.BaseType?.Name)
+            {
+                break;
             }
 
             currentSearchType = currentSearchType.BaseType;

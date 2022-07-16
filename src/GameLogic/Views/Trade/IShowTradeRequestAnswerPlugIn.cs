@@ -13,5 +13,5 @@ public interface IShowTradeRequestAnswerPlugIn : IViewPlugIn
     /// The requested trade partner has answered the request. Information about the trading partner can be found at ITrader.TradingPartner.
     /// </summary>
     /// <param name="tradeAccepted">if set to <c>true</c> the trade has been accepted and will be opened.</param>
-    void ShowTradeRequestAnswer(bool tradeAccepted);
+    ValueTask ShowTradeRequestAnswerAsync(bool tradeAccepted);
 }

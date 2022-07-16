@@ -42,7 +42,7 @@ public class JsonDownloadController<T, TSerializable> : ControllerBase
     public IActionResult? GetConfigurationById(Guid objectId)
     {
         using var context = this._persistenceContextProvider.CreateNewTypedContext<T>();
-        var item = context.GetById<T>(objectId);
+        var item = context.GetByIdAsync<T>(objectId);
         if (item is IConvertibleTo<TSerializable> convertibleTo)
         {
             return this.Content(convertibleTo.Convert().ToJson(), "application/json");

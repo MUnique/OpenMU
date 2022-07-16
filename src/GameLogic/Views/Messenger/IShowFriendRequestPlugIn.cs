@@ -13,5 +13,5 @@ public interface IShowFriendRequestPlugIn : IViewPlugIn
     /// Shows the friend request.
     /// </summary>
     /// <param name="requester">The character name of the requesting player.</param>
-    void ShowFriendRequest(string requester);
+    ValueTask ShowFriendRequestAsync(string requester);
 }

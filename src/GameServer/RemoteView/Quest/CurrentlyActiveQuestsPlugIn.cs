@@ -32,28 +32,32 @@ public class CurrentlyActiveQuestsPlugIn : ICurrentlyActiveQuestsPlugIn
     }
 
     /// <inheritdoc />
-    public void ShowActiveQuests()
+    public async ValueTask ShowActiveQuestsAsync()
     {
         var connection = this._player.Connection;
-        if (connection is null || this._player.SelectedCharacter is null)
+        if (connection is null || this._player.SelectedCharacter is not { } character)
         {
             return;
         }
 
-        var activeQuests = this._player.SelectedCharacter.QuestStates.Where(state => state.Group != QuestConstants.LegacyQuestGroup && state.ActiveQuest != null).Select(s => s.ActiveQuest!).ToList();
-        using var writer = connection.StartSafeWrite(
-            QuestStateList.HeaderType,
-            QuestStateList.GetRequiredSize(activeQuests.Count));
-        var message = new QuestStateList(writer.Span);
-        int i = 0;
-        foreach (var activeQuest in activeQuests)
+        int Write()
         {
-            var questIdentification = message[i];
-            questIdentification.Number = (ushort)activeQuest.Number;
-            questIdentification.Group = (ushort)activeQuest.Group;
-            i++;
+            var activeQuests = character.QuestStates.Where(state => state.Group != QuestConstants.LegacyQuestGroup && state.ActiveQuest != null).Select(s => s.ActiveQuest!).ToList();
+            var size = QuestStateListRef.GetRequiredSize(activeQuests.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var message = new QuestStateListRef(span);
+            int i = 0;
+            foreach (var activeQuest in activeQuests)
+            {
+                var questIdentification = message[i];
+                questIdentification.Number = (ushort)activeQuest.Number;
+                questIdentification.Group = (ushort)activeQuest.Group;
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

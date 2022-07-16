@@ -12,5 +12,5 @@ public interface IUpdateMasterSkillsPlugIn : IViewPlugIn
     /// <summary>
     /// Sends the master skill list to the client.
     /// </summary>
-    void UpdateMasterSkills();
+    ValueTask UpdateMasterSkillsAsync();
 }

@@ -17,5 +17,5 @@ public interface ITradeItemDisappearPlugIn : IViewPlugIn
     /// </remarks>
     /// <param name="fromSlot">The slot from which the item has been removed.</param>
     /// <param name="item">The item which has been removed.</param>
-    void TradeItemDisappear(byte fromSlot, Item item);
+    ValueTask TradeItemDisappearAsync(byte fromSlot, Item item);
 }

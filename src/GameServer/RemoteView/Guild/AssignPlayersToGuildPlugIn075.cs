@@ -35,7 +35,7 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
     }
 
     /// <inheritdoc />
-    public void AssignPlayersToGuild(ICollection<Player> guildPlayers, bool appearsNew)
+    public async ValueTask AssignPlayersToGuildAsync(ICollection<Player> guildPlayers, bool appearsNew)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -45,27 +45,33 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
 
         foreach (var guildPlayer in guildPlayers)
         {
-            this.SendGuildInfoIfRequired(guildPlayer);
+            await this.SendGuildInfoIfRequiredAsync(guildPlayer).ConfigureAwait(false);
         }
 
-        using var writer = connection.StartSafeWrite(0xC2, AssignCharacterToGuild075.GetRequiredSize(guildPlayers.Count));
-        var packet = new AssignCharacterToGuild075(writer.Span)
+        int Write()
         {
-            PlayerCount = (byte)guildPlayers.Count,
-        };
+            var size = AssignCharacterToGuild075Ref.GetRequiredSize(guildPlayers.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new AssignCharacterToGuild075Ref(span)
+            {
+                PlayerCount = (byte)guildPlayers.Count,
+            };
 
-        int i = 0;
-        foreach (var guildPlayer in guildPlayers)
-        {
-            this.SetGuildPlayerBlock(packet[i], guildPlayer);
-            i++;
+            int i = 0;
+            foreach (var guildPlayer in guildPlayers)
+            {
+                this.SetGuildPlayerBlock(packet[i], guildPlayer);
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void AssignPlayerToGuild(Player guildPlayer, bool appearsNew)
+    public async ValueTask AssignPlayerToGuildAsync(Player guildPlayer, bool appearsNew)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -73,22 +79,27 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
             return;
         }
 
-        this.SendGuildInfoIfRequired(guildPlayer);
+        await this.SendGuildInfoIfRequiredAsync(guildPlayer).ConfigureAwait(false);
 
         // C2 00 11
         // 65
         // 01
         // 34 4B 00 00 80 00 00
         // A4 F2 00 00 00
-        using var writer = connection.StartSafeWrite(AssignCharacterToGuild075.HeaderType, AssignCharacterToGuild075.GetRequiredSize(1));
-        var packet = new AssignCharacterToGuild075(writer.Span)
+        int Write()
         {
-            PlayerCount = 1,
-        };
+            var size = AssignCharacterToGuild075Ref.GetRequiredSize(1);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new AssignCharacterToGuild075Ref(span)
+            {
+                PlayerCount = 1,
+            };
 
-        this.SetGuildPlayerBlock(packet[0], guildPlayer);
+            this.SetGuildPlayerBlock(packet[0], guildPlayer);
+            return size;
+        }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -104,7 +115,7 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
         return array.AsMemory();
     }
 
-    private void SendGuildInfoIfRequired(Player guildPlayer)
+    private async ValueTask SendGuildInfoIfRequiredAsync(Player guildPlayer)
     {
         if (guildPlayer.GuildStatus is not { } guildStatus)
         {
@@ -116,7 +127,7 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
             return;
         }
 
-        var data = this.GetGuildData(guildStatus.GuildId);
+        var data = await this.GetGuildDataAsync(guildStatus.GuildId).ConfigureAwait(false);
         if (data.Length == 0)
         {
             return;
@@ -131,12 +142,17 @@ public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersTo
         this._transmittedGuilds.Add(guildStatus.GuildId);
 
         // guildInfo is the cached, serialized result of the GuildInformation-Class.
-        using var writer = connection.StartSafeWrite(data.Span[0], data.Length);
-        data.Span.CopyTo(writer.Span);
-        writer.Commit();
+        int Write()
+        {
+            var target = connection.Output.GetSpan(data.Length);
+            data.Span.CopyTo(target);
+            return data.Length;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
-    private void SetGuildPlayerBlock(AssignCharacterToGuild075.GuildMemberRelation playerBlock, Player guildPlayer)
+    private void SetGuildPlayerBlock(AssignCharacterToGuild075Ref.GuildMemberRelationRef playerBlock, Player guildPlayer)
     {
         if (guildPlayer.GuildStatus is null)
         {

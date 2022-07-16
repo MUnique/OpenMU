@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.ComponentModel;
-using System.Threading;
+using Nito.AsyncEx;
 
 /// <summary>
 /// A state machine.
@@ -15,12 +15,12 @@ public class StateMachine
     /// <summary>
     /// The lock object for state transitions.
     /// </summary>
-    private readonly SemaphoreSlim _lockObject = new (1);
+    private readonly AsyncLock _asyncLock = new();
 
     /// <summary>
     /// A cancel event args object, which is getting reused.
     /// </summary>
-    private readonly StateChangeEventArgs _cachedCancelEventArgs = new ();
+    private readonly StateChangeEventArgs _cachedCancelEventArgs = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StateMachine"/> class.
@@ -63,26 +63,20 @@ public class StateMachine
     /// </summary>
     /// <param name="nextState">The state to advance to.</param>
     /// <returns>The success.</returns>
-    public bool TryAdvanceTo(State nextState)
+    public async ValueTask<bool> TryAdvanceToAsync(State nextState)
     {
         if (this.CurrentState?.PossibleTransitions is null)
         {
             return false;
         }
 
-        this._lockObject.Wait();
-        try
+        using var l = await this._asyncLock.LockAsync();
+
+        if (this.CurrentState.PossibleTransitions.Contains(nextState) && this.OnStateChanging(nextState))
         {
-            if (this.CurrentState.PossibleTransitions.Contains(nextState) && this.OnStateChanging(nextState))
-            {
-                this.CurrentState = nextState;
-                this.OnStateChanged();
-                return true;
-            }
-        }
-        finally
-        {
-            this._lockObject.Release();
+            this.CurrentState = nextState;
+            this.OnStateChanged();
+            return true;
         }
 
         return false;
@@ -93,9 +87,10 @@ public class StateMachine
     /// </summary>
     /// <param name="nextState">The state to advance to.</param>
     /// <returns>The state change context. On disposal of this object, the state change is getting completed.</returns>
-    public StateChangeContext TryBeginAdvanceTo(State nextState)
+    public async ValueTask<StateChangeContext> TryBeginAdvanceToAsync(State nextState)
     {
-        var context = new StateChangeContext(this._lockObject, () =>
+        var lockRelease = await this._asyncLock.LockAsync().ConfigureAwait(false);
+        var context = new StateChangeContext(lockRelease, () =>
         {
             this.CurrentState = nextState;
             this.OnStateChanged();
@@ -140,9 +135,9 @@ public class StateMachine
     public sealed class StateChangeContext : IDisposable
     {
         /// <summary>
-        /// The lock object of the state machine.
+        /// The lock release of the acquired lock of the state machine.
         /// </summary>
-        private readonly SemaphoreSlim _lockObject;
+        private readonly IDisposable _lockRelease;
 
         /// <summary>
         /// The action which gets executed when the state change is completed.
@@ -152,12 +147,11 @@ public class StateMachine
         /// <summary>
         /// Initializes a new instance of the <see cref="StateChangeContext"/> class.
         /// </summary>
-        /// <param name="lockObject">The lock object of the state machine.</param>
+        /// <param name="lockRelease">The lock object of the state machine, which is in the locked state.</param>
         /// <param name="finishAction">The action which should get executed when the state change is completed.</param>
-        public StateChangeContext(SemaphoreSlim lockObject, Action finishAction)
+        public StateChangeContext(IDisposable lockRelease, Action finishAction)
         {
-            lockObject.Wait();
-            this._lockObject = lockObject;
+            this._lockRelease = lockRelease;
             this._finishAction = finishAction;
         }
 
@@ -178,7 +172,7 @@ public class StateMachine
             }
             finally
             {
-                this._lockObject.Release(1);
+                this._lockRelease.Dispose();
             }
         }
     }

@@ -28,9 +28,9 @@ public class ShowGuildInfoPlugIn : BaseGuildInfoPlugIn<ShowGuildInfoPlugIn>, ISh
     }
 
     /// <inheritdoc/>
-    public void ShowGuildInfo(uint guildId)
+    public async ValueTask ShowGuildInfoAsync(uint guildId)
     {
-        var data = this.GetGuildData(guildId);
+        var data = await this.GetGuildDataAsync(guildId).ConfigureAwait(false);
         if (data.Length == 0)
         {
             return;
@@ -43,9 +43,14 @@ public class ShowGuildInfoPlugIn : BaseGuildInfoPlugIn<ShowGuildInfoPlugIn>, ISh
         }
 
         // guildInfo is the cached, serialized result of the GuildInformation-Class.
-        using var writer = connection.StartSafeWrite(data.Span[0], data.Length);
-        data.Span.CopyTo(writer.Span);
-        writer.Commit();
+        int Write()
+        {
+            var target = connection.Output.GetSpan(data.Length);
+            data.Span.CopyTo(target);
+            return data.Length;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

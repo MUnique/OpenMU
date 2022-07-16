@@ -12,5 +12,5 @@ public interface IShowCharacterCreationFailedPlugIn : IViewPlugIn
     /// <summary>
     /// Shows that the character creation failed.
     /// </summary>
-    void ShowCharacterCreationFailed();
+    ValueTask ShowCharacterCreationFailedAsync();
 }

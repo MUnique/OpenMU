@@ -58,7 +58,7 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
         this.Source = source;
         this._decryptionKeys = decryptionKeys;
         this._inputBuffer = new byte[this.EncryptedBlockSize];
-        this.ReadSource().ConfigureAwait(false);
+        _ = this.ReadSourceAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -70,9 +70,9 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
     public bool AcceptWrongBlockChecksum { get; set; }
 
     /// <inheritdoc />
-    protected override void OnComplete(Exception? exception)
+    protected override ValueTask OnCompleteAsync(Exception? exception)
     {
-        this.Pipe.Writer.Complete(exception);
+        return this.Pipe.Writer.CompleteAsync(exception);
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
     /// </summary>
     /// <param name="packet">The mu online packet.</param>
     /// <returns>The async task.</returns>
-    protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
+    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         // The next line is getting a span from the writer which is at least as big as the packet.
         // As I found out, it's initially about 2 kb in size and gets smaller within further

@@ -11,27 +11,17 @@
     </tr>
     </thead>
     <tbody>
-        @foreach (var player in this.MapController.Objects.Values.OfType<Player>()) // todo: this leads to problems, because the list may have changed during enumeration.
-                                                                                    // additionally, ObjectsChanged also fires when monsters have changed (e.g. by being killed),
-                                                                                    // so we do a lot of unneeded iterations here.
-        {
-            <tr>
-                <td>@player.Name</td>
-                <td>@player.Id</td>
-                <td>
-                    <button type="button" class="oi oi-account-logout" @onclick=@(() => player.Disconnect()) title="Disconnect"></button>
-                    <button type="button" class="oi oi-ban" @onclick=@(() =>
-                                                                     {
-                                                                         if (player.Account is not null)
-                                                                         {
-                                                                            player.Account.State = AccountState.TemporarilyBanned;
-                                                                         }
-
-                                                                         player.Disconnect();
-                                                                     }) title="Temporarily ban"></button>
-                </td>
-            </tr>
-        }
+    @foreach (var player in this.MapController.Players.Values)
+    {
+        <tr>
+            <td>@player.Name</td>
+            <td>@player.Id</td>
+            <td>
+                <button type="button" class="oi oi-account-logout" @onclick=@(async () => await player.DisconnectAsync()) title="Disconnect"></button>
+                <button type="button" class="oi oi-ban" @onclick=@(async () => { if (player.Account is not null) { player.Account.State = AccountState.TemporarilyBanned; } await player.DisconnectAsync(); }) title="Temporarily ban"></button>
+            </td>
+        </tr>
+    }
     </tbody>
 </table>
 
@@ -47,6 +37,6 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        this.MapController.ObjectsChanged += (_, _) => this.InvokeAsync(this.StateHasChanged);
+        this.MapController.PlayersChanged += (_, _) => this.InvokeAsync(this.StateHasChanged);
     }
 }

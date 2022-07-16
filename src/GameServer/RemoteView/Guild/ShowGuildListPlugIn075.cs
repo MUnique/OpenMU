@@ -29,7 +29,7 @@ public class ShowGuildListPlugIn075 : IShowGuildListPlugIn
     public ShowGuildListPlugIn075(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowGuildList(IEnumerable<GuildListEntry> players)
+    public async ValueTask ShowGuildListAsync(IEnumerable<GuildListEntry> players)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -42,26 +42,31 @@ public class ShowGuildListPlugIn075 : IShowGuildListPlugIn
             .ThenBy(p => p.PlayerName)
             .ToList();
         var playerCount = sortedPlayers.Count;
-
-        using var writer = connection.StartSafeWrite(GuildList075.HeaderType, GuildList075.GetRequiredSize(playerCount));
-        var packet = new GuildList075(writer.Span)
+        int Write()
         {
-            GuildMemberCount = (byte)playerCount,
-            IsInGuild = playerCount > 0,
-            CurrentScore = 0, // TODO
-            TotalScore = 0, // TODO
-        };
+            var size = GuildList075Ref.GetRequiredSize(playerCount);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new GuildList075Ref(span)
+            {
+                GuildMemberCount = (byte)playerCount,
+                IsInGuild = playerCount > 0,
+                CurrentScore = 0, // TODO
+                TotalScore = 0, // TODO
+            };
 
-        int i = 0;
-        foreach (var member in sortedPlayers)
-        {
-            var memberBlock = packet[i];
-            memberBlock.Name = member.PlayerName;
-            memberBlock.ServerId = member.ServerId;
-            memberBlock.ServerId2 = (byte)(member.ServerId == 0xFF ? 0x7F : 0x80 + member.ServerId);
-            i++;
+            int i = 0;
+            foreach (var member in sortedPlayers)
+            {
+                var memberBlock = packet[i];
+                memberBlock.Name = member.PlayerName;
+                memberBlock.ServerId = member.ServerId;
+                memberBlock.ServerId2 = (byte)(member.ServerId == 0xFF ? 0x7F : 0x80 + member.ServerId);
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

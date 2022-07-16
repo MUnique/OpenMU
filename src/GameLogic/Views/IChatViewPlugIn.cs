@@ -15,5 +15,5 @@ public interface IChatViewPlugIn : IViewPlugIn
     /// <param name="message">The message which should be shown in the view.</param>
     /// <param name="sender">The character name of the sender.</param>
     /// <param name="type">The type of the chat message.</param>
-    void ChatMessage(string message, string sender, ChatMessageType type);
+    ValueTask ChatMessageAsync(string message, string sender, ChatMessageType type);
 }

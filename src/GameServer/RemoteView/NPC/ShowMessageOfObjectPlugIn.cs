@@ -26,8 +26,8 @@ public class ShowMessageOfObjectPlugIn : IShowMessageOfObjectPlugIn
     public ShowMessageOfObjectPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowMessageOfObject(string message, IIdentifiable sender)
+    public async ValueTask ShowMessageOfObjectAsync(string message, IIdentifiable sender)
     {
-        this._player.Connection?.SendObjectMessage(sender.Id, message);
+        await this._player.Connection.SendObjectMessageAsync(sender.Id, message).ConfigureAwait(false);
     }
 }

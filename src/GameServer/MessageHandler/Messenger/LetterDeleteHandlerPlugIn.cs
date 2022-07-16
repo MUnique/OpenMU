@@ -28,19 +28,20 @@ internal class LetterDeleteHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => LetterDeleteRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        if (packet[3] != 0)
+        if (packet.Span[3] != 0)
         {
-            player.Logger.LogWarning("Player {0} Unknown Letter Delete Request: {1}", player.SelectedCharacter?.Name, packet.AsString());
+            player.Logger.LogWarning("Player {0} Unknown Letter Delete Request: {1}", player.SelectedCharacter?.Name, packet.Span.AsString());
             return;
         }
 
         LetterDeleteRequest message = packet;
-        if (message.LetterIndex < player.SelectedCharacter?.Letters.Count)
+        var letterIndex = message.LetterIndex;
+        if (letterIndex < player.SelectedCharacter?.Letters.Count)
         {
-            var letter = player.SelectedCharacter.Letters[message.LetterIndex];
-            this._deleteAction.DeleteLetter(player, letter);
+            var letter = player.SelectedCharacter!.Letters[letterIndex];
+            await this._deleteAction.DeleteLetterAsync(player, letter).ConfigureAwait(false);
         }
     }
 }

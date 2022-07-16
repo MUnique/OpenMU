@@ -51,11 +51,11 @@ internal class ChatClient : IChatClient
         this._manager = manager;
         this._logger = logger;
         this._connection = connection;
-        this._connection.PacketReceived += this.ReadPacket;
-        this._connection.Disconnected += (_, _) => this.LogOff();
+        this._connection.PacketReceived += this.ReadPacketAsync;
+        this._connection.Disconnected += this.LogOffAsync;
 
         this.LastActivity = DateTime.Now;
-        this._connection.BeginReceive();
+        _ = this._connection.BeginReceiveAsync();
     }
 
     /// <summary>
@@ -80,48 +80,57 @@ internal class ChatClient : IChatClient
     public DateTime LastActivity { get; private set; }
 
     /// <inheritdoc/>
-    public void SendMessage(byte senderId, string message)
+    public async ValueTask SendMessageAsync(byte senderId, string message)
     {
-        if (this._connection is null)
+        if (this._connection is not { } connection)
         {
             return;
         }
 
-        var messageByteLength = (byte)Encoding.UTF8.GetByteCount(message);
-        using var writer = this._connection.StartSafeWrite(ChatMessage.HeaderType, ChatMessage.GetRequiredSize(message));
-        var packet = new ChatMessage(writer.Span);
-        packet.SenderIndex = senderId;
-        packet.MessageLength = messageByteLength;
-        packet.Message = message;
-        MessageEncryptor.Encrypt(packet);
-        writer.Commit();
+        int WritePacket()
+        {
+            var length = ChatMessageRef.GetRequiredSize(message);
+            var packet = new ChatMessageRef(connection.Output.GetSpan(length)[..length]);
+            packet.SenderIndex = senderId;
+            packet.MessageLength = (byte)Encoding.UTF8.GetByteCount(message);
+            packet.Message = message;
+            MessageEncryptor.Encrypt(packet);
+            return length;
+        }
+
+        await this._connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public void SendChatRoomClientList(IReadOnlyCollection<IChatClient> clients)
+    public async ValueTask SendChatRoomClientListAsync(IReadOnlyCollection<IChatClient> clients)
     {
-        if (this._connection is null)
+        if (this._connection is not { } connection)
         {
             return;
         }
 
-        using var writer = this._connection.StartSafeWrite(ChatRoomClients.HeaderType, ChatRoomClients.GetRequiredSize(clients.Count));
-        var packet = new ChatRoomClients(writer.Span);
-        packet.ClientCount = (byte)clients.Count;
-        int i = 0;
-        foreach (var client in clients)
+        int WritePacket()
         {
-            var clientBlock = packet[i];
-            clientBlock.Index = client.Index;
-            clientBlock.Name = client.Nickname ?? string.Empty;
-            i++;
+            var length = ChatRoomClientsRef.GetRequiredSize(clients.Count);
+            var packet = new ChatRoomClientsRef(connection.Output.GetSpan(length)[..length]);
+            packet.ClientCount = (byte)clients.Count;
+            int i = 0;
+            foreach (var client in clients)
+            {
+                var clientBlock = packet[i];
+                clientBlock.Index = client.Index;
+                clientBlock.Name = client.Nickname ?? string.Empty;
+                i++;
+            }
+
+            return length;
         }
 
-        writer.Commit();
+        await this._connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public void SendChatRoomClientUpdate(byte updatedClientId, string updatedClientName, ChatRoomClientUpdateType updateType)
+    public async ValueTask SendChatRoomClientUpdateAsync(byte updatedClientId, string updatedClientName, ChatRoomClientUpdateType updateType)
     {
         if (this._connection is null || !this._connection.Connected)
         {
@@ -132,11 +141,11 @@ internal class ChatClient : IChatClient
         {
             if (updateType == ChatRoomClientUpdateType.Joined)
             {
-                this._connection.SendChatRoomClientJoined(updatedClientId, updatedClientName);
+                await this._connection.SendChatRoomClientJoinedAsync(updatedClientId, updatedClientName).ConfigureAwait(false);
             }
             else
             {
-                this._connection.SendChatRoomClientLeft(updatedClientId, updatedClientName);
+                await this._connection.SendChatRoomClientLeftAsync(updatedClientId, updatedClientName).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -146,7 +155,7 @@ internal class ChatClient : IChatClient
     }
 
     /// <inheritdoc/>
-    public void LogOff()
+    public async ValueTask LogOffAsync()
     {
         if (this._connection is null)
         {
@@ -157,11 +166,15 @@ internal class ChatClient : IChatClient
         this._logger.LogDebug($"Client {this._connection} is going to be disconnected.");
         if (this._room != null)
         {
-            this._room.Leave(this);
+            await this._room.LeaveAsync(this).ConfigureAwait(false);
             this._room = null;
         }
 
-        this._connection?.Disconnect();
+        if (this._connection is { } connection)
+        {
+            await connection.DisconnectAsync().ConfigureAwait(false);
+        }
+
         this._connection = null;
         this.Disconnected?.Invoke(this, EventArgs.Empty);
         this.Disconnected = null;
@@ -178,7 +191,7 @@ internal class ChatClient : IChatClient
         return $"Connection:{this._connection}, Client name:{this.Nickname}, Room-ID:{this._room?.RoomId}, Index: {this.Index}";
     }
 
-    private void ReadPacket(object sender, ReadOnlySequence<byte> sequence)
+    private async ValueTask ReadPacketAsync(ReadOnlySequence<byte> sequence)
     {
         if (sequence.Length < 3)
         {
@@ -186,17 +199,17 @@ internal class ChatClient : IChatClient
         }
 
         sequence.CopyTo(this._packetBuffer);
-        var packet = this._packetBuffer.AsSpan(0, (int)sequence.Length);
-        if (packet[0] != 0xC1)
+        var packet = this._packetBuffer.AsMemory(0, (int)sequence.Length);
+        if (this._packetBuffer[0] != 0xC1)
         {
             return;
         }
 
         this.LastActivity = DateTime.Now;
-        switch (packet[2])
+        switch (this._packetBuffer[2])
         {
             case 0:
-                this.Authenticate(packet);
+                await this.AuthenticateAsync(packet).ConfigureAwait(false);
                 break;
             case 1:
             case 2:
@@ -206,14 +219,14 @@ internal class ChatClient : IChatClient
             case 4:
                 if (this._room != null && this.CheckMessage(packet))
                 {
-                    MessageDecryptor.Decrypt(packet);
-                    var message = packet.ExtractString(5, int.MaxValue, Encoding.UTF8);
+                    MessageDecryptor.Decrypt(packet.Span);
+                    var message = packet.Span.ExtractString(5, int.MaxValue, Encoding.UTF8);
                     if (this._logger.IsEnabled(LogLevel.Debug))
                     {
                         this._logger.LogDebug($"Message received from {this.Index}: \"{message}\"");
                     }
 
-                    this._room.SendMessage(this.Index, message);
+                    await this._room.SendMessageAsync(this.Index, message).ConfigureAwait(false);
                 }
 
                 break;
@@ -224,46 +237,46 @@ internal class ChatClient : IChatClient
                 this._logger.LogDebug("Keep-alive received");
                 break;
 
-            default:
-                this._logger.LogError($"Received unknown packet of type {packet[2]}: {packet.AsString()}");
-                this.LogOff();
+            case var value:
+                this._logger.LogError($"Received unknown packet of type {value}: {packet.Span.AsString()}");
+                await this.LogOffAsync().ConfigureAwait(false);
                 break;
         }
     }
 
-    private bool CheckMessage(Span<byte> packet)
+    private bool CheckMessage(Memory<byte> packet)
     {
-        return packet.Length > 4 && (packet[4] + 5) == packet.Length;
+        return packet.Length > 4 && (packet.Span[4] + 5) == packet.Length;
     }
 
-    private void Authenticate(Span<byte> packet)
+    private async ValueTask AuthenticateAsync(Memory<byte> packet)
     {
-        var roomId = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
+        var roomId = NumberConversionExtensions.MakeWord(packet.Span[4], packet.Span[5]);
         var requestedRoom = this._manager.GetChatRoom(roomId);
         if (requestedRoom is null)
         {
             this._logger.LogError($"Requested room {roomId} has not been registered before.");
-            this.LogOff();
+            await this.LogOffAsync().ConfigureAwait(false);
             return;
         }
 
-        TokenDecryptor.Decrypt(packet);
-        var tokenAsString = packet.ExtractString(TokenOffset, 10, Encoding.UTF8);
+        TokenDecryptor.Decrypt(packet.Span);
+        var tokenAsString = packet.Span.ExtractString(TokenOffset, 10, Encoding.UTF8);
         if (!uint.TryParse(tokenAsString, out uint _))
         {
             this._logger.LogError($"Token '{tokenAsString}' is not a parseable integer.");
-            this.LogOff();
+            await this.LogOffAsync().ConfigureAwait(false);
             return;
         }
 
         this.AuthenticationToken = tokenAsString;
-        if (requestedRoom.TryJoin(this))
+        if (await requestedRoom.TryJoinAsync(this).ConfigureAwait(false))
         {
             this._room = requestedRoom;
         }
         else
         {
-            this.LogOff();
+            await this.LogOffAsync().ConfigureAwait(false);
         }
     }
 }

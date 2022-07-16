@@ -20,7 +20,7 @@ internal abstract class CharacterMoveBaseHandlerPlugIn : IPacketHandlerPlugIn
     public abstract byte Key { get; }
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < InstantMoveRequest.Length)
         {
@@ -32,6 +32,6 @@ internal abstract class CharacterMoveBaseHandlerPlugIn : IPacketHandlerPlugIn
         // So, we just allow it for developers when the debugger is attached.
         // When handling a skill which moves to the target, we'll handle the move on server-side, instead.
         InstantMoveRequest moveRequest = packet;
-        player.Move(new Point(moveRequest.TargetX, moveRequest.TargetY));
+        await player.MoveAsync(new Point(moveRequest.TargetX, moveRequest.TargetY)).ConfigureAwait(false);
     }
 }

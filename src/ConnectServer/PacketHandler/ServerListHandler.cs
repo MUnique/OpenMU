@@ -34,17 +34,17 @@ internal class ServerListHandler : IPacketHandler<Client>
     }
 
     /// <inheritdoc/>
-    public void HandlePacket(Client client, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Client client, Memory<byte> packet)
     {
-        var packetSubType = packet[3];
+        var packetSubType = packet.Span[3];
         if (this._packetHandlers.TryGetValue(packetSubType, out var packetHandler))
         {
-            packetHandler.HandlePacket(client, packet);
+            await packetHandler.HandlePacketAsync(client, packet).ConfigureAwait(false);
         }
         else if (this._connectServerSettings.DisconnectOnUnknownPacket)
         {
             this._logger.LogInformation("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
-            client.Connection.Disconnect();
+            await client.Connection.DisconnectAsync().ConfigureAwait(false);
         }
         else
         {

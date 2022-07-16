@@ -18,15 +18,15 @@ using static System.Buffers.Binary.BinaryPrimitives;
 /// <summary>
 /// The structure for a C1 packet header. Usually encrypted by Xor32..
 /// </summary>
-public readonly ref struct C1Header
+public readonly struct C1Header
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="C1Header"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public C1Header(Span<byte> data)
+    public C1Header(Memory<byte> data)
     {
         this._data = data;
     }
@@ -36,8 +36,8 @@ public readonly ref struct C1Header
     /// </summary>
     public byte Type
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -45,8 +45,8 @@ public readonly ref struct C1Header
     /// </summary>
     public byte Length
     {
-        get => this._data[1];
-        set => this._data[1] = value;
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
     }
 
     /// <summary>
@@ -54,8 +54,8 @@ public readonly ref struct C1Header
     /// </summary>
     public byte Code
     {
-        get => this._data[2];
-        set => this._data[2] = value;
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
     }
 }
 
@@ -63,15 +63,15 @@ public readonly ref struct C1Header
 /// <summary>
 /// The structure for a C1 packet header with sub code. Usually encrypted by Xor32..
 /// </summary>
-public readonly ref struct C1HeaderWithSubCode
+public readonly struct C1HeaderWithSubCode
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="C1HeaderWithSubCode"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public C1HeaderWithSubCode(Span<byte> data)
+    public C1HeaderWithSubCode(Memory<byte> data)
     {
         this._data = data;
     }
@@ -81,8 +81,8 @@ public readonly ref struct C1HeaderWithSubCode
     /// </summary>
     public byte Type
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -90,8 +90,8 @@ public readonly ref struct C1HeaderWithSubCode
     /// </summary>
     public byte Length
     {
-        get => this._data[1];
-        set => this._data[1] = value;
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
     }
 
     /// <summary>
@@ -99,8 +99,8 @@ public readonly ref struct C1HeaderWithSubCode
     /// </summary>
     public byte Code
     {
-        get => this._data[2];
-        set => this._data[2] = value;
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
     }
 
     /// <summary>
@@ -108,8 +108,8 @@ public readonly ref struct C1HeaderWithSubCode
     /// </summary>
     public byte SubCode
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 }
 
@@ -117,15 +117,15 @@ public readonly ref struct C1HeaderWithSubCode
 /// <summary>
 /// The structure for a C2 packet header. Usually encrypted by Xor32..
 /// </summary>
-public readonly ref struct C2Header
+public readonly struct C2Header
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="C2Header"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public C2Header(Span<byte> data)
+    public C2Header(Memory<byte> data)
     {
         this._data = data;
     }
@@ -135,8 +135,8 @@ public readonly ref struct C2Header
     /// </summary>
     public byte Type
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -144,8 +144,8 @@ public readonly ref struct C2Header
     /// </summary>
     public ushort Length
     {
-        get => ReadUInt16BigEndian(this._data[1..]);
-        set => WriteUInt16BigEndian(this._data[1..], value);
+        get => ReadUInt16BigEndian(this._data.Span[1..]);
+        set => WriteUInt16BigEndian(this._data.Span[1..], value);
     }
 
     /// <summary>
@@ -153,8 +153,8 @@ public readonly ref struct C2Header
     /// </summary>
     public byte Code
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 }
 
@@ -162,15 +162,15 @@ public readonly ref struct C2Header
 /// <summary>
 /// The structure for a C2 packet header. Usually encrypted by Xor32..
 /// </summary>
-public readonly ref struct C2HeaderWithSubCode
+public readonly struct C2HeaderWithSubCode
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="C2HeaderWithSubCode"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public C2HeaderWithSubCode(Span<byte> data)
+    public C2HeaderWithSubCode(Memory<byte> data)
     {
         this._data = data;
     }
@@ -180,8 +180,8 @@ public readonly ref struct C2HeaderWithSubCode
     /// </summary>
     public byte Type
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -189,8 +189,8 @@ public readonly ref struct C2HeaderWithSubCode
     /// </summary>
     public ushort Length
     {
-        get => ReadUInt16BigEndian(this._data[1..]);
-        set => WriteUInt16BigEndian(this._data[1..], value);
+        get => ReadUInt16BigEndian(this._data.Span[1..]);
+        set => WriteUInt16BigEndian(this._data.Span[1..], value);
     }
 
     /// <summary>
@@ -198,8 +198,8 @@ public readonly ref struct C2HeaderWithSubCode
     /// </summary>
     public byte Code
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -207,8 +207,8 @@ public readonly ref struct C2HeaderWithSubCode
     /// </summary>
     public byte SubCode
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 }
 
@@ -216,15 +216,15 @@ public readonly ref struct C2HeaderWithSubCode
 /// <summary>
 /// The structure for a C3 packet header. Usually encrypted by Xor32 and SimpleModulus..
 /// </summary>
-public readonly ref struct C3Header
+public readonly struct C3Header
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="C3Header"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public C3Header(Span<byte> data)
+    public C3Header(Memory<byte> data)
     {
         this._data = data;
     }
@@ -234,8 +234,8 @@ public readonly ref struct C3Header
     /// </summary>
     public byte Type
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -243,8 +243,8 @@ public readonly ref struct C3Header
     /// </summary>
     public byte Length
     {
-        get => this._data[1];
-        set => this._data[1] = value;
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
     }
 
     /// <summary>
@@ -252,8 +252,8 @@ public readonly ref struct C3Header
     /// </summary>
     public byte Code
     {
-        get => this._data[2];
-        set => this._data[2] = value;
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
     }
 }
 
@@ -261,15 +261,15 @@ public readonly ref struct C3Header
 /// <summary>
 /// The structure for a C3 packet header with sub code. Usually encrypted by Xor32 and SimpleModulus..
 /// </summary>
-public readonly ref struct C3HeaderWithSubCode
+public readonly struct C3HeaderWithSubCode
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="C3HeaderWithSubCode"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public C3HeaderWithSubCode(Span<byte> data)
+    public C3HeaderWithSubCode(Memory<byte> data)
     {
         this._data = data;
     }
@@ -279,8 +279,8 @@ public readonly ref struct C3HeaderWithSubCode
     /// </summary>
     public byte Type
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -288,8 +288,8 @@ public readonly ref struct C3HeaderWithSubCode
     /// </summary>
     public byte Length
     {
-        get => this._data[1];
-        set => this._data[1] = value;
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
     }
 
     /// <summary>
@@ -297,8 +297,8 @@ public readonly ref struct C3HeaderWithSubCode
     /// </summary>
     public byte Code
     {
-        get => this._data[2];
-        set => this._data[2] = value;
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
     }
 
     /// <summary>
@@ -306,8 +306,8 @@ public readonly ref struct C3HeaderWithSubCode
     /// </summary>
     public byte SubCode
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 }
 
@@ -315,15 +315,15 @@ public readonly ref struct C3HeaderWithSubCode
 /// <summary>
 /// The structure for a C4 packet header. Usually encrypted by Xor32 and SimpleModulus..
 /// </summary>
-public readonly ref struct C4Header
+public readonly struct C4Header
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="C4Header"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public C4Header(Span<byte> data)
+    public C4Header(Memory<byte> data)
     {
         this._data = data;
     }
@@ -333,8 +333,8 @@ public readonly ref struct C4Header
     /// </summary>
     public byte Type
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -342,8 +342,8 @@ public readonly ref struct C4Header
     /// </summary>
     public ushort Length
     {
-        get => ReadUInt16BigEndian(this._data[1..]);
-        set => WriteUInt16BigEndian(this._data[1..], value);
+        get => ReadUInt16BigEndian(this._data.Span[1..]);
+        set => WriteUInt16BigEndian(this._data.Span[1..], value);
     }
 
     /// <summary>
@@ -351,8 +351,8 @@ public readonly ref struct C4Header
     /// </summary>
     public byte Code
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 }
 
@@ -360,15 +360,15 @@ public readonly ref struct C4Header
 /// <summary>
 /// The structure for a C4 packet header with sub code. Usually encrypted by Xor32 and SimpleModulus..
 /// </summary>
-public readonly ref struct C4HeaderWithSubCode
+public readonly struct C4HeaderWithSubCode
 {
-    private readonly Span<byte> _data;
+    private readonly Memory<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="C4HeaderWithSubCode"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public C4HeaderWithSubCode(Span<byte> data)
+    public C4HeaderWithSubCode(Memory<byte> data)
     {
         this._data = data;
     }
@@ -378,8 +378,8 @@ public readonly ref struct C4HeaderWithSubCode
     /// </summary>
     public byte Type
     {
-        get => this._data[0];
-        set => this._data[0] = value;
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
     }
 
     /// <summary>
@@ -387,8 +387,8 @@ public readonly ref struct C4HeaderWithSubCode
     /// </summary>
     public ushort Length
     {
-        get => ReadUInt16BigEndian(this._data[1..]);
-        set => WriteUInt16BigEndian(this._data[1..], value);
+        get => ReadUInt16BigEndian(this._data.Span[1..]);
+        set => WriteUInt16BigEndian(this._data.Span[1..], value);
     }
 
     /// <summary>
@@ -396,8 +396,8 @@ public readonly ref struct C4HeaderWithSubCode
     /// </summary>
     public byte Code
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 
     /// <summary>
@@ -405,7 +405,7 @@ public readonly ref struct C4HeaderWithSubCode
     /// </summary>
     public byte SubCode
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
     }
 }

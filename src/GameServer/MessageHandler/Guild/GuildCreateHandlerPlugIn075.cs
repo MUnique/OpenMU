@@ -26,9 +26,9 @@ internal class GuildCreateHandlerPlugIn075 : IPacketHandlerPlugIn
     public byte Key => GuildCreateRequest075.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildCreateRequest075 request = packet;
-        this._createAction.CreateGuild(player, request.GuildName, request.GuildEmblem.ToArray());
+        await this._createAction.CreateGuildAsync(player, request.GuildName, request.GuildEmblem.ToArray()).ConfigureAwait(false);
     }
 }

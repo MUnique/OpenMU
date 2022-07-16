@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.NPC;
 
+using System.Buffers;
+using Nito.AsyncEx;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -16,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISupportWalk, IMovable
 {
-    private readonly object _moveLock = new ();
+    private readonly AsyncLock _moveLock = new();
     private readonly INpcIntelligence _intelligence;
     private readonly Walker _walker;
 
@@ -82,15 +84,16 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// Attacks the specified target.
     /// </summary>
     /// <param name="target">The target.</param>
-    public void Attack(IAttackable target)
+    public async ValueTask AttackAsync(IAttackable target)
     {
-        target.AttackBy(this, null);
-        this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowMonsterAttackAnimation(this, target, this.GetDirectionTo(target)), true);
+        await target.AttackByAsync(this, null).ConfigureAwait(false);
+
+        await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowMonsterAttackAnimationAsync(this, target, this.GetDirectionTo(target)), true).ConfigureAwait(false);
         if (this.Definition.AttackSkill is { } attackSkill)
         {
-            target.TryApplyElementalEffects(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration);
+            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration).ConfigureAwait(false);
 
-            this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this, target, attackSkill, true), true);
+            await this.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this, target, attackSkill, true), true).ConfigureAwait(false);
         }
     }
 
@@ -98,7 +101,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// Walks to the target coordinates.
     /// </summary>
     /// <param name="target">The target object.</param>
-    public void WalkTo(Point target)
+    public async ValueTask WalkToAsync(Point target)
     {
         if (this._isCalculatingPath || this.IsWalking)
         {
@@ -130,66 +133,67 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         }
 
         var targetNode = calculatedPath.Last(); // that's one step before the target coordinates actually are reached.
-        Span<WalkingStep> steps = stackalloc WalkingStep[calculatedPath.Count];
+        using var stepsRent = MemoryPool<WalkingStep>.Shared.Rent(calculatedPath.Count);
+        var steps = stepsRent.Memory.Slice(0, calculatedPath.Count);
         var i = 0;
         foreach (var step in calculatedPath.Select(GetStep))
         {
-            steps[i] = step;
+            steps.Span[i] = step;
             i++;
         }
 
-        this.WalkTo(new Point(targetNode.X, targetNode.Y), steps);
+        await this.WalkToAsync(new Point(targetNode.X, targetNode.Y), steps).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Walks to the target object.
     /// </summary>
     /// <param name="target">The target object.</param>
-    public void WalkTo(ILocateable target) => this.WalkTo(target.Position);
+    public ValueTask WalkToAsync(ILocateable target) => this.WalkToAsync(target.Position);
 
     /// <summary>
     /// Walks to the specified target coordinates using the specified steps.
     /// </summary>
     /// <param name="target">The target.</param>
     /// <param name="steps">The steps.</param>
-    public void WalkTo(Point target, Span<WalkingStep> steps)
+    public async ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps)
     {
-        this._walker.Stop();
-        this._walker.WalkTo(target, steps);
-        this.Move(target, MoveType.Walk);
+        await this._walker.StopAsync().ConfigureAwait(false);
+        await this._walker.WalkToAsync(target, steps).ConfigureAwait(false);
+        await this.MoveAsync(target, MoveType.Walk).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public int GetDirections(Span<Direction> directions)
+    public ValueTask<int> GetDirectionsAsync(Memory<Direction> directions)
     {
-        return this._walker.GetDirections(directions);
+        return this._walker.GetDirectionsAsync(directions);
     }
 
     /// <inheritdoc />
-    public int GetSteps(Span<WalkingStep> steps) => this._walker.GetSteps(steps);
+    public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._walker.GetStepsAsync(steps);
 
     /// <inheritdoc />
-    public override void ReflectDamage(IAttacker reflector, uint damage)
+    public override ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
     {
-        this.Hit(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector, null);
+        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector, null);
     }
 
     /// <inheritdoc />
-    public override void ApplyPoisonDamage(IAttacker initialAttacker, uint damage)
+    public override ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
     {
-        this.Hit(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
+        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
     }
 
     /// <inheritdoc/>
-    public void Move(Point target)
+    public ValueTask MoveAsync(Point target)
     {
-        this.Move(target, MoveType.Instant);
+        return this.MoveAsync(target, MoveType.Instant);
     }
 
     /// <summary>
     /// Moves this instance randomly.
     /// </summary>
-    internal void RandomMove()
+    internal async ValueTask RandomMoveAsync()
     {
         byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - 1), Math.Min(0xFF, this.Position.X + 2));
         byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - 1), Math.Min(0xFF, this.Position.Y + 2));
@@ -197,14 +201,15 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         {
             var target = new Point(randx, randy);
             var current = this.Position;
-            Span<WalkingStep> steps = stackalloc WalkingStep[1];
-            steps[0] = new WalkingStep
+            using var stepsRent = MemoryPool<WalkingStep>.Shared.Rent(1);
+            var steps = stepsRent.Memory.Slice(0, 1);
+            steps.Span[0] = new WalkingStep
             {
                 From = current,
                 To = target,
                 Direction = current.GetDirectionTo(target),
             };
-            this.WalkTo(target, steps);
+            await this.WalkToAsync(target, steps).ConfigureAwait(false);
         }
     }
 
@@ -221,14 +226,14 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     }
 
     /// <inheritdoc />
-    protected override void Move(Point target, MoveType type)
+    protected override async ValueTask MoveAsync(Point target, MoveType type)
     {
         if (type == MoveType.Instant || type == MoveType.Teleport)
         {
-            this._walker.Stop();
+            await this._walker.StopAsync().ConfigureAwait(false);
         }
 
-        this.CurrentMap.Move(this, target, this._moveLock, type);
+        await this.CurrentMap.MoveAsync(this, target, this._moveLock, type).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -256,10 +261,10 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     }
 
     /// <inheritdoc />
-    protected override void OnDeath(IAttacker attacker)
+    protected override async ValueTask OnDeathAsync(IAttacker attacker)
     {
-        this._walker.Stop();
-        base.OnDeath(attacker);
+        await this._walker.StopAsync().ConfigureAwait(false);
+        await base.OnDeathAsync(attacker).ConfigureAwait(false);
     }
 
     private static WalkingStep GetStep(PathResultNode node)
@@ -294,6 +299,6 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         }
 
         var powerUpDef = skill.MagicEffectDef.PowerUpDefinition;
-        return (this.Attributes!.CreateElement(powerUpDef.Boost), this.Attributes!.CreateElement(powerUpDef.Duration));
+        return (this.Attributes.CreateElement(powerUpDef.Boost), this.Attributes.CreateElement(powerUpDef.Duration));
     }
 }

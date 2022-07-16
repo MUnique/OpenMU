@@ -13,5 +13,5 @@ public interface IPlayerShopClosedPlugIn : IViewPlugIn
     /// A player closed his shop.
     /// </summary>
     /// <param name="playerWithClosedShop">Player of closing shop.</param>
-    void PlayerShopClosed(Player playerWithClosedShop);
+    ValueTask PlayerShopClosedAsync(Player playerWithClosedShop);
 }

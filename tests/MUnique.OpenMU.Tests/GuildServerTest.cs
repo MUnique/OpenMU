@@ -16,27 +16,27 @@ public class GuildServerTest : GuildTestBase
     /// Tests if the entrance of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]
-    public void GuildMemberEnterGame()
+    public async ValueTask GuildMemberEnterGameAsync()
     {
         const byte serverId = 1;
-        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
-        var guildMaster = this.GuildServer.GetGuildList(guildId).First();
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        var guildMaster = (await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false)).First();
         Assert.That(guildMaster.ServerId, Is.EqualTo(serverId));
-        this.GameServer1.Verify(g => g.AssignGuildToPlayer(this.GuildMaster.Name, It.Is<GuildMemberStatus>(s => s.GuildId == guildId && s.Position == GuildPosition.GuildMaster)));
+        this.GameServer1.Verify(g => g.AssignGuildToPlayerAsync(this.GuildMaster.Name, It.Is<GuildMemberStatus>(s => s.GuildId == guildId && s.Position == GuildPosition.GuildMaster)));
     }
 
     /// <summary>
     /// Tests if the exit of the last guild member removes (not deletes ;)) the guild from the guild server.
     /// </summary>
     [Test]
-    public void LastGuildMemberLeaveGame()
+    public async ValueTask LastGuildMemberLeaveGameAsync()
     {
         const byte serverId = 1;
-        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
-        this.GuildServer.GuildMemberLeftGame(guildId, this.GuildMaster.Id, serverId);
-        var guildList = this.GuildServer.GetGuildList(guildId); // guild id is invalid now
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.GuildMemberLeftGameAsync(guildId, this.GuildMaster.Id, serverId).ConfigureAwait(false);
+        var guildList = await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false); // guild id is invalid now
         Assert.That(guildList, Is.Empty);
     }
 
@@ -44,16 +44,16 @@ public class GuildServerTest : GuildTestBase
     /// Tests if the exit of guild members is registered correctly in the guild member list.
     /// </summary>
     [Test]
-    public void GuildMemberLeaveGame()
+    public async ValueTask GuildMemberLeaveGameAsync()
     {
         const byte serverId = 1;
 
-        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
 
-        this.GuildServer.CreateGuildMember(guildId, Guid.Empty, "TestMember", GuildPosition.NormalMember, serverId);
-        this.GuildServer.GuildMemberLeftGame(guildId, this.GuildMaster.Id, serverId);
-        var guildMaster = this.GuildServer.GetGuildList(guildId).First(m => m.PlayerPosition == GuildPosition.GuildMaster);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, Guid.Empty, "TestMember", GuildPosition.NormalMember, serverId).ConfigureAwait(false);
+        await this.GuildServer.GuildMemberLeftGameAsync(guildId, this.GuildMaster.Id, serverId).ConfigureAwait(false);
+        var guildMaster = (await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false)).First(m => m.PlayerPosition == GuildPosition.GuildMaster);
         Assert.That(guildMaster.ServerId, Is.EqualTo(OpenMU.GuildServer.GuildServer.OfflineServerId));
     }
 
@@ -61,27 +61,27 @@ public class GuildServerTest : GuildTestBase
     /// Tests if the removal of the whole guild is forwarded to all game servers when the guild master kicks himself.
     /// </summary>
     [Test]
-    public void GuildPlayerKickDeletesGuild()
+    public async ValueTask GuildPlayerKickDeletesGuildAsync()
     {
         const byte serverId = 1;
-        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
-        this.GuildServer.KickMember(guildId, this.GuildMaster.Name);
-        this.GameServer1.Verify(g => g.GuildDeleted(guildId), Times.Once);
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.KickMemberAsync(guildId, this.GuildMaster.Name).ConfigureAwait(false);
+        this.GameServer1.Verify(g => g.GuildDeletedAsync(guildId), Times.Once);
     }
 
     /// <summary>
     /// Tests if the removal of guild members is forwarded to all game servers.
     /// </summary>
     [Test]
-    public void GuildPlayerKickRemovesPlayerFromGuild()
+    public async ValueTask GuildPlayerKickRemovesPlayerFromGuildAsync()
     {
         const byte serverId = 1;
         const string testMemberName = "TestMember";
-        this.GuildServer.PlayerEnteredGame(this.GuildMaster.Id, this.GuildMaster.Name, serverId);
-        var guildId = this.GuildServer.GetGuildIdByName(GuildName);
-        this.GuildServer.CreateGuildMember(guildId, Guid.Empty, testMemberName, GuildPosition.NormalMember, serverId);
-        this.GuildServer.KickMember(guildId, testMemberName);
-        this.GameServer1.Verify(g => g.GuildPlayerKicked(testMemberName), Times.Once);
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, Guid.Empty, testMemberName, GuildPosition.NormalMember, serverId).ConfigureAwait(false);
+        await this.GuildServer.KickMemberAsync(guildId, testMemberName).ConfigureAwait(false);
+        this.GameServer1.Verify(g => g.GuildPlayerKickedAsync(testMemberName), Times.Once);
     }
 }

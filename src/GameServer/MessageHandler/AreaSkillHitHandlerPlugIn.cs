@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameServer.MessageHandler;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -35,7 +34,7 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => AreaSkillHit.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < 11)
         {
@@ -54,14 +53,14 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
             {
                 if (player.SkillList.GetSkill(message.SkillId) is { } skillEntry)
                 {
-                    this._skillHitAction.AttackTarget(player, target, skillEntry);
+                    await this._skillHitAction.AttackTargetAsync(player, target, skillEntry).ConfigureAwait(false);
                 }
             }
             else
             {
                 // Client may be out of sync (or it's an hacker attempt),
                 // so we tell him the object is out of scope - this should prevent further attempts to attack it.
-                player.ViewPlugIns.GetPlugIn<IObjectsOutOfScopePlugIn>()?.ObjectsOutOfScope(target.GetAsEnumerable());
+                await player.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(target.GetAsEnumerable())).ConfigureAwait(false);
             }
         }
     }

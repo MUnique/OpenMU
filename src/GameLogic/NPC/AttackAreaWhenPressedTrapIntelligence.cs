@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.NPC;
 
 using MUnique.OpenMU.GameLogic.Views.World;
+using Nito.AsyncEx;
 
 /// <summary>
 /// An AI which attacks all targets in an area, when it's triggered by one target.
@@ -21,7 +22,7 @@ public class AttackAreaWhenPressedTrapIntelligence : TrapIntelligenceBase
     }
 
     /// <inheritdoc />
-    protected override void Tick()
+    protected override async ValueTask TickAsync()
     {
         if (this.Trap.Observers.Count == 0)
         {
@@ -40,9 +41,9 @@ public class AttackAreaWhenPressedTrapIntelligence : TrapIntelligenceBase
 
         if (this.Trap.Definition.AttackSkill is { } attackSkill)
         {
-            this.Trap.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this.Trap, targetsInRange.FirstOrDefault(), attackSkill, true), true);
+            await this.Trap.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this.Trap, targetsInRange.FirstOrDefault(), attackSkill, true), true).ConfigureAwait(false);
         }
 
-        targetsInRange.ForEach(this.Trap.Attack);
+        await targetsInRange.Select(this.Trap.AttackAsync).WhenAll().ConfigureAwait(false);
     }
 }

@@ -29,18 +29,19 @@ public class UpdateLevelPlugIn : IUpdateLevelPlugIn
     public UpdateLevelPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateLevel()
+    public async ValueTask UpdateLevelAsync()
     {
         var selectedCharacter = this._player.SelectedCharacter;
         var charStats = this._player.Attributes;
-        if (selectedCharacter is null || charStats is null)
+        var connection = this._player.Connection;
+        if (selectedCharacter is null || charStats is null || connection is null)
         {
             return;
         }
 
         if (selectedCharacter.CharacterClass?.IsMasterClass ?? false)
         {
-            this._player.Connection?.SendMasterCharacterLevelUpdate(
+            await connection.SendMasterCharacterLevelUpdateAsync(
                 (ushort)charStats[Stats.MasterLevel],
                 (ushort)charStats[Stats.MasterPointsPerLevelUp],
                 (ushort)selectedCharacter.MasterLevelUpPoints,
@@ -48,13 +49,13 @@ public class UpdateLevelPlugIn : IUpdateLevelPlugIn
                 (ushort)charStats[Stats.MaximumHealth],
                 (ushort)charStats[Stats.MaximumMana],
                 (ushort)charStats[Stats.MaximumShield],
-                (ushort)charStats[Stats.MaximumAbility]);
+                (ushort)charStats[Stats.MaximumAbility]).ConfigureAwait(false);
 
-            this._player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Congratulations, you are Master Level {charStats[Stats.MasterLevel]} now.", MessageType.BlueNormal);
+            await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Congratulations, you are Master Level {charStats[Stats.MasterLevel]} now.", MessageType.BlueNormal)).ConfigureAwait(false);
         }
         else
         {
-            this._player.Connection?.SendCharacterLevelUpdate(
+            await connection.SendCharacterLevelUpdateAsync(
                 (ushort)charStats[Stats.Level],
                 (ushort)selectedCharacter.LevelUpPoints,
                 (ushort)charStats[Stats.MaximumHealth],
@@ -64,9 +65,9 @@ public class UpdateLevelPlugIn : IUpdateLevelPlugIn
                 (ushort)selectedCharacter.UsedFruitPoints,
                 selectedCharacter.GetMaximumFruitPoints(),
                 (ushort)selectedCharacter.UsedNegFruitPoints,
-                selectedCharacter.GetMaximumFruitPoints());
+                selectedCharacter.GetMaximumFruitPoints()).ConfigureAwait(false);
 
-            this._player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"Congratulations, you are Level {charStats[Stats.Level]} now.", MessageType.BlueNormal);
+            await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Congratulations, you are Level {charStats[Stats.Level]} now.", MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 }

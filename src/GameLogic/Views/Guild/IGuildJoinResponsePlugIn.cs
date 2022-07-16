@@ -13,5 +13,5 @@ public interface IGuildJoinResponsePlugIn : IViewPlugIn
     /// Shows the guild join response from the guild master.
     /// </summary>
     /// <param name="response">The response.</param>
-    void ShowGuildJoinResponse(GuildRequestAnswerResult response);
+    ValueTask ShowGuildJoinResponseAsync(GuildRequestAnswerResult response);
 }

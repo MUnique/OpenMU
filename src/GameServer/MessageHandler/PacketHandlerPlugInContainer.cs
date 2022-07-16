@@ -65,12 +65,12 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="packet">The packet.</param>
-    public void HandlePacket(RemotePlayer player, in Span<byte> packet)
+    public async ValueTask HandlePacketAsync(RemotePlayer player, Memory<byte> packet)
     {
-        var typeIndex = packet[0] % 2 == 1 ? 2 : 3;
-        var packetType = packet[typeIndex];
+        var typeIndex = packet.Span[0] % 2 == 1 ? 2 : 3;
+        var packetType = packet.Span[typeIndex];
         var handler = this[packetType];
-        this.HandlePacket(player, packet, handler);
+        await this.HandlePacketAsync(player, packet, handler).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -104,7 +104,7 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
     /// <param name="player">The player.</param>
     /// <param name="packet">The packet.</param>
     /// <param name="handler">The handler.</param>
-    protected void HandlePacket(Player player, in Span<byte> packet, THandler? handler)
+    protected async ValueTask HandlePacketAsync(Player player, Memory<byte> packet, THandler? handler)
     {
         if (handler is null)
         {
@@ -112,13 +112,13 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
             return;
         }
 
-        if (handler.IsEncryptionExpected && (packet[0] < 0xC3))
+        if (handler.IsEncryptionExpected && (packet.Span[0] < 0xC3))
         {
-            this.Logger.LogWarning($"Packet was not encrypted and will not be handled: {packet.AsString()}");
+            this.Logger.LogWarning($"Packet was not encrypted and will not be handled: {packet.Span.AsString()}");
             return;
         }
 
-        handler.HandlePacket(player, packet);
+        await handler.HandlePacketAsync(player, packet).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

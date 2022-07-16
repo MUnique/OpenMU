@@ -30,7 +30,7 @@ public class QuestStateSetLegacyRequestHandlerPlugIn : IPacketHandlerPlugIn
     public bool IsEncryptionExpected => false;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         LegacyQuestStateSetRequest request = packet;
         switch (request.NewState)
@@ -39,19 +39,19 @@ public class QuestStateSetLegacyRequestHandlerPlugIn : IPacketHandlerPlugIn
                 var state = player.GetQuestState(QuestConstants.LegacyQuestGroup, request.QuestNumber);
                 if (state is null)
                 {
-                    this._questStartAction.StartQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                    await this._questStartAction.StartQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber).ConfigureAwait(false);
                 }
                 else
                 {
-                    this._questCompletionAction.CompleteQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                    await this._questCompletionAction.CompleteQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber).ConfigureAwait(false);
                 }
 
                 break;
             case LegacyQuestState.Complete:
-                this._questCompletionAction.CompleteQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                await this._questCompletionAction.CompleteQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber).ConfigureAwait(false);
                 break;
             case LegacyQuestState.Inactive:
-                this._questCancelAction.CancelQuest(player, QuestConstants.LegacyQuestGroup, request.QuestNumber);
+                await this._questCancelAction.CancelQuestAsync(player, QuestConstants.LegacyQuestGroup, request.QuestNumber).ConfigureAwait(false);
                 break;
             default:
                 player.Logger.LogError($"Invalid state value {request.NewState}, quest number {request.QuestNumber}, player {player}.");

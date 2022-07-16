@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Reflection;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.Extensions.Logging;
@@ -15,17 +18,19 @@ using MUnique.OpenMU.Interfaces;
 internal class GenericRepository<T> : GenericRepositoryBase<T>
     where T : class
 {
+    private readonly ILoggerFactory _loggerFactory;
     private readonly IConfigurationChangePublisher? _changePublisher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GenericRepository{T}" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="changePublisher">The change publisher.</param>
-    public GenericRepository(RepositoryManager repositoryManager, ILogger logger, IConfigurationChangePublisher? changePublisher)
-        : base(repositoryManager, logger)
+    public GenericRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
+        : base(repositoryManager, loggerFactory.CreateLogger(MethodBase.GetCurrentMethod()?.DeclaringType ?? typeof(GenericRepository<T>)))
     {
+        this._loggerFactory = loggerFactory;
         this._changePublisher = changePublisher;
     }
 
@@ -37,6 +42,6 @@ internal class GenericRepository<T> : GenericRepositoryBase<T>
     {
         var context = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContext;
 
-        return new EntityFrameworkContext(context?.Context ?? new TypedContext<T>(), this.RepositoryManager, context is null, this._changePublisher);
+        return new EntityFrameworkContext(context?.Context ?? new TypedContext<T>(), this._loggerFactory, this.RepositoryManager, context is null, this._changePublisher);
     }
 }

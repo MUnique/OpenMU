@@ -25,11 +25,12 @@ public class UpdateVaultMoneyPlugIn : IUpdateVaultMoneyPlugIn
     public UpdateVaultMoneyPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateVaultMoney(bool success)
+    public async ValueTask UpdateVaultMoneyAsync(bool success)
     {
-        this._player.Connection?.SendVaultMoneyUpdate(
+        await this._player.Connection.SendVaultMoneyUpdateAsync(
             success,
             success ? (uint)this._player.Account!.Vault!.Money : 0,
-            success ? (uint)this._player.Money : 0);
+            success ? (uint)this._player.Money : 0)
+            .ConfigureAwait(false);
     }
 }

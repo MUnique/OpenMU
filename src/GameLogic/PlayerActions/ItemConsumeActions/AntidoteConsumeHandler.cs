@@ -14,9 +14,9 @@ public class AntidoteConsumeHandler : BaseConsumeHandler
     private const short PoisonEffectNumber = 0x37;
 
     /// <inheritdoc />
-    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (base.ConsumeItem(player, item, targetItem, fruitUsage))
+        if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
             if (player.MagicEffectList.ActiveEffects.TryGetValue(PoisonEffectNumber, out var effect))
             {

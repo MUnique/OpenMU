@@ -63,10 +63,10 @@ public partial class ItemTable<TItem>
         this._isCollapsed = !this._isCollapsed;
     }
 
-    private async Task OnAddClick()
+    private async Task OnAddClickAsync()
     {
         var modal = this._modal.Show<ModalObjectSelection<TItem>>($"Select {typeof(TItem).Name}");
-        var result = await modal.Result;
+        var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled && result.Data is TItem item)
         {
             this.Value ??= new List<TItem>();
@@ -75,7 +75,7 @@ public partial class ItemTable<TItem>
         }
     }
 
-    private async Task OnCreateClick()
+    private async Task OnCreateClickAsync()
     {
         var item = this.PersistenceContext.CreateNew<TItem>();
         var parameters = new ModalParameters();
@@ -87,21 +87,21 @@ public partial class ItemTable<TItem>
         };
 
         var modal = this._modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).Name}", parameters, options);
-        var result = await modal.Result;
+        var result = await modal.Result.ConfigureAwait(false);
         if (result.Cancelled)
         {
-            this.PersistenceContext.Delete(item);
+            await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         }
         else
         {
             this.Value ??= new List<TItem>();
             this.Value.Add(item);
-            this.PersistenceContext.SaveChanges();
+            await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
             this.StateHasChanged();
         }
     }
 
-    private void OnRemoveClick(TItem item)
+    private async Task OnRemoveClickAsync(TItem item)
     {
         this.Value?.Remove(item);
 
@@ -109,9 +109,9 @@ public partial class ItemTable<TItem>
         if (!this.ValueExpression!.GetAccessedMemberType().IsConfigurationType()
             && !typeof(TItem).IsConfigurationType())
         {
-            this.PersistenceContext.Delete(item);
+            await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         }
 
-        this.PersistenceContext.SaveChanges();
+        await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
     }
 }

@@ -17,12 +17,12 @@ public interface ILoginServer
     /// <param name="accountName">Name of the account.</param>
     /// <param name="serverId">The server identifier.</param>
     /// <returns>The success.</returns>
-    Task<bool> TryLogin(string accountName, byte serverId);
+    Task<bool> TryLoginAsync(string accountName, byte serverId);
 
     /// <summary>
     /// Logs the account off from the specified server.
     /// </summary>
     /// <param name="accountName">Name of the account.</param>
     /// <param name="serverId">The server identifier.</param>
-    void LogOff(string accountName, byte serverId);
+    ValueTask LogOffAsync(string accountName, byte serverId);
 }

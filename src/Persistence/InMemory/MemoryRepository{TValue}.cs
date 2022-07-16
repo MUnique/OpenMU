@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.Collections;
+
 /// <summary>
 /// A repository which lives on memory only.
 /// </summary>
@@ -37,40 +39,46 @@ public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     }
 
     /// <inheritdoc />
-    public void Remove(Guid key)
+    public async ValueTask RemoveAsync(Guid key)
     {
-        this.Delete(key);
+        await this.DeleteAsync(key).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public TValue? GetById(Guid id)
+    public ValueTask<TValue?> GetByIdAsync(Guid id)
     {
         this._values.TryGetValue(id, out var obj);
-        return obj;
+        return ValueTask.FromResult(obj);
     }
 
     /// <inheritdoc/>
-    object? IRepository.GetById(Guid id)
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id)
     {
-        return this.GetById(id);
+        return await this.GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public bool Delete(object obj)
+    public ValueTask<bool> DeleteAsync(object obj)
     {
         var key = this._values.Where(kvp => kvp.Value.Equals(obj)).Select(kvp => kvp.Key).FirstOrDefault();
-        return this._values.Remove(key);
+        return ValueTask.FromResult(this._values.Remove(key));
     }
 
     /// <inheritdoc/>
-    public bool Delete(Guid id)
+    public ValueTask<bool> DeleteAsync(Guid id)
     {
-        return this._values.Remove(id);
+        return ValueTask.FromResult(this._values.Remove(id));
     }
 
     /// <inheritdoc/>
-    public IEnumerable<TValue> GetAll()
+    public ValueTask<IEnumerable<TValue>> GetAllAsync()
     {
-        return this._values.Values;
+        return ValueTask.FromResult(this._values.Values.Cast<TValue>());
+    }
+
+    /// <inheritdoc/>
+    ValueTask<IEnumerable> IRepository.GetAllAsync()
+    {
+        return ValueTask.FromResult<IEnumerable>(this._values.Values);
     }
 }

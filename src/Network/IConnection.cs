@@ -7,21 +7,8 @@ namespace MUnique.OpenMU.Network;
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
-using System.Threading;
-
-/// <summary>
-/// A delegate which is executed when a packet gets received from a connection.
-/// </summary>
-/// <param name="sender">The sender.</param>
-/// <param name="packet">The packet.</param>
-public delegate void PipedPacketReceivedHandler(object sender, ReadOnlySequence<byte> packet);
-
-/// <summary>
-/// A delegate which is executed when the connection got disconnected.
-/// </summary>
-/// <param name="sender">The sender.</param>
-/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-public delegate void DisconnectedHandler(object sender, EventArgs e);
+using Nito.AsyncEx;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Interface for a connection.
@@ -35,12 +22,12 @@ public interface IConnection : IDisposable
     /// <remarks>
     /// Remove and implement <see cref="IDuplexPipe"/> instead?
     /// </remarks>
-    event PipedPacketReceivedHandler? PacketReceived;
+    event AsyncEventHandler<ReadOnlySequence<byte>>? PacketReceived;
 
     /// <summary>
     /// Occurs when the client disconnected.
     /// </summary>
-    event DisconnectedHandler? Disconnected;
+    event AsyncEventHandler? Disconnected;
 
     /// <summary>
     /// Gets a value indicating whether this <see cref="IConnection"/> is connected.
@@ -64,18 +51,18 @@ public interface IConnection : IDisposable
     PipeWriter Output { get; }
 
     /// <summary>
-    /// Gets a <see cref="SemaphoreSlim"/> to synchronize writes to the <see cref="Output"/>.
+    /// Gets an <see cref="AsyncLock"/> to synchronize writes to the <see cref="Output"/>.
     /// </summary>
-    SemaphoreSlim OutputLock { get; }
+    AsyncLock OutputLock { get; }
 
     /// <summary>
     /// Begins receiving from the client.
     /// </summary>
     /// <returns>The async task.</returns>
-    Task BeginReceive();
+    Task BeginReceiveAsync();
 
     /// <summary>
     /// Disconnects this instance.
     /// </summary>
-    void Disconnect();
+    ValueTask DisconnectAsync();
 }

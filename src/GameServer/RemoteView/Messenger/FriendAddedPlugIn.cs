@@ -25,8 +25,8 @@ public class FriendAddedPlugIn : IFriendAddedPlugIn
     public FriendAddedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void FriendAdded(string friendName)
+    public async ValueTask FriendAddedAsync(string friendName)
     {
-        this._player.Connection?.SendFriendAdded(friendName);
+        await this._player.Connection.SendFriendAddedAsync(friendName).ConfigureAwait(false);
     }
 }

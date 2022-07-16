@@ -28,7 +28,7 @@ public interface IMapInitializer
     /// Initializes the state of the previously created game map (e.g. by creating NPC instances).
     /// </summary>
     /// <param name="createdMap">The created map.</param>
-    void InitializeState(GameMap createdMap);
+    ValueTask InitializeStateAsync(GameMap createdMap);
 
     /// <summary>
     /// Initializes the spawn on the map.
@@ -36,14 +36,14 @@ public interface IMapInitializer
     /// <param name="gameMap">The game map on which the spawn should be initialized.</param>
     /// <param name="spawnArea">The spawn area.</param>
     /// <param name="eventStateProvider">The event state provider.</param>
-    void InitializeSpawn(GameMap gameMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null);
+    ValueTask InitializeSpawnAsync(GameMap gameMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null);
 
     /// <summary>
     /// Initializes the event NPCs of the previously created game map.
     /// </summary>
     /// <param name="createdMap">The created map.</param>
     /// <param name="eventStateProvider">The event state provider.</param>
-    void InitializeNpcsOnEventStart(GameMap createdMap, IEventStateProvider eventStateProvider);
+    ValueTask InitializeNpcsOnEventStartAsync(GameMap createdMap, IEventStateProvider eventStateProvider);
 
     /// <summary>
     /// Initializes the event NPCs of the previously created game map after the spawn waves started.
@@ -51,5 +51,5 @@ public interface IMapInitializer
     /// <param name="createdMap">The created map.</param>
     /// <param name="eventStateProvider">The event state provider.</param>
     /// <param name="waveNumber">The number of the started spawn wave.</param>
-    void InitializeNpcsOnWaveStart(GameMap createdMap, IEventStateProvider eventStateProvider, byte waveNumber);
+    ValueTask InitializeNpcsOnWaveStartAsync(GameMap createdMap, IEventStateProvider eventStateProvider, byte waveNumber);
 }

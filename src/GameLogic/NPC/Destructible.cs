@@ -27,14 +27,16 @@ public sealed class Destructible : AttackableNpcBase, IAttackable
     }
 
     /// <inheritdoc/>
-    public override void ReflectDamage(IAttacker reflector, uint damage)
+    public override ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
     {
         // A destructible doesn't attack, so it doesn't reflect.
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public override void ApplyPoisonDamage(IAttacker initialAttacker, uint damage)
+    public override ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
     {
         // A destructible is not an organism which can be poisoned.
+        return ValueTask.CompletedTask;
     }
 }

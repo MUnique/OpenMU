@@ -12,5 +12,5 @@ public interface IUpdateInventoryListPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the inventory list.
     /// </summary>
-    void UpdateInventoryList();
+    ValueTask UpdateInventoryListAsync();
 }

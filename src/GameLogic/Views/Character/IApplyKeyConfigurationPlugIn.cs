@@ -12,5 +12,5 @@ public interface IApplyKeyConfigurationPlugIn : IViewPlugIn
     /// <summary>
     /// Applies the key configuration on the view.
     /// </summary>
-    void ApplyKeyConfiguration();
+    ValueTask ApplyKeyConfigurationAsync();
 }

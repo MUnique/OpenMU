@@ -16,5 +16,5 @@ public interface IItemPriceSetResponsePlugIn : IViewPlugIn
     /// </summary>
     /// <param name="itemSlot">The item slot.</param>
     /// <param name="result">The result.</param>
-    void ItemPriceSetResponse(byte itemSlot, ItemPriceResult result);
+    ValueTask ItemPriceSetResponseAsync(byte itemSlot, ItemPriceResult result);
 }

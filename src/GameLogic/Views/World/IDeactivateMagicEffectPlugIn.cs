@@ -14,5 +14,5 @@ public interface IDeactivateMagicEffectPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="effect">The effect.</param>
     /// <param name="affectedObject">The affected object.</param>
-    void DeactivateMagicEffect(MagicEffect effect, IAttackable affectedObject);
+    ValueTask DeactivateMagicEffectAsync(MagicEffect effect, IAttackable affectedObject);
 }

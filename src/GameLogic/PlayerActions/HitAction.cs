@@ -19,12 +19,11 @@ public class HitAction
     /// <param name="target">The target.</param>
     /// <param name="attackAnimation">The attack animation.</param>
     /// <param name="lookingDirection">The looking direction.</param>
-    public void Hit(Player player, IAttackable target, byte attackAnimation, Direction lookingDirection)
+    public async ValueTask HitAsync(Player player, IAttackable target, byte attackAnimation, Direction lookingDirection)
     {
         if (target is IObservable targetAsObservable)
         {
-            targetAsObservable.ObserverLock.EnterReadLock();
-            try
+            using (await targetAsObservable.ObserverLock.ReaderLockAsync())
             {
                 if (!targetAsObservable.Observers.Contains(player))
                 {
@@ -32,25 +31,21 @@ public class HitAction
                     return;
                 }
             }
-            finally
-            {
-                targetAsObservable.ObserverLock.ExitReadLock();
-            }
         }
 
         player.Rotation = lookingDirection;
-        target.AttackBy(player, null);
+        await target.AttackByAsync(player, null).ConfigureAwait(false);
         if (player.Attributes?[Stats.TransformationSkin] is { } skin and not 0
-            && this.ApplySkinnedMonstersSkill(player, target, (short)skin) is var (skill, effectApplied))
+            && await this.ApplySkinnedMonstersSkillAsync(player, target, (short)skin).ConfigureAwait(false) is var (skill, effectApplied))
         {
-            player.ForEachWorldObserver(observer => observer.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(player, target, skill, effectApplied), true);
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, skill, effectApplied), true).ConfigureAwait(false);
             return;
         }
 
-        player.ForEachObservingPlayer(observer => observer.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(player, attackAnimation, target, lookingDirection), false);
+        await player.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowAnimationAsync(player, attackAnimation, target, lookingDirection), false).ConfigureAwait(false);
     }
 
-    private (Skill Skill, bool EffectApplied)? ApplySkinnedMonstersSkill(Player player, IAttackable target, short skin)
+    private async ValueTask<(Skill Skill, bool EffectApplied)?> ApplySkinnedMonstersSkillAsync(Player player, IAttackable target, short skin)
     {
         var effectApplied = false;
         if (player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == skin)?.AttackSkill
@@ -75,13 +70,13 @@ public class HitAction
             var magicEffect = effectDefinition.PowerUpDefinition.TargetAttribute == Stats.IsPoisoned
                 ? new PoisonMagicEffect(powerUp, effectDefinition, TimeSpan.FromSeconds(powerUpDuration.Value), player, target)
                 : new MagicEffect(powerUp, effectDefinition, TimeSpan.FromSeconds(powerUpDuration.Value));
-            target.MagicEffectList.AddEffect(magicEffect);
+            await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
             effectApplied = true;
         }
 
         if (modifier == Stats.LightningResistance)
         {
-            target.MoveRandomly();
+            await target.MoveRandomlyAsync().ConfigureAwait(false);
         }
 
         return (skill, effectApplied);

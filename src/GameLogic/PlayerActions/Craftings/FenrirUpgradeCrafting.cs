@@ -97,7 +97,7 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
     }
 
     /// <inheritdoc/>
-    protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex)
     {
         var fenrir = requiredItems.First(i => i.ItemRequirement.Reference == 1).Items.First();
 
@@ -120,6 +120,6 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
             fenrir.ItemOptions.Add(optionLink);
         }
 
-        yield return fenrir;
+        return new List<Item> { fenrir };
     }
 }

@@ -29,14 +29,19 @@ public class ObjectGotKilledPlugIn : IObjectGotKilledPlugIn
     public ObjectGotKilledPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ObjectGotKilled(IAttackable killed, IAttacker killer, Skill? skill = null)
+    public async ValueTask ObjectGotKilledAsync(IAttackable killed, IAttacker killer, Skill? skill = null)
     {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
         var killedId = killed.GetId(this._player);
         var killerId = killer.GetId(this._player);
-        this._player.Connection?.SendObjectGotKilled(killedId, skill?.Number.ToUnsigned() ?? 0, killerId);
+        await connection.SendObjectGotKilledAsync(killedId, skill?.Number.ToUnsigned() ?? 0, killerId).ConfigureAwait(false);
         if (this._player == killed && killer is Player killerPlayer)
         {
-            this._player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal);
+            await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 }

@@ -24,7 +24,7 @@ internal class TargetedSkillHandlerPlugIn075 : TargetedSkillHandlerPlugIn
     /// <remarks>
     /// In early versions, the index of the skill is used as identifier. Later it was the skill id.
     /// </remarks>
-    public override void HandlePacket(Player player, Span<byte> packet)
+    public override async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         TargetedSkill075 message = packet;
         var skill = player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.GetSkillByIndex(message.SkillIndex);
@@ -33,6 +33,6 @@ internal class TargetedSkillHandlerPlugIn075 : TargetedSkillHandlerPlugIn
             return;
         }
 
-        this.Handle(player, (ushort)skill.Number, message.TargetId);
+        await this.HandleAsync(player, (ushort)skill.Number, message.TargetId).ConfigureAwait(false);
     }
 }

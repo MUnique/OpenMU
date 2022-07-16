@@ -15,5 +15,5 @@ public interface IMovable
     /// Moves the object to the specified target coordinates.
     /// </summary>
     /// <param name="target">The target coordinates.</param>
-    void Move(Point target);
+    ValueTask MoveAsync(Point target);
 }

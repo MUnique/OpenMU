@@ -14,5 +14,5 @@ public interface IShowMessageOfObjectPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="message">The message.</param>
     /// <param name="sender">The sender.</param>
-    void ShowMessageOfObject(string message, IIdentifiable sender);
+    ValueTask ShowMessageOfObjectAsync(string message, IIdentifiable sender);
 }

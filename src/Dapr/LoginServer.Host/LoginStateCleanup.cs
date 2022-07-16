@@ -35,16 +35,16 @@ public sealed class LoginStateCleanup : IHostedService
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        this._registry.NewGameServerAdded += this.OnNewGameServerAdded;
-        this._registry.GameServerRemoved += this.OnGameServerRemoved;
+        this._registry.NewGameServerAdded += this.OnNewGameServerAddedAsync;
+        this._registry.GameServerRemoved += this.OnGameServerRemovedAsync;
         return Task.CompletedTask;
     }
 
     /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        this._registry.NewGameServerAdded -= this.OnNewGameServerAdded;
-        this._registry.GameServerRemoved -= this.OnGameServerRemoved;
+        this._registry.NewGameServerAdded -= this.OnNewGameServerAddedAsync;
+        this._registry.GameServerRemoved -= this.OnGameServerRemovedAsync;
         return Task.CompletedTask;
     }
 
@@ -52,18 +52,17 @@ public sealed class LoginStateCleanup : IHostedService
     /// It's called when a new server which recently started, is added.
     /// We clean up the login states for this server as well.
     /// </summary>
-    /// <param name="sender">The sender of the event.</param>
     /// <param name="serverId">The id of the started server.</param>
     /// <remarks>
     /// We handle here the <see cref="GameServerRegistry.NewGameServerAdded"/> instead of the <see cref="GameServerRegistry.GameServerAdded"/>,
     /// because only then it makes sense to clean the login states of this server.
     /// Otherwise, it might be possible, that the login server itself just crashed and recognized a longer running game server. In that case, cleaning the states is not wanted.
     /// </remarks>
-    private async void OnNewGameServerAdded(object? sender, ushort serverId)
+    private async ValueTask OnNewGameServerAddedAsync(ushort serverId)
     {
         try
         {
-            await this._loginServer.RemoveServerAsync((byte)serverId);
+            await this._loginServer.RemoveServerAsync((byte)serverId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -71,11 +70,11 @@ public sealed class LoginStateCleanup : IHostedService
         }
     }
 
-    private async void OnGameServerRemoved(object? sender, ushort serverId)
+    private async ValueTask OnGameServerRemovedAsync(ushort serverId)
     {
         try
         {
-            await this._loginServer.RemoveServerAsync((byte)serverId);
+            await this._loginServer.RemoveServerAsync((byte)serverId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

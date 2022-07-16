@@ -19,5 +19,5 @@ public interface IBloodCastleScoreTableViewPlugin : IViewPlugIn
     /// <param name="totalScore">The total score.</param>
     /// <param name="bonusExp">The bonus experience.</param>
     /// <param name="bonusMoney">The bonus money.</param>
-    void ShowScoreTable(bool success, string playerName, int totalScore, int bonusExp, int bonusMoney);
+    ValueTask ShowScoreTableAsync(bool success, string playerName, int totalScore, int bonusExp, int bonusMoney);
 }

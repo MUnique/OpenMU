@@ -22,7 +22,7 @@ public class QuestCompletionAction
     /// <param name="player">The player.</param>
     /// <param name="group">The group.</param>
     /// <param name="number">The number.</param>
-    public void CompleteQuest(Player player, short group, short number)
+    public async ValueTask CompleteQuestAsync(Player player, short group, short number)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var questState = player.GetQuestState(group, number);
@@ -67,23 +67,23 @@ public class QuestCompletionAction
 
             foreach (var item in items)
             {
-                player.ViewPlugIns.GetPlugIn<IItemRemovedPlugIn>()?.RemoveItem(item.ItemSlot);
-                player.Inventory.RemoveItem(item);
-                player.PersistenceContext.Delete(item);
+                await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
+                await player.Inventory.RemoveItemAsync(item).ConfigureAwait(false);
+                await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
             }
         }
 
         foreach (var reward in activeQuest.Rewards)
         {
-            AddReward(player, reward);
+            await AddRewardAsync(player, reward).ConfigureAwait(false);
         }
 
         questState!.LastFinishedQuest = activeQuest;
-        questState.Clear(player.PersistenceContext);
-        player.ViewPlugIns.GetPlugIn<IQuestCompletionResponsePlugIn>()?.QuestCompleted(activeQuest);
+        await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletedAsync(activeQuest)).ConfigureAwait(false);
     }
 
-    private static void AddReward(Player player, QuestReward reward)
+    private static async ValueTask AddRewardAsync(Player player, QuestReward reward)
     {
         switch (reward.RewardType)
         {
@@ -97,53 +97,54 @@ public class QuestCompletionAction
 
                 attribute.Value += reward.Value;
 
-                player.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(player, QuestRewardType.Attribute, reward.Value, attribute.Definition);
+                await player.InvokeViewPlugInAsync<ILegacyQuestRewardPlugIn>(p => p.ShowAsync(player, QuestRewardType.Attribute, reward.Value, attribute.Definition)).ConfigureAwait(false);
                 break;
             case QuestRewardType.Item:
                 var item = player.PersistenceContext.CreateNew<Item>();
                 item.AssignValues(reward.ItemReward ?? throw new InvalidOperationException($"Reward {reward.GetId()} is defined as item reward, but has no item assigned"));
-                if (player.Inventory!.AddItem(item))
+                if (await player.Inventory!.AddItemAsync(item).ConfigureAwait(false))
                 {
-                    player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()?.ItemAppear(item);
+                    await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
                 }
                 else
                 {
-                    player.CurrentMap?.Add(new DroppedItem(item, player.Position, player.CurrentMap, player, player.GetAsEnumerable()));
+                    player.CurrentMap?.AddAsync(new DroppedItem(item, player.Position, player.CurrentMap, player, player.GetAsEnumerable()));
                 }
 
                 break;
             case QuestRewardType.LevelUpPoints:
                 player.SelectedCharacter!.LevelUpPoints += reward.Value;
-                player.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()
-                    ?.Show(player, QuestRewardType.LevelUpPoints, reward.Value, null);
+                await player.InvokeViewPlugInAsync<ILegacyQuestRewardPlugIn>(p => p.ShowAsync(player, QuestRewardType.LevelUpPoints, reward.Value, null)).ConfigureAwait(false);
                 break;
             case QuestRewardType.CharacterEvolutionFirstToSecond:
                 player.SelectedCharacter!.CharacterClass = player.SelectedCharacter.CharacterClass?.NextGenerationClass
                                                            ?? throw new InvalidOperationException($"Current character class has no next generation");
-                player.ForEachWorldObserver(
-                    o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(
+                await player.ForEachWorldObserverAsync<ILegacyQuestRewardPlugIn>(
+                    p => p.ShowAsync(
                         player,
                         QuestRewardType.CharacterEvolutionFirstToSecond,
                         reward.Value,
-                        null), true);
+                        null),
+                    true).ConfigureAwait(false);
                 break;
             case QuestRewardType.CharacterEvolutionSecondToThird:
                 player.SelectedCharacter!.CharacterClass = player.SelectedCharacter.CharacterClass?.NextGenerationClass
                                                            ?? throw new InvalidOperationException($"Current character class has no next generation");
-                player.ForEachWorldObserver(
-                    o => o.ViewPlugIns.GetPlugIn<ILegacyQuestRewardPlugIn>()?.Show(
+                await player.ForEachWorldObserverAsync<ILegacyQuestRewardPlugIn>(
+                    p => p.ShowAsync(
                         player,
                         QuestRewardType.CharacterEvolutionSecondToThird,
                         reward.Value,
-                        null), true);
-                player.ViewPlugIns.GetPlugIn<IUpdateMasterStatsPlugIn>()?.SendMasterStats();
+                        null),
+                    true).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
                 break;
             case QuestRewardType.Experience:
-                player.AddExperience(reward.Value, null);
+                await player.AddExperienceAsync(reward.Value, null).ConfigureAwait(false);
                 break;
             case QuestRewardType.Money:
                 player.TryAddMoney(reward.Value);
-                player.ViewPlugIns.GetPlugIn<IUpdateMoneyPlugIn>()?.UpdateMoney();
+                await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
                 break;
             case QuestRewardType.GensAttribution:
                 // not yet implemented.

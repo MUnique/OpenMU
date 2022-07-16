@@ -28,16 +28,16 @@ internal class TradeRequestHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => TradeRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         TradeRequest message = packet;
-        var partner = player.GetObservingPlayerWithId(message.PlayerId);
+        var partner = await player.GetObservingPlayerWithIdAsync(message.PlayerId).ConfigureAwait(false);
         if (partner is null)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Trade partner not found.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Trade partner not found.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
-        this._requestAction.RequestTrade(player, partner);
+        await this._requestAction.RequestTradeAsync(player, partner).ConfigureAwait(false);
     }
 }

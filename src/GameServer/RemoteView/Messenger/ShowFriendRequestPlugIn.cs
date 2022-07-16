@@ -25,8 +25,8 @@ public class ShowFriendRequestPlugIn : IShowFriendRequestPlugIn
     public ShowFriendRequestPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowFriendRequest(string requester)
+    public async ValueTask ShowFriendRequestAsync(string requester)
     {
-        this._player.Connection?.SendFriendRequest(requester);
+        await this._player.Connection.SendFriendRequestAsync(requester).ConfigureAwait(false);
     }
 }

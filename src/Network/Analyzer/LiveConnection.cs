@@ -54,13 +54,13 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
         this._logger = loggerFactory.CreateLogger("Proxy_" + this._clientConnection);
         this._clientName = this._clientConnection.ToString()!;
         this.Name = this._clientName;
-        this._clientConnection.PacketReceived += this.ClientPacketReceived;
-        this._serverConnection.PacketReceived += this.ServerPacketReceived;
-        this._clientConnection.Disconnected += this.ClientDisconnected;
-        this._serverConnection.Disconnected += this.ServerDisconnected;
+        this._clientConnection.PacketReceived += this.ClientPacketReceivedAsync;
+        this._serverConnection.PacketReceived += this.ServerPacketReceivedAsync;
+        this._clientConnection.Disconnected += this.ClientDisconnectedAsync;
+        this._serverConnection.Disconnected += this.ServerDisconnectedAsync;
         this._logger.LogInformation("LiveConnection initialized.");
-        this._clientConnection.BeginReceive();
-        this._serverConnection.BeginReceive();
+        _ = this._clientConnection.BeginReceiveAsync();
+        _ = this._serverConnection.BeginReceiveAsync();
     }
 
     /// <summary>
@@ -104,21 +104,21 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
     /// <summary>
     /// Disconnects the connection to the server and therefore indirectly also to the client.
     /// </summary>
-    public void Disconnect()
+    public ValueTask DisconnectAsync()
     {
-        this._serverConnection.Disconnect();
+        return this._serverConnection.DisconnectAsync();
     }
 
     /// <summary>
     /// Sends data to the server.
     /// </summary>
     /// <param name="data">The data.</param>
-    public void SendToServer(byte[] data)
+    public async ValueTask SendToServerAsync(byte[] data)
     {
         var packet = new Packet(DateTime.UtcNow - this.StartTimestamp, data, true);
         this._logger.LogInformation(packet.ToString());
         this._serverConnection.Output.Write(data);
-        this._serverConnection.Output.FlushAsync();
+        await this._serverConnection.Output.FlushAsync().ConfigureAwait(false);
         this._invokeAction((Action)(() => this.PacketList.Add(packet)));
     }
 
@@ -126,10 +126,10 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
     /// Sends data to the client.
     /// </summary>
     /// <param name="data">The data.</param>
-    public void SendToClient(byte[] data)
+    public async ValueTask SendToClientAsync(byte[] data)
     {
         this._clientConnection.Output.Write(data);
-        this._clientConnection.Output.FlushAsync();
+        await this._clientConnection.Output.FlushAsync().ConfigureAwait(false);
         var packet = new Packet(DateTime.UtcNow - this.StartTimestamp, data, false);
         this._logger.LogInformation(packet.ToString());
         this._invokeAction((Action)(() => this.PacketList.Add(packet)));
@@ -144,29 +144,29 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
         this._invokeAction((Action)(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName))));
     }
 
-    private void ServerDisconnected(object sender, EventArgs e)
+    private async ValueTask ServerDisconnectedAsync()
     {
         this._logger.LogInformation("The server connection closed.");
-        this._clientConnection.Disconnect();
+        await this._clientConnection.DisconnectAsync().ConfigureAwait(false);
         this.Name = this._clientName + " [Disconnected]";
     }
 
-    private void ClientDisconnected(object sender, EventArgs e)
+    private async ValueTask ClientDisconnectedAsync()
     {
         this._logger.LogInformation("The client connected closed");
-        this._serverConnection.Disconnect();
+        await this._serverConnection.DisconnectAsync().ConfigureAwait(false);
         this.Name = this._clientName + " [Disconnected]";
     }
 
-    private void ServerPacketReceived(object sender, ReadOnlySequence<byte> data)
+    private async ValueTask ServerPacketReceivedAsync(ReadOnlySequence<byte> data)
     {
         var dataAsArray = data.ToArray();
-        this.SendToClient(dataAsArray);
+        await this.SendToClientAsync(dataAsArray).ConfigureAwait(false);
     }
 
-    private void ClientPacketReceived(object sender, ReadOnlySequence<byte> data)
+    private async ValueTask ClientPacketReceivedAsync(ReadOnlySequence<byte> data)
     {
         var dataAsArray = data.ToArray();
-        this.SendToServer(dataAsArray);
+        await this.SendToServerAsync(dataAsArray).ConfigureAwait(false);
     }
 }

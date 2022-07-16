@@ -22,10 +22,10 @@ public class PipelinedEncryptDecryptCycleTests
     /// </summary>
     /// <returns>The task.</returns>
     [Test]
-    public async Task ClientToServerC3()
+    public async Task ClientToServerC3Async()
     {
         var packet = Convert.FromBase64String("w7kxFgK8hYpGGLgdXe7ZpTZViB+r3sRI3YSqZs7/Mh5Vmh2mXqs+3dqkvURmXrL57ASs+FkJz/236Tl9ER67R+WZyMLRMkeLF6tEBiB/4X7SsXrKUznES8of73RxwMy76HZezJbvJ7m9IOGuxcjcNwe6q1+k8fOs1Hz3sULSGlbfiB6qIBXo4onADTNYFoYCQrdtthVsF/aDsvcZ93V36gaKzzyqMhby0sjV4+TAU7719W6LZWNAcnA=");
-        await this.EncryptDecryptFromClientToServer(packet).ConfigureAwait(false);
+        await this.EncryptDecryptFromClientToServerAsync(packet).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -36,10 +36,10 @@ public class PipelinedEncryptDecryptCycleTests
     /// </remarks>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task ClientToServerC3WithNonMaximalFinalBlockSize()
+    public async Task ClientToServerC3WithNonMaximalFinalBlockSizeAsync()
     {
         var packet = new byte[] { 195, 12, 14, 0, 1, 51, 254, 39, 0, 0, 0, 0 };
-        await this.EncryptDecryptFromClientToServer(packet).ConfigureAwait(false);
+        await this.EncryptDecryptFromClientToServerAsync(packet).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -50,10 +50,10 @@ public class PipelinedEncryptDecryptCycleTests
     /// </remarks>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task ClientToServerC3WithSmallPacket()
+    public async Task ClientToServerC3WithSmallPacketAsync()
     {
         var packet = new byte[] { 195, 5, 14, 0, 1 };
-        await this.EncryptDecryptFromClientToServer(packet).ConfigureAwait(false);
+        await this.EncryptDecryptFromClientToServerAsync(packet).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -63,10 +63,10 @@ public class PipelinedEncryptDecryptCycleTests
     /// </summary>
     /// <returns>The task.</returns>
     [Test]
-    public async Task ClientToServerC1()
+    public async Task ClientToServerC1Async()
     {
         var packet = new byte[] { 0xC1, 0x06, 0x11, 0x01, 0x02, 0x03 };
-        await this.EncryptDecryptFromClientToServer(packet).ConfigureAwait(false);
+        await this.EncryptDecryptFromClientToServerAsync(packet).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -76,10 +76,10 @@ public class PipelinedEncryptDecryptCycleTests
     /// </summary>
     /// <returns>The task.</returns>
     [Test]
-    public async Task ServerToClientC3()
+    public async Task ServerToClientC3Async()
     {
         var packet = Convert.FromBase64String("w7kxFgK8hYpGGLgdXe7ZpTZViB+r3sRI3YSqZs7/Mh5Vmh2mXqs+3dqkvURmXrL57ASs+FkJz/236Tl9ER67R+WZyMLRMkeLF6tEBiB/4X7SsXrKUznES8of73RxwMy76HZezJbvJ7m9IOGuxcjcNwe6q1+k8fOs1Hz3sULSGlbfiB6qIBXo4onADTNYFoYCQrdtthVsF/aDsvcZ93V36gaKzzyqMhby0sjV4+TAU7719W6LZWNAcnA=");
-        await this.EncryptDecryptFromServerToClient(packet).ConfigureAwait(false);
+        await this.EncryptDecryptFromServerToClientAsync(packet).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -88,10 +88,10 @@ public class PipelinedEncryptDecryptCycleTests
     /// </summary>
     /// <returns>The task.</returns>
     [Test]
-    public async Task ServerToClientC1()
+    public async Task ServerToClientC1Async()
     {
         var packet = new byte[] { 0xC1, 0x06, 0x11, 0x01, 0x02, 0x03 };
-        await this.EncryptDecryptFromServerToClient(packet).ConfigureAwait(false);
+        await this.EncryptDecryptFromServerToClientAsync(packet).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public class PipelinedEncryptDecryptCycleTests
     /// </summary>
     /// <param name="packet">The packet.</param>
     /// <returns>The task.</returns>
-    private async Task EncryptDecryptFromServerToClient(byte[] packet)
+    private async Task EncryptDecryptFromServerToClientAsync(byte[] packet)
     {
         // this pipe connects the encryptor with the decryptor. You can imagine this as the server-to-client pipe of a network socket, for example.
         var pipe = new Pipe();
@@ -120,7 +120,7 @@ public class PipelinedEncryptDecryptCycleTests
     /// </summary>
     /// <param name="packet">The packet.</param>
     /// <returns>The async task.</returns>
-    private async Task EncryptDecryptFromClientToServer(byte[] packet)
+    private async Task EncryptDecryptFromClientToServerAsync(byte[] packet)
     {
         // this pipe connects the encryptor with the decryptor. You can imagine this as the client-to-server pipe of a network socket, for example.
         var pipe = new Pipe();
@@ -128,7 +128,7 @@ public class PipelinedEncryptDecryptCycleTests
         var encryptor = new PipelinedXor32Encryptor(new PipelinedSimpleModulusEncryptor(pipe.Writer, PipelinedSimpleModulusEncryptor.DefaultClientKey).Writer);
         var decryptor = new PipelinedXor32Decryptor(new PipelinedSimpleModulusDecryptor(pipe.Reader).Reader);
         encryptor.Writer.Write(packet);
-        await encryptor.Writer.FlushAsync();
+        await encryptor.Writer.FlushAsync().ConfigureAwait(false);
         var readResult = await decryptor.Reader.ReadAsync().ConfigureAwait(false);
 
         var result = readResult.Buffer.ToArray();

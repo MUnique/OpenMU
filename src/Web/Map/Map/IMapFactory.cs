@@ -15,7 +15,7 @@ public interface IMapFactory
     /// <param name="server">The server.</param>
     /// <param name="mapId">The map identifier.</param>
     /// <returns>A disposable map controller.</returns>
-    ValueTask<IMapController> CreateMap(IObservableGameServer server, Guid mapId);
+    ValueTask<IMapController> CreateMapAsync(IObservableGameServer server, Guid mapId);
 
     /// <summary>
     /// Gets the map identifier which is used to identify the container DOM-Element.

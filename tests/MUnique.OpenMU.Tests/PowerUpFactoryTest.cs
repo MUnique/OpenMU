@@ -30,9 +30,9 @@ public class PowerUpFactoryTest
     /// Tests if the item option results in an corresponding power up.
     /// </summary>
     [Test]
-    public void ItemOptions()
+    public async ValueTask ItemOptionsAsync()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithOption();
         var result = factory.GetPowerUps(item, player.Attributes!);
@@ -43,9 +43,9 @@ public class PowerUpFactoryTest
     /// Tests if the item option of level 0 results in the corresponding power up.
     /// </summary>
     [Test]
-    public void ItemBasePowerUpLevel0()
+    public async ValueTask ItemBasePowerUpLevel0Async()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithBasePowerUp();
         var result = factory.GetPowerUps(item, player.Attributes!);
@@ -56,9 +56,9 @@ public class PowerUpFactoryTest
     /// Tests if the item option of level 3 results in the corresponding power up.
     /// </summary>
     [Test]
-    public void ItemBasePowerUpLevel3()
+    public async ValueTask ItemBasePowerUpLevel3Async()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithBasePowerUp();
         item.Level = 3;
@@ -70,9 +70,9 @@ public class PowerUpFactoryTest
     /// Tests if the power ups don't get created if the item has no more durability.
     /// </summary>
     [Test]
-    public void NoPowerUpsWhenItemBroken()
+    public async ValueTask NoPowerUpsWhenItemBrokenAsync()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithBasePowerUp();
         item.Durability = 0;
@@ -84,9 +84,9 @@ public class PowerUpFactoryTest
     /// Tests if the power ups don't get created if the item is not equipped at the player.
     /// </summary>
     [Test]
-    public void NoPowerUpsWhenItemUnwearable()
+    public async ValueTask NoPowerUpsWhenItemUnwearableAsync()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItemWithBasePowerUp();
         item.ItemSlot = UnwearableSlot;
@@ -98,9 +98,9 @@ public class PowerUpFactoryTest
     /// Tests if the power ups don't get created when the item has no options.
     /// </summary>
     [Test]
-    public void NoPowerUpsInItem()
+    public async ValueTask NoPowerUpsInItemAsync()
     {
-        var player = TestHelper.CreatePlayer();
+        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var factory = this.GetPowerUpFactory();
         var item = this.GetItem();
         var result = factory.GetPowerUps(item, player.Attributes!);

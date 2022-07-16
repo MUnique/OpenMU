@@ -18,5 +18,5 @@ public interface IQuestCancelledPlugIn : IViewPlugIn
     /// Shows if the specified quest was cancelled.
     /// </summary>
     /// <param name="quest">The quest.</param>
-    void QuestCancelled(QuestDefinition quest);
+    ValueTask QuestCancelledAsync(QuestDefinition quest);
 }

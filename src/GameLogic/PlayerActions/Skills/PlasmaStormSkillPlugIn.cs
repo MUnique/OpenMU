@@ -21,14 +21,14 @@ public class PlasmaStormSkillPlugIn : IAreaSkillPlugIn
     public short Key => 76;
 
     /// <inheritdoc />
-    public void AfterTargetGotAttacked(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
+    public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
     {
         if (target is Player targetPlayer
             && Rand.NextRandomBool(25)
             && targetPlayer.Inventory?.EquippedItems.SelectRandom() is { } randomItem)
         {
             randomItem.Durability /= 2;
-            targetPlayer.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(randomItem, false);
+            await targetPlayer.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(randomItem, false)).ConfigureAwait(false);
         }
     }
 }

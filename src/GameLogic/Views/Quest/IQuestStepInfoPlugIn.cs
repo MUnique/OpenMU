@@ -19,5 +19,5 @@ public interface IQuestStepInfoPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="questGroup">The quest group.</param>
     /// <param name="stepNumber">The step number, usually one of <see cref="QuestDefinition.StartingNumber" /> or <see cref="QuestDefinition.RefuseNumber" />.</param>
-    void ShowQuestStepInfo(short questGroup, short stepNumber);
+    ValueTask ShowQuestStepInfoAsync(short questGroup, short stepNumber);
 }

@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 public class LearnablesConsumeHandler : IItemConsumeHandler
 {
     /// <inheritdoc/>
-    public bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
         {
@@ -30,9 +30,9 @@ public class LearnablesConsumeHandler : IItemConsumeHandler
             return false;
         }
 
-        player.SkillList.AddLearnedSkill(skill);
-        player.Inventory!.RemoveItem(item);
-        player.PersistenceContext.Delete(item);
+        await player.SkillList.AddLearnedSkillAsync(skill).ConfigureAwait(false);
+        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         return true;
     }
 

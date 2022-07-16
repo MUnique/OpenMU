@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
-using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
@@ -17,14 +17,17 @@ using Microsoft.Extensions.Logging;
 internal class CachingGenericRepository<T> : GenericRepositoryBase<T>
     where T : class
 {
+    private readonly ILoggerFactory _loggerFactory;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingGenericRepository{T}" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger.</param>
-    public CachingGenericRepository(RepositoryManager repositoryManager, ILogger logger)
-        : base(repositoryManager, logger)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public CachingGenericRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory)
+        : base(repositoryManager, loggerFactory.CreateLogger(MethodBase.GetCurrentMethod()?.DeclaringType ?? typeof(CachingGenericRepository<T>)))
     {
+        this._loggerFactory = loggerFactory;
     }
 
     /// <summary>
@@ -35,7 +38,7 @@ internal class CachingGenericRepository<T> : GenericRepositoryBase<T>
     {
         var context = this.RepositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext;
 
-        return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryManager, context is null);
+        return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryManager, context is null, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc/>

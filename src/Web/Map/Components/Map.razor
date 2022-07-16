@@ -49,7 +49,7 @@
     {
         _lazyController = new AsyncLazy<IMapController>(async () =>
         {
-            this._controller = await this.MapFactory.CreateMap(this.Server, this.MapId);
+            this._controller = await this.MapFactory.CreateMapAsync(this.Server, this.MapId);
             await this.InvokeAsync(this.StateHasChanged);
             return this._controller;
         });

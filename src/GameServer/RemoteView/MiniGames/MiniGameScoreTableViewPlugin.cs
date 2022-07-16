@@ -26,29 +26,37 @@ public class MiniGameScoreTableViewPlugin : IMiniGameScoreTableViewPlugin
     public MiniGameScoreTableViewPlugin(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowScoreTable(byte playerRank, IReadOnlyCollection<(string Player, int Score, int BonusExp, int BonusMoney)> scores)
+    public async ValueTask ShowScoreTableAsync(byte playerRank, IReadOnlyCollection<(string Player, int Score, int BonusExp, int BonusMoney)> scores)
     {
-        if (this._player.Connection is null)
+        if (this._player.Connection is not { } connection)
         {
             return;
         }
 
         const int maxScores = 10;
-        using var writer = this._player.Connection.StartSafeWrite(0xC1, MiniGameScoreTable.GetRequiredSize(Math.Min(maxScores, scores.Count)));
-        var message = new MiniGameScoreTable(writer.Span);
-        message.PlayerRank = playerRank;
-        message.ResultCount = (byte)scores.Count;
-        var i = 0;
-        foreach (var (playerName, totalScore, bonusExp, bonusMoney) in scores.Take(maxScores))
+        int Write()
         {
-            var item = message[i];
-            item.PlayerName = playerName;
-            item.TotalScore = (uint)totalScore;
-            item.BonusExperience = (uint)bonusExp;
-            item.BonusMoney = (uint)bonusMoney;
-            i++;
+            var size = MiniGameScoreTableRef.GetRequiredSize(Math.Min(maxScores, scores.Count));
+            var span = connection.Output.GetSpan(size)[..size];
+            var message = new MiniGameScoreTableRef(span)
+            {
+                PlayerRank = playerRank,
+                ResultCount = (byte)scores.Count,
+            };
+            var i = 0;
+            foreach (var (playerName, totalScore, bonusExp, bonusMoney) in scores.Take(maxScores))
+            {
+                var item = message[i];
+                item.PlayerName = playerName;
+                item.TotalScore = (uint)totalScore;
+                item.BonusExperience = (uint)bonusExp;
+                item.BonusMoney = (uint)bonusMoney;
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

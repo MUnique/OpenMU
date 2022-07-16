@@ -16,8 +16,8 @@ public class GuildInfoRequestAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="guildId">The guild identifier.</param>
-    public void RequestGuildInfo(Player player, uint guildId)
+    public async ValueTask RequestGuildInfoAsync(Player player, uint guildId)
     {
-        player.ViewPlugIns.GetPlugIn<IShowGuildInfoPlugIn>()?.ShowGuildInfo(guildId);
+        await player.InvokeViewPlugInAsync<IShowGuildInfoPlugIn>(p => p.ShowGuildInfoAsync(guildId)).ConfigureAwait(false);
     }
 }

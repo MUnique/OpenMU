@@ -27,7 +27,7 @@ public class AddExperiencePlugIn : IAddExperiencePlugIn
     public AddExperiencePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void AddExperience(int exp, IAttackable? obj)
+    public async ValueTask AddExperienceAsync(int exp, IAttackable? obj)
     {
         var remainingExperience = exp;
         ushort damage = 0;
@@ -43,7 +43,7 @@ public class AddExperiencePlugIn : IAddExperiencePlugIn
             // On a normal exp server this should never be an issue, but with higher settings, it fixes the problem that the exp bar
             // shows less exp than the player actually gained.
             ushort sendExp = remainingExperience > ushort.MaxValue ? ushort.MaxValue : (ushort)remainingExperience;
-            this._player.Connection?.SendExperienceGained(id, sendExp, damage);
+            await this._player.Connection.SendExperienceGainedAsync(id, sendExp, damage).ConfigureAwait(false);
             damage = 0; // don't send damage again
             remainingExperience -= sendExp;
         }

@@ -13,5 +13,5 @@ public interface IUpdateVaultMoneyPlugIn : IViewPlugIn
     /// Refreshes vault and player money on client side, if the last money movement was successfully.
     /// </summary>
     /// <param name="success"><c>true</c>, if the money movement request was successful; otherwise, <c>false</c>.</param>
-    void UpdateVaultMoney(bool success);
+    ValueTask UpdateVaultMoneyAsync(bool success);
 }

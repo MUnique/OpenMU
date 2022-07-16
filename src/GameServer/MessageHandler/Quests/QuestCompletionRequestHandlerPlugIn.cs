@@ -27,9 +27,9 @@ public class QuestCompletionRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => QuestCompletionRequest.SubCode;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         QuestCompletionRequest request = packet;
-        this._questCompletionAction.CompleteQuest(player, (short)request.QuestGroup, (short)request.QuestNumber);
+        await this._questCompletionAction.CompleteQuestAsync(player, (short)request.QuestGroup, (short)request.QuestNumber).ConfigureAwait(false);
     }
 }

@@ -35,19 +35,21 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
     }
 
     /// <inheritdoc />
-    protected override IAttackable? SearchNextTarget()
+    protected override ValueTask<IAttackable?> SearchNextTargetAsync()
     {
         var currentMap = this.Owner.CurrentMap;
 
-        return currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
+        var nextTarget = currentMap?.GetAttackablesInRange(this.Owner.Position, 8)
             .Where(o => o is Monster { SummonedBy: null, IsAlive: true })
             .OfType<NonPlayerCharacter>()
             .OrderBy(o => o.GetDistanceTo(this.Owner))
             .FirstOrDefault() as IAttackable;
+
+        return ValueTask.FromResult(nextTarget);
     }
 
     /// <inheritdoc />
-    protected override bool CanAttack()
+    protected override async ValueTask<bool> CanAttackAsync()
     {
         var maxDistance = this.CurrentTarget is null ? 2 : 5;
         var distanceToOwner = this.Owner.GetDistanceTo(this.Npc);
@@ -57,11 +59,11 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
             var target = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(this.Owner.Position, 2);
             if (this.Monster.Observers.Contains(this.Owner))
             {
-                this.Monster.WalkTo(target);
+                await this.Monster.WalkToAsync(target).ConfigureAwait(false);
             }
             else
             {
-                this.Monster.Move(target);
+                await this.Monster.MoveAsync(target).ConfigureAwait(false);
             }
 
             return false;

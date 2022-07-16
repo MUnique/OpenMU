@@ -18,17 +18,17 @@ public class ConnectionTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task DisconnectedByMalformedPacketReceived()
+    public async Task DisconnectedByMalformedPacketReceivedAsync()
     {
         var malformedData = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF };
         var duplexPipe = new DuplexPipe();
         using var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         var disconnected = false;
-        connection.Disconnected += (sender, args) => disconnected = true;
-        _ = connection.BeginReceive();
+        connection.Disconnected += async () => disconnected = true;
+        _ = connection.BeginReceiveAsync();
         try
         {
-            await duplexPipe.ReceivePipe.Writer.WriteAsync(malformedData);
+            await duplexPipe.ReceivePipe.Writer.WriteAsync(malformedData).ConfigureAwait(false);
         }
         catch
         {
@@ -49,13 +49,13 @@ public class ConnectionTests
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task ExceptionWhenFailingToEncryptSentPacket()
+    public async Task ExceptionWhenFailingToEncryptSentPacketAsync()
     {
         var malformedData = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF };
         var duplexPipe = new DuplexPipe();
         using var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output), new NullLogger<Connection>());
 
-        _ = connection.BeginReceive();
+        _ = connection.BeginReceiveAsync();
         await connection.Output.WriteAsync(malformedData).ConfigureAwait(false);
 
         Assert.Throws<InvalidPacketHeaderException>(() => duplexPipe.SendPipe.Reader.ReadAsync().GetAwaiter().GetResult());

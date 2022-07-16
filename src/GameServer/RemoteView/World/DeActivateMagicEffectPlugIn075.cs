@@ -29,7 +29,7 @@ public class DeActivateMagicEffectPlugIn075 : IDeactivateMagicEffectPlugIn
     public DeActivateMagicEffectPlugIn075(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void DeactivateMagicEffect(MagicEffect effect, IAttackable affectedObject)
+    public async ValueTask DeactivateMagicEffectAsync(MagicEffect effect, IAttackable affectedObject)
     {
         if (effect.Definition.Number <= 0)
         {
@@ -38,6 +38,6 @@ public class DeActivateMagicEffectPlugIn075 : IDeactivateMagicEffectPlugIn
 
         // We assume, that the magic effect number is equal to the skill number.
         // In early versions, the magic effect number is not used elsewhere.
-        this._player.Connection.SendMagicEffectCancelled075((byte)effect.Definition.Number, affectedObject.GetId(this._player));
+        await this._player.Connection.SendMagicEffectCancelled075Async((byte)effect.Definition.Number, affectedObject.GetId(this._player)).ConfigureAwait(false);
     }
 }

@@ -43,7 +43,7 @@ public class SocketConnectionTest
     /// Tests if the connection is disconnected after sending invalid data.
     /// </summary>
     [Test]
-    public async Task TestDisconnectOnInvalidHeaderSent()
+    public async Task TestDisconnectOnInvalidHeaderSentAsync()
     {
         IConnection? connection = null;
         var server = new TcpListener(IPAddress.Any, 5000);
@@ -65,7 +65,7 @@ public class SocketConnectionTest
             }
 
 #pragma warning disable 4014
-            connection.BeginReceive();
+            connection.BeginReceiveAsync();
 #pragma warning restore 4014
 
             var packet = new byte[22222];
@@ -106,7 +106,7 @@ public class SocketConnectionTest
             var socketConnection = SocketConnection.Create(client.Client);
             var connection = new Connection(socketConnection, new PipelinedDecryptor(socketConnection.Input), new PipelinedEncryptor(socketConnection.Output), new NullLogger<Connection>());
 
-            connection.BeginReceive();
+            _ = connection.BeginReceiveAsync();
 
             Thread.Sleep(100);
             Assert.That(connection.Connected, Is.False);
@@ -142,8 +142,8 @@ public class SocketConnectionTest
             }
 
             int packetCount = 0;
-            connection.PacketReceived += (sender, p) => Interlocked.Increment(ref packetCount);
-            connection.BeginReceive();
+            connection.PacketReceived += async p => Interlocked.Increment(ref packetCount);
+            _ = connection.BeginReceiveAsync();
 
             var packet = new byte[] { 0xC1, 10, 0, 0, 0, 0, 0, 0, 0, 0 };
             for (int i = 0; i < maximumPacketCount; i++)

@@ -25,8 +25,8 @@ public class BloodCastleScoreTableViewPlugin : IBloodCastleScoreTableViewPlugin
     public BloodCastleScoreTableViewPlugin(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowScoreTable(bool success, string playerName, int totalScore, int bonusExp, int bonusMoney)
+    public async ValueTask ShowScoreTableAsync(bool success, string playerName, int totalScore, int bonusExp, int bonusMoney)
     {
-        this._player.Connection?.SendBloodCastleScore(success, playerName, (uint)totalScore, (uint)bonusExp, (uint)bonusMoney);
+        await this._player.Connection.SendBloodCastleScoreAsync(success, playerName, (uint)totalScore, (uint)bonusExp, (uint)bonusMoney).ConfigureAwait(false);
     }
 }

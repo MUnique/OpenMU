@@ -14,5 +14,5 @@ public interface IShowShopItemListPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="requestedPlayer">The requested player.</param>
     /// <param name="isUpdate">If set to <c>true</c>, the sent list is an update of an already received list, e.g. after an item has been sold.</param>
-    void ShowShopItemList(Player requestedPlayer, bool isUpdate);
+    ValueTask ShowShopItemListAsync(Player requestedPlayer, bool isUpdate);
 }

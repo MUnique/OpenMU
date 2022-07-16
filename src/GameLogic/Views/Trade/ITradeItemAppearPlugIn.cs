@@ -17,5 +17,5 @@ public interface ITradeItemAppearPlugIn : IViewPlugIn
     /// </remarks>
     /// <param name="toSlot">The slot at which the item has been added.</param>
     /// <param name="item">The item which has been added.</param>
-    void TradeItemAppear(byte toSlot, Item item);
+    ValueTask TradeItemAppearAsync(byte toSlot, Item item);
 }

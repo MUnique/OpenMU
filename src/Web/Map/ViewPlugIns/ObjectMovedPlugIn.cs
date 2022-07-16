@@ -28,11 +28,11 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
     }
 
     /// <inheritdoc />
-    public async void ObjectMoved(ILocateable movedObject, MoveType moveType)
+    public async ValueTask ObjectMovedAsync(ILocateable movedObject, MoveType moveType)
     {
         try
         {
-            await this.ObjectMovedAsync(movedObject, moveType).ConfigureAwait(false);
+            await this.ObjectMovedAsyncInnerAsync(movedObject, moveType).ConfigureAwait(false);
         }
         catch (TaskCanceledException)
         {
@@ -40,11 +40,11 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
         }
         catch (Exception e)
         {
-            this.Logger.LogError(e, $"Error in {nameof(this.ObjectMoved)}; movedObject: {movedObject}, moveType: {moveType}");
+            this.Logger.LogError(e, $"Error in {nameof(this.ObjectMovedAsync)}; movedObject: {movedObject}, moveType: {moveType}");
         }
     }
 
-    private async Task ObjectMovedAsync(ILocateable movedObject, MoveType moveType)
+    private async Task ObjectMovedAsyncInnerAsync(ILocateable movedObject, MoveType moveType)
     {
         Point targetPoint = movedObject.Position;
         object? steps = null;
@@ -54,7 +54,7 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
             targetPoint = walker.WalkTarget;
             walkDelay = (int)walker.StepDelay.TotalMilliseconds;
             var walkingSteps = new WalkingStep[16];
-            var stepCount = walker.GetSteps(walkingSteps);
+            var stepCount = await walker.GetStepsAsync(walkingSteps).ConfigureAwait(false);
             var walkSteps = walkingSteps.AsSpan().Slice(0, stepCount).ToArray()
                 .Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
 
@@ -72,6 +72,6 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
             steps = walkSteps;
         }
 
-        await this.InvokeAsync(movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps!);
+        await this.InvokeAsync(movedObject.Id, targetPoint.X, targetPoint.Y, moveType, walkDelay, steps!).ConfigureAwait(false);
     }
 }

@@ -37,12 +37,12 @@ public class ChatServerListener
     /// <summary>
     /// Occurs when a new client was accepted.
     /// </summary>
-    public event EventHandler<ClientAcceptedEventArgs>? ClientAccepted;
+    public event AsyncEventHandler<ClientAcceptedEventArgs>? ClientAccepted;
 
     /// <summary>
     /// Occurs when a client has been accepted by the tcp listener, but before a <see cref="Connection"/> is created.
     /// </summary>
-    public event EventHandler<CancelEventArgs>? ClientAccepting;
+    public event AsyncEventHandler<CancelEventArgs>? ClientAccepting;
 
     /// <summary>
     /// Starts the tcp listener of this instance.
@@ -50,8 +50,8 @@ public class ChatServerListener
     public void Start()
     {
         this._chatClientListener = new Listener(this._endpoint.NetworkPort, this.CreateDecryptor, _ => null, this._loggerFactory);
-        this._chatClientListener.ClientAccepted += (sender, args) => this.ClientAccepted?.Invoke(sender, args);
-        this._chatClientListener.ClientAccepting += (sender, args) => this.ClientAccepting?.Invoke(sender, args);
+        this._chatClientListener.ClientAccepted += async args => await this.ClientAccepted.SafeInvokeAsync(args).ConfigureAwait(false);
+        this._chatClientListener.ClientAccepting += async args => await this.ClientAccepting.SafeInvokeAsync(args).ConfigureAwait(false);
         this._chatClientListener.Start();
     }
 

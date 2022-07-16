@@ -13,18 +13,18 @@ public interface ISkillListViewPlugIn : IViewPlugIn
     /// Adds the skill to the skill list.
     /// </summary>
     /// <param name="skill">The skill.</param>
-    void AddSkill(Skill skill);
+    ValueTask AddSkillAsync(Skill skill);
 
     /// <summary>
     /// Removes the skill from the skill list.
     /// </summary>
     /// <param name="skill">The skill.</param>
-    void RemoveSkill(Skill skill);
+    ValueTask RemoveSkillAsync(Skill skill);
 
     /// <summary>
     /// Updates the skill list.
     /// </summary>
-    void UpdateSkillList();
+    ValueTask UpdateSkillListAsync();
 
     /// <summary>
     /// Gets the skill by its index in the internal skill list.

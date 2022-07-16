@@ -27,9 +27,17 @@ internal class UnlockVaultPlugIn : ISubPacketHandlerPlugIn
     public byte Key => UnlockVault.SubCode;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        UnlockVault message = packet;
-        this._unlockVaultAction.UnlockVault(player, message.Pin.ToString());
+        string pin;
+
+        void ExtractValues()
+        {
+            UnlockVaultRef message = packet.Span;
+            pin = message.Pin.ToString();
+        }
+
+        ExtractValues();
+        await this._unlockVaultAction.UnlockVaultAsync(player, pin).ConfigureAwait(false);
     }
 }

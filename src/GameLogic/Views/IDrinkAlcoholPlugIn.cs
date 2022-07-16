@@ -12,5 +12,5 @@ public interface IDrinkAlcoholPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the effects of drinking alcohol.
     /// </summary>
-    void DrinkAlcohol();
+    ValueTask DrinkAlcoholAsync();
 }

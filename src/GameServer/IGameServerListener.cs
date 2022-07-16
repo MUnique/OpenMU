@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameServer;
 
+using MUnique.OpenMU.PlugIns;
+
 /// <summary>
 /// Interface for a game server listener.
 /// </summary>
@@ -17,12 +19,12 @@ public interface IGameServerListener
     /// <summary>
     /// Occurs when a player has connected to the game successfully.
     /// </summary>
-    event EventHandler<PlayerConnectedEventArgs> PlayerConnected;
+    event AsyncEventHandler<PlayerConnectedEventArgs> PlayerConnected;
 
     /// <summary>
     /// Starts this listener.
     /// </summary>
-    void Start();
+    ValueTask StartAsync();
 
     /// <summary>
     /// Stops this listener.

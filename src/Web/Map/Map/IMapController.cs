@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Map.Map;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.GameLogic;
 
 /// <summary>
@@ -13,12 +14,12 @@ using MUnique.OpenMU.GameLogic;
 public interface IMapController : IAsyncDisposable
 {
     /// <summary>
-    /// Occurs when <see cref="Objects"/> changed.
+    /// Occurs when <see cref="Players"/> changed.
     /// </summary>
-    event EventHandler ObjectsChanged;
+    event EventHandler PlayersChanged;
 
     /// <summary>
     /// Gets the objects which are on the map.
     /// </summary>
-    IDictionary<int, ILocateable> Objects { get; }
+    ConcurrentDictionary<int, Player> Players { get; }
 }

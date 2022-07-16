@@ -51,7 +51,7 @@ public class DataInitialization : DataInitializationBase
     /// <inheritdoc />
     protected override void CreateGameClientDefinition()
     {
-        var clientDefinition = this.Context!.CreateNew<GameClientDefinition>();
+        var clientDefinition = this.Context.CreateNew<GameClientDefinition>();
         clientDefinition.Season = 6;
         clientDefinition.Episode = 3;
         clientDefinition.Language = ClientLanguage.English;

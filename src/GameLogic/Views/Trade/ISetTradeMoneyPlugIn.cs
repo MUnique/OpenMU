@@ -17,5 +17,5 @@ public interface ISetTradeMoneyPlugIn : IViewPlugIn
     /// It overrides all previous sent zen values.
     /// </remarks>
     /// <param name="moneyAmount">The money amount.</param>
-    void SetTradeMoney(uint moneyAmount);
+    ValueTask SetTradeMoneyAsync(uint moneyAmount);
 }

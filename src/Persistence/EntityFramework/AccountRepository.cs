@@ -19,25 +19,25 @@ internal class AccountRepository : CachingGenericRepository<Account>
     /// Initializes a new instance of the <see cref="AccountRepository" /> class.
     /// </summary>
     /// <param name="repositoryManager">The repository manager.</param>
-    /// <param name="logger">The logger.</param>
-    public AccountRepository(CachingRepositoryManager repositoryManager, ILogger<AccountRepository> logger)
-        : base(repositoryManager, logger)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public AccountRepository(CachingRepositoryManager repositoryManager, ILoggerFactory loggerFactory)
+        : base(repositoryManager, loggerFactory)
     {
     }
 
     /// <inheritdoc />
-    public override Account? GetById(Guid id)
+    public override async ValueTask<Account?> GetByIdAsync(Guid id)
     {
         ((CachingRepositoryManager)this.RepositoryManager).EnsureCachesForCurrentGameConfiguration();
         using var context = this.GetContext();
-        context.Context.Database.OpenConnection();
+        await context.Context.Database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
             var account = context.Context.ChangeTracker.Entries<Account>().FirstOrDefault(a => a.Entity.Id == id)?.Entity;
             if (account is null)
             {
                 var objectLoader = new AccountJsonObjectLoader();
-                account = objectLoader.LoadObject<Account>(id, context.Context);
+                account = await objectLoader.LoadObjectAsync<Account>(id, context.Context).ConfigureAwait(false);
                 if (account != null && !(context.Context.Entry(account) is { } entry && entry.State != EntityState.Detached))
                 {
                     context.Context.Attach(account);
@@ -48,7 +48,7 @@ internal class AccountRepository : CachingGenericRepository<Account>
         }
         finally
         {
-            context.Context.Database.CloseConnection();
+            await context.Context.Database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
 
@@ -58,22 +58,22 @@ internal class AccountRepository : CachingGenericRepository<Account>
     /// <param name="loginName">The login name.</param>
     /// <param name="password">The password.</param>
     /// <returns>The account, if the password is correct. Otherwise, null.</returns>
-    internal DataModel.Entities.Account? GetAccountByLoginName(string loginName, string password)
+    internal async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password)
     {
         using var context = this.GetContext();
-        return this.LoadAccountByLoginNameByJsonQuery(loginName, password, context);
+        return await this.LoadAccountByLoginNameByJsonQueryAsync(loginName, password, context).ConfigureAwait(false);
     }
 
-    private Account? LoadAccountByLoginNameByJsonQuery(string loginName, string password, EntityFrameworkContextBase context)
+    private async ValueTask<Account?> LoadAccountByLoginNameByJsonQueryAsync(string loginName, string password, EntityFrameworkContextBase context)
     {
-        var accountInfo = context.Context.Set<Account>()
+        var accountInfo = await context.Context.Set<Account>()
             .Select(a => new { a.Id, a.LoginName, a.PasswordHash })
             .AsNoTracking()
-            .FirstOrDefault(a => a.LoginName == loginName);
+            .FirstOrDefaultAsync(a => a.LoginName == loginName).ConfigureAwait(false);
 
         if (accountInfo != null && BCrypt.Verify(password, accountInfo.PasswordHash))
         {
-            return this.GetById(accountInfo.Id);
+            return await this.GetByIdAsync(accountInfo.Id).ConfigureAwait(false);
         }
 
         return null;

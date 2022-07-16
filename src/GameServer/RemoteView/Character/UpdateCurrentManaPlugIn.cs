@@ -26,15 +26,15 @@ public class UpdateCurrentManaPlugIn : IUpdateCurrentManaPlugIn
     public UpdateCurrentManaPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateCurrentMana()
+    public async ValueTask UpdateCurrentManaAsync()
     {
         if (this._player.Attributes is null)
         {
             return;
         }
 
-        this._player.Connection?.SendCurrentManaAndAbility(
+        await this._player.Connection.SendCurrentManaAndAbilityAsync(
             (ushort)this._player.Attributes[Stats.CurrentMana],
-            (ushort)this._player.Attributes[Stats.CurrentAbility]);
+            (ushort)this._player.Attributes[Stats.CurrentAbility]).ConfigureAwait(false);
     }
 }

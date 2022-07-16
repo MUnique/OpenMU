@@ -35,6 +35,6 @@ metricsRegistry.AddNetworkMeters();
 builder.AddOpenTelemetryMetrics(metricsRegistry);
 
 var app = builder.BuildAndConfigure();
-await app.WaitForUpdatedDatabase();
+await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
 
 app.Run();

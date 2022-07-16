@@ -19,7 +19,7 @@ public class GuildKickPlayerAction
     /// <param name="player">The player.</param>
     /// <param name="nickname">The nickname.</param>
     /// <param name="securityCode">The security code.</param>
-    public void KickPlayer(Player player, string nickname, string securityCode)
+    public async ValueTask KickPlayerAsync(Player player, string nickname, string securityCode)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
@@ -43,10 +43,10 @@ public class GuildKickPlayerAction
 
         if (player.Account!.SecurityCode != null && player.Account.SecurityCode != securityCode)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Wrong Security Code.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Wrong Security Code.", MessageType.BlueNormal)).ConfigureAwait(false);
             player.Logger.LogDebug("Wrong Security Code: [{0}] <> [{1}], Player: {2}", securityCode, player.Account.SecurityCode, player.SelectedCharacter?.Name);
 
-            player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.Failed);
+            await player.InvokeViewPlugInAsync<IGuildKickResultPlugIn>(p => p.GuildKickResultAsync(GuildKickSuccess.Failed)).ConfigureAwait(false);
             return;
         }
 
@@ -54,18 +54,18 @@ public class GuildKickPlayerAction
         if (!isKickingHimself && player.GuildStatus?.Position != GuildPosition.GuildMaster)
         {
             player.Logger.LogWarning("Suspicious kick request for player with name: {0} (player is not a guild master) to kick {1}, could be hack attempt.", player.Name, nickname);
-            player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.FailedBecausePlayerIsNotGuildMaster);
+            await player.InvokeViewPlugInAsync<IGuildKickResultPlugIn>(p => p.GuildKickResultAsync(GuildKickSuccess.FailedBecausePlayerIsNotGuildMaster)).ConfigureAwait(false);
             return;
         }
 
         if (isKickingHimself && player.GuildStatus?.Position == GuildPosition.GuildMaster)
         {
             var guildId = player.GuildStatus.GuildId;
-            player.ViewPlugIns.GetPlugIn<IGuildKickResultPlugIn>()?.GuildKickResult(GuildKickSuccess.GuildDisband);
-            guildServer.KickMember(guildId, nickname);
+            await player.InvokeViewPlugInAsync<IGuildKickResultPlugIn>(p => p.GuildKickResultAsync(GuildKickSuccess.GuildDisband)).ConfigureAwait(false);
+            await guildServer.KickMemberAsync(guildId, nickname).ConfigureAwait(false);
             return;
         }
 
-        guildServer.KickMember(player.GuildStatus!.GuildId, nickname);
+        await guildServer.KickMemberAsync(player.GuildStatus!.GuildId, nickname).ConfigureAwait(false);
     }
 }

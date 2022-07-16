@@ -12,5 +12,5 @@ public interface IUpdateCurrentHealthPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the current health.
     /// </summary>
-    void UpdateCurrentHealth();
+    ValueTask UpdateCurrentHealthAsync();
 }

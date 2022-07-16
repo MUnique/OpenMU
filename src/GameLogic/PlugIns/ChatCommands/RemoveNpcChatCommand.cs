@@ -26,16 +26,16 @@ internal class RemoveNpcChatCommand : ChatCommandPlugInBase<IdCommandArgs>
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player gameMaster, IdCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, IdCommandArgs arguments)
     {
         var monster = gameMaster.ObservingBuckets.SelectMany(b => b).OfType<NonPlayerCharacter>().FirstOrDefault(m => m.Id == arguments.Id);
         if (monster is null)
         {
-            this.ShowMessageTo(gameMaster, $"NPC with id {arguments.Id} not found.");
+            await this.ShowMessageToAsync(gameMaster, $"NPC with id {arguments.Id} not found.").ConfigureAwait(false);
             return;
         }
 
         monster.Dispose();
-        this.ShowMessageTo(gameMaster, $"NPC with id {arguments.Id} removed.");
+        await this.ShowMessageToAsync(gameMaster, $"NPC with id {arguments.Id} removed.").ConfigureAwait(false);
     }
 }

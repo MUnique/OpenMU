@@ -27,18 +27,18 @@ public class OpenNpcWindowPlugIn : IOpenNpcWindowPlugIn
     public OpenNpcWindowPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void OpenNpcWindow(NpcWindow window)
+    public async ValueTask OpenNpcWindowAsync(NpcWindow window)
     {
         if (window == NpcWindow.NpcDialog)
         {
             if (this._player.OpenedNpc is not null)
             {
-                this._player.Connection?.SendOpenNpcDialog(this._player.OpenedNpc.Definition.Number.ToUnsigned(), 0);
+                await this._player.Connection.SendOpenNpcDialogAsync(this._player.OpenedNpc.Definition.Number.ToUnsigned(), 0).ConfigureAwait(false);
             }
         }
         else
         {
-            this._player.Connection?.SendNpcWindowResponse(Convert(window));
+            await this._player.Connection.SendNpcWindowResponseAsync(Convert(window)).ConfigureAwait(false);
         }
     }
 

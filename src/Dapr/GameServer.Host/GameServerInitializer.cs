@@ -45,7 +45,7 @@ public class GameServerInitializer
     /// <summary>
     /// Initializes the game server.
     /// </summary>
-    public void Initialize()
+    public async ValueTask InitializeAsync()
     {
         foreach (var endpoint in this._definition.Endpoints)
         {
@@ -59,12 +59,12 @@ public class GameServerInitializer
         }
 
         using var context = this._contextProvider.CreateNewConfigurationContext();
-        this.LoadGameClientDefinitions(context);
+        await this.LoadGameClientDefinitionsAsync(context).ConfigureAwait(false);
     }
 
-    private void LoadGameClientDefinitions(IContext persistenceContext)
+    private async ValueTask LoadGameClientDefinitionsAsync(IContext persistenceContext)
     {
-        var versions = persistenceContext.Get<GameClientDefinition>().ToList();
+        var versions = (await persistenceContext.GetAsync<GameClientDefinition>().ConfigureAwait(false)).ToList();
         foreach (var gameClientDefinition in versions)
         {
             ClientVersionResolver.Register(

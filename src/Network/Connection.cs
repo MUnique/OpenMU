@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx;
+
 namespace MUnique.OpenMU.Network;
 
 using System.Diagnostics;
@@ -12,7 +14,9 @@ using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Pipelines.Sockets.Unofficial;
+using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.Network.SimpleModulus;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A connection which works on <see cref="IDuplexPipe"/>.
@@ -49,14 +53,14 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger = logger;
         this.Source = decryptionPipe?.Reader ?? this._duplexPipe!.Input;
         this._remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
-        this.OutputLock = new SemaphoreSlim(1);
+        this.OutputLock = new();
     }
 
     /// <inheritdoc />
-    public event PipedPacketReceivedHandler? PacketReceived;
+    public event AsyncEventHandler<ReadOnlySequence<byte>>? PacketReceived;
 
     /// <inheritdoc />
-    public event DisconnectedHandler? Disconnected;
+    public event AsyncEventHandler? Disconnected;
 
     /// <inheritdoc />
     public bool Connected => this.SocketConnection != null ? this.SocketConnection.ShutdownKind == PipeShutdownKind.None && !this._disconnected : !this._disconnected;
@@ -65,10 +69,10 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public EndPoint? EndPoint => this._remoteEndPoint;
 
     /// <inheritdoc />
-    public PipeWriter Output => this._outputWriter ??= new AutoFlushPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, this.OutputLock, this._logger, OutgoingBytesCounter);
+    public PipeWriter Output => this._outputWriter ??= new ExtendedPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, OutgoingBytesCounter);
 
     /// <inheritdoc />
-    public SemaphoreSlim OutputLock { get; }
+    public AsyncLock OutputLock { get; }
 
     /// <summary>
     /// Gets the name of the meter.
@@ -84,24 +88,28 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public override string ToString() => this._remoteEndPoint?.ToString() ?? $"{base.ToString()} {this.GetHashCode()}";
 
     /// <inheritdoc/>
-    public async Task BeginReceive()
+    public async Task BeginReceiveAsync()
     {
         try
         {
             ConnectionCounter.Add(1);
-            await this.ReadSource().ConfigureAwait(false);
+            await this.ReadSourceAsync().ConfigureAwait(false);
         }
-        catch (Exception e)
+        catch (OperationCanceledException)
         {
-            this.OnComplete(e);
+            // not an error which we need to handle.
+        }
+        catch (Exception ex)
+        {
+            await this.OnCompleteAsync(ex).ConfigureAwait(false);
             return;
         }
 
-        this.OnComplete(null);
+        await this.OnCompleteAsync(null).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Disconnect()
+    public async ValueTask DisconnectAsync()
     {
         using var scope = this._logger.BeginScope(this._remoteEndPoint);
         if (this._disconnected)
@@ -114,8 +122,8 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger.LogDebug("Disconnecting...");
         if (this._duplexPipe is not null)
         {
-            this.Source.Complete();
-            this.Output.Complete();
+            await this.Source.CompleteAsync().ConfigureAwait(false);
+            await this.Output.CompleteAsync().ConfigureAwait(false);
             (this._duplexPipe as IDisposable)?.Dispose();
             this._duplexPipe = null;
         }
@@ -123,19 +131,19 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger.LogDebug("Disconnected");
         this._disconnected = true;
 
-        this.Disconnected?.Invoke(this, EventArgs.Empty);
+        await this.Disconnected.SafeInvokeAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        this.Disconnect();
+        this.DisconnectAsync().AsTask().WaitAndUnwrapException();
         this.PacketReceived = null;
         this.Disconnected = null;
     }
 
     /// <inheritdoc />
-    protected override void OnComplete(Exception? exception)
+    protected override async ValueTask OnCompleteAsync(Exception? exception)
     {
         using var scope = this._logger.BeginScope(this._remoteEndPoint);
         if (exception is InvalidBlockChecksumException)
@@ -155,8 +163,8 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
             }
         }
 
-        this.Output.Complete(exception);
-        this.Disconnect();
+        await this.Output.CompleteAsync(exception).ConfigureAwait(false);
+        await this.DisconnectAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -164,7 +172,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// </summary>
     /// <param name="packet">The mu online packet.</param>
     /// <returns>The async task.</returns>
-    protected override Task ReadPacket(ReadOnlySequence<byte> packet)
+    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         IncomingBytesCounter.Add(packet.Length);
 
@@ -174,13 +182,11 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
                 .Start();
         try
         {
-            this.PacketReceived?.Invoke(this, packet);
+            await this.PacketReceived.SafeInvokeAsync(packet).ConfigureAwait(false);
         }
         finally
         {
             activity?.Stop();
         }
-
-        return Task.CompletedTask;
     }
 }

@@ -27,7 +27,7 @@ internal class QuestStateRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => QuestStateRequest.SubCode;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         QuestStateRequest request = packet;
         var questState = player.GetQuestState((short)request.QuestGroup, (short)request.QuestNumber);
@@ -37,7 +37,7 @@ internal class QuestStateRequestHandlerPlugIn : ISubPacketHandlerPlugIn
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IQuestStateResponsePlugIn>()?.ShowQuestState(questState);
+            await player.InvokeViewPlugInAsync<IQuestStateResponsePlugIn>(p => p.ShowQuestStateAsync(questState)).ConfigureAwait(false);
         }
     }
 }

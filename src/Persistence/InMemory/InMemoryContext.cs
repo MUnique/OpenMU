@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
@@ -40,12 +42,18 @@ public class InMemoryContext : IContext
     }
 
     /// <inheritdoc/>
+    public ValueTask<bool> SaveChangesAsync()
+    {
+        return ValueTask.FromResult(true);
+    }
+
+    /// <inheritdoc/>
     public bool Detach(object item)
     {
         if (item is IIdentifiable identifiable)
         {
             var repository = this.Manager.GetRepository(item.GetType()) as IMemoryRepository;
-            repository?.Remove(identifiable.Id);
+            repository?.RemoveAsync(identifiable.Id).AsTask().WaitWithoutException();
         }
 
         return false;
@@ -81,23 +89,23 @@ public class InMemoryContext : IContext
     }
 
     /// <inheritdoc/>
-    public bool Delete<T>(T obj)
+    public ValueTask<bool> DeleteAsync<T>(T obj)
         where T : class
     {
-        return this.Manager.GetRepository<T>()?.Delete(obj) ?? false;
+        return this.Manager.GetRepository<T>().DeleteAsync(obj);
     }
 
     /// <inheritdoc/>
-    public T? GetById<T>(Guid id)
+    public ValueTask<T?> GetByIdAsync<T>(Guid id)
         where T : class
     {
-        return this.Manager.GetRepository<T>().GetById(id);
+        return this.Manager.GetRepository<T>().GetByIdAsync(id);
     }
 
     /// <inheritdoc/>
-    public IEnumerable<T> Get<T>()
+    public ValueTask<IEnumerable<T>> GetAsync<T>()
         where T : class
     {
-        return this.Manager.GetRepository<T>().GetAll();
+        return this.Manager.GetRepository<T>().GetAllAsync();
     }
 }

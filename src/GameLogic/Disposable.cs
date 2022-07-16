@@ -44,7 +44,7 @@ public class Disposable : IDisposable
             try
             {
                 this.Dispose(true);
-                GC.SuppressFinalize(this);
+
                 this.IsDisposed = true;
             }
             finally
@@ -52,6 +52,8 @@ public class Disposable : IDisposable
                 this.IsDisposing = false;
             }
         }
+
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>

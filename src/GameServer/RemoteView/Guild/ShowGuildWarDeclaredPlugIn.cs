@@ -25,11 +25,11 @@ public class ShowGuildWarDeclaredPlugIn : IShowGuildWarDeclaredPlugIn
     public ShowGuildWarDeclaredPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowDeclared()
+    public async ValueTask ShowDeclaredAsync()
     {
         if (this._player.GuildWarContext is { } guildWarContext)
         {
-            this._player.Connection?.SendGuildWarDeclared(guildWarContext.EnemyTeamName, guildWarContext.WarType.Convert(), (byte)guildWarContext.Team);
+            await this._player.Connection.SendGuildWarDeclaredAsync(guildWarContext.EnemyTeamName, guildWarContext.WarType.Convert(), (byte)guildWarContext.Team).ConfigureAwait(false);
         }
     }
 }

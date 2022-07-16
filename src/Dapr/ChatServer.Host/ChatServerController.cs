@@ -36,12 +36,12 @@ public class ChatServerController : ControllerBase
     /// </summary>
     /// <param name="data">The registration arguments.</param>
     /// <returns>The authentication info.</returns>
-    [HttpPost(nameof(IChatServer.RegisterClient))]
-    public ChatServerAuthenticationInfo RegisterClient([FromBody] RegisterChatClientArguments data)
+    [HttpPost(nameof(IChatServer.RegisterClientAsync))]
+    public async ValueTask<ChatServerAuthenticationInfo?> RegisterClientAsync([FromBody] RegisterChatClientArguments data)
     {
         try
         {
-            return this._chatServer.RegisterClient(data.RoomId, data.ClientName);
+            return await this._chatServer.RegisterClientAsync(data.RoomId, data.ClientName).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -54,12 +54,12 @@ public class ChatServerController : ControllerBase
     /// Creates the chat room.
     /// </summary>
     /// <returns>The id of the created chat room.</returns>
-    [HttpPost(nameof(IChatServer.CreateChatRoom))]
-    public ushort CreateChatRoom()
+    [HttpPost(nameof(IChatServer.CreateChatRoomAsync))]
+    public async ValueTask<ushort> CreateChatRoomAsync()
     {
         try
         {
-            return this._chatServer.CreateChatRoom();
+            return await this._chatServer.CreateChatRoomAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

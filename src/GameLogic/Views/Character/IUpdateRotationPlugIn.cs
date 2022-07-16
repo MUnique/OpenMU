@@ -12,5 +12,5 @@ public interface IUpdateRotationPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the rotation of the own player.
     /// </summary>
-    void UpdateRotation();
+    ValueTask UpdateRotationAsync();
 }

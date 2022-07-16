@@ -21,7 +21,7 @@ public class AttackAreaTargetInDirectionTrapIntelligence : TrapIntelligenceBase
     }
 
     /// <inheritdoc />
-    protected override void Tick()
+    protected override async ValueTask TickAsync()
     {
         if (this.Trap.Observers.Count == 0)
         {
@@ -35,13 +35,13 @@ public class AttackAreaTargetInDirectionTrapIntelligence : TrapIntelligenceBase
         bool hasAttacked = false;
         foreach (var target in targetsInRange)
         {
-            this.Trap.Attack(target);
+            await this.Trap.AttackAsync(target).ConfigureAwait(false);
             hasAttacked = true;
         }
 
         if (hasAttacked && this.Trap.Definition.AttackSkill is { } attackSkill)
         {
-            this.Trap.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(this.Trap, null, attackSkill, true), true);
+            await this.Trap.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this.Trap, null, attackSkill, true), true).ConfigureAwait(false);
         }
     }
 }

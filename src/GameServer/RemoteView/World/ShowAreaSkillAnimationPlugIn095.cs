@@ -31,10 +31,10 @@ public class ShowAreaSkillAnimationPlugIn095 : IShowAreaSkillAnimationPlugIn
     public ShowAreaSkillAnimationPlugIn095(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowAreaSkillAnimation(Player playerWhichPerformsSkill, Skill skill, Point point, byte rotation)
+    public async ValueTask ShowAreaSkillAnimationAsync(Player playerWhichPerformsSkill, Skill skill, Point point, byte rotation)
     {
         var skillId = (byte)skill.Number;
         var playerId = playerWhichPerformsSkill.GetId(this._player);
-        this._player.Connection?.SendAreaSkillAnimation095(skillId, playerId, point.X, point.Y, rotation);
+        await this._player.Connection.SendAreaSkillAnimation095Async(skillId, playerId, point.X, point.Y, rotation).ConfigureAwait(false);
     }
 }

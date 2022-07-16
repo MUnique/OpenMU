@@ -39,12 +39,12 @@ public sealed class Trap : NonPlayerCharacter, IAttacker
     /// Attacks the specified player.
     /// </summary>
     /// <param name="player">The player.</param>
-    public void Attack(IAttackable player)
+    public async Task AttackAsync(IAttackable player)
     {
         // need to find specific animation
         // Maybe add SpecificAnimation and AttackWhenPlayerOn properties to MonsterDefinition?? or create new TrapDefinition?
-        player.AttackBy(this, null);
-        this.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAnimationPlugIn>()?.ShowAnimation(this, TrapAttackAnimation, player, this.Rotation), true);
+        await player.AttackByAsync(this, null).ConfigureAwait(false);
+        await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowAnimationAsync(this, TrapAttackAnimation, player, this.Rotation), true).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

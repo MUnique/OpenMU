@@ -23,8 +23,8 @@ internal class CharacterClientReadyPacketHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => 0x12;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        player.ClientReadyAfterMapChange();
+        await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
     }
 }

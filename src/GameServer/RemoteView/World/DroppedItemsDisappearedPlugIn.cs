@@ -26,7 +26,7 @@ public class DroppedItemsDisappearedPlugIn : IDroppedItemsDisappearedPlugIn
     public DroppedItemsDisappearedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void DroppedItemsDisappeared(IEnumerable<ushort> disappearedItemIds)
+    public async ValueTask DroppedItemsDisappearedAsync(IEnumerable<ushort> disappearedItemIds)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -36,19 +36,27 @@ public class DroppedItemsDisappearedPlugIn : IDroppedItemsDisappearedPlugIn
 
         ////C2 00 07 21 01 00 0C
         int count = disappearedItemIds.Count();
-        using var writer = connection.StartSafeWrite(ItemDropRemoved.HeaderType, ItemDropRemoved.GetRequiredSize(count));
-        var message = new ItemDropRemoved(writer.Span)
+
+        int Write()
         {
-            ItemCount = (byte)count,
-        };
-        int i = 0;
-        foreach (var dropId in disappearedItemIds)
-        {
-            var drop = message[i];
-            drop.Id = dropId;
-            i++;
+            var size = ItemDropRemovedRef.GetRequiredSize(count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var message = new ItemDropRemovedRef(span)
+            {
+                ItemCount = (byte)count,
+            };
+
+            int i = 0;
+            foreach (var dropId in disappearedItemIds)
+            {
+                var drop = message[i];
+                drop.Id = dropId;
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

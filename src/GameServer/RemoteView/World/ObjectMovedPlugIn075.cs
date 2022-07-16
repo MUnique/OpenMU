@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
-using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
@@ -30,8 +29,8 @@ public class ObjectMovedPlugIn075 : ObjectMovedPlugIn
     }
 
     /// <inheritdoc />
-    protected override void SendMessage(IConnection connection, ushort objectId, Point targetPoint, Span<Direction> steps, Direction rotation, int stepsLength)
+    protected override ValueTask SendWalkAsync(IConnection connection, ushort objectId, Point targetPoint, Memory<Direction> steps, Direction rotation, int stepsLength)
     {
-        connection.SendObjectWalked075(objectId, targetPoint.X, targetPoint.Y, rotation.ToPacketByte());
+        return connection.SendObjectWalked075Async(objectId, targetPoint.X, targetPoint.Y, rotation.ToPacketByte());
     }
 }

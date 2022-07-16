@@ -18,8 +18,8 @@ internal static class PipeWriterExtension
     /// <param name="data">The data which should be written.</param>
     public static async Task WriteAndWaitForFlushAsync(this PipeWriter pipeWriter, ReadOnlyMemory<byte> data)
     {
-        await pipeWriter.WriteAsync(data);
-        await pipeWriter.WaitForFlushAsync();
+        await pipeWriter.WriteAsync(data).ConfigureAwait(false);
+        await pipeWriter.WaitForFlushAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -30,9 +30,9 @@ internal static class PipeWriterExtension
     {
         do
         {
-            await Task.Delay(200);
+            await Task.Delay(200).ConfigureAwait(false);
         }
         while (pipeWriter.UnflushedBytes > 0);
-        await Task.Delay(200);
+        await Task.Delay(200).ConfigureAwait(false);
     }
 }

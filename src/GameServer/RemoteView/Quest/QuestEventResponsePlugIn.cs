@@ -29,7 +29,7 @@ public class QuestEventResponsePlugIn : IQuestEventResponsePlugIn
     }
 
     /// <inheritdoc/>
-    public void ShowActiveEventQuests()
+    public async ValueTask ShowActiveEventQuestsAsync()
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -40,17 +40,19 @@ public class QuestEventResponsePlugIn : IQuestEventResponsePlugIn
         // Hints: * This is only sent for new characters (level <= 1, no MG or DL).
         //        * I also found a struct which contains the following fields (each 2 bytes: NpcNumber (0), Count (1), QuestGroup (1), QuestNumber (0)).
         //        * Always: C1 0C F6 03 00 00 01 00 00 00 01 00
-        using var writer = connection.StartSafeWrite(
-            QuestEventResponse.HeaderType,
-            QuestEventResponse.Length);
-        var message = new QuestStateList(writer.Span);
+        int Write()
+        {
+            var size = QuestEventResponseRef.Length;
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new QuestEventResponseRef(span);
+            var vanertGroup = packet[0];
+            vanertGroup.Number = 1;
 
-        var vanertGroup = message[0];
-        vanertGroup.Number = 1;
+            var duprianGroup = packet[1];
+            duprianGroup.Number = 1;
+            return size;
+        }
 
-        var duprianGroup = message[1];
-        duprianGroup.Number = 1;
-
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

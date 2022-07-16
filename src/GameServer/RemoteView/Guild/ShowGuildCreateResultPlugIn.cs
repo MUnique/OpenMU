@@ -25,8 +25,8 @@ public class ShowGuildCreateResultPlugIn : IShowGuildCreateResultPlugIn
     public ShowGuildCreateResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowGuildCreateResult(GuildCreateErrorDetail errorDetail)
+    public async ValueTask ShowGuildCreateResultAsync(GuildCreateErrorDetail errorDetail)
     {
-        this._player.Connection?.SendGuildCreationResult(errorDetail == GuildCreateErrorDetail.None, errorDetail.Convert());
+        await this._player.Connection.SendGuildCreationResultAsync(errorDetail == GuildCreateErrorDetail.None, errorDetail.Convert()).ConfigureAwait(false);
     }
 }

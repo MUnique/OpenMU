@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Web.Map;
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
@@ -28,13 +31,22 @@ public static class WebApplicationExtensions
     /// When using the DaprService, call the BuildAndConfigure-Method with the parameter to add Blazor.
     /// </summary>
     /// <param name="builder">The web application builder which should be configured.</param>
-    /// <returns>The web application builder.</returns>
-    public static WebApplicationBuilder AddAdminPanel(this WebApplicationBuilder builder)
+    /// <param name="includeMapApp">If set to <c>true</c>, the map app is included.</param>
+    /// <returns>
+    /// The web application builder.
+    /// </returns>
+    public static WebApplicationBuilder AddAdminPanel(this WebApplicationBuilder builder, bool includeMapApp = false)
     {
         // Ensure that DataInitialization plugins will get collected - for the setup functionality.
         _ = DataInitialization.Id;
 
-        builder.Services.AddRazorPages();
+        var mvcBuilder = builder.Services.AddRazorPages();
+        if (includeMapApp)
+        {
+            AdminPanelEnvironment.IsHostingEmbedded = true;
+            mvcBuilder.AddApplicationPart(typeof(Map.Exports).Assembly);
+        }
+
         builder.Services.AddServerSideBlazor();
 
         var services = builder.Services;
@@ -58,7 +70,7 @@ public static class WebApplicationExtensions
         {
             var contextProvider = provider.GetService<IPersistenceContextProvider>();
             using var initialContext = contextProvider!.CreateNewConfigurationContext();
-            return initialContext.Get<GameConfiguration>()?.FirstOrDefault()!;
+            return initialContext.GetAsync<GameConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault()!;
         });
 
         services.AddTransient(provider =>

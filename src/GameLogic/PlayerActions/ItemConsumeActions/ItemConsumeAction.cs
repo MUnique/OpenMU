@@ -24,19 +24,19 @@ public class ItemConsumeAction
     /// <param name="inventorySlot">The inventory slot.</param>
     /// <param name="inventoryTargetSlot">The inventory target slot.</param>
     /// <param name="fruitUsage">The fruit usage.</param>
-    public void HandleConsumeRequest(Player player, byte inventorySlot, byte inventoryTargetSlot, FruitUsage fruitUsage)
+    public async ValueTask HandleConsumeRequestAsync(Player player, byte inventorySlot, byte inventoryTargetSlot, FruitUsage fruitUsage)
     {
         var item = player.Inventory?.GetItem(inventorySlot);
         if (item?.Definition is null)
         {
-            player.ViewPlugIns.GetPlugIn<IRequestedItemConsumptionFailedPlugIn>()?.RequestedItemConsumptionFailed();
+            await player.InvokeViewPlugInAsync<IRequestedItemConsumptionFailedPlugIn>(p => p.RequestedItemConsumptionFailedAsync()).ConfigureAwait(false);
             return;
         }
 
         this.InitializeConsumeHandlersIfRequired(player.GameContext);
         if (!this._consumeHandlers!.TryGetValue(item.Definition, out var consumeHandler))
         {
-            player.ViewPlugIns.GetPlugIn<IRequestedItemConsumptionFailedPlugIn>()?.RequestedItemConsumptionFailed();
+            await player.InvokeViewPlugInAsync<IRequestedItemConsumptionFailedPlugIn>(p => p.RequestedItemConsumptionFailedAsync()).ConfigureAwait(false);
             return;
         }
 
@@ -52,20 +52,20 @@ public class ItemConsumeAction
             }
         }
 
-        if (!consumeHandler.ConsumeItem(player, item, targetItem, fruitUsage))
+        if (!await consumeHandler.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
-            player.ViewPlugIns.GetPlugIn<IRequestedItemConsumptionFailedPlugIn>()?.RequestedItemConsumptionFailed();
+            await player.InvokeViewPlugInAsync<IRequestedItemConsumptionFailedPlugIn>(p => p.RequestedItemConsumptionFailedAsync()).ConfigureAwait(false);
             return;
         }
 
         if (item.Durability == 0)
         {
-            player.Inventory.RemoveItem(item);
-            player.ViewPlugIns.GetPlugIn<Views.Inventory.IItemRemovedPlugIn>()?.RemoveItem(inventorySlot);
+            await player.Inventory.RemoveItemAsync(item).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<Views.Inventory.IItemRemovedPlugIn>(p => p.RemoveItemAsync(inventorySlot)).ConfigureAwait(false);
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(item, true);
+            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, true)).ConfigureAwait(false);
         }
 
         player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemConsumedPlugIn>()?.ItemConsumed(player, item, targetItem);

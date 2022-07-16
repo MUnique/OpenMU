@@ -13,5 +13,5 @@ public interface IUpdateCharacterHeroStatePlugIn : IViewPlugIn
     /// Updates the current hero state.
     /// </summary>
     /// <param name="affectedPlayer">The player whose status needs an update.</param>
-    void UpdateCharacterHeroState(Player affectedPlayer);
+    ValueTask UpdateCharacterHeroStateAsync(Player affectedPlayer);
 }

@@ -30,9 +30,9 @@ public class LogoutPlugIn : ILogoutPlugIn
     /// It will send the Client to the the Server Select, Character Select or Disconnects the User.
     /// </remarks>
     /// <inheritdoc />
-    public void Logout(LogoutType logoutType)
+    public async ValueTask LogoutAsync(LogoutType logoutType)
     {
-        this._player.Connection?.SendLogoutResponse(Convert(logoutType));
+        await this._player.Connection.SendLogoutResponseAsync(Convert(logoutType)).ConfigureAwait(false);
     }
 
     private static LogOutType Convert(LogoutType logoutType)

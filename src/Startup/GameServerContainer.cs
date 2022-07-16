@@ -60,7 +60,7 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
         IIpAddressResolver ipResolver,
         PlugInManager plugInManager,
         SetupService setupService)
-        : base (setupService, loggerFactory.CreateLogger<GameServerContainer>())
+        : base(setupService, loggerFactory.CreateLogger<GameServerContainer>())
     {
         this._loggerFactory = loggerFactory;
         this._servers = servers;
@@ -88,12 +88,12 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
 
     /// <inheritdoc />
 #pragma warning disable CS1998
-    protected override async Task StartAsyncCore(CancellationToken cancellationToken)
+    protected override async Task StartInnerAsync(CancellationToken cancellationToken)
 #pragma warning restore CS1998
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
-        this.LoadGameClientDefinitions(persistenceContext);
-        foreach (var gameServerDefinition in persistenceContext.Get<GameServerDefinition>())
+        await this.LoadGameClientDefinitionsAsync(persistenceContext).ConfigureAwait(false);
+        foreach (var gameServerDefinition in await persistenceContext.GetAsync<GameServerDefinition>().ConfigureAwait(false))
         {
             using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
             var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager);
@@ -109,20 +109,20 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
     }
 
     /// <inheritdoc />
-    protected override async Task StopAsyncCore(CancellationToken cancellationToken)
+    protected override async Task StopInnerAsync(CancellationToken cancellationToken)
     {
         foreach (var gameServer in this._gameServers.Values)
         {
-            await gameServer.StopAsync(cancellationToken);
+            await gameServer.StopAsync(cancellationToken).ConfigureAwait(false);
             this._servers.Remove(gameServer);
         }
 
         this._gameServers.Clear();
     }
 
-    private void LoadGameClientDefinitions(IContext persistenceContext)
+    private async ValueTask LoadGameClientDefinitionsAsync(IContext persistenceContext)
     {
-        var versions = persistenceContext.Get<GameClientDefinition>().ToList();
+        var versions = (await persistenceContext.GetAsync<GameClientDefinition>().ConfigureAwait(false)).ToList();
         foreach (var gameClientDefinition in versions)
         {
             ClientVersionResolver.Register(

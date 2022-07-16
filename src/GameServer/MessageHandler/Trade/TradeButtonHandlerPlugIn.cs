@@ -27,7 +27,7 @@ internal class TradeButtonHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => TradeButtonStateChange.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         TradeButtonStateChange message = packet;
         if (packet.Length < 4)
@@ -35,6 +35,6 @@ internal class TradeButtonHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        this._buttonAction.TradeButtonChanged(player, (TradeButtonState)message.NewState);
+        await this._buttonAction.TradeButtonChangedAsync(player, (TradeButtonState)message.NewState).ConfigureAwait(false);
     }
 }

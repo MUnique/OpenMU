@@ -28,7 +28,7 @@ public class ObjectsOutOfScopePlugIn : IObjectsOutOfScopePlugIn
     public ObjectsOutOfScopePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
+    public async ValueTask ObjectsOutOfScopeAsync(IEnumerable<IIdentifiable> objects)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -37,20 +37,26 @@ public class ObjectsOutOfScopePlugIn : IObjectsOutOfScopePlugIn
         }
 
         var count = objects.Count();
-        using var writer = connection.StartSafeWrite(MapObjectOutOfScope.HeaderType, MapObjectOutOfScope.GetRequiredSize(count));
-        var packet = new MapObjectOutOfScope(writer.Span)
+        int Write()
         {
-            ObjectCount = (byte)count,
-        };
+            var size = MapObjectOutOfScopeRef.GetRequiredSize(count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new MapObjectOutOfScopeRef(span)
+            {
+                ObjectCount = (byte)count,
+            };
 
-        int i = 0;
-        foreach (var m in objects)
-        {
-            var objectId = packet[i];
-            objectId.Id = m.GetId(this._player);
-            i++;
+            int i = 0;
+            foreach (var m in objects)
+            {
+                var objectId = packet[i];
+                objectId.Id = m.GetId(this._player);
+                i++;
+            }
+
+            return size;
         }
 
-        writer.Commit();
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

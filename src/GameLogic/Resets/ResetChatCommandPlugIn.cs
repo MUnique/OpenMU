@@ -26,9 +26,9 @@ public class ResetChatCommandPlugIn : IChatCommandPlugIn
     public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
 
     /// <inheritdoc />
-    public void HandleCommand(Player player, string command)
+    public async ValueTask HandleCommandAsync(Player player, string command)
     {
         var resetAction = new ResetCharacterAction(player);
-        resetAction.ResetCharacter();
+        await resetAction.ResetCharacterAsync().ConfigureAwait(false);
     }
 }

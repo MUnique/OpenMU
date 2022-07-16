@@ -61,32 +61,54 @@ public class ChatServer : IChatServer
     }
 
     /// <inheritdoc />
+    public ValueTask StartAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc />
-    public void Start()
+    public ValueTask ShutdownAsync()
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc />
-    public void Shutdown()
+    public async ValueTask<ChatServerAuthenticationInfo?> RegisterClientAsync(ushort roomId, string clientName)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<RegisterChatClientArguments, ChatServerAuthenticationInfo>(
+                    this._targetAppId,
+                    nameof(IChatServer.RegisterClientAsync),
+                    new RegisterChatClientArguments(roomId, clientName))
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.RegisterClientAsync));
+        }
+
+        return null;
     }
 
     /// <inheritdoc />
-    public ChatServerAuthenticationInfo RegisterClient(ushort roomId, string clientName)
+    public async ValueTask<ushort> CreateChatRoomAsync()
     {
-        return this._daprClient.InvokeMethodAsync<RegisterChatClientArguments, ChatServerAuthenticationInfo>(this._targetAppId, nameof(IChatServer.RegisterClient), new RegisterChatClientArguments(roomId, clientName)).GetAwaiter().GetResult();
-    }
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<ushort>(this._targetAppId, nameof(IChatServer.CreateChatRoomAsync)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.CreateChatRoomAsync));
+        }
 
-    /// <inheritdoc />
-    public ushort CreateChatRoom()
-    {
-        return this._daprClient.InvokeMethodAsync<ushort>(this._targetAppId, nameof(IChatServer.CreateChatRoom)).GetAwaiter().GetResult();
+        return default;
     }
 }

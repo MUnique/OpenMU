@@ -41,12 +41,12 @@ public class LoginServerController : ControllerBase
     /// </summary>
     /// <param name="data">The login data.</param>
     /// <returns>The success.</returns>
-    [HttpPost(nameof(TryLogin))]
-    public async Task<bool> TryLogin([FromBody] LoginArguments data)
+    [HttpPost(nameof(TryLoginAsync))]
+    public async Task<bool> TryLoginAsync([FromBody] LoginArguments data)
     {
         try
         {
-            return await this._loginServer.TryLogin(data.AccountName, data.ServerId);
+            return await this._loginServer.TryLoginAsync(data.AccountName, data.ServerId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -59,12 +59,12 @@ public class LoginServerController : ControllerBase
     /// Logs the account off from the specified server.
     /// </summary>
     /// <param name="data">The login data.</param>
-    [HttpPost(nameof(LogOff))]
-    public void LogOff([FromBody] LoginArguments data)
+    [HttpPost(nameof(LogOffAsync))]
+    public async Task LogOffAsync([FromBody] LoginArguments data)
     {
         try
         {
-            this._loginServer.LogOff(data.AccountName, data.ServerId);
+            await this._loginServer.LogOffAsync(data.AccountName, data.ServerId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

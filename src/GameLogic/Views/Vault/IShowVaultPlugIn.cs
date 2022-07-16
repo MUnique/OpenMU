@@ -12,5 +12,5 @@ public interface IShowVaultPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the vault.
     /// </summary>
-    void ShowVault();
+    ValueTask ShowVaultAsync();
 }

@@ -19,15 +19,15 @@ public class WarpAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="warpInfo">The warp information.</param>
-    public void WarpTo(Player player, WarpInfo warpInfo)
+    public async ValueTask WarpToAsync(Player player, WarpInfo warpInfo)
     {
         if (this.CheckRequirements(player, warpInfo, out var errorMessage))
         {
-            player.WarpTo(warpInfo.Gate!);
+            await player.WarpToAsync(warpInfo.Gate!).ConfigureAwait(false);
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(errorMessage, MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(errorMessage, MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 

@@ -30,26 +30,26 @@ public class EncryptionBenchmarks
     private readonly byte[] _c1Packet = Convert.FromBase64String("wf8AudHEjjSP53H6Rkp3oXj7B9z+rVDR2f0Is4bvsIsUL3RM/aTDB2FX9YG3Hkboy1Z1JThot558MeDTvNuunzfl5RbWK6TTOP97prjPGbq3IOcweopTq3fVz8vD8EuFqVVJ0jgvEZ+xoe047RHmrRgmG5zzfSWtkTmeAVzZD0i09f1jhUeBiA5HfticGr5m7iGzndSvkSwvm0D/kRBD15GlhPgTgyfQpJONrP5NEHd7NxI6JnJzBWPQM+kHgvb+BKdH95bFUmv54vlBIeUt4ovIg1r9CLEfMX+UQk89yCKcj6dXBRjgteSmQUN5MuN9o1FePv6cAPv2KMUXMBAc");
 
     /// <summary>
-    /// Benchmarks the performance of the <see cref="SimpleModulusEncryption"/>.
+    /// Benchmarks the performance of the <see cref="SimpleModulusEncryptionAsync"/>.
     /// </summary>
     /// <returns>The value task.</returns>
     [Benchmark]
-    public async ValueTask SimpleModulusEncryption()
+    public async ValueTask SimpleModulusEncryptionAsync()
     {
         var pipe = new Pipe();
         var pipelinedEncryptor = new PipelinedSimpleModulusEncryptor(pipe.Writer);
         var readBuffer = new byte[256];
         for (int i = 0; i < PacketCount; i++)
         {
-            await pipelinedEncryptor.Writer.WriteAsync(this._c3Packet);
-            await pipelinedEncryptor.Writer.FlushAsync();
-            var readResult = await pipe.Reader.ReadAsync();
+            await pipelinedEncryptor.Writer.WriteAsync(this._c3Packet).ConfigureAwait(false);
+            await pipelinedEncryptor.Writer.FlushAsync().ConfigureAwait(false);
+            var readResult = await pipe.Reader.ReadAsync().ConfigureAwait(false);
             readResult.Buffer.CopyTo(readBuffer);
             //// In the server, I would process the readBuffer here
             pipe.Reader.AdvanceTo(readResult.Buffer.Start, readResult.Buffer.End);
         }
 
-        pipelinedEncryptor.Writer.Complete();
+        await pipelinedEncryptor.Writer.CompleteAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -57,21 +57,21 @@ public class EncryptionBenchmarks
     /// </summary>
     /// <returns>The value task.</returns>
     [Benchmark]
-    public async ValueTask Xor32Encryption()
+    public async ValueTask Xor32EncryptionAsync()
     {
         var pipe = new Pipe();
         var pipelinedEncryptor = new PipelinedXor32Encryptor(pipe.Writer);
         var readBuffer = new byte[256];
         for (int i = 0; i < PacketCount; i++)
         {
-            await pipelinedEncryptor.Writer.WriteAsync(this._c1Packet);
-            await pipelinedEncryptor.Writer.FlushAsync();
-            var readResult = await pipe.Reader.ReadAsync();
+            await pipelinedEncryptor.Writer.WriteAsync(this._c1Packet).ConfigureAwait(false);
+            await pipelinedEncryptor.Writer.FlushAsync().ConfigureAwait(false);
+            var readResult = await pipe.Reader.ReadAsync().ConfigureAwait(false);
             readResult.Buffer.CopyTo(readBuffer);
             //// In the client/server, I would process the readBuffer here
             pipe.Reader.AdvanceTo(readResult.Buffer.Start, readResult.Buffer.End);
         }
 
-        pipelinedEncryptor.Writer.Complete();
+        await pipelinedEncryptor.Writer.CompleteAsync().ConfigureAwait(false);
     }
 }

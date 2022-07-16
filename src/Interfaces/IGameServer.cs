@@ -67,19 +67,19 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     /// <param name="guildId">The guild identifier.</param>
     /// <param name="sender">The sender character name.</param>
     /// <param name="message">The message which should be sent.</param>
-    void GuildChatMessage(uint guildId, string sender, string message);
+    ValueTask GuildChatMessageAsync(uint guildId, string sender, string message);
 
     /// <summary>
     /// Notifies the game server that a guild got deleted.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
-    void GuildDeleted(uint guildId);
+    ValueTask GuildDeletedAsync(uint guildId);
 
     /// <summary>
     /// Notifies the game server that a guild member got removed from a guild.
     /// </summary>
     /// <param name="playerName">Name of the player which got removed from a guild.</param>
-    void GuildPlayerKicked(string playerName);
+    ValueTask GuildPlayerKickedAsync(string playerName);
 
     /// <summary>
     /// Sends a chat message to all connected alliance members.
@@ -87,33 +87,33 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     /// <param name="guildId">The guild identifier.</param>
     /// <param name="sender">The sender character name.</param>
     /// <param name="message">The message.</param>
-    void AllianceChatMessage(uint guildId, string sender, string message);
+    ValueTask AllianceChatMessageAsync(uint guildId, string sender, string message);
 
     /// <summary>
     /// Sends a global message to all connected players with the specified message type.
     /// </summary>
     /// <param name="message">The message.</param>
     /// <param name="messageType">Type of the message.</param>
-    void SendGlobalMessage(string message, MessageType messageType);
+    ValueTask SendGlobalMessageAsync(string message, MessageType messageType);
 
     /// <summary>
     /// Disconnects the player from the game.
     /// </summary>
     /// <param name="playerName">Name of the player.</param>
     /// <returns>True, if the player has been disconnected; False, otherwise.</returns>
-    bool DisconnectPlayer(string playerName);
+    ValueTask<bool> DisconnectPlayerAsync(string playerName);
 
     /// <summary>
     /// Bans the player from the game.
     /// </summary>
     /// <param name="playerName">Name of the player.</param>
     /// <returns>True, if the player has been banned; False, otherwise.</returns>
-    bool BanPlayer(string playerName);
+    ValueTask<bool> BanPlayerAsync(string playerName);
 
     /// <summary>
     /// Assigns the guild to the player.
     /// </summary>
     /// <param name="characterName">Name of the character.</param>
     /// <param name="guildStatus">The guild status of the character.</param>
-    void AssignGuildToPlayer(string characterName, GuildMemberStatus guildStatus);
+    ValueTask AssignGuildToPlayerAsync(string characterName, GuildMemberStatus guildStatus);
 }

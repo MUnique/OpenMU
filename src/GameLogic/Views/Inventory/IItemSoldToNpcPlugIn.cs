@@ -13,5 +13,5 @@ public interface IItemSoldToNpcPlugIn : IViewPlugIn
     /// Notifies the client that the item got sold to the npc (or not).
     /// </summary>
     /// <param name="success">If set to <c>true</c> the item has been sold; otherwise not.</param>
-    void ItemSoldToNpc(bool success);
+    ValueTask ItemSoldToNpcAsync(bool success);
 }

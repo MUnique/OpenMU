@@ -114,21 +114,13 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     internal ClientListener ClientListener { get; }
 
     /// <inheritdoc />
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        this.Start();
-        return Task.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        this.Shutdown();
-        return Task.CompletedTask;
+        await this.StartAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public void Start()
+    public async ValueTask StartAsync()
     {
         if (this.ServerState != ServerState.Stopped)
         {
@@ -152,8 +144,14 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
         this._logger.LogInformation("Finished starting");
     }
 
+    /// <inheritdoc />
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await this.ShutdownAsync().ConfigureAwait(false);
+    }
+
     /// <inheritdoc/>
-    public void Shutdown()
+    public async ValueTask ShutdownAsync()
     {
         this._logger.LogInformation("Begin stopping");
         this.ServerState = OpenMU.Interfaces.ServerState.Stopping;

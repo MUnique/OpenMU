@@ -19,5 +19,5 @@ public interface IQuestProgressPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="quest">The quest.</param>
     /// <param name="wasProgressionRequested">If set to <c>true</c>, the client previously requested to increase the progress of the quest. Otherwise, <c>false</c>, e.g. after a specific request or entering the game.</param>
-    void ShowQuestProgress(QuestDefinition quest, bool wasProgressionRequested);
+    ValueTask ShowQuestProgressAsync(QuestDefinition quest, bool wasProgressionRequested);
 }

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
+using System.Buffers;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
@@ -35,31 +36,36 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
     public ObjectMovedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the directions provided by <see cref="ISupportWalk.GetDirections"/> should be send when an object moved.
+    /// Gets or sets a value indicating whether the directions provided by <see cref="ISupportWalk.GetDirectionsAsync"/> should be send when an object moved.
     /// This is usually not required, because the game client calculates a proper path anyway and doesn't use the suggested path.
     /// </summary>
     public bool SendWalkDirections { get; set; } = true;
 
     /// <inheritdoc/>
-    public void ObjectMoved(ILocateable obj, MoveType type)
+    public async ValueTask ObjectMovedAsync(ILocateable obj, MoveType type)
     {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
         var objectId = obj.GetId(this._player);
         switch (type)
         {
             case MoveType.Instant:
-                this._player.Connection?.SendObjectMoved(this.GetInstantMoveCode(), objectId, obj.Position.X, obj.Position.Y);
+                await connection.SendObjectMovedAsync(this.GetInstantMoveCode(), objectId, obj.Position.X, obj.Position.Y).ConfigureAwait(false);
                 break;
 
             case MoveType.Teleport when obj is Player movedPlayer && movedPlayer != this._player:
-                this._player.ViewPlugIns.GetPlugIn<INewPlayersInScopePlugIn>()?.NewPlayersInScope(movedPlayer.GetAsEnumerable(), false);
-                this._player.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(movedPlayer, movedPlayer, TeleportTargetNumber, true);
+                await this._player.InvokeViewPlugInAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(movedPlayer.GetAsEnumerable(), false)).ConfigureAwait(false);
+                await this._player.InvokeViewPlugInAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(movedPlayer, movedPlayer, TeleportTargetNumber, true)).ConfigureAwait(false);
                 break;
 
             case MoveType.Teleport when obj is NonPlayerCharacter movedNpc:
-                this._player.ViewPlugIns.GetPlugIn<INewNpcsInScopePlugIn>()?.NewNpcsInScope(movedNpc.GetAsEnumerable(), false);
+                await this._player.InvokeViewPlugInAsync<INewNpcsInScopePlugIn>(p => p.NewNpcsInScopeAsync(movedNpc.GetAsEnumerable(), false)).ConfigureAwait(false);
                 if (movedNpc is Monster monster)
                 {
-                    this._player.ViewPlugIns.GetPlugIn<IShowSkillAnimationPlugIn>()?.ShowSkillAnimation(monster, monster, TeleportTargetNumber, true);
+                    await this._player.InvokeViewPlugInAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(monster, monster, TeleportTargetNumber, true)).ConfigureAwait(false);
                 }
 
                 break;
@@ -69,7 +75,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
                 break;
 
             case MoveType.Walk:
-                this.ObjectWalked(obj);
+                await this.ObjectWalkedAsync(obj).ConfigureAwait(false);
                 break;
         }
     }
@@ -83,28 +89,32 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
     /// <param name="steps">The steps.</param>
     /// <param name="rotation">The rotation.</param>
     /// <param name="stepsLength">Length of the steps.</param>
-    protected virtual void SendMessage(IConnection connection, ushort objectId, Point targetPoint, Span<Direction> steps, Direction rotation, int stepsLength)
+    protected virtual async ValueTask SendWalkAsync(IConnection connection, ushort objectId, Point targetPoint, Memory<Direction> steps, Direction rotation, int stepsLength)
     {
-        var stepsSize = steps == default ? 1 : (steps.Length / 2) + 2;
-        using var writer = connection.StartSafeWrite(
-            Network.Packets.ServerToClient.ObjectWalked.HeaderType,
-            Network.Packets.ServerToClient.ObjectWalked.GetRequiredSize(stepsSize));
-        var walkPacket = new ObjectWalked(writer.Span)
+        int Write()
         {
-            HeaderCode = this.GetWalkCode(),
-            ObjectId = objectId,
-            TargetX = targetPoint.X,
-            TargetY = targetPoint.Y,
-            TargetRotation = rotation.ToPacketByte(),
-            StepCount = (byte)stepsLength,
-        };
+            var stepsSize = steps.Length == 0 ? 1 : (steps.Length / 2) + 2;
+            var size = ObjectWalkedRef.GetRequiredSize(stepsSize);
+            var span = connection.Output.GetSpan(size)[..size];
 
-        this.SetStepData(walkPacket, steps, stepsSize);
+            var walkPacket = new ObjectWalkedRef(span)
+            {
+                HeaderCode = this.GetWalkCode(),
+                ObjectId = objectId,
+                TargetX = targetPoint.X,
+                TargetY = targetPoint.Y,
+                TargetRotation = rotation.ToPacketByte(),
+                StepCount = (byte)stepsLength,
+            };
 
-        writer.Commit();
+            this.SetStepData(walkPacket, steps.Span, stepsSize);
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
-    private void ObjectWalked(ILocateable obj)
+    private async ValueTask ObjectWalkedAsync(ILocateable obj)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -113,7 +123,10 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         }
 
         var objectId = obj.GetId(this._player);
-        Span<Direction> steps = this.SendWalkDirections ? stackalloc Direction[16] : default;
+
+        using var rentArray = this.SendWalkDirections ? MemoryPool<Direction>.Shared.Rent(16) : null;
+        var steps = rentArray?.Memory.Slice(0, 16) ?? Memory<Direction>.Empty;
+
         var stepsLength = 0;
         Point targetPoint;
         var rotation = Direction.Undefined;
@@ -126,11 +139,11 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         {
             if (this.SendWalkDirections)
             {
-                stepsLength = supportWalk.GetDirections(steps);
+                stepsLength = await supportWalk.GetDirectionsAsync(steps).ConfigureAwait(false);
                 if (stepsLength > 0)
                 {
                     // The last one is the rotation
-                    rotation = steps[stepsLength - 1];
+                    rotation = steps.Span[stepsLength - 1];
                     steps = steps[..(stepsLength - 1)];
                     stepsLength--;
                 }
@@ -143,10 +156,10 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
             targetPoint = obj.Position;
         }
 
-        this.SendMessage(connection, objectId, targetPoint, steps, rotation, stepsLength);
+        await this.SendWalkAsync(connection, objectId, targetPoint, steps, rotation, stepsLength).ConfigureAwait(false);
     }
 
-    private void SetStepData(ObjectWalked walkPacket, Span<Direction> steps, int stepsSize)
+    private void SetStepData(ObjectWalkedRef walkPacket, Span<Direction> steps, int stepsSize)
     {
         if (steps == default || walkPacket.StepCount == 0)
         {

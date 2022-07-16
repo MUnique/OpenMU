@@ -41,7 +41,7 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
         {
             try
             {
-                var secrets = await this._daprClient.GetBulkSecretAsync(SecretStoreName, cancellationToken: cancellationToken);
+                var secrets = await this._daprClient.GetBulkSecretAsync(SecretStoreName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 foreach (var secret in secrets.Where(kvp => string.Equals(kvp.Key.Split(':')[0], "connectionStrings", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     var contextTypeName = secret.Value.Keys.First().Split(':').Last();

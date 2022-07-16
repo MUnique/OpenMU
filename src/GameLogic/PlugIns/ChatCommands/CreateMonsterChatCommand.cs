@@ -26,12 +26,12 @@ internal class CreateMonsterChatCommand : ChatCommandPlugInBase<CreateMonsterCha
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player gameMaster, CreateMonsterChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CreateMonsterChatCommandArgs arguments)
     {
         var monsterDef = gameMaster.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == arguments.MonsterNumber);
         if (monsterDef is null)
         {
-            this.ShowMessageTo(gameMaster, $"Monster with number {arguments.MonsterNumber} not found.");
+            await this.ShowMessageToAsync(gameMaster, $"Monster with number {arguments.MonsterNumber} not found.").ConfigureAwait(false);
             return;
         }
 
@@ -52,9 +52,8 @@ internal class CreateMonsterChatCommand : ChatCommandPlugInBase<CreateMonsterCha
         var monster = new Monster(area, monsterDef, gameMap, NullDropGenerator.Instance, intelligence, gameMaster.GameContext.PlugInManager);
         intelligence.Npc = monster;
         monster.Initialize();
-        gameMap.Add(monster);
-        gameMaster.PlayerDisconnected += (_, _) => monster.Dispose();
+        await gameMap.AddAsync(monster).ConfigureAwait(false);
 
-        this.ShowMessageTo(gameMaster, $"Monster with number {arguments.MonsterNumber} created, id: {monster.Id}.");
+        await this.ShowMessageToAsync(gameMaster, $"Monster with number {arguments.MonsterNumber} created, id: {monster.Id}.").ConfigureAwait(false);
     }
 }

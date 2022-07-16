@@ -47,6 +47,7 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
       <xsl:apply-templates select="pd:Description"/>
       <xsl:text>public readonly ref struct </xsl:text>
       <xsl:apply-templates select="pd:Name" />
+      <xsl:text>Ref</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:text>{</xsl:text>
       <xsl:value-of select="$newline"/>
@@ -96,6 +97,7 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
       </xsl:if>
       <xsl:text>struct </xsl:text>
       <xsl:apply-templates select="pd:Name" />
+      <xsl:text>Ref</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:text>{</xsl:text>
       <xsl:value-of select="$newline"/>
@@ -115,7 +117,7 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
     /// &lt;/summary&gt;
     public </xsl:text>
       <xsl:value-of select="pd:HeaderType"/>
-      <xsl:text> Header => new (this._data);</xsl:text>
+      <xsl:text>Ref Header => new (this._data);</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:apply-templates select="pd:Fields" />
       <xsl:call-template name="implicitConversions">
@@ -178,12 +180,12 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
         <xsl:param name="packet" />
         <xsl:text>
     /// &lt;summary&gt;
-    /// Initializes a new instance of the &lt;see cref="</xsl:text><xsl:apply-templates select="pd:Name" /><xsl:text>"/&gt; struct.
+    /// Initializes a new instance of the &lt;see cref="</xsl:text><xsl:apply-templates select="pd:Name" /><xsl:text>Ref"/&gt; struct.
     /// &lt;/summary&gt;
     /// &lt;param name="data"&gt;The underlying data.&lt;/param&gt;
     public </xsl:text>
         <xsl:apply-templates select="pd:Name" />
-        <xsl:text>(Span&lt;byte&gt; data)
+        <xsl:text>Ref(Span&lt;byte&gt; data)
         : this(data, true)</xsl:text>
         <xsl:value-of select="$newline"/>
         <xsl:text>    {</xsl:text>
@@ -193,13 +195,13 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
 
         <xsl:text>
     /// &lt;summary&gt;
-    /// Initializes a new instance of the &lt;see cref="</xsl:text><xsl:apply-templates select="pd:Name" /><xsl:text>"/&gt; struct.
+    /// Initializes a new instance of the &lt;see cref="</xsl:text><xsl:apply-templates select="pd:Name" /><xsl:text>Ref"/&gt; struct.
     /// &lt;/summary&gt;
     /// &lt;param name="data"&gt;The underlying data.&lt;/param&gt;
     /// &lt;param name="initialize"&gt;If set to &lt;c&gt;true&lt;/c&gt;, the header data is automatically initialized and written to the underlying span.&lt;/param&gt;
     private </xsl:text>
         <xsl:apply-templates select="pd:Name" />
-        <xsl:text>(Span&lt;byte&gt; data, bool initialize)</xsl:text>
+        <xsl:text>Ref(Span&lt;byte&gt; data, bool initialize)</xsl:text>
         <xsl:value-of select="$newline"/>
         <xsl:text>    {</xsl:text>
         <xsl:value-of select="$newline"/>
@@ -247,12 +249,12 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
         <xsl:param name="struct" />
         <xsl:text>
     /// &lt;summary&gt;
-    /// Initializes a new instance of the &lt;see cref="</xsl:text><xsl:apply-templates select="pd:Name" /><xsl:text>"/&gt; struct.
+    /// Initializes a new instance of the &lt;see cref="</xsl:text><xsl:apply-templates select="pd:Name" /><xsl:text>Ref"/&gt; struct.
     /// &lt;/summary&gt;
     /// &lt;param name="data"&gt;The underlying data.&lt;/param&gt;
     public </xsl:text>
         <xsl:apply-templates select="pd:Name" />
-        <xsl:text>(Span&lt;byte&gt; data)</xsl:text>
+        <xsl:text>Ref(Span&lt;byte&gt; data)</xsl:text>
       <xsl:value-of select="$newline"/>
         <xsl:text>    {</xsl:text>
         <xsl:value-of select="$newline"/>
@@ -301,16 +303,16 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
     /// &lt;summary&gt;
     /// Calculates the size of the packet for the specified count of &lt;see cref="</xsl:text>
           <xsl:value-of select="$variableField/pd:TypeName" />
-          <xsl:text>"/&gt; and it's size.
+          <xsl:text>Ref"/&gt; and it's size.
     /// &lt;/summary&gt;
     /// &lt;param name="</xsl:text>
           <xsl:value-of select="$paramName"/>
           <xsl:text>"&gt;The count of &lt;see cref="</xsl:text>
           <xsl:value-of select="$variableField/pd:TypeName" />
-          <xsl:text>"/&gt; from which the size will be calculated.&lt;/param&gt;
+          <xsl:text>Ref"/&gt; from which the size will be calculated.&lt;/param&gt;
     /// &lt;param name="structLength"&gt;The length of &lt;see cref="</xsl:text>
           <xsl:value-of select="$variableField/pd:TypeName" />
-          <xsl:text>"/&gt; from which the size will be calculated.&lt;/param&gt;
+          <xsl:text>Ref"/&gt; from which the size will be calculated.&lt;/param&gt;
           </xsl:text>
         </xsl:when>
         <xsl:when test="$variableField/pd:Type = 'Structure[]'">
@@ -318,12 +320,12 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
     /// &lt;summary&gt;
     /// Calculates the size of the packet for the specified count of &lt;see cref="</xsl:text>
           <xsl:value-of select="$variableField/pd:TypeName" />
-          <xsl:text>"/&gt;.
+          <xsl:text>Ref"/&gt;.
     /// &lt;/summary&gt;
     /// &lt;param name="</xsl:text>
           <xsl:value-of select="$paramName"/><xsl:text>"&gt;The count of &lt;see cref="</xsl:text>
           <xsl:value-of select="$variableField/pd:TypeName" />
-          <xsl:text>"/&gt; from which the size will be calculated.&lt;/param&gt;
+          <xsl:text>Ref"/&gt; from which the size will be calculated.&lt;/param&gt;
         </xsl:text>
         </xsl:when>
         <xsl:when test="$variableField/pd:Type = 'Binary'">
@@ -376,7 +378,7 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
             </xsl:when>
             <xsl:otherwise>
               <xsl:value-of select="$variableField/pd:TypeName" />
-              <xsl:text>.Length</xsl:text>
+              <xsl:text>Ref.Length</xsl:text>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:when>
@@ -398,7 +400,7 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
     /// &lt;returns&gt;The packet as struct.&lt;/returns&gt;
     public static implicit operator </xsl:text>
       <xsl:apply-templates select="pd:Name" />
-      <xsl:text>(Span&lt;byte&gt; packet) => new (packet, false);
+      <xsl:text>Ref(Span&lt;byte&gt; packet) => new (packet, false);
 
     /// &lt;summary&gt;
     /// Performs an implicit conversion from &lt;see cref="</xsl:text><xsl:apply-templates select="pd:Name" /><xsl:text>"/&gt; to a Span of bytes.
@@ -407,7 +409,7 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
     /// &lt;returns&gt;The packet as byte span.&lt;/returns&gt;
     public static implicit operator Span&lt;byte&gt;(</xsl:text>
       <xsl:apply-templates select="pd:Name" />
-      <xsl:text> packet) => packet._data; </xsl:text>
+      <xsl:text>Ref packet) => packet._data; </xsl:text>
       <xsl:value-of select="$newline"/>
     </xsl:template>
 
@@ -420,11 +422,12 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
     <xsl:variable name="typeLengthParamName" select="concat(translate(substring(pd:TypeName, 1, 1), $upperCaseLetters, $lowerCaseLetters), substring(pd:TypeName, 2), 'Length')" />
     <xsl:text>
     /// &lt;summary&gt;
-    /// Gets the &lt;see cref="</xsl:text><xsl:value-of select="pd:TypeName" /><xsl:text>"/&gt; of the specified index.
+    /// Gets the &lt;see cref="</xsl:text><xsl:value-of select="pd:TypeName" /><xsl:text>Ref"/&gt; of the specified index.
     /// &lt;/summary&gt;</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:text>        public </xsl:text>
       <xsl:value-of select="pd:TypeName"/>
+      <xsl:text>Ref</xsl:text>
       <xsl:choose>
         <xsl:when test="$arrayOfVariableStruct">
           <xsl:text> this[int index, int </xsl:text>
@@ -446,7 +449,7 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="pd:TypeName"/>
-          <xsl:text>.Length</xsl:text>
+          <xsl:text>Ref.Length</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
       <xsl:text>)..]);</xsl:text>
@@ -459,18 +462,18 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
     /// &lt;summary&gt;
     /// Gets the &lt;see cref="</xsl:text>
     <xsl:value-of select="pd:TypeName" />
-    <xsl:text>"/&gt; of the specified index.
+    <xsl:text>Ref"/&gt; of the specified index.
     /// &lt;/summary&gt;</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:text>    public </xsl:text>
     <xsl:value-of select="pd:TypeName"/>
-    <xsl:text> Get</xsl:text>
+    <xsl:text>Ref Get</xsl:text>
     <xsl:value-of select="pd:TypeName"/>
     <xsl:text>(int index) => new (this._data[(</xsl:text>
     <xsl:value-of select="pd:Index"/>
     <xsl:text> + index * </xsl:text>
     <xsl:value-of select="pd:TypeName"/>
-    <xsl:text>.Length</xsl:text>
+    <xsl:text>Ref.Length</xsl:text>
     <xsl:text>)..]);</xsl:text>
 
     <xsl:value-of select="$newline"/>
@@ -518,40 +521,7 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
       <xsl:value-of select="$newline"/>
     </xsl:template>
 
-    <xsl:template match="pd:Enum/pd:Description">
-      <xsl:text>    /// &lt;summary&gt;
-    /// </xsl:text><xsl:value-of select="."/><xsl:text>
-    /// &lt;/summary&gt;</xsl:text>
-      <xsl:value-of select="$newline"/>
-    </xsl:template>
-    <xsl:template match="pd:EnumValue/pd:Description">
-      <xsl:text>        /// &lt;summary&gt;
-        /// </xsl:text><xsl:value-of select="."/><xsl:text>
-        /// &lt;/summary&gt;</xsl:text>
-      <xsl:value-of select="$newline"/>
-    </xsl:template>
-    <xsl:template match="pd:Enum">
-      <xsl:apply-templates select="pd:Description"/>
-      <xsl:text>    public enum </xsl:text>
-      <xsl:apply-templates select="pd:Name" />
-      <xsl:value-of select="$newline"/>
-      <xsl:text>    {</xsl:text>
-      <xsl:apply-templates select="pd:Values" />
-      <xsl:text>    }</xsl:text>
-      <xsl:value-of select="$newline"/>
-      <xsl:value-of select="$newline"/>
-    </xsl:template>
-    <xsl:template match="pd:EnumValue">
-      <xsl:value-of select="$newline"/>
-      <xsl:apply-templates select="pd:Description"/>
-      <xsl:text xml:space="preserve">            </xsl:text>
-      <xsl:apply-templates select="pd:Name" />
-      <xsl:text> = </xsl:text>
-      <xsl:value-of select="pd:Value" />
-      <xsl:text>,</xsl:text>
-      <xsl:value-of select="$newline"/>
-    </xsl:template>
-
+  <xsl:template match="pd:Enum"></xsl:template>
   <xsl:template match="text()"></xsl:template>
     
     <!-- Getter/Setter implementations: -->
@@ -581,7 +551,9 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
       <xsl:value-of select="$newline"/>
       <xsl:text>        get =&gt; </xsl:text>
       <xsl:if test="pd:Type = 'Enum'">
-        <xsl:text>(</xsl:text><xsl:value-of select="pd:TypeName"/><xsl:text>)</xsl:text>
+        <xsl:text>(</xsl:text>
+        <xsl:apply-templates mode="type" />
+        <xsl:text>)</xsl:text>
       </xsl:if>
       <xsl:if test="pd:Length or pd:LeftShifted">
         <xsl:call-template name="SliceData"/>

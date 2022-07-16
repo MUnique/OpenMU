@@ -13,5 +13,5 @@ public interface IFriendDeletedPlugIn : IViewPlugIn
     /// A friend has been deleted from the friend list.
     /// </summary>
     /// <param name="deletedFriend">The deleted friend.</param>
-    void FriendDeleted(string deletedFriend);
+    ValueTask FriendDeletedAsync(string deletedFriend);
 }

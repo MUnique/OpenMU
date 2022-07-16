@@ -24,7 +24,7 @@ public class PostChatCommandPlugIn : IChatCommandPlugIn
     public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
 
     /// <inheritdoc />
-    public void HandleCommand(Player player, string command)
+    public async ValueTask HandleCommandAsync(Player player, string command)
     {
         var regex = new Regex(Regex.Escape(CommandKey));
         var message = regex.Replace(command, string.Empty, 1)?.Trim();
@@ -34,6 +34,6 @@ public class PostChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
-        player.GameContext.SendGlobalMessage(message, Interfaces.MessageType.BlueNormal);
+        await player.GameContext.SendGlobalMessageAsync(message, Interfaces.MessageType.BlueNormal).ConfigureAwait(false);
     }
 }

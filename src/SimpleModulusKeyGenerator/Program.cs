@@ -25,7 +25,7 @@ public static class Program
         }
         else
         {
-            await GenerateNewKeyPair().ConfigureAwait(false);
+            await GenerateNewKeyPairAsync().ConfigureAwait(false);
         }
     }
 
@@ -72,10 +72,10 @@ public static class Program
         throw new ArgumentException("File name does not begin with 'Enc' or 'Dec'.", nameof(fileName));
     }
 
-    private static async Task GenerateNewKeyPair()
+    private static async Task GenerateNewKeyPairAsync()
     {
         var generator = new SimpleModulusKeyGenerator();
-        var result = await generator.GenerateKeys().ConfigureAwait(false);
+        var result = await generator.GenerateKeysAsync().ConfigureAwait(false);
 
         Console.WriteLine("Generated key pair:");
         Console.WriteLine(result);

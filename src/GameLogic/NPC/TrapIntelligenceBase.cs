@@ -53,14 +53,9 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
         get
         {
             List<IWorldObserver> tempObservers;
-            this.Trap.ObserverLock.EnterReadLock();
-            try
+            using (this.Trap.ObserverLock.ReaderLock()) // todo: async?
             {
                 tempObservers = new List<IWorldObserver>(this.Trap.Observers);
-            }
-            finally
-            {
-                this.Trap.ObserverLock.ExitReadLock();
             }
 
             return tempObservers.OfType<IAttackable>();
@@ -89,13 +84,14 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
     /// <summary>
     /// Function which is executed in an interval.
     /// </summary>
-    protected abstract void Tick();
+    protected abstract ValueTask TickAsync();
 
-    private void SafeTick()
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void SafeTick()
     {
         try
         {
-            this.Tick();
+            await this.TickAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

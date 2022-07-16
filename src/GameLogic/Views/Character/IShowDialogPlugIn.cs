@@ -14,5 +14,5 @@ public interface IShowDialogPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="categoryNumber">The number of the dialog category.</param>
     /// <param name="dialogNumber">The number of the specific dialog.</param>
-    void ShowDialog(byte categoryNumber, byte dialogNumber);
+    ValueTask ShowDialogAsync(byte categoryNumber, byte dialogNumber);
 }

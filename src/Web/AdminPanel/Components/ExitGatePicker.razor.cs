@@ -92,20 +92,20 @@ public partial class ExitGatePicker
             (this._scale * gate.Y1).ToString(CultureInfo.InvariantCulture));
     }
 
-    private async void OnSelected(ExitGate exitGate)
+    private async Task OnSelectedAsync(ExitGate exitGate)
     {
         this.SelectedGate = exitGate;
         if (this.SelectedGateChanged is { } eventCallback)
         {
-            await eventCallback.InvokeAsync(exitGate);
+            await eventCallback.InvokeAsync(exitGate).ConfigureAwait(false);
         }
     }
 
-    private void OnMapSelected(ChangeEventArgs args)
+    private async Task OnMapSelectedAsync(ChangeEventArgs args)
     {
         if (Guid.TryParse(args.Value as string, out var mapId))
         {
-            this.Map = this.PersistenceContext.GetById<GameMapDefinition>(mapId);
+            this.Map = await this.PersistenceContext.GetByIdAsync<GameMapDefinition>(mapId).ConfigureAwait(false);
         }
     }
 }

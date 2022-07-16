@@ -6,17 +6,18 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
 using System.Threading;
+using Nito.AsyncEx;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Money which got dropped on the ground of a map.
 /// </summary>
-public sealed class DroppedMoney : IDisposable, ILocateable
+public sealed class DroppedMoney : AsyncDisposable, ILocateable
 {
     /// <summary>
     /// Gets the pickup lock. Used to synchronize pick up requests from the players.
     /// </summary>
-    private readonly object _pickupLock;
+    private readonly AsyncLock _pickupLock;
 
     private Timer? _removeTimer;
 
@@ -31,10 +32,10 @@ public sealed class DroppedMoney : IDisposable, ILocateable
     public DroppedMoney(uint amount, Point position, GameMap map)
     {
         this.Amount = amount;
-        this._pickupLock = new object();
+        this._pickupLock = new();
         this.Position = position;
         this.CurrentMap = map;
-        this._removeTimer = new Timer(_ => this.Dispose(), null, map.ItemDropDuration * 1000, Timeout.Infinite);
+        this._removeTimer = new Timer(this.OnTimerTimeout, null, map.ItemDropDuration * 1000, Timeout.Infinite);
     }
 
     /// <summary>
@@ -63,10 +64,10 @@ public sealed class DroppedMoney : IDisposable, ILocateable
     /// <remarks>
     /// Can be overwritten, for example for quest items which dropped only for a specific player.
     /// </remarks>
-    public bool TryPickUpBy(Player player)
+    public async ValueTask<bool> TryPickUpByAsync(Player player)
     {
         player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
-        lock (this._pickupLock)
+        using (await this._pickupLock.LockAsync())
         {
             if (!this._availableToPick)
             {
@@ -84,7 +85,7 @@ public sealed class DroppedMoney : IDisposable, ILocateable
         }
 
         player.Logger.LogInformation("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
-        this.Dispose();
+        await this.DisposeAsync().ConfigureAwait(false);
 
         return true;
     }
@@ -96,22 +97,35 @@ public sealed class DroppedMoney : IDisposable, ILocateable
     }
 
     /// <inheritdoc />
-    public void Dispose()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        var timer = this._removeTimer;
-        if (timer != null)
+        if (this._removeTimer is { } timer)
         {
             try
             {
                 this._removeTimer = null;
-                timer.Dispose();
-                this.CurrentMap.Remove(this);
+                await timer.DisposeAsync().ConfigureAwait(false);
+                await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
             }
             catch (Exception e)
             {
                 Debug.Fail(e.Message, e.StackTrace);
-                throw;
             }
+        }
+
+        await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnTimerTimeout(object? state)
+    {
+        try
+        {
+            await this.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Debug.Fail(ex.Message, ex.StackTrace);
         }
     }
 }

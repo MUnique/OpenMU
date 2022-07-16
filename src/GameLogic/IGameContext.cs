@@ -78,7 +78,7 @@ public interface IGameContext
     /// Adds the player to the game.
     /// </summary>
     /// <param name="player">The player.</param>
-    void AddPlayer(Player player);
+    ValueTask AddPlayerAsync(Player player);
 
     /// <summary>
     /// Gets the maps which is meant to be hosted by the game.
@@ -88,7 +88,7 @@ public interface IGameContext
     /// <returns>
     /// The hosted GameMap instance.
     /// </returns>
-    GameMap? GetMap(ushort mapId, bool createIfNotExists = true);
+    ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true);
 
     /// <summary>
     /// Gets the mini game map which is meant to be hosted by the game.
@@ -98,7 +98,7 @@ public interface IGameContext
     /// <returns>
     /// The state of the mini game which contains the hosted GameMap instance.
     /// </returns>
-    MiniGameContext GetMiniGame(MiniGameDefinition miniGameDefinition, Player requester);
+    ValueTask<MiniGameContext> GetMiniGameAsync(MiniGameDefinition miniGameDefinition, Player requester);
 
     /// <summary>
     /// Removes the mini game instance from the context.
@@ -118,13 +118,13 @@ public interface IGameContext
     /// </summary>
     /// <param name="message">The message.</param>
     /// <param name="messageType">Type of the message.</param>
-    void SendGlobalMessage(string message, MessageType messageType);
+    ValueTask SendGlobalMessageAsync(string message, MessageType messageType);
 
     /// <summary>
     /// Sends a golden global notification to all players of the game.
     /// </summary>
     /// <param name="message">The message.</param>
-    void SendGlobalNotification(string message);
+    ValueTask SendGlobalNotificationAsync(string message);
 
     /// <summary>
     /// Executes an action for each player.
@@ -133,5 +133,5 @@ public interface IGameContext
     /// <remarks>
     /// Please avoid doing actions which may lead to the connected-state of the players.
     /// </remarks>
-    void ForEachPlayer(Action<Player> action);
+    ValueTask ForEachPlayerAsync(Func<Player, Task> action);
 }

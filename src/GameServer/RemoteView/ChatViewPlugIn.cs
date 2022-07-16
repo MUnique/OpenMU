@@ -28,9 +28,9 @@ public class ChatViewPlugIn : IChatViewPlugIn
     }
 
     /// <inheritdoc/>
-    public void ChatMessage(string message, string sender, ChatMessageType type)
+    public async ValueTask ChatMessageAsync(string message, string sender, ChatMessageType type)
     {
-        this._player.Connection?.SendChatMessage(ConvertChatMessageType(type), sender, message);
+        await this._player.Connection.SendChatMessageAsync(ConvertChatMessageType(type), sender, message).ConfigureAwait(false);
     }
 
     private static ChatMessage.ChatMessageType ConvertChatMessageType(ChatMessageType type)

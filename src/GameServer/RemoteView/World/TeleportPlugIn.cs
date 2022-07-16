@@ -28,7 +28,7 @@ public class TeleportPlugIn : ITeleportPlugIn
     public TeleportPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowTeleported()
+    public async ValueTask ShowTeleportedAsync()
     {
         if (this._player.SelectedCharacter?.CurrentMap is null)
         {
@@ -37,6 +37,6 @@ public class TeleportPlugIn : ITeleportPlugIn
 
         var mapNumber = this._player.SelectedCharacter.CurrentMap.Number.ToUnsigned();
         var position = this._player.Position;
-        this._player.Connection?.SendMapChanged(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte(), false);
+        await this._player.Connection.SendMapChangedAsync(mapNumber, position.X, position.Y, this._player.Rotation.ToPacketByte(), false).ConfigureAwait(false);
     }
 }

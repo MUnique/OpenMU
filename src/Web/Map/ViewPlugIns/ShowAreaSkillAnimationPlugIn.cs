@@ -28,8 +28,8 @@ public class ShowAreaSkillAnimationPlugIn : JsViewPlugInBase, IShowAreaSkillAnim
     }
 
     /// <inheritdoc />
-    public async void ShowAreaSkillAnimation(Player player, Skill skill, Point point, byte rotation)
+    public async ValueTask ShowAreaSkillAnimationAsync(Player player, Skill skill, Point point, byte rotation)
     {
-        await this.InvokeAsync(player.Id, skill.Number, point.X, point.Y, rotation);
+        await this.InvokeAsync(player.Id, skill.Number, point.X, point.Y, rotation).ConfigureAwait(false);
     }
 }

@@ -4,31 +4,46 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.GameLogic.Views;
+
 /// <summary>
 /// Extensions for <see cref="IObservable"/> objects.
 /// </summary>
 public static class ObservableExtensions
 {
     /// <summary>
-    /// Executes the action for all observing players of the observable.
+    /// Executes the action for all observers of the observable.
     /// </summary>
+    /// <typeparam name="TViewPlugIn">The type of the <see cref="IViewPlugIn"/>.</typeparam>
     /// <param name="observable">The observable.</param>
     /// <param name="action">The action.</param>
-    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action"/> should be done for <paramref name="observable"/> too.</param>
-    public static void ForEachObservingPlayer(this IObservable observable, Action<Player> action, bool includeThis)
+    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action" /> should be done for <paramref name="observable" /> too.</param>
+    public static ValueTask ForEachWorldObserverAsync<TViewPlugIn>(this IObservable observable, Func<TViewPlugIn, ValueTask> action, bool includeThis)
+        where TViewPlugIn : class, IViewPlugIn
     {
-        observable.ForEachObserving(action, includeThis);
+        return observable.ForEachObservingAsync<IWorldObserver>(o => o.InvokeViewPlugInAsync(action), includeThis);
     }
 
     /// <summary>
-    /// Executes the action for all observers of the observable.
+    /// Invokes the view plug in asynchronously and catches possible errors.
     /// </summary>
-    /// <param name="observable">The observable.</param>
+    /// <typeparam name="TViewPlugIn">The type of the view plug in.</typeparam>
+    /// <param name="observer">The observer.</param>
     /// <param name="action">The action.</param>
-    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action"/> should be done for <paramref name="observable"/> too.</param>
-    public static void ForEachWorldObserver(this IObservable observable, Action<IWorldObserver> action, bool includeThis)
+    public static async ValueTask InvokeViewPlugInAsync<TViewPlugIn>(this IWorldObserver observer, Func<TViewPlugIn, ValueTask> action)
+        where TViewPlugIn : class, IViewPlugIn
     {
-        observable.ForEachObserving(action, includeThis);
+        if (observer.ViewPlugIns.GetPlugIn<TViewPlugIn>() is { } plugIn)
+        {
+            try
+            {
+                await action(plugIn).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                observer.Logger.LogError(ex, $"Error when invoking view action of {typeof(TViewPlugIn)}");
+            }
+        }
     }
 
     /// <summary>
@@ -37,56 +52,44 @@ public static class ObservableExtensions
     /// <param name="observable">The observable.</param>
     /// <param name="playerId">The player identifier.</param>
     /// <returns>The observing player with the specified identifier, if found. Otherwise, null.</returns>
-    public static Player? GetObservingPlayerWithId(this IObservable observable, ushort playerId)
+    public static async ValueTask<Player?> GetObservingPlayerWithIdAsync(this IObservable observable, ushort playerId)
     {
-        observable.ObserverLock.EnterReadLock();
-        try
-        {
-            return observable.Observers.OfType<Player>().FirstOrDefault(p => p.Id == playerId);
-        }
-        finally
-        {
-            observable.ObserverLock.ExitReadLock();
-        }
+        using var readerLock = await observable.ObserverLock.ReaderLockAsync();
+        return observable.Observers.OfType<Player>().FirstOrDefault(p => p.Id == playerId);
     }
 
     /// <summary>
     /// Executes the action for all observing players of the observable.
     /// </summary>
+    /// <typeparam name="T">The type of the <see cref="IWorldObserver"/>.</typeparam>
     /// <param name="observable">The observable.</param>
     /// <param name="action">The action.</param>
-    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action"/> should be done for <paramref name="observable"/> too.</param>
-    public static void ForEachObserving<T>(this IObservable observable, Action<T> action, bool includeThis)
+    /// <param name="includeThis">if set to <c>true</c> the <paramref name="action" /> should be done for <paramref name="observable" /> too.</param>
+    /// <returns></returns>
+    public static async ValueTask ForEachObservingAsync<T>(this IObservable observable, Func<T, ValueTask> action, bool includeThis)
         where T : class, IWorldObserver
     {
         try
         {
-            observable.ObserverLock.EnterReadLock();
-            try
+            using var readerLock = await observable.ObserverLock.ReaderLockAsync();
+            foreach (var obs in observable.Observers.OfType<T>())
             {
-                foreach (var obs in observable.Observers.OfType<T>())
+                if (!includeThis && obs.Equals(observable))
                 {
-                    if (!includeThis && obs.Equals(observable))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    try
+                try
+                {
+                    await action(obs).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    if (obs is ILoggerOwner loggerOwner)
                     {
-                        action(obs);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (obs is ILoggerOwner loggerOwner)
-                        {
-                            loggerOwner.Logger.LogError(ex, "Error when performing action for {0}", obs);
-                        }
+                        loggerOwner.Logger.LogError(ex, "Error when performing action for {0}", obs);
                     }
                 }
-            }
-            finally
-            {
-                observable.ObserverLock.ExitReadLock();
             }
         }
         catch (ObjectDisposedException)

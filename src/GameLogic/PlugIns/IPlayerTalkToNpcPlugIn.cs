@@ -23,7 +23,7 @@ public interface IPlayerTalkToNpcPlugIn
     /// <param name="player">The player.</param>
     /// <param name="npc">The NPC.</param>
     /// <param name="eventArgs">The event args.</param>
-    void PlayerTalksToNpc(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs);
+    ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs);
 }
 
 /// <summary>

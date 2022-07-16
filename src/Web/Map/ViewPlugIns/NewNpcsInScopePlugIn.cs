@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.Map.ViewPlugIns;
 
 using Microsoft.JSInterop;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Web.Map.Map;
@@ -15,9 +14,6 @@ using MUnique.OpenMU.Web.Map.Map;
 /// </summary>
 public class NewNpcsInScopePlugIn : JsViewPlugInBase, INewNpcsInScopePlugIn
 {
-    private readonly IDictionary<int, ILocateable> _objects;
-    private readonly Action _objectsChangedCallback;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="NewNpcsInScopePlugIn" /> class.
     /// </summary>
@@ -25,41 +21,33 @@ public class NewNpcsInScopePlugIn : JsViewPlugInBase, INewNpcsInScopePlugIn
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="worldAccessor">The world accessor.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <param name="objects">The objects.</param>
-    /// <param name="objectsChangedCallback">The objects changed callback.</param>
-    public NewNpcsInScopePlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken, IDictionary<int, ILocateable> objects, Action objectsChangedCallback)
+    public NewNpcsInScopePlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken)
         : base(jsRuntime, loggerFactory, $"{worldAccessor}.addOrUpdateNpc", cancellationToken)
     {
-        this._objects = objects;
-        this._objectsChangedCallback = objectsChangedCallback;
     }
 
     /// <inheritdoc />
-    public async void NewNpcsInScope(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true)
+    public async ValueTask NewNpcsInScopeAsync(IEnumerable<NonPlayerCharacter> newObjects, bool isSpawned = true)
     {
         try
         {
             foreach (var npc in newObjects)
             {
-                this._objects.TryAdd(npc.Id, npc);
-
                 if (this.CancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
 
-                await this.InvokeAsync(npc.CreateMapObject());
+                await this.InvokeAsync(npc.CreateMapObject()).ConfigureAwait(false);
             }
-
-            this._objectsChangedCallback?.Invoke();
         }
         catch (TaskCanceledException)
         {
             // don't need to handle that.
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            this.Logger.LogError(e, $"Error in {nameof(this.NewNpcsInScope)}");
+            this.Logger.LogError(ex, $"Error in {nameof(this.NewNpcsInScopeAsync)}");
         }
     }
 }

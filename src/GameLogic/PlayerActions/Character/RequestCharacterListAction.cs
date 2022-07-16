@@ -15,11 +15,11 @@ public class RequestCharacterListAction
     /// Requests the character list and advances the player state to <see cref="PlayerState.CharacterSelection"/>.
     /// </summary>
     /// <param name="player">The player who requests the character list.</param>
-    public void RequestCharacterList(Player player)
+    public async ValueTask RequestCharacterListAsync(Player player)
     {
-        if (player.PlayerState.TryAdvanceTo(PlayerState.CharacterSelection))
+        if (await player.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false))
         {
-            player.ViewPlugIns.GetPlugIn<IShowCharacterListPlugIn>()?.ShowCharacterList();
+            await player.InvokeViewPlugInAsync<IShowCharacterListPlugIn>(p => p.ShowCharacterListAsync()).ConfigureAwait(false);
         }
     }
 }

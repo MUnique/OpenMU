@@ -30,7 +30,7 @@ public class QuestProgressPlugIn : IQuestProgressPlugIn
     }
 
     /// <inheritdoc/>
-    public void ShowQuestProgress(QuestDefinition quest, bool wasProgressionRequested)
+    public async ValueTask ShowQuestProgressAsync(QuestDefinition quest, bool wasProgressionRequested)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -38,17 +38,24 @@ public class QuestProgressPlugIn : IQuestProgressPlugIn
             return;
         }
 
-        using var writer = connection.StartSafeWrite(QuestProgress.HeaderType, QuestProgress.Length);
-        _ = new QuestProgress(writer.Span)
+        int Write()
         {
-            QuestGroup = (ushort)quest.Group,
-        };
+            var size = QuestProgressRef.Length;
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new QuestProgressRef(span)
+            {
+                QuestGroup = (ushort)quest.Group,
+            };
 
-        var questState = this._player.SelectedCharacter?.QuestStates.FirstOrDefault(q => q.Group == quest.Group);
+            var questState = this._player.SelectedCharacter?.QuestStates.FirstOrDefault(q => q.Group == quest.Group);
 
-        // to write the quest state into the message, we can use the same logic as for the QuestState. The messages are equal in their content.
-        QuestState progress = writer.Span;
-        progress.AssignActiveQuestData(questState, this._player);
-        writer.Commit();
+            // to write the quest state into the message, we can use the same logic as for the QuestState. The messages are equal in their content.
+            QuestStateRef progress = span;
+            progress.AssignActiveQuestData(questState, this._player);
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

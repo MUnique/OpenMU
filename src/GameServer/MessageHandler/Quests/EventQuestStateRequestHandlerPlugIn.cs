@@ -25,8 +25,8 @@ public class EventQuestStateRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     public byte Key => EventQuestStateListRequest.SubCode;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        player.ViewPlugIns.GetPlugIn<IQuestEventResponsePlugIn>()?.ShowActiveEventQuests();
+        await player.InvokeViewPlugInAsync<IQuestEventResponsePlugIn>(p => p.ShowActiveEventQuestsAsync()).ConfigureAwait(false);
     }
 }

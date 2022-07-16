@@ -27,9 +27,9 @@ public class ChatRoomInvitationRequestPlugIn : IPacketHandlerPlugIn
     public byte Key => ChatRoomInvitationRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         ChatRoomInvitationRequest message = packet;
-        this._chatRequestAction.InviteFriendToChat(player, message.FriendName, message.RoomId, message.RequestId);
+        await this._chatRequestAction.InviteFriendToChatAsync(player, message.FriendName, message.RoomId, message.RequestId).ConfigureAwait(false);
     }
 }

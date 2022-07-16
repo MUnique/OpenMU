@@ -27,7 +27,7 @@ public class NpcItemBoughtPlugIn : INpcItemBoughtPlugIn
     public NpcItemBoughtPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void NpcItemBought(Item newItem)
+    public async ValueTask NpcItemBoughtAsync(Item newItem)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -36,12 +36,19 @@ public class NpcItemBoughtPlugIn : INpcItemBoughtPlugIn
         }
 
         var itemSerializer = this._player.ItemSerializer;
-        using var writer = connection.StartSafeWrite(ItemBought.HeaderType, ItemBought.GetRequiredSize(itemSerializer.NeededSpace));
-        var message = new ItemBought(writer.Span)
+
+        int Write()
         {
-            InventorySlot = newItem.ItemSlot,
-        };
-        itemSerializer.SerializeItem(message.ItemData, newItem);
-        writer.Commit();
+            var size = ItemBoughtRef.GetRequiredSize(itemSerializer.NeededSpace);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new ItemBoughtRef(span)
+            {
+                InventorySlot = newItem.ItemSlot,
+            };
+            itemSerializer.SerializeItem(packet.ItemData, newItem);
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

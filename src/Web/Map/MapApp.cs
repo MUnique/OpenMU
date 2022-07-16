@@ -77,15 +77,18 @@ public sealed class MapApp : IHostedService, IDisposable
         app.MapFallbackToPage("/_Host");
 
         this._host = app;
-        await this._host!.StartAsync(cancellationToken);
+        await this._host!.StartAsync(cancellationToken).ConfigureAwait(false);
         this._logger.LogInformation($"Map app initialized for game server {this._gameServer.Id} on port {port}.");
     }
 
     /// <inheritdoc />
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         this._logger.LogInformation($"Stopping Map app for game server {this._gameServer.Id}");
-        return this._host?.StopAsync(cancellationToken) ?? Task.CompletedTask;
+        if (this._host is { } host)
+        {
+            await host.StopAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc />

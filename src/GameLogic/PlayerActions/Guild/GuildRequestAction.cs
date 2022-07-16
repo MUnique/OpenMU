@@ -17,17 +17,17 @@ public class GuildRequestAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="guildMasterId">The guild master identifier.</param>
-    public void RequestGuild(Player player, ushort guildMasterId)
+    public async ValueTask RequestGuildAsync(Player player, ushort guildMasterId)
     {
         if (player.Level < 6)
         {
-            player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.MinimumLevel6);
+            await player.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.MinimumLevel6)).ConfigureAwait(false);
             return;
         }
 
         if (player.GuildStatus is not null)
         {
-            player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
+            await player.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.AlreadyHaveGuild)).ConfigureAwait(false);
             return;
         }
 
@@ -35,17 +35,17 @@ public class GuildRequestAction
 
         if (guildMaster?.GuildStatus?.Position != GuildPosition.GuildMaster)
         {
-            player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.NotTheGuildMaster);
+            await player.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.NotTheGuildMaster)).ConfigureAwait(false);
             return; // targeted player not in a guild or not the guild master
         }
 
         if (guildMaster.LastGuildRequester != null || player.PlayerState.CurrentState != PlayerState.EnteredWorld)
         {
-            player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy);
+            await player.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy)).ConfigureAwait(false);
             return;
         }
 
         guildMaster.LastGuildRequester = player;
-        guildMaster.ViewPlugIns.GetPlugIn<IShowGuildJoinRequestPlugIn>()?.ShowGuildJoinRequest(player);
+        await guildMaster.InvokeViewPlugInAsync<IShowGuildJoinRequestPlugIn>(p => p.ShowGuildJoinRequestAsync(player)).ConfigureAwait(false);
     }
 }

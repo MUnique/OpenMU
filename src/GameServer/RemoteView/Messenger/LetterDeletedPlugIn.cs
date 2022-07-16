@@ -25,8 +25,8 @@ public class LetterDeletedPlugIn : ILetterDeletedPlugIn
     public LetterDeletedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void LetterDeleted(ushort letterIndex)
+    public async ValueTask LetterDeletedAsync(ushort letterIndex)
     {
-        this._player.Connection?.SendRemoveLetter(letterIndex);
+        await this._player.Connection.SendRemoveLetterAsync(letterIndex).ConfigureAwait(false);
     }
 }

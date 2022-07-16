@@ -13,5 +13,5 @@ public interface IShowShopsOfPlayersPlugIn : IViewPlugIn
     /// Shows the shops of players.
     /// </summary>
     /// <param name="playersWithShop">The players with shop.</param>
-    void ShowShopsOfPlayers(ICollection<Player> playersWithShop);
+    ValueTask ShowShopsOfPlayersAsync(ICollection<Player> playersWithShop);
 }

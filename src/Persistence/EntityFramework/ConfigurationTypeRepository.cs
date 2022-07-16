@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Collections;
 using System.Collections.Concurrent;
 using System.IO;
 
@@ -43,26 +44,32 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// Gets all objects by using the <see cref="_collectionSelector"/> to the current <see cref="GameConfiguration"/>.
     /// </summary>
     /// <returns>All objects of the repository.</returns>
-    public IEnumerable<T> GetAll()
+    public ValueTask<IEnumerable<T>> GetAllAsync()
     {
-        return this._collectionSelector(this.GetCurrentGameConfiguration());
+        return ValueTask.FromResult<IEnumerable<T>>(this._collectionSelector(this.GetCurrentGameConfiguration()));
+    }
+
+    /// <inheritdoc/>
+    async ValueTask<IEnumerable> IRepository.GetAllAsync()
+    {
+        return await this.GetAllAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public T GetById(Guid id)
+    public ValueTask<T?> GetByIdAsync(Guid id)
     {
         this.EnsureCacheForCurrentConfiguration();
         var dictionary = this._cache[this.GetCurrentGameConfiguration()];
         if (dictionary.TryGetValue(id, out var result))
         {
-            return result;
+            return ValueTask.FromResult<T?>(result);
         }
 
         throw new InvalidDataException($"The object of {typeof(T).Name} with the specified id {id} could not be found in the game configuration");
     }
 
     /// <inheritdoc />
-    public bool Delete(object obj)
+    public async ValueTask<bool> DeleteAsync(object obj)
     {
         if (obj is T item)
         {
@@ -75,15 +82,21 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     }
 
     /// <inheritdoc />
-    public bool Delete(Guid id)
+    public async ValueTask<bool> DeleteAsync(Guid id)
     {
-        return this.Delete(this.GetById(id));
+        var obj = await this.GetByIdAsync(id).ConfigureAwait(false);
+        if (obj is null)
+        {
+            return false;
+        }
+
+        return await this.DeleteAsync(obj).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    object IRepository.GetById(Guid id)
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id)
     {
-        return this.GetById(id);
+        return await this.GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <summary>

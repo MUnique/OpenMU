@@ -46,18 +46,21 @@ public class ExDbClient
         this._loggerFactory = loggerFactory;
         this._chatServerPort = (ushort)chatServerPort;
         this._logger = this._loggerFactory.CreateLogger<ExDbClient>();
-        Task.Run(async () => await this.Connect().ConfigureAwait(false));
+        _ = Task.Run(this.ConnectAsync);
     }
 
     /// <summary>
     /// Disconnects the exDB server.
     /// </summary>
-    public void Disconnect()
+    public async ValueTask DisconnectAsync()
     {
-        this._connection?.Disconnect();
+        if (this._connection is { } connection)
+        {
+            await connection.DisconnectAsync().ConfigureAwait(false);
+        }
     }
 
-    private async Task Connect()
+    private async ValueTask ConnectAsync()
     {
         var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -65,7 +68,7 @@ public class ExDbClient
         {
             try
             {
-                socket.Connect(this._host, this._port);
+                await socket.ConnectAsync(this._host, this._port).ConfigureAwait(false);
             }
             catch
             {
@@ -77,61 +80,67 @@ public class ExDbClient
         this._logger.LogInformation("Connection to ExDB-Server established");
 
         this._connection = new Connection(SocketConnection.Create(socket), null, null, this._loggerFactory.CreateLogger<Connection>());
-        this._connection.PacketReceived += this.ExDbPacketReceived;
-        this._connection.Disconnected += (_, _) => Task.Run(async () => await this.Connect().ConfigureAwait(false));
-        this.SendHello();
-        await this._connection!.BeginReceive();
+        this._connection.PacketReceived += this.ExDbPacketReceivedAsync;
+        this._connection.Disconnected += this.ConnectAsync;
+        await this.SendHelloAsync().ConfigureAwait(false);
+        await this._connection!.BeginReceiveAsync().ConfigureAwait(false);
     }
 
-    private void SendHello()
+    private async ValueTask SendHelloAsync()
     {
         // C1 3A 00 02 AC DA 43 68 61 74 53 65 72 76 65 72 00 ...
-        using (var writer = this._connection!.StartSafeWrite(0xC1, 0x3A))
+        int Write()
         {
-            var packet = writer.Span;
+            var length = 0x3A;
+            var span = this._connection!.Output.GetSpan(length)[..length];
+            var packet = span;
+            packet[0] = 0xC1;
+            packet[1] = 0x3A;
             packet[3] = 0x02;
             packet[4] = this._chatServerPort.GetLowByte();
             packet[5] = this._chatServerPort.GetHighByte();
             packet.Slice(6).WriteString("ChatServer", Encoding.UTF8);
-            writer.Commit();
+            return length;
         }
 
+        await this._connection!.SendAsync(Write).ConfigureAwait(false);
         this._logger.LogInformation("Sent registration packet to ExDB-Server");
     }
 
     /// <summary>
     /// Is called when a packet is received from the exDB-Server.
     /// </summary>
-    /// <param name="sender">The sender.</param>
     /// <param name="sequence">The packet.</param>
-    private void ExDbPacketReceived(object sender, ReadOnlySequence<byte> sequence)
+    private async ValueTask ExDbPacketReceivedAsync(ReadOnlySequence<byte> sequence)
     {
         try
         {
             sequence.CopyTo(this._packetBuffer);
-            var packet = this._packetBuffer.AsSpan(0, (int)sequence.Length);
-            if (packet[0] != 0xC1)
+            var packet = this._packetBuffer.AsMemory(0, (int)sequence.Length);
+            var type = packet.Span[0];
+            if (type != 0xC1)
             {
-                this._logger.LogWarning($"Unknown packet received from ExDB-Server, type: {packet[0]}");
+                this._logger.LogWarning($"Unknown packet received from ExDB-Server, type: {type}");
                 return;
             }
 
-            switch (packet[2])
+            var code = packet.Span[2];
+            switch (code)
             {
                 case 0xA0:
-                    this.ReadChatRoomCreation(packet);
+                    await this.ReadChatRoomCreationAsync(packet).ConfigureAwait(false);
                     break;
                 case 0xA1:
-                    this.ReadChatRoomInvitation(packet);
+                    await this.ReadChatRoomInvitationAsync(packet).ConfigureAwait(false);
                     break;
                 default:
-                    this._logger.LogWarning($"Unknown packet received from ExDB-Server, code: {packet[2]}");
+                    this._logger.LogWarning($"Unknown packet received from ExDB-Server, code: {code}");
                     break;
             }
         }
         catch (Exception exception)
         {
-            this._logger.LogError(exception, $"An error occured while processing an incoming packet from ExDB: {this._packetBuffer.AsString()}");
+            this._logger.LogError(exception, $"An error occurred while processing an incoming packet from ExDB: {this._packetBuffer.AsString()}");
         }
     }
 
@@ -145,16 +154,29 @@ public class ExDbClient
     /// The chat server answers this with the same packets as above(ticket 96862210):
     /// C1 2C A0 01 00 00 61 62 63 64 65 66 67 68 69 6F CC CC CC CC CC CC CC CC CC CC 53 54 55 56 CC CC 02 00 C6 05 CC CC CC CC 57 CC CC CC.
     /// </remarks>
-    private void ReadChatRoomInvitation(Span<byte> packet)
+    private async ValueTask ReadChatRoomInvitationAsync(Memory<byte> packet)
     {
-        var roomId = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
-        var clientName = packet.ExtractString(6, 10, Encoding.UTF8);
-        var clientPlayerId = packet.TryMakeWordBigEndian(16);
-        var clientServerId = packet.TryMakeWordBigEndian(18);
-        var type = packet.Length > 20 ? packet[20] : (byte)0x57;
+        ushort roomId = 0;
+        string clientName = string.Empty;
+        ushort clientPlayerId = 0;
+        ushort clientServerId = 0;
+        byte type = 0;
+
+        void Extract(Span<byte> packet)
+        {
+            roomId = NumberConversionExtensions.MakeWord(packet[4], packet[5]);
+            clientName = packet.ExtractString(6, 10, Encoding.UTF8);
+            clientPlayerId = packet.TryMakeWordBigEndian(16);
+            clientServerId = packet.TryMakeWordBigEndian(18);
+            type = packet.Length > 20 ? packet[20] : (byte)0x57;
+        }
+
+        Extract(packet.Span);
         this._logger.LogDebug($"Received request to invite {clientName} to chat room {roomId}, Client-ID: {clientPlayerId}, Server-ID: {clientServerId}");
-        var authentication = this._chatServer.RegisterClient(roomId, clientName);
-        this.SendAuthentication(authentication, null, clientPlayerId, clientServerId, type);
+        if (await this._chatServer.RegisterClientAsync(roomId, clientName).ConfigureAwait(false) is { } authentication)
+        {
+            await this.SendAuthenticationAsync(authentication, null, clientPlayerId, clientServerId, type).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -170,20 +192,40 @@ public class ExDbClient
     /// C1 2C A0 01 00 00 41 42 43 44 45 46 47 48 49 4A 50 51 52 53 54 55 56 57 58 59 00 00 00 00 CC CC 00 00 11 04 CC CC CC CC 00 CC CC CC
     /// C1 2C A0 01 00 00 50 51 52 53 54 55 56 57 58 59 41 42 43 44 45 46 47 48 49 4A 00 00 00 00 CC CC 01 00 BB 05 CC CC CC CC 01 CC CC CC.
     /// </remarks>
-    private void ReadChatRoomCreation(Span<byte> packet)
+    private async ValueTask ReadChatRoomCreationAsync(Memory<byte> packet)
     {
-        string clientName = packet.ExtractString(3, 10, Encoding.UTF8);
-        string friendName = packet.ExtractString(13, 10, Encoding.UTF8);
-        var clientPlayerId = packet.TryMakeWordBigEndian(24);
-        var clientServerId = packet.TryMakeWordBigEndian(26);
-        var friendPlayerId = packet.TryMakeWordBigEndian(28);
-        var friendServerId = packet.TryMakeWordBigEndian(30);
-        var roomId = this._chatServer.CreateChatRoom();
+        string clientName = string.Empty;
+        string friendName = string.Empty;
+        ushort clientPlayerId = 0;
+        ushort clientServerId = 0;
+        ushort friendPlayerId = 0;
+        ushort friendServerId = 0;
+
+        void Extract(Span<byte> packet)
+        {
+
+            clientName = packet.ExtractString(3, 10, Encoding.UTF8);
+            friendName = packet.ExtractString(13, 10, Encoding.UTF8);
+            clientPlayerId = packet.TryMakeWordBigEndian(24);
+            clientServerId = packet.TryMakeWordBigEndian(26);
+            friendPlayerId = packet.TryMakeWordBigEndian(28);
+            friendServerId = packet.TryMakeWordBigEndian(30);
+        }
+
+        Extract(packet.Span);
+        var roomId = await this._chatServer.CreateChatRoomAsync().ConfigureAwait(false);
         this._logger.LogDebug($"Received request to create chat room for {clientName} and {friendName}; Room-ID: {roomId}; Client-ID: {clientPlayerId}; Server-ID: {clientServerId}; Friend-ID: {friendPlayerId}; Friend-Server: {friendServerId}");
-        var requesterAuthentication = this._chatServer.RegisterClient(roomId, clientName);
-        var friendAuthentication = this._chatServer.RegisterClient(roomId, friendName);
-        this.SendAuthentication(requesterAuthentication, friendAuthentication, clientPlayerId, clientServerId, requesterAuthentication.Index);
-        this.SendAuthentication(friendAuthentication, requesterAuthentication, friendPlayerId, friendServerId, friendAuthentication.Index);
+        var requesterAuthentication = await this._chatServer.RegisterClientAsync(roomId, clientName).ConfigureAwait(false);
+        var friendAuthentication = await this._chatServer.RegisterClientAsync(roomId, friendName).ConfigureAwait(false);
+        if (requesterAuthentication is not null)
+        {
+            await this.SendAuthenticationAsync(requesterAuthentication, friendAuthentication, clientPlayerId, clientServerId, requesterAuthentication.Index).ConfigureAwait(false);
+        }
+
+        if (friendAuthentication is not null)
+        {
+            await this.SendAuthenticationAsync(friendAuthentication, requesterAuthentication, friendPlayerId, friendServerId, friendAuthentication.Index).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -194,7 +236,7 @@ public class ExDbClient
     /// <param name="clientId">The client identifier on the server where the client plays on.</param>
     /// <param name="serverId">The server identifier where the client plays on.</param>
     /// <param name="type">The type. Usually 0 for the player who requested the chat and 1 for the other player.</param>
-    private void SendAuthentication(ChatServerAuthenticationInfo authenticationInfo, ChatServerAuthenticationInfo? friendAuthenticationInfo, ushort clientId, ushort serverId, byte type)
+    private async ValueTask SendAuthenticationAsync(ChatServerAuthenticationInfo authenticationInfo, ChatServerAuthenticationInfo? friendAuthenticationInfo, ushort clientId, ushort serverId, byte type)
     {
         this._logger.LogDebug($"Registered client {authenticationInfo.ClientName} with index {authenticationInfo.Index} and token {authenticationInfo.AuthenticationToken}");
         var token = uint.Parse(authenticationInfo.AuthenticationToken);
@@ -205,23 +247,30 @@ public class ExDbClient
         }
 
         var roomId = authenticationInfo.RoomId;
-        using var writer = this._connection!.StartSafeWrite(0xC1, 0x2C);
-        var packet = writer.Span;
-        packet[2] = 0xA0;
-        packet[3] = 0x01;
-        WriteUInt16LittleEndian(packet.Slice(4), roomId);
-        packet.Slice(6).WriteString(authenticationInfo.ClientName, Encoding.UTF8);
-        if (friendAuthenticationInfo != null)
+
+        int Write()
         {
-            packet.Slice(16).WriteString(friendAuthenticationInfo.ClientName, Encoding.UTF8);
+            var length = 0x2C;
+            var packet = this._connection!.Output.GetSpan(length);
+            packet[0] = 0xC1;
+            packet[1] = 0x2C;
+            packet[2] = 0xA0;
+            packet[3] = 0x01;
+            WriteUInt16LittleEndian(packet.Slice(4), roomId);
+            packet.Slice(6).WriteString(authenticationInfo.ClientName, Encoding.UTF8);
+            if (friendAuthenticationInfo != null)
+            {
+                packet.Slice(16).WriteString(friendAuthenticationInfo.ClientName, Encoding.UTF8);
+            }
+
+            WriteUInt16LittleEndian(packet.Slice(26), clientId);
+            WriteUInt16LittleEndian(packet.Slice(28), serverId);
+            WriteUInt32LittleEndian(packet.Slice(32), token);
+            WriteUInt32LittleEndian(packet.Slice(36), friendToken);
+            packet[40] = type;
+            return length;
         }
 
-        WriteUInt16LittleEndian(packet.Slice(26), clientId);
-        WriteUInt16LittleEndian(packet.Slice(28), serverId);
-        WriteUInt32LittleEndian(packet.Slice(32), token);
-        WriteUInt32LittleEndian(packet.Slice(36), friendToken);
-        packet[40] = type;
-
-        writer.Commit();
+        await this._connection!.SendAsync(Write).ConfigureAwait(false);
     }
 }

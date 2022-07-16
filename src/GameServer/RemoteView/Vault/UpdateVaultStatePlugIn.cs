@@ -25,9 +25,9 @@ public class UpdateVaultStatePlugIn : IUpdateVaultStatePlugIn
     public UpdateVaultStatePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void UpdateState()
+    public async ValueTask UpdateStateAsync()
     {
-        this._player.Connection?.SendVaultProtectionInformation(this.GetVaultState());
+        await this._player.Connection.SendVaultProtectionInformationAsync(this.GetVaultState()).ConfigureAwait(false);
     }
 
     private VaultProtectionInformation.VaultProtectionState GetVaultState()

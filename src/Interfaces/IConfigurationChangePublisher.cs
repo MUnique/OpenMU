@@ -20,7 +20,7 @@ public interface IConfigurationChangePublisher
     /// <param name="type">The type.</param>
     /// <param name="id">The identifier.</param>
     /// <param name="configuration">The changed configuration.</param>
-    void ConfigurationChanged(Type type, Guid id, object configuration);
+    Task ConfigurationChangedAsync(Type type, Guid id, object configuration);
 
     /// <summary>
     /// A configuration has been added.
@@ -28,33 +28,36 @@ public interface IConfigurationChangePublisher
     /// <param name="type">The type.</param>
     /// <param name="id">The identifier.</param>
     /// <param name="configuration">The added configuration.</param>
-    void ConfigurationAdded(Type type, Guid id, object configuration);
+    Task ConfigurationAddedAsync(Type type, Guid id, object configuration);
 
     /// <summary>
     /// A configuration has been removed.
     /// </summary>
     /// <param name="type">The type.</param>
     /// <param name="id">The identifier.</param>
-    void ConfigurationRemoved(Type type, Guid id);
+    Task ConfigurationRemovedAsync(Type type, Guid id);
 
     /// <summary>
     /// A publisher which doesn't publish changes at all.
     /// </summary>
     private class NoneConfigurationChangePublisher : IConfigurationChangePublisher
     {
-        public void ConfigurationChanged(Type type, Guid id, object configuration)
+        /// <inheritdoc />
+        public Task ConfigurationChangedAsync(Type type, Guid id, object configuration)
         {
-            // do nothing.
+            return Task.CompletedTask;
         }
 
-        public void ConfigurationAdded(Type type, Guid id, object configuration)
+        /// <inheritdoc />
+        public Task ConfigurationAddedAsync(Type type, Guid id, object configuration)
         {
-            // do nothing
+            return Task.CompletedTask;
         }
 
-        public void ConfigurationRemoved(Type type, Guid id)
+        /// <inheritdoc />
+        public Task ConfigurationRemovedAsync(Type type, Guid id)
         {
-            // do nothing
+            return Task.CompletedTask;
         }
     }
 }

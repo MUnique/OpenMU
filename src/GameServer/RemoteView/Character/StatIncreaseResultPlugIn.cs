@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
@@ -28,7 +27,7 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
     public StatIncreaseResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void StatIncreaseResult(AttributeDefinition attribute, bool success)
+    public async ValueTask StatIncreaseResultAsync(AttributeDefinition attribute, bool success)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -36,32 +35,15 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
             return;
         }
 
-        using var writer = connection.StartSafeWrite(CharacterStatIncreaseResponse.HeaderType, CharacterStatIncreaseResponse.Length);
-        var packet = new CharacterStatIncreaseResponse(writer.Span)
-        {
-            Success = success,
-            Attribute = attribute.GetStatType(),
-        };
-        if (success)
-        {
-            if (attribute == Stats.BaseEnergy)
-            {
-                packet.UpdatedDependentMaximumStat = (ushort)this._player.Attributes![Stats.MaximumMana];
-            }
-            else if (attribute == Stats.BaseVitality)
-            {
-                packet.UpdatedDependentMaximumStat = (ushort)this._player.Attributes![Stats.MaximumHealth];
-            }
-            else
-            {
-                // no updated value required
-            }
-
-            // since all stats may affect shield and ability, both are included
-            packet.UpdatedMaximumShield = (ushort)this._player.Attributes![Stats.MaximumShield];
-            packet.UpdatedMaximumAbility = (ushort)this._player.Attributes[Stats.MaximumAbility];
-        }
-
-        writer.Commit();
+        await connection.SendCharacterStatIncreaseResponseAsync(
+            success,
+            attribute.GetStatType(),
+            attribute == Stats.BaseEnergy
+                ? (ushort)this._player.Attributes![Stats.MaximumMana]
+                : attribute == Stats.BaseVitality
+                    ? (ushort)this._player.Attributes![Stats.MaximumHealth]
+                    : default,
+            (ushort)this._player.Attributes![Stats.MaximumShield],
+            (ushort)this._player.Attributes[Stats.MaximumAbility]).ConfigureAwait(false);
     }
 }

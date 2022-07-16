@@ -22,7 +22,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     private readonly IEventStateProvider? _eventStateProvider;
     private readonly IDropGenerator _dropGenerator;
     private readonly PlugInManager _plugInManager;
-    private Timer? _respawnTimer;
     private int _health;
 
     /// <summary>
@@ -99,28 +98,30 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                                   || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this._eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
 
     /// <inheritdoc />
-    public void AttackBy(IAttacker attacker, SkillEntry? skill)
+    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill)
     {
         var hitInfo = attacker.CalculateDamage(this, skill);
-        this.Hit(hitInfo, attacker, skill?.Skill);
+        await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
         if (hitInfo.HealthDamage > 0)
         {
             attacker.ApplyAmmunitionConsumption(hitInfo);
-            (attacker as Player)?.AfterHitTarget();
+            if (attacker is Player player)
+            {
+                await player.AfterHitTargetAsync().ConfigureAwait(false);
+            }
         }
     }
 
     /// <inheritdoc />
-    public abstract void ReflectDamage(IAttacker reflector, uint damage);
+    public abstract ValueTask ReflectDamageAsync(IAttacker reflector, uint damage);
 
     /// <inheritdoc />
-    public abstract void ApplyPoisonDamage(IAttacker initialAttacker, uint damage);
+    public abstract ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
 
     /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();
-        this._respawnTimer?.Dispose();
         this.Health = this.SpawnArea.MaximumHealthOverride ?? (int)this.Attributes[Stats.MaximumHealth];
         this.IsAlive = true;
     }
@@ -131,7 +132,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         if (managed)
         {
             this.Died = null;
-            this._respawnTimer?.Dispose();
             this.IsAlive = false;
         }
 
@@ -146,42 +146,13 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         // can be overwritten to do additional stuff.
     }
 
-    private void RemoveFromMapAndDispose()
-    {
-        this.CurrentMap.Remove(this);
-        this.Dispose();
-        this.OnRemoveFromMap();
-    }
-
-    /// <summary>
-    /// Respawns this instance on the map.
-    /// </summary>
-    private void Respawn()
-    {
-        try
-        {
-            if (!this.ShouldRespawn)
-            {
-                this.RemoveFromMapAndDispose();
-                return;
-            }
-
-            this.Initialize();
-            this.CurrentMap.Respawn(this);
-        }
-        catch (Exception ex)
-        {
-            Debug.Fail(ex.Message, ex.StackTrace);
-        }
-    }
-
     /// <summary>
     /// Hits this instance with the specified hit information.
     /// </summary>
     /// <param name="hitInfo">The hit information.</param>
     /// <param name="attacker">The attacker.</param>
     /// <param name="skill">The skill.</param>
-    protected void Hit(HitInfo hitInfo, IAttacker attacker, Skill? skill)
+    protected async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill)
     {
         if (!this.IsAlive)
         {
@@ -193,18 +164,18 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         var player = this.GetHitNotificationTarget(attacker);
         if (player is not null)
         {
-            player.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()?.ShowHit(this, hitInfo);
+            await player.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
             player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
         }
 
         if (killed)
         {
             this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
-            this.OnDeath(attacker);
+            await this.OnDeathAsync(attacker).ConfigureAwait(false);
             this.Died?.Invoke(this, this.LastDeath);
             if (!this.ShouldRespawn)
             {
-                this.RemoveFromMapAndDispose();
+                await this.RemoveFromMapAndDisposeAsync().ConfigureAwait(false);
             }
         }
     }
@@ -226,6 +197,35 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     protected virtual void RegisterHit(IAttacker attacker)
     {
         // can be overwritten
+    }
+
+    private async ValueTask RemoveFromMapAndDisposeAsync()
+    {
+        await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
+        this.Dispose();
+        this.OnRemoveFromMap();
+    }
+
+    /// <summary>
+    /// Respawns this instance on the map.
+    /// </summary>
+    private async ValueTask RespawnAsync()
+    {
+        try
+        {
+            if (!this.ShouldRespawn)
+            {
+                await this.RemoveFromMapAndDisposeAsync().ConfigureAwait(false);
+                return;
+            }
+
+            this.Initialize();
+            await this.CurrentMap.RespawnAsync(this).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Debug.Fail(ex.Message, ex.StackTrace);
+        }
     }
 
     private bool TryHit(uint damage, IAttacker attacker)
@@ -253,7 +253,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
     }
 
-    private void HandleMoneyDrop(uint amount, Player killer)
+    private async ValueTask HandleMoneyDropAsync(uint amount, Player killer)
     {
         // We don't drop money in Devil Square, etc.
         var shouldDropMoney = killer.GameContext.Configuration.ShouldDropMoney && killer.CurrentMiniGame is null;
@@ -266,22 +266,22 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             }
             else
             {
-                party.DistributeMoneyAfterKill(this, killer, amount);
+                await party.DistributeMoneyAfterKillAsync(this, killer, amount).ConfigureAwait(false);
             }
 
             return;
         }
 
         var droppedMoney = new DroppedMoney((uint)(amount * killer.Attributes![Stats.MoneyAmountRate]), this.Position, this.CurrentMap);
-        this.CurrentMap.Add(droppedMoney);
+        await this.CurrentMap.AddAsync(droppedMoney).ConfigureAwait(false);
     }
 
-    private void DropItem(int exp, Player killer)
+    private async ValueTask DropItemAsync(int exp, Player killer)
     {
         var generatedItems = this._dropGenerator.GenerateItemDrops(this.Definition, exp, killer, out var droppedMoney);
         if (droppedMoney > 0)
         {
-            this.HandleMoneyDrop(droppedMoney.Value, killer);
+            await this.HandleMoneyDropAsync(droppedMoney.Value, killer).ConfigureAwait(false);
         }
 
         var firstItem = !droppedMoney.HasValue;
@@ -300,7 +300,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
             var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
             var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, null, owners);
-            this.CurrentMap.Add(droppedItem);
+            await this.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
         }
     }
 
@@ -308,36 +308,27 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// Called when this instance died.
     /// </summary>
     /// <param name="attacker">The attacker which killed this instance.</param>
-    protected virtual void OnDeath(IAttacker attacker)
+    protected virtual async ValueTask OnDeathAsync(IAttacker attacker)
     {
         if (this.ShouldRespawn)
         {
-            this._respawnTimer = new Timer(_ => this.Respawn(), null, (int)this.Definition.RespawnDelay.TotalMilliseconds, System.Threading.Timeout.Infinite);
-        }
-
-        this.ObserverLock.EnterWriteLock();
-        try
-        {
-            foreach (IWorldObserver o in this.Observers)
+            _ = Task.Run(async () =>
             {
-                o.ViewPlugIns.GetPlugIn<IObjectGotKilledPlugIn>()?.ObjectGotKilled(this, attacker);
-            }
+                await Task.Delay(this.Definition.RespawnDelay).ConfigureAwait(false);
+                await this.RespawnAsync().ConfigureAwait(false);
+            });
+        }
 
-            this.Observers.Clear();
-        }
-        finally
-        {
-            this.ObserverLock.ExitWriteLock();
-        }
+        await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, attacker), true).ConfigureAwait(false);
 
         var player = this.GetHitNotificationTarget(attacker);
         if (player is { })
         {
-            int exp = player.Party?.DistributeExperienceAfterKill(this, player) ?? player.AddExpAfterKill(this);
-            this.DropItem(exp, player);
+            int exp = await ((player.Party?.DistributeExperienceAfterKillAsync(this, player) ?? player.AddExpAfterKillAsync(this)).ConfigureAwait(false));
+            await this.DropItemAsync(exp, player).ConfigureAwait(false);
             if (attacker == player)
             {
-                player.AfterKilledMonster();
+                await player.AfterKilledMonsterAsync().ConfigureAwait(false);
             }
 
             player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, attacker);

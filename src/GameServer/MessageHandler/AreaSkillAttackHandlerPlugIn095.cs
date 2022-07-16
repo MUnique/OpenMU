@@ -30,7 +30,7 @@ internal class AreaSkillAttackHandlerPlugIn095 : IPacketHandlerPlugIn
     public byte Key => AreaSkill095.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         AreaSkill095 message = packet;
         var skill = player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()?.GetSkillByIndex(message.SkillIndex);
@@ -39,6 +39,6 @@ internal class AreaSkillAttackHandlerPlugIn095 : IPacketHandlerPlugIn
             return;
         }
 
-        this._attackAction.Attack(player, 0, (ushort)skill.Number, new Point(message.TargetX, message.TargetY), message.Rotation);
+        await this._attackAction.AttackAsync(player, 0, (ushort)skill.Number, new Point(message.TargetX, message.TargetY), message.Rotation).ConfigureAwait(false);
     }
 }

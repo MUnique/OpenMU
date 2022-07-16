@@ -36,7 +36,7 @@ public class RepositoryManager : BaseRepositoryManager
     /// </summary>
     public virtual void RegisterRepositories()
     {
-        this.RegisterRepository(new GameConfigurationRepository(this, this._loggerFactory.CreateLogger<GameConfigurationRepository>(), this._changePublisher));
+        this.RegisterRepository(new GameConfigurationRepository(this, this._loggerFactory, this._changePublisher));
         this.RegisterMissingRepositoriesAsGeneric();
     }
 
@@ -64,7 +64,7 @@ public class RepositoryManager : BaseRepositoryManager
     protected virtual IRepository CreateGenericRepository(Type entityType)
     {
         var repositoryType = typeof(GenericRepository<>).MakeGenericType(entityType);
-        return (IRepository)Activator.CreateInstance(repositoryType, this, this._loggerFactory.CreateLogger(repositoryType), this._changePublisher)!;
+        return (IRepository)Activator.CreateInstance(repositoryType, this, this._loggerFactory, this._changePublisher)!;
     }
 
     /// <summary>

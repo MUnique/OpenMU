@@ -26,7 +26,7 @@ public class UpdateMaximumHealthPlugIn : IUpdateMaximumHealthPlugIn
     public UpdateMaximumHealthPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateMaximumHealth()
+    public async ValueTask UpdateMaximumHealthAsync()
     {
         if (this._player.Attributes is null
             || !(this._player.Connection?.Connected ?? false))
@@ -34,8 +34,8 @@ public class UpdateMaximumHealthPlugIn : IUpdateMaximumHealthPlugIn
             return;
         }
 
-        this._player.Connection?.SendMaximumHealthAndShield(
+        await this._player.Connection.SendMaximumHealthAndShieldAsync(
             (ushort)this._player.Attributes[Stats.MaximumHealth],
-            (ushort)this._player.Attributes[Stats.MaximumShield]);
+            (ushort)this._player.Attributes[Stats.MaximumShield]).ConfigureAwait(false);
     }
 }

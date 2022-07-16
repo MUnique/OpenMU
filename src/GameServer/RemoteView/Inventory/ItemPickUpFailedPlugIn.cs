@@ -25,8 +25,8 @@ public class ItemPickUpFailedPlugIn : IItemPickUpFailedPlugIn
     public ItemPickUpFailedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ItemPickUpFailed(ItemPickFailReason reason)
+    public async ValueTask ItemPickUpFailedAsync(ItemPickFailReason reason)
     {
-        this._player.Connection?.SendItemPickUpRequestFailed(reason.Convert());
+        await this._player.Connection.SendItemPickUpRequestFailedAsync(reason.Convert()).ConfigureAwait(false);
     }
 }

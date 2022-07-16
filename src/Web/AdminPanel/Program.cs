@@ -27,7 +27,7 @@ public class Program
             {
                 serviceCollection.AddSingleton<IList<IManageableServer>>(new List<IManageableServer>());
                 serviceCollection.AddSingleton<IPersistenceContextProvider>(new NullPersistenceContextProvider());
-                serviceCollection.AddSingleton<IConfigurationChangePublisher>(new NullConfigurationChangePublisher());
+                serviceCollection.AddSingleton<IConfigurationChangePublisher>(IConfigurationChangePublisher.None);
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
@@ -36,24 +36,6 @@ public class Program
             })
             .Build();
         host.Run();
-    }
-
-    private class NullConfigurationChangePublisher : IConfigurationChangePublisher
-    {
-        public void ConfigurationChanged(Type type, Guid id, object configuration)
-        {
-            // we do nothing
-        }
-
-        public void ConfigurationAdded(Type type, Guid id, object configuration)
-        {
-            // we do nothing
-        }
-
-        public void ConfigurationRemoved(Type type, Guid id)
-        {
-            // we do nothing
-        }
     }
 
     private class NullPersistenceContextProvider : IPersistenceContextProvider

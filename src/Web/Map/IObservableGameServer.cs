@@ -27,14 +27,14 @@ public interface IObservableGameServer : INotifyPropertyChanged
     /// </summary>
     /// <param name="mapId">The id of the map.</param>
     /// <param name="worldObserver">The world observer.</param>
-    void RegisterMapObserver(Guid mapId, ILocateable worldObserver);
+    ValueTask RegisterMapObserverAsync(Guid mapId, ILocateable worldObserver);
 
     /// <summary>
     /// Unregisters the map observer.
     /// </summary>
     /// <param name="mapId">The map identifier.</param>
     /// <param name="worldObserverId">The world observer identifier.</param>
-    void UnregisterMapObserver(Guid mapId, ushort worldObserverId);
+    ValueTask UnregisterMapObserverAsync(Guid mapId, ushort worldObserverId);
 }
 
 /// <summary>

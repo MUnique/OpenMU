@@ -21,5 +21,5 @@ public interface IQuestCompletionResponsePlugIn : IViewPlugIn
     /// <remarks>
     /// The success/state of the quest can be determined by inspecting the player object.
     /// </remarks>
-    void QuestCompleted(QuestDefinition quest);
+    ValueTask QuestCompletedAsync(QuestDefinition quest);
 }

@@ -27,9 +27,9 @@ internal class TradeAcceptHandlerPlugIn : IPacketHandlerPlugIn
 
     /// <inheritdoc/>
     /// <summary>The packet looks like: 0xC1, 0x04, 0x37, 0x01.</summary>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         TradeRequestResponse message = packet;
-        this._acceptAction.HandleTradeAccept(player, message.TradeAccepted);
+        await this._acceptAction.HandleTradeAcceptAsync(player, message.TradeAccepted).ConfigureAwait(false);
     }
 }

@@ -13,5 +13,5 @@ public interface IPartyMemberRemovedPlugIn : IViewPlugIn
     /// Delete Member from Party.
     /// </summary>
     /// <param name="index">index of the player.</param>
-    void PartyMemberRemoved(byte index);
+    ValueTask PartyMemberRemovedAsync(byte index);
 }

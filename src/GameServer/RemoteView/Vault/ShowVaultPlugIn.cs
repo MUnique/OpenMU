@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Vault;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.GameLogic.Views.Vault;
 using MUnique.OpenMU.PlugIns;
@@ -26,16 +27,16 @@ public class ShowVaultPlugIn : IShowVaultPlugIn
     public ShowVaultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowVault()
+    public async ValueTask ShowVaultAsync()
     {
         if (this._player.Vault is null)
         {
             return;
         }
 
-        this._player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()?.OpenNpcWindow(NpcWindow.VaultStorage);
-        this._player.ViewPlugIns.GetPlugIn<IShowMerchantStoreItemListPlugIn>()?.ShowMerchantStoreItemList(this._player.Vault.ItemStorage.Items, StoreKind.Normal);
-        this._player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()?.UpdateVaultMoney(true);
-        this._player.ViewPlugIns.GetPlugIn<IUpdateVaultStatePlugIn>()?.UpdateState();
+        await this._player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(NpcWindow.VaultStorage)).ConfigureAwait(false);
+        await this._player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(p => p.ShowMerchantStoreItemListAsync(this._player.Vault.ItemStorage.Items, StoreKind.Normal)).ConfigureAwait(false);
+        await this._player.InvokeViewPlugInAsync<IUpdateVaultMoneyPlugIn>(p => p.UpdateVaultMoneyAsync(true)).ConfigureAwait(false);
+        await this._player.InvokeViewPlugInAsync<IUpdateVaultStatePlugIn>(p => p.UpdateStateAsync()).ConfigureAwait(false);
     }
 }

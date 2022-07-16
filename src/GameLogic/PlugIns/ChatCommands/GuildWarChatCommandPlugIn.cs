@@ -28,8 +28,8 @@ public class GuildWarChatCommandPlugIn : ChatCommandPlugInBase<GuildWarChatComma
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player guildMaster, GuildWarChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player guildMaster, GuildWarChatCommandArgs arguments)
     {
-        this._action.RequestWar(guildMaster, arguments.GuildName);
+        await this._action.RequestWarAsync(guildMaster, arguments.GuildName).ConfigureAwait(false);
     }
 }

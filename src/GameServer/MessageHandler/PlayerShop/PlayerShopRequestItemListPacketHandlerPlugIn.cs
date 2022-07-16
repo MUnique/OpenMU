@@ -29,21 +29,21 @@ internal class PlayerShopRequestItemListPacketHandlerPlugIn : ISubPacketHandlerP
     public byte Key => PlayerShopItemListRequest.SubCode;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PlayerShopItemListRequest message = packet;
         if (player.CurrentMap?.GetObject(message.PlayerId) is not Player requestedPlayer)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Open Store: Player not found.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Open Store: Player not found.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
         if (message.PlayerName != requestedPlayer.SelectedCharacter?.Name)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player Names don't match." + message.PlayerName + "<>" + requestedPlayer.SelectedCharacter?.Name, MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Player Names don't match." + message.PlayerName + "<>" + requestedPlayer.SelectedCharacter?.Name, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
-        this._requestListAction.RequestStoreItemList(player, requestedPlayer);
+        await this._requestListAction.RequestStoreItemListAsync(player, requestedPlayer).ConfigureAwait(false);
     }
 }

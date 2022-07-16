@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.ServerClients;
 
 using System.ComponentModel;
-using MUnique.OpenMU.Interfaces;
 using Dapr.Client;
 using Nito.AsyncEx.Synchronous;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Implementation of an <see cref="IGameServer"/> which accesses another game server remotely over Dapr.
@@ -16,7 +16,6 @@ public class GameServer : IGameServer
 {
     private readonly DaprClient _client;
     private readonly string _targetAppId;
-    private Guid? _configurationId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServer"/> class.
@@ -32,6 +31,13 @@ public class GameServer : IGameServer
         this._client = daprClient;
         this._targetAppId = $"gameServer{serverId}";
         this.Description = $"Game Server {serverId}";
+
+        async Task InitAsync()
+        {
+            this.ConfigurationId = await this._client.InvokeMethodAsync<Guid>(this._targetAppId, $"get{nameof(this.ConfigurationId)}").ConfigureAwait(false);
+        }
+
+        _ = InitAsync();
     }
 
     /// <inheritdoc />
@@ -41,7 +47,7 @@ public class GameServer : IGameServer
     public int Id { get; }
 
     /// <inheritdoc />
-    public Guid ConfigurationId => this._configurationId ??= this._client.InvokeMethodAsync<Guid>(this._targetAppId, $"get{nameof(this.ConfigurationId)}").Result;
+    public Guid ConfigurationId { get; private set; }
 
     /// <inheritdoc />
     public string Description { get; }
@@ -50,7 +56,7 @@ public class GameServer : IGameServer
     public ServerType Type => ServerType.GameServer;
 
     /// <inheritdoc />
-    public ServerState ServerState => this._client.InvokeMethodAsync<ServerState>(this._targetAppId, nameof(this.ServerState)).Result;
+    public ServerState ServerState => this._client.InvokeMethodAsync<ServerState>(this._targetAppId, nameof(this.ServerState)).WaitAndUnwrapException();
 
     /// <inheritdoc />
     public int MaximumConnections { get; } // TODO
@@ -59,107 +65,105 @@ public class GameServer : IGameServer
     public int CurrentConnections { get; } // TODO
 
     /// <inheritdoc />
-    public void Start()
+    public async ValueTask StartAsync()
     {
-        Task.Run(() => this.StartAsync(default)).WaitAndUnwrapException();
-    }
-
-    /// <inheritdoc />
-    public void Shutdown()
-    {
-        Task.Run(() => this.StopAsync(default)).WaitAndUnwrapException();
+        await this.StartAsync(default).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return this._client.InvokeMethodAsync(this._targetAppId, nameof(this.Start), cancellationToken);
+        return this._client.InvokeMethodAsync(this._targetAppId, nameof(this.StartAsync), cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ShutdownAsync()
+    {
+        await this.StopAsync(default).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return this._client.InvokeMethodAsync(this._targetAppId, nameof(this.Shutdown), cancellationToken);
+        return this._client.InvokeMethodAsync(this._targetAppId, nameof(this.ShutdownAsync), cancellationToken);
     }
 
     /// <inheritdoc />
-    public void GuildChatMessage(uint guildId, string sender, string message)
+    public async ValueTask GuildChatMessageAsync(uint guildId, string sender, string message)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.GuildChatMessage), new GuildMessageArguments(guildId, sender, message));
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.GuildChatMessageAsync), new GuildMessageArguments(guildId, sender, message)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void AllianceChatMessage(uint guildId, string sender, string message)
+    public async ValueTask AllianceChatMessageAsync(uint guildId, string sender, string message)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.AllianceChatMessage), new GuildMessageArguments(guildId, sender, message));
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.AllianceChatMessageAsync), new GuildMessageArguments(guildId, sender, message)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void GuildDeleted(uint guildId)
+    public async ValueTask GuildDeletedAsync(uint guildId)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.GuildDeleted), guildId);
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.GuildDeletedAsync), guildId).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void GuildPlayerKicked(string playerName)
+    public async ValueTask GuildPlayerKickedAsync(string playerName)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.GuildPlayerKicked), playerName);
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.GuildPlayerKickedAsync), playerName).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void AssignGuildToPlayer(string characterName, GuildMemberStatus guildStatus)
+    public async ValueTask AssignGuildToPlayerAsync(string characterName, GuildMemberStatus guildStatus)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.AssignGuildToPlayer), new GuildMemberAssignArguments(characterName, guildStatus));
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.AssignGuildToPlayerAsync), new GuildMemberAssignArguments(characterName, guildStatus)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void LetterReceived(LetterHeader letter)
+    public async ValueTask LetterReceivedAsync(LetterHeader letter)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.LetterReceived), letter);
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.LetterReceivedAsync), letter).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void InitializeMessenger(MessengerInitializationData initializationData)
+    public async ValueTask InitializeMessengerAsync(MessengerInitializationData initializationData)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.InitializeMessenger), initializationData);
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.InitializeMessengerAsync), initializationData).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void SendGlobalMessage(string message, MessageType messageType)
+    public async ValueTask SendGlobalMessageAsync(string message, MessageType messageType)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.SendGlobalMessage), new MessageArguments(message, messageType));
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.SendGlobalMessageAsync), new MessageArguments(message, messageType)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void FriendRequest(string requester, string receiver)
+    public async ValueTask FriendRequestAsync(string requester, string receiver)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.FriendRequest), new RequestArguments(requester, receiver));
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.FriendRequestAsync), new RequestArguments(requester, receiver)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void FriendOnlineStateChanged(string player, string friend, int serverId)
+    public async ValueTask FriendOnlineStateChangedAsync(string player, string friend, int serverId)
     {
         // TODO: Use PubSub!
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.FriendOnlineStateChanged), new FriendOnlineStateChangedArguments(player, friend, serverId));
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, serverId)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void ChatRoomCreated(ChatServerAuthenticationInfo playerAuthenticationInfo, string friendName)
+    public async ValueTask ChatRoomCreatedAsync(ChatServerAuthenticationInfo playerAuthenticationInfo, string friendName)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.LetterReceived), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName));
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.ChatRoomCreatedAsync), new ChatRoomCreationArguments(playerAuthenticationInfo, friendName)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public bool DisconnectPlayer(string playerName)
+    public async ValueTask<bool> DisconnectPlayerAsync(string playerName)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.DisconnectPlayer), playerName);
-        return true;
+        return await this._client.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.DisconnectPlayerAsync), playerName).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public bool BanPlayer(string playerName)
+    public async ValueTask<bool> BanPlayerAsync(string playerName)
     {
-        this._client.InvokeMethodAsync(this._targetAppId, nameof(this.BanPlayer), playerName);
-        return true;
+        return await this._client.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.BanPlayerAsync), playerName).ConfigureAwait(false);
     }
 }

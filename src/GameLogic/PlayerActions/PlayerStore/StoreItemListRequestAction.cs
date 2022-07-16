@@ -18,14 +18,14 @@ public class StoreItemListRequestAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="requestedPlayer">The requested player.</param>
-    public void RequestStoreItemList(Player player, Player requestedPlayer)
+    public async ValueTask RequestStoreItemListAsync(Player player, Player requestedPlayer)
     {
         if (!(requestedPlayer.ShopStorage?.StoreOpen ?? false))
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("Player's Store not open.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Player's Store not open.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
-        player.ViewPlugIns.GetPlugIn<IShowShopItemListPlugIn>()?.ShowShopItemList(requestedPlayer, false);
+        await player.InvokeViewPlugInAsync<IShowShopItemListPlugIn>(p => p.ShowShopItemListAsync(requestedPlayer, false)).ConfigureAwait(false);
     }
 }

@@ -20,9 +20,9 @@ public class InvalidPacketHeaderExceptionTest
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task Thrown()
+    public async Task ThrownAsync()
     {
-        await this.TestException(e => { });
+        await this.TestExceptionAsync(e => { }).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -30,9 +30,9 @@ public class InvalidPacketHeaderExceptionTest
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task TestHeader()
+    public async Task TestHeaderAsync()
     {
-        await this.TestException(e => Assert.That(e.Header, Is.EquivalentTo(new byte[] { 0x00, 0x00, 0x00 })));
+        await this.TestExceptionAsync(e => Assert.That(e.Header, Is.EquivalentTo(new byte[] { 0x00, 0x00, 0x00 }))).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -40,9 +40,9 @@ public class InvalidPacketHeaderExceptionTest
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task TestPosition()
+    public async Task TestPositionAsync()
     {
-        await this.TestException(e => Assert.That(e.Position, Is.EqualTo(3)));
+        await this.TestExceptionAsync(e => Assert.That(e.Position, Is.EqualTo(3))).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -50,17 +50,17 @@ public class InvalidPacketHeaderExceptionTest
     /// </summary>
     /// <returns>The async task.</returns>
     [Test]
-    public async Task TestBufferContent()
+    public async Task TestBufferContentAsync()
     {
-        await this.TestException(e => Assert.That(e.BufferContent, Is.EquivalentTo(this._malformedData)));
+        await this.TestExceptionAsync(e => Assert.That(e.BufferContent, Is.EquivalentTo(this._malformedData))).ConfigureAwait(false);
     }
 
-    private async ValueTask TestException(Action<InvalidPacketHeaderException> check)
+    private async ValueTask TestExceptionAsync(Action<InvalidPacketHeaderException> check)
     {
         bool thrown = false;
         var duplexPipe = new DuplexPipe(new PipeOptions(pauseWriterThreshold: 1, resumeWriterThreshold: 1));
         using var connection = new Connection(duplexPipe, null, new Xor.PipelinedXor32Encryptor(duplexPipe.Output), new NullLogger<Connection>());
-        _ = connection.BeginReceive();
+        _ = connection.BeginReceiveAsync();
 
         try
         {

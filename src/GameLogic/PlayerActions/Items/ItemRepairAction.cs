@@ -18,7 +18,7 @@ public class ItemRepairAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="slot">The inventory slot.</param>
-    public void RepairItem(Player player, byte slot)
+    public async ValueTask RepairItemAsync(Player player, byte slot)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (slot == InventoryConstants.PetSlot && player.OpenedNpc is null)
@@ -30,7 +30,7 @@ public class ItemRepairAction
         var item = player.Inventory?.GetItem(slot);
         if (item is null)
         {
-            player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage("No Item there to repair.", MessageType.BlueNormal);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No Item there to repair.", MessageType.BlueNormal)).ConfigureAwait(false);
             player.Logger.LogWarning("RepairItem: Player {0}, Itemslot {1} not filled", player.SelectedCharacter?.Name, slot);
             return;
         }
@@ -43,7 +43,7 @@ public class ItemRepairAction
         if (IsMoneySufficient(player, item))
         {
             item.Durability = item.GetMaximumDurabilityOfOnePiece();
-            player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(item, false);
+            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
         }
     }
 
@@ -55,7 +55,7 @@ public class ItemRepairAction
     /// The client calculates a sum based on all items in the inventory, even these which are not equipped.
     /// However, it should really just repair the equipped ones.
     /// </remarks>
-    public void RepairAllItems(Player player)
+    public async ValueTask RepairAllItemsAsync(Player player)
     {
         if (player.OpenedNpc is null)
         {
@@ -78,7 +78,7 @@ public class ItemRepairAction
                 continue;
             }
 
-            if (item.Durability == item.GetMaximumDurabilityOfOnePiece())
+            if ((int)item.Durability == item.GetMaximumDurabilityOfOnePiece())
             {
                 continue;
             }
@@ -86,7 +86,7 @@ public class ItemRepairAction
             if (IsMoneySufficient(player, item))
             {
                 item.Durability = item.GetMaximumDurabilityOfOnePiece();
-                player.ViewPlugIns.GetPlugIn<IItemDurabilityChangedPlugIn>()?.ItemDurabilityChanged(item, false);
+                await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
             }
         }
     }

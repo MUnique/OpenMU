@@ -35,16 +35,16 @@ public class CachingRepositoryManager : RepositoryManager
     /// </summary>
     public override void RegisterRepositories()
     {
-        this.RegisterRepository(new AccountRepository(this, this._loggerFactory.CreateLogger<AccountRepository>()));
-        this.RegisterRepository(new LetterBodyRepository(this, this._loggerFactory.CreateLogger<LetterBodyRepository>()));
-        this.RegisterRepository(new CachedRepository<GameConfiguration>(new CachingGameConfigurationRepository(this, this._loggerFactory.CreateLogger<CachingGameConfigurationRepository>())));
-        this.RegisterRepository(new CachingGenericRepository<GameServerConfiguration>(this, this._loggerFactory.CreateLogger<CachingGenericRepository<GameServerConfiguration>>()));
-        this.RegisterRepository(new CachingGenericRepository<GameClientDefinition>(this, this._loggerFactory.CreateLogger<CachingGenericRepository<GameClientDefinition>>()));
-        this.RegisterRepository(new CachingGenericRepository<ConnectServerDefinition>(this, this._loggerFactory.CreateLogger<CachingGenericRepository<ConnectServerDefinition>>()));
-        this.RegisterRepository(new CachingGenericRepository<ChatServerDefinition>(this, this._loggerFactory.CreateLogger<CachingGenericRepository<ChatServerDefinition>>()));
-        this.RegisterRepository(new CachingGenericRepository<ChatServerEndpoint>(this, this._loggerFactory.CreateLogger<CachingGenericRepository<ChatServerEndpoint>>()));
-        this.RegisterRepository(new CachingGenericRepository<GameServerEndpoint>(this, this._loggerFactory.CreateLogger<CachingGenericRepository<GameServerEndpoint>>()));
-        this.RegisterRepository(new GameServerDefinitionRepository(this, this._loggerFactory.CreateLogger<GameServerDefinitionRepository>()));
+        this.RegisterRepository(new AccountRepository(this, this._loggerFactory));
+        this.RegisterRepository(new LetterBodyRepository(this, this._loggerFactory));
+        this.RegisterRepository(new CachedRepository<GameConfiguration>(new CachingGameConfigurationRepository(this, this._loggerFactory)));
+        this.RegisterRepository(new CachingGenericRepository<GameServerConfiguration>(this, this._loggerFactory));
+        this.RegisterRepository(new CachingGenericRepository<GameClientDefinition>(this, this._loggerFactory));
+        this.RegisterRepository(new CachingGenericRepository<ConnectServerDefinition>(this, this._loggerFactory));
+        this.RegisterRepository(new CachingGenericRepository<ChatServerDefinition>(this, this._loggerFactory));
+        this.RegisterRepository(new CachingGenericRepository<ChatServerEndpoint>(this, this._loggerFactory));
+        this.RegisterRepository(new CachingGenericRepository<GameServerEndpoint>(this, this._loggerFactory));
+        this.RegisterRepository(new GameServerDefinitionRepository(this, this._loggerFactory));
 
         this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(this, config => config.RawItemOptions));
         this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(
@@ -84,6 +84,6 @@ public class CachingRepositoryManager : RepositoryManager
     protected override IRepository CreateGenericRepository(Type entityType)
     {
         var repositoryType = typeof(CachingGenericRepository<>).MakeGenericType(entityType);
-        return (IRepository)Activator.CreateInstance(repositoryType, this, this._loggerFactory.CreateLogger(repositoryType))!;
+        return (IRepository)Activator.CreateInstance(repositoryType, this, this._loggerFactory)!;
     }
 }

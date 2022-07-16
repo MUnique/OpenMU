@@ -81,25 +81,25 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     /// </summary>
     /// <param name="numberOfGameServers">The number of game servers.</param>
     /// <param name="createTestAccounts">If set to <c>true</c>, test accounts should be created.</param>
-    public void CreateInitialData(byte numberOfGameServers, bool createTestAccounts)
+    public async Task CreateInitialDataAsync(byte numberOfGameServers, bool createTestAccounts)
     {
         BaseMapInitializer.ClearDefaultDropItemGroups();
         using (var temporaryContext = this._persistenceContextProvider.CreateNewContext())
         {
             this.GameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
-            temporaryContext.SaveChanges();
+            await temporaryContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         using var contextWithConfiguration = this._persistenceContextProvider.CreateNewContext(this.GameConfiguration);
         this.Context = contextWithConfiguration;
         this.CreateGameClientDefinition();
-        this.CreateChatServerDefinition();
+        await this.CreateChatServerDefinitionAsync().ConfigureAwait(false);
         this.GameConfigurationInitializer.Initialize();
 
         var gameServerConfiguration = this.CreateGameServerConfiguration(this.GameConfiguration.Maps);
-        this.CreateGameServerDefinitions(gameServerConfiguration, numberOfGameServers);
-        this.CreateConnectServerDefinition();
-        this.Context.SaveChanges();
+        await this.CreateGameServerDefinitionsAsync(gameServerConfiguration, numberOfGameServers).ConfigureAwait(false);
+        await this.CreateConnectServerDefinitionAsync().ConfigureAwait(false);
+        await this.Context.SaveChangesAsync().ConfigureAwait(false);
 
         this.GameMapsInitializer.SetSafezoneMaps();
 
@@ -140,7 +140,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             }
         });
 
-        this.Context.SaveChanges();
+        await this.Context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -148,9 +148,9 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     /// </summary>
     protected abstract void CreateGameClientDefinition();
 
-    private void CreateConnectServerDefinition()
+    private async ValueTask CreateConnectServerDefinitionAsync()
     {
-        var client = this.Context!.Get<GameClientDefinition>().First();
+        var client = (await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false)).First();
         var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
         connectServer.Client = client;
         connectServer.ClientListenerPort = 44405;
@@ -169,7 +169,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         connectServer.MaxServerListRequests = 20;
     }
 
-    private void CreateGameServerDefinitions(GameServerConfiguration gameServerConfiguration, int numberOfServers)
+    private async ValueTask CreateGameServerDefinitionsAsync(GameServerConfiguration gameServerConfiguration, int numberOfServers)
     {
         for (int i = 0; i < numberOfServers; i++)
         {
@@ -180,7 +180,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             server.GameConfiguration = this.GameConfiguration;
             server.ServerConfiguration = gameServerConfiguration;
 
-            foreach (var client in this.Context.Get<GameClientDefinition>().ToList())
+            foreach (var client in await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false))
             {
                 var endPoint = this.Context.CreateNew<GameServerEndpoint>();
                 endPoint.Client = client;
@@ -190,13 +190,13 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         }
     }
 
-    private void CreateChatServerDefinition()
+    private async ValueTask CreateChatServerDefinitionAsync()
     {
         var server = this.Context!.CreateNew<ChatServerDefinition>();
         server.ServerId = 0;
         server.Description = "Chat Server";
 
-        var client = this.Context!.Get<GameClientDefinition>().First();
+        var client = (await this.Context!.GetAsync<GameClientDefinition>().ConfigureAwait(false)).First();
         var endPoint = this.Context.CreateNew<ChatServerEndpoint>();
         endPoint.Client = client;
         endPoint.NetworkPort = 55980;
@@ -205,7 +205,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
 
     private GameServerConfiguration CreateGameServerConfiguration(ICollection<GameMapDefinition> maps)
     {
-        var gameServerConfiguration = this.Context!.CreateNew<GameServerConfiguration>();
+        var gameServerConfiguration = this.Context.CreateNew<GameServerConfiguration>();
         gameServerConfiguration.MaximumPlayers = 1000;
 
         // by default we add every map to a server configuration

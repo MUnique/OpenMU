@@ -17,7 +17,7 @@ public class GuildRequestAnswerAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="accept">If set to <c>true</c>, the membership has been accepted. Otherwise, not.</param>
-    public void AnswerRequest(Player player, bool accept)
+    public async ValueTask AnswerRequestAsync(Player player, bool accept)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var guildServer = (player.GameContext as IGameServerContext)?.GuildServer;
@@ -34,29 +34,29 @@ public class GuildRequestAnswerAction
 
         if (lastGuildRequester.GuildStatus is not null)
         {
-            lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.AlreadyHaveGuild);
+            await lastGuildRequester.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.AlreadyHaveGuild)).ConfigureAwait(false);
             return;
         }
 
         if (player.GuildStatus?.Position != GuildPosition.GuildMaster)
         {
             player.Logger.LogWarning("Suspicious request for player with name: {0} (player is not a guild master), could be hack attempt.", player.Name);
-            lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.NotTheGuildMaster);
+            await lastGuildRequester.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.NotTheGuildMaster)).ConfigureAwait(false);
             return;
         }
 
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
             || lastGuildRequester.PlayerState.CurrentState != PlayerState.EnteredWorld)
         {
-            lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy);
+            await lastGuildRequester.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.GuildMasterOrRequesterIsBusy)).ConfigureAwait(false);
         }
 
         if (accept)
         {
-            guildServer.CreateGuildMember(player.GuildStatus.GuildId, lastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id);
+            await guildServer.CreateGuildMemberAsync(player.GuildStatus.GuildId, lastGuildRequester.SelectedCharacter.Id, lastGuildRequester.SelectedCharacter.Name, GuildPosition.NormalMember, ((IGameServerContext)player.GameContext).Id).ConfigureAwait(false);
         }
 
-        lastGuildRequester.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()?.ShowGuildJoinResponse(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused);
+        await lastGuildRequester.InvokeViewPlugInAsync<IGuildJoinResponsePlugIn>(p => p.ShowGuildJoinResponseAsync(accept ? GuildRequestAnswerResult.Accepted : GuildRequestAnswerResult.Refused)).ConfigureAwait(false);
         player.LastGuildRequester = null;
     }
 }

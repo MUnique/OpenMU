@@ -17,15 +17,15 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 public class TownPortalScrollConsumeHandler : BaseConsumeHandler
 {
     /// <inheritdoc />
-    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (base.ConsumeItem(player, item, targetItem, fruitUsage))
+        if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
             var targetMapDef = player.CurrentMap!.Definition.SafezoneMap ?? player.SelectedCharacter!.CharacterClass!.HomeMap;
             if (targetMapDef is { }
-                && player.GameContext.GetMap((ushort)targetMapDef.Number) is { SafeZoneSpawnGate: { } spawnGate })
+                && await player.GameContext.GetMapAsync((ushort)targetMapDef.Number).ConfigureAwait(false) is { SafeZoneSpawnGate: { } spawnGate })
             {
-                player.WarpTo(spawnGate);
+                await player.WarpToAsync(spawnGate).ConfigureAwait(false);
                 return true;
             }
         }

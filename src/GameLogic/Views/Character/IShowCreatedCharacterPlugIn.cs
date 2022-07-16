@@ -13,5 +13,5 @@ public interface IShowCreatedCharacterPlugIn : IViewPlugIn
     /// Shows the created character.
     /// </summary>
     /// <param name="character">The character.</param>
-    void ShowCreatedCharacter(DataModel.Entities.Character character);
+    ValueTask ShowCreatedCharacterAsync(DataModel.Entities.Character character);
 }

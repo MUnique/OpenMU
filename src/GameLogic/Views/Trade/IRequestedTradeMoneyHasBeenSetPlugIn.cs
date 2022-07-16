@@ -13,5 +13,5 @@ public interface IRequestedTradeMoneyHasBeenSetPlugIn : IViewPlugIn
     /// Notifies the client that the money amount which has been previously requested to be set,
     /// has been successfully placed into the trade.
     /// </summary>
-    void RequestedTradeMoneyHasBeenSet();
+    ValueTask RequestedTradeMoneyHasBeenSetAsync();
 }

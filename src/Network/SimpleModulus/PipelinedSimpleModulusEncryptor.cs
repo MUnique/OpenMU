@@ -60,20 +60,20 @@ public class PipelinedSimpleModulusEncryptor : PipelinedSimpleModulusBase, IPipe
         this._encryptionKeys = encryptionKeys;
         this.Source = this.Pipe.Reader;
         this._inputBuffer = new byte[this.DecryptedBlockSize];
-        this.ReadSource().ConfigureAwait(false);
+        _ = this.ReadSourceAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public PipeWriter Writer => this.Pipe.Writer;
 
     /// <inheritdoc />
-    protected override void OnComplete(Exception? exception)
+    protected override ValueTask OnCompleteAsync(Exception? exception)
     {
-        this._target.Complete(exception);
+        return this._target.CompleteAsync(exception);
     }
 
     /// <inheritdoc />
-    protected override async Task ReadPacket(ReadOnlySequence<byte> packet)
+    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         packet.Slice(0, this.HeaderBuffer.Length).CopyTo(this.HeaderBuffer);
 
@@ -86,7 +86,7 @@ public class PipelinedSimpleModulusEncryptor : PipelinedSimpleModulusBase, IPipe
         }
 
         this.EncryptAndWrite(packet);
-        await this._target.FlushAsync();
+        await this._target.FlushAsync().ConfigureAwait(false);
     }
 
     /// <summary>

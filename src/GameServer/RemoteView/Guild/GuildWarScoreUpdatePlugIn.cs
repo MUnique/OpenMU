@@ -25,11 +25,11 @@ public class GuildWarScoreUpdatePlugIn : IGuildWarScoreUpdatePlugIn
     public GuildWarScoreUpdatePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void UpdateScore()
+    public async ValueTask UpdateScoreAsync()
     {
         if (this._player.GuildWarContext is { } guildWarContext)
         {
-            this._player.Connection?.SendGuildWarScoreUpdate(guildWarContext.ThisScore, guildWarContext.EnemyScore);
+            await this._player.Connection.SendGuildWarScoreUpdateAsync(guildWarContext.ThisScore, guildWarContext.EnemyScore).ConfigureAwait(false);
         }
     }
 }

@@ -30,14 +30,14 @@ public class QuestCancelledPlugIn : IQuestCancelledPlugIn
     }
 
     /// <inheritdoc/>
-    public void QuestCancelled(QuestDefinition quest)
+    public async ValueTask QuestCancelledAsync(QuestDefinition quest)
     {
         if (quest.Group == QuestConstants.LegacyQuestGroup)
         {
-            this._player.SelectedCharacter?.QuestStates.FirstOrDefault(q => q.Group == QuestConstants.LegacyQuestGroup)?.SendLegacyQuestState(this._player);
+            this._player.SelectedCharacter?.QuestStates.FirstOrDefault(q => q.Group == QuestConstants.LegacyQuestGroup)?.SendLegacyQuestStateAsync(this._player);
             return;
         }
 
-        this._player.Connection?.SendQuestCancelled((ushort)quest.Number, (ushort)quest.Group);
+        await this._player.Connection.SendQuestCancelledAsync((ushort)quest.Number, (ushort)quest.Group).ConfigureAwait(false);
     }
 }

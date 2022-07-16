@@ -126,6 +126,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Adds the form to the render tree.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <param name="currentSequence">The current sequence.</param>
     protected abstract void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence);
 
     /// <inheritdoc />
@@ -163,21 +168,28 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                     this._modalDisposable = this.ModalService.ShowLoadingIndicator();
                     this.StateHasChanged();
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
-        await base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Saves the changes.
     /// </summary>
-    protected Task SaveChanges()
+    protected async Task SaveChangesAsync()
     {
         string text;
         try
         {
-            text = this._persistenceContext?.SaveChanges() ?? false ? "The changes have been saved." : "There were no changes to save.";
+            if (this._persistenceContext is { } context)
+            {
+                text = await context.SaveChangesAsync().ConfigureAwait(false) ? "The changes have been saved." : "There were no changes to save.";
+            }
+            else
+            {
+                text = "Failed, context not initialized";
+            }
         }
         catch (Exception ex)
         {
@@ -185,7 +197,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             text = $"An unexpected error occured: {ex.Message}.";
         }
 
-        return this.ModalService.ShowMessageAsync("Save", text);
+        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(false);
     }
 
     private string? GetDownloadMarkup()
@@ -233,7 +245,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
         this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, Array.Empty<object>())!;
 
-        var method = typeof(IContext).GetMethod(nameof(IContext.GetById))!.MakeGenericMethod(this.Type);
+        var method = typeof(IContext).GetMethod(nameof(IContext.GetByIdAsync))!.MakeGenericMethod(this.Type);
         try
         {
             if (!cancellationToken.IsCancellationRequested)
@@ -249,10 +261,10 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                 {
                     this._loadingState = DataLoadingState.Error;
                     this.Logger?.LogError(ex, $"Could not load {this.Type.FullName} with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    await this.InvokeAsync(() => this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details."));
+                    await this.InvokeAsync(() => this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details.")).ConfigureAwait(false);
                 }
 
-                await this.InvokeAsync(this.StateHasChanged);
+                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
             }
         }
         catch (TargetInvocationException ex) when (ex.InnerException is ObjectDisposedException)

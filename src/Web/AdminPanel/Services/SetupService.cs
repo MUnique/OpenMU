@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Services;
 
 using System.Threading;
+using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
@@ -36,22 +37,22 @@ public class SetupService
     /// <summary>
     /// Occurs when the database got initialized.
     /// </summary>
-    public event EventHandler? DatabaseInitialized;
+    public event AsyncEventHandler? DatabaseInitialized;
 
     /// <summary>
     /// Gets a value indicating whether this application can connect to database.
     /// </summary>
-    public bool CanConnectToDatabase => this._contextProvider.CanConnectToDatabase();
+    public bool CanConnectToDatabase => this._contextProvider.CanConnectToDatabaseAsync().WaitAndUnwrapException();
 
     /// <summary>
     /// Gets a value indicating whether the data is installed.
     /// </summary>
-    public bool IsInstalled => this._contextProvider.DatabaseExists();
+    public bool IsInstalled => this._contextProvider.DatabaseExistsAsync().WaitAndUnwrapException();
 
     /// <summary>
     /// Gets a value indicating whether the database requires an update.
     /// </summary>
-    public bool IsUpdateRequired => !this._contextProvider.IsDatabaseUpToDate();
+    public bool IsUpdateRequired => !this._contextProvider.IsDatabaseUpToDateAsync().WaitAndUnwrapException();
 
     /// <summary>
     /// Gets a value indicating whether the data is initialized.
@@ -66,7 +67,7 @@ public class SetupService
         get
         {
             using var context = this._contextProvider.CreateNewTypedContext<GameClientDefinition>();
-            var definition = context.Get<GameClientDefinition>().FirstOrDefault();
+            var definition = context.GetAsync<GameClientDefinition>().AsTask().WaitAndUnwrapException().FirstOrDefault();
             return definition is { } ? new ClientVersion(definition.Season, definition.Episode, definition.Language) : null;
         }
     }
@@ -84,20 +85,23 @@ public class SetupService
     /// Installs the updates asynchronous.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public Task InstallUpdatesAsync(CancellationToken cancellationToken)
+    public async Task InstallUpdatesAsync(CancellationToken cancellationToken)
     {
-        this._contextProvider.ApplyAllPendingUpdates();
-        return this._contextProvider.WaitForUpdatedDatabase(cancellationToken);
+        await this._contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
+        await this._contextProvider.WaitForUpdatedDatabaseAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Creates the database.
     /// </summary>
     /// <param name="dataInitialization">The data initialization action.</param>
-    public void CreateDatabase(Action dataInitialization)
+    public async Task CreateDatabaseAsync(Func<Task> dataInitialization)
     {
-        this._contextProvider.ReCreateDatabase();
-        dataInitialization();
-        this.DatabaseInitialized?.Invoke(this, EventArgs.Empty);
+        await this._contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
+        await dataInitialization().ConfigureAwait(false);
+        if (this.DatabaseInitialized is { } eventHandler)
+        {
+            await eventHandler.Invoke().ConfigureAwait(false);
+        }
     }
 }

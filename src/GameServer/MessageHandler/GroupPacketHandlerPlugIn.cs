@@ -33,11 +33,11 @@ internal abstract class GroupPacketHandlerPlugIn : PacketHandlerPlugInContainer<
     public abstract bool IsEncryptionExpected { get; }
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        var subTypeIndex = packet[0] % 2 == 1 ? 3 : 4;
-        var subPacketType = packet[subTypeIndex];
-        this.HandlePacket(player, packet, this[subPacketType]);
+        var subTypeIndex = packet.Span[0] % 2 == 1 ? 3 : 4;
+        var subPacketType = packet.Span[subTypeIndex];
+        await this.HandlePacketAsync(player, packet, this[subPacketType]).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

@@ -27,15 +27,15 @@ public class ShowMiniGameEnterResultViewPlugIn : IShowMiniGameEnterResultPlugIn
     public ShowMiniGameEnterResultViewPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public void ShowResult(MiniGameType miniGameType, EnterResult enterResult)
+    public async ValueTask ShowResultAsync(MiniGameType miniGameType, EnterResult enterResult)
     {
         switch (miniGameType)
         {
             case MiniGameType.DevilSquare:
-                this._player.Connection?.SendDevilSquareEnterResult(enterResult.ToDevilSquareEnterResult());
+                await this._player.Connection.SendDevilSquareEnterResultAsync(enterResult.ToDevilSquareEnterResult()).ConfigureAwait(false);
                 break;
             case MiniGameType.BloodCastle:
-                this._player.Connection?.SendBloodCastleEnterResult(enterResult.ToBloodCastleEnterResult());
+                await this._player.Connection.SendBloodCastleEnterResultAsync(enterResult.ToBloodCastleEnterResult()).ConfigureAwait(false);
                 break;
             case MiniGameType.ChaosCastle:
                 throw new NotImplementedException();

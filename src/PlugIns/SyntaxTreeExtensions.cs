@@ -26,6 +26,10 @@ public static class SyntaxTreeExtensions
                 return _assemblyReferences;
             }
 
+            var nitoAssemblies = Directory.EnumerateFiles(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "Nito.*.dll")
+                .Select(path => Assembly.LoadFrom(path))
+                .ToList();
+            
             var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic)
                 .Select(a => a.Location)
@@ -55,7 +59,7 @@ public static class SyntaxTreeExtensions
         var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
             .WithOverflowChecks(false)
             .WithOptimizationLevel(OptimizationLevel.Release)
-            .WithUsings("System", "System.Collections.Generic");
+            .WithUsings("System", "System.Collections.Generic", "System.Threading", "Nito.AsyncEx");
         var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree }, AssemblyReferences, options);
         using var stream = new MemoryStream();
         var result = compilation.Emit(stream);

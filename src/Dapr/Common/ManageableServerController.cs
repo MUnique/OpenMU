@@ -28,18 +28,18 @@ public class ManageableServerController
     /// <summary>
     /// Shuts the manageable server down.
     /// </summary>
-    [HttpPost(nameof(IManageableServer.Shutdown))]
-    public void Shutdown()
+    [HttpPost(nameof(IManageableServer.ShutdownAsync))]
+    public async Task ShutdownAsync()
     {
-        this._manageableServer.Shutdown();
+        await this._manageableServer.ShutdownAsync().ConfigureAwait(false);
     }
 
     /// <summary>
     /// Starts the manageable server.
     /// </summary>
-    [HttpPost(nameof(IManageableServer.Start))]
-    public void Start()
+    [HttpPost(nameof(IManageableServer.StartAsync))]
+    public async Task StartAsync()
     {
-        this._manageableServer.Start();
+        await this._manageableServer.StartAsync().ConfigureAwait(false);
     }
 }

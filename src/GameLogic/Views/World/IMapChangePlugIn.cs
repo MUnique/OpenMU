@@ -12,10 +12,10 @@ public interface IMapChangePlugIn : IViewPlugIn
     /// <summary>
     /// Will be called then the map got changed. The new map and coordinates are defined in the player.SelectedCharacter.CurrentMap.
     /// </summary>
-    void MapChange();
+    ValueTask MapChangeAsync();
 
     /// <summary>
     /// Is called when a map change request failed.
     /// </summary>
-    void MapChangeFailed();
+    ValueTask MapChangeFailedAsync();
 }

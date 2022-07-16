@@ -26,8 +26,8 @@ public class ShowGuildJoinRequestPlugIn : IShowGuildJoinRequestPlugIn
     public ShowGuildJoinRequestPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowGuildJoinRequest(Player requester)
+    public async ValueTask ShowGuildJoinRequestAsync(Player requester)
     {
-        this._player.Connection?.SendGuildJoinRequest(requester.Id);
+        await this._player.Connection.SendGuildJoinRequestAsync(requester.Id).ConfigureAwait(false);
     }
 }

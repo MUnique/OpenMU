@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GuildServer.Host;
 
+using System.Collections.Immutable;
 using global::Dapr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -38,10 +39,10 @@ public class GuildServerController : ControllerBase
     /// </summary>
     /// <param name="guildName">Name of the guild.</param>
     /// <returns>True, if the guild exists; False, otherwise.</returns>
-    [HttpPost(nameof(IGuildServer.GuildExists))]
-    public bool GuildExists([FromBody] string guildName)
+    [HttpPost(nameof(IGuildServer.GuildExistsAsync))]
+    public ValueTask<bool> GuildExistsAsync([FromBody] string guildName)
     {
-        return this._guildServer.GuildExists(guildName);
+        return this._guildServer.GuildExistsAsync(guildName);
     }
 
     /// <summary>
@@ -49,10 +50,10 @@ public class GuildServerController : ControllerBase
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
     /// <returns>The guild.</returns>
-    [HttpPost(nameof(IGuildServer.GetGuild))]
-    public Guild? GetGuild([FromBody] uint guildId)
+    [HttpPost(nameof(IGuildServer.GetGuildAsync))]
+    public ValueTask<Guild?> GetGuildAsync([FromBody] uint guildId)
     {
-        return this._guildServer.GetGuild(guildId);
+        return this._guildServer.GetGuildAsync(guildId);
     }
 
     /// <summary>
@@ -60,62 +61,62 @@ public class GuildServerController : ControllerBase
     /// </summary>
     /// <param name="guildName">The guild name.</param>
     /// <returns>The guild id. <c>0</c>, if not found.</returns>
-    [HttpPost(nameof(IGuildServer.GetGuildIdByName))]
-    public uint GetGuildIdByName([FromBody] string guildName)
+    [HttpPost(nameof(IGuildServer.GetGuildIdByNameAsync))]
+    public ValueTask<uint> GetGuildIdByNameAsync([FromBody] string guildName)
     {
-        return this._guildServer.GetGuildIdByName(guildName);
+        return this._guildServer.GetGuildIdByNameAsync(guildName);
     }
 
     /// <summary>
-    /// Creates the guild and sets the guild master online at the guild server. A separate call to <see cref="PlayerEnteredGame" /> is not required.
+    /// Creates the guild and sets the guild master online at the guild server. A separate call to <see cref="PlayerEnteredGameAsync" /> is not required.
     /// </summary>
     /// <param name="data">The guild creation arguments.</param>
-    [HttpPost(nameof(IGuildServer.CreateGuild))]
-    public void CreateGuild([FromBody] GuildCreationArguments data)
+    [HttpPost(nameof(IGuildServer.CreateGuildAsync))]
+    public ValueTask<bool> CreateGuildAsync([FromBody] GuildCreationArguments data)
     {
-        this._guildServer.CreateGuild(data.Name, data.MasterName, data.MasterId, data.Logo, data.ServerId);
+        return this._guildServer.CreateGuildAsync(data.Name, data.MasterName, data.MasterId, data.Logo, data.ServerId);
     }
 
     /// <summary>
-    /// Creates the guild member and sets it online at the guild server. A separate call to <see cref="PlayerEnteredGame" /> is not required.
+    /// Creates the guild member and sets it online at the guild server. A separate call to <see cref="PlayerEnteredGameAsync" /> is not required.
     /// </summary>
     /// <param name="data">The guild member creation arguments.</param>
-    [HttpPost(nameof(IGuildServer.CreateGuildMember))]
-    public void CreateGuildMember([FromBody] GuildMemberCreationArguments data)
+    [HttpPost(nameof(IGuildServer.CreateGuildMemberAsync))]
+    public ValueTask CreateGuildMemberAsync([FromBody] GuildMemberCreationArguments data)
     {
-        this._guildServer.CreateGuildMember(data.GuildId, data.CharacterId, data.CharacterName, data.Role, data.ServerId);
+        return this._guildServer.CreateGuildMemberAsync(data.GuildId, data.CharacterId, data.CharacterName, data.Role, data.ServerId);
     }
 
     /// <summary>
     /// Updates the guild member position.
     /// </summary>
     /// <param name="data">The change arguments.</param>
-    [HttpPost(nameof(IGuildServer.ChangeGuildMemberPosition))]
-    public void ChangeGuildMemberPosition([FromBody] GuildMemberRoleChangeArguments data)
+    [HttpPost(nameof(IGuildServer.ChangeGuildMemberPositionAsync))]
+    public ValueTask ChangeGuildMemberPositionAsync([FromBody] GuildMemberRoleChangeArguments data)
     {
-        this._guildServer.ChangeGuildMemberPosition(data.GuildId, data.CharacterId, data.NewRole);
+        return this._guildServer.ChangeGuildMemberPositionAsync(data.GuildId, data.CharacterId, data.NewRole);
     }
 
     /// <summary>
     /// Notifies the guild server that a player (potential guild member) entered the game.
     /// </summary>
     /// <param name="data">The arguments of the changed player.</param>
-    [Topic("pubsub", nameof(IEventPublisher.PlayerEnteredGame))]
-    [HttpPost(nameof(IEventPublisher.PlayerEnteredGame))]
-    public void PlayerEnteredGame([FromBody] PlayerOnlineStateArguments data)
+    [Topic("pubsub", nameof(IEventPublisher.PlayerEnteredGameAsync))]
+    [HttpPost(nameof(IEventPublisher.PlayerEnteredGameAsync))]
+    public ValueTask PlayerEnteredGameAsync([FromBody] PlayerOnlineStateArguments data)
     {
-        this._guildServer.PlayerEnteredGame(data.CharacterId, data.CharacterName, data.ServerId);
+        return this._guildServer.PlayerEnteredGameAsync(data.CharacterId, data.CharacterName, data.ServerId);
     }
 
     /// <summary>
     /// Notifies the guild server that a guild member left the game.
     /// </summary>
     /// <param name="data">The arguments of the changed player.</param>
-    [Topic("pubsub", nameof(IEventPublisher.PlayerLeftGame))]
-    [HttpPost(nameof(IEventPublisher.PlayerLeftGame))]
-    public void PlayerLeftGame([FromBody] PlayerOnlineStateArguments data)
+    [Topic("pubsub", nameof(IEventPublisher.PlayerLeftGameAsync))]
+    [HttpPost(nameof(IEventPublisher.PlayerLeftGameAsync))]
+    public ValueTask PlayerLeftGameAsync([FromBody] PlayerOnlineStateArguments data)
     {
-        this._guildServer.GuildMemberLeftGame(data.GuildId, data.CharacterId, data.ServerId);
+        return this._guildServer.GuildMemberLeftGameAsync(data.GuildId, data.CharacterId, data.ServerId);
     }
 
     /// <summary>
@@ -123,20 +124,20 @@ public class GuildServerController : ControllerBase
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
     /// <returns>The guild member list.</returns>
-    [HttpPost(nameof(IGuildServer.GetGuildList))]
-    public IEnumerable<GuildListEntry> GetGuildList([FromBody] uint guildId)
+    [HttpPost(nameof(IGuildServer.GetGuildListAsync))]
+    public ValueTask<IImmutableList<GuildListEntry>> GetGuildListAsync([FromBody] uint guildId)
     {
-        return this._guildServer.GetGuildList(guildId);
+        return this._guildServer.GetGuildListAsync(guildId);
     }
 
     /// <summary>
     /// Kicks a guild member from a guild.
     /// </summary>
     /// <param name="data">The guild member arguments.</param>
-    [HttpPost(nameof(IGuildServer.KickMember))]
-    public void KickMember([FromBody] GuildMemberArguments data)
+    [HttpPost(nameof(IGuildServer.KickMemberAsync))]
+    public ValueTask KickMemberAsync([FromBody] GuildMemberArguments data)
     {
-        this._guildServer.KickMember(data.GuildId, data.PlayerName);
+        return this._guildServer.KickMemberAsync(data.GuildId, data.PlayerName);
     }
 
     /// <summary>
@@ -144,19 +145,19 @@ public class GuildServerController : ControllerBase
     /// </summary>
     /// <param name="characterId">The character identifier.</param>
     /// <returns>The guild position.</returns>
-    [HttpPost(nameof(IGuildServer.GetGuildPosition))]
-    public GuildPosition GetGuildPosition([FromBody] Guid characterId)
+    [HttpPost(nameof(IGuildServer.GetGuildPositionAsync))]
+    public ValueTask<GuildPosition> GetGuildPositionAsync([FromBody] Guid characterId)
     {
-        return this._guildServer.GetGuildPosition(characterId);
+        return this._guildServer.GetGuildPositionAsync(characterId);
     }
 
     /// <summary>
     /// Increases the guild score by one.
     /// </summary>
     /// <param name="guildId">The identifier of the guild.</param>
-    [HttpPost(nameof(IGuildServer.IncreaseGuildScore))]
-    public void IncreaseGuildScore([FromBody] uint guildId)
+    [HttpPost(nameof(IGuildServer.IncreaseGuildScoreAsync))]
+    public ValueTask IncreaseGuildScoreAsync([FromBody] uint guildId)
     {
-        this._guildServer.IncreaseGuildScore(guildId);
+        return this._guildServer.IncreaseGuildScoreAsync(guildId);
     }
 }

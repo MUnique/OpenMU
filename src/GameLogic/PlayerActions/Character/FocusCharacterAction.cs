@@ -16,7 +16,7 @@ public class FocusCharacterAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="characterName">Name of the character.</param>
-    public void FocusCharacter(Player player, string characterName)
+    public async ValueTask FocusCharacterAsync(Player player, string characterName)
     {
         if (player.PlayerState.CurrentState != PlayerState.CharacterSelection)
         {
@@ -26,7 +26,7 @@ public class FocusCharacterAction
         var character = player.Account?.Characters.FirstOrDefault(c => c.Name == characterName);
         if (character is not null)
         {
-            player.ViewPlugIns.GetPlugIn<ICharacterFocusedPlugIn>()?.CharacterFocused(character);
+            await player.InvokeViewPlugInAsync<ICharacterFocusedPlugIn>(p => p.CharacterFocusedAsync(character)).ConfigureAwait(false);
         }
     }
 }

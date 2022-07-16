@@ -14,11 +14,11 @@ using MUnique.OpenMU.GameLogic.Views;
 public class AlcoholConsumeHandler : BaseConsumeHandler
 {
     /// <inheritdoc/>
-    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (base.ConsumeItem(player, item, targetItem, fruitUsage))
+        if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
-            player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()?.DrinkAlcohol();
+            await player.InvokeViewPlugInAsync<IDrinkAlcoholPlugIn>(p => p.DrinkAlcoholAsync()).ConfigureAwait(false);
             return true;
         }
 

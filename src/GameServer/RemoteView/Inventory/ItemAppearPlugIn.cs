@@ -27,7 +27,7 @@ public class ItemAppearPlugIn : IItemAppearPlugIn
     public ItemAppearPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ItemAppear(Item newItem)
+    public async ValueTask ItemAppearAsync(Item newItem)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -35,13 +35,20 @@ public class ItemAppearPlugIn : IItemAppearPlugIn
             return;
         }
 
-        var itemSerializer = this._player.ItemSerializer;
-        using var writer = connection.StartSafeWrite(ItemAddedToInventory.HeaderType, ItemAddedToInventory.GetRequiredSize(itemSerializer.NeededSpace));
-        var message = new ItemAddedToInventory(writer.Span)
+        int Write()
         {
-            InventorySlot = newItem.ItemSlot,
-        };
-        itemSerializer.SerializeItem(message.ItemData, newItem);
-        writer.Commit();
+            var itemSerializer = this._player.ItemSerializer;
+            var size = ItemAddedToInventoryRef.GetRequiredSize(itemSerializer.NeededSpace);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new ItemAddedToInventoryRef(span)
+            {
+                InventorySlot = newItem.ItemSlot,
+            };
+            itemSerializer.SerializeItem(packet.ItemData, newItem);
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

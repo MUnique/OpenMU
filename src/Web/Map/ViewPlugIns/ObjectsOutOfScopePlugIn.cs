@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Map.ViewPlugIns;
 
+using System.Collections.Concurrent;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -13,9 +14,9 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public class ObjectsOutOfScopePlugIn : JsViewPlugInBase, IObjectsOutOfScopePlugIn
 {
-    private readonly IDictionary<int, ILocateable> _objects;
+    private readonly ConcurrentDictionary<int, Player> _players;
 
-    private readonly Action _objectsChangedCallback;
+    private readonly Action _playersChangedCallback;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObjectsOutOfScopePlugIn" /> class.
@@ -24,37 +25,41 @@ public class ObjectsOutOfScopePlugIn : JsViewPlugInBase, IObjectsOutOfScopePlugI
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="worldAccessor">The world accessor.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <param name="objects">The objects.</param>
-    /// <param name="objectsChangedCallback">The objects changed callback.</param>
-    public ObjectsOutOfScopePlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken, IDictionary<int, ILocateable> objects, Action objectsChangedCallback)
+    /// <param name="players">The objects.</param>
+    /// <param name="playersChangedCallback">The objects changed callback.</param>
+    public ObjectsOutOfScopePlugIn(IJSRuntime jsRuntime, ILoggerFactory loggerFactory, string worldAccessor, CancellationToken cancellationToken, ConcurrentDictionary<int, Player> players, Action playersChangedCallback)
         : base(jsRuntime, loggerFactory, $"{worldAccessor}.removeObject", cancellationToken)
     {
-        this._objects = objects;
-        this._objectsChangedCallback = objectsChangedCallback;
+        this._players = players;
+        this._playersChangedCallback = playersChangedCallback;
     }
 
     /// <inheritdoc />
-    public async void ObjectsOutOfScope(IEnumerable<IIdentifiable> objects)
+    public async ValueTask ObjectsOutOfScopeAsync(IEnumerable<IIdentifiable> objects)
     {
         try
         {
+            var isPlayerInvolved = false;
             foreach (var obj in objects)
             {
-                this._objects.Remove(obj.Id);
+                isPlayerInvolved = this._players.TryRemove(obj.Id, out _) | isPlayerInvolved;
 
                 if (this.CancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
 
-                await this.InvokeAsync(obj.Id);
+                await this.InvokeAsync(obj.Id).ConfigureAwait(false);
             }
 
-            this._objectsChangedCallback?.Invoke();
+            if (isPlayerInvolved)
+            {
+                this._playersChangedCallback?.Invoke();
+            }
         }
         catch (Exception e)
         {
-            this.Logger.LogError(e, $"Error in {nameof(this.ObjectsOutOfScope)}; objects: {string.Join(';', objects)}");
+            this.Logger.LogError(e, $"Error in {nameof(this.ObjectsOutOfScopeAsync)}; objects: {string.Join(';', objects)}");
         }
     }
 }

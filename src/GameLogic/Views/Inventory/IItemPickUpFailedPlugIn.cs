@@ -13,5 +13,5 @@ public interface IItemPickUpFailedPlugIn : IViewPlugIn
     /// Notifies the client that the previous attempt to pick up an item failed.
     /// </summary>
     /// <param name="reason">The reason for the fail.</param>
-    void ItemPickUpFailed(ItemPickFailReason reason);
+    ValueTask ItemPickUpFailedAsync(ItemPickFailReason reason);
 }

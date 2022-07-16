@@ -16,5 +16,5 @@ public interface IUpdateMiniGameStateViewPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="type">The type of the mini game.</param>
     /// <param name="state">The new state of the game.</param>
-    void UpdateState(MiniGameType type, MiniGameState state);
+    ValueTask UpdateStateAsync(MiniGameType type, MiniGameState state);
 }

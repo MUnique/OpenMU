@@ -27,19 +27,25 @@ internal class ServerListRequestHandler : IPacketHandler<Client>
     }
 
     /// <inheritdoc/>
-    public void HandlePacket(Client client, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Client client, Memory<byte> packet)
     {
         this._logger.LogDebug("Client {0}:{1} requested Server List", client.Address, client.Port);
         if (client.ServerListRequestCount >= this._connectServer.Settings.MaxServerListRequests)
         {
             this._logger.LogDebug("Client {0}:{1} reached maxListRequests", client.Address, client.Port);
-            client.Connection.Disconnect();
+            await client.Connection.DisconnectAsync().ConfigureAwait(false);
         }
 
         client.ServerListRequestCount++;
-        var serverList = this._connectServer.ServerList.Serialize();
-        using var writer = client.Connection.StartSafeWrite(serverList[0], serverList.Length);
-        serverList.CopyTo(writer.Span);
-        writer.Commit();
+
+        int WritePacket()
+        {
+            var serverList = this._connectServer.ServerList.Serialize();
+            var span = client.Connection.Output.GetSpan(serverList.Length)[..serverList.Length];
+            serverList.CopyTo(span);
+            return span.Length;
+        }
+
+        await client.Connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 }

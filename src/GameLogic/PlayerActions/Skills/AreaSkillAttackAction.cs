@@ -22,7 +22,7 @@ public class AreaSkillAttackAction
     /// <param name="skillId">The skill identifier.</param>
     /// <param name="targetAreaCenter">The coordinates of the center of the target area.</param>
     /// <param name="rotation">The rotation in which the player is looking. It's not really relevant for the hitted objects yet, but for some directed skills in the future it might be.</param>
-    public void Attack(Player player, ushort extraTargetId, ushort skillId, Point targetAreaCenter, byte rotation)
+    public async ValueTask AttackAsync(Player player, ushort extraTargetId, ushort skillId, Point targetAreaCenter, byte rotation)
     {
         var skillEntry = player.SkillList?.GetSkill(skillId);
         var skill = skillEntry?.Skill;
@@ -31,20 +31,20 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (!player.TryConsumeForSkill(skill))
+        if (!await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
         {
             return;
         }
 
         if (skill.SkillType == SkillType.AreaSkillAutomaticHits)
         {
-            this.PerformAutomaticHits(player, extraTargetId, targetAreaCenter, skillEntry!, skill);
+            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill).ConfigureAwait(false);
         }
 
-        player.ForEachWorldObserver(p => p.ViewPlugIns.GetPlugIn<IShowAreaSkillAnimationPlugIn>()?.ShowAreaSkillAnimation(player, skill, targetAreaCenter, rotation), true);
+        await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
     }
 
-    private void PerformAutomaticHits(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)
+    private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)
     {
         bool isExtraTargetDefined = extraTargetId != 0xFFFF;
         var attackablesInRange = player.CurrentMap?.GetAttackablesInRange(targetAreaCenter, skill.Range).Where(a => a != player) ?? Enumerable.Empty<IAttackable>();
@@ -56,7 +56,7 @@ public class AreaSkillAttackAction
         var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
         foreach (var target in attackablesInRange)
         {
-            this.ApplySkill(player, skillEntry, target, targetAreaCenter);
+            await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter).ConfigureAwait(false);
 
             if (target == extraTarget)
             {
@@ -67,19 +67,22 @@ public class AreaSkillAttackAction
 
         if (isExtraTargetDefined && extraTarget is not null && player.IsInRange(extraTarget.Position, skill.Range + 2))
         {
-            this.ApplySkill(player, skillEntry, extraTarget, targetAreaCenter);
+            await this.ApplySkillAsync(player, skillEntry, extraTarget, targetAreaCenter).ConfigureAwait(false);
         }
     }
 
-    private void ApplySkill(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter)
+    private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
 
         if (target.CheckSkillTargetRestrictions(player, skillEntry.Skill))
         {
-            target.AttackBy(player, skillEntry);
-            target.TryApplyElementalEffects(player, skillEntry);
-            player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number)?.AfterTargetGotAttacked(player, target, skillEntry, targetAreaCenter);
+            await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
+            await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
+            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number) is { } strategy)
+            {
+                await strategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter).ConfigureAwait(false);
+            }
         }
     }
 }

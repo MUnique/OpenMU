@@ -16,17 +16,17 @@ public class RemoveVaultPinAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="accountPassword">The account password.</param>
-    public void RemovePin(Player player, string accountPassword)
+    public async ValueTask RemovePinAsync(Player player, string accountPassword)
     {
         if (player.Account is not null && BCrypt.Net.BCrypt.Verify(accountPassword, player.Account.PasswordHash))
         {
             player.Account.VaultPassword = string.Empty;
             player.IsVaultLocked = false;
-            player.ViewPlugIns.GetPlugIn<IUpdateVaultStatePlugIn>()?.UpdateState();
+            await player.InvokeViewPlugInAsync<IUpdateVaultStatePlugIn>(p => p.UpdateStateAsync()).ConfigureAwait(false);
         }
         else
         {
-            player.ViewPlugIns.GetPlugIn<IShowVaultLockChangeResponse>()?.ShowResponse(VaultLockChangeResult.RemovePinFailedByWrongPassword);
+            await player.InvokeViewPlugInAsync<IShowVaultLockChangeResponse>(p => p.ShowResponseAsync(VaultLockChangeResult.RemovePinFailedByWrongPassword)).ConfigureAwait(false);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Network.Packets.ServerToClient;
 /// <summary>
 /// This part contains the custom indexer.
 /// </summary>
-public readonly ref partial struct AddTransformedCharactersToScope
+public readonly ref partial struct AddTransformedCharactersToScopeRef
 {
     /// <summary>
     /// Gets the final size, depending on the specified effects of each character.
@@ -28,17 +28,17 @@ public readonly ref partial struct AddTransformedCharactersToScope
     /// <value>
     /// The <see cref="MUnique.OpenMU.Network.Packets.ServerToClient.AddCharactersToScope.CharacterData" />.
     /// </value>
-    /// <param name="characterIndex">Index of the character.</param>
+    /// <param name="characterIndex">Index ofS the character.</param>
     /// <returns>The character data of the specified index.</returns>
     /// <remarks>
     /// It goes sequentially through the data. So when creating a new packet, it makes sense to create them sequentially in order of the index.
     /// </remarks>
-    public CharacterData this[int characterIndex]
+    public CharacterDataRef this[int characterIndex]
     {
         get
         {
             var index = this.GetIndexOfCharacter(characterIndex, out _);
-            return new CharacterData(this._data.Slice(index));
+            return new CharacterDataRef(this._data.Slice(index));
         }
     }
 

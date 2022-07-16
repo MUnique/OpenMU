@@ -15,5 +15,5 @@ public interface IQuestEventResponsePlugIn : IViewPlugIn
     /// <summary>
     /// Shows the active event quests.
     /// </summary>
-    void ShowActiveEventQuests();
+    ValueTask ShowActiveEventQuestsAsync();
 }

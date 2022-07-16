@@ -27,7 +27,7 @@ public class ItemBoughtFromPlayerShopPlugIn : IItemBoughtFromPlayerShopPlugIn
     public ItemBoughtFromPlayerShopPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ItemBoughtFromPlayerShop(Item item)
+    public async ValueTask ItemBoughtFromPlayerShopAsync(Item item)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -35,13 +35,20 @@ public class ItemBoughtFromPlayerShopPlugIn : IItemBoughtFromPlayerShopPlugIn
             return;
         }
 
-        var itemSerializer = this._player.ItemSerializer;
-        using var writer = connection.StartSafeWrite(ItemBought.HeaderType, ItemBought.GetRequiredSize(itemSerializer.NeededSpace));
-        var message = new ItemBought(writer.Span)
+        int Write()
         {
-            InventorySlot = item.ItemSlot,
-        };
-        itemSerializer.SerializeItem(message.ItemData, item);
-        writer.Commit();
+            var itemSerializer = this._player.ItemSerializer;
+            var size = ItemBoughtRef.GetRequiredSize(itemSerializer.NeededSpace);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new ItemBoughtRef(span)
+            {
+                InventorySlot = item.ItemSlot,
+            };
+            itemSerializer.SerializeItem(packet.ItemData, item);
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

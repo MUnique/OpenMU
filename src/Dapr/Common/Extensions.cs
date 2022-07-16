@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using Npgsql;
 using OpenTelemetry.Metrics;
 using Serilog.Debugging;
@@ -62,7 +63,13 @@ public static class Extensions
             {
                 try
                 {
-                    return s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().Get<PlugInConfiguration>().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+                    if (s.GetService<IPersistenceContextProvider>() is not { } persistenceContextProvider)
+                    {
+                        throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+                    }
+
+                    var configs = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException();
+                    return configs.ToList();
                 }
                 catch (PostgresException)
                 {
@@ -99,7 +106,15 @@ public static class Extensions
         where TTarget : class
     {
         return services.AddSingleton(s =>
-            (TTarget)s.GetService<IPersistenceContextProvider>()?.CreateNewConfigurationContext().Get<TActual>().First(predicate ?? (_ => true))!);
+        {
+            if (s.GetService<IPersistenceContextProvider>() is not { } persistenceContextProvider)
+            {
+                throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+            }
+
+            var objects = persistenceContextProvider.CreateNewConfigurationContext().GetAsync<TActual>().AsTask().WaitAndUnwrapException();
+            return (TTarget)objects.First(predicate ?? (_ => true))!;
+        });
     }
 
     /// <summary>
@@ -254,11 +269,11 @@ public static class Extensions
     /// Waits for the completion of outstanding database updates.
     /// </summary>
     /// <param name="app">The application.</param>
-    public static async Task WaitForUpdatedDatabase(this WebApplication app)
+    public static async Task WaitForUpdatedDatabaseAsync(this WebApplication app)
     {
-        await app.WaitForDatabaseConnectionInitialization().ConfigureAwait(false);
+        await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);
         await app.Services.GetService<PersistenceContextProvider>()!
-            .WaitForUpdatedDatabase()
+            .WaitForUpdatedDatabaseAsync()
             .ConfigureAwait(false);
     }
 
@@ -266,7 +281,7 @@ public static class Extensions
     /// Waits for database connection (settings) initialization.
     /// </summary>
     /// <param name="app">The application.</param>
-    public static async Task WaitForDatabaseConnectionInitialization(this WebApplication app)
+    public static async Task WaitForDatabaseConnectionInitializationAsync(this WebApplication app)
     {
         await app.Services.GetService<IDatabaseConnectionSettingProvider>()!
             .InitializeAsync(default)

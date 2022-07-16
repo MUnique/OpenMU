@@ -14,5 +14,5 @@ public interface IActivateMagicEffectPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="effect">The effect.</param>
     /// <param name="affectedObject">The affected object.</param>
-    void ActivateMagicEffect(MagicEffect effect, IAttackable affectedObject);
+    ValueTask ActivateMagicEffectAsync(MagicEffect effect, IAttackable affectedObject);
 }

@@ -13,5 +13,5 @@ public interface INpcItemBoughtPlugIn : IViewPlugIn
     /// Notifies the client that the item got bought from the npc.
     /// </summary>
     /// <param name="newItem">The new item.</param>
-    void NpcItemBought(Item newItem);
+    ValueTask NpcItemBoughtAsync(Item newItem);
 }

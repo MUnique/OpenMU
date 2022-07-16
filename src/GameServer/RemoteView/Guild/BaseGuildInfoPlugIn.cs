@@ -66,14 +66,14 @@ public abstract class BaseGuildInfoPlugIn<T>
     /// <returns>
     /// The data of the guild.
     /// </returns>
-    protected Memory<byte> GetGuildData(uint guildId)
+    protected async ValueTask<Memory<byte>> GetGuildDataAsync(uint guildId)
     {
         if (Cache.TryGetValue(guildId, out var guildInfo))
         {
             return guildInfo;
         }
 
-        var guild = this.Player.GameServerContext.GuildServer.GetGuild(guildId);
+        var guild = await this.Player.GameServerContext.GuildServer.GetGuildAsync(guildId).ConfigureAwait(false);
         if (guild is null)
         {
             return Memory<byte>.Empty;

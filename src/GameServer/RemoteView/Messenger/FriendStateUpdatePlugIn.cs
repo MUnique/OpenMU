@@ -25,8 +25,8 @@ public class FriendStateUpdatePlugIn : IFriendStateUpdatePlugIn
     public FriendStateUpdatePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void FriendStateUpdate(string friend, int serverId)
+    public async ValueTask FriendStateUpdateAsync(string friend, int serverId)
     {
-        this._player.Connection?.SendFriendOnlineStateUpdate(friend, (byte)serverId);
+        await this._player.Connection.SendFriendOnlineStateUpdateAsync(friend, (byte)serverId).ConfigureAwait(false);
     }
 }

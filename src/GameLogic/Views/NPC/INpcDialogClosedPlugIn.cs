@@ -13,5 +13,5 @@ public interface INpcDialogClosedPlugIn : IViewPlugIn
     /// Informs the view about the closed dialog.
     /// </summary>
     /// <param name="npc">The definition of the closed NPC.</param>
-    void DialogClosed(MonsterDefinition npc);
+    ValueTask DialogClosedAsync(MonsterDefinition npc);
 }

@@ -26,9 +26,9 @@ public class QuestStateListLegacyRequestHandlerPlugIn : IPacketHandlerPlugIn
     public bool IsEncryptionExpected => false;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         var questState = player.SelectedCharacter?.QuestStates?.FirstOrDefault(state => state.Group == QuestConstants.LegacyQuestGroup);
-        player.ViewPlugIns.GetPlugIn<IQuestStateResponsePlugIn>()?.ShowQuestState(questState);
+        await player.InvokeViewPlugInAsync<IQuestStateResponsePlugIn>(p => p.ShowQuestStateAsync(questState)).ConfigureAwait(false);
     }
 }

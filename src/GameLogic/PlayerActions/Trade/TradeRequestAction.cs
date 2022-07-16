@@ -17,27 +17,27 @@ public class TradeRequestAction
     /// <param name="player">The player who requests the trade.</param>
     /// <param name="partner">The partner which will be requested.</param>
     /// <returns>The success of sending the request to the <paramref name="partner"/>.</returns>
-    public bool RequestTrade(ITrader player, ITrader partner)
+    public async ValueTask<bool> RequestTradeAsync(ITrader player, ITrader partner)
     {
         if (player.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>() is null || partner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>() is null)
         {
             return false;
         }
 
-        if (!partner.PlayerState.TryAdvanceTo(PlayerState.TradeRequested))
+        if (!await partner.PlayerState.TryAdvanceToAsync(PlayerState.TradeRequested).ConfigureAwait(false))
         {
             return false;
         }
 
-        if (!player.PlayerState.TryAdvanceTo(PlayerState.TradeRequested))
+        if (!await player.PlayerState.TryAdvanceToAsync(PlayerState.TradeRequested).ConfigureAwait(false))
         {
-            partner.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld);
+            await partner.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
             return false;
         }
 
         player.TradingPartner = partner;
         partner.TradingPartner = player;
-        partner.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>()?.ShowTradeRequest(player);
+        await partner.InvokeViewPlugInAsync<IShowTradeRequestPlugIn>(p => p.ShowTradeRequestAsync(player)).ConfigureAwait(false);
         return true;
     }
 }

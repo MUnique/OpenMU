@@ -13,5 +13,5 @@ public interface IMasterSkillLevelChangedPlugIn : IViewPlugIn
     /// Informs the player that the master skill level has been changed (usually increased).
     /// </summary>
     /// <param name="learnedSkill">The learned master skill.</param>
-    void MasterSkillLevelChanged(SkillEntry learnedSkill);
+    ValueTask MasterSkillLevelChangedAsync(SkillEntry learnedSkill);
 }

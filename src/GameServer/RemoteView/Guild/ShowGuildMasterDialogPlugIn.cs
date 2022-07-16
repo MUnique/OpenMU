@@ -25,8 +25,8 @@ public class ShowGuildMasterDialogPlugIn : IShowGuildMasterDialogPlugIn
     public ShowGuildMasterDialogPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowGuildMasterDialog()
+    public async ValueTask ShowGuildMasterDialogAsync()
     {
-        this._player.Connection?.SendShowGuildMasterDialog();
+        await this._player.Connection.SendShowGuildMasterDialogAsync().ConfigureAwait(false);
     }
 }

@@ -24,24 +24,31 @@ public class PersistentObjectsLookupController : ILookupController
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<T>> GetSuggestionsAsync<T>(string? text, IContext? persistenceContext)
+    public async Task<IEnumerable<T>> GetSuggestionsAsync<T>(string? text, IContext? persistenceContext)
         where T : class
     {
         if (!typeof(T).IsConfigurationType())
         {
             // Only config data should be searchable
-            return Task.FromResult(Enumerable.Empty<T>());
+            return Enumerable.Empty<T>();
         }
 
         using var context = persistenceContext is null ? this._contextProvider.CreateNewTypedContext<T>() : null;
-        var values = (persistenceContext ?? context)?.Get<T>() ?? Enumerable.Empty<T>();
-        if (string.IsNullOrEmpty(text))
+        var effectiveContext = persistenceContext ?? context;
+        if (effectiveContext is null)
         {
-            return Task.FromResult(values);
+            return Enumerable.Empty<T>();
         }
 
-        return Task.FromResult(values.Where(v => v.GetName().StartsWith(text, StringComparison.InvariantCultureIgnoreCase))
+        var values = await effectiveContext.GetAsync<T>().ConfigureAwait(false);
+
+        if (string.IsNullOrEmpty(text))
+        {
+            return values;
+        }
+
+        return values.Where(v => v.GetName().StartsWith(text, StringComparison.InvariantCultureIgnoreCase))
             .Concat(values.Where(v => v.GetName().Contains(text, StringComparison.InvariantCultureIgnoreCase)))
-            .Distinct());
+            .Distinct();
     }
 }

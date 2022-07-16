@@ -25,8 +25,8 @@ public class ItemSoldToNpcPlugIn : IItemSoldToNpcPlugIn
     public ItemSoldToNpcPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ItemSoldToNpc(bool success)
+    public async ValueTask ItemSoldToNpcAsync(bool success)
     {
-        this._player.Connection?.SendNpcItemSellResult(success, (uint)this._player.Money);
+        await this._player.Connection.SendNpcItemSellResultAsync(success, (uint)this._player.Money).ConfigureAwait(false);
     }
 }

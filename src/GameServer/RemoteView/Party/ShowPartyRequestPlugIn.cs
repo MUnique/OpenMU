@@ -26,8 +26,8 @@ public class ShowPartyRequestPlugIn : IShowPartyRequestPlugIn
     public ShowPartyRequestPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowPartyRequest(IPartyMember requester)
+    public async ValueTask ShowPartyRequestAsync(IPartyMember requester)
     {
-        this._player.Connection?.SendPartyRequest(requester.Id);
+        await this._player.Connection.SendPartyRequestAsync(requester.Id).ConfigureAwait(false);
     }
 }

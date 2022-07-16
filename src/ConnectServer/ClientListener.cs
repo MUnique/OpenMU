@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.ConnectServer;
 
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
 using MUnique.OpenMU.ConnectServer.PacketHandler;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
@@ -17,7 +18,7 @@ internal class ClientListener
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<ClientListener> _logger;
-    private readonly object _clientListLock = new ();
+    private readonly AsyncLock _clientListLock = new();
     private readonly IConnectServerSettings _connectServerSettings;
     private readonly IPacketHandler<Client> _packetHandler;
     private Listener? _listener;
@@ -64,8 +65,8 @@ internal class ClientListener
     public void StartListener()
     {
         this._listener = new Listener(this._connectServerSettings.ClientListenerPort, null, null, this._loggerFactory);
-        this._listener.ClientAccepting += this.OnClientAccepting;
-        this._listener.ClientAccepted += this.OnClientAccepted;
+        this._listener.ClientAccepting += this.OnClientAcceptingAsync;
+        this._listener.ClientAccepted += this.OnClientAcceptedAsync;
         this._listener.Start(this._connectServerSettings.ListenerBacklog);
 
         this._logger.LogInformation("Client Listener started, Port {0}", this._connectServerSettings.ClientListenerPort);
@@ -80,7 +81,7 @@ internal class ClientListener
         this._logger.LogInformation("Client Listener stopped");
     }
 
-    private void OnClientAccepting(object? sender, ClientAcceptingEventArgs e)
+    private async ValueTask OnClientAcceptingAsync(ClientAcceptingEventArgs e)
     {
         for (var i = 0; i < this.ClientSocketAcceptPlugins.Count; ++i)
         {
@@ -88,12 +89,12 @@ internal class ClientListener
             if (!plugin.OnAfterSocketAccept(e.AcceptingSocket))
             {
                 e.Cancel = true;
-                return;
+                break;
             }
         }
     }
 
-    private void OnClientAccepted(object? sender, ClientAcceptedEventArgs e)
+    private async ValueTask OnClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
         var connection = e.AcceptedConnection;
         var client = new Client(connection, this._connectServerSettings.Timeout, this._packetHandler, this._connectServerSettings.MaximumReceiveSize, this._loggerFactory.CreateLogger<Client>());
@@ -102,19 +103,19 @@ internal class ClientListener
         client.Port = ipEndpoint?.Port ?? 0;
         client.Timeout = this._connectServerSettings.Timeout;
 
-        lock (this._clientListLock)
+        using (await this._clientListLock.LockAsync().ConfigureAwait(false))
         {
             this.Clients.Add(client);
         }
 
-        client.Connection.Disconnected += (sender, e) => this.OnClientDisconnect(client);
+        client.Connection.Disconnected += async () => await this.OnClientDisconnectAsync(client).ConfigureAwait(false);
         this._logger.LogDebug("Client connected: {0}, current client count: {1}", connection.EndPoint, this.Clients.Count);
-        client.SendHello();
-        client.Connection.BeginReceive();
+        await client.SendHelloAsync().ConfigureAwait(false);
+        _ = Task.Run(() => client.Connection.BeginReceiveAsync());
         this.ConnectedClientsChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnClientDisconnect(Client client)
+    private async ValueTask OnClientDisconnectAsync(Client client)
     {
         foreach (var plugin in this.ClientSocketDisconnectPlugins)
         {
@@ -122,7 +123,7 @@ internal class ClientListener
         }
 
         this._logger.LogDebug("Connection to Client {0}:{1} disconnected.", client.Address, client.Port);
-        lock (this._clientListLock)
+        using (await this._clientListLock.LockAsync().ConfigureAwait(false))
         {
             this.Clients.Remove(client);
         }

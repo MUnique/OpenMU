@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Messenger;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Messenger;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
@@ -27,7 +28,7 @@ public class InitializeMessengerPlugIn : IInitializeMessengerPlugIn
     public InitializeMessengerPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void InitializeMessenger(MessengerInitializationData data, int maxLetters)
+    public async ValueTask InitializeMessengerAsync(MessengerInitializationData data, int maxLetters)
     {
         var connection = this._player.Connection;
         if (connection is null || this._player.SelectedCharacter is null)
@@ -35,11 +36,12 @@ public class InitializeMessengerPlugIn : IInitializeMessengerPlugIn
             return;
         }
 
-        var friendList = data.Friends;
-
-        using (var writer = connection.StartSafeWrite(MessengerInitialization.HeaderType, MessengerInitialization.GetRequiredSize(friendList.Count)))
+        int Write()
         {
-            var message = new MessengerInitialization(writer.Span)
+            var friendList = data.Friends;
+            var size = MessengerInitializationRef.GetRequiredSize(friendList.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var message = new MessengerInitializationRef(span)
             {
                 FriendCount = (byte)friendList.Count,
                 LetterCount = (byte)this._player.SelectedCharacter.Letters.Count,
@@ -55,18 +57,20 @@ public class InitializeMessengerPlugIn : IInitializeMessengerPlugIn
                 i++;
             }
 
-            writer.Commit();
+            return size;
         }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
 
         foreach (var requesterName in data.OpenFriendRequests)
         {
-            this._player.ViewPlugIns.GetPlugIn<IShowFriendRequestPlugIn>()?.ShowFriendRequest(requesterName);
+            await this._player.InvokeViewPlugInAsync<IShowFriendRequestPlugIn>(p => p.ShowFriendRequestAsync(requesterName)).ConfigureAwait(false);
         }
 
         var letters = this._player.SelectedCharacter.Letters;
         for (ushort l = 0; l < letters.Count; l++)
         {
-            this._player.ViewPlugIns.GetPlugIn<IAddToLetterListPlugIn>()?.AddToLetterList(letters[l], l, false);
+            await this._player.InvokeViewPlugInAsync<IAddToLetterListPlugIn>(p => p.AddToLetterListAsync(letters[l], l, false)).ConfigureAwait(false);
         }
     }
 }

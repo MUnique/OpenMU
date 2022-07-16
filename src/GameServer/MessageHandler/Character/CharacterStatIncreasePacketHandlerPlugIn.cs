@@ -28,9 +28,9 @@ internal class CharacterStatIncreasePacketHandlerPlugIn : ISubPacketHandlerPlugI
     public byte Key => 6;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         IncreaseCharacterStatPoint message = packet;
-        this._increaseStatsAction.IncreaseStats(player, message.StatType.GetAttributeDefinition());
+        await this._increaseStatsAction.IncreaseStatsAsync(player, message.StatType.GetAttributeDefinition()).ConfigureAwait(false);
     }
 }

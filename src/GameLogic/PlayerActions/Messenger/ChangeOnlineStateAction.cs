@@ -14,12 +14,12 @@ public class ChangeOnlineStateAction
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="online">If set to <c>true</c> the player is visible as online with its server id to his friends. Otherwise, not.</param>
-    public void SetOnlineState(Player player, bool online)
+    public async ValueTask SetOnlineStateAsync(Player player, bool online)
     {
         player.OnlineAsFriend = online;
         if (player.GameContext is IGameServerContext gameServerContext && player.SelectedCharacter is { } character)
         {
-            gameServerContext.FriendServer.SetPlayerVisibilityState(gameServerContext.Id, character.Id, player.SelectedCharacter.Name, player.OnlineAsFriend);
+            await gameServerContext.FriendServer.SetPlayerVisibilityStateAsync(gameServerContext.Id, character.Id, player.SelectedCharacter.Name, player.OnlineAsFriend).ConfigureAwait(false);
         }
     }
 }

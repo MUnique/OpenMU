@@ -12,5 +12,5 @@ public interface IUpdatePartyListPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the party list.
     /// </summary>
-    void UpdatePartyList();
+    ValueTask UpdatePartyListAsync();
 }

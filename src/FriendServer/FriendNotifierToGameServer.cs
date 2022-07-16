@@ -23,47 +23,47 @@ public class FriendNotifierToGameServer : IFriendNotifier
     }
 
     /// <inheritdoc />
-    public void FriendRequest(string requester, string receiver, int serverId)
+    public async ValueTask FriendRequestAsync(string requester, string receiver, int serverId)
     {
         if (this._gameServers.TryGetValue(serverId, out var gameServer))
         {
-            gameServer.FriendRequest(requester, receiver);
+            await gameServer.FriendRequestAsync(requester, receiver).ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc />
-    public void LetterReceived(LetterHeader letter)
+    public async ValueTask LetterReceivedAsync(LetterHeader letter)
     {
         foreach (var gameServer in this._gameServers.Values)
         {
-            gameServer.LetterReceived(letter);
+            await gameServer.LetterReceivedAsync(letter).ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc />
-    public void FriendOnlineStateChanged(int playerServerId, string player, string friend, int friendServerId)
+    public async ValueTask FriendOnlineStateChangedAsync(int playerServerId, string player, string friend, int friendServerId)
     {
         if (this._gameServers.TryGetValue(playerServerId, out var gameServer))
         {
-            gameServer.FriendOnlineStateChanged(player, friend, friendServerId);
+            await gameServer.FriendOnlineStateChangedAsync(player, friend, friendServerId).ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc />
-    public void ChatRoomCreated(int serverId, ChatServerAuthenticationInfo playerAuthenticationInfo, string friendName)
+    public async ValueTask ChatRoomCreatedAsync(int serverId, ChatServerAuthenticationInfo playerAuthenticationInfo, string friendName)
     {
         if (this._gameServers.TryGetValue(serverId, out var gameServer))
         {
-            gameServer.ChatRoomCreated(playerAuthenticationInfo, friendName);
+            await gameServer.ChatRoomCreatedAsync(playerAuthenticationInfo, friendName).ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc />
-    public void InitializeMessenger(int serverId, MessengerInitializationData initializationData)
+    public async ValueTask InitializeMessengerAsync(int serverId, MessengerInitializationData initializationData)
     {
         if (this._gameServers.TryGetValue(serverId, out var gameServer))
         {
-            gameServer.InitializeMessenger(initializationData);
+            await gameServer.InitializeMessengerAsync(initializationData).ConfigureAwait(false);
         }
     }
 }

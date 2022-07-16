@@ -13,5 +13,5 @@ public interface IShowGuildInfoPlugIn : IViewPlugIn
     /// Shows the guild information of a previously requested guild.
     /// </summary>
     /// <param name="guildId">The guild id.</param>
-    void ShowGuildInfo(uint guildId);
+    ValueTask ShowGuildInfoAsync(uint guildId);
 }

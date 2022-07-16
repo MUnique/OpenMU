@@ -27,7 +27,7 @@ internal class CharacterKeyConfigurationPacketHandlerPlugIn : ISubPacketHandlerP
     public byte Key => 0x30;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         SaveKeyConfiguration message = packet;
         this._saveKeyConfigurationAction.SaveKeyConfiguration(player, message.Configuration.ToArray());

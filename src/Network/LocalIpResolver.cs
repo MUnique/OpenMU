@@ -12,11 +12,11 @@ using System.Net;
 public class LocalIpResolver : IIpAddressResolver
 {
     /// <inheritdoc/>
-    public IPAddress ResolveIPv4()
+    public async ValueTask<IPAddress> ResolveIPv4Async()
     {
         if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
         {
-            var localHostEntry = Dns.GetHostEntry(Dns.GetHostName());
+            var localHostEntry = await Dns.GetHostEntryAsync(Dns.GetHostName()).ConfigureAwait(false);
             var localAddress = localHostEntry.AddressList
                 .FirstOrDefault(address => address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
             if (localAddress != null)

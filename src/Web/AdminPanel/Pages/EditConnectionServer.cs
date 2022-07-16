@@ -23,7 +23,7 @@ public sealed class EditConnectionServer : EditBase
     {
         builder.OpenComponent<ConnectServerConfiguration>(++currentSequence);
         builder.AddAttribute(++currentSequence, nameof(ConnectServerConfiguration.Model), this.Model);
-        builder.AddAttribute(++currentSequence, nameof(ConnectServerConfiguration.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChanges));
+        builder.AddAttribute(++currentSequence, nameof(ConnectServerConfiguration.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
         builder.CloseComponent();
     }
 }

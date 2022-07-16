@@ -26,20 +26,20 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override void DoHandleCommand(Player gameMaster, PkClearChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, PkClearChatCommandArgs arguments)
     {
         var targetPlayer = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
 
         targetPlayer.SelectedCharacter!.State = HeroState.Normal;
         targetPlayer.SelectedCharacter!.StateRemainingSeconds = 0;
         targetPlayer.SelectedCharacter!.PlayerKillCount = 0;
-        targetPlayer.ForEachWorldObserver(o => o.ViewPlugIns.GetPlugIn<IUpdateCharacterHeroStatePlugIn>()?.UpdateCharacterHeroState(targetPlayer), true);
+        await targetPlayer.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(targetPlayer), true).ConfigureAwait(false);
 
         if (!targetPlayer.Name.Equals(gameMaster.Name))
         {
-            this.ShowMessageTo(targetPlayer, $"Your player kills have been cleaned by the game master.");
+            await this.ShowMessageToAsync(targetPlayer, $"Your player kills have been cleaned by the game master.").ConfigureAwait(false);
         }
 
-        this.ShowMessageTo(gameMaster, $"[{this.Key}] {targetPlayer.Name} kills have been cleaned.");
+        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {targetPlayer.Name} kills have been cleaned.").ConfigureAwait(false);
     }
 }

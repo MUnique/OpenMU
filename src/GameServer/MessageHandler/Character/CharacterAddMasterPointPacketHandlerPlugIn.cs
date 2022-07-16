@@ -27,9 +27,9 @@ internal class CharacterAddMasterPointPacketHandlerPlugIn : ISubPacketHandlerPlu
     public byte Key => 0x52;
 
     /// <inheritdoc />
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         AddMasterSkillPoint message = packet;
-        this._addMasterPointAction.AddMasterPoint(player, message.SkillId);
+        await this._addMasterPointAction.AddMasterPointAsync(player, message.SkillId).ConfigureAwait(false);
     }
 }

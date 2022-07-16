@@ -13,5 +13,5 @@ public interface ILogoutPlugIn : IViewPlugIn
     /// Logouts with the specified logout type.
     /// </summary>
     /// <param name="logoutType">Type of the logout.</param>
-    void Logout(LogoutType logoutType);
+    ValueTask LogoutAsync(LogoutType logoutType);
 }

@@ -15,16 +15,16 @@ public class CloseNpcDialogAction
     /// Closes the currently opened npc dialog.
     /// </summary>
     /// <param name="player">The player who wants to close the dialog.</param>
-    public void CloseNpcDialog(Player player)
+    public async ValueTask CloseNpcDialogAsync(Player player)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var npc = player.OpenedNpc;
-        if (npc != null && player.PlayerState.TryAdvanceTo(PlayerState.EnteredWorld))
+        if (npc != null && await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
         {
             player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {player.OpenedNpc}");
             player.OpenedNpc = null;
             player.Vault = null;
-            player.ViewPlugIns.GetPlugIn<INpcDialogClosedPlugIn>()?.DialogClosed(npc.Definition);
+            await player.InvokeViewPlugInAsync<INpcDialogClosedPlugIn>(p => p.DialogClosedAsync(npc.Definition)).ConfigureAwait(false);
         }
         else
         {

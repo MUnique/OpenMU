@@ -14,5 +14,5 @@ public interface IShowGuildWarResultPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="hostileGuildName">Name of the hostile guild.</param>
     /// <param name="result">The result.</param>
-    void ShowResult(string hostileGuildName, GuildWarResult result);
+    ValueTask ShowResultAsync(string hostileGuildName, GuildWarResult result);
 }

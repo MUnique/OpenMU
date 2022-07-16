@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A game server listener that listens on a TCP port.
@@ -54,14 +55,14 @@ public class DefaultTcpGameServerListener : IGameServerListener
     }
 
     /// <inheritdoc/>
-    public event EventHandler<PlayerConnectedEventArgs>? PlayerConnected;
+    public event AsyncEventHandler<PlayerConnectedEventArgs>? PlayerConnected;
 
     private INetworkEncryptionFactoryPlugIn? EncryptionFactoryPlugIn { get; set; }
 
     private ClientVersion ClientVersion => new (this._endPoint.Client!.Season, this._endPoint.Client.Episode, this._endPoint.Client.Language);
 
     /// <inheritdoc/>
-    public void Start()
+    public async ValueTask StartAsync()
     {
         if (this._listener is { IsBound: true })
         {
@@ -79,15 +80,15 @@ public class DefaultTcpGameServerListener : IGameServerListener
         var port = this._endPoint.NetworkPort;
         this._logger.LogInformation("Starting Server Listener, port {port}", port);
         this._listener = new Listener(port, this.CreateDecryptor, this.CreateEncryptor, this._loggerFactory);
-        this._listener.ClientAccepted += this.OnClientAccepted;
-        this._listener.ClientAccepting += this.OnClientAccepting;
+        this._listener.ClientAccepted += this.OnClientAcceptedAsync;
+        this._listener.ClientAccepting += this.OnClientAcceptingAsync;
         if (this._endPoint.AlternativePublishedPort > 0)
         {
             port = this._endPoint.AlternativePublishedPort;
             this._logger.LogWarning("GameServer endpoint of port {0} has registered an alternative public port of {1}.", this._endPoint.NetworkPort, port);
         }
 
-        this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(this._addressResolver.ResolveIPv4(), port));
+        this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false), port));
         this._listener.Start();
         this._logger.LogInformation("Server listener started.");
     }
@@ -124,7 +125,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
             : new PipelinedDecryptor(arg);
     }
 
-    private void OnClientAccepting(object? sender, ClientAcceptingEventArgs e)
+    private async ValueTask OnClientAcceptingAsync(ClientAcceptingEventArgs e)
     {
         if (this._gameContext.PlayerCount >= this._gameContext.ServerConfiguration.MaximumPlayers)
         {
@@ -134,31 +135,31 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
     }
 
-    private void OnClientAccepted(object? sender, ClientAcceptedEventArgs e)
+    private async ValueTask OnClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
         var connection = e.AcceptedConnection;
         var remoteEndPoint = connection.EndPoint as IPEndPoint;
         this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));
 
         var remotePlayer = new RemotePlayer(this._gameContext, connection, this.ClientVersion);
-        connection.Disconnected += (_, _) =>
+        connection.Disconnected += async () =>
         {
-            remotePlayer.Disconnect();
+            await remotePlayer.DisconnectAsync().ConfigureAwait(false);
             this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.PlayerCount);
         };
 
-        this.OnPlayerConnected(remotePlayer);
+        await this.OnPlayerConnectedAsync(remotePlayer).ConfigureAwait(false);
 
         // we don't want to await the call.
-        connection.BeginReceive();
+        _ = Task.Run(connection.BeginReceiveAsync);
     }
 
-    private void OnPlayerConnected(Player player)
+    private async ValueTask OnPlayerConnectedAsync(Player player)
     {
         var eventHandler = this.PlayerConnected;
         if (eventHandler != null)
         {
-            eventHandler(this, new PlayerConnectedEventArgs(player));
+            await eventHandler(new PlayerConnectedEventArgs(player)).ConfigureAwait(false);
         }
         else
         {

@@ -26,9 +26,9 @@ internal class GuildRequestAnswerHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => GuildJoinResponse.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildJoinResponse response = packet;
-        this._answerAction.AnswerRequest(player, response.Accepted);
+        await this._answerAction.AnswerRequestAsync(player, response.Accepted).ConfigureAwait(false);
     }
 }

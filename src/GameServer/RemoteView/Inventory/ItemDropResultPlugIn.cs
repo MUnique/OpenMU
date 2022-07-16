@@ -25,8 +25,8 @@ public class ItemDropResultPlugIn : IItemDropResultPlugIn
     public ItemDropResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ItemDropResult(byte slot, bool success)
+    public async ValueTask ItemDropResultAsync(byte slot, bool success)
     {
-        this._player.Connection?.SendItemDropResponse(success, slot);
+        await this._player.Connection.SendItemDropResponseAsync(success, slot).ConfigureAwait(false);
     }
 }

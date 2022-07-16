@@ -19,8 +19,8 @@ public class InMemoryRepositoryManager : BaseRepositoryManager
     public new IRepository<T> GetRepository<T>()
         where T : class
     {
-        var repository = this.InternalGetRepository(typeof(T)) as IRepository<T> ?? this.CreateAndRegisterMemoryRepository<T>();
-        return (IRepository<T>)repository;
+        var repository = this.InternalGetRepository(typeof(T)) ?? this.CreateAndRegisterMemoryRepository<T>();
+        return new InMemoryRepositoryAdapter<T>((IMemoryRepository)repository);
     }
 
     private IRepository CreateAndRegisterMemoryRepository<T>()

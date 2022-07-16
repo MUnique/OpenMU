@@ -54,7 +54,7 @@ public sealed class GameServerStatePublisher : IGameServerStateObserver, IDispos
 
         this._serverInfo = serverInfo;
         this._publicEndPoint = publicEndPoint;
-        this._heartbeatCancellationTokenSource = new ();
+        this._heartbeatCancellationTokenSource = new();
         try
         {
             this._logger.LogInformation("Starting heartbeat thread ...");

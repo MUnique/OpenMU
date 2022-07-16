@@ -38,7 +38,7 @@ public class TerrainController : Controller
     /// <param name="mapId">The map identifier.</param>
     /// <returns>The rendered terrain.</returns>
     [HttpGet("{serverId}/{mapId}")]
-    public async Task<IActionResult> Terrain(int serverId, Guid mapId)
+    public async Task<IActionResult> TerrainAsync(int serverId, Guid mapId)
     {
         if (this._servers.OfType<IGameServer>().FirstOrDefault(s => s.Id == serverId) is not IGameServerContextProvider server)
         {
@@ -46,7 +46,9 @@ public class TerrainController : Controller
             return this.NotFound();
         }
 
-        var gameServer = new ObservableGameServerAdapter(server.Context);
+        // TODO: Do this without creating an ObservableGameServerAdapter, because that's a very expensive operation.
+        using var gameServer = new ObservableGameServerAdapter(server.Context);
+        await gameServer.InitializeAsync().ConfigureAwait(false);
         var map = gameServer.Maps.FirstOrDefault(m => m.Id == mapId);
         if (map is null)
         {

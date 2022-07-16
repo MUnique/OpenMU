@@ -14,5 +14,5 @@ public interface IObjectMovedPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="movedObject">The moved object.</param>
     /// <param name="moveType">Type of the move.</param>
-    void ObjectMoved(ILocateable movedObject, MoveType moveType);
+    ValueTask ObjectMovedAsync(ILocateable movedObject, MoveType moveType);
 }

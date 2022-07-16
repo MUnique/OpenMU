@@ -25,8 +25,8 @@ public class CloseVaultPlugIn : ICloseVaultPlugIn
     public CloseVaultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void CloseVault()
+    public async ValueTask CloseVaultAsync()
     {
-        this._player.Connection?.SendVaultClosed();
+        await this._player.Connection.SendVaultClosedAsync().ConfigureAwait(false);
     }
 }

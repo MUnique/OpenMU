@@ -25,8 +25,8 @@ public class ShowGuildCreationDialogPlugIn : IShowGuildCreationDialogPlugIn
     public ShowGuildCreationDialogPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowGuildCreationDialog()
+    public async ValueTask ShowGuildCreationDialogAsync()
     {
-        this._player.Connection?.SendShowGuildCreationDialog();
+        await this._player.Connection.SendShowGuildCreationDialogAsync().ConfigureAwait(false);
     }
 }

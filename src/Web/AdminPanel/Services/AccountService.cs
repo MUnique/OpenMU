@@ -40,15 +40,15 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     /// <param name="offset">The offset.</param>
     /// <param name="count">The count.</param>
     /// <returns>A slice of the account list, defined by an offset and a count.</returns>
-    public Task<List<Account>> Get(int offset, int count)
+    public async Task<List<Account>> GetAsync(int offset, int count)
     {
         try
         {
-            return Task.FromResult(this._playerContext.GetAccountsOrderedByLoginName(offset, count).ToList());
+            return (await this._playerContext.GetAccountsOrderedByLoginNameAsync(offset, count).ConfigureAwait(false)).ToList();
         }
         catch (NotImplementedException)
         {
-            return Task.FromResult(new List<Account>());
+            return new List<Account>();
         }
     }
 
@@ -56,26 +56,26 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     /// Bans the specified account.
     /// </summary>
     /// <param name="account">The account.</param>
-    public void Ban(Account account)
+    public async ValueTask BanAsync(Account account)
     {
         account.State = AccountState.Banned;
-        this._playerContext.SaveChanges();
+        await this._playerContext.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
     /// Unbans the specified account.
     /// </summary>
     /// <param name="account">The account.</param>
-    public void Unban(Account account)
+    public async ValueTask UnbanAsync(Account account)
     {
         account.State = AccountState.Normal;
-        this._playerContext.SaveChanges();
+        await this._playerContext.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
     /// Creates a new Account in a modal dialog.
     /// </summary>
-    public async Task CreateNewInModalDialog()
+    public async Task CreateNewInModalDialogAsync()
     {
         var accountParameters = new AccountCreationParameters();
         var parameters = new ModalParameters();
@@ -86,7 +86,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
         };
 
         var modal = this._modalService.Show<ModalCreateNew<AccountCreationParameters>>($"Create {nameof(Account)}", parameters, options);
-        var result = await modal.Result;
+        var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
             var item = this._playerContext.CreateNew<Account>();
@@ -96,7 +96,7 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
             item.State = accountParameters.State;
             item.SecurityCode = accountParameters.SecurityCode;
             item.RegistrationDate = DateTime.UtcNow;
-            this._playerContext.SaveChanges();
+            await this._playerContext.SaveChangesAsync().ConfigureAwait(false);
             this.RaiseDataChanged();
         }
     }

@@ -5,17 +5,18 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections;
-using System.Threading;
+using Nito.AsyncEx;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A bucket, which can be observed for added and removed items.
 /// </summary>
 /// <typeparam name="T">The type which should be hold by this bucket.</typeparam>
-public sealed class Bucket<T> : IEnumerable<T>, IDisposable
+public sealed class Bucket<T> : IEnumerable<T>
 {
     private readonly List<T> _innerList;
 
-    private readonly ReaderWriterLockSlim _locker = new ();
+    private readonly AsyncReaderWriterLock _locker = new ();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Bucket{T}"/> class.
@@ -29,12 +30,12 @@ public sealed class Bucket<T> : IEnumerable<T>, IDisposable
     /// <summary>
     /// Occurs when an item has been added.
     /// </summary>
-    public event EventHandler<BucketItemEventArgs<T>>? ItemAdded;
+    public event AsyncEventHandler<T>? ItemAdded;
 
     /// <summary>
     /// Occurs when an item has been removed.
     /// </summary>
-    public event EventHandler<BucketItemEventArgs<T>>? ItemRemoved;
+    public event AsyncEventHandler<T>? ItemRemoved;
 
     /// <summary>
     /// Gets the count.
@@ -45,19 +46,17 @@ public sealed class Bucket<T> : IEnumerable<T>, IDisposable
     /// Adds the specified item.
     /// </summary>
     /// <param name="item">The item.</param>
-    public void Add(T item)
+    public async ValueTask AddAsync(T item)
     {
-        this._locker.EnterWriteLock();
-        try
+        using (await this._locker.WriterLockAsync())
         {
             this._innerList.Add(item);
         }
-        finally
-        {
-            this._locker.ExitWriteLock();
-        }
 
-        this.ItemAdded?.Invoke(this, new BucketItemEventArgs<T>(item));
+        if (this.ItemAdded is { } eventHandler)
+        {
+            await eventHandler(item).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -65,22 +64,17 @@ public sealed class Bucket<T> : IEnumerable<T>, IDisposable
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>The success.</returns>
-    public bool Remove(T item)
+    public async ValueTask<bool> RemoveAsync(T item)
     {
         bool result;
-        this._locker.EnterWriteLock();
-        try
+        using (await this._locker.WriterLockAsync())
         {
             result = this._innerList.Remove(item);
         }
-        finally
-        {
-            this._locker.ExitWriteLock();
-        }
 
-        if (result)
+        if (result && this.ItemRemoved is { } eventHandler)
         {
-            this.ItemRemoved?.Invoke(this, new BucketItemEventArgs<T>(item));
+            await eventHandler(item).ConfigureAwait(false);
         }
 
         return result;
@@ -98,22 +92,14 @@ public sealed class Bucket<T> : IEnumerable<T>, IDisposable
         return this.GetEnumerator();
     }
 
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        this._locker.Dispose();
-    }
-
     private sealed class LockingEnumerator<TEnumerated> : IEnumerator<TEnumerated>
     {
-        private readonly ReaderWriterLockSlim _locker;
+        private readonly IDisposable _lockRelease;
         private readonly IEnumerator<TEnumerated> _enumerator;
 
-        public LockingEnumerator(ReaderWriterLockSlim locker, IEnumerator<TEnumerated> innerEnumerator)
+        public LockingEnumerator(AsyncReaderWriterLock locker, IEnumerator<TEnumerated> innerEnumerator)
         {
-            this._locker = locker;
-
-            locker.EnterReadLock();
+            this._lockRelease = locker.ReaderLock();
             this._enumerator = innerEnumerator;
         }
 
@@ -134,7 +120,7 @@ public sealed class Bucket<T> : IEnumerable<T>, IDisposable
         public void Dispose()
         {
             this._enumerator.Dispose();
-            this._locker.ExitReadLock();
+            this._lockRelease.Dispose();
         }
     }
 }

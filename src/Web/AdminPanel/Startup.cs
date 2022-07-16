@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.AsyncEx.Synchronous;
+
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
@@ -74,7 +76,7 @@ public class Startup
         {
             var contextProvider = provider.GetService<IPersistenceContextProvider>();
             using var initialContext = contextProvider!.CreateNewConfigurationContext();
-            return initialContext.Get<GameConfiguration>().FirstOrDefault()!; // yes, we might get null here - it's intended.
+            return initialContext.GetAsync<GameConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault()!; // yes, we might get null here - it's intended.
         });
 
         services.AddTransient(provider =>

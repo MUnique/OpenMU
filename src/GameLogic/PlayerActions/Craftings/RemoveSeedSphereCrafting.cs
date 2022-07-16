@@ -28,7 +28,7 @@ public class RemoveSeedSphereCrafting : SimpleItemCraftingHandler
     public static byte SocketItemReference { get; } = 0x88;
 
     /// <inheritdoc />
-    protected override IEnumerable<Item> CreateOrModifyResultItems(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
     {
         var socketItem = requiredItems.Single(i => i.ItemRequirement.Reference == SocketItemReference).Items.Single();
 
@@ -40,15 +40,15 @@ public class RemoveSeedSphereCrafting : SimpleItemCraftingHandler
         }
 
         socketItem.ItemOptions.Remove(socketOption);
-        player.PersistenceContext.Delete(socketOption);
+        await player.PersistenceContext.DeleteAsync(socketOption).ConfigureAwait(false);
 
         if (socketOption.Index < 3
             && socketItem.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketBonusOption) is { } bonusOption)
         {
             socketItem.ItemOptions.Remove(bonusOption);
-            player.PersistenceContext.Delete(bonusOption);
+            await player.PersistenceContext.DeleteAsync(bonusOption).ConfigureAwait(false);
         }
 
-        yield return socketItem;
+        return new List<Item> { socketItem };
     }
 }

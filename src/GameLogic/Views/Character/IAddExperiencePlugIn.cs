@@ -14,5 +14,5 @@ public interface IAddExperiencePlugIn : IViewPlugIn
     /// </summary>
     /// <param name="gainedExperience">The experience gain.</param>
     /// <param name="killedObject">The killed object.</param>
-    void AddExperience(int gainedExperience, IAttackable? killedObject);
+    ValueTask AddExperienceAsync(int gainedExperience, IAttackable? killedObject);
 }

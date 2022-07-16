@@ -26,8 +26,8 @@ internal class VaultCloseHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => VaultClosed.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        this._closeDialogAction.CloseNpcDialog(player);
+        await this._closeDialogAction.CloseNpcDialogAsync(player).ConfigureAwait(false);
     }
 }

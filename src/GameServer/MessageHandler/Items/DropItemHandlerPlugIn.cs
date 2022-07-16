@@ -27,9 +27,9 @@ internal class DropItemHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => DropItemRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         DropItemRequest message = packet;
-        this._dropAction.DropItem(player, message.ItemSlot, new Point(message.TargetX, message.TargetY));
+        await this._dropAction.DropItemAsync(player, message.ItemSlot, new Point(message.TargetX, message.TargetY)).ConfigureAwait(false);
     }
 }

@@ -14,5 +14,5 @@ public interface IItemBoughtFromPlayerShopPlugIn : IViewPlugIn
     /// Notifies the client that an item has been bought from another players shop.
     /// </summary>
     /// <param name="item">The item.</param>
-    void ItemBoughtFromPlayerShop(Item item);
+    ValueTask ItemBoughtFromPlayerShopAsync(Item item);
 }

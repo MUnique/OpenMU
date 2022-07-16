@@ -7,8 +7,8 @@ namespace MUnique.OpenMU.GameLogic;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Text.RegularExpressions;
 using System.Threading;
+using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The game context which holds all data of the game together.
 /// </summary>
-public class GameContext : Disposable, IGameContext
+public class GameContext : AsyncDisposable, IGameContext
 {
     private static readonly Meter Meter = new(MeterName);
 
@@ -29,22 +29,24 @@ public class GameContext : Disposable, IGameContext
 
     private static readonly Counter<int> MiniGameCounter = Meter.CreateCounter<int>("MiniGameCount");
 
-    private readonly Dictionary<ushort, GameMap> _mapList = new ();
+    private readonly Dictionary<ushort, GameMap> _mapList = new();
 
-    private readonly Dictionary<MiniGameMapKey, MiniGameContext> _miniGames = new ();
+    private readonly Dictionary<MiniGameMapKey, MiniGameContext> _miniGames = new();
 
     private readonly Timer _recoverTimer;
 
     private readonly IMapInitializer _mapInitializer;
 
+    private readonly AsyncLock _mapInitializerLock = new();
+
     private readonly Timer _tasksTimer;
 
-    private readonly SemaphoreSlim _playerListLock = new (1);
+    private readonly AsyncReaderWriterLock _playerListLock = new();
 
     /// <summary>
     /// Keeps the list of all players.
     /// </summary>
-    private readonly List<Player> _playerList = new ();
+    private readonly List<Player> _playerList = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameContext" /> class.
@@ -129,12 +131,12 @@ public class GameContext : Disposable, IGameContext
     public int PlayerCount => this._playerList.Count;
 
     /// <summary>
-    /// Sets the name of the meter of this class.
+    /// Gets the name of the meter of this class.
     /// </summary>
     internal static string MeterName => typeof(GameContext).FullName ?? nameof(GameContext);
 
     /// <inheritdoc/>
-    public GameMap? GetMap(ushort mapId, bool createIfNotExists = true)
+    public async ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true)
     {
         if (this._mapList.TryGetValue(mapId, out var map))
         {
@@ -147,7 +149,7 @@ public class GameContext : Disposable, IGameContext
         }
 
         GameMap? createdMap;
-        lock (this._mapInitializer)
+        using (await this._mapInitializerLock.LockAsync())
         {
             if (this._mapList.TryGetValue(mapId, out map))
             {
@@ -161,12 +163,20 @@ public class GameContext : Disposable, IGameContext
             }
 
             this._mapList.Add(mapId, createdMap);
-            createdMap.ObjectAdded += (sender, args) => this.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>()?.ObjectAddedToMap(args.Map, args.Object);
-            createdMap.ObjectRemoved += (sender, args) => this.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>()?.ObjectRemovedFromMap(args.Map, args.Object);
+            createdMap.ObjectAdded += args =>
+            {
+                this.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>()?.ObjectAddedToMap(args.Map, args.Object);
+                return ValueTask.CompletedTask;
+            };
+            createdMap.ObjectRemoved += args =>
+            {
+                this.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>()?.ObjectRemovedFromMap(args.Map, args.Object);
+                return ValueTask.CompletedTask;
+            };
         }
 
         // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
-        this._mapInitializer.InitializeState(createdMap);
+        await this._mapInitializer.InitializeStateAsync(createdMap).ConfigureAwait(false);
         this.GameMapCreated?.Invoke(this, createdMap);
         MapCounter.Add(1);
 
@@ -179,7 +189,7 @@ public class GameContext : Disposable, IGameContext
     /// <param name="miniGameDefinition">The mini game definition.</param>
     /// <param name="requester">The requesting player.</param>
     /// <returns>The hosted mini game instance.</returns>
-    public MiniGameContext GetMiniGame(MiniGameDefinition miniGameDefinition, Player requester)
+    public async ValueTask<MiniGameContext> GetMiniGameAsync(MiniGameDefinition miniGameDefinition, Player requester)
     {
         var miniGameKey = MiniGameMapKey.Create(miniGameDefinition, requester);
 
@@ -188,7 +198,7 @@ public class GameContext : Disposable, IGameContext
             return miniGameContext;
         }
 
-        lock (this._mapInitializer)
+        using (await this._mapInitializerLock.LockAsync())
         {
             if (this._miniGames.TryGetValue(miniGameKey, out miniGameContext))
             {
@@ -214,7 +224,7 @@ public class GameContext : Disposable, IGameContext
         var createdMap = miniGameContext.Map;
 
         // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
-        this._mapInitializer.InitializeState(createdMap);
+        await this._mapInitializer.InitializeStateAsync(createdMap).ConfigureAwait(false);
         this.GameMapCreated?.Invoke(this, createdMap);
         MiniGameCounter.Add(1);
         return miniGameContext;
@@ -232,20 +242,15 @@ public class GameContext : Disposable, IGameContext
     /// Adds the player to the game.
     /// </summary>
     /// <param name="player">The player.</param>
-    public virtual void AddPlayer(Player player)
+    public virtual async ValueTask AddPlayerAsync(Player player)
     {
-        player.PlayerLeftWorld += this.PlayerLeftWorld;
-        player.PlayerEnteredWorld += this.PlayerEnteredWorld;
-        player.PlayerDisconnected += this.PlayerDisconnected;
+        player.PlayerLeftWorld += this.PlayerLeftWorldAsync;
+        player.PlayerEnteredWorld += this.PlayerEnteredWorldAsync;
+        player.PlayerDisconnected += this.RemovePlayerAsync;
 
-        this._playerListLock.Wait();
-        try
+        using (await this._playerListLock.WriterLockAsync())
         {
             this._playerList.Add(player);
-        }
-        finally
-        {
-            this._playerListLock.Release();
         }
 
         PlayerCounter.Add(1);
@@ -255,7 +260,7 @@ public class GameContext : Disposable, IGameContext
     /// Removes the player from the game.
     /// </summary>
     /// <param name="player">The player.</param>
-    public virtual void RemovePlayer(Player player)
+    public virtual async ValueTask RemovePlayerAsync(Player player)
     {
         PlayerCounter.Add(-1);
         if (player.SelectedCharacter != null)
@@ -263,21 +268,16 @@ public class GameContext : Disposable, IGameContext
             this.PlayersByCharacterName.Remove(player.SelectedCharacter.Name);
         }
 
-        player.CurrentMap?.Remove(player);
+        player.CurrentMap?.RemoveAsync(player);
 
-        this._playerListLock.Wait();
-        try
+        using (await this._playerListLock.WriterLockAsync())
         {
             this._playerList.Remove(player);
         }
-        finally
-        {
-            this._playerListLock.Release();
-        }
 
-        player.PlayerDisconnected -= this.PlayerDisconnected;
-        player.PlayerEnteredWorld -= this.PlayerEnteredWorld;
-        player.PlayerLeftWorld -= this.PlayerLeftWorld;
+        player.PlayerDisconnected -= this.RemovePlayerAsync;
+        player.PlayerEnteredWorld -= this.PlayerEnteredWorldAsync;
+        player.PlayerLeftWorld -= this.PlayerLeftWorldAsync;
     }
 
     /// <summary>
@@ -292,55 +292,49 @@ public class GameContext : Disposable, IGameContext
     }
 
     /// <inheritdoc />
-    public void ForEachPlayer(Action<Player> action)
+    public async ValueTask ForEachPlayerAsync(Func<Player, Task> action)
     {
         if (this._playerList.Count == 0)
         {
             return;
         }
 
-        this._playerListLock.Wait();
+        using (await this._playerListLock.ReaderLockAsync())
+        {
+            await this._playerList.Select(action).WhenAll().ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc/>
+    public ValueTask SendGlobalMessageAsync(string message, MessageType messageType)
+    {
+        return this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType)).AsTask());
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask SendGlobalNotificationAsync(string message)
+    {
+        var sendingMessage = message.TrimStart('!');
+        await this.SendGlobalMessageAsync(sendingMessage, MessageType.GoldenCenter).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        await this._recoverTimer.DisposeAsync().ConfigureAwait(false);
+        await this._tasksTimer.DisposeAsync().ConfigureAwait(false);
+        await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void ExecutePeriodicTasks(object? state)
+    {
         try
         {
-            for (int i = this._playerList.Count - 1; i >= 0; --i)
+            if (this.PlugInManager.GetPlugInPoint<IPeriodicTaskPlugIn>() is { } plugInPoint)
             {
-                var player = this._playerList[i];
-                action(player);
+                await plugInPoint.ExecuteTaskAsync(this).ConfigureAwait(false);
             }
-        }
-        finally
-        {
-            this._playerListLock.Release();
-        }
-    }
-
-    /// <inheritdoc/>
-    public void SendGlobalMessage(string message, MessageType messageType)
-    {
-        this.ForEachPlayer(player => player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()?.ShowMessage(message, messageType));
-    }
-
-    /// <inheritdoc/>
-    public void SendGlobalNotification(string message)
-    {
-        var regex = new Regex(Regex.Escape("!"));
-        var sendingMessage = regex.Replace(message, string.Empty, 1);
-        this.SendGlobalMessage(sendingMessage, MessageType.GoldenCenter);
-    }
-
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-        this._recoverTimer.Dispose();
-        this._tasksTimer.Dispose();
-    }
-
-    private void ExecutePeriodicTasks(object? state)
-    {
-        try
-        {
-            this.PlugInManager.GetPlugInPoint<IPeriodicTaskPlugIn>()?.ExecuteTask(this);
         }
         catch (Exception ex)
         {
@@ -348,44 +342,38 @@ public class GameContext : Disposable, IGameContext
         }
     }
 
-    private void RecoverTimerElapsed(object? state)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void RecoverTimerElapsed(object? state)
     {
-        this.ForEachPlayer(player =>
+        try
         {
-            if (player.SelectedCharacter != null && player.PlayerState.CurrentState == PlayerState.EnteredWorld)
+            await this.ForEachPlayerAsync(player =>
             {
-                player.Regenerate();
-            }
-        });
+                if (player.SelectedCharacter != null && player.PlayerState.CurrentState == PlayerState.EnteredWorld)
+                {
+                    return player.RegenerateAsync();
+                }
+
+                return Task.CompletedTask;
+            }).ConfigureAwait(false);
+
+        }
+        catch
+        {
+            // This should never happen as we already handle Exceptions in player.RegenerateAsync.
+            // However, if the player disconnects in the meantime, it could happen :-).
+        }
     }
 
-    private void PlayerDisconnected(object? sender, EventArgs e)
+    private ValueTask PlayerEnteredWorldAsync(Player player)
     {
-        if (sender is not Player player)
-        {
-            return;
-        }
-
-        this.RemovePlayer(player);
-    }
-
-    private void PlayerEnteredWorld(object? sender, EventArgs e)
-    {
-        if (sender is not Player player)
-        {
-            return;
-        }
-
         this.PlayersByCharacterName.Add(player.SelectedCharacter!.Name, player);
+        return ValueTask.CompletedTask;
     }
 
-    private void PlayerLeftWorld(object? sender, EventArgs e)
+    private ValueTask PlayerLeftWorldAsync(Player player)
     {
-        if (sender is not Player player)
-        {
-            return;
-        }
-
         this.PlayersByCharacterName.Remove(player.SelectedCharacter!.Name);
+        return ValueTask.CompletedTask;
     }
 }

@@ -12,5 +12,5 @@ public interface IUpdateVaultStatePlugIn : IViewPlugIn
     /// <summary>
     /// Updates the vault state on client side.
     /// </summary>
-    void UpdateState();
+    ValueTask UpdateStateAsync();
 }

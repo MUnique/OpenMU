@@ -19,7 +19,7 @@ public class AttackSingleWhenPressedTrapIntelligence : TrapIntelligenceBase
     }
 
     /// <inheritdoc />
-    protected override void Tick()
+    protected override async ValueTask TickAsync()
     {
         if (this.Trap.Observers.Count == 0)
         {
@@ -31,7 +31,7 @@ public class AttackSingleWhenPressedTrapIntelligence : TrapIntelligenceBase
 
         foreach (var player in playersOnTrap)
         {
-            this.Trap.Attack(player);
+            await this.Trap.AttackAsync(player).ConfigureAwait(false);
         }
     }
 }

@@ -19,5 +19,5 @@ public interface IPeriodicTaskPlugIn
     /// Executes the task.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
-    void ExecuteTask(GameContext gameContext);
+    ValueTask ExecuteTaskAsync(GameContext gameContext);
 }

@@ -23,29 +23,29 @@ public class GuildChangeToGameServerPublisher : IGuildChangePublisher
     }
 
     /// <inheritdoc />
-    public void GuildPlayerKicked(string playerName)
+    public async ValueTask GuildPlayerKickedAsync(string playerName)
     {
         foreach (var gameServer in this._gameServers.Values)
         {
-            gameServer.GuildPlayerKicked(playerName);
+            await gameServer.GuildPlayerKickedAsync(playerName).ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc />
-    public void GuildDeleted(uint guildId)
+    public async ValueTask GuildDeletedAsync(uint guildId)
     {
         foreach (var gameServer in this._gameServers.Values)
         {
-            gameServer.GuildDeleted(guildId);
+            await gameServer.GuildDeletedAsync(guildId).ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc />
-    public void AssignGuildToPlayer(byte serverId, string characterName, GuildMemberStatus status)
+    public async ValueTask AssignGuildToPlayerAsync(byte serverId, string characterName, GuildMemberStatus status)
     {
         if (this._gameServers.TryGetValue(serverId, out var gameServer))
         {
-            gameServer.AssignGuildToPlayer(characterName, status);
+            await gameServer.AssignGuildToPlayerAsync(characterName, status).ConfigureAwait(false);
         }
     }
 }

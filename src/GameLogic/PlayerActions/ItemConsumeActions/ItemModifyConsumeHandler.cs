@@ -29,7 +29,7 @@ public abstract class ItemModifyConsumeHandler : BaseConsumeHandler
     protected IPersistenceContextProvider PersistenceContextProvider { get; }
 
     /// <inheritdoc/>
-    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
         {
@@ -60,9 +60,9 @@ public abstract class ItemModifyConsumeHandler : BaseConsumeHandler
             return false;
         }
 
-        this.ConsumeSourceItem(player, item);
+        await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
 
-        player.ViewPlugIns.GetPlugIn<IItemUpgradedPlugIn>()?.ItemUpgraded(targetItem);
+        await player.InvokeViewPlugInAsync<IItemUpgradedPlugIn>(p => p.ItemUpgradedAsync(targetItem)).ConfigureAwait(false);
         return true;
     }
 

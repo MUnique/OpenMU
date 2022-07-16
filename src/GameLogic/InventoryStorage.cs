@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.PlugIns;
+
 namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -29,13 +31,13 @@ public class InventoryStorage : Storage, IInventoryStorage
             new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, GetInventorySize(player)))
     {
         this._player = player;
-        this.EquippedItemsChanged += (sender, eventArgs) => this.UpdateItemsOnChange(eventArgs.Item);
+        this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item).ConfigureAwait(false);
         this._gameContext = context;
         this.InitializePowerUps();
     }
 
     /// <inheritdoc/>
-    public event EventHandler<ItemEventArgs>? EquippedItemsChanged;
+    public event AsyncEventHandler<ItemEventArgs>? EquippedItemsChanged;
 
     /// <inheritdoc/>
     public IEnumerable<Item> EquippedItems
@@ -54,7 +56,7 @@ public class InventoryStorage : Storage, IInventoryStorage
 
     /// <inheritdoc />
     /// <remarks>Additionally we need to make a temporary item persistent with the context of the player.</remarks>
-    public override bool AddItem(byte slot, Item item)
+    public override async ValueTask<bool> AddItemAsync(byte slot, Item item)
     {
         Item? convertedItem = null;
         if (item is TemporaryItem temporaryItem)
@@ -62,18 +64,18 @@ public class InventoryStorage : Storage, IInventoryStorage
             convertedItem = temporaryItem.MakePersistent(this._player.PersistenceContext);
         }
 
-        var success = base.AddItem(slot, convertedItem ?? item);
+        var success = await base.AddItemAsync(slot, convertedItem ?? item).ConfigureAwait(false);
         if (!success && convertedItem != null)
         {
-            this._player.PersistenceContext.Delete(convertedItem);
+            await this._player.PersistenceContext.DeleteAsync(convertedItem).ConfigureAwait(false);
         }
 
         if (success)
         {
             var isEquippedItem = this.IsWearingSlot(slot);
-            if (isEquippedItem)
+            if (isEquippedItem && this.EquippedItemsChanged is { } eventHandler)
             {
-                this.EquippedItemsChanged?.Invoke(this, new ItemEventArgs(convertedItem ?? item));
+                await eventHandler(new ItemEventArgs(convertedItem ?? item)).ConfigureAwait(false);
             }
         }
 
@@ -81,13 +83,13 @@ public class InventoryStorage : Storage, IInventoryStorage
     }
 
     /// <inheritdoc />
-    public override void RemoveItem(Item item)
+    public override async ValueTask RemoveItemAsync(Item item)
     {
         var isEquippedItem = this.IsWearingSlot(item.ItemSlot);
-        base.RemoveItem(item);
-        if (isEquippedItem)
+        await base.RemoveItemAsync(item).ConfigureAwait(false);
+        if (isEquippedItem && this.EquippedItemsChanged is { } eventHandler)
         {
-            this.EquippedItemsChanged?.Invoke(this, new ItemEventArgs(item));
+            await eventHandler(new ItemEventArgs(item)).ConfigureAwait(false);
         }
     }
 
@@ -96,10 +98,13 @@ public class InventoryStorage : Storage, IInventoryStorage
         return slot >= FirstEquippableItemSlotIndex && slot <= LastEquippableItemSlotIndex;
     }
 
-    private void UpdateItemsOnChange(Item item)
+    private async ValueTask UpdateItemsOnChangeAsync(Item item)
     {
         this._player.OnAppearanceChanged();
-        this._player.ForEachObservingPlayer(p => p.ViewPlugIns.GetPlugIn<IAppearanceChangedPlugIn>()?.AppearanceChanged(this._player, item), false); // in my tests it was not needed to send the appearance to the own players client.
+        await this._player.ForEachWorldObserverAsync<IAppearanceChangedPlugIn>(
+            p => p.AppearanceChangedAsync(this._player, item),
+            false).ConfigureAwait(false); // in my tests it was not needed to send the appearance to the own players client.
+
         if (this._player.Attributes is null)
         {
             return;

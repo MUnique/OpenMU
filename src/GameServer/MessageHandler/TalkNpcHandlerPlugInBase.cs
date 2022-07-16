@@ -26,12 +26,12 @@ internal abstract class TalkNpcHandlerPlugInBase : IPacketHandlerPlugIn
     protected abstract TalkNpcAction TalkNpcAction { get; }
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         TalkToNpcRequest message = packet;
         if (player.CurrentMap?.GetObject(message.NpcId) is NonPlayerCharacter npc)
         {
-            this.TalkNpcAction.TalkToNpc(player, npc);
+            await this.TalkNpcAction.TalkToNpcAsync(player, npc).ConfigureAwait(false);
         }
     }
 }

@@ -25,8 +25,8 @@ public class ShowGuildWarRequestPlugIn : IShowGuildWarRequestPlugIn
     public ShowGuildWarRequestPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowRequest(string requestingGuildName, GameLogic.GuildWar.GuildWarType warType)
+    public async ValueTask ShowRequestAsync(string requestingGuildName, GameLogic.GuildWar.GuildWarType warType)
     {
-        this._player.Connection?.SendGuildWarRequest(requestingGuildName, warType.Convert());
+        await this._player.Connection.SendGuildWarRequestAsync(requestingGuildName, warType.Convert()).ConfigureAwait(false);
     }
 }

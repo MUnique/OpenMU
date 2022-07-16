@@ -27,13 +27,13 @@ public class PlayerShopClosedPlugIn : IPlayerShopClosedPlugIn
     public PlayerShopClosedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void PlayerShopClosed(Player playerWithClosedShop)
+    public async ValueTask PlayerShopClosedAsync(Player playerWithClosedShop)
     {
         var playerId = playerWithClosedShop.GetId(this._player);
-        this._player.Connection?.SendPlayerShopClosed(playerId);
+        await this._player.Connection.SendPlayerShopClosedAsync(playerId).ConfigureAwait(false);
 
         // The following usually just needs to be sent to all players which currently have the shop dialog open
         // For the sake of simplicity, we send it to all players.
-        this._player.Connection?.SendClosePlayerShopDialog(playerId);
+        await this._player.Connection.SendClosePlayerShopDialogAsync(playerId).ConfigureAwait(false);
     }
 }

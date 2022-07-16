@@ -17,14 +17,14 @@ public interface IPlayerContext : IContext
     /// </summary>
     /// <param name="headerId">The id of its header.</param>
     /// <returns>The body of the header.</returns>
-    LetterBody? GetLetterBodyByHeaderId(Guid headerId);
+    ValueTask<LetterBody?> GetLetterBodyByHeaderIdAsync(Guid headerId);
 
     /// <summary>
     /// Determines if the letter can be saved.
     /// </summary>
     /// <param name="letterHeader">The letter header.</param>
     /// <returns><c>True</c>, if successful; Otherwise, <c>false</c>.</returns>
-    bool CanSaveLetter(LetterHeader letterHeader);
+    ValueTask<bool> CanSaveLetterAsync(LetterHeader letterHeader);
 
     /// <summary>
     /// Gets the account by login name if the password is correct.
@@ -32,7 +32,7 @@ public interface IPlayerContext : IContext
     /// <param name="loginName">The login name.</param>
     /// <param name="password">The password.</param>
     /// <returns>The account, if the password is correct. Otherwise, null.</returns>
-    Account? GetAccountByLoginName(string loginName, string password);
+    ValueTask<Account?> GetAccountByLoginNameAsync(string loginName, string password);
 
     /// <summary>
     /// Gets the accounts ordered by login name.
@@ -40,5 +40,5 @@ public interface IPlayerContext : IContext
     /// <param name="skip">The skip count.</param>
     /// <param name="count">The count.</param>
     /// <returns>The account objects, without depending data.</returns>
-    IEnumerable<Account> GetAccountsOrderedByLoginName(int skip, int count);
+    ValueTask<IEnumerable<Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count);
 }

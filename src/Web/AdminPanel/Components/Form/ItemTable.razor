@@ -43,7 +43,7 @@
                             <td>
                                 @if (this._isEditable)
                                 {
-                                    <button type="button" class="btn-danger" @onclick="@(() => OnRemoveClick(item.Item))">Remove</button>
+                                    <button type="button" class="btn-danger" @onclick="@(() => OnRemoveClickAsync(item.Item))">Remove</button>
                                 }
                             </td>
                         </tr>
@@ -54,12 +54,12 @@
                             <td colspan="3">
                                 @if (this._isAddingSupported)
                                 {
-                                    <button type="button" class="btn-primary" @onclick="@OnAddClick">Add</button>
+                                    <button type="button" class="btn-primary" @onclick="@OnAddClickAsync">Add</button>
                                 }
 
                                 @if (this._isCreatingSupported)
                                 {
-                                    <button type="button" class="btn-primary" @onclick="@OnCreateClick">Create</button>
+                                    <button type="button" class="btn-primary" @onclick="@OnCreateClickAsync">Create</button>
                                 }
                             </td>
                         </tr>

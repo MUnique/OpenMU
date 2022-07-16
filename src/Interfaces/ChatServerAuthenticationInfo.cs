@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Authentication info of a chat server client.
-/// This is created by the chatserver through <see cref="IChatServer.RegisterClient"/>
+/// This is created by the chatserver through <see cref="IChatServer.RegisterClientAsync"/>
 /// and the chat client needs to provide all of this information to authenticate itself.
 /// </summary>
 public class ChatServerAuthenticationInfo

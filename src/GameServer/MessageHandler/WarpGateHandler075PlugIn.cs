@@ -31,7 +31,7 @@ internal class WarpGateHandler075PlugIn : IPacketHandlerPlugIn
     public byte Key => EnterGateRequest075.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < EnterGateRequest075.Length)
         {
@@ -43,7 +43,7 @@ internal class WarpGateHandler075PlugIn : IPacketHandlerPlugIn
 
         if (gateNumber == 0)
         {
-            this._teleportAction.TryTeleportWithSkill(player, new Point(request.TeleportTargetX, request.TeleportTargetY));
+            await this._teleportAction.TryTeleportWithSkillAsync(player, new Point(request.TeleportTargetX, request.TeleportTargetY)).ConfigureAwait(false);
             return;
         }
 
@@ -54,6 +54,6 @@ internal class WarpGateHandler075PlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        this._warpAction.EnterGate(player, gate);
+        await this._warpAction.EnterGateAsync(player, gate).ConfigureAwait(false);
     }
 }

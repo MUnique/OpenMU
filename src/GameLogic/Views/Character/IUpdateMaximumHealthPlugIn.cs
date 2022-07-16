@@ -12,5 +12,5 @@ public interface IUpdateMaximumHealthPlugIn : IViewPlugIn
     /// <summary>
     /// Updates the maximum health.
     /// </summary>
-    void UpdateMaximumHealth();
+    ValueTask UpdateMaximumHealthAsync();
 }

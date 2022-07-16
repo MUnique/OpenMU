@@ -39,16 +39,16 @@ public class ShowAnimationPlugIn : IShowAnimationPlugIn
     /// This Packet is sent to the Server when an Object does an animation, including attacking other players.
     /// It will create the animation at the client side.
     /// </remarks>
-    public void ShowAnimation(IIdentifiable animatingObj, byte animation, IIdentifiable? targetObj, Direction direction)
+    public async ValueTask ShowAnimationAsync(IIdentifiable animatingObj, byte animation, IIdentifiable? targetObj, Direction direction)
     {
         var animatingId = animatingObj.GetId(this._player);
         var targetId = targetObj?.GetId(this._player) ?? 0;
-        this._player.Connection?.SendObjectAnimation(animatingId, direction.ToPacketByte(), animation, targetId);
+        await this._player.Connection.SendObjectAnimationAsync(animatingId, direction.ToPacketByte(), animation, targetId).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public void ShowMonsterAttackAnimation(IIdentifiable animatingObj, IIdentifiable? targetObj, Direction direction)
+    public ValueTask ShowMonsterAttackAnimationAsync(IIdentifiable animatingObj, IIdentifiable? targetObj, Direction direction)
     {
-        this.ShowAnimation(animatingObj, this.MonsterAttackAnimation, targetObj, direction);
+        return this.ShowAnimationAsync(animatingObj, this.MonsterAttackAnimation, targetObj, direction);
     }
 }

@@ -32,9 +32,9 @@ public class ChangeTradeButtonStatePlugIn : IChangeTradeButtonStatePlugIn
     /// C1 04 3C 01 Partner pressed
     /// C1 04 3C 02 Button is red for x seconds.
     /// </remarks>
-    public void ChangeTradeButtonState(TradeButtonState state)
+    public async ValueTask ChangeTradeButtonStateAsync(TradeButtonState state)
     {
-        this._player.Connection?.SendTradeButtonStateChanged(Convert(state));
+        await this._player.Connection.SendTradeButtonStateChangedAsync(Convert(state)).ConfigureAwait(false);
     }
 
     private static TradeButtonStateChanged.TradeButtonState Convert(TradeButtonState state)

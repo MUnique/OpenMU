@@ -31,7 +31,7 @@ internal class BloodCastleEnterHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => BloodCastleEnterRequest.Code;
 
     /// <inheritdoc/>
-    public void HandlePacket(Player player, Span<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         if (packet.Length < BloodCastleEnterRequest.Length
             || player.SelectedCharacter?.CharacterClass is null)
@@ -42,6 +42,6 @@ internal class BloodCastleEnterHandlerPlugIn : IPacketHandlerPlugIn
         BloodCastleEnterRequest request = packet;
         var actualLevel = request.CastleLevel;
         var ticketIndex = request.TicketItemInventoryIndex;
-        this._enterAction.TryEnterMiniGame(player, MiniGameType.BloodCastle, actualLevel, (byte)ticketIndex);
+        await this._enterAction.TryEnterMiniGameAsync(player, MiniGameType.BloodCastle, actualLevel, (byte)ticketIndex).ConfigureAwait(false);
     }
 }

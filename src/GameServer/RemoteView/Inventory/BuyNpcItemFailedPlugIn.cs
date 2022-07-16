@@ -25,8 +25,8 @@ public class BuyNpcItemFailedPlugIn : IBuyNpcItemFailedPlugIn
     public BuyNpcItemFailedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void BuyNpcItemFailed()
+    public ValueTask BuyNpcItemFailedAsync()
     {
-        this._player.Connection?.SendNpcItemBuyFailed();
+        return this._player.Connection.SendNpcItemBuyFailedAsync();
     }
 }

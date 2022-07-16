@@ -14,6 +14,8 @@
 // ReSharper disable AssignmentIsFullyDiscarded
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UseObjectOrCollectionInitializer
+
+#nullable enable
 namespace MUnique.OpenMU.Network.Packets.ConnectServer;
 
 using System;
@@ -27,107 +29,31 @@ public static class ConnectionExtensions
 {
 
     /// <summary>
-    /// Starts a safe write of a <see cref="ConnectionInfoRequest" /> to this connection.
+    /// Sends a <see cref="ConnectionInfoRequest075" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
+    /// <param name="serverId">The server id.</param>
     /// <remarks>
     /// Is sent by the client when: This packet is sent by the client after the user clicked on an entry of the server list.
     /// Causes reaction on server side: The server will send a ConnectionInfo back to the client.
     /// </remarks>
-    public static ConnectionInfoRequestThreadSafeWriter StartWriteConnectionInfoRequest(this IConnection connection)
+    public static async ValueTask SendConnectionInfoRequest075Async(this IConnection? connection, byte @serverId)
     {
-        return new (connection);
-    }
+        if (connection is null)
+        {
+            return;
+        }
 
-    /// <summary>
-    /// Starts a safe write of a <see cref="ConnectionInfo" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <remarks>
-    /// Is sent by the server when: This packet is sent by the server after the client requested the connection information of a server. This happens after the user clicked on a server.
-    /// Causes reaction on client side: The client will try to connect to the server with the specified information.
-    /// </remarks>
-    public static ConnectionInfoThreadSafeWriter StartWriteConnectionInfo(this IConnection connection)
-    {
-        return new (connection);
-    }
+        int WritePacket()
+        {
+            var length = ConnectionInfoRequest075Ref.Length;
+            var packet = new ConnectionInfoRequest075Ref(connection.Output.GetSpan(length)[..length]);
+            packet.ServerId = @serverId;
 
-    /// <summary>
-    /// Starts a safe write of a <see cref="ServerListRequest" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <remarks>
-    /// Is sent by the client when: This packet is sent by the client after it connected and received the 'Hello' message.
-    /// Causes reaction on server side: The server will send a ServerListResponse back to the client.
-    /// </remarks>
-    public static ServerListRequestThreadSafeWriter StartWriteServerListRequest(this IConnection connection)
-    {
-        return new (connection);
-    }
+            return packet.Header.Length;
+        }
 
-    /// <summary>
-    /// Starts a safe write of a <see cref="ServerListRequestOld" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <remarks>
-    /// Is sent by the client when: This packet is sent by the client (below season 1) after it connected and received the 'Hello' message.
-    /// Causes reaction on server side: The server will send a ServerListResponseOld back to the client.
-    /// </remarks>
-    public static ServerListRequestOldThreadSafeWriter StartWriteServerListRequestOld(this IConnection connection)
-    {
-        return new (connection);
-    }
-
-    /// <summary>
-    /// Starts a safe write of a <see cref="Hello" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <remarks>
-    /// Is sent by the server when: This packet is sent by the server after the client connected to the server.
-    /// Causes reaction on client side: A game client will request the server list. The launcher would request the patch state.
-    /// </remarks>
-    public static HelloThreadSafeWriter StartWriteHello(this IConnection connection)
-    {
-        return new (connection);
-    }
-
-    /// <summary>
-    /// Starts a safe write of a <see cref="PatchCheckRequest" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <remarks>
-    /// Is sent by the client when: This packet is sent by the client (launcher) to check if the patch version is high enough to be able to connect to the server.
-    /// Causes reaction on server side: The connect server will check the version and sends a 'PatchVersionOkay' or a 'ClientNeedsPatch' message.
-    /// </remarks>
-    public static PatchCheckRequestThreadSafeWriter StartWritePatchCheckRequest(this IConnection connection)
-    {
-        return new (connection);
-    }
-
-    /// <summary>
-    /// Starts a safe write of a <see cref="PatchVersionOkay" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <remarks>
-    /// Is sent by the server when: This packet is sent by the server after the client (launcher) requested the to check the patch version and it was high enough.
-    /// Causes reaction on client side: The launcher will activate its start button.
-    /// </remarks>
-    public static PatchVersionOkayThreadSafeWriter StartWritePatchVersionOkay(this IConnection connection)
-    {
-        return new (connection);
-    }
-
-    /// <summary>
-    /// Starts a safe write of a <see cref="ClientNeedsPatch" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <remarks>
-    /// Is sent by the server when: This packet is sent by the server after the client (launcher) requested to check the patch version and it requires an update.
-    /// Causes reaction on client side: The launcher will download the required patches and then activate the start button.
-    /// </remarks>
-    public static ClientNeedsPatchThreadSafeWriter StartWriteClientNeedsPatch(this IConnection connection)
-    {
-        return new (connection);
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -139,12 +65,23 @@ public static class ConnectionExtensions
     /// Is sent by the client when: This packet is sent by the client after the user clicked on an entry of the server list.
     /// Causes reaction on server side: The server will send a ConnectionInfo back to the client.
     /// </remarks>
-    public static void SendConnectionInfoRequest(this IConnection connection, ushort @serverId)
+    public static async ValueTask SendConnectionInfoRequestAsync(this IConnection? connection, ushort @serverId)
     {
-        using var writer = connection.StartWriteConnectionInfoRequest();
-        var packet = writer.Packet;
-        packet.ServerId = @serverId;
-        writer.Commit();
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ConnectionInfoRequestRef.Length;
+            var packet = new ConnectionInfoRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.ServerId = @serverId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -157,13 +94,24 @@ public static class ConnectionExtensions
     /// Is sent by the server when: This packet is sent by the server after the client requested the connection information of a server. This happens after the user clicked on a server.
     /// Causes reaction on client side: The client will try to connect to the server with the specified information.
     /// </remarks>
-    public static void SendConnectionInfo(this IConnection connection, string @ipAddress, ushort @port)
+    public static async ValueTask SendConnectionInfoAsync(this IConnection? connection, string @ipAddress, ushort @port)
     {
-        using var writer = connection.StartWriteConnectionInfo();
-        var packet = writer.Packet;
-        packet.IpAddress = @ipAddress;
-        packet.Port = @port;
-        writer.Commit();
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ConnectionInfoRef.Length;
+            var packet = new ConnectionInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.IpAddress = @ipAddress;
+            packet.Port = @port;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -174,10 +122,21 @@ public static class ConnectionExtensions
     /// Is sent by the client when: This packet is sent by the client after it connected and received the 'Hello' message.
     /// Causes reaction on server side: The server will send a ServerListResponse back to the client.
     /// </remarks>
-    public static void SendServerListRequest(this IConnection connection)
+    public static async ValueTask SendServerListRequestAsync(this IConnection? connection)
     {
-        using var writer = connection.StartWriteServerListRequest();
-        writer.Commit();
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ServerListRequestRef.Length;
+            var packet = new ServerListRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -188,10 +147,21 @@ public static class ConnectionExtensions
     /// Is sent by the client when: This packet is sent by the client (below season 1) after it connected and received the 'Hello' message.
     /// Causes reaction on server side: The server will send a ServerListResponseOld back to the client.
     /// </remarks>
-    public static void SendServerListRequestOld(this IConnection connection)
+    public static async ValueTask SendServerListRequestOldAsync(this IConnection? connection)
     {
-        using var writer = connection.StartWriteServerListRequestOld();
-        writer.Commit();
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ServerListRequestOldRef.Length;
+            var packet = new ServerListRequestOldRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -202,10 +172,21 @@ public static class ConnectionExtensions
     /// Is sent by the server when: This packet is sent by the server after the client connected to the server.
     /// Causes reaction on client side: A game client will request the server list. The launcher would request the patch state.
     /// </remarks>
-    public static void SendHello(this IConnection connection)
+    public static async ValueTask SendHelloAsync(this IConnection? connection)
     {
-        using var writer = connection.StartWriteHello();
-        writer.Commit();
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = HelloRef.Length;
+            var packet = new HelloRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -219,14 +200,25 @@ public static class ConnectionExtensions
     /// Is sent by the client when: This packet is sent by the client (launcher) to check if the patch version is high enough to be able to connect to the server.
     /// Causes reaction on server side: The connect server will check the version and sends a 'PatchVersionOkay' or a 'ClientNeedsPatch' message.
     /// </remarks>
-    public static void SendPatchCheckRequest(this IConnection connection, byte @majorVersion, byte @minorVersion, byte @patchVersion)
+    public static async ValueTask SendPatchCheckRequestAsync(this IConnection? connection, byte @majorVersion, byte @minorVersion, byte @patchVersion)
     {
-        using var writer = connection.StartWritePatchCheckRequest();
-        var packet = writer.Packet;
-        packet.MajorVersion = @majorVersion;
-        packet.MinorVersion = @minorVersion;
-        packet.PatchVersion = @patchVersion;
-        writer.Commit();
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PatchCheckRequestRef.Length;
+            var packet = new PatchCheckRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.MajorVersion = @majorVersion;
+            packet.MinorVersion = @minorVersion;
+            packet.PatchVersion = @patchVersion;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -237,10 +229,21 @@ public static class ConnectionExtensions
     /// Is sent by the server when: This packet is sent by the server after the client (launcher) requested the to check the patch version and it was high enough.
     /// Causes reaction on client side: The launcher will activate its start button.
     /// </remarks>
-    public static void SendPatchVersionOkay(this IConnection connection)
+    public static async ValueTask SendPatchVersionOkayAsync(this IConnection? connection)
     {
-        using var writer = connection.StartWritePatchVersionOkay();
-        writer.Commit();
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PatchVersionOkayRef.Length;
+            var packet = new PatchVersionOkayRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -253,427 +256,22 @@ public static class ConnectionExtensions
     /// Is sent by the server when: This packet is sent by the server after the client (launcher) requested to check the patch version and it requires an update.
     /// Causes reaction on client side: The launcher will download the required patches and then activate the start button.
     /// </remarks>
-    public static void SendClientNeedsPatch(this IConnection connection, byte @patchVersion, string @patchAddress)
+    public static async ValueTask SendClientNeedsPatchAsync(this IConnection? connection, byte @patchVersion, string @patchAddress)
     {
-        using var writer = connection.StartWriteClientNeedsPatch();
-        var packet = writer.Packet;
-        packet.PatchVersion = @patchVersion;
-        packet.PatchAddress = @patchAddress;
-        writer.Commit();
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ClientNeedsPatchRef.Length;
+            var packet = new ClientNeedsPatchRef(connection.Output.GetSpan(length)[..length]);
+            packet.PatchVersion = @patchVersion;
+            packet.PatchAddress = @patchAddress;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}
-/// <summary>
-/// A helper struct to write a <see cref="ConnectionInfoRequest"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct ConnectionInfoRequestThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConnectionInfoRequestThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public ConnectionInfoRequestThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new ConnectionInfoRequest(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(ConnectionInfoRequest.Length)[..ConnectionInfoRequest.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public ConnectionInfoRequest Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="ConnectionInfoRequest" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(ConnectionInfoRequest.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      
-/// <summary>
-/// A helper struct to write a <see cref="ConnectionInfo"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct ConnectionInfoThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConnectionInfoThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public ConnectionInfoThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new ConnectionInfo(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(ConnectionInfo.Length)[..ConnectionInfo.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public ConnectionInfo Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="ConnectionInfo" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(ConnectionInfo.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      
-/// <summary>
-/// A helper struct to write a <see cref="ServerListRequest"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct ServerListRequestThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ServerListRequestThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public ServerListRequestThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new ServerListRequest(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(ServerListRequest.Length)[..ServerListRequest.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public ServerListRequest Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="ServerListRequest" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(ServerListRequest.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      
-/// <summary>
-/// A helper struct to write a <see cref="ServerListRequestOld"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct ServerListRequestOldThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ServerListRequestOldThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public ServerListRequestOldThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new ServerListRequestOld(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(ServerListRequestOld.Length)[..ServerListRequestOld.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public ServerListRequestOld Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="ServerListRequestOld" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(ServerListRequestOld.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      
-/// <summary>
-/// A helper struct to write a <see cref="Hello"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct HelloThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="HelloThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public HelloThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new Hello(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(Hello.Length)[..Hello.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public Hello Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="Hello" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(Hello.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      
-/// <summary>
-/// A helper struct to write a <see cref="PatchCheckRequest"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct PatchCheckRequestThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PatchCheckRequestThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public PatchCheckRequestThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new PatchCheckRequest(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(PatchCheckRequest.Length)[..PatchCheckRequest.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public PatchCheckRequest Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="PatchCheckRequest" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(PatchCheckRequest.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      
-/// <summary>
-/// A helper struct to write a <see cref="PatchVersionOkay"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct PatchVersionOkayThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PatchVersionOkayThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public PatchVersionOkayThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new PatchVersionOkay(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(PatchVersionOkay.Length)[..PatchVersionOkay.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public PatchVersionOkay Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="PatchVersionOkay" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(PatchVersionOkay.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      
-/// <summary>
-/// A helper struct to write a <see cref="ClientNeedsPatch"/> safely to a <see cref="IConnection.Output" />.
-/// </summary>
-public readonly ref struct ClientNeedsPatchThreadSafeWriter
-{
-    private readonly IConnection connection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ClientNeedsPatchThreadSafeWriter" /> struct.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    public ClientNeedsPatchThreadSafeWriter(IConnection connection)
-    {
-        this.connection = connection;
-        this.connection.OutputLock.Wait();
-        try
-        {
-            // Initialize header and default values
-            var span = this.Span;
-            span.Clear();
-            _ = new ClientNeedsPatch(span);
-        }
-        catch (InvalidOperationException)
-        {
-            this.connection.OutputLock.Release();
-            throw;
-        }
-    }
-
-    /// <summary>Gets the span to write at.</summary>
-    private Span<byte> Span => this.connection.Output.GetSpan(ClientNeedsPatch.Length)[..ClientNeedsPatch.Length];
-
-    /// <summary>Gets the packet to write at.</summary>
-    public ClientNeedsPatch Packet => this.Span;
-
-    /// <summary>
-    /// Commits the data of the <see cref="ClientNeedsPatch" />.
-    /// </summary>
-    public void Commit()
-    {
-        this.connection.Output.AdvanceSafely(ClientNeedsPatch.Length);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.connection.OutputLock.Release();
-    }
-}
-      

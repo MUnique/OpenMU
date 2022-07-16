@@ -28,9 +28,9 @@ public abstract class RecoverConsumeHandler : BaseConsumeHandler
     protected abstract AttributeDefinition MaximumAttribute { get; }
 
     /// <inheritdoc/>
-    public override bool ConsumeItem(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (base.ConsumeItem(player, item, targetItem, fruitUsage))
+        if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
             this.Recover(player);
             return true;

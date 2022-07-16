@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameServer.RemoteView.Guild;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
@@ -31,7 +32,7 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
     public ShowCharacterListPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public void ShowCharacterList()
+    public async ValueTask ShowCharacterListAsync()
     {
         var connection = this._player.Connection;
         if (connection is null || this._player.Account is not { } account)
@@ -40,10 +41,10 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
         }
 
         var unlockFlags = CreateUnlockFlags(account);
-        this.SendCharacterList(unlockFlags);
+        await this.SendCharacterListAsync(connection, account, unlockFlags).ConfigureAwait(false);
         if (unlockFlags > CharacterCreationUnlockFlags.None)
         {
-            connection.SendCharacterClassCreationUnlock(unlockFlags);
+            await connection.SendCharacterClassCreationUnlockAsync(unlockFlags).ConfigureAwait(false);
         }
     }
 
@@ -56,28 +57,44 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
         return (CharacterCreationUnlockFlags)result;
     }
 
-    private void SendCharacterList(CharacterCreationUnlockFlags unlockFlags)
+    private async ValueTask SendCharacterListAsync(IConnection connection, Account account, CharacterCreationUnlockFlags unlockFlags)
     {
-        var appearanceSerializer = this._player.AppearanceSerializer;
-        using var writer = this._player.Connection!.StartSafeWrite(CharacterList.HeaderType, CharacterList.GetRequiredSize(this._player.Account!.Characters.Count));
-        var packet = new CharacterList(writer.Span);
-        packet.UnlockFlags = unlockFlags;
-        packet.CharacterCount = (byte)this._player.Account.Characters.Count;
-        packet.IsVaultExtended = this._player.Account.IsVaultExtended;
-        var i = 0;
-        foreach (var character in this._player.Account.Characters.OrderBy(c => c.CharacterSlot))
+        var guildPositions = new GuildPosition?[account.Characters.Count];
+        int i = 0;
+        foreach (var character in account.Characters)
         {
-            var characterData = packet[i];
-            characterData.SlotIndex = character.CharacterSlot;
-            characterData.Name = character.Name;
-            characterData.Level = (ushort)(character.Attributes.FirstOrDefault(s => s.Definition == Stats.Level)?.Value ?? 1);
-            characterData.Status = character.CharacterStatus.Convert();
-            var guildPosition = this._player.GameServerContext.GuildServer?.GetGuildPosition(character.Id);
-            characterData.GuildPosition = guildPosition.Convert();
-            appearanceSerializer.WriteAppearanceData(characterData.Appearance, new CharacterAppearanceDataAdapter(character), false);
+            guildPositions[i] = await this._player.GameServerContext.GuildServer.GetGuildPositionAsync(character.Id).ConfigureAwait(false);
             i++;
         }
 
-        writer.Commit();
+        var appearanceSerializer = this._player.AppearanceSerializer;
+        int Write()
+        {
+            var size = CharacterListRef.GetRequiredSize(account.Characters.Count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new CharacterListRef(span)
+            {
+                UnlockFlags = unlockFlags,
+                CharacterCount = (byte)account.Characters.Count,
+                IsVaultExtended = account.IsVaultExtended,
+            };
+
+            var j = 0;
+            foreach (var character in account.Characters.OrderBy(c => c.CharacterSlot))
+            {
+                var characterData = packet[j];
+                characterData.SlotIndex = character.CharacterSlot;
+                characterData.Name = character.Name;
+                characterData.Level = (ushort)(character.Attributes.FirstOrDefault(s => s.Definition == Stats.Level)?.Value ?? 1);
+                characterData.Status = character.CharacterStatus.Convert();
+                characterData.GuildPosition = guildPositions[j].Convert();
+                appearanceSerializer.WriteAppearanceData(characterData.Appearance, new CharacterAppearanceDataAdapter(character), false);
+                j++;
+            }
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

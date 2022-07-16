@@ -19,6 +19,15 @@ using GameConfiguration = MUnique.OpenMU.Persistence.EntityFramework.Model.GameC
 internal class JsonQueryBuilderTests
 {
     /// <summary>
+    /// Sets up this instance.
+    /// </summary>
+    [OneTimeSetUp]
+    public void Setup()
+    {
+        ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+    }
+
+    /// <summary>
     /// Tests the json query builder for the <see cref="GameConfiguration"/> type.
     /// </summary>
     [Test]
@@ -74,9 +83,9 @@ internal class JsonQueryBuilderTests
     /// </summary>
     [Test]
     [Ignore("It hits the database.")]
-    public void LoadConfigByJson()
+    public async Task LoadConfigByJsonAsync()
     {
-        using var installationContext = new ConfigurationContext();
+        await using var installationContext = new ConfigurationContext();
         installationContext.Database.OpenConnection();
         var builder = new GameConfigurationJsonObjectLoader();
         IEnumerable<GameConfiguration> result;
@@ -84,7 +93,8 @@ internal class JsonQueryBuilderTests
         stopwatch.Start();
         try
         {
-            result = builder.LoadAllObjects<EntityFramework.Model.GameConfiguration>(installationContext).ToList();
+            result = await builder.LoadAllObjectsAsync<EntityFramework.Model.GameConfiguration>(installationContext).ConfigureAwait(false);
+            result = result.ToList();
         }
         finally
         {
