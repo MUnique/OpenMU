@@ -119,12 +119,6 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
         await this.StartAsync().ConfigureAwait(false);
     }
 
-    /// <inheritdoc />
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        await this.ShutdownAsync().ConfigureAwait(false);
-    }
-
     /// <inheritdoc/>
     public async ValueTask StartAsync()
     {
@@ -148,6 +142,12 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
         }
 
         this._logger.LogInformation("Finished starting");
+    }
+
+    /// <inheritdoc />
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await this.ShutdownAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

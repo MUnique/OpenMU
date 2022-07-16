@@ -71,15 +71,15 @@ public class GameServer : IGameServer
     }
 
     /// <inheritdoc />
-    public async ValueTask ShutdownAsync()
-    {
-        await this.StopAsync(default).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
         return this._client.InvokeMethodAsync(this._targetAppId, nameof(this.StartAsync), cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ShutdownAsync()
+    {
+        await this.StopAsync(default).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

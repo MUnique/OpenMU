@@ -11,6 +11,8 @@ import { NpcData, PlayerData, Step } from "./Types";
 
 export class World extends THREE.Object3D {
     private static readonly sideLength: number = 256;
+    private static readonly rotationAnimationId: number = 122;
+
     private objects:
         {
             [id: number]: GameObject,
@@ -121,7 +123,7 @@ export class World extends THREE.Object3D {
     public addAnimation(animatingId: number, animation: number, targetId: number, direction: number): void {
         const animating = this.getObjectById(animatingId);
         if (animating !== undefined && animating !== null) {
-            if (animation === 122) {
+            if (animation === World.rotationAnimationId) {
                 animating.rotateTo(direction);
             } else {
                 const rotationMultiplier = 0x10;
