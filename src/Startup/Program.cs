@@ -16,11 +16,6 @@ using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using Serilog;
 using Serilog.Debugging;
-using SixLabors.ImageSharp;
-using SixLabors.Memory;
-using MUnique.OpenMU.Web.AdminPanel;
-using MUnique.OpenMU.Web.AdminPanel.Services;
-using MUnique.OpenMU.Web.Map.Map;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.FriendServer;
@@ -34,6 +29,9 @@ using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Web.AdminPanel;
+using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Map.Map;
 
 /// <summary>
 /// The startup class for an all-in-one game server.
@@ -70,7 +68,6 @@ internal sealed class Program : IDisposable
     /// <param name="args">The command line args.</param>
     public static async Task Main(string[] args)
     {
-        Configuration.Default.MemoryAllocator = ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
         using var exitCts = new CancellationTokenSource();
         var exitToken = exitCts.Token;
         var isDaemonMode = args.Contains("-daemon");

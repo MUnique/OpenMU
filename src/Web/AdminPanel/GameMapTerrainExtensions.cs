@@ -26,14 +26,14 @@ public static class GameMapTerrainExtensions
         {
             for (int x = 0; x < 0x100; x++)
             {
-                var color = Rgba32.Black;
+                var color = Color.Black;
                 if (terrain.SafezoneMap[y, x])
                 {
-                    color = Rgba32.Gray;
+                    color = Color.Gray;
                 }
                 else if (terrain.WalkMap[y, x])
                 {
-                    color = Rgba32.SpringGreen;
+                    color = Color.SpringGreen;
                 }
                 else
                 {

@@ -4,14 +4,12 @@
 
 namespace MUnique.OpenMU.Web.Map;
 
-using Microsoft.AspNetCore.Builder;
-using MUnique.OpenMU.Web.Map.Map;
 using System.Threading;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
-using SixLabors.Memory;
+using MUnique.OpenMU.Web.Map.Map;
 
 /// <summary>
 /// The admin panel host class which provides a web server over ASP.NET Core Kestrel.
@@ -43,7 +41,6 @@ public sealed class MapApp : IHostedService, IDisposable
         var port = StartPort + this._gameServer.Id;
 
         this._logger.LogInformation($"Start initializing Map app for game server {this._gameServer.Id} on port {port}.");
-        Configuration.Default.MemoryAllocator = ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
 
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddRazorPages();

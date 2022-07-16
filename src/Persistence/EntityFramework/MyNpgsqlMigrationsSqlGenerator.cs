@@ -60,7 +60,7 @@ internal class MyNpgsqlMigrationsSqlGenerator : NpgsqlMigrationsSqlGenerator
     /// <param name="dependencies">The dependencies of the generator.</param>
     /// <param name="npgsqlOptions">The options.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "We are extending internals of the NpgsqlMigrationsSqlGenerator.")]
-    public MyNpgsqlMigrationsSqlGenerator(MigrationsSqlGeneratorDependencies dependencies, INpgsqlOptions npgsqlOptions)
+    public MyNpgsqlMigrationsSqlGenerator(MigrationsSqlGeneratorDependencies dependencies, INpgsqlSingletonOptions npgsqlOptions)
         : base(dependencies, npgsqlOptions)
     {
         ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());

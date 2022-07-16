@@ -4,10 +4,7 @@
 
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.Web.AdminPanel;
-using SixLabors.ImageSharp;
-using SixLabors.Memory;
 
-Configuration.Default.MemoryAllocator = ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
 var builder = DaprService.CreateBuilder("AdminPanel", args);
 
 var services = builder.Services;
