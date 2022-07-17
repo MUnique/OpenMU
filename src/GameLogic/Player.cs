@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Threading;
 using Nito.AsyncEx;
-using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
@@ -50,6 +49,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private IDisposable? _accountLoggingScope;
 
     private Account? _account;
+
+    private SkillHitValidator? _skillHitValidator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
@@ -103,6 +104,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <inheritdoc />
     public Point WalkTarget => this._walker.CurrentTarget;
+
+    /// <summary>
+    /// Gets the skill hit validator.
+    /// </summary>
+    public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger);
 
     /// <inheritdoc/>
     public int Money

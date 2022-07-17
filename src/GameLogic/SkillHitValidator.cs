@@ -1,0 +1,151 @@
+﻿// <copyright file="SkillHitValidator.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic;
+
+using MUnique.OpenMU.Network;
+
+/// <summary>
+/// Validator for skill hits, which were done by skills with type <see cref="SkillType.AreaSkillExplicitHits"/>.
+/// </summary>
+public class SkillHitValidator
+{
+    private const int MaximumCounterValue = 0x32;
+
+    private const byte TwisterSkillId = 8;
+    private const byte EvilSpiritSkillId = 9;
+
+    private static readonly TimeSpan MaxAnimationToHitDelay = TimeSpan.FromSeconds(10);
+
+    private readonly ILogger _logger;
+
+    /// <summary>
+    /// The counter which keeps the expected count of the next animation and hit.
+    /// </summary>
+    private readonly Counter _counter = new(1, MaximumCounterValue);
+
+    private readonly HitEntry[] _hits = new HitEntry[MaximumCounterValue + 1];
+
+    private byte _lastTwisterIndex;
+
+    /// <summary>
+    /// The game client doesn't reset its counter when it connects with a new account.
+    /// So, the simplest way for us is, to accept the first counter we get with
+    /// an animation.
+    /// </summary>
+    private bool _isFirstAfterConnectionEstablished = true;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillHitValidator"/> class.
+    /// </summary>
+    /// <param name="logger">The logger.</param>
+    public SkillHitValidator(ILogger logger)
+    {
+        this._logger = logger;
+        this._counter.Reset();
+    }
+
+    /// <summary>
+    /// Tries to register an animation with the specified counter.
+    /// </summary>
+    /// <param name="skillId">The skill identifier.</param>
+    /// <param name="animationCounter">The animation counter.</param>
+    /// <returns>
+    /// True, if successful.
+    /// </returns>
+    /// <remarks>Basically, only skills with overlapping animations and hits send an animation counter greater than 0.</remarks>
+    public bool TryRegisterAnimation(ushort skillId, byte animationCounter)
+    {
+        if (skillId == TwisterSkillId)
+        {
+            // Twister is a implemented wrong at the client side. It sends a counter of the animations here, but not in the hit packets.
+            this._lastTwisterIndex = animationCounter;
+        }
+
+        if (skillId == EvilSpiritSkillId
+            || skillId == TwisterSkillId
+            || animationCounter > 0)
+        {
+            if (this._isFirstAfterConnectionEstablished)
+            {
+                this._counter.Count = animationCounter;
+                this._isFirstAfterConnectionEstablished = false;
+            }
+
+            if (this._counter.Count != animationCounter)
+            {
+                this._logger.LogWarning($"Animation count out of sync - hacker? Expected: {this._counter.Count}, Actual: {animationCounter}.");
+                return false;
+            }
+
+            this._counter.Increase();
+        }
+
+        this._hits[animationCounter] = new HitEntry(skillId, DateTime.UtcNow, true, 0);
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether a hit request is valid for the specified skill identifier.
+    /// </summary>
+    /// <param name="skillId">The skill identifier.</param>
+    /// <param name="animationCounter">The animation counter.</param>
+    /// <param name="hitCounter">The hit counter.</param>
+    /// <returns>
+    ///   <c>true</c> if a hit request is valid for the specified skill identifier; otherwise, <c>false</c>.
+    /// </returns>
+    public bool IsHitValid(ushort skillId, byte animationCounter, byte hitCounter)
+    {
+        if (animationCounter == 0 && skillId == TwisterSkillId)
+        {
+            // Twister is implemented wrong at the client side. It doesn't send an animation counter in hit packets.
+            animationCounter = this._lastTwisterIndex;
+        }
+
+        if (this._hits[animationCounter] is { } animationEntry)
+        {
+            if (!animationEntry.IsAnimation)
+            {
+                this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because the given animation counter wasn't registered as animation.");
+                return false;
+            }
+
+            var expectedCount = this._counter.Count;
+            if (expectedCount != hitCounter)
+            {
+                this._logger.LogWarning($"Hit count out of sync - hacker? Expected: {this._counter.Count}, Actual: {animationCounter}.");
+                return false;
+            }
+
+            if (animationEntry.Skill != skillId)
+            {
+                this._logger.LogWarning($"Wrong skill in referenced animation - hacker?");
+                return false;
+            }
+
+            this._counter.Increase();
+            var newCount = animationEntry.HitCount + 1;
+
+            this._hits[animationCounter] = animationEntry with { HitCount = newCount };
+            Console.WriteLine(this._hits[animationCounter]);
+            this._hits[hitCounter] = new HitEntry(skillId, DateTime.UtcNow, false, 0);
+
+            var timestampDiff = DateTime.UtcNow - animationEntry.TimeStamp;
+            if (timestampDiff > MaxAnimationToHitDelay)
+            {
+                this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because of too high time difference between animation and hit");
+                return false;
+            }
+
+            return true;
+        }
+        else
+        {
+            this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because of missing previous animation.");
+            return false;
+        }
+    }
+
+    private record struct HitEntry(ushort Skill, DateTime TimeStamp, bool IsAnimation, int HitCount);
+}

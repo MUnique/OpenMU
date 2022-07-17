@@ -47,6 +47,11 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
+        if (!player.SkillHitValidator.IsHitValid(message.SkillId, message.AnimationCounter, message.HitCounter))
+        {
+            return;
+        }
+
         if (player.GetObject(message.TargetId) is IAttackable target)
         {
             if (target is IObservable observable && observable.Observers.Contains(player))
