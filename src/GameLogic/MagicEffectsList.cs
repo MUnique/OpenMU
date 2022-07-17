@@ -12,7 +12,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// <summary>
 /// The list of magic effects of a player instance. Automatically applies the power-ups of the effects to the player.
 /// </summary>
-public class MagicEffectsList : Disposable
+public class MagicEffectsList : AsyncDisposable
 {
     private readonly BitArray _contains = new (0x100);
     private readonly IAttackable _owner;
@@ -84,11 +84,11 @@ public class MagicEffectsList : Disposable
     /// <summary>
     /// Clears all active effects.
     /// </summary>
-    public void ClearAllEffects()
+    public async ValueTask ClearAllEffectsAsync()
     {
         while (this.ActiveEffects.Any())
         {
-            this.ActiveEffects.Values.First().Dispose();
+            await this.ActiveEffects.Values.First().DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -96,22 +96,18 @@ public class MagicEffectsList : Disposable
     /// Tries to get the currently active effect of the specified <see cref="MagicEffectDefinition.SubType"/>.
     /// </summary>
     /// <param name="subType">The <see cref="MagicEffectDefinition.SubType"/>.</param>
-    /// <param name="effect">The effect, if found.</param>
-    /// <returns><see langword="true"/>, if found.</returns>
-    public bool TryGetActiveEffectOfSubType(byte subType, [MaybeNullWhen(false)] out MagicEffect effect)
+    /// <returns>The effect, if found.</returns>
+    public async ValueTask<MagicEffect?> TryGetActiveEffectOfSubTypeAsync(byte subType)
     {
-        using (this._addLock.Lock())
-        {
-            effect = this.ActiveEffects.Values.FirstOrDefault(e => e.Definition.SubType == subType);
-            return effect is not null;
-        }
+        using var l = await this._addLock.LockAsync();
+        return this.ActiveEffects.Values.FirstOrDefault(e => e.Definition.SubType == subType);
     }
 
     /// <inheritdoc />
-    protected override void Dispose(bool disposing)
+    protected override async ValueTask DisposeAsyncCore()
     {
-        base.Dispose(disposing);
-        this.ClearAllEffects();
+        await this.ClearAllEffectsAsync().ConfigureAwait(false);
+        await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
     private async ValueTask OnEffectTimeOutAsync(MagicEffect effect)

@@ -27,9 +27,9 @@ public class ApplyMagicEffectConsumeHandler : BaseConsumeHandler
             return false;
         }
 
-        if (player.MagicEffectList.TryGetActiveEffectOfSubType(effectDefinition.SubType, out var existingEffect))
+        if (await player.MagicEffectList.TryGetActiveEffectOfSubTypeAsync(effectDefinition.SubType).ConfigureAwait(false) is { } existingEffect)
         {
-            existingEffect.Dispose();
+            await existingEffect.DisposeAsync().ConfigureAwait(false);
         }
 
         var boost = player.Attributes!.CreateElement(boostDefinition);
