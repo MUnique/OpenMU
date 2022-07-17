@@ -711,6 +711,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.ThrowNotInitializedProperty(this.SelectedCharacter is null, nameof(this.SelectedCharacter));
         this.SelectedCharacter.ThrowNotInitializedProperty(this.SelectedCharacter.CurrentMap is null, nameof(this.SelectedCharacter.CurrentMap));
         this.PlaceAtGate(gate);
+        this._respawnAfterDeathCts?.Dispose();
+        this._respawnAfterDeathCts = null;
 
         if (this.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>() is { } respawnPlugIn)
         {
