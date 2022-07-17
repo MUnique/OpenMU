@@ -46,8 +46,19 @@ public class AreaSkillAttackAction
 
     private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)
     {
+        if (player.IsAtSafezone())
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
+            return;
+        }
+
         bool isExtraTargetDefined = extraTargetId != 0xFFFF;
-        var attackablesInRange = player.CurrentMap?.GetAttackablesInRange(targetAreaCenter, skill.Range).Where(a => a != player) ?? Enumerable.Empty<IAttackable>();
+        var attackablesInRange =
+            player.CurrentMap?
+            .GetAttackablesInRange(targetAreaCenter, skill.Range)
+            .Where(a => a != player)
+            .Where(a => !a.IsAtSafezone())
+            ?? Enumerable.Empty<IAttackable>();
         if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
         {
             attackablesInRange = attackablesInRange.Where(a => a is not Player);
@@ -65,7 +76,10 @@ public class AreaSkillAttackAction
             }
         }
 
-        if (isExtraTargetDefined && extraTarget is not null && player.IsInRange(extraTarget.Position, skill.Range + 2))
+        if (isExtraTargetDefined
+            && extraTarget is not null
+            && player.IsInRange(extraTarget.Position, skill.Range + 2)
+            && !player.IsAtSafezone())
         {
             await this.ApplySkillAsync(player, skillEntry, extraTarget, targetAreaCenter).ConfigureAwait(false);
         }

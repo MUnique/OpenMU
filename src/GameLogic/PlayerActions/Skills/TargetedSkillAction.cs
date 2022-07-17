@@ -32,6 +32,12 @@ public class TargetedSkillAction
     public async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
+        if (player.IsAtSafezone())
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
+            return;
+        }
+
         var skillEntry = player.SkillList?.GetSkill(skillId);
         var skill = skillEntry?.Skill;
         if (skill is null || skill.SkillType == SkillType.PassiveBoost)
@@ -116,11 +122,22 @@ public class TargetedSkillAction
         {
             if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
             {
-                await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
-                success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
+                if (!target.IsAtSafezone() && !player.IsAtSafezone())
+                {
+                    await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
+                    success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
+                }
             }
             else if (skill.MagicEffectDef != null)
             {
+                // Buffs are allowed in the Safezone of Blood Castle.
+                var canDoBuff = !player.IsAtSafezone() || player.CurrentMiniGame is { };
+                if (!canDoBuff)
+                {
+                    player.Logger.LogWarning($"Can't apply magic effect when being in the safezone. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                    break;
+                }
+
                 if (skill.SkillType == SkillType.Buff)
                 {
                     await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);

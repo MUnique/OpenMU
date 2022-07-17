@@ -21,15 +21,24 @@ public class HitAction
     /// <param name="lookingDirection">The looking direction.</param>
     public async ValueTask HitAsync(Player player, IAttackable target, byte attackAnimation, Direction lookingDirection)
     {
+        if (player.IsAtSafezone())
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
+            return;
+        }
+
+        if (target.IsAtSafezone())
+        {
+            return;
+        }
+
         if (target is IObservable targetAsObservable)
         {
-            using (await targetAsObservable.ObserverLock.ReaderLockAsync())
+            using var readerLock = await targetAsObservable.ObserverLock.ReaderLockAsync();
+            if (!targetAsObservable.Observers.Contains(player))
             {
-                if (!targetAsObservable.Observers.Contains(player))
-                {
-                    // Target out of range
-                    return;
-                }
+                // Target out of range
+                return;
             }
         }
 
