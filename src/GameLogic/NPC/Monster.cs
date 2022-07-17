@@ -132,6 +132,12 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
             this._isCalculatingPath = false;
         }
 
+        // The walker just supports maximum 16 steps.
+        while (calculatedPath.Count > 16)
+        {
+            calculatedPath.RemoveAt(calculatedPath.Count - 1);
+        }
+
         var targetNode = calculatedPath.Last(); // that's one step before the target coordinates actually are reached.
         using var stepsRent = MemoryPool<WalkingStep>.Shared.Rent(calculatedPath.Count);
         var steps = stepsRent.Memory.Slice(0, calculatedPath.Count);
