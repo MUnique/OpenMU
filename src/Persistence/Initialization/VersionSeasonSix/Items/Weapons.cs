@@ -362,20 +362,11 @@ internal class Weapons : InitializerBase
                 item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
                 item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
 
-                var staffRisePowerUpMinDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                staffRisePowerUpMinDmg.TargetAttribute = Stats.MinimumWizBaseDmg.GetPersistent(this.GameConfiguration);
-                staffRisePowerUpMinDmg.BaseValue = 1f + (staffRise / 100f);
-                this._staffRiseBonusPerLevel.ForEach(staffRisePowerUpMinDmg.BonusPerLevel.Add);
-                //// TODO: staffRisePowerUpMinDmg.BaseValueElement.AggregateType = AggregateType.Multiplicate;
-                //// TODO: Simply do this by using a AttributeDefinition "Staff Rise" and define a relationship to MinimumWizBaseDmg
-                item.BasePowerUpAttributes.Add(staffRisePowerUpMinDmg);
-
-                var staffRisePowerUpMaxDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-                staffRisePowerUpMaxDmg.TargetAttribute = Stats.MaximumWizBaseDmg.GetPersistent(this.GameConfiguration);
-                staffRisePowerUpMaxDmg.BaseValue = 1f + (staffRise / 100f);
-                this._staffRiseBonusPerLevel.ForEach(staffRisePowerUpMaxDmg.BonusPerLevel.Add);
-                //// TODO: staffRisePowerUpMaxDmg.BaseValueElement.AggregateType = AggregateType.Multiplicate;
-                item.BasePowerUpAttributes.Add(staffRisePowerUpMaxDmg);
+                var staffRisePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+                staffRisePowerUp.TargetAttribute = Stats.StaffRise.GetPersistent(this.GameConfiguration);
+                staffRisePowerUp.BaseValue = staffRise;
+                this._staffRiseBonusPerLevel.ForEach(staffRisePowerUp.BonusPerLevel.Add);
+                item.BasePowerUpAttributes.Add(staffRisePowerUp);
             }
         }
 

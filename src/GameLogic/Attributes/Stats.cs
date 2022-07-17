@@ -212,6 +212,11 @@ public class Stats
     public static AttributeDefinition MaximumWizBaseDmg { get; } = new (new Guid("44B8236A-BF5B-4082-BA8B-5DEDA1458D33"), "Maximum Wizardry Base Damage", string.Empty);
 
     /// <summary>
+    /// Gets the staff rise percentage attribute definition.
+    /// </summary>
+    public static AttributeDefinition StaffRise { get; } = new(new Guid("DB2F48FD-42AB-4204-B863-AFEE138A9D43"), "Staff Rise Percentage", string.Empty);
+
+    /// <summary>
     /// Gets the minimum curse base DMG attribute definition.
     /// </summary>
     public static AttributeDefinition MinimumCurseBaseDmg { get; } = new (new Guid("B8AE2D6B-05CE-43A9-B2BB-3C32F288A043"), "Minimum Curse Base Damage", string.Empty);
