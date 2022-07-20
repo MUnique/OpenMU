@@ -49,7 +49,7 @@ internal class JsonQueryBuilderTests
         }
 
         result = $"-- Json query created in {stopwatch.ElapsedMilliseconds} ms:{Environment.NewLine}" + result;
-        File.WriteAllText(@"C:\temp\json_GameConfiguration.txt", result);
+        //// File.WriteAllText(@"C:\temp\json_GameConfiguration.txt", result);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ internal class JsonQueryBuilderTests
         }
 
         result = $"-- Json query created in {stopwatch.ElapsedMilliseconds} ms:{Environment.NewLine}" + result;
-        File.WriteAllText(@"C:\temp\json_Account.txt", result);
+        //// File.WriteAllText(@"C:\temp\json_Account.txt", result);
     }
 
     /// <summary>
