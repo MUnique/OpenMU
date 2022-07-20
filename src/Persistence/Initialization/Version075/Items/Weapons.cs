@@ -18,18 +18,18 @@ internal class Weapons : InitializerBase
     /// <summary>
     /// The durability increase per level.
     /// </summary>
-    protected static readonly int[] DurabilityIncreasePerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21 };
+    protected static readonly float[] DurabilityIncreasePerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21 };
 
     /// <summary>
     /// The weapon damage increase by level.
     /// </summary>
-    private static readonly int[] DamageIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36 };
+    private static readonly float[] DamageIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36 };
 
-    private static readonly int[] StaffRiseIncreaseByLevel = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40 };
+    private static readonly float[] StaffRiseIncreaseByLevel = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40 };
 
-    private readonly List<LevelBonus> _damageBonusPerLevel;
+    private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
-    private readonly List<LevelBonus> _staffRiseBonusPerLevel;
+    private ItemLevelBonusTable? _staffRiseTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Weapons" /> class.
@@ -39,20 +39,6 @@ internal class Weapons : InitializerBase
     public Weapons(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration)
     {
-        this._damageBonusPerLevel = new List<LevelBonus>();
-        this._staffRiseBonusPerLevel = new List<LevelBonus>();
-        for (int level = 1; level <= Constants.MaximumItemLevel; level++)
-        {
-            var levelBonus = this.Context.CreateNew<LevelBonus>();
-            levelBonus.Level = level;
-            levelBonus.AdditionalValue = DamageIncreaseByLevel[level];
-            this._damageBonusPerLevel.Add(levelBonus);
-
-            var staffRiseBonus = this.Context.CreateNew<LevelBonus>();
-            staffRiseBonus.Level = level;
-            staffRiseBonus.AdditionalValue = StaffRiseIncreaseByLevel[level];
-            this._staffRiseBonusPerLevel.Add(staffRiseBonus);
-        }
     }
 
     /// <summary>
@@ -93,6 +79,9 @@ internal class Weapons : InitializerBase
     /// </summary>
     public override void Initialize()
     {
+        this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
+        this._staffRiseTable = this.CreateItemBonusTable(StaffRiseIncreaseByLevel, "Staff Rise", "The staff rise bonus per item level.");
+
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1);
         this.CreateWeapon(0, 2, 0, 0, 1, 3, true, "Rapier", 9, 9, 15, 40, 23, 0, 0, 50, 40, 0, 0, 0, 1, 1);
@@ -271,21 +260,15 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass == 1, knightClass == 1, elfClass == 1);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-        var minDamagePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-        minDamagePowerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MinimumPhysBaseDmgByWeapon);
-        minDamagePowerUp.BaseValue = minimumDamage;
-
-        var maxDamagePowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-        maxDamagePowerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.MaximumPhysBaseDmgByWeapon);
-        maxDamagePowerUp.BaseValue = maximumDamage;
-
-        this._damageBonusPerLevel.ForEach(minDamagePowerUp.BonusPerLevel.Add);
-        this._damageBonusPerLevel.ForEach(maxDamagePowerUp.BonusPerLevel.Add);
+        var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage);
+        minDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
         item.BasePowerUpAttributes.Add(minDamagePowerUp);
+
+        var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage);
+        maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
         item.BasePowerUpAttributes.Add(maxDamagePowerUp);
-        var speedPowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-        speedPowerUp.TargetAttribute = this.GameConfiguration.Attributes.First(a => a == Stats.AttackSpeed);
-        speedPowerUp.BaseValue = attackSpeed;
+
+        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed);
         item.BasePowerUpAttributes.Add(speedPowerUp);
 
         this.CreateItemRequirementIfNeeded(item, Stats.Level, levelRequirement);
@@ -304,20 +287,9 @@ internal class Weapons : InitializerBase
         {
             item.PossibleItemOptions.Add(this.WizardryDamageOption);
 
-            var staffRisePowerUpMinDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            staffRisePowerUpMinDmg.TargetAttribute = Stats.MinimumWizBaseDmg.GetPersistent(this.GameConfiguration);
-            staffRisePowerUpMinDmg.BaseValue = 1f + (staffRise / 100f);
-            this._staffRiseBonusPerLevel.ForEach(staffRisePowerUpMinDmg.BonusPerLevel.Add);
-            //// TODO: staffRisePowerUpMinDmg.BaseValueElement.AggregateType = AggregateType.Multiplicate;
-            //// TODO: Simply do this by using a AttributeDefinition "Staff Rise" and define a relationship to MinimumWizBaseDmg
-            item.BasePowerUpAttributes.Add(staffRisePowerUpMinDmg);
-
-            var staffRisePowerUpMaxDmg = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            staffRisePowerUpMaxDmg.TargetAttribute = Stats.MaximumWizBaseDmg.GetPersistent(this.GameConfiguration);
-            staffRisePowerUpMaxDmg.BaseValue = 1f + (staffRise / 100f);
-            this._staffRiseBonusPerLevel.ForEach(staffRisePowerUpMaxDmg.BonusPerLevel.Add);
-            //// TODO: staffRisePowerUpMaxDmg.BaseValueElement.AggregateType = AggregateType.Multiplicate;
-            item.BasePowerUpAttributes.Add(staffRisePowerUpMaxDmg);
+            var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise);
+            staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
+            item.BasePowerUpAttributes.Add(staffRisePowerUp);
         }
 
         item.IsAmmunition = isAmmunition;

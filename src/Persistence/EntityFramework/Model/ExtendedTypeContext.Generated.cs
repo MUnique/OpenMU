@@ -79,6 +79,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOption>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus>();

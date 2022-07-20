@@ -203,6 +203,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition, MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition>()
             .Include<ItemDefinition, BasicModel.ItemDefinition>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable, MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable>()
+            .Include<ItemLevelBonusTable, BasicModel.ItemLevelBonusTable>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet>()
             .Include<ItemOfItemSet, BasicModel.ItemOfItemSet>();
 

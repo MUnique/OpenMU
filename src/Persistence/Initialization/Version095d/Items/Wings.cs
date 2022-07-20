@@ -14,14 +14,11 @@ using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 /// <summary>
 /// Initializer for wing items.
 /// </summary>
-/// <seealso cref="MUnique.OpenMU.Persistence.Initialization.InitializerBase" />
-public class Wings : InitializerBase
+public class Wings : WingsInitializerBase
 {
-    private static readonly int[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36 };
-
-    private List<LevelBonus> _defenseBonusPerLevel = null!;
-    private List<LevelBonus> _damageIncreasePerLevelFirstWings = null!;
-    private List<LevelBonus> _damageAbsorbPerLevel = null!;
+    private ItemLevelBonusTable? _absorbByLevelTable;
+    private ItemLevelBonusTable? _defenseBonusByLevelTable;
+    private ItemLevelBonusTable? _damageIncreaseByLevelTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Wings"/> class.
@@ -31,26 +28,23 @@ public class Wings : InitializerBase
     public Wings(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration)
     {
-        this.CreateAbsorbBonusPerLevel();
-        this.CreateBonusDefensePerLevel();
-        this.CreateDamageIncreaseBonusPerLevel();
     }
 
-    private enum OptionType
-    {
-        HealthRecover,
-        PhysDamage,
-        WizDamage,
-    }
+    /// <inheritdoc />
+    protected override int MaximumItemLevel => Constants.MaximumItemLevel;
 
     /// <summary>
     /// Initializes all wings.
     /// </summary>
     public override void Initialize()
     {
-        this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12, this._damageIncreasePerLevelFirstWings, this._defenseBonusPerLevel, null);
-        this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreasePerLevelFirstWings, this._defenseBonusPerLevel, null);
-        this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12, this._damageIncreasePerLevelFirstWings, this._defenseBonusPerLevel, null);
+        this._absorbByLevelTable = this.CreateAbsorbBonusPerLevel();
+        this._defenseBonusByLevelTable = this.CreateBonusDefensePerLevel();
+        this._damageIncreaseByLevelTable = this.CreateDamageIncreaseBonusPerLevelFirstAndThirdWings();
+
+        this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12);
+        this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12);
+        this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12);
     }
 
     /// <summary>
@@ -85,32 +79,21 @@ public class Wings : InitializerBase
         }
     }
 
-    private void CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial, List<LevelBonus> damageIncreasePerLevel, List<LevelBonus> defenseIncreasePerLevel, ItemOptionDefinition? wingOptionDefinition)
+    private void CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial)
     {
         var wing = this.CreateWing(number, width, height, name, dropLevel, defense, durability, levelRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
-        if (wingOptionDefinition != null)
-        {
-            wing.PossibleItemOptions.Add(wingOptionDefinition);
-        }
-
-        var defensePowerUp = wing.BasePowerUpAttributes.First(p => p.TargetAttribute == Stats.DefenseBase);
-        defenseIncreasePerLevel.ForEach(defensePowerUp.BonusPerLevel.Add);
 
         if (damageAbsorbInitial > 0)
         {
-            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            powerUp.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
-            powerUp.BaseValue = 0f - (damageAbsorbInitial / 100f);
-            this._damageAbsorbPerLevel.ForEach(powerUp.BonusPerLevel.Add);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 0f - (damageAbsorbInitial / 100f));
+            powerUp.BonusPerLevelTable = this._absorbByLevelTable;
             wing.BasePowerUpAttributes.Add(powerUp);
         }
 
         if (damageIncreaseInitial > 0)
         {
-            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            powerUp.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
-            powerUp.BaseValue = damageIncreaseInitial / 100f;
-            damageIncreasePerLevel.ForEach(powerUp.BonusPerLevel.Add);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, damageIncreaseInitial / 100f);
+            powerUp.BonusPerLevelTable = this._damageIncreaseByLevelTable;
             wing.BasePowerUpAttributes.Add(powerUp);
         }
 
@@ -149,10 +132,9 @@ public class Wings : InitializerBase
 
         if (defense > 0)
         {
-            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            powerUp.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
-            powerUp.BaseValue = defense;
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense);
             wing.BasePowerUpAttributes.Add(powerUp);
+            powerUp.BonusPerLevelTable = this._defenseBonusByLevelTable;
         }
 
         var classes = darkWizardClassLevel == 1 ? CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator : CharacterClasses.None;
@@ -187,43 +169,5 @@ public class Wings : InitializerBase
         }
 
         return itemOption;
-    }
-
-    private void CreateDamageIncreaseBonusPerLevel()
-    {
-        this._damageIncreasePerLevelFirstWings = new List<LevelBonus>();
-
-        for (int level = 1; level <= Constants.MaximumItemLevel; level++)
-        {
-            var absorb = this.Context.CreateNew<LevelBonus>();
-            absorb.Level = level;
-            absorb.AdditionalValue = 0f - (0.02f * level);
-            this._damageIncreasePerLevelFirstWings.Add(absorb);
-        }
-    }
-
-    private void CreateAbsorbBonusPerLevel()
-    {
-        this._damageAbsorbPerLevel = new List<LevelBonus>();
-
-        for (int level = 1; level <= Constants.MaximumItemLevel; level++)
-        {
-            var absorb = this.Context.CreateNew<LevelBonus>();
-            absorb.Level = level;
-            absorb.AdditionalValue = 0f - (0.02f * level);
-            this._damageAbsorbPerLevel.Add(absorb);
-        }
-    }
-
-    private void CreateBonusDefensePerLevel()
-    {
-        this._defenseBonusPerLevel = new List<LevelBonus>();
-        for (int level = 1; level <= Constants.MaximumItemLevel; level++)
-        {
-            var levelBonus = this.Context.CreateNew<LevelBonus>();
-            levelBonus.Level = level;
-            levelBonus.AdditionalValue = DefenseIncreaseByLevel[level];
-            this._defenseBonusPerLevel.Add(levelBonus);
-        }
     }
 }

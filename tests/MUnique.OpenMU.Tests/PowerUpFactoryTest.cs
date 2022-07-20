@@ -288,14 +288,17 @@ public class PowerUpFactoryTest
     {
         var resultMock = new Mock<ItemBasePowerUpDefinition>();
         resultMock.SetupAllProperties();
-        resultMock.Setup(r => r.BonusPerLevel).Returns(new List<LevelBonus>());
+        var bonusTableMock = new Mock<ItemLevelBonusTable>();
+        bonusTableMock.Setup(r => r.BonusPerLevel).Returns(new List<LevelBonus>());
         var result = resultMock.Object;
         result.BaseValueElement = new ConstantElement(PowerUpStrength);
         result.TargetAttribute = Stats.MaximumPhysBaseDmg;
-        result.BonusPerLevel.Add(new LevelBonus(1, this._levelBonus[1]));
-        result.BonusPerLevel.Add(new LevelBonus(2, this._levelBonus[2]));
-        result.BonusPerLevel.Add(new LevelBonus(3, this._levelBonus[3]));
-        result.BonusPerLevel.Add(new LevelBonus(4, this._levelBonus[4]));
+        var bonusTable = bonusTableMock.Object;
+        result.BonusPerLevelTable = bonusTable;
+        bonusTable.BonusPerLevel.Add(new LevelBonus(1, this._levelBonus[1]));
+        bonusTable.BonusPerLevel.Add(new LevelBonus(2, this._levelBonus[2]));
+        bonusTable.BonusPerLevel.Add(new LevelBonus(3, this._levelBonus[3]));
+        bonusTable.BonusPerLevel.Add(new LevelBonus(4, this._levelBonus[4]));
         return result;
     }
 

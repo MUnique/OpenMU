@@ -302,6 +302,27 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ItemLevelBonusTable",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemLevelBonusTable", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemLevelBonusTable_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemOptionDefinition",
                 schema: "config",
                 columns: table => new
@@ -618,6 +639,27 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalTable: "PowerUpDefinitionValue",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LevelBonus",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemLevelBonusTableId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Level = table.Column<int>(type: "integer", nullable: false),
+                    AdditionalValue = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LevelBonus", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LevelBonus_ItemLevelBonusTable_ItemLevelBonusTableId",
+                        column: x => x.ItemLevelBonusTableId,
+                        principalSchema: "config",
+                        principalTable: "ItemLevelBonusTable",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1596,6 +1638,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TargetAttributeId = table.Column<Guid>(type: "uuid", nullable: true),
+                    BonusPerLevelTableId = table.Column<Guid>(type: "uuid", nullable: true),
                     ItemDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     BaseValue = table.Column<float>(type: "real", nullable: false)
                 },
@@ -1608,26 +1651,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalSchema: "config",
                         principalTable: "AttributeDefinition",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LevelBonus",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ItemBasePowerUpDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Level = table.Column<int>(type: "integer", nullable: false),
-                    AdditionalValue = table.Column<float>(type: "real", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LevelBonus", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LevelBonus_ItemBasePowerUpDefinition_ItemBasePowerUpDefinit~",
-                        column: x => x.ItemBasePowerUpDefinitionId,
+                        name: "FK_ItemBasePowerUpDefinition_ItemLevelBonusTable_BonusPerLevel~",
+                        column: x => x.BonusPerLevelTableId,
                         principalSchema: "config",
-                        principalTable: "ItemBasePowerUpDefinition",
+                        principalTable: "ItemLevelBonusTable",
                         principalColumn: "Id");
                 });
 
@@ -3049,6 +3077,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ItemOptionTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ItemBasePowerUpDefinition_BonusPerLevelTableId",
+                schema: "config",
+                table: "ItemBasePowerUpDefinition",
+                column: "BonusPerLevelTableId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ItemBasePowerUpDefinition_ItemDefinitionId",
                 schema: "config",
                 table: "ItemBasePowerUpDefinition",
@@ -3169,6 +3203,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ItemSetGroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ItemLevelBonusTable_GameConfigurationId",
+                schema: "config",
+                table: "ItemLevelBonusTable",
+                column: "GameConfigurationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ItemOfItemSet_BonusOptionId",
                 schema: "config",
                 table: "ItemOfItemSet",
@@ -3283,10 +3323,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LevelBonus_ItemBasePowerUpDefinitionId",
+                name: "IX_LevelBonus_ItemLevelBonusTableId",
                 schema: "config",
                 table: "LevelBonus",
-                column: "ItemBasePowerUpDefinitionId");
+                column: "ItemLevelBonusTableId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MagicEffectDefinition_GameConfigurationId",
@@ -3880,6 +3920,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
+                name: "ItemBasePowerUpDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
                 name: "ItemCrafting",
                 schema: "config");
 
@@ -4044,7 +4088,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "data");
 
             migrationBuilder.DropTable(
-                name: "ItemBasePowerUpDefinition",
+                name: "ItemLevelBonusTable",
                 schema: "config");
 
             migrationBuilder.DropTable(

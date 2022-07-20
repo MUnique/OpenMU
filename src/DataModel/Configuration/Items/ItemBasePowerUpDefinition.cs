@@ -25,8 +25,7 @@ public class ItemBasePowerUpDefinition
     /// <summary>
     /// Gets or sets the bonus per level.
     /// </summary>
-    [MemberOfAggregate]
-    public virtual ICollection<LevelBonus> BonusPerLevel { get; protected set; } = null!;
+    public virtual ItemLevelBonusTable? BonusPerLevelTable { get; set; }
 
     /// <summary>
     /// Gets or sets the additional value to the base value.

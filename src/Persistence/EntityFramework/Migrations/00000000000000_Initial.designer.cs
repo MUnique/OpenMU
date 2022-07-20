@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.0")
+                .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -1193,6 +1193,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<float>("BaseValue")
                         .HasColumnType("real");
 
+                    b.Property<Guid?>("BonusPerLevelTableId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ItemDefinitionId")
                         .HasColumnType("uuid");
 
@@ -1200,6 +1203,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BonusPerLevelTableId");
 
                     b.HasIndex("ItemDefinitionId");
 
@@ -1556,6 +1561,30 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("ItemItemSetGroup", "data");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelBonusTable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("GameConfigurationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameConfigurationId");
+
+                    b.ToTable("ItemLevelBonusTable", "config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOfItemSet", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1893,7 +1922,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<float>("AdditionalValue")
                         .HasColumnType("real");
 
-                    b.Property<Guid?>("ItemBasePowerUpDefinitionId")
+                    b.Property<Guid?>("ItemLevelBonusTableId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Level")
@@ -1901,7 +1930,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemBasePowerUpDefinitionId");
+                    b.HasIndex("ItemLevelBonusTableId");
 
                     b.ToTable("LevelBonus", "config");
                 });
@@ -3466,6 +3495,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemBasePowerUpDefinition", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelBonusTable", "RawBonusPerLevelTable")
+                        .WithMany()
+                        .HasForeignKey("BonusPerLevelTableId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", null)
                         .WithMany("RawBasePowerUpAttributes")
                         .HasForeignKey("ItemDefinitionId");
@@ -3473,6 +3506,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
+
+                    b.Navigation("RawBonusPerLevelTable");
 
                     b.Navigation("RawTargetAttribute");
                 });
@@ -3681,6 +3716,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("ItemSetGroup");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelBonusTable", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
+                        .WithMany("RawItemLevelBonusTables")
+                        .HasForeignKey("GameConfigurationId");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOfItemSet", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.IncreasableItemOption", "RawBonusOption")
@@ -3814,9 +3856,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.LevelBonus", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemBasePowerUpDefinition", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelBonusTable", null)
                         .WithMany("RawBonusPerLevel")
-                        .HasForeignKey("ItemBasePowerUpDefinitionId");
+                        .HasForeignKey("ItemLevelBonusTableId");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
@@ -4314,6 +4356,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Navigation("RawDropItemGroups");
 
+                    b.Navigation("RawItemLevelBonusTables");
+
                     b.Navigation("RawItemOptionCombinationBonuses");
 
                     b.Navigation("RawItemOptionTypes");
@@ -4390,11 +4434,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("JoinedVisibleOptions");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemBasePowerUpDefinition", b =>
-                {
-                    b.Navigation("RawBonusPerLevel");
-                });
-
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItem", b =>
                 {
                     b.Navigation("JoinedPossibleItems");
@@ -4420,6 +4459,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup", b =>
                 {
                     b.Navigation("JoinedPossibleItems");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelBonusTable", b =>
+                {
+                    b.Navigation("RawBonusPerLevel");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionCombinationBonus", b =>

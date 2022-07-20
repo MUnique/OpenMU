@@ -165,6 +165,12 @@ public class GameConfiguration
     public virtual ICollection<ItemDefinition> Items { get; protected set; } = null!;
 
     /// <summary>
+    /// Gets or sets the item level bonus tables.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemLevelBonusTable> ItemLevelBonusTables { get; protected set; } = null!;
+
+    /// <summary>
     /// Gets or sets the item slot types.
     /// </summary>
     [MemberOfAggregate]

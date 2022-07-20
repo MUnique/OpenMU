@@ -164,6 +164,29 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="ItemLevelBonusTables" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("itemLevelBonusTables")]
+    [System.Text.Json.Serialization.JsonPropertyName("itemLevelBonusTables")]
+    public ICollection<ItemLevelBonusTable> RawItemLevelBonusTables { get; } = new List<ItemLevelBonusTable>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable> ItemLevelBonusTables
+    {
+        get => base.ItemLevelBonusTables ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable, ItemLevelBonusTable>(this.RawItemLevelBonusTables);
+        protected set
+        {
+            this.ItemLevelBonusTables.Clear();
+            foreach (var item in value)
+            {
+                this.ItemLevelBonusTables.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="ItemSlotTypes" />.
     /// </summary>
     [Newtonsoft.Json.JsonProperty("itemSlotTypes")]

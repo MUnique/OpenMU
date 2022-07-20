@@ -26,29 +26,6 @@ public partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Config
     public Guid Id { get; set; }
     
     /// <summary>
-    /// Gets the raw collection of <see cref="BonusPerLevel" />.
-    /// </summary>
-    [Newtonsoft.Json.JsonProperty("bonusPerLevel")]
-    [System.Text.Json.Serialization.JsonPropertyName("bonusPerLevel")]
-    public ICollection<LevelBonus> RawBonusPerLevel { get; } = new List<LevelBonus>();
-    
-    /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
-    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus> BonusPerLevel
-    {
-        get => base.BonusPerLevel ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus, LevelBonus>(this.RawBonusPerLevel);
-        protected set
-        {
-            this.BonusPerLevel.Clear();
-            foreach (var item in value)
-            {
-                this.BonusPerLevel.Add(item);
-            }
-        }
-    }
-
-    /// <summary>
     /// Gets the raw object of <see cref="TargetAttribute" />.
     /// </summary>
     [Newtonsoft.Json.JsonProperty("targetAttribute")]
@@ -66,6 +43,26 @@ public partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Config
     {
         get => base.TargetAttribute;
         set => base.TargetAttribute = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="BonusPerLevelTable" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("bonusPerLevelTable")]
+    [System.Text.Json.Serialization.JsonPropertyName("bonusPerLevelTable")]
+    public ItemLevelBonusTable RawBonusPerLevelTable
+    {
+        get => base.BonusPerLevelTable as ItemLevelBonusTable;
+        set => base.BonusPerLevelTable = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable BonusPerLevelTable
+    {
+        get => base.BonusPerLevelTable;
+        set => base.BonusPerLevelTable = value;
     }
 
 

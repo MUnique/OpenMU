@@ -15,7 +15,9 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// </summary>
 internal class Jewelery : InitializerBase
 {
+    private static readonly float[] ResistanceIncreaseByLevel = { 0, 0.1f, 0.2f, 0.3f, 0.4f };
     private ItemOptionDefinition? _healthRecoverOptionDefinition;
+    private ItemLevelBonusTable? _resistancesBonusTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Jewelery"/> class.
@@ -31,7 +33,7 @@ internal class Jewelery : InitializerBase
     public sealed override void Initialize()
     {
         this._healthRecoverOptionDefinition = this.CreateOption("Health recover for jewelery", Stats.HealthRecoveryMultiplier, 0.01f);
-
+        this._resistancesBonusTable = this.CreateItemBonusTable(ResistanceIncreaseByLevel, "Elemental resistances (Jewelery)", "Defines the elemental resistances for jewelery. It's 10 % per item level.");
         this.CreateItems();
     }
 
@@ -86,15 +88,7 @@ internal class Jewelery : InitializerBase
         ring.BasePowerUpAttributes.Add(powerUp);
         powerUp.BaseValue = 0;
         powerUp.TargetAttribute = Stats.TransformationSkin.GetPersistent(this.GameConfiguration);
-
-        for (int level = 0; level < transformationSkins.Length; level++)
-        {
-            var transformationSkin = transformationSkins[level];
-            var levelBonus = this.Context.CreateNew<LevelBonus>();
-            levelBonus.Level = level;
-            levelBonus.AdditionalValue = (int)transformationSkin;
-            powerUp.BonusPerLevel.Add(levelBonus);
-        }
+        powerUp.BonusPerLevelTable = this.CreateItemBonusTable(transformationSkins.Select(v => (float)v).ToArray(), $"Transformation Ring Skins ({name})", $"Contains the skin numbers for the different levels of the transformation ring ({name}).");
 
         foreach (var characterClass in this.GameConfiguration.CharacterClasses)
         {
@@ -178,17 +172,8 @@ internal class Jewelery : InitializerBase
 
         if (resistanceAttribute != null)
         {
-            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            item.BasePowerUpAttributes.Add(powerUp);
-            powerUp.BaseValue = 0.1f;
-            powerUp.TargetAttribute = resistanceAttribute.GetPersistent(this.GameConfiguration);
-            for (int lvl = 1; lvl <= 4; lvl++)
-            {
-                var levelBonus = this.Context.CreateNew<LevelBonus>();
-                levelBonus.Level = lvl;
-                levelBonus.AdditionalValue = lvl * 0.1f;
-                powerUp.BonusPerLevel.Add(levelBonus);
-            }
+            var powerUp = this.CreateItemBasePowerUpDefinition(resistanceAttribute, 0.1f);
+            powerUp.BonusPerLevelTable = this._resistancesBonusTable;
         }
 
         foreach (var characterClass in this.GameConfiguration.CharacterClasses)

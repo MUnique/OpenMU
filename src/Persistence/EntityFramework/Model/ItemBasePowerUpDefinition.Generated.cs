@@ -29,15 +29,6 @@ internal partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Conf
     public Guid Id { get; set; }
     
     /// <summary>
-    /// Gets the raw collection of <see cref="BonusPerLevel" />.
-    /// </summary>
-    public ICollection<LevelBonus> RawBonusPerLevel { get; } = new EntityFramework.List<LevelBonus>();
-    
-    /// <inheritdoc/>
-    [NotMapped]
-    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus> BonusPerLevel => base.BonusPerLevel ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus, LevelBonus>(this.RawBonusPerLevel);
-
-    /// <summary>
     /// Gets or sets the identifier of <see cref="TargetAttribute"/>.
     /// </summary>
     public Guid? TargetAttributeId { get; set; }
@@ -60,6 +51,32 @@ internal partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Conf
         {
             base.TargetAttribute = value;
             this.TargetAttributeId = this.RawTargetAttribute?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="BonusPerLevelTable"/>.
+    /// </summary>
+    public Guid? BonusPerLevelTableId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="BonusPerLevelTable" />.
+    /// </summary>
+    [ForeignKey(nameof(BonusPerLevelTableId))]
+    public ItemLevelBonusTable RawBonusPerLevelTable
+    {
+        get => base.BonusPerLevelTable as ItemLevelBonusTable;
+        set => base.BonusPerLevelTable = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable BonusPerLevelTable
+    {
+        get => base.BonusPerLevelTable;set
+        {
+            base.BonusPerLevelTable = value;
+            this.BonusPerLevelTableId = this.RawBonusPerLevelTable?.Id;
         }
     }
 

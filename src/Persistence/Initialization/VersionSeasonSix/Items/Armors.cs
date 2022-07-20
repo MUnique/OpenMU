@@ -17,10 +17,12 @@ using MUnique.OpenMU.Persistence.Initialization.Items;
 /// </summary>
 public class Armors : InitializerBase
 {
-    private static readonly int[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
+    private static readonly float[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
+    private static readonly float[] ShieldDefenseIncreaseByLevel = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
-    private List<LevelBonus>? _defenseBonusPerLevel;
-    private List<LevelBonus>? _shieldDefenseBonusPerLevel;
+    private ItemLevelBonusTable? _defenseIncreaseTable;
+    private ItemLevelBonusTable? _shieldDefenseIncreaseTable;
+    private ItemLevelBonusTable? _shieldDefenseRateIncreaseTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Armors"/> class.
@@ -41,7 +43,9 @@ public class Armors : InitializerBase
     /// </remarks>
     public override void Initialize()
     {
-        this.CreateBonusDefensePerLevel();
+        this._defenseIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Increase (Armors)", "Defines the defense increase per item level for armors. It's 3 per item level until level 9, then it's always 1 more for each level.");
+        this._shieldDefenseIncreaseTable = this.CreateItemBonusTable(ShieldDefenseIncreaseByLevel, "Defense Increase (Shields)", "Defines the defense increase per item level for shields. It's always 1 per item level.");
+        this._shieldDefenseRateIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Rate Increase (Shields)", "Defines the defense rate increase per item level for shields. It's 3 per item level until level 9, then it's always 1 more for each level.");
 
         // Shields:
         this.CreateShield(0, 1, 0, 2, 2, "Small Shield", 3, 1, 3, 22, 0, 70, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0);
@@ -459,19 +463,15 @@ public class Armors : InitializerBase
 
         if (defense > 0)
         {
-            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            powerUp.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
-            powerUp.BaseValue = defense;
-            this._shieldDefenseBonusPerLevel?.ForEach(powerUp.BonusPerLevel.Add);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense);
+            powerUp.BonusPerLevelTable = this._shieldDefenseIncreaseTable;
             shield.BasePowerUpAttributes.Add(powerUp);
         }
 
         if (defenseRate > 0)
         {
-            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            powerUp.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
-            powerUp.BaseValue = defenseRate;
-            this._defenseBonusPerLevel?.ForEach(powerUp.BonusPerLevel.Add);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseRatePvm, defenseRate);
+            powerUp.BonusPerLevelTable = this._shieldDefenseRateIncreaseTable;
             shield.BasePowerUpAttributes.Add(powerUp);
         }
 
@@ -504,10 +504,8 @@ public class Armors : InitializerBase
 
         if (defense > 0)
         {
-            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            powerUp.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
-            powerUp.BaseValue = defense;
-            this._defenseBonusPerLevel?.ForEach(powerUp.BonusPerLevel.Add);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense);
+            powerUp.BonusPerLevelTable = this._defenseIncreaseTable;
             armor.BasePowerUpAttributes.Add(powerUp);
         }
 
@@ -523,23 +521,5 @@ public class Armors : InitializerBase
         armor.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.DefenseOptionsName));
 
         return armor;
-    }
-
-    private void CreateBonusDefensePerLevel()
-    {
-        this._defenseBonusPerLevel = new List<LevelBonus>();
-        this._shieldDefenseBonusPerLevel = new List<LevelBonus>();
-        for (int level = 1; level <= 15; level++)
-        {
-            var levelBonus = this.Context.CreateNew<LevelBonus>();
-            levelBonus.Level = level;
-            levelBonus.AdditionalValue = DefenseIncreaseByLevel[level];
-            this._defenseBonusPerLevel.Add(levelBonus);
-
-            var shieldLevelBonus = this.Context.CreateNew<LevelBonus>();
-            levelBonus.Level = level;
-            levelBonus.AdditionalValue = level;
-            this._shieldDefenseBonusPerLevel.Add(shieldLevelBonus);
-        }
     }
 }
