@@ -50,6 +50,11 @@ public static class ConnectionConfigurator
     private static IDatabaseConnectionSettingProvider Provider => _provider ?? throw new InvalidOperationException("Call Initialize before.");
 
     /// <summary>
+    /// Gets a value indicating whether this instance is initialized.
+    /// </summary>
+    public static bool IsInitialized => _provider is not null;
+
+    /// <summary>
     /// Initializes this instance.
     /// </summary>
     /// <param name="provider">The <see cref="IDatabaseConnectionSettingProvider"/> which provides the required connection settings.</param>
@@ -114,7 +119,7 @@ public static class ConnectionConfigurator
     {
         return role switch
         {
-            DatabaseRole.Account => typeof(AccountContext),
+            DatabaseRole.Account => typeof(AccountContext), 
             DatabaseRole.Admin => typeof(EntityDataContext),
             DatabaseRole.Configuration => typeof(ConfigurationContext),
             DatabaseRole.Guild => typeof(GuildContext),

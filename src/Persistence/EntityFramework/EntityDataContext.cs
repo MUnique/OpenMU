@@ -22,6 +22,11 @@ public class EntityDataContext : ExtendedTypeContext
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        if (!ConnectionConfigurator.IsInitialized)
+        {
+            ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        }
+
         base.OnConfiguring(optionsBuilder);
         this.Configure(optionsBuilder);
     }
