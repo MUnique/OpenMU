@@ -115,7 +115,6 @@ public void SendObjectsOutOfScope(List<ushort> objectIds)
         {
             var objectIdStruct = packet[i];
             objectIdStruct.Id = objectIds[i];
-            i++;
         }
 
         return size;
