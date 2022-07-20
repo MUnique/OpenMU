@@ -581,7 +581,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 World.prototype.addAnimation = function (animatingId, animation, targetId, direction) {
                     var animating = this.getObjectById(animatingId);
                     if (animating !== undefined && animating !== null) {
-                        if (animation === 122) {
+                        if (animation === World.rotationAnimationId) {
                             animating.rotateTo(direction);
                         }
                         else {
@@ -636,6 +636,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     this.objects[mesh.data.id] = mesh;
                 };
                 World.sideLength = 256;
+                World.rotationAnimationId = 122;
                 return World;
             }(THREE.Object3D));
             exports_9("World", World);
