@@ -104,11 +104,19 @@ public partial class MapEditor : IDisposable
         this._terrainImage = new GameMapTerrain(this.Map).ToImage();
     }
 
-    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
-        if (sender == this._focusedObject)
+        try
         {
-            this.StateHasChanged();
+            if (sender == this._focusedObject)
+            {
+                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            // must be catched because it's an async void method.
         }
     }
 

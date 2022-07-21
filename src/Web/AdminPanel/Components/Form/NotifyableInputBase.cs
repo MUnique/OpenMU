@@ -41,20 +41,28 @@ public abstract class NotifyableInputBase<TValue> : InputBase<TValue>
         this.NotificationService.PropertyChanged -= this.OnPropertyChanged;
     }
 
-    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
-        if (sender != this.EditContext.Model)
+        try
         {
-            return;
-        }
+            if (sender != this.EditContext.Model)
+            {
+                return;
+            }
 
-        if (args.PropertyName != null && args.PropertyName != this.FieldIdentifier.FieldName)
+            if (args.PropertyName != null && args.PropertyName != this.FieldIdentifier.FieldName)
+            {
+                return;
+            }
+
+            this._getter ??= this.ValueExpression!.Compile();
+            this.CurrentValue = this._getter();
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
+        catch
         {
-            return;
+            // must be catched because it's an async void method.
         }
-
-        this._getter ??= this.ValueExpression!.Compile();
-        this.CurrentValue = this._getter();
-        this.StateHasChanged();
     }
 }

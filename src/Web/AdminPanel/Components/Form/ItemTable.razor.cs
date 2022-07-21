@@ -71,7 +71,7 @@ public partial class ItemTable<TItem>
         {
             this.Value ??= new List<TItem>();
             this.Value.Add(item);
-            this.StateHasChanged();
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
         }
     }
 
@@ -97,7 +97,7 @@ public partial class ItemTable<TItem>
             this.Value ??= new List<TItem>();
             this.Value.Add(item);
             await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
-            this.StateHasChanged();
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
         }
     }
 

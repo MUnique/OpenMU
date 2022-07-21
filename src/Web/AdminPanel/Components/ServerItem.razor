@@ -70,9 +70,18 @@
         this.Server.PropertyChanged += this.OnServerPropertyChanged;
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void OnServerPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
     {
-        await this.InvokeAsync(this.StateHasChanged);
+        try
+        {
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
+        catch
+        {
+            // must be catched because it's an async void method.
+        }
+
     }
 
     private string GetExpandIconClass()
@@ -98,10 +107,10 @@
             return "btn-warning";
     }
 
-    private void OnExpandClick(MouseEventArgs eventArgs)
+    private async Task OnExpandClick(MouseEventArgs eventArgs)
     {
         this._isExpanded = !this._isExpanded;
-        this.StateHasChanged();
+        await this.InvokeAsync(this.StateHasChanged);
     }
 
     private Task OnActionClick(MouseEventArgs eventArgs)

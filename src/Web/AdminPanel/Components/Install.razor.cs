@@ -72,7 +72,7 @@ public sealed partial class Install
     private async Task StartInstallationAsync()
     {
         this.IsInstalling = true;
-        this.StateHasChanged();
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
         try
         {
             await this.SetupService.CreateDatabaseAsync(() => this.SelectedVersion!.CreateInitialDataAsync((byte)this.GameServerCount, this.CreateTestAccounts)).ConfigureAwait(false);

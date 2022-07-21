@@ -12,10 +12,13 @@
 
 @code {
 
+    /// <summary>
+    /// Gets or sets the servers.
+    /// </summary>
     [Parameter]
     public IList<IManageableServer> Servers { get; set; } = null!;
 
-    
+    /// <inheritdoc />
     public void Dispose()
     {
         foreach (var server in this.Servers)
@@ -24,6 +27,7 @@
         }
     }
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -33,10 +37,18 @@
         }
     }
 
-
-    private void OnServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        this.InvokeAsync(() => this.StateHasChanged());
+        try
+        {
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
+        catch
+        {
+            // must be catched because it's an async void method.
+        }
+        
     }
 
     private int GetPlayerCount()
@@ -46,6 +58,4 @@
                     && s.ServerState != ServerState.Timeout)
             .Sum(s => s.CurrentConnections) ?? 0;
     }
-
-
 }

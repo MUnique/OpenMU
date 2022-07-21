@@ -128,7 +128,7 @@
         this._isLoading = true;
         try
         {
-            this.StateHasChanged();
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
             var loadedItems = await this._dataService.GetAsync((page - 1) * this.PageSize, this.PageSize);
             var isRefresh = this.Page == page;
             if (isRefresh)
@@ -151,7 +151,7 @@
         finally
         {
             this._isLoading = false;
-            this.StateHasChanged();
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
         }
     }
 }

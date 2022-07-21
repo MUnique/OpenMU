@@ -60,7 +60,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this._plugInController.DataChanged += (s, e) => this.StateHasChanged();
+        this._plugInController.DataChanged += (s, e) => this.InvokeAsync(this.StateHasChanged);
     }
 
     private void OnPlugInPointSelected(ChangeEventArgs args)

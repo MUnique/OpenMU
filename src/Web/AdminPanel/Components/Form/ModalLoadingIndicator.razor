@@ -26,8 +26,8 @@
 
         if (this.CancellationToken.IsCancellationRequested)
         {
-            await this.InvokeAsync(this.Modal.CloseAsync);
-            await this.InvokeAsync(this.StateHasChanged);
+            await this.InvokeAsync(this.Modal.CloseAsync).ConfigureAwait(false);
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
             return;
         }
 
