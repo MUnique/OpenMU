@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Newtonsoft.Json.Serialization;
@@ -44,9 +45,9 @@ public class JsonObjectLoader
         var result = new List<T>();
         var type = context.Model.FindEntityType(typeof(T)) ?? throw new ArgumentException($"{typeof(T)} is not included in the model of the context.");
         var queryString = this._queryBuilder.BuildJsonQueryForEntity(type);
-        using var command = context.Database.GetDbConnection().CreateCommand();
+        await using var command = context.Database.GetDbConnection().CreateCommand();
         command.CommandText = queryString;
-        using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+        await using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess).ConfigureAwait(false);
         if (reader.HasRows)
         {
             while (await reader.ReadAsync().ConfigureAwait(false))
@@ -81,14 +82,14 @@ public class JsonObjectLoader
 
         var queryString = this._queryBuilder.BuildJsonQueryForEntity(type);
         queryString += " where result.\"Id\" = @id;";
-        using var command = context.Database.GetDbConnection().CreateCommand();
+        await using var command = context.Database.GetDbConnection().CreateCommand();
         command.CommandText = queryString;
         var idParameter = command.CreateParameter();
         idParameter.ParameterName = "id";
         idParameter.Value = id;
 
         command.Parameters.Add(idParameter);
-        using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+        await using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess | CommandBehavior.SingleResult).ConfigureAwait(false);
         if (reader.HasRows && await reader.ReadAsync().ConfigureAwait(false))
         {
             using var textReader = reader.GetTextReader(2);
