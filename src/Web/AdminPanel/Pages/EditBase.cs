@@ -245,14 +245,13 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
         this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, Array.Empty<object>())!;
 
-        var method = typeof(IContext).GetMethod(nameof(IContext.GetByIdAsync))!.MakeGenericMethod(this.Type);
         try
         {
             if (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    this._model = method.Invoke(this._persistenceContext, new object[] { this.Id });
+                    this._model = await this._persistenceContext.GetByIdAsync(this.Id, this.Type).ConfigureAwait(false);
                     this._loadingState = this.Model is not null
                         ? DataLoadingState.Loaded
                         : DataLoadingState.NotFound;

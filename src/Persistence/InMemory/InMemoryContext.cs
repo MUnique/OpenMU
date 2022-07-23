@@ -96,10 +96,16 @@ public class InMemoryContext : IContext
     }
 
     /// <inheritdoc/>
-    public ValueTask<T?> GetByIdAsync<T>(Guid id)
+    public async Task<T?> GetByIdAsync<T>(Guid id)
         where T : class
     {
-        return this.Manager.GetRepository<T>().GetByIdAsync(id);
+        return await this.Manager.GetRepository<T>().GetByIdAsync(id).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async Task<object?> GetByIdAsync(Guid id, Type type)
+    {
+        return await this.Manager.GetRepository(type).GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

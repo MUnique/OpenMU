@@ -145,12 +145,20 @@ public class EntityFrameworkContextBase : IContext
     }
 
     /// <inheritdoc/>
-    public async ValueTask<T?> GetByIdAsync<T>(Guid id)
+    public async Task<T?> GetByIdAsync<T>(Guid id)
         where T : class
     {
         using var l = await this._lock.LockAsync();
         using var context = this.RepositoryManager.ContextStack.UseContext(this);
         return await this.RepositoryManager.GetRepository<T>().GetByIdAsync(id).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async Task<object?> GetByIdAsync(Guid id, Type type)
+    {
+        using var l = await this._lock.LockAsync();
+        using var context = this.RepositoryManager.ContextStack.UseContext(this);
+        return await this.RepositoryManager.GetRepository(type).GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

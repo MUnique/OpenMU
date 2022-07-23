@@ -69,8 +69,16 @@ public interface IContext : IDisposable
     /// <typeparam name="T">The type of the requested object.</typeparam>
     /// <param name="id">The identifier.</param>
     /// <returns>The object of the specified type by its identifier.</returns>
-    ValueTask<T?> GetByIdAsync<T>(Guid id)
+    Task<T?> GetByIdAsync<T>(Guid id)
         where T : class;
+
+    /// <summary>
+    /// Gets the object of the specified type by its identifier.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="type">The type of the requested object.</param>
+    /// <returns>The object of the specified type by its identifier.</returns>
+    Task<object?> GetByIdAsync(Guid id, Type type);
 
     /// <summary>
     /// Gets all objects of the specified type. Use with caution!.

@@ -32,7 +32,7 @@ public class ByteArrayDownloadController : Controller
     /// <param name="id">The identifier.</param>
     /// <param name="propertyName">Name of the property.</param>
     [HttpGet]
-    public Task GetAsync(string typeString, Guid id, string propertyName)
+    public async Task<IActionResult> GetAsync(string typeString, Guid id, string propertyName)
     {
         var type = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName?.StartsWith(nameof(MUnique)) ?? false)
             .Select(assembly => assembly.GetType(typeString)).FirstOrDefault(t => t != null);
@@ -55,20 +55,20 @@ public class ByteArrayDownloadController : Controller
         var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(type);
         using var persistenceContext = (IContext)createContextMethod.Invoke(this._persistenceContextProvider, Array.Empty<object>())!;
 
-        var method = typeof(IContext).GetMethod(nameof(IContext.GetByIdAsync))!.MakeGenericMethod(type);
-        var obj = method.Invoke(persistenceContext, new object[] { id });
+        var obj = await persistenceContext.GetByIdAsync(id, type).ConfigureAwait(false);
         if (obj is null)
         {
-            return Task.FromResult(this.NotFound());
+            return this.NotFound();
         }
 
         var array = (byte[]?)property.GetValue(obj);
         this.Response.ContentType = "application/octet-stream";
         if (array is null || array.Length == 0)
         {
-            return Task.CompletedTask;
+            return this.NoContent();
         }
 
-        return this.Response.Body.WriteAsync(array, 0, array.Length);
+        await this.Response.Body.WriteAsync(array, 0, array.Length).ConfigureAwait(false);
+        return this.Ok();
     }
 }
