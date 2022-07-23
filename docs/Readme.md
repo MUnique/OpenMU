@@ -145,7 +145,7 @@ database (e.g. RavenDB).
 * [Progress](Progress.md)/[Skills Progress](Skills-Progress.md): Information about
   the feature implementation progress of the project
 
-* [Admin Panel](https://github.com/MUnique/OpenMU/tree/master/src/AdminPanel):
+* [Admin Panel](https://github.com/MUnique/OpenMU/tree/master/src/Web/AdminPanel):
   The user inferface of the server
 
 * [Attribute System](https://github.com/MUnique/OpenMU/tree/master/src/AttributeSystem):
