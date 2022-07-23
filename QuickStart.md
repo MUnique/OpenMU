@@ -97,7 +97,7 @@ If you have that, you'll need to do:
 
   * Optional: you can add the parameter '-autostart' to save the next step.
 
-* When the Admin Panel is initialized, go to <http://localhost:1234/>. Then you
+* When the Admin Panel is initialized, go to <http://localhost/>. Then you
   should see three gameservers, the chat server and the connect server. Start
   the connect server and at least one gameserver.
   If all goes well, you should be able to expand a gameserver and see the
