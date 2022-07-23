@@ -2,7 +2,7 @@
 
 The admin panel is meant to offer functions for administrative tasks.
 
-It's implemented with ASP.NET Core Blazor Server and it's accessible via <http://localhost:1234/>
+It's implemented with ASP.NET Core Blazor Server and it's accessible via <http://localhost/> or <http://localhost/admin/>
 The current features are:
 
 ## Server list
