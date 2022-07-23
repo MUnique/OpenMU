@@ -20,7 +20,7 @@ jobs:
           PROJECT_FILE_PATH: src/PlugIns/MUnique.OpenMU.PlugIns.csproj
           TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_KEY}}
-          PACKAGE_NAME: MUnique.OpenMU.PlugIns
+          PACKAGE_NAME: munique.openmu.plugins
 
       - name: publish MUnique.OpenMU.Network on version change
         uses: rohith/publish-nuget@5fdc86fb81a38b37521c9f153bfb60ac44e7ba93
@@ -28,7 +28,7 @@ jobs:
           PROJECT_FILE_PATH: src/Network/MUnique.OpenMU.Network.csproj
           TAG_COMMIT: false
           NUGET_KEY: ${{secrets.NUGET_KEY}}
-          PACKAGE_NAME: MUnique.OpenMU.Network
+          PACKAGE_NAME: munique.openmu.network
 
       - name: publish MUnique.OpenMU.Network.Packets on version change
         uses: rohith/publish-nuget@5fdc86fb81a38b37521c9f153bfb60ac44e7ba93
@@ -37,4 +37,4 @@ jobs:
           TAG_COMMIT: true
           TAG_FORMAT: v*
           NUGET_KEY: ${{secrets.NUGET_KEY}}
-          PACKAGE_NAME: MUnique.OpenMU.Network.Packets
+          PACKAGE_NAME: munique.openmu.network.packets
