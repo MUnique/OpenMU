@@ -72,7 +72,7 @@ export class MapApp {
         }
 
         requestAnimationFrame(() => this.animate(time)); // request the next frame to be rendered
-        this.stats.update(); // updates the stats (fps and frametimes)
+        this.stats?.update(); // updates the stats (fps and frametimes)
         TWEEN.update(time); // updates all existing Tweens
         this.world.update(); // update world and it's objects
         this.renderer.render(this.scene, this.camera);

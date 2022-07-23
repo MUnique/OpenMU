@@ -743,11 +743,12 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                 };
                 MapApp.prototype.animate = function (time) {
                     var _this = this;
+                    var _a;
                     if (this.isDisposing || this.isDisposed) {
                         return;
                     }
                     requestAnimationFrame(function () { return _this.animate(time); });
-                    this.stats.update();
+                    (_a = this.stats) === null || _a === void 0 ? void 0 : _a.update();
                     tween_3.default.update(time);
                     this.world.update();
                     this.renderer.render(this.scene, this.camera);

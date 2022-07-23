@@ -3,10 +3,13 @@
 function CreateMap(serverId, mapId, containerId, appId) {
     console.debug("Creating map; serverId: ", serverId, ", mapId: ", mapId, ", containerId: ", containerId, ", appId: ", appId);
 
-    var stats = new Stats();
-    stats.domElement.style.position = "relative";
-    stats.domElement.style.top = "0";
-    document.getElementById(containerId).appendChild(stats.domElement);
+    let stats = null;
+    if (typeof Stats === "function") {
+        stats = new Stats();
+        stats.domElement.style.position = "relative";
+        stats.domElement.style.top = "0";
+        document.getElementById(containerId).appendChild(stats.domElement);
+    }
 
     System.import("MapApp")
         .then((module) => {
