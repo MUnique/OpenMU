@@ -136,6 +136,49 @@ public class TradeTest
         Assert.That(trader2.Inventory!.ItemStorage.Items.First(), Is.SameAs(item1));
     }
 
+    /// <summary>
+    /// Tests a trade of items, when it failes due to missing inventory space.
+    /// </summary>
+    [Test]
+    public async ValueTask TradeFailedItemsNotFitAsync()
+    {
+        var trader1 = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var trader2 = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var tradeRequestAction = new TradeRequestAction();
+        var tradeResponseAction = new TradeAcceptAction();
+
+        // Fill up inventory of the receiving player
+        for (byte i = (byte)(InventoryConstants.LastEquippableItemSlotIndex + 1); i < 64 + InventoryConstants.LastEquippableItemSlotIndex; i++)
+        {
+            var item = this.GetItem();
+            await trader2.Inventory!.AddItemAsync(i, item).ConfigureAwait(false);
+        }
+
+        // Create items which should be traded.
+        var item1 = this.GetItem();
+        var item2 = this.GetItem();
+        await trader1.Inventory!.AddItemAsync(20, item1).ConfigureAwait(false);
+        await trader1.Inventory.AddItemAsync(21, item2).ConfigureAwait(false);
+
+        // Set up the trade
+        await tradeRequestAction.RequestTradeAsync(trader1, trader2).ConfigureAwait(false);
+        await tradeResponseAction.HandleTradeAcceptAsync(trader2, true).ConfigureAwait(false);
+        var itemMoveAction = new MoveItemAction();
+        await itemMoveAction.MoveItemAsync(trader1, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+        await itemMoveAction.MoveItemAsync(trader1, 21, Storages.Inventory, 2, Storages.Trade).ConfigureAwait(false);
+        Assert.That(trader1.TemporaryStorage!.Items.First(), Is.SameAs(item1));
+
+        // Accept the trade on both ends
+        var tradeButtonHandler = new TradeButtonAction();
+        await tradeButtonHandler.TradeButtonChangedAsync(trader1, TradeButtonState.Checked).ConfigureAwait(false);
+        await tradeButtonHandler.TradeButtonChangedAsync(trader2, TradeButtonState.Checked).ConfigureAwait(false);
+
+        // Check result
+        Assert.That(trader1.Inventory.ItemStorage.Items, Is.Not.Empty);
+        Assert.That(trader1.Inventory!.ItemStorage.Items.First(), Is.SameAs(item1));
+        Assert.That(trader1.Inventory!.ItemStorage.Items.Last(), Is.SameAs(item2));
+    }
+
     private Item GetItem()
     {
         var item = new Mock<Item>();

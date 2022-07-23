@@ -165,16 +165,33 @@ public class Storage : IStorage
     /// <inheritdoc/>
     public async ValueTask<bool> TryTakeAllAsync(IStorage anotherStorage)
     {
-        // TODO: this should be a all-or-nothing action...
-        foreach (var item in anotherStorage.Items)
+        var result = true;
+
+        var itemsWithSlots = anotherStorage.Items.Select(item => (item.ItemSlot, Item: item)).ToList();
+        try
         {
-            if (!await this.AddItemAsync(item).ConfigureAwait(false))
+            foreach (var item in itemsWithSlots)
             {
-                return false;
+                await anotherStorage.RemoveItemAsync(item.Item).ConfigureAwait(false);
+                if (!await this.AddItemAsync(item.Item).ConfigureAwait(false))
+                {
+                    result = false;
+                }
+            }
+        }
+        finally
+        {
+            if (!result)
+            {
+                foreach (var item in itemsWithSlots)
+                {
+                    await this.RemoveItemAsync(item.Item).ConfigureAwait(false);
+                    await anotherStorage.AddItemAsync(item.ItemSlot, item.Item).ConfigureAwait(false);
+                }
             }
         }
 
-        return true;
+        return result;
     }
 
     /// <inheritdoc/>

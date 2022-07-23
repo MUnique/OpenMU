@@ -37,8 +37,8 @@ public class TradeButtonAction : BaseTradeAction
             TradeResult result = await this.InternalFinishTradeAsync(trader, tradingPartner).ConfigureAwait(false);
             if (result != TradeResult.Success)
             {
-                await this.CancelTradeAsync(tradingPartner).ConfigureAwait(false);
-                await this.CancelTradeAsync(trader).ConfigureAwait(false);
+                await this.CancelTradeAsync(tradingPartner, false).ConfigureAwait(false);
+                await this.CancelTradeAsync(trader, false).ConfigureAwait(false);
                 (trader as Player)?.Logger.LogDebug($"Cancelled the trade because of unfinished state. trader: {trader.Name}, partner:{tradingPartner.Name}");
             }
 
@@ -69,7 +69,6 @@ public class TradeButtonAction : BaseTradeAction
     {
         using var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
         using var partnerContext = await tradingPartner.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
-        using var itemContext = trader.GameContext.PersistenceContextProvider.CreateNewTradeContext();
         if (!context.Allowed || !partnerContext.Allowed)
         {
             context.Allowed = false;
@@ -78,6 +77,7 @@ public class TradeButtonAction : BaseTradeAction
             return TradeResult.Cancelled;
         }
 
+        using var itemContext = trader.GameContext.PersistenceContextProvider.CreateNewTradeContext();
         var traderItems = trader.TemporaryStorage!.Items.ToList();
         var tradePartnerItems = tradingPartner.TemporaryStorage!.Items.ToList();
         this.AttachItemsToPersistenceContext(traderItems, itemContext);
