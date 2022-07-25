@@ -61,29 +61,6 @@ internal partial class NpcInitialization
 
             this.ItemHelper.CreateItem(32, 10, 14, 1, 0), // Town Portal Scroll
             this.ItemHelper.CreateItem(33, 29, 13, 1, 0), // Armor of Guardsman
-
-            // TEST - do not commit
-            this.ItemHelper.CreateItem(50, 11, 14, 1, 0), // Box of Luck
-            this.ItemHelper.CreateItem(51, 11, 14, 1, 1), // Box of Kundun 1 (Christmas Star)
-            this.ItemHelper.CreateItem(52, 11, 14, 1, 2), // Box of Kundun 2 (Firecracker)
-            this.ItemHelper.CreateItem(53, 11, 14, 1, 3), // Box of Kundun 3 ( HEart of Love)
-            this.ItemHelper.CreateItem(54, 11, 14, 1, 5), // Silver Medal
-            this.ItemHelper.CreateItem(55, 11, 14, 1, 6), // Gold Medal
-            this.ItemHelper.CreateItem(56, 11, 14, 1, 7), // Event Chip
-            this.ItemHelper.CreateItem(57, 11, 14, 1, 8), // Box of Kundun+1 7 (Event Chip)
-            this.ItemHelper.CreateItem(58, 11, 14, 1, 9), // Box of Kundun+2 8 (ElradoraBox)
-            this.ItemHelper.CreateItem(59, 11, 14, 1, 10), // Box of Kundun+3 9 (ElradoraBox)
-            this.ItemHelper.CreateItem(60, 11, 14, 1, 11), // Box of Kundun+4 10 (ElradoraBox)
-            this.ItemHelper.CreateItem(61, 11, 14, 1, 12), // Box of Kundun+5 11 (ElradoraBox)
-            this.ItemHelper.CreateItem(62, 11, 14, 1, 13), // (DarkLordHeart)
-            this.ItemHelper.CreateItem(63, 11, 14, 1, 14), // Box of Kundun 13 (?)
-            this.ItemHelper.CreateItem(64, 11, 14, 1, 15), // Box of Kundun 14 (?)
-
-            this.ItemHelper.CreateItem(68, 46, 14, 1, 0),
-            this.ItemHelper.CreateItem(69, 47, 14, 1, 0),
-            this.ItemHelper.CreateItem(70, 48, 14, 1, 0),
-            this.ItemHelper.CreateItem(71, 49, 14, 1, 0),
-            this.ItemHelper.CreateItem(72, 50, 14, 1, 0),
         };
         return this.CreateMerchantStore(itemList);
     }
