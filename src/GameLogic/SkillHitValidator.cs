@@ -149,7 +149,6 @@ public class SkillHitValidator
             var newCount = animationEntry.HitCount + 1;
 
             this._hits[animationCounter] = animationEntry with { HitCount = newCount };
-            Console.WriteLine(this._hits[animationCounter]);
             this._hits[hitCounter] = new HitEntry(skillId, DateTime.UtcNow, false, 0);
 
             var timestampDiff = DateTime.UtcNow - animationEntry.TimeStamp;
