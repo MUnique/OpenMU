@@ -313,9 +313,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("PositionY")
                         .HasColumnType("smallint");
 
-                    b.Property<byte[]>("QuestInfo")
-                        .HasColumnType("bytea");
-
                     b.Property<int>("State")
                         .HasColumnType("integer");
 
@@ -1939,6 +1936,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("DurationId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
@@ -1952,9 +1952,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<short>("Number")
                         .HasColumnType("smallint");
 
-                    b.Property<Guid?>("PowerUpDefinitionId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("SendDuration")
                         .HasColumnType("boolean");
 
@@ -1966,9 +1963,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameConfigurationId");
+                    b.HasIndex("DurationId");
 
-                    b.HasIndex("PowerUpDefinitionId");
+                    b.HasIndex("GameConfigurationId");
 
                     b.ToTable("MagicEffectDefinition", "config");
                 });
@@ -2506,12 +2503,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("BoostId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("MagicEffectDefinitionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("TargetAttributeId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BoostId");
+
+                    b.HasIndex("MagicEffectDefinitionId");
 
                     b.HasIndex("TargetAttributeId");
 
@@ -2527,46 +2529,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("AggregateType")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("ParentAsBoostId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ParentAsDurationId")
-                        .HasColumnType("uuid");
-
                     b.Property<float>("Value")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
 
                     b.ToTable("PowerUpDefinitionValue", "config");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("BoostId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("DurationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("TargetAttributeId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BoostId")
-                        .IsUnique();
-
-                    b.HasIndex("DurationId")
-                        .IsUnique();
-
-                    b.HasIndex("TargetAttributeId");
-
-                    b.ToTable("PowerUpDefinitionWithDuration", "config");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestDefinition", b =>
@@ -3861,15 +3829,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawDuration")
+                        .WithMany()
+                        .HasForeignKey("DurationId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
                         .WithMany("RawMagicEffects")
                         .HasForeignKey("GameConfigurationId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", "RawPowerUpDefinition")
-                        .WithMany()
-                        .HasForeignKey("PowerUpDefinitionId");
-
-                    b.Navigation("RawPowerUpDefinition");
+                    b.Navigation("RawDuration");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
@@ -4084,36 +4052,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("BoostId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
-                        .WithMany()
-                        .HasForeignKey("TargetAttributeId");
-
-                    b.Navigation("RawBoost");
-
-                    b.Navigation("RawTargetAttribute");
-                });
-
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", b =>
-                {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawBoost")
-                        .WithOne("ParentAsBoost")
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", "BoostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("PowerUpDefinitionWithDuration_Boost");
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawDuration")
-                        .WithOne("ParentAsDuration")
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionWithDuration", "DurationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("PowerUpDefinitionWithDuration_Duration");
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", null)
+                        .WithMany("RawPowerUpDefinitions")
+                        .HasForeignKey("MagicEffectDefinitionId");
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
 
                     b.Navigation("RawBoost");
-
-                    b.Navigation("RawDuration");
 
                     b.Navigation("RawTargetAttribute");
                 });
@@ -4486,6 +4433,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawItems");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
+                {
+                    b.Navigation("RawPowerUpDefinitions");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
                 {
                     b.Navigation("JoinedRequiredMasterSkills");
@@ -4518,10 +4470,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", b =>
                 {
-                    b.Navigation("ParentAsBoost");
-
-                    b.Navigation("ParentAsDuration");
-
                     b.Navigation("RawRelatedValues");
                 });
 

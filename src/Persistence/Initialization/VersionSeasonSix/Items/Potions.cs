@@ -525,12 +525,14 @@ public class Potions : InitializerBase
         effect.StopByDeath = true;
         effect.SubType = subType;
         effect.SendDuration = true;
-        effect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
-        effect.PowerUpDefinition.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        effect.PowerUpDefinition.Duration.ConstantValue.Value = (float)duration.TotalSeconds;
-        effect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        effect.PowerUpDefinition.Boost.ConstantValue.Value = boostValue;
-        effect.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        effect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        effect.Duration.ConstantValue.Value = (float)duration.TotalSeconds;
+
+        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        effect.PowerUpDefinitions.Add(powerUpDefinition);
+        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = boostValue;
+        powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
         return effect;
     }
 }

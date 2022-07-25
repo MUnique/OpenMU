@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
@@ -26,7 +24,12 @@ public class MagicEffect : AsyncDisposable
     /// <param name="definition">The definition.</param>
     /// <param name="duration">The duration.</param>
     public MagicEffect(IElement powerUp, MagicEffectDefinition definition, TimeSpan duration)
-        : this(duration, definition, new ElementWithTarget(powerUp, definition.PowerUpDefinition?.TargetAttribute ?? throw new InvalidOperationException($"MagicEffectDefinition {definition.GetId()} has no target attribute.")))
+        : this(
+            duration,
+            definition,
+            definition.PowerUpDefinitions
+                .Select(def => new ElementWithTarget(powerUp, def.TargetAttribute ?? throw new InvalidOperationException($"MagicEffectDefinition {definition.GetId()} has no target attribute.")))
+                .ToArray())
     {
     }
 

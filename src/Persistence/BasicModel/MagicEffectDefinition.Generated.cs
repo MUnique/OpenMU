@@ -26,23 +26,46 @@ public partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configurat
     public Guid Id { get; set; }
     
     /// <summary>
-    /// Gets the raw object of <see cref="PowerUpDefinition" />.
+    /// Gets the raw collection of <see cref="PowerUpDefinitions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
-    [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
-    public PowerUpDefinitionWithDuration RawPowerUpDefinition
+    [Newtonsoft.Json.JsonProperty("powerUpDefinitions")]
+    [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinitions")]
+    public ICollection<PowerUpDefinition> RawPowerUpDefinitions { get; } = new List<PowerUpDefinition>();
+    
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PowerUpDefinitions
     {
-        get => base.PowerUpDefinition as PowerUpDefinitionWithDuration;
-        set => base.PowerUpDefinition = value;
+        get => base.PowerUpDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawPowerUpDefinitions);
+        protected set
+        {
+            this.PowerUpDefinitions.Clear();
+            foreach (var item in value)
+            {
+                this.PowerUpDefinitions.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Duration" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("duration")]
+    [System.Text.Json.Serialization.JsonPropertyName("duration")]
+    public PowerUpDefinitionValue RawDuration
+    {
+        get => base.Duration as PowerUpDefinitionValue;
+        set => base.Duration = value;
     }
 
     /// <inheritdoc/>
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
-    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionWithDuration PowerUpDefinition
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Duration
     {
-        get => base.PowerUpDefinition;
-        set => base.PowerUpDefinition = value;
+        get => base.Duration;
+        set => base.Duration = value;
     }
 
 

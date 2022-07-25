@@ -1095,29 +1095,45 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
 
         var skill = skillEntry.Skill;
-        if (skill.MagicEffectDef?.PowerUpDefinition?.Boost is null)
+
+        if (skill.MagicEffectDef?.PowerUpDefinitions.Any(d => d.Boost is null) ?? true)
         {
-            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefintion.");
+            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefinition.");
         }
 
-        if (skill.MagicEffectDef.PowerUpDefinition.Duration is null)
+        if (skill.MagicEffectDef.Duration is null)
         {
-            throw new InvalidOperationException($"PowerUpDefinition {skill.MagicEffectDef.PowerUpDefinition.GetId()} no Duration.");
+            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no duration in MagicEffectDef.");
         }
 
-        var powerUpDef = skill.MagicEffectDef.PowerUpDefinition;
-        if (skillEntry.Level > 0)
+        int i = 0;
+        var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
+        foreach (var powerUpDef in skill.MagicEffectDef.PowerUpDefinitions)
         {
-            var element = this.Attributes!.CreateElement(powerUpDef.Boost);
-            var additionalValue = new SimpleElement(skillEntry.CalculateValue(), element.AggregateType);
-            skillEntry.BuffPowerUp = new CombinedElement(element, additionalValue);
-        }
-        else
-        {
-            skillEntry.BuffPowerUp = this.Attributes!.CreateElement(powerUpDef.Boost);
+            IElement powerUp;
+            if (skillEntry.Level > 0)
+            {
+                powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
+
+                // Apply either for all, or just for the specified TargetAttribute of the master skill
+                if (skillEntry.Skill.MasterDefinition?.TargetAttribute is not { } masterSkillTargetAttribute
+                    || masterSkillTargetAttribute == powerUpDef.TargetAttribute)
+                {
+                    var additionalValue = new SimpleElement(skillEntry.CalculateValue(), skillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
+                    powerUp = new CombinedElement(powerUp, additionalValue);
+                }
+            }
+            else
+            {
+                powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
+            }
+
+            result[i] = (powerUpDef.TargetAttribute!, powerUp);
+            i++;
         }
 
-        skillEntry.PowerUpDuration = this.Attributes!.CreateElement(powerUpDef.Duration);
+        skillEntry.PowerUpDuration = this.Attributes!.CreateElement(skill.MagicEffectDef.Duration);
+        skillEntry.PowerUps = result;
     }
 
     /// <summary>

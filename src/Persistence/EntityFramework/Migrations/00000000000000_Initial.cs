@@ -168,9 +168,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Value = table.Column<float>(type: "real", nullable: false),
-                    AggregateType = table.Column<int>(type: "integer", nullable: false),
-                    ParentAsBoostId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ParentAsDurationId = table.Column<Guid>(type: "uuid", nullable: true)
+                    AggregateType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -515,6 +513,38 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MagicEffectDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DurationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Number = table.Column<short>(type: "smallint", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    SubType = table.Column<byte>(type: "smallint", nullable: false),
+                    InformObservers = table.Column<bool>(type: "boolean", nullable: false),
+                    StopByDeath = table.Column<bool>(type: "boolean", nullable: false),
+                    SendDuration = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MagicEffectDefinition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MagicEffectDefinition_GameConfiguration_GameConfigurationId",
+                        column: x => x.GameConfigurationId,
+                        principalSchema: "config",
+                        principalTable: "GameConfiguration",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MagicEffectDefinition_PowerUpDefinitionValue_DurationId",
+                        column: x => x.DurationId,
+                        principalSchema: "config",
+                        principalTable: "PowerUpDefinitionValue",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BattleZoneDefinition",
                 schema: "config",
                 columns: table => new
@@ -581,67 +611,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PowerUpDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TargetAttributeId = table.Column<Guid>(type: "uuid", nullable: true),
-                    BoostId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PowerUpDefinition", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PowerUpDefinition_AttributeDefinition_TargetAttributeId",
-                        column: x => x.TargetAttributeId,
-                        principalSchema: "config",
-                        principalTable: "AttributeDefinition",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_PowerUpDefinition_PowerUpDefinitionValue_BoostId",
-                        column: x => x.BoostId,
-                        principalSchema: "config",
-                        principalTable: "PowerUpDefinitionValue",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PowerUpDefinitionWithDuration",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    DurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    TargetAttributeId = table.Column<Guid>(type: "uuid", nullable: true),
-                    BoostId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PowerUpDefinitionWithDuration", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PowerUpDefinitionWithDuration_AttributeDefinition_TargetAtt~",
-                        column: x => x.TargetAttributeId,
-                        principalSchema: "config",
-                        principalTable: "AttributeDefinition",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "PowerUpDefinitionWithDuration_Boost",
-                        column: x => x.BoostId,
-                        principalSchema: "config",
-                        principalTable: "PowerUpDefinitionValue",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "PowerUpDefinitionWithDuration_Duration",
-                        column: x => x.DurationId,
-                        principalSchema: "config",
-                        principalTable: "PowerUpDefinitionValue",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "LevelBonus",
                 schema: "config",
                 columns: table => new
@@ -687,6 +656,39 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.GameServerDefinitionId,
                         principalSchema: "config",
                         principalTable: "GameServerDefinition",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PowerUpDefinition",
+                schema: "config",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TargetAttributeId = table.Column<Guid>(type: "uuid", nullable: true),
+                    BoostId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MagicEffectDefinitionId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PowerUpDefinition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PowerUpDefinition_AttributeDefinition_TargetAttributeId",
+                        column: x => x.TargetAttributeId,
+                        principalSchema: "config",
+                        principalTable: "AttributeDefinition",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PowerUpDefinition_MagicEffectDefinition_MagicEffectDefiniti~",
+                        column: x => x.MagicEffectDefinitionId,
+                        principalSchema: "config",
+                        principalTable: "MagicEffectDefinition",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PowerUpDefinition_PowerUpDefinitionValue_BoostId",
+                        column: x => x.BoostId,
+                        principalSchema: "config",
+                        principalTable: "PowerUpDefinitionValue",
                         principalColumn: "Id");
                 });
 
@@ -824,38 +826,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.BonusId,
                         principalSchema: "config",
                         principalTable: "PowerUpDefinition",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MagicEffectDefinition",
-                schema: "config",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PowerUpDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    GameConfigurationId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Number = table.Column<short>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    SubType = table.Column<byte>(type: "smallint", nullable: false),
-                    InformObservers = table.Column<bool>(type: "boolean", nullable: false),
-                    StopByDeath = table.Column<bool>(type: "boolean", nullable: false),
-                    SendDuration = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MagicEffectDefinition", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MagicEffectDefinition_GameConfiguration_GameConfigurationId",
-                        column: x => x.GameConfigurationId,
-                        principalSchema: "config",
-                        principalTable: "GameConfiguration",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_MagicEffectDefinition_PowerUpDefinitionWithDuration_PowerUp~",
-                        column: x => x.PowerUpDefinitionId,
-                        principalSchema: "config",
-                        principalTable: "PowerUpDefinitionWithDuration",
                         principalColumn: "Id");
                 });
 
@@ -1122,7 +1092,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     State = table.Column<int>(type: "integer", nullable: false),
                     CharacterStatus = table.Column<int>(type: "integer", nullable: false),
                     Pose = table.Column<byte>(type: "smallint", nullable: false),
-                    QuestInfo = table.Column<byte[]>(type: "bytea", nullable: true),
                     UsedFruitPoints = table.Column<int>(type: "integer", nullable: false),
                     UsedNegFruitPoints = table.Column<int>(type: "integer", nullable: false),
                     InventoryExtensions = table.Column<int>(type: "integer", nullable: false),
@@ -3329,16 +3298,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ItemLevelBonusTableId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MagicEffectDefinition_DurationId",
+                schema: "config",
+                table: "MagicEffectDefinition",
+                column: "DurationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MagicEffectDefinition_GameConfigurationId",
                 schema: "config",
                 table: "MagicEffectDefinition",
                 column: "GameConfigurationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MagicEffectDefinition_PowerUpDefinitionId",
-                schema: "config",
-                table: "MagicEffectDefinition",
-                column: "PowerUpDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MasterSkillDefinition_ReplacedSkillId",
@@ -3509,29 +3478,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "BoostId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PowerUpDefinition_MagicEffectDefinitionId",
+                schema: "config",
+                table: "PowerUpDefinition",
+                column: "MagicEffectDefinitionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PowerUpDefinition_TargetAttributeId",
                 schema: "config",
                 table: "PowerUpDefinition",
-                column: "TargetAttributeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PowerUpDefinitionWithDuration_BoostId",
-                schema: "config",
-                table: "PowerUpDefinitionWithDuration",
-                column: "BoostId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PowerUpDefinitionWithDuration_DurationId",
-                schema: "config",
-                table: "PowerUpDefinitionWithDuration",
-                column: "DurationId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PowerUpDefinitionWithDuration_TargetAttributeId",
-                schema: "config",
-                table: "PowerUpDefinitionWithDuration",
                 column: "TargetAttributeId");
 
             migrationBuilder.CreateIndex(
@@ -3841,14 +3796,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "PowerUpDefinitionWithDuration_Boost",
+                name: "FK_MagicEffectDefinition_PowerUpDefinitionValue_DurationId",
                 schema: "config",
-                table: "PowerUpDefinitionWithDuration");
-
-            migrationBuilder.DropForeignKey(
-                name: "PowerUpDefinitionWithDuration_Duration",
-                schema: "config",
-                table: "PowerUpDefinitionWithDuration");
+                table: "MagicEffectDefinition");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_MasterSkillDefinition_Skill_ReplacedSkillId",
@@ -4212,15 +4162,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "PowerUpDefinitionWithDuration",
+                name: "AttributeDefinition",
                 schema: "config");
 
             migrationBuilder.DropTable(
                 name: "MasterSkillRoot",
-                schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "AttributeDefinition",
                 schema: "config");
 
             migrationBuilder.DropTable(

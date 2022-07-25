@@ -46,46 +46,6 @@ internal partial class PowerUpDefinitionValue
         get => this.ConstantValue!.AggregateType;
         set => this.ConstantValue!.AggregateType = value;
     }
-
-    /// <summary>
-    /// Gets or sets the parent as boost identifier.
-    /// </summary>
-    /// <remarks>
-    /// This is required, because <see cref="PowerUpDefinitionValue"/> is used as <see cref="PowerUpDefinition.Boost"/> and as <see cref="PowerUpDefinitionWithDuration.Duration"/>.
-    /// The entity framework will not name the foreign keys in a proper way, so they would collide.
-    /// </remarks>
-    public Guid? ParentAsBoostId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the parent as boost.
-    /// </summary>
-    /// <remarks>
-    /// This is required, because <see cref="PowerUpDefinitionValue"/> is used as <see cref="PowerUpDefinition.Boost"/> and as <see cref="PowerUpDefinitionWithDuration.Duration"/>.
-    /// The entity framework will not name the foreign keys in a proper way, so they would collide.
-    /// </remarks>
-    [InverseProperty(nameof(PowerUpDefinitionWithDuration.RawBoost))]
-    [Browsable(false)]
-    public PowerUpDefinitionWithDuration? ParentAsBoost { get; set; }
-
-    /// <summary>
-    /// Gets or sets the parent as duration identifier.
-    /// </summary>
-    /// <remarks>
-    /// This is required, because <see cref="PowerUpDefinitionValue"/> is used as <see cref="PowerUpDefinition.Boost"/> and as <see cref="PowerUpDefinitionWithDuration.Duration"/>.
-    /// The entity framework will not name the foreign keys in a proper way, so they would collide.
-    /// </remarks>
-    public Guid? ParentAsDurationId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the duration of the parent as.
-    /// </summary>
-    /// <remarks>
-    /// This is required, because <see cref="PowerUpDefinitionValue"/> is used as <see cref="PowerUpDefinition.Boost"/> and as <see cref="PowerUpDefinitionWithDuration.Duration"/>.
-    /// The entity framework will not name the foreign keys in a proper way, so they would collide.
-    /// </remarks>
-    [InverseProperty(nameof(PowerUpDefinitionWithDuration.RawDuration))]
-    [Browsable(false)]
-    public PowerUpDefinitionWithDuration? ParentAsDuration { get; set; }
 }
 
 /// <summary>

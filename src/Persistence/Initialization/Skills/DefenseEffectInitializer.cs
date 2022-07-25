@@ -34,14 +34,16 @@ public class DefenseEffectInitializer : InitializerBase
         magicEffect.InformObservers = false;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
-        magicEffect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
-        magicEffect.PowerUpDefinition.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
-        magicEffect.PowerUpDefinition.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.PowerUpDefinition.Duration.ConstantValue!.Value = 1; // 1 Second
+        magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        magicEffect.Duration.ConstantValue!.Value = 1; // 1 Second
+
+        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
+        powerUpDefinition.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
 
         // Always a 50 % damage reduction
-        magicEffect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.PowerUpDefinition.Boost.ConstantValue.Value = 0.50f;
-        magicEffect.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = 0.50f;
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

@@ -33,18 +33,19 @@ public class HealEffectInitializer : InitializerBase
         magicEffect.Name = "Heal Effect";
         magicEffect.InformObservers = false;
         magicEffect.SendDuration = false;
-        magicEffect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
-        magicEffect.PowerUpDefinition.TargetAttribute = Stats.CurrentHealth.GetPersistent(this.GameConfiguration);
+        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
+        powerUpDefinition.TargetAttribute = Stats.CurrentHealth.GetPersistent(this.GameConfiguration);
 
         // The effect gives 5 + (energy / 5) health
-        magicEffect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.PowerUpDefinition.Boost.ConstantValue.Value = 5f;
-        magicEffect.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
+        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = 5f;
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
 
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         boostPerEnergy.InputOperator = InputOperator.Multiply;
         boostPerEnergy.InputOperand = 1f / 5f; // one health per 5 energy
-        magicEffect.PowerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
+        powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
     }
 }

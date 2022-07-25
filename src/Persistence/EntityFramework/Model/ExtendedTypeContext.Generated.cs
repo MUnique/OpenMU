@@ -95,7 +95,6 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue>();
-        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionWithDuration>();
         modelBuilder.Ignore<MUnique.OpenMU.AttributeSystem.AttributeDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.AttributeSystem.StatAttribute>();
         modelBuilder.Ignore<MUnique.OpenMU.AttributeSystem.ConstValueAttribute>();

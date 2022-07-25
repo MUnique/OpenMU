@@ -33,24 +33,25 @@ public class ShieldRecoverEffectInitializer : InitializerBase
         magicEffect.Name = "Shield Recover Effect";
         magicEffect.InformObservers = false;
         magicEffect.SendDuration = false;
-        magicEffect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
-        magicEffect.PowerUpDefinition.TargetAttribute = Stats.CurrentHealth.GetPersistent(this.GameConfiguration);
+        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
+        powerUpDefinition.TargetAttribute = Stats.CurrentShield.GetPersistent(this.GameConfiguration);
 
         // The effect gives: level + (energy / 4) shield
-        magicEffect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.PowerUpDefinition.Boost.ConstantValue.Value = 0f;
-        magicEffect.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
+        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = 0f;
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
 
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         boostPerEnergy.InputOperator = InputOperator.Multiply;
         boostPerEnergy.InputOperand = 1f / 4f; // one shield per 4 energy
-        magicEffect.PowerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
+        powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
 
         var boostPerLevel = this.Context.CreateNew<AttributeRelationship>();
         boostPerLevel.InputAttribute = Stats.Level.GetPersistent(this.GameConfiguration);
         boostPerLevel.InputOperator = InputOperator.Multiply;
         boostPerLevel.InputOperand = 1f; // one shield per level
-        magicEffect.PowerUpDefinition.Boost.RelatedValues.Add(boostPerLevel);
+        powerUpDefinition.Boost.RelatedValues.Add(boostPerLevel);
     }
 }

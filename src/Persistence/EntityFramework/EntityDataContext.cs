@@ -41,21 +41,6 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<Model.AttributeDefinition>();
         modelBuilder.Entity<ConnectServerDefinition>();
         modelBuilder.Entity<ChatServerDefinition>();
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>()
-            .HasOne(d => d.RawBoost)
-            .WithOne(v => v.ParentAsBoost!)
-            .OnDelete(DeleteBehavior.Cascade)
-            .HasConstraintName("PowerUpDefinitionWithDuration_Boost");
-
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>()
-            .HasOne(d => d.RawDuration)
-            .WithOne(v => v.ParentAsDuration!)
-            .OnDelete(DeleteBehavior.Cascade)
-            .HasConstraintName("PowerUpDefinitionWithDuration_Duration");
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>().Property(d => d.BoostId);
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>().Property(d => d.DurationId);
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>()
-            .HasOne(d => d.RawTargetAttribute);
 
         modelBuilder.Entity<PowerUpDefinitionValue>().Ignore(p => p.ConstantValue);
         modelBuilder.Entity<Model.ConstValueAttribute>().Ignore(c => c.AggregateType);
@@ -91,7 +76,8 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<MonsterSpawnArea>().HasOne(spawn => spawn.RawMonsterDefinition);
         modelBuilder.Entity<MonsterSpawnArea>().HasOne(spawn => spawn.RawGameMap);
 
-        modelBuilder.Entity<SkillEntry>().Ignore(s => s.BuffPowerUp).Ignore(s => s.PowerUpDuration);
+        modelBuilder.Entity<SkillEntry>().Ignore(s => s.PowerUps);
+        modelBuilder.Entity<SkillEntry>().Ignore(s => s.PowerUpDuration);
         modelBuilder.Entity<Model.ConstValueAttribute>().Ignore(c => c.AggregateType);
         modelBuilder.Entity<CharacterClass>()
             .HasMany(c => c.RawBaseAttributeValues)

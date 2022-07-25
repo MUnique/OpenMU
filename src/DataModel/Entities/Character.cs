@@ -190,11 +190,6 @@ public class Character
     public CharacterPose Pose { get; set; }
 
     /// <summary>
-    /// Gets or sets the quest info. Don't know yet what its content is.
-    /// </summary>
-    public byte[]? QuestInfo { get; set; }
-
-    /// <summary>
     /// Gets or sets the used fruit points.
     /// </summary>
     public int UsedFruitPoints { get; set; }

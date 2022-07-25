@@ -55,6 +55,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.GreaterDamage, MagicEffectNumber.GreaterDamage },
         { SkillNumber.Heal, MagicEffectNumber.Heal },
         { SkillNumber.Recovery, MagicEffectNumber.ShieldRecover },
+        { SkillNumber.InfinityArrow, MagicEffectNumber.InfiniteArrow },
+        { SkillNumber.InfinityArrowStr, MagicEffectNumber.InfiniteArrow },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -147,7 +149,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.ManaRays, "Mana Rays", CharacterClasses.AllMGs, DamageType.Wizardry, 85, 6, 7, 130);
         this.CreateSkill(SkillNumber.FireBlast, "Fire Blast", CharacterClasses.AllLords, DamageType.Physical, 150, 6, 10, 30);
         this.CreateSkill(SkillNumber.PlasmaStorm, "Plasma Storm", CharacterClasses.AllMastersAndSecondClass, DamageType.Fenrir, damage: 60, distance: 6, abilityConsumption: 20, manaConsumption: 50, levelRequirement: 110, skillType: SkillType.AreaSkillAutomaticHits);
-        this.CreateSkill(SkillNumber.InfinityArrow, "Infinity Arrow", CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 220, skillType: SkillType.Buff);
+        this.CreateSkill(SkillNumber.InfinityArrow, "Infinity Arrow", CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 220, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Self);
         this.CreateSkill(SkillNumber.FireScream, "Fire Scream", CharacterClasses.AllLords, DamageType.Physical, 130, 6, 10, 45, energyRequirement: 70, leadershipRequirement: 150, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.Explosion79, "Explosion", CharacterClasses.AllLords, DamageType.Physical, distance: 2);
         this.CreateSkill(SkillNumber.SummonMonster, "Summon Monster", manaConsumption: 40, energyRequirement: 90);
@@ -338,7 +340,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.BowMastery, "Bow Mastery", CharacterClasses.HighElf, damage: 23, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.CrossbowMastery, "Crossbow Mastery", CharacterClasses.HighElf, damage: 5, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.ShieldMasteryHighElf, "Shield Mastery", CharacterClasses.HighElf, damage: 15, skillType: SkillType.PassiveBoost);
-        this.CreateSkill(SkillNumber.InfinityArrowStr, "Infinity Arrow Str", CharacterClasses.HighElf, damage: 1, distance: 6, abilityConsumption: 11, manaConsumption: 55, levelRequirement: 220);
+        this.CreateSkill(SkillNumber.InfinityArrowStr, "Infinity Arrow Str", CharacterClasses.HighElf, damage: 1, distance: 6, abilityConsumption: 11, manaConsumption: 55, levelRequirement: 220, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Self);
         this.CreateSkill(SkillNumber.MinimumAttPowerInc, "Minimum Att Power Inc", CharacterClasses.HighElf, DamageType.Physical, 22, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.MaximumAttPowerInc, "Maximum Att Power Inc", CharacterClasses.HighElf, DamageType.Physical, 3, skillType: SkillType.PassiveBoost);
 
@@ -496,6 +498,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new GreaterDefenseEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new HealEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new ShieldRecoverEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new InfiniteArrowEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
@@ -617,7 +620,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.BowMastery, Stats.AttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.BowStrengthener, SkillNumber.Undefined, 10);
         this.AddMasterSkillDefinition(SkillNumber.CrossbowMastery, SkillNumber.CrossbowStrengthener, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula1154);
         this.AddMasterSkillDefinition(SkillNumber.ShieldMasteryHighElf, SkillNumber.ShieldStrengthenerHighElf, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula1806);
-        this.AddMasterSkillDefinition(SkillNumber.InfinityArrowStr, SkillNumber.InfinityArrow, SkillNumber.Undefined, 3, 5, SkillNumber.InfinityArrow, 20, Formula120);
+        this.AddMasterSkillDefinition(SkillNumber.InfinityArrowStr, SkillNumber.InfinityArrow, SkillNumber.Undefined, 3, 5, SkillNumber.InfinityArrow, 20, $"{Formula120} / 100", Formula120, Stats.AttackDamageIncrease, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MinimumAttPowerInc, Stats.MinimumPhysBaseDmg, AggregateType.AddRaw, Formula502, 5, 3);
 
         // SUM

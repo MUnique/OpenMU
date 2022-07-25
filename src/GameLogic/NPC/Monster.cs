@@ -5,13 +5,12 @@
 namespace MUnique.OpenMU.GameLogic.NPC;
 
 using System.Buffers;
-using Nito.AsyncEx;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
-using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The implementation of a monster, which can attack players.
@@ -31,10 +30,12 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <summary>
     /// The duration of the <see cref="_skillPowerUp"/>.
     /// </summary>
-    /// <remarks>
-    /// It is an IElement, because the duration can be dependent from the player attributes.
-    /// </remarks>
     private readonly IElement? _skillPowerUpDuration;
+
+    /// <summary>
+    /// The target attribute of the <see cref="_skillPowerUp"/>.
+    /// </summary>
+    private readonly AttributeDefinition? _skillPowerUpTarget;
 
     private bool _isCalculatingPath;
     private PathFinder? _pathFinder;
@@ -55,7 +56,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         this._walker = new Walker(this, () => this.StepDelay);
         this._intelligence = npcIntelligence;
 
-        (this._skillPowerUp, this._skillPowerUpDuration) = this.CreateMagicEffectPowerUp();
+        (this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget) = this.CreateMagicEffectPowerUp();
 
         this._intelligence.Npc = this;
         this._intelligence.Start();
@@ -91,7 +92,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowMonsterAttackAnimationAsync(this, target, this.GetDirectionTo(target)), true).ConfigureAwait(false);
         if (this.Definition.AttackSkill is { } attackSkill)
         {
-            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration).ConfigureAwait(false);
+            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget).ConfigureAwait(false);
 
             await this.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this, target, attackSkill, true), true).ConfigureAwait(false);
         }
@@ -286,25 +287,23 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <summary>
     /// Creates the magic effect power up for the given skill of a monster.
     /// </summary>
-    private (IElement? PowerUp, IElement? Duration) CreateMagicEffectPowerUp()
+    /// <remarks>
+    /// Currently, we just support one effect for monsters.
+    /// </remarks>
+    private (IElement? PowerUp, IElement? Duration, AttributeDefinition? Target) CreateMagicEffectPowerUp()
     {
         var skill = this.Definition.AttackSkill;
-        if (skill?.MagicEffectDef is null)
+        if (skill?.MagicEffectDef?.PowerUpDefinitions.FirstOrDefault() is not { } powerUpDefinition
+            || skill.MagicEffectDef.Duration is not { } duration)
         {
-            return (null, null);
+            return (null, null, null);
         }
 
-        if (skill.MagicEffectDef.PowerUpDefinition?.Boost is null)
+        if (powerUpDefinition.Boost is null)
         {
-            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefintion.");
+            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefinition.");
         }
 
-        if (skill.MagicEffectDef.PowerUpDefinition.Duration is null)
-        {
-            throw new InvalidOperationException($"PowerUpDefinition {skill.MagicEffectDef.PowerUpDefinition.GetId()} no Duration.");
-        }
-
-        var powerUpDef = skill.MagicEffectDef.PowerUpDefinition;
-        return (this.Attributes.CreateElement(powerUpDef.Boost), this.Attributes.CreateElement(powerUpDef.Duration));
+        return (this.Attributes.CreateElement(powerUpDefinition.Boost), this.Attributes.CreateElement(duration), powerUpDefinition.TargetAttribute);
     }
 }

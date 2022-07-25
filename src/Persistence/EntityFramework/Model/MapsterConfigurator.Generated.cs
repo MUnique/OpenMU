@@ -251,9 +251,6 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue>()
             .Include<PowerUpDefinitionValue, BasicModel.PowerUpDefinitionValue>();
 
-        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionWithDuration, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionWithDuration>()
-            .Include<PowerUpDefinitionWithDuration, BasicModel.PowerUpDefinitionWithDuration>();
-
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.AttributeSystem.AttributeDefinition, MUnique.OpenMU.AttributeSystem.AttributeDefinition>()
             .Include<AttributeDefinition, BasicModel.AttributeDefinition>();
 

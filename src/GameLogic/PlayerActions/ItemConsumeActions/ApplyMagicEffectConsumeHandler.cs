@@ -21,8 +21,8 @@ public class ApplyMagicEffectConsumeHandler : BaseConsumeHandler
         }
 
         if (item.Definition?.ConsumeEffect is not { } effectDefinition
-            || effectDefinition.PowerUpDefinition?.Boost is not { } boostDefinition
-            || effectDefinition.PowerUpDefinition.Duration?.ConstantValue?.Value is not { } durationInSeconds)
+            || !effectDefinition.PowerUpDefinitions.Any()
+            || effectDefinition.Duration?.ConstantValue.Value is not { } durationInSeconds)
         {
             return false;
         }
@@ -32,9 +32,16 @@ public class ApplyMagicEffectConsumeHandler : BaseConsumeHandler
             await existingEffect.DisposeAsync().ConfigureAwait(false);
         }
 
-        var boost = player.Attributes!.CreateElement(boostDefinition);
+        var boosts = effectDefinition.PowerUpDefinitions
+            .Where(def => def.Boost is not null && def.TargetAttribute is not null)
+            .Select(def => new MagicEffect.ElementWithTarget(player.Attributes!.CreateElement(def.Boost!), def.TargetAttribute!))
+            .ToArray();
+        if (boosts.Length == 0)
+        {
+            return false;
+        }
 
-        var effect = new MagicEffect(boost, effectDefinition, TimeSpan.FromSeconds(durationInSeconds));
+        var effect = new MagicEffect(TimeSpan.FromSeconds(durationInSeconds), effectDefinition!, boosts!);
         await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
         return true;
     }

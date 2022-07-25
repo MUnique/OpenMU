@@ -147,12 +147,13 @@ internal abstract class SkillsInitializerBase : InitializerBase
         effect.Number = (short)effectNumber;
         effect.StopByDeath = true;
         effect.SubType = (byte)(0xFF - type);
-        effect.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinitionWithDuration>();
-        effect.PowerUpDefinition.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        effect.PowerUpDefinition.Duration.ConstantValue.Value = durationInSeconds;
-        effect.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        effect.PowerUpDefinition.Boost.ConstantValue.Value = 1;
-        effect.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        effect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        effect.Duration.ConstantValue.Value = durationInSeconds;
+        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        effect.PowerUpDefinitions.Add(powerUpDefinition);
+        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = 1;
+        powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
         return effect;
     }
 
