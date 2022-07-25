@@ -459,6 +459,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public async ValueTask AfterHitTargetAsync()
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
+        this.Attributes![Stats.CurrentMana] = Math.Max(this.Attributes[Stats.CurrentMana] - this.Attributes[Stats.ManaLossAfterHit], 0);
         await this.DecreaseWeaponDurabilityAfterHitAsync().ConfigureAwait(false);
     }
 

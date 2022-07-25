@@ -589,6 +589,11 @@ public class Stats
     public static AttributeDefinition HealthLossAfterHit { get; } = new (new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by wearing wings");
 
     /// <summary>
+    /// Gets the mana loss after hit definition.
+    /// </summary>
+    public static AttributeDefinition ManaLossAfterHit { get; } = new(new Guid("321B9B7D-EF8C-45FC-9CA7-F511FC7D802B"), "Mana loss after hitting a target", "Caused by infinity arrow effect");
+
+    /// <summary>
     /// Gets the CanFly attribute for warping to icarus.
     /// </summary>
     public static AttributeDefinition CanFly { get; } = new (new Guid("EC34C673-84DE-4811-8962-CD2164A2248C"), "Requirement of the Icarus map.", "You can enter Icarus only with wings, dinorant, fenrir.");
