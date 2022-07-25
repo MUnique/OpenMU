@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Persistence.Initialization.Items;
-
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.TestAccounts;
 
 using MUnique.OpenMU.AttributeSystem;
@@ -12,7 +10,9 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameServer.MessageHandler.Quests;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
 /// Abstract base class for a test account initializer.
@@ -31,6 +31,7 @@ internal abstract class AccountInitializerBase : InitializerBase
     {
         this.Level = level;
         this.AccountName = accountName;
+        this.ItemHelper = new ItemHelper(this.Context, this.GameConfiguration);
     }
 
     /// <summary>
@@ -48,6 +49,8 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// The name of the account.
     /// </value>
     protected string AccountName { get; }
+
+    protected ItemHelper ItemHelper { get; }
 
     /// <inheritdoc />
     public sealed override void Initialize()
@@ -196,6 +199,23 @@ internal abstract class AccountInitializerBase : InitializerBase
                                         * character.CharacterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
         character.Inventory = this.Context.CreateNew<ItemStorage>();
         character.Inventory.Money = 10000000;
+
+        if (level > 220)
+        {
+            // Some skills require a completed level 220 quest, so we add it here.
+            var marlonNpc = this.GameConfiguration.Monsters.First(m => m.Designation == "Marlon");
+            if (marlonNpc.Quests
+                    .Where(q => q.QualifiedCharacter == character.CharacterClass
+                                || q.QualifiedCharacter!.NextGenerationClass == character.CharacterClass)
+                    .OrderByDescending(q => q.Number).FirstOrDefault() is { } marlonQuest)
+            {
+                var questInfo220 = this.Context.CreateNew<CharacterQuestState>();
+                questInfo220.Group = QuestConstants.LegacyQuestGroup;
+                questInfo220.LastFinishedQuest = marlonQuest;
+                character.QuestStates.Add(questInfo220);
+            }
+        }
+
         return character;
     }
 
@@ -478,10 +498,7 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// <returns>The created orb.</returns>
     protected Item CreateOrb(byte itemSlot, byte itemNumber)
     {
-        var potion = this.Context.CreateNew<Item>();
-        potion.Definition = this.GameConfiguration.Items.FirstOrDefault(def => def.Group == 12 && def.Number == itemNumber);
-        potion.ItemSlot = itemSlot;
-        return potion;
+        return this.ItemHelper.CreateOrb(itemSlot, itemNumber);
     }
 
     /// <summary>
@@ -585,11 +602,7 @@ internal abstract class AccountInitializerBase : InitializerBase
 
     private Item CreatePotion(byte itemSlot, byte itemNumber)
     {
-        var potion = this.Context.CreateNew<Item>();
-        potion.Definition = this.GameConfiguration.Items.FirstOrDefault(def => def.Group == 14 && def.Number == itemNumber);
-        potion.Durability = 3; // Stack of 3 Potions
-        potion.ItemSlot = itemSlot;
-        return potion;
+        return this.ItemHelper.CreatePotion(itemSlot, itemNumber, 3, 0);
     }
 
     private Item CreateJewelOfBless(byte itemSlot)
