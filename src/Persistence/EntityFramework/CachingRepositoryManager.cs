@@ -64,6 +64,7 @@ public class CachingRepositoryManager : RepositoryManager
         this.RegisterRepository(new ConfigurationTypeRepository<MonsterDefinition>(this, config => config.RawMonsters));
         this.RegisterRepository(new ConfigurationTypeRepository<Skill>(this, config => config.RawSkills));
         this.RegisterRepository(new ConfigurationTypeRepository<PlugInConfiguration>(this, config => config.RawPlugInConfigurations));
+        this.RegisterRepository(new ConfigurationTypeRepository<QuestDefinition>(this, config => config.RawMonsters.SelectMany(m => m.RawQuests).ToList()));
 
         this.RegisterMissingRepositoriesAsGeneric();
     }
