@@ -7,22 +7,11 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 /// <summary>
 /// Consume handler for items (e.g. scrolls, orbs) which add a skill when being consumed.
 /// </summary>
-public class LearnablesConsumeHandler : IItemConsumeHandler
+public class LearnablesConsumeHandler : BaseConsumeHandler
 {
     /// <inheritdoc/>
-    public async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
-        {
-            return false;
-        }
-
-        // Check Requirements
-        if (!player.CompliesRequirements(item))
-        {
-            return false;
-        }
-
         var skill = this.GetLearnableSkill(item, player.GameContext.Configuration);
 
         if (skill is null || player.SkillList!.ContainsSkill(skill.Number.ToUnsigned()))
@@ -30,10 +19,20 @@ public class LearnablesConsumeHandler : IItemConsumeHandler
             return false;
         }
 
+        if (!await base.ConsumeItemAsync(player, item, targetItem, fruitUsage))
+        {
+            return false;
+        }
+
         await player.SkillList.AddLearnedSkillAsync(skill).ConfigureAwait(false);
-        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
-        await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         return true;
+    }
+
+    /// <inheritdoc />
+    protected override bool CheckPreconditions(Player player, Item item)
+    {
+        return base.CheckPreconditions(player, item)
+               && player.CompliesRequirements(item);
     }
 
     /// <summary>

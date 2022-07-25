@@ -53,7 +53,7 @@ public class BaseConsumeHandler : IItemConsumeHandler
     /// <param name="player">The player.</param>
     /// <param name="item">The item.</param>
     /// <returns><c>True</c>, if preconditions are met.</returns>
-    protected bool CheckPreconditions(Player player, Item item)
+    protected virtual bool CheckPreconditions(Player player, Item item)
     {
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
             || item.Durability == 0)
