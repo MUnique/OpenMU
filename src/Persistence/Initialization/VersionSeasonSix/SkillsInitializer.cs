@@ -173,7 +173,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.StrikeofDestruction, "Strike of Destruction", CharacterClasses.BladeKnightAndBladeMaster, DamageType.Physical, 110, 5, 24, 30, 100, elementalModifier: ElementalType.Ice);
         this.CreateSkill(SkillNumber.ExpansionofWizardry, "Expansion of Wizardry", CharacterClasses.SoulMasterAndGrandMaster, distance: 6, abilityConsumption: 50, manaConsumption: 200, levelRequirement: 220, energyRequirement: 118);
         this.CreateSkill(SkillNumber.Recovery, "Recovery", CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 40, levelRequirement: 100, energyRequirement: 37, skillType: SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
-        this.CreateSkill(SkillNumber.MultiShot, "Multi-Shot", CharacterClasses.MuseElfAndHighElf, DamageType.Physical, 40, 6, 7, 10, 100);
+        this.CreateSkill(SkillNumber.MultiShot, "Multi-Shot", CharacterClasses.MuseElfAndHighElf, DamageType.Physical, 40, 6, 7, 10, 100, skillType: SkillType.AreaSkillExplicitHits);
         this.CreateSkill(SkillNumber.FlameStrike, "Flame Strike", CharacterClasses.AllMGs, DamageType.Wizardry, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire);
         this.CreateSkill(SkillNumber.GiganticStorm, "Gigantic Storm", CharacterClasses.AllMGs, DamageType.Wizardry, 110, 6, 10, 120, 220, 118, elementalModifier: ElementalType.Wind);
         this.CreateSkill(SkillNumber.ChaoticDiseier, "Chaotic Diseier", CharacterClasses.AllLords, DamageType.Physical, 190, 6, 15, 50, 100, 16, skillType: SkillType.AreaSkillAutomaticHits);
@@ -308,7 +308,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         // High Elf:
         this.CreateSkill(SkillNumber.IllusionWingsAbsPowUp, "Illusion Wings Abs PowUp", CharacterClasses.HighElf, damage: 1, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.IllusionWingsDefPowUp, "Illusion Wings Def PowUp", CharacterClasses.HighElf, damage: 17, skillType: SkillType.PassiveBoost);
-        this.CreateSkill(SkillNumber.MultiShotStreng, "Multi-Shot Streng", CharacterClasses.HighElf, DamageType.Physical, 22, 6, 7, 11, 100);
+        this.CreateSkill(SkillNumber.MultiShotStreng, "Multi-Shot Streng", CharacterClasses.HighElf, DamageType.Physical, 22, 6, 7, 11, 100, skillType: SkillType.AreaSkillExplicitHits);
         this.CreateSkill(SkillNumber.IllusionWingsAttPowUp, "Illusion Wings Att PowUp", CharacterClasses.HighElf, damage: 17, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.HealStrengthener, "Heal Strengthener", CharacterClasses.HighElf, DamageType.Physical, 22, 6, manaConsumption: 22, levelRequirement: 8, energyRequirement: 100);
         this.CreateSkill(SkillNumber.TripleShotStrengthener, "Triple Shot Strengthener", CharacterClasses.HighElf, DamageType.Physical, 22, 6, manaConsumption: 5);
@@ -328,7 +328,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.SummonedMonsterStr3, "Summoned Monster Str (3)", CharacterClasses.HighElf, damage: 16, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.PartyHealingStr, "Party Healing Str", CharacterClasses.HighElf, damage: 22, distance: 6, abilityConsumption: 13, manaConsumption: 72, energyRequirement: 100);
         this.CreateSkill(SkillNumber.Bless, "Bless", CharacterClasses.HighElf, distance: 6, abilityConsumption: 18, manaConsumption: 108, energyRequirement: 100);
-        this.CreateSkill(SkillNumber.MultiShotMastery, "Multi-Shot Mastery", CharacterClasses.HighElf, DamageType.Physical, 1, 6, 8, 12, 100);
+        this.CreateSkill(SkillNumber.MultiShotMastery, "Multi-Shot Mastery", CharacterClasses.HighElf, DamageType.Physical, 1, 6, 8, 12, 100, skillType: SkillType.AreaSkillExplicitHits);
         this.CreateSkill(SkillNumber.SummonSatyros, "Summon Satyros", CharacterClasses.HighElf, abilityConsumption: 52, manaConsumption: 525, energyRequirement: 280);
         this.CreateSkill(SkillNumber.BlessStrengthener, "Bless Strengthener", CharacterClasses.HighElf, damage: 10, distance: 6, abilityConsumption: 20, manaConsumption: 118, energyRequirement: 100);
         this.CreateSkill(SkillNumber.PoisonArrowStr, "Poison Arrow Str", CharacterClasses.HighElf, DamageType.Physical, 22, 6, 29, 24, elementalModifier: ElementalType.Poison);

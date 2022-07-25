@@ -42,30 +42,40 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
         }
 
         AreaSkillHit message = packet;
-        if (player.SkillList is null || !player.SkillList.ContainsSkill(message.SkillId))
+        var skillId = message.SkillId;
+        if (skillId == 0)
+        {
+            skillId = player.SkillHitValidator.LastRegisteredSkillId;
+        }
+
+        if (player.SkillList is null || !player.SkillList.ContainsSkill(skillId))
         {
             return;
         }
 
-        if (!player.SkillHitValidator.IsHitValid(message.SkillId, message.AnimationCounter, message.HitCounter))
+        for (int i = 0; i < message.TargetCount; i++)
         {
-            return;
-        }
-
-        if (player.GetObject(message.TargetId) is IAttackable target)
-        {
-            if (target is IObservable observable && observable.Observers.Contains(player))
+            var targetInfo = message[i];
+            if (!player.SkillHitValidator.IsHitValid(skillId, targetInfo.AnimationCounter, message.HitCounter))
             {
-                if (player.SkillList.GetSkill(message.SkillId) is { } skillEntry)
-                {
-                    await this._skillHitAction.AttackTargetAsync(player, target, skillEntry).ConfigureAwait(false);
-                }
+                return;
             }
-            else
+
+            if (player.GetObject(targetInfo.TargetId) is IAttackable target)
             {
-                // Client may be out of sync (or it's an hacker attempt),
-                // so we tell him the object is out of scope - this should prevent further attempts to attack it.
-                await player.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(target.GetAsEnumerable())).ConfigureAwait(false);
+                if (target is IObservable observable && observable.Observers.Contains(player))
+                {
+                    if (player.SkillList.GetSkill(skillId) is { } skillEntry)
+                    {
+                        await this._skillHitAction.AttackTargetAsync(player, target, skillEntry).ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    // Client may be out of sync (or it's an hacker attempt),
+                    // so we tell him the object is out of scope - this should prevent further attempts to attack it.
+                    await player.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(target.GetAsEnumerable())).ConfigureAwait(false);
+                }
             }
         }
     }

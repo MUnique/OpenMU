@@ -1400,7 +1400,6 @@
       <HeaderType>C3Header</HeaderType>
       <Code>DB</Code>
       <Name>AreaSkillHit</Name>
-      <Length>12</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>An area skill was performed and the client decided to hit a target.</SentWhen>
       <CausedReaction>The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.</CausedReaction>
@@ -1427,17 +1426,39 @@
           <Description>A sequential hit counter which should prevent that hits are sent multiple times.</Description>
         </Field>
         <Field>
-          <Index>9</Index>
-          <Type>ShortBigEndian</Type>
-          <Name>TargetId</Name>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>TargetCount</Name>
+          <Description>Number of targets which will follow in the structure.</Description>
         </Field>
         <Field>
-          <Index>11</Index>
-          <Type>Byte</Type>
-          <Name>AnimationCounter</Name>
-          <Description>A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</Description>
+          <Index>9</Index>
+          <Type>Structure[]</Type>
+          <TypeName>TargetData</TypeName>
+          <Name>Targets</Name>
+          <ItemCountField>TargetCount</ItemCountField>
         </Field>
       </Fields>
+      <Structures>
+        <Structure>
+          <Name>TargetData</Name>
+          <Description>Contains the data of the target</Description>
+          <Length>3</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>TargetId</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>AnimationCounter</Name>
+              <Description>A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>

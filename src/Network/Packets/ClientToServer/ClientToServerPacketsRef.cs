@@ -5053,7 +5053,7 @@ public readonly ref struct AreaSkillHitRef
             var header = this.Header;
             header.Type = HeaderType;
             header.Code = Code;
-            header.Length = (byte)Math.Min(data.Length, Length);
+            header.Length = (byte)data.Length;
         }
     }
 
@@ -5066,11 +5066,6 @@ public readonly ref struct AreaSkillHitRef
     /// Gets the operation code of this data packet.
     /// </summary>
     public static byte Code => 0xDB;
-
-    /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 12;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -5114,22 +5109,18 @@ public readonly ref struct AreaSkillHitRef
     }
 
     /// <summary>
-    /// Gets or sets the target id.
+    /// Gets or sets number of targets which will follow in the structure.
     /// </summary>
-    public ushort TargetId
+    public byte TargetCount
     {
-        get => ReadUInt16BigEndian(this._data[9..]);
-        set => WriteUInt16BigEndian(this._data[9..], value);
+        get => this._data[8];
+        set => this._data[8] = value;
     }
 
     /// <summary>
-    /// Gets or sets a sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.
+    /// Gets the <see cref="TargetDataRef"/> of the specified index.
     /// </summary>
-    public byte AnimationCounter
-    {
-        get => this._data[11];
-        set => this._data[11] = value;
-    }
+        public TargetDataRef this[int index] => new (this._data[(9 + index * TargetDataRef.Length)..]);
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="AreaSkillHit"/>.
@@ -5144,6 +5135,54 @@ public readonly ref struct AreaSkillHitRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(AreaSkillHitRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="TargetDataRef"/>.
+    /// </summary>
+    /// <param name="targetsCount">The count of <see cref="TargetDataRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int targetsCount) => targetsCount * TargetDataRef.Length + 9;
+
+
+/// <summary>
+/// Contains the data of the target.
+/// </summary>
+public readonly ref struct TargetDataRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TargetDataRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public TargetDataRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 3;
+
+    /// <summary>
+    /// Gets or sets the target id.
+    /// </summary>
+    public ushort TargetId
+    {
+        get => ReadUInt16BigEndian(this._data);
+        set => WriteUInt16BigEndian(this._data, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.
+    /// </summary>
+    public byte AnimationCounter
+    {
+        get => this._data[2];
+        set => this._data[2] = value;
+    }
+}
 }
 
 

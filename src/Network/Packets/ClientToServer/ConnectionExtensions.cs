@@ -1675,44 +1675,6 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="AreaSkillHit" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <param name="skillId">The skill id.</param>
-    /// <param name="targetX">The target x.</param>
-    /// <param name="targetY">The target y.</param>
-    /// <param name="hitCounter">A sequential hit counter which should prevent that hits are sent multiple times.</param>
-    /// <param name="targetId">The target id.</param>
-    /// <param name="animationCounter">A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</param>
-    /// <remarks>
-    /// Is sent by the client when: An area skill was performed and the client decided to hit a target.
-    /// Causes reaction on server side: The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.
-    /// </remarks>
-    public static async ValueTask SendAreaSkillHitAsync(this IConnection? connection, ushort @skillId, byte @targetX, byte @targetY, byte @hitCounter, ushort @targetId, byte @animationCounter)
-    {
-        if (connection is null)
-        {
-            return;
-        }
-
-        int WritePacket()
-        {
-            var length = AreaSkillHitRef.Length;
-            var packet = new AreaSkillHitRef(connection.Output.GetSpan(length)[..length]);
-            packet.SkillId = @skillId;
-            packet.TargetX = @targetX;
-            packet.TargetY = @targetY;
-            packet.HitCounter = @hitCounter;
-            packet.TargetId = @targetId;
-            packet.AnimationCounter = @animationCounter;
-
-            return packet.Header.Length;
-        }
-
-        await connection.SendAsync(WritePacket).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Sends a <see cref="AreaSkill075" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

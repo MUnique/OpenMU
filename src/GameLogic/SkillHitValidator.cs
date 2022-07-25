@@ -15,6 +15,7 @@ public class SkillHitValidator
 
     private const byte TwisterSkillId = 8;
     private const byte EvilSpiritSkillId = 9;
+    private const byte MultishotSkillId = 235;
 
     private static readonly TimeSpan MaxAnimationToHitDelay = TimeSpan.FromSeconds(10);
 
@@ -28,6 +29,8 @@ public class SkillHitValidator
     private readonly HitEntry[] _hits = new HitEntry[MaximumCounterValue + 1];
 
     private byte _lastTwisterIndex;
+
+    private byte _lastMultishotIndex;
 
     /// <summary>
     /// The game client doesn't reset its counter when it connects with a new account.
@@ -47,6 +50,11 @@ public class SkillHitValidator
     }
 
     /// <summary>
+    /// Gets the last registered skill identifier.
+    /// </summary>
+    public ushort LastRegisteredSkillId { get; private set; }
+
+    /// <summary>
     /// Tries to register an animation with the specified counter.
     /// </summary>
     /// <param name="skillId">The skill identifier.</param>
@@ -61,6 +69,12 @@ public class SkillHitValidator
         {
             // Twister is a implemented wrong at the client side. It sends a counter of the animations here, but not in the hit packets.
             this._lastTwisterIndex = animationCounter;
+        }
+
+        if (skillId == MultishotSkillId)
+        {
+            // Multishot is a implemented wrong at the client side. It sends a counter of the animations here, but not in the hit packets.
+            this._lastMultishotIndex = animationCounter;
         }
 
         if (skillId == EvilSpiritSkillId
@@ -82,6 +96,7 @@ public class SkillHitValidator
             this._counter.Increase();
         }
 
+        this.LastRegisteredSkillId = skillId;
         this._hits[animationCounter] = new HitEntry(skillId, DateTime.UtcNow, true, 0);
         return true;
     }
@@ -101,6 +116,12 @@ public class SkillHitValidator
         {
             // Twister is implemented wrong at the client side. It doesn't send an animation counter in hit packets.
             animationCounter = this._lastTwisterIndex;
+        }
+
+        if (animationCounter == 0 && skillId == MultishotSkillId)
+        {
+            // Multishot is implemented wrong at the client side. It doesn't send an animation counter in hit packets.
+            animationCounter = this._lastMultishotIndex;
         }
 
         if (this._hits[animationCounter] is { } animationEntry)
