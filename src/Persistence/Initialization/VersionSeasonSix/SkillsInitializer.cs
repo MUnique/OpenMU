@@ -49,6 +49,7 @@ internal class SkillsInitializer : SkillsInitializerBase
     private static readonly IDictionary<SkillNumber, MagicEffectNumber> EffectsOfSkills = new Dictionary<SkillNumber, MagicEffectNumber>
     {
         { SkillNumber.SwellLife, MagicEffectNumber.GreaterFortitude },
+        { SkillNumber.IncreaseCriticalDamage, MagicEffectNumber.CriticalDamageIncrease },
         { SkillNumber.SoulBarrier, MagicEffectNumber.SoulBarrier },
         { SkillNumber.Defense, MagicEffectNumber.ShieldSkill },
         { SkillNumber.GreaterDefense, MagicEffectNumber.GreaterDefense },
@@ -137,7 +138,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.FireBurst, "Fire Burst", CharacterClasses.AllLords, DamageType.Physical, 100, 6, manaConsumption: 25, energyRequirement: 79, skillType: SkillType.DirectHit, skillTarget: SkillTarget.ExplicitWithImplicitInRange, implicitTargetRange: 1);
         this.CreateSkill(SkillNumber.Earthshake, "Earthshake", CharacterClasses.AllLords, DamageType.Physical, 150, 10, 50, elementalModifier: ElementalType.Lightning, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.Summon, "Summon", CharacterClasses.AllLords, abilityConsumption: 30, manaConsumption: 70, energyRequirement: 153, leadershipRequirement: 400, skillType: SkillType.Other);
-        this.CreateSkill(SkillNumber.IncreaseCriticalDamage, "Increase Critical Damage", CharacterClasses.AllLords, abilityConsumption: 50, manaConsumption: 50, energyRequirement: 102, leadershipRequirement: 300, skillType: SkillType.Buff);
+        this.CreateSkill(SkillNumber.IncreaseCriticalDamage, "Increase Critical Damage", CharacterClasses.AllLords, abilityConsumption: 50, manaConsumption: 50, energyRequirement: 102, leadershipRequirement: 300, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitParty);
         this.CreateSkill(SkillNumber.ElectricSpike, "Electric Spike", CharacterClasses.AllLords, DamageType.Physical, 250, 10, 100, energyRequirement: 126, leadershipRequirement: 340, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.ForceWave, "Force Wave", CharacterClasses.AllLords, DamageType.Physical, 50, 4, manaConsumption: 10);
         this.CreateSkill(SkillNumber.Stun, "Stun", CharacterClasses.All, distance: 2, abilityConsumption: 50, manaConsumption: 70, skillType: SkillType.Other, cooldownMinutes: 4);
@@ -493,6 +494,7 @@ internal class SkillsInitializer : SkillsInitializerBase
     {
         new SoulBarrierEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new LifeSwellEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new CriticalDamageIncreaseEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new DefenseEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new GreaterDamageEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new GreaterDefenseEffectInitializer(this.Context, this.GameConfiguration).Initialize();
