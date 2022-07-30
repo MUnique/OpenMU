@@ -24,6 +24,7 @@ internal class GameMaster : Level400
     public GameMaster(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration, "testgm", 400)
     {
+        this.AddAllSkills = true;
     }
 
     /// <inheritdoc />

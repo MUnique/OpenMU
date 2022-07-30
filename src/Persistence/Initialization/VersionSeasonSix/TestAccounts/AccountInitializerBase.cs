@@ -13,12 +13,26 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameServer.MessageHandler.Quests;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
 /// Abstract base class for a test account initializer.
 /// </summary>
 internal abstract class AccountInitializerBase : InitializerBase
 {
+    private static readonly HashSet<SkillNumber> EventSkills = new()
+    {
+        SkillNumber.Stun,
+        SkillNumber.CancelStun,
+        SkillNumber.SwellMana,
+        SkillNumber.Invisibility,
+        SkillNumber.CancelInvisibility,
+        SkillNumber.SpellofProtection,
+        SkillNumber.SpellofRestriction,
+        SkillNumber.SpellofPursuit,
+        SkillNumber.ShieldBurn,
+    };
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AccountInitializerBase"/> class.
     /// </summary>
@@ -41,6 +55,11 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// The level.
     /// </value>
     protected int Level { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether to add all available skills automatically.
+    /// </summary>
+    protected bool AddAllSkills { get; set; }
 
     /// <summary>
     /// Gets the name of the account.
@@ -213,6 +232,19 @@ internal abstract class AccountInitializerBase : InitializerBase
                 questInfo220.Group = QuestConstants.LegacyQuestGroup;
                 questInfo220.LastFinishedQuest = marlonQuest;
                 character.QuestStates.Add(questInfo220);
+            }
+        }
+
+        if (this.AddAllSkills)
+        {
+            var availableSkills = this.GameConfiguration.Skills.Where(s => s.QualifiedCharacters.Contains(character.CharacterClass) 
+                                                                           && s.Number < 300 // no master skills
+                                                                           && !EventSkills.Contains((SkillNumber)s.Number)).ToList();
+            foreach (var availableSkill in availableSkills)
+            {
+                var skillEntry = this.Context.CreateNew<SkillEntry>();
+                skillEntry.Skill = availableSkill;
+                character.LearnedSkills.Add(skillEntry);
             }
         }
 
