@@ -107,7 +107,7 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
             const int estimatedEffectsPerPlayer = 5;
             var estimatedSizePerCharacter = AddSummonedMonstersToScopeRef.SummonedMonsterDataRef.GetRequiredSize(estimatedEffectsPerPlayer);
             var estimatedSize = AddSummonedMonstersToScopeRef.GetRequiredSize(summons.Count, estimatedSizePerCharacter);
-            var span = connection.Output.GetSpan(estimatedSize);
+            var span = connection.Output.GetSpan(estimatedSize)[..estimatedSize];
             var packet = new AddSummonedMonstersToScopeRef(span)
             {
                 MonsterCount = (byte)summons.Count,
