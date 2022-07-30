@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -517,5 +518,18 @@ public static class AttackableExtensions
             : new MagicEffect(TimeSpan.FromSeconds(duration.Value), magicEffectDefinition, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target)).ToArray());
 
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
+        if (target is ISupportWalk walkSupporter
+            && walkSupporter.IsWalking
+            && magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsFrozen || e.TargetAttribute == Stats.IsStunned))
+        {
+            await walkSupporter.StopWalkingAsync().ConfigureAwait(false);
+
+            // Since the actual coordinates could be out of sync with the client
+            // coordinates, we simply update the position on the client side.
+            if (walkSupporter is IObservable observable)
+            {
+                await observable.ForEachWorldObserverAsync<IObjectMovedPlugIn> (p => p.ObjectMovedAsync(walkSupporter, MoveType.Instant), true).ConfigureAwait(false);
+            }
+        }
     }
 }

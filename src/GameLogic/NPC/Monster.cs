@@ -180,6 +180,9 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._walker.GetStepsAsync(steps);
 
     /// <inheritdoc />
+    public ValueTask StopWalkingAsync() => this._walker.StopAsync();
+
+    /// <inheritdoc />
     public override ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
     {
         return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector, null);

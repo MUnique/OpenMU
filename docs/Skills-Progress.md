@@ -65,14 +65,14 @@ Some general notes:
 | 48     | Swell Life                  | works                                                            |
 | 49     | Fire Breath                 | works                                                            |
 | 50     | Flame of Evil (Monster)     |                                                                  |
-| 51     | Ice Arrow                   | works, icing isn't applied yet                                   |
-| 52     | Penetration                 | works, untested                                                  |
+| 51     | Ice Arrow                   | works                                                            |
+| 52     | Penetration                 | works                                                            |
 | 55     | Fire Slash                  | ?                                                                |
 | 56     | Power Slash                 | probably not working right; needs to take direction into account |
 | 57     | Spiral Slash                | ?                                                                |
 | 60     | Force                       | works                                                            |
 | 61     | Fire Burst                  | works                                                            |
-| 62     | Earthshake                  | not implemented                                                  |
+| 62     | Earthshake                  | works                                                            |
 | 63     | Summon                      | not implemented                                                  |
 | 64     | Increase Critical Damage    | not implemented                                                  |
 | 65     | Electric Spike              | ?                                                                |
@@ -112,7 +112,7 @@ Some general notes:
 | 232    | Strike of Destruction       | works, untested                                                  |
 | 233    | Expansion of Wizardry       | not implemented                                                  |
 | 234    | Recovery                    | works                                                            |
-| 235    | Multi-Shot                  | works, untested                                                  |
+| 235    | Multi-Shot                  | works                                                            |
 | 236    | Flame Strike                | ?                                                                |
 | 237    | Gigantic Storm              | works, untested                                                  |
 | 238    | Chaotic Diseier             | works, but needs to take direction into account                  |

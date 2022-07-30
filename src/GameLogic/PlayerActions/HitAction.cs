@@ -21,6 +21,17 @@ public class HitAction
     /// <param name="lookingDirection">The looking direction.</param>
     public async ValueTask HitAsync(Player player, IAttackable target, byte attackAnimation, Direction lookingDirection)
     {
+        if (player.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        if (attributes[Stats.IsStunned] > 0)
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
+            return;
+        }
+
         if (player.IsAtSafezone())
         {
             player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");

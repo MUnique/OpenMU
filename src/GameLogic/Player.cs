@@ -147,7 +147,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public int Level => (int)(this.Attributes?[Stats.Level] ?? 0);
 
     /// <summary>
-    /// Gets or sets the selected character.
+    /// Gets the selected character.
     /// </summary>
     public Character? SelectedCharacter => this._selectedCharacter;
 
@@ -923,6 +923,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
+        if (this.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        if (attributes[Stats.IsFrozen] > 0 || attributes[Stats.IsStunned] > 0)
+        {
+            return;
+        }
+
         await this._walker.StopAsync().ConfigureAwait(false);
         if (currentMap.Terrain.WalkMap[target.X, target.Y])
         {
@@ -945,6 +955,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <inheritdoc />
     public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._walker.GetStepsAsync(steps);
+
+    /// <inheritdoc />
+    public ValueTask StopWalkingAsync() => this._walker.StopAsync();
 
     /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.NPC;
 
 using System.Diagnostics;
 using System.Threading;
+using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
 /// A basic monster AI which is pretty basic.
@@ -158,6 +159,11 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             return;
         }
 
+        if (this.Monster.Attributes[Stats.IsStunned] > 0)
+        {
+            return;
+        }
+
         if (!await this.CanAttackAsync().ConfigureAwait(false))
         {
             return;
@@ -184,6 +190,11 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         // no target?
         if (target is null)
         {
+            if (this.Monster.Attributes[Stats.IsFrozen] > 0)
+            {
+                return;
+            }
+
             // we move around randomly, so the monster does not look dead when watched from distance.
             if (await this.IsObservedByAttackerAsync().ConfigureAwait(false))
             {
@@ -197,6 +208,11 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         if (target.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange + 1) && !this.Monster.IsAtSafezone())
         {
             await this.Monster.AttackAsync(target).ConfigureAwait(false);  // yes, attack
+        }
+
+        if (this.Monster.Attributes[Stats.IsFrozen] > 0)
+        {
+            return;
         }
 
         // Target in View Range?

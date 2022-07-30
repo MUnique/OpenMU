@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.World;
 
@@ -35,6 +36,17 @@ public class TargetedSkillAction
         if (player.IsAtSafezone())
         {
             player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
+            return;
+        }
+
+        if (player.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        if (attributes[Stats.IsStunned] > 0)
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
             return;
         }
 

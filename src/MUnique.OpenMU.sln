@@ -46,9 +46,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\QuickStart.md = ..\QuickStart.md
 		..\Readme.md = ..\Readme.md
 		..\release-docker-images-pipeline.yml = ..\release-docker-images-pipeline.yml
-		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 		..\set-projectVersion.ps1 = ..\set-projectVersion.ps1
+		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 		SharedGlobalUsings.cs = SharedGlobalUsings.cs
+		..\docs\Skills-Progress.md = ..\docs\Skills-Progress.md
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
