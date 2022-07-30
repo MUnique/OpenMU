@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.Views.World;
 
@@ -69,10 +68,11 @@ public class MagicEffectsList : AsyncDisposable
             if (this._owner is IWorldObserver observer)
             {
                 await observer.InvokeViewPlugInAsync<IActivateMagicEffectPlugIn>(p => p.ActivateMagicEffectAsync(effect, this._owner)).ConfigureAwait(false);
-                if (effect.Definition.InformObservers && observer is IObservable observable)
-                {
-                    await observable.ForEachWorldObserverAsync<IActivateMagicEffectPlugIn>(p => p.ActivateMagicEffectAsync(effect, this._owner), false).ConfigureAwait(false);
-                }
+            }
+
+            if (effect.Definition.InformObservers && this._owner is IObservable observable)
+            {
+                await observable.ForEachWorldObserverAsync<IActivateMagicEffectPlugIn>(p => p.ActivateMagicEffectAsync(effect, this._owner), false).ConfigureAwait(false);
             }
         }
         else
@@ -123,7 +123,7 @@ public class MagicEffectsList : AsyncDisposable
             this._owner.Attributes.RemoveElement(powerUp.Element, powerUp.Target);
         }
 
-        (this._owner as Player)?.InvokeViewPlugInAsync<IDeactivateMagicEffectPlugIn>(p => p.DeactivateMagicEffectAsync(effect, this._owner));
+        (this._owner as IWorldObserver)?.InvokeViewPlugInAsync<IDeactivateMagicEffectPlugIn>(p => p.DeactivateMagicEffectAsync(effect, this._owner));
         if (effect.Definition.InformObservers && this._owner.IsAlive)
         {
             (this._owner as IObservable)?.ForEachWorldObserverAsync<IDeactivateMagicEffectPlugIn>(p => p.DeactivateMagicEffectAsync(effect, this._owner), false);
