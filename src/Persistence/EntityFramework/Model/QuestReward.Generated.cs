@@ -80,6 +80,32 @@ internal partial class QuestReward : MUnique.OpenMU.DataModel.Configuration.Ques
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="SkillReward"/>.
+    /// </summary>
+    public Guid? SkillRewardId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="SkillReward" />.
+    /// </summary>
+    [ForeignKey(nameof(SkillRewardId))]
+    public Skill RawSkillReward
+    {
+        get => base.SkillReward as Skill;
+        set => base.SkillReward = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Skill SkillReward
+    {
+        get => base.SkillReward;set
+        {
+            base.SkillReward = value;
+            this.SkillRewardId = this.RawSkillReward?.Id;
+        }
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

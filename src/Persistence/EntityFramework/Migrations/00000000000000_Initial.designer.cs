@@ -2691,6 +2691,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("RewardType")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("SkillRewardId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Value")
                         .HasColumnType("integer");
 
@@ -2701,6 +2704,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("ItemRewardId");
 
                     b.HasIndex("QuestDefinitionId");
+
+                    b.HasIndex("SkillRewardId");
 
                     b.ToTable("QuestReward", "config");
                 });
@@ -4145,9 +4150,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany("RawRewards")
                         .HasForeignKey("QuestDefinitionId");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "RawSkillReward")
+                        .WithMany()
+                        .HasForeignKey("SkillRewardId");
+
                     b.Navigation("RawAttributeReward");
 
                     b.Navigation("RawItemReward");
+
+                    b.Navigation("RawSkillReward");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", b =>

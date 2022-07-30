@@ -59,4 +59,9 @@ public enum QuestRewardType
     /// further be a requirement for skills etc. With the the definition of an attribute, we have maximum flexibility.
     /// </remarks>
     Attribute,
+
+    /// <summary>
+    /// The completed quest rewards an additional skill, if not yet learned.
+    /// </summary>
+    Skill,
 }

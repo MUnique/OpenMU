@@ -2579,6 +2579,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemRewardId = table.Column<Guid>(type: "uuid", nullable: true),
                     AttributeRewardId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SkillRewardId = table.Column<Guid>(type: "uuid", nullable: true),
                     QuestDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     RewardType = table.Column<int>(type: "integer", nullable: false),
                     Value = table.Column<int>(type: "integer", nullable: false)
@@ -2603,6 +2604,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         column: x => x.QuestDefinitionId,
                         principalSchema: "config",
                         principalTable: "QuestDefinition",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_QuestReward_Skill_SkillRewardId",
+                        column: x => x.SkillRewardId,
+                        principalSchema: "config",
+                        principalTable: "Skill",
                         principalColumn: "Id");
                 });
 
@@ -3566,6 +3573,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "QuestReward",
                 column: "QuestDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuestReward_SkillRewardId",
+                schema: "config",
+                table: "QuestReward",
+                column: "SkillRewardId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Skill_ElementalModifierTargetId",

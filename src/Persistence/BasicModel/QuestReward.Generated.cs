@@ -65,6 +65,26 @@ public partial class QuestReward : MUnique.OpenMU.DataModel.Configuration.Quests
         set => base.AttributeReward = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="SkillReward" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("skillReward")]
+    [System.Text.Json.Serialization.JsonPropertyName("skillReward")]
+    public Skill RawSkillReward
+    {
+        get => base.SkillReward as Skill;
+        set => base.SkillReward = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.Skill SkillReward
+    {
+        get => base.SkillReward;
+        set => base.SkillReward = value;
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

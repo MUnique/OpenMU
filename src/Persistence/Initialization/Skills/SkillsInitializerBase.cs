@@ -103,6 +103,13 @@ internal abstract class SkillsInitializerBase : InitializerBase
 
     private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)
     {
+        if ((SkillNumber)skill.Number is SkillNumber.IceArrow or SkillNumber.IceArrowStrengthener)
+        {
+            skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Freeze, Stats.IsFrozen, 5);
+            return;
+        }
+
         switch (elementalModifier)
         {
             case ElementalType.Ice:

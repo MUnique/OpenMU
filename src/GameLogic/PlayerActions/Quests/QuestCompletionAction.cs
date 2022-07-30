@@ -149,6 +149,29 @@ public class QuestCompletionAction
             case QuestRewardType.GensAttribution:
                 // not yet implemented.
                 break;
+            case QuestRewardType.Skill:
+                if (reward.SkillReward is not { } skill)
+                {
+                    player.Logger.LogError("Reward has no skill defined.");
+                    return;
+                }
+
+                if (player.SkillList is not { } skillList)
+                {
+                    player.Logger.LogError("Can't reward the skill; SkillList is null.");
+                    return;
+                }
+
+                if (skillList.ContainsSkill(skill.Number.ToUnsigned()))
+                {
+                    await skillList.AddLearnedSkillAsync(skill).ConfigureAwait(false);
+                }
+                else
+                {
+                    player.Logger.LogWarning($"Skill {skill} is already learned.");
+                }
+
+                break;
             default:
                 player.Logger.LogWarning("Unknown reward type: {0}", reward.RewardType);
                 break;

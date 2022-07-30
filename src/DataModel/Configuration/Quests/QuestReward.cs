@@ -36,4 +36,9 @@ public class QuestReward
     /// Gets or sets the attribute reward. It's set when <see cref="RewardType"/> is <see cref="QuestRewardType.Attribute"/>.
     /// </summary>
     public virtual AttributeDefinition? AttributeReward { get; set; }
+
+    /// <summary>
+    /// Gets or sets the attribute reward. It's set when <see cref="RewardType"/> is <see cref="QuestRewardType.Skill"/>.
+    /// </summary>
+    public virtual Skill? SkillReward { get; set; }
 }
