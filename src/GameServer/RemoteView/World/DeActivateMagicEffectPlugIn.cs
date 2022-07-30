@@ -62,12 +62,6 @@ public class DeActivateMagicEffectPlugIn : IActivateMagicEffectPlugIn, IDeactiva
         }
 
         var playerId = affectedPlayer.GetId(this._player);
-
-        if (affectedPlayer != this._player || !effect.Definition.SendDuration || !isActive)
-        {
-            return;
-        }
-
         foreach (var powerUpDefinition in effect.Definition.PowerUpDefinitions)
         {
             if (powerUpDefinition.TargetAttribute is { } targetAttribute
