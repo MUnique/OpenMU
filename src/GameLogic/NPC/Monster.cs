@@ -133,6 +133,11 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
             this._isCalculatingPath = false;
         }
 
+        if (calculatedPath.Count == 0)
+        {
+            return;
+        }
+
         // The walker just supports maximum 16 steps.
         while (calculatedPath.Count > 16)
         {
