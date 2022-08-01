@@ -115,7 +115,8 @@ export class World extends THREE.Object3D {
     public addAreaSkillAnimation(playerId: number, skill: number, x: number, y: number, rotation: number): void {
         const animating = this.getObjectById(playerId);
         if (animating !== undefined && animating !== null) {
-            animating.rotateTo(rotation);
+            const rotationMultiplier = 0x10;
+            animating.rotateTo(rotation / rotationMultiplier);
             // todo add effect
         }
     }
