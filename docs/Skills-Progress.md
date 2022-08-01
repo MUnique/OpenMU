@@ -7,10 +7,8 @@ Some general notes:
 
 * Elemental effects (poison, ice, etc.) are not yet implemented at all
 
-* Area Damage Skills with explicit damage packets work, but are vulnerable to cheaters
-
-* Area Damage Skills with implicit damage work, but directions are not
-  considered yet - they hit targets in all directions.
+* Area Damage Skills with explicit damage packets work, but are still vulnerable
+  to advanced cheaters
 
 * All kind of skills which are somehow special are not working
 
@@ -74,8 +72,8 @@ Some general notes:
 | 61     | Fire Burst                  | works                                                            |
 | 62     | Earthshake                  | works                                                            |
 | 63     | Summon                      | not implemented                                                  |
-| 64     | Increase Critical Damage    | not implemented                                                  |
-| 65     | Electric Spike              | ?                                                                |
+| 64     | Increase Critical Damage    | works                                                            |
+| 65     | Electric Spike              | works                                                            |
 | 66     | Force Wave                  | works                                                            |
 | 67     | Stun                        | not implemented                                                  |
 | 68     | Cancel Stun                 | not implemented                                                  |
@@ -85,9 +83,9 @@ Some general notes:
 | 72     | Abolish Magic               | not implemented                                                  |
 | 73     | Mana Rays                   | ?                                                                |
 | 74     | Fire Blast                  | ?                                                                |
-| 76     | Plasma Storm                | ?                                                                |
+| 76     | Plasma Storm                | works                                                            |
 | 77     | Infinity Arrow              | not implemented                                                  |
-| 78     | Fire Scream                 | ?                                                                |
+| 78     | Fire Scream                 | works                                                            |
 | 79     | Explosion                   | ?                                                                |
 | 200    | Summon Monster              | ?                                                                |
 | 201    | Magic Attack Immunity       | not implemented                                                  |
@@ -115,7 +113,7 @@ Some general notes:
 | 235    | Multi-Shot                  | works                                                            |
 | 236    | Flame Strike                | ?                                                                |
 | 237    | Gigantic Storm              | works, untested                                                  |
-| 238    | Chaotic Diseier             | works, but needs to take direction into account                  |
+| 238    | Chaotic Diseier             | works                                                            |
 | 239    | Doppelganger Self Explosion | ?                                                                |
 | 260    | Killing Blow                | ?                                                                |
 | 261    | Beast Uppercut              | ?                                                                |

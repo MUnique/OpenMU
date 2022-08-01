@@ -39,13 +39,13 @@ public class AreaSkillAttackAction
 
         if (skill.SkillType == SkillType.AreaSkillAutomaticHits)
         {
-            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill).ConfigureAwait(false);
+            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill, rotation).ConfigureAwait(false);
         }
 
         await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
     }
 
-    private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)
+    private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill, byte rotation)
     {
         if (player.Attributes is not { } attributes)
         {
@@ -65,26 +65,35 @@ public class AreaSkillAttackAction
         }
 
         bool isExtraTargetDefined = extraTargetId != 0xFFFF;
+        var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
+
         var attackablesInRange =
             player.CurrentMap?
             .GetAttackablesInRange(targetAreaCenter, skill.Range)
             .Where(a => a != player)
-            .Where(a => !a.IsAtSafezone())
-            ?? Enumerable.Empty<IAttackable>();
-        if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
-        {
-            attackablesInRange = attackablesInRange.Where(a => a is not Player);
-        }
+            .Where(a => !a.IsAtSafezone());
 
-        var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
-        foreach (var target in attackablesInRange)
+        if (attackablesInRange is not null)
         {
-            await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter).ConfigureAwait(false);
-
-            if (target == extraTarget)
+            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillTargetFilter>(skill.Number) is { } filterPlugin)
             {
-                isExtraTargetDefined = false;
-                extraTarget = null;
+                attackablesInRange = attackablesInRange.Where(a => filterPlugin.IsTargetWithinBounds(player, a, targetAreaCenter, rotation));
+            }
+
+            if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
+            {
+                attackablesInRange = attackablesInRange.Where(a => a is not Player);
+            }
+
+            foreach (var target in attackablesInRange)
+            {
+                await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter).ConfigureAwait(false);
+
+                if (target == extraTarget)
+                {
+                    isExtraTargetDefined = false;
+                    extraTarget = null;
+                }
             }
         }
 
