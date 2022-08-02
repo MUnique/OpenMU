@@ -53,7 +53,7 @@ public class DeActivateMagicEffectPlugIn : IActivateMagicEffectPlugIn, IDeactiva
         return this.SendMagicEffectStatusAsync(effect, affectedObject, false, TimeSpan.Zero);
     }
 
-    private async ValueTask SendMagicEffectStatusAsync(MagicEffect effect, IAttackable affectedPlayer, bool isActive, TimeSpan duration)
+    private async ValueTask SendMagicEffectStatusAsync(MagicEffect effect, IAttackable affectedObject, bool isActive, TimeSpan duration)
     {
         if (!(this._player.Connection?.Connected ?? false)
             || effect.Definition.Number <= 0)
@@ -61,10 +61,11 @@ public class DeActivateMagicEffectPlugIn : IActivateMagicEffectPlugIn, IDeactiva
             return;
         }
 
-        var playerId = affectedPlayer.GetId(this._player);
+        var objectId = affectedObject.GetId(this._player);
         foreach (var powerUpDefinition in effect.Definition.PowerUpDefinitions)
         {
-            if (powerUpDefinition.TargetAttribute is { } targetAttribute
+            if (affectedObject == this._player
+                && powerUpDefinition.TargetAttribute is { } targetAttribute
                 && EffectTypeMapping.TryGetValue(targetAttribute, out var effectType))
             {
                 var origin = EffectItemConsumption.EffectOrigin.HalloweenAndCherryBlossomEvent; // Basically, all normal consumable items which add effects
@@ -73,7 +74,7 @@ public class DeActivateMagicEffectPlugIn : IActivateMagicEffectPlugIn, IDeactiva
             }
             else
             {
-                await this._player.Connection.SendMagicEffectStatusAsync(isActive, playerId, (byte)effect.Id).ConfigureAwait(false);
+                await this._player.Connection.SendMagicEffectStatusAsync(isActive, objectId, (byte)effect.Id).ConfigureAwait(false);
             }
         }
     }

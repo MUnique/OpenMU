@@ -101,6 +101,11 @@ public class SkillHitValidator
         return true;
     }
 
+    public void IncreaseCounter()
+    {
+        this._counter.Increase();
+    }
+
     /// <summary>
     /// Determines whether a hit request is valid for the specified skill identifier.
     /// </summary>
@@ -110,7 +115,7 @@ public class SkillHitValidator
     /// <returns>
     ///   <c>true</c> if a hit request is valid for the specified skill identifier; otherwise, <c>false</c>.
     /// </returns>
-    public bool IsHitValid(ushort skillId, byte animationCounter, byte hitCounter)
+    public (bool IsValid, bool IncreaseCounter) IsHitValid(ushort skillId, byte animationCounter, byte hitCounter)
     {
         if (animationCounter == 0 && skillId == TwisterSkillId)
         {
@@ -129,23 +134,22 @@ public class SkillHitValidator
             if (!animationEntry.IsAnimation)
             {
                 this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because the given animation counter wasn't registered as animation.");
-                return false;
+                return (false, false);
             }
 
             var expectedCount = this._counter.Count;
             if (expectedCount != hitCounter)
             {
-                this._logger.LogWarning($"Hit count out of sync - hacker? Expected: {this._counter.Count}, Actual: {animationCounter}.");
-                return false;
+                this._logger.LogWarning($"Hit count out of sync - hacker? Expected: {this._counter.Count}, Actual: {hitCounter}.");
+                return (false, false);
             }
 
             if (animationEntry.Skill != skillId)
             {
                 this._logger.LogWarning($"Wrong skill in referenced animation - hacker?");
-                return false;
+                return (false, false);
             }
 
-            this._counter.Increase();
             var newCount = animationEntry.HitCount + 1;
 
             this._hits[animationCounter] = animationEntry with { HitCount = newCount };
@@ -155,15 +159,15 @@ public class SkillHitValidator
             if (timestampDiff > MaxAnimationToHitDelay)
             {
                 this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because of too high time difference between animation and hit");
-                return false;
+                return (false, true);
             }
 
-            return true;
+            return (true, true);
         }
         else
         {
             this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because of missing previous animation.");
-            return false;
+            return (false, false);
         }
     }
 
