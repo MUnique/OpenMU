@@ -65,8 +65,8 @@ Some general notes:
 | 50     | Flame of Evil (Monster)     |                                                                  |
 | 51     | Ice Arrow                   | works                                                            |
 | 52     | Penetration                 | works                                                            |
-| 55     | Fire Slash                  | ?                                                                |
-| 56     | Power Slash                 | probably not working right; needs to take direction into account |
+| 55     | Fire Slash                  | works                                                            |
+| 56     | Power Slash                 | works                                                            |
 | 57     | Spiral Slash                | ?                                                                |
 | 60     | Force                       | works                                                            |
 | 61     | Fire Burst                  | works                                                            |
@@ -111,8 +111,8 @@ Some general notes:
 | 233    | Expansion of Wizardry       | not implemented                                                  |
 | 234    | Recovery                    | works                                                            |
 | 235    | Multi-Shot                  | works                                                            |
-| 236    | Flame Strike                | ?                                                                |
-| 237    | Gigantic Storm              | works, untested                                                  |
+| 236    | Flame Strike                | works                                                            |
+| 237    | Gigantic Storm              | works                                                            |
 | 238    | Chaotic Diseier             | works                                                            |
 | 239    | Doppelganger Self Explosion | ?                                                                |
 | 260    | Killing Blow                | ?                                                                |
