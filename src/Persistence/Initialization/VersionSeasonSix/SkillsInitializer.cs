@@ -58,6 +58,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.Recovery, MagicEffectNumber.ShieldRecover },
         { SkillNumber.InfinityArrow, MagicEffectNumber.InfiniteArrow },
         { SkillNumber.InfinityArrowStr, MagicEffectNumber.InfiniteArrow },
+        { SkillNumber.FireSlash, MagicEffectNumber.DefenseReduction },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -131,8 +132,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.FlameofEvil, "Flame of Evil (Monster)", damage: 120, manaConsumption: 160, levelRequirement: 60, energyRequirement: 100);
         this.CreateSkill(SkillNumber.IceArrow, "Ice Arrow", CharacterClasses.MuseElfAndHighElf, DamageType.Physical, 105, 8, 12, 10, elementalModifier: ElementalType.Ice);
         this.CreateSkill(SkillNumber.Penetration, "Penetration", CharacterClasses.AllElfs, DamageType.Physical, 70, 6, 9, 7, 130, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillExplicitHits);
-        this.CreateSkill(SkillNumber.FireSlash, "Fire Slash", CharacterClasses.AllMGs, DamageType.Physical, 80, 2, 20, 15, elementalModifier: ElementalType.Poison, skillType: SkillType.AreaSkillExplicitHits);
-        this.CreateSkill(SkillNumber.PowerSlash, "Power Slash", CharacterClasses.AllMGs, distance: 5, manaConsumption: 15, energyRequirement: 100, skillType: SkillType.AreaSkillAutomaticHits);
+        this.CreateSkill(SkillNumber.FireSlash, "Fire Slash", CharacterClasses.AllMGs, DamageType.Physical, 80, 2, 20, 15, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillExplicitHits);
+        this.CreateSkill(SkillNumber.PowerSlash, "Power Slash", CharacterClasses.AllMGs, DamageType.Physical, distance: 5, manaConsumption: 15, energyRequirement: 100, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.SpiralSlash, "Spiral Slash", CharacterClasses.AllMGs, DamageType.Physical, 75, 5, 15, 20);
         this.CreateSkill(SkillNumber.Force, "Force", CharacterClasses.AllLords, DamageType.Physical, 10, 4, manaConsumption: 10);
         this.CreateSkill(SkillNumber.FireBurst, "Fire Burst", CharacterClasses.AllLords, DamageType.Physical, 100, 6, manaConsumption: 25, energyRequirement: 79, skillType: SkillType.DirectHit, skillTarget: SkillTarget.ExplicitWithImplicitInRange, implicitTargetRange: 1);
@@ -177,8 +178,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.ExpansionofWizardry, "Expansion of Wizardry", CharacterClasses.SoulMasterAndGrandMaster, distance: 6, abilityConsumption: 50, manaConsumption: 200, levelRequirement: 220, energyRequirement: 118);
         this.CreateSkill(SkillNumber.Recovery, "Recovery", CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 40, levelRequirement: 100, energyRequirement: 37, skillType: SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
         this.CreateSkill(SkillNumber.MultiShot, "Multi-Shot", CharacterClasses.MuseElfAndHighElf, DamageType.Physical, 40, 6, 7, 10, 100, skillType: SkillType.AreaSkillExplicitHits);
-        this.CreateSkill(SkillNumber.FlameStrike, "Flame Strike", CharacterClasses.AllMGs, DamageType.Wizardry, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire);
-        this.CreateSkill(SkillNumber.GiganticStorm, "Gigantic Storm", CharacterClasses.AllMGs, DamageType.Wizardry, 110, 6, 10, 120, 220, 118, elementalModifier: ElementalType.Wind);
+        this.CreateSkill(SkillNumber.FlameStrike, "Flame Strike", CharacterClasses.AllMGs, DamageType.Physical, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillAutomaticHits);
+        this.CreateSkill(SkillNumber.GiganticStorm, "Gigantic Storm", CharacterClasses.AllMGs, DamageType.Wizardry, 110, 6, 10, 120, 220, 118, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.ChaoticDiseier, "Chaotic Diseier", CharacterClasses.AllLords, DamageType.Physical, 190, 6, 15, 50, 100, 16, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.DoppelgangerSelfExplosion, "Doppelganger Self Explosion", CharacterClasses.AllMGs, DamageType.Wizardry, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire);
         this.CreateSkill(SkillNumber.KillingBlow, "Killing Blow", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Earth);
@@ -501,6 +502,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new HealEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new ShieldRecoverEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new InfiniteArrowEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new DefenseReductionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
