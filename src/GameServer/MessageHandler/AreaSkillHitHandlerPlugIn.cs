@@ -16,10 +16,6 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for area skill hit packets.
 /// </summary>
-/// <remarks>
-/// TODO: It's usually required to perform a <see cref="AreaSkillAttackAction"/> before, so this check has to be implemented.
-///       Each animation and hit is usually referenced due a counter value in the packets.
-/// </remarks>
 [PlugIn("AreaSkillHitHandlerPlugIn", "Handler for area skill hit packets.")]
 [Guid("2f5848fd-a1bd-488b-84b3-fd88bdef5ac8")]
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
@@ -53,29 +49,43 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        for (int i = 0; i < message.TargetCount; i++)
+        var increaseCounterAfterLoop = false;
+        var targetCount = message.TargetCount;
+        try
         {
-            var targetInfo = message[i];
-            if (!player.SkillHitValidator.IsHitValid(skillId, targetInfo.AnimationCounter, message.HitCounter))
+            for (int i = 0; i < targetCount; i++)
             {
-                return;
-            }
-
-            if (player.GetObject(targetInfo.TargetId) is IAttackable target)
-            {
-                if (target is IObservable observable && observable.Observers.Contains(player))
+                var targetInfo = message[i];
+                var (isHitValid, increaseCounter) = player.SkillHitValidator.IsHitValid(skillId, targetInfo.AnimationCounter, message.HitCounter);
+                increaseCounterAfterLoop |= increaseCounter;
+                if (!isHitValid)
                 {
-                    if (player.SkillList.GetSkill(skillId) is { } skillEntry)
+                    return;
+                }
+
+                if (player.GetObject(targetInfo.TargetId) is IAttackable target)
+                {
+                    if (target is IObservable observable && observable.Observers.Contains(player))
                     {
-                        await this._skillHitAction.AttackTargetAsync(player, target, skillEntry).ConfigureAwait(false);
+                        if (player.SkillList.GetSkill(skillId) is { } skillEntry)
+                        {
+                            await this._skillHitAction.AttackTargetAsync(player, target, skillEntry).ConfigureAwait(false);
+                        }
+                    }
+                    else
+                    {
+                        // Client may be out of sync (or it's an hacker attempt),
+                        // so we tell him the object is out of scope - this should prevent further attempts to attack it.
+                        await player.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(target.GetAsEnumerable())).ConfigureAwait(false);
                     }
                 }
-                else
-                {
-                    // Client may be out of sync (or it's an hacker attempt),
-                    // so we tell him the object is out of scope - this should prevent further attempts to attack it.
-                    await player.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(target.GetAsEnumerable())).ConfigureAwait(false);
-                }
+            }
+        }
+        finally
+        {
+            if (increaseCounterAfterLoop)
+            {
+                player.SkillHitValidator.IncreaseCounter();
             }
         }
     }

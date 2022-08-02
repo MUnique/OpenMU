@@ -101,7 +101,11 @@ public class SkillHitValidator
         return true;
     }
 
-    public void IncreaseCounter()
+    /// <summary>
+    /// Increases the counter by one, after a hit was done.
+    /// It must just be called once after a combined hit.
+    /// </summary>
+    public void IncreaseCounterAfterHit()
     {
         this._counter.Increase();
     }
