@@ -109,6 +109,11 @@ internal abstract class AccountInitializerBase : InitializerBase
             account.Characters.Add(darkLord);
         }
 
+        if (this.CreateMagicGladiator() is { } magicGladiator)
+        {
+            account.Characters.Add(magicGladiator);
+        }
+
         return account;
     }
 
@@ -117,6 +122,12 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// </summary>
     /// <returns>The dark lord, or null.</returns>
     protected abstract Character? CreateDarkLord();
+
+    /// <summary>
+    /// Creates the magic gladiator.
+    /// </summary>
+    /// <returns>The magic gladiator, or null.</returns>
+    protected virtual Character? CreateMagicGladiator() => null;
 
     /// <summary>
     /// Creates the knight.
@@ -174,6 +185,16 @@ internal abstract class AccountInitializerBase : InitializerBase
     protected Character CreateDarkLord(CharacterClassNumber characterClassNumber)
     {
         return this.CreateCharacter(this.AccountName + "Dl", characterClassNumber, this.Level, 3);
+    }
+
+    /// <summary>
+    /// Creates the magic gladiator.
+    /// </summary>
+    /// <param name="characterClassNumber">The character class number.</param>
+    /// <returns>The created magic gladiator.</returns>
+    protected Character CreateMagicGladiator(CharacterClassNumber characterClassNumber)
+    {
+        return this.CreateCharacter(this.AccountName + "Mg", characterClassNumber, this.Level, 4);
     }
 
     /// <summary>
