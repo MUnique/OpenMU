@@ -237,9 +237,11 @@ internal abstract class AccountInitializerBase : InitializerBase
 
         if (this.AddAllSkills)
         {
+            var weaponSkills = this.GameConfiguration.Items.Where(i => i.Skill is not null && i.ItemSlot is not null).Select(i => i.Skill!).Distinct().ToHashSet();
             var availableSkills = this.GameConfiguration.Skills.Where(s => s.QualifiedCharacters.Contains(character.CharacterClass) 
                                                                            && s.Number < 300 // no master skills
-                                                                           && !EventSkills.Contains((SkillNumber)s.Number)).ToList();
+                                                                           && !EventSkills.Contains((SkillNumber)s.Number)
+                                                                           && !weaponSkills.Contains(s)).ToList();
             foreach (var availableSkill in availableSkills)
             {
                 var skillEntry = this.Context.CreateNew<SkillEntry>();
