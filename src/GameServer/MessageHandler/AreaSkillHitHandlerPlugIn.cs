@@ -85,7 +85,7 @@ internal class AreaSkillHitHandlerPlugIn : IPacketHandlerPlugIn
         {
             if (increaseCounterAfterLoop)
             {
-                player.SkillHitValidator.IncreaseCounter();
+                player.SkillHitValidator.IncreaseCounterAfterHit();
             }
         }
     }
