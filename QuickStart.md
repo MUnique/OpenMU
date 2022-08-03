@@ -116,6 +116,8 @@ These are the user names:
 * test300: General test account with level 300
 * test400: General test account with level 400, master characters
 * testgm: Test account of a game master
+* testgm2: Test account of a game master with summoner and rage fighter characters
+* testunlock: Test account without characters, but unlocked character classes
 * quest1: Test account for the level 150 quests
 * quest2: Test account for the level 220 quests
 * quest3: Test account for the level 400 quests

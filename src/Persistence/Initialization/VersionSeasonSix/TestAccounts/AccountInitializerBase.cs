@@ -121,7 +121,7 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// Creates the dark lord.
     /// </summary>
     /// <returns>The dark lord, or null.</returns>
-    protected abstract Character? CreateDarkLord();
+    protected virtual Character? CreateDarkLord() => null;
 
     /// <summary>
     /// Creates the magic gladiator.
@@ -133,19 +133,19 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// Creates the knight.
     /// </summary>
     /// <returns>The dark knight, or null.</returns>
-    protected abstract Character? CreateKnight();
+    protected virtual Character? CreateKnight() => null;
 
     /// <summary>
     /// Creates the elf.
     /// </summary>
     /// <returns>The elf, or null.</returns>
-    protected abstract Character? CreateElf();
+    protected virtual Character? CreateElf() => null;
 
     /// <summary>
     /// Creates the wizard.
     /// </summary>
     /// <returns>The wizard, or null.</returns>
-    protected abstract Character? CreateWizard();
+    protected virtual Character? CreateWizard() => null;
 
     /// <summary>
     /// Creates the knight.
