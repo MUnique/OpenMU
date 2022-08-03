@@ -33,7 +33,7 @@ Some general notes:
 | 15     | Teleport Ally               | not implemented yet                                              |
 | 16     | Soul Barrier                | works                                                            |
 | 17     | Energy Ball                 | works                                                            |
-| 18     | Defense                     | works, untested                                                  |
+| 18     | Defense                     | works                                                            |
 | 19     | Falling Slash               | works                                                            |
 | 20     | Lunge                       | works                                                            |
 | 21     | Uppercut                    | works                                                            |

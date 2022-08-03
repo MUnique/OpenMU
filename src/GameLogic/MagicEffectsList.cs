@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public class MagicEffectsList : AsyncDisposable
 {
+    private const byte InvisibleEffectStartIndex = 200;
     private readonly BitArray _contains = new (0x100);
     private readonly IAttackable _owner;
     private readonly AsyncLock _addLock = new ();
@@ -65,12 +66,12 @@ public class MagicEffectsList : AsyncDisposable
         if (added)
         {
             effect.EffectTimeOut += this.OnEffectTimeOutAsync;
-            if (this._owner is IWorldObserver observer)
+            if (effect.Id < InvisibleEffectStartIndex && this._owner is IWorldObserver observer)
             {
                 await observer.InvokeViewPlugInAsync<IActivateMagicEffectPlugIn>(p => p.ActivateMagicEffectAsync(effect, this._owner)).ConfigureAwait(false);
             }
 
-            if (effect.Definition.InformObservers && this._owner is IObservable observable)
+            if (effect.Id < InvisibleEffectStartIndex && effect.Definition.InformObservers && this._owner is IObservable observable)
             {
                 await observable.ForEachWorldObserverAsync<IActivateMagicEffectPlugIn>(p => p.ActivateMagicEffectAsync(effect, this._owner), false).ConfigureAwait(false);
             }
@@ -121,6 +122,11 @@ public class MagicEffectsList : AsyncDisposable
         foreach (var powerUp in effect.PowerUpElements)
         {
             this._owner.Attributes.RemoveElement(powerUp.Element, powerUp.Target);
+        }
+
+        if (effect.Id >= InvisibleEffectStartIndex)
+        {
+            return;
         }
 
         (this._owner as IWorldObserver)?.InvokeViewPlugInAsync<IDeactivateMagicEffectPlugIn>(p => p.DeactivateMagicEffectAsync(effect, this._owner));
