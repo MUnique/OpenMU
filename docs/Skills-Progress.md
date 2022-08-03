@@ -84,7 +84,7 @@ Some general notes:
 | 73     | Mana Rays                   | ?                                                                |
 | 74     | Fire Blast                  | ?                                                                |
 | 76     | Plasma Storm                | works                                                            |
-| 77     | Infinity Arrow              | not implemented                                                  |
+| 77     | Infinity Arrow              | works                                                            |
 | 78     | Fire Scream                 | works                                                            |
 | 79     | Explosion                   | ?                                                                |
 | 200    | Summon Monster              | ?                                                                |
