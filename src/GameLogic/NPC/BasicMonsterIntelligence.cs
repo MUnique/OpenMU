@@ -141,6 +141,10 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         {
             await this.TickAsync().ConfigureAwait(false);
         }
+        catch (OperationCanceledException)
+        {
+            // can be ignored.
+        }
         catch (Exception ex)
         {
             Debug.Fail(ex.Message, ex.StackTrace);
