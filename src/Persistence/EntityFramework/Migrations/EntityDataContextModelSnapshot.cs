@@ -1541,19 +1541,19 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("ItemDropItemGroupItemDefinition", "config");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemItemSetGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemItemOfItemSet", b =>
                 {
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ItemSetGroupId")
+                    b.Property<Guid>("ItemOfItemSetId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("ItemId", "ItemSetGroupId");
+                    b.HasKey("ItemId", "ItemOfItemSetId");
 
-                    b.HasIndex("ItemSetGroupId");
+                    b.HasIndex("ItemOfItemSetId");
 
-                    b.ToTable("ItemItemSetGroup", "data");
+                    b.ToTable("ItemItemOfItemSet", "data");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelBonusTable", b =>
@@ -1585,6 +1585,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<int>("AncientSetDiscriminator")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("BonusOptionId")
                         .HasColumnType("uuid");
@@ -1755,9 +1758,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<bool>("AlwaysApplies")
                         .HasColumnType("boolean");
-
-                    b.Property<int>("AncientSetDiscriminator")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("CountDistinct")
                         .HasColumnType("boolean");
@@ -3668,7 +3668,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("ItemDropItemGroup");
                 });
 
-            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemItemSetGroup", b =>
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemItemOfItemSet", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Item", "Item")
                         .WithMany("JoinedItemSetGroups")
@@ -3676,15 +3676,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", "ItemSetGroup")
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOfItemSet", "ItemOfItemSet")
                         .WithMany()
-                        .HasForeignKey("ItemSetGroupId")
+                        .HasForeignKey("ItemOfItemSetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Item");
 
-                    b.Navigation("ItemSetGroup");
+                    b.Navigation("ItemOfItemSet");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemLevelBonusTable", b =>
@@ -3704,13 +3704,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("ItemDefinitionId");
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", null)
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", "RawItemSetGroup")
                         .WithMany("RawItems")
                         .HasForeignKey("ItemSetGroupId");
 
                     b.Navigation("RawBonusOption");
 
                     b.Navigation("RawItemDefinition");
+
+                    b.Navigation("RawItemSetGroup");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionCombinationBonus", b =>

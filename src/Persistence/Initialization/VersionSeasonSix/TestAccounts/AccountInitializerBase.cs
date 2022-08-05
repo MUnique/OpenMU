@@ -763,7 +763,7 @@ internal abstract class AccountInitializerBase : InitializerBase
             ancient.ItemOptions.Add(ancientBonus);
         }
 
-        ancient.ItemSetGroups.Add(set);
+        ancient.ItemSetGroups.Add(itemOfSet);
 
         return ancient;
     }

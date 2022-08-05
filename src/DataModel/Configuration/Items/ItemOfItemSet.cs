@@ -13,6 +13,21 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items;
 public class ItemOfItemSet
 {
     /// <summary>
+    /// Gets or sets the ancient set discriminator.
+    /// </summary>
+    /// <remarks>
+    /// Only relevant to ancient sets. One item can only be in one ancient set with the same discriminator.
+    /// The original mu online protocol supports up to two different ancient sets per item - with discriminator values 1 and 2.
+    /// E.g. a 'Warrior Leather' set would have a discriminator value of 1, the 'Anonymous Leather' set would have 2.
+    /// </remarks>
+    public int AncientSetDiscriminator { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item set group to which this instance belongs.
+    /// </summary>
+    public virtual ItemSetGroup? ItemSetGroup { get; set; }
+
+    /// <summary>
     /// Gets or sets the item's definition for which the bonus should apply.
     /// </summary>
     public virtual ItemDefinition? ItemDefinition { get; set; }

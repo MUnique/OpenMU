@@ -128,12 +128,12 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
     private static void AddAncientBonusOption(TemporaryItem item, ItemChatCommandArgs arguments)
     {
         if (item.Definition != null && arguments.Ancient > default(byte)
-                                    && item.Definition.PossibleItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator == arguments.Ancient) is { } ancientSet
+                                    && item.Definition.PossibleItemSetGroups.FirstOrDefault(g => g.Items.Any(i => i.ItemDefinition == item.Definition && i.AncientSetDiscriminator == arguments.Ancient)) is { } ancientSet
                                     && ancientSet.Items.FirstOrDefault(i => i.ItemDefinition == item.Definition) is { } itemOfItemSet)
         {
             var optionLink = new ItemOptionLink { ItemOption = itemOfItemSet.BonusOption, Level = arguments.AncientBonusLevel };
             item.ItemOptions.Add(optionLink);
-            item.ItemSetGroups.Add(ancientSet);
+            item.ItemSetGroups.Add(itemOfItemSet);
         }
     }
 }

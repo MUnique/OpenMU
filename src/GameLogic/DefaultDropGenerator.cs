@@ -324,14 +324,14 @@ public class DefaultDropGenerator : IDropGenerator
 
     private void ApplyRandomAncientOption(Item item)
     {
-        var ancientSet = item.ItemSetGroups.Where(g => g.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).SelectRandom(this._randomizer);
+        var ancientSet = item.Definition?.PossibleItemSetGroups.Where(g => g!.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).SelectRandom(this._randomizer);
         if (ancientSet is null)
         {
             return;
         }
 
-        item.ItemSetGroups.Add(ancientSet);
         var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
+        item.ItemSetGroups.Add(itemOfSet);
         var bonusOption = itemOfSet.BonusOption ?? throw Error.NotInitializedProperty(itemOfSet, nameof(itemOfSet.BonusOption)); // for example: +5str or +10str
         var bonusOptionLink = new ItemOptionLink();
         bonusOptionLink.ItemOption = bonusOption;

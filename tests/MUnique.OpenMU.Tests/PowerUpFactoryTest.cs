@@ -266,7 +266,7 @@ public class PowerUpFactoryTest
         item.Object.ItemSlot = 0;
         item.Object.Durability = item.Object.Definition.Durability;
         item.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
-        item.Setup(i => i.ItemSetGroups).Returns(new List<ItemSetGroup>());
+        item.Setup(i => i.ItemSetGroups).Returns(new List<ItemOfItemSet>());
         return item.Object;
     }
 
@@ -327,9 +327,10 @@ public class PowerUpFactoryTest
         foreach (var level in levels)
         {
             var item = this.GetItem();
+            var itemOfItemSet = new ItemOfItemSet { ItemDefinition = item.Definition, ItemSetGroup = armorSet.Object };
             item.Definition!.PossibleItemSetGroups.Add(armorSet.Object);
-            item.ItemSetGroups.Add(armorSet.Object);
-            armorSet.Object.Items.Add(new ItemOfItemSet { ItemDefinition = item.Definition });
+            item.ItemSetGroups.Add(itemOfItemSet);
+            armorSet.Object.Items.Add(itemOfItemSet);
             item.Level = level;
             yield return item;
         }
@@ -352,11 +353,12 @@ public class PowerUpFactoryTest
         for (int i = 0; i < itemCount; i++)
         {
             var item = this.GetItem();
+            var itemOfSet = new ItemOfItemSet { BonusOption = bonusOption, ItemDefinition = item.Definition, ItemSetGroup = ancientSet.Object};
             item.Definition!.PossibleItemSetGroups.Add(ancientSet.Object);
-            item.ItemSetGroups.Add(ancientSet.Object);
+            item.ItemSetGroups.Add(itemOfSet);
             item.ItemOptions.Add(new ItemOptionLink { ItemOption = bonusOption, Level = 1 });
 
-            ancientSet.Object.Items.Add(new ItemOfItemSet { BonusOption = bonusOption, ItemDefinition = item.Definition });
+            ancientSet.Object.Items.Add(itemOfSet);
             yield return item;
         }
     }

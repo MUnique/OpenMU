@@ -55,6 +55,7 @@ public class CachingRepositoryManager : RepositoryManager
         this.RegisterRepository(new ConfigurationTypeRepository<CharacterClass>(this, config => config.RawCharacterClasses));
         this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionType>(this, config => config.RawItemOptionTypes));
         this.RegisterRepository(new ConfigurationTypeRepository<ItemSetGroup>(this, config => config.RawItemSetGroups));
+        this.RegisterRepository(new ConfigurationTypeRepository<ItemOfItemSet>(this, config => config.RawItemSetGroups.SelectMany(g => g.RawItems).ToList()));
         this.RegisterRepository(new ConfigurationTypeRepository<ItemSlotType>(this, config => config.RawItemSlotTypes));
         this.RegisterRepository(new ConfigurationTypeRepository<ItemDefinition>(this, config => config.RawItems));
         this.RegisterRepository(new ConfigurationTypeRepository<JewelMix>(this, config => config.RawJewelMixes));

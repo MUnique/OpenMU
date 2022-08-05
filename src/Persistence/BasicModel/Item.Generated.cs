@@ -53,14 +53,14 @@ public partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiabl
     /// </summary>
     [Newtonsoft.Json.JsonProperty("itemSetGroups")]
     [System.Text.Json.Serialization.JsonPropertyName("itemSetGroups")]
-    public ICollection<ItemSetGroup> RawItemSetGroups { get; } = new List<ItemSetGroup>();
+    public ICollection<ItemOfItemSet> RawItemSetGroups { get; } = new List<ItemOfItemSet>();
     
     /// <inheritdoc/>
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
-    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup> ItemSetGroups
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet> ItemSetGroups
     {
-        get => base.ItemSetGroups ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, ItemSetGroup>(this.RawItemSetGroups);
+        get => base.ItemSetGroups ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, ItemOfItemSet>(this.RawItemSetGroups);
         protected set
         {
             this.ItemSetGroups.Clear();

@@ -67,7 +67,8 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             .Where(i => i.Durability > 0)
             .ToList();
         var itemGroups = activeItems
-            .SelectMany(i => i.ItemSetGroups ?? Enumerable.Empty<ItemSetGroup>())
+            .SelectMany(i => i.ItemSetGroups)
+            .Select(i => i.ItemSetGroup!)
             .Distinct();
 
         var result = Enumerable.Empty<PowerUpDefinition>();
@@ -80,7 +81,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 continue;
             }
 
-            var itemsOfGroup = activeItems.Where(i => (i.ItemSetGroups?.Contains(group) ?? false)
+            var itemsOfGroup = activeItems.Where(i => i.ItemSetGroups.Any(ios => ios.ItemSetGroup == group)
                                                       && (group.SetLevel == 0 || i.Level >= group.SetLevel));
             var setMustBeComplete = group.MinimumItemCount == group.Items.Count;
             if (group.SetLevel > 0 && setMustBeComplete && itemsOfGroup.All(i => i.Level > group.SetLevel))

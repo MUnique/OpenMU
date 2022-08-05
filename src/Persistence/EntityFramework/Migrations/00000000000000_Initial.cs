@@ -376,8 +376,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     AlwaysApplies = table.Column<bool>(type: "boolean", nullable: false),
                     CountDistinct = table.Column<bool>(type: "boolean", nullable: false),
                     MinimumItemCount = table.Column<int>(type: "integer", nullable: false),
-                    SetLevel = table.Column<int>(type: "integer", nullable: false),
-                    AncientSetDiscriminator = table.Column<int>(type: "integer", nullable: false)
+                    SetLevel = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1497,33 +1496,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemItemSetGroup",
-                schema: "data",
-                columns: table => new
-                {
-                    ItemId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ItemSetGroupId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemItemSetGroup", x => new { x.ItemId, x.ItemSetGroupId });
-                    table.ForeignKey(
-                        name: "FK_ItemItemSetGroup_Item_ItemId",
-                        column: x => x.ItemId,
-                        principalSchema: "data",
-                        principalTable: "Item",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ItemItemSetGroup_ItemSetGroup_ItemSetGroupId",
-                        column: x => x.ItemSetGroupId,
-                        principalSchema: "config",
-                        principalTable: "ItemSetGroup",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ItemOptionLink",
                 schema: "data",
                 columns: table => new
@@ -1831,9 +1803,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemSetGroupId = table.Column<Guid>(type: "uuid", nullable: true),
                     ItemDefinitionId = table.Column<Guid>(type: "uuid", nullable: true),
                     BonusOptionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ItemSetGroupId = table.Column<Guid>(type: "uuid", nullable: true)
+                    AncientSetDiscriminator = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1939,6 +1912,33 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         principalSchema: "config",
                         principalTable: "ItemDefinition",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemItemOfItemSet",
+                schema: "data",
+                columns: table => new
+                {
+                    ItemId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemOfItemSetId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemItemOfItemSet", x => new { x.ItemId, x.ItemOfItemSetId });
+                    table.ForeignKey(
+                        name: "FK_ItemItemOfItemSet_Item_ItemId",
+                        column: x => x.ItemId,
+                        principalSchema: "data",
+                        principalTable: "Item",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ItemItemOfItemSet_ItemOfItemSet_ItemOfItemSetId",
+                        column: x => x.ItemOfItemSetId,
+                        principalSchema: "config",
+                        principalTable: "ItemOfItemSet",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -3173,10 +3173,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "ItemDefinitionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemItemSetGroup_ItemSetGroupId",
+                name: "IX_ItemItemOfItemSet_ItemOfItemSetId",
                 schema: "data",
-                table: "ItemItemSetGroup",
-                column: "ItemSetGroupId");
+                table: "ItemItemOfItemSet",
+                column: "ItemOfItemSetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemLevelBonusTable_GameConfigurationId",
@@ -3919,12 +3919,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "ItemItemSetGroup",
+                name: "ItemItemOfItemSet",
                 schema: "data");
-
-            migrationBuilder.DropTable(
-                name: "ItemOfItemSet",
-                schema: "config");
 
             migrationBuilder.DropTable(
                 name: "ItemOptionLink",
@@ -4043,7 +4039,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "IncreasableItemOption",
+                name: "ItemOfItemSet",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -4087,19 +4083,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config");
 
             migrationBuilder.DropTable(
-                name: "ItemOptionDefinition",
-                schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "ItemOptionType",
-                schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "ItemSetGroup",
-                schema: "config");
-
-            migrationBuilder.DropTable(
-                name: "PowerUpDefinition",
+                name: "IncreasableItemOption",
                 schema: "config");
 
             migrationBuilder.DropTable(
@@ -4116,6 +4100,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "QuestDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ItemOptionDefinition",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ItemOptionType",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "ItemSetGroup",
+                schema: "config");
+
+            migrationBuilder.DropTable(
+                name: "PowerUpDefinition",
                 schema: "config");
 
             migrationBuilder.DropTable(

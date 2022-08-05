@@ -25,18 +25,19 @@ public class EfCoreModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
     /// The standalone types which should not contain additional foreign key, because they were used somewhere in collections (except at GameConfiguration).
     /// For these types, join entity classes will be created and ManyToManyCollectionAdapter{T,TJoin} are used adapt between these types and the join entities.
     /// </summary>
-    private static readonly string[] StandaloneTypes = new[]
+    private static readonly (string TypeName, bool StandaloneForEntityOnly)[] StandaloneTypes =
     {
-        "MUnique.OpenMU.DataModel.Configuration.CharacterClass",
-        "MUnique.OpenMU.DataModel.Configuration.DropItemGroup",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemOption",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup",
-        "MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition",
-        "MUnique.OpenMU.DataModel.Configuration.Skill",
-        "MUnique.OpenMU.DataModel.Configuration.GameMapDefinition",
+        ("MUnique.OpenMU.DataModel.Configuration.CharacterClass", false),
+        ("MUnique.OpenMU.DataModel.Configuration.DropItemGroup", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOption", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet", true),
+        ("MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Skill", false),
+        ("MUnique.OpenMU.DataModel.Configuration.GameMapDefinition", false),
     };
 
     /// <summary>
@@ -209,7 +210,7 @@ public static class MapsterConfigurator
             .SelectMany(t => t.GetProperties().Where(p =>
                 p.PropertyType.IsGenericType &&
                 p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) &&
-                StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName))).ToList();
+                IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, t))).ToList();
 
         foreach (PropertyInfo propertyInfo in allStandaloneCollectionProperties)
         {
@@ -281,9 +282,10 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
             .Where(p => p.GetGetMethod() is { IsVirtual: true, IsFinal: false }
                         && !p.PropertyType.IsValueType
                         && !p.PropertyType.IsArray)
-            .Where(p => !(p.PropertyType.IsGenericType
+            .Where(p => type.FullName == GameConfigurationFullName ||
+                        !(p.PropertyType.IsGenericType
                           && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
-                          && StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)) || type.FullName == GameConfigurationFullName)
+                          && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)))
             .ToList();
 
         var collectionProperties = virtualNavigationProperties
@@ -417,10 +419,24 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         return string.Empty;
     }
 
+    private static bool IsStandaloneType(string typeName, Type referencingType)
+    {
+        return StandaloneTypes.Any(st =>
+        {
+
+            if (st.TypeName != typeName)
+            {
+                return false;
+            }
+
+            return !st.StandaloneForEntityOnly || !IsConfigurationType(referencingType);
+        });
+    }
+
     private IEnumerable<PropertyInfo> GetStandaloneCollectionProperties(Type type)
     {
         return type.FullName != GameConfigurationFullName ?
-            type.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)).ToList() :
+            type.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)).ToList() :
             Enumerable.Empty<PropertyInfo>();
     }
 

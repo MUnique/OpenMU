@@ -23,7 +23,7 @@ internal class MyNpgsqlMigrationsSqlGenerator : NpgsqlMigrationsSqlGenerator
     {
         nameof(Item),
         nameof(ItemOptionLink),
-        nameof(ItemItemSetGroup),
+        nameof(ItemItemOfItemSet),
         nameof(ItemStorage),
     };
 

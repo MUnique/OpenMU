@@ -1,4 +1,4 @@
-// <copyright file="ItemItemSetGroup.Generated.cs" company="MUnique">
+// <copyright file="ItemItemOfItemSet.Generated.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -16,17 +16,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 
-[Table(nameof(ItemItemSetGroup), Schema = SchemaNames.AccountData)]
-internal partial class ItemItemSetGroup
+[Table(nameof(ItemItemOfItemSet), Schema = SchemaNames.AccountData)]
+internal partial class ItemItemOfItemSet
 {
     public Guid ItemId { get; set; }
     public Item Item { get; set; }
 
-    public Guid ItemSetGroupId { get; set; }
-    public ItemSetGroup ItemSetGroup { get; set; }
+    public Guid ItemOfItemSetId { get; set; }
+    public ItemOfItemSet ItemOfItemSet { get; set; }
 }
 
 internal partial class Item
 {
-    public ICollection<ItemItemSetGroup> JoinedItemSetGroups { get; } = new EntityFramework.List<ItemItemSetGroup>();
+    public ICollection<ItemItemOfItemSet> JoinedItemSetGroups { get; } = new EntityFramework.List<ItemItemOfItemSet>();
 }

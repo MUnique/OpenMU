@@ -29,6 +29,32 @@ internal partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.It
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets or sets the identifier of <see cref="ItemSetGroup"/>.
+    /// </summary>
+    public Guid? ItemSetGroupId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ItemSetGroup" />.
+    /// </summary>
+    [ForeignKey(nameof(ItemSetGroupId))]
+    public ItemSetGroup RawItemSetGroup
+    {
+        get => base.ItemSetGroup as ItemSetGroup;
+        set => base.ItemSetGroup = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup ItemSetGroup
+    {
+        get => base.ItemSetGroup;set
+        {
+            base.ItemSetGroup = value;
+            this.ItemSetGroupId = this.RawItemSetGroup?.Id;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="ItemDefinition"/>.
     /// </summary>
     public Guid? ItemDefinitionId { get; set; }

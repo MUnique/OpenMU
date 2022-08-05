@@ -64,6 +64,7 @@ public class EntityDataContext : ExtendedTypeContext
         });
 
         modelBuilder.Entity<ItemStorage>().HasMany(storage => storage.RawItems).WithOne(item => item.RawItemStorage!);
+        modelBuilder.Entity<ItemSetGroup>().HasMany(isg => isg.RawItems).WithOne(item => item.RawItemSetGroup!);
         modelBuilder.Entity<GameServerDefinition>();
         modelBuilder.Entity<ItemBasePowerUpDefinition>().Ignore(d => d.BaseValueElement);
         modelBuilder.Entity<LevelBonus>().Ignore(l => l.AdditionalValueElement);
