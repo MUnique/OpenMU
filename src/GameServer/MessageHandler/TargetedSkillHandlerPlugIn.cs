@@ -20,6 +20,9 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
 {
+    private const ushort ForceSkillId = 60;
+    private const ushort ForceWaveSkillId = 66;
+
     private readonly TargetedSkillAction _attackAction = new ();
 
     /// <inheritdoc/>
@@ -46,6 +49,13 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
         if (player.SkillList is null || !player.SkillList.ContainsSkill(skillId))
         {
             return;
+        }
+
+        // Special handling of force wave skill. The client might send skill id 60,
+        // even though it's performing force wave.
+        if (skillId == ForceSkillId && player.SkillList.ContainsSkill(ForceWaveSkillId))
+        {
+            skillId = ForceWaveSkillId;
         }
 
         // The target can be the own player too, for example when using buff skills.

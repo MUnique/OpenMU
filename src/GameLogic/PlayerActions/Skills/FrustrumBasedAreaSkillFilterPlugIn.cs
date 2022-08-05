@@ -93,7 +93,7 @@ public abstract class FrustrumBasedAreaSkillFilterPlugIn : IAreaSkillTargetFilte
     private Vector2[][] CalculateRotationVectors()
     {
         const int degreeOffset = 180;
-        const float distanceOffset = 0; // we always start at the characters coordinates.
+        const float distanceOffset = 0.99f; // we always start in front of the characters coordinates.
 
         var result = new Vector2[byte.MaxValue + 1][];
 

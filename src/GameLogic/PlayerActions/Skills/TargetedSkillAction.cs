@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
@@ -193,7 +194,28 @@ public class TargetedSkillAction
 
         if (skill.Target == SkillTarget.ExplicitWithImplicitInRange)
         {
-            if (skill.ImplicitTargetRange > 0)
+            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillTargetFilter>(skill.Number) is { } filterPlugin)
+            {
+                var rotationToTarget = (byte)(player.Position.GetAngleDegreeTo(targetedTarget.Position) / 360.0 * 255.0);
+                var attackablesInRange =
+                    player.CurrentMap?
+                        .GetAttackablesInRange(player.Position, skill.Range)
+                        .Where(a => a != player)
+                        .Where(a => player.GameContext.Configuration.AreaSkillHitsPlayer || a is NonPlayerCharacter)
+                        .Where(a => !a.IsAtSafezone())
+                        .Where(a => filterPlugin.IsTargetWithinBounds(player, a, player.Position, rotationToTarget))
+                        .ToList();
+                if (attackablesInRange is not null)
+                {
+                    if (!attackablesInRange.Contains(targetedTarget))
+                    {
+                        attackablesInRange.Add(targetedTarget);
+                    }
+
+                    return attackablesInRange;
+                }
+            }
+            else if (skill.ImplicitTargetRange > 0)
             {
                 var targetsOfTarget = targetedTarget.CurrentMap?.GetAttackablesInRange(targetedTarget.Position, skill.ImplicitTargetRange) ?? Enumerable.Empty<IAttackable>();
                 if (!player.GameContext.Configuration.AreaSkillHitsPlayer && targetedTarget is Monster)
@@ -202,6 +224,10 @@ public class TargetedSkillAction
                 }
 
                 return targetsOfTarget;
+            }
+            else
+            {
+                // do nothing.
             }
 
             return targetedTarget.GetAsEnumerable();

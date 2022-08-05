@@ -21,6 +21,8 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 public class SkillListViewPlugIn : ISkillListViewPlugIn
 {
+    private const short ForceWaveSkillId = 66;
+
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -50,6 +52,11 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     /// <inheritdoc/>
     public virtual async ValueTask AddSkillAsync(Skill skill)
     {
+        if (skill.Number == ForceWaveSkillId)
+        {
+            return;
+        }
+
         var skillIndex = this.AddSkillToList(skill);
         await this._player.Connection.SendSkillAddedAsync(skillIndex, (ushort)skill.Number, 0).ConfigureAwait(false);
     }
@@ -57,6 +64,11 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     /// <inheritdoc/>
     public virtual async ValueTask RemoveSkillAsync(Skill skill)
     {
+        if (skill.Number == ForceWaveSkillId)
+        {
+            return;
+        }
+
         var skillIndex = this.SkillList.IndexOf(skill);
         await this._player.Connection.SendSkillRemovedAsync((byte)skillIndex, (ushort)skill.Number).ConfigureAwait(false);
         this.SkillList[skillIndex] = null;
@@ -127,6 +139,8 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
             var replacedSkills = skills.Select(entry => entry.Skill?.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
             skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
         }
+
+        skills.RemoveAll(s => s.Skill?.Number == ForceWaveSkillId);
 
         foreach (var skillEntry in skills.Distinct(default(SkillEqualityComparer)))
         {

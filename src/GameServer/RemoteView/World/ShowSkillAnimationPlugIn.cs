@@ -22,6 +22,9 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
 {
+    private const short ForceSkillId = 60;
+    private const short ForceWaveSkillId = 66;
+
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -39,6 +42,11 @@ public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowSkillAnimationAsync(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied)
     {
+        if (skillNumber == ForceWaveSkillId)
+        {
+            skillNumber = ForceSkillId;
+        }
+
         var playerId = attacker.GetId(this._player);
         var targetId = target.GetId(this._player);
         var skillId = NumberConversionExtensions.ToUnsigned(skillNumber);

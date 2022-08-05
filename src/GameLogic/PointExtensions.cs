@@ -25,4 +25,25 @@ public static class PointExtensions
                && point.Y >= rectangle.Y1
                && point.Y <= rectangle.Y2;
     }
+
+    /// <summary>
+    /// Gets the angle degree from start point to a target point.
+    /// </summary>
+    /// <param name="start">The start point.</param>
+    /// <param name="target">The target point.</param>
+    /// <returns>The angle between 0 and 360 degree.</returns>
+    /// <remarks>This matches with the angle which gets received by area skill packets.</remarks>
+    public static double GetAngleDegreeTo(this Point start, Point target)
+    {
+        var diffX = start.X - target.X;
+        var diffY = start.Y - target.Y;
+        var radian = Math.Atan2(diffY, diffX);
+        var result = (radian * 180 / Math.PI) - 90;
+        if (result < 0)
+        {
+            result += 360;
+        }
+
+        return result;
+    }
 }
