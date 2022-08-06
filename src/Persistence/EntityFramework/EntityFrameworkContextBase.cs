@@ -2,17 +2,15 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Logging;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Nito.AsyncEx;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Interfaces;
+using Nito.AsyncEx;
 
 /// <summary>
 /// Abstract base class for an <see cref="IContext"/> which uses an <see cref="DbContext"/>.
@@ -22,7 +20,7 @@ public class EntityFrameworkContextBase : IContext
 {
     private readonly bool _isOwner;
     private readonly IConfigurationChangePublisher? _changePublisher;
-    private readonly AsyncLock _lock = new AsyncLock();
+    private readonly AsyncLock _lock = new();
     private readonly ILogger _logger;
     private bool _isDisposed;
 
@@ -92,7 +90,6 @@ public class EntityFrameworkContextBase : IContext
     /// <inheritdoc />
     public bool Detach(object item)
     {
-        using var l = this._lock.Lock();
         var entry = this.Context.Entry(item);
         if (entry is null)
         {
@@ -109,7 +106,6 @@ public class EntityFrameworkContextBase : IContext
     /// <inheritdoc />
     public void Attach(object item)
     {
-        using var l = this._lock.Lock();
         this.Context.Attach(item);
     }
 
