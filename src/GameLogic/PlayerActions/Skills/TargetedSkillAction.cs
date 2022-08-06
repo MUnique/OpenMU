@@ -158,7 +158,7 @@ public class TargetedSkillAction
                 }
                 else if (skill.SkillType == SkillType.Regeneration)
                 {
-                    target.ApplyRegeneration(player, skillEntry);
+                    await target.ApplyRegenerationAsync(player, skillEntry).ConfigureAwait(false);
                     success = true;
                 }
                 else

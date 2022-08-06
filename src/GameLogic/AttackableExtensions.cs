@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -157,7 +158,7 @@ public static class AttackableExtensions
     /// <param name="target">The target.</param>
     /// <param name="player">The player.</param>
     /// <param name="skillEntry">The skill entry.</param>
-    public static void ApplyRegeneration(this IAttackable target, Player player, SkillEntry skillEntry)
+    public static async ValueTask ApplyRegenerationAsync(this IAttackable target, Player player, SkillEntry skillEntry)
     {
         if (player.Attributes is null)
         {
@@ -166,6 +167,8 @@ public static class AttackableExtensions
 
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
 
+        var isHealthUpdated = false;
+        var isManaUpdated = false;
         var skill = skillEntry.Skill;
         foreach (var powerUpDefinition in skill.MagicEffectDef?.PowerUpDefinitions ?? Enumerable.Empty<PowerUpDefinition>())
         {
@@ -177,11 +180,26 @@ public static class AttackableExtensions
                 target.Attributes[regeneration.CurrentAttribute] = Math.Min(
                     target.Attributes[regeneration.CurrentAttribute] + value,
                     target.Attributes[regeneration.MaximumAttribute]);
+                isHealthUpdated |= regeneration.CurrentAttribute == Stats.CurrentHealth || regeneration.CurrentAttribute == Stats.CurrentShield;
+                isManaUpdated |= regeneration.CurrentAttribute == Stats.CurrentMana || regeneration.CurrentAttribute == Stats.CurrentAbility;
             }
             else
             {
                 player.Logger.LogWarning(
                     $"Regeneration skill {skill.Name} is configured to regenerate a non-regeneration-able target attribute {powerUpDefinition.TargetAttribute}.");
+            }
+        }
+
+        if (target is IWorldObserver observer)
+        {
+            if (isHealthUpdated)
+            {
+                await observer.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
+            }
+
+            if (isManaUpdated)
+            {
+                await observer.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
             }
         }
     }
