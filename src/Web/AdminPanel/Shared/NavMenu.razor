@@ -45,15 +45,15 @@
                         <span class="oi oi-list" aria-hidden="true"></span> Accounts
                     </NavLink>
                 </li>
-                @if (this.GameConfiguration != null)
+                @if (this.GameConfigurationId is not null)
                 {
                     <li>
-                        <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this.GameConfiguration.GetId())">
+                        <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this.GameConfigurationId)">
                             <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink href="@("map-editor/" + this.GameConfiguration.Maps.OrderBy(c => c.Number).First().GetId())">
+                        <NavLink href="map-editor">
                             <span class="oi oi-globe" aria-hidden="true"></span> Map Editor
                         </NavLink>
                     </li>

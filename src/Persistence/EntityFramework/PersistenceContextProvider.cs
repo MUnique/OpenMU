@@ -170,9 +170,9 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     }
 
     /// <inheritdoc />
-    public IContext CreateNewConfigurationContext()
+    public IConfigurationContext CreateNewConfigurationContext()
     {
-        return new CachingEntityFrameworkContext(new ConfigurationContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        return new GameConfigurationContext(this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />

@@ -18,18 +18,12 @@ using MUnique.OpenMU.Web.AdminPanel.Components;
 /// <summary>
 /// A page, which shows an <see cref="MapEditor"/> for the given <see cref="Id"/> of a <see cref="GameMapDefinition"/>.
 /// </summary>
-[Route("/map-editor/{id:guid}")]
+[Route("/map-editor")]
 public sealed class EditMap : ComponentBase, IDisposable
 {
-    private GameMapDefinition? _model;
+    private List<GameMapDefinition>? _maps;
     private IContext? _persistenceContext;
     private CancellationTokenSource? _disposeCts;
-
-    /// <summary>
-    /// Gets or sets the identifier of the object which should be edited.
-    /// </summary>
-    [Parameter]
-    public Guid Id { get; set; }
 
     /// <summary>
     /// Gets or sets the persistence context provider which loads and saves the object.
@@ -52,17 +46,14 @@ public sealed class EditMap : ComponentBase, IDisposable
         this._disposeCts?.Cancel();
         this._disposeCts?.Dispose();
         this._disposeCts = null;
-        if (this._persistenceContext is IDisposable disposable)
-        {
-            disposable.Dispose();
-            this._persistenceContext = null;
-        }
+        this._persistenceContext?.Dispose();
+        this._persistenceContext = null;
     }
 
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        if (this._model is { })
+        if (this._maps is { })
         {
             builder.OpenComponent<CascadingValue<IContext>>(1);
             builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
@@ -70,7 +61,7 @@ public sealed class EditMap : ComponentBase, IDisposable
             builder.AddAttribute(4, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
             {
                 builder2.OpenComponent(5, typeof(MapEditor));
-                builder2.AddAttribute(6, nameof(MapEditor.Map), this._model);
+                builder2.AddAttribute(6, nameof(MapEditor.Maps), this._maps);
                 builder2.AddAttribute(7, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
                 builder2.CloseComponent();
             }));
@@ -86,8 +77,6 @@ public sealed class EditMap : ComponentBase, IDisposable
         this._disposeCts?.Dispose();
         this._disposeCts = null;
 
-        this._model = null;
-
         return base.OnParametersSetAsync();
     }
 
@@ -95,7 +84,7 @@ public sealed class EditMap : ComponentBase, IDisposable
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
-        if (this._model is null)
+        if (this._maps is null)
         {
             this._disposeCts = new CancellationTokenSource();
             var cts = this._disposeCts.Token;
@@ -115,11 +104,11 @@ public sealed class EditMap : ComponentBase, IDisposable
             {
                 try
                 {
-                    this._model = await this._persistenceContext.GetByIdAsync<GameMapDefinition>(this.Id).ConfigureAwait(false);
+                    this._maps = (await this._persistenceContext.GetAsync<GameMapDefinition>().ConfigureAwait(false)).OrderBy(c => c.Number).ToList();
                 }
                 catch (Exception ex)
                 {
-                    this.Logger.LogError(ex, $"Could not load game map with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    this.Logger.LogError(ex, $"Could not load game maps: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                     await this.ModalService.ShowMessageAsync("Error", "Could not load the map data. Check the logs for details.").ConfigureAwait(false);
                 }
 
@@ -149,7 +138,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, $"Error during saving {this.Id}");
+            this.Logger.LogError(ex, $"Error during saving");
             text = $"An unexpected error occured: {ex.Message}.";
         }
 

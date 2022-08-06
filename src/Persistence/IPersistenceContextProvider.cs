@@ -34,7 +34,7 @@ public interface IPersistenceContextProvider
     /// <returns>
     /// The newly created context.
     /// </returns>
-    IContext CreateNewConfigurationContext();
+    IConfigurationContext CreateNewConfigurationContext();
 
     /// <summary>
     /// Creates the new trade context which is used to exchange items in a trade.

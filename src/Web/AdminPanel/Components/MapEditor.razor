@@ -3,15 +3,19 @@
 @using SixLabors.ImageSharp
 @using SixLabors.ImageSharp.Formats.Png
 
+@if (this._selectedMap is null)
+{
+    return;
+}
 
-<h3>@this.Map.Name</h3>
+<h3>@this.SelectedMap.Name</h3>
 
 <div class="map-select">
     <label for="mapSelect">Selected Map:</label>
     <select title="Map" @onchange=this.OnMapSelected id="mapSelect" autocomplete="off">
         @foreach (var map in this.Maps ?? Enumerable.Empty<GameMapDefinition>())
         {
-            <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>Map: @map.ToString()</option>
+            <option value="@map.GetId()" selected=@(object.Equals(this.SelectedMap, map))>Map: @map.ToString()</option>
         }
     </select>
 </div>
@@ -47,7 +51,7 @@
         <img src="@(this._terrainImage.ToBase64String(PngFormat.Instance))"
              width="@(_scale * 255)"
              height="@(_scale * 255)"
-             alt="Terrain of @this.Map.Name"/>
+             alt="Terrain of @this.SelectedMap.Name"/>
         @foreach (var obj in this.GetMapObjects())
         {
             <div class="@this.GetCssClass(obj)"
@@ -77,15 +81,15 @@
         <label for="objectSelect">Selected Object:</label>
         <select title="Object" @onchange=this.OnObjectSelected id="objectSelect" autocomplete="off" disabled="@this._createMode">
             <option value="@Guid.Empty" selected=@(this._focusedObject is null)></option>
-            @foreach (var enterGate in this.Map.EnterGates)
+            @foreach (var enterGate in this.SelectedMap.EnterGates)
             {
                 <option value="@enterGate.GetId()" selected=@(object.Equals(this._focusedObject, enterGate))>EnterGate: @enterGate.ToString()</option>
             }
-            @foreach (var exitGate in this.Map.ExitGates)
+            @foreach (var exitGate in this.SelectedMap.ExitGates)
             {
                 <option value="@exitGate.GetId()" selected=@(object.Equals(this._focusedObject, exitGate))>ExitGate: @exitGate.ToString()</option>
             }
-            @foreach (var spawn in this.Map.MonsterSpawns)
+            @foreach (var spawn in this.SelectedMap.MonsterSpawns)
             {
                 <option value="@spawn.GetId()" selected=@(object.Equals(this._focusedObject, spawn))>Spawn: @spawn.ToString()</option>
             }

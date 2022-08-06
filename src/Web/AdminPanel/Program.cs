@@ -50,7 +50,7 @@ public class Program
             throw new NotImplementedException();
         }
 
-        public IContext CreateNewConfigurationContext()
+        public IConfigurationContext CreateNewConfigurationContext()
         {
             throw new NotImplementedException();
         }

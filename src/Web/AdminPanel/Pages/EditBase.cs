@@ -98,11 +98,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         this._disposeCts?.Dispose();
         this._disposeCts = null;
         await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(false);
-        if (this._persistenceContext is IDisposable disposable)
-        {
-            disposable.Dispose();
-            this._persistenceContext = null;
-        }
+        this._persistenceContext?.Dispose();
+        this._persistenceContext = null;
     }
 
     /// <inheritdoc />

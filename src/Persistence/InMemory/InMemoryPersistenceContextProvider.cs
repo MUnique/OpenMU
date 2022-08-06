@@ -39,9 +39,9 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc/>
-    public IContext CreateNewConfigurationContext()
+    public IConfigurationContext CreateNewConfigurationContext()
     {
-        return new InMemoryContext(this._repositoryManager);
+        return new ConfigurationInMemoryContext(this._repositoryManager);
     }
 
     /// <inheritdoc />

@@ -29,7 +29,7 @@ public partial class NavMenu
     [Inject]
     private IUserService UserService { get; set; } = null!;
 
-    private GameConfiguration? GameConfiguration { get; set; }
+    private Guid? GameConfigurationId { get; set; }
 
     /// <summary>
     /// Gets the class for the entries of the navigation menu.
@@ -49,13 +49,13 @@ public partial class NavMenu
     private async ValueTask OnDatabaseInitializedAsync()
     {
         // We have to reload, because the old links are not correct anymore.
-        this.GameConfiguration = null;
+        this.GameConfigurationId = null;
         await this.LoadGameConfigurationAsync().ConfigureAwait(false);
     }
 
     private async Task LoadGameConfigurationAsync()
     {
-        if (this.GameConfiguration is not null || this._isLoadingConfig)
+        if (this.GameConfigurationId is not null || this._isLoadingConfig)
         {
             return;
         }
@@ -66,14 +66,14 @@ public partial class NavMenu
         try
         {
             using var context = this.PersistenceContextProvider.CreateNewConfigurationContext();
-            this.GameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).FirstOrDefault();
+            this.GameConfigurationId = await context.GetDefaultGameConfigurationIdAsync();
         }
         catch
         {
-            this.GameConfiguration = null;
+            this.GameConfigurationId = null;
         }
 
-        this._onlyShowSetup = this.GameConfiguration is null;
+        this._onlyShowSetup = this.GameConfigurationId is null;
         this._isLoadingConfig = false;
         await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
     }
