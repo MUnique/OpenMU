@@ -87,6 +87,7 @@ public class TargetedSkillAction
         if (skill.SkillType == SkillType.SummonMonster && player.Summon is { } summon)
         {
             // remove summon, if exists
+            await summon.Item1.CurrentMap.RemoveAsync(summon.Item1).ConfigureAwait(false);
             summon.Item1.Dispose();
             player.SummonDied();
             return;
