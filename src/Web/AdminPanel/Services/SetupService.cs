@@ -57,19 +57,21 @@ public class SetupService
     /// <summary>
     /// Gets a value indicating whether the data is initialized.
     /// </summary>
-    public bool IsDataInitialized => this.CurrentGameClientVersion is not null;
+    public async ValueTask<bool> IsDataInitializedAsync()
+    {
+        using var context = this._contextProvider.CreateNewConfigurationContext();
+        var id = await context.GetDefaultGameConfigurationIdAsync().ConfigureAwait(false);
+        return id is not null;
+    }
 
     /// <summary>
     /// Gets the current game client definition.
     /// </summary>
-    public ClientVersion? CurrentGameClientVersion
+    public async ValueTask<ClientVersion?> GetCurrentGameClientVersionAsync()
     {
-        get
-        {
-            using var context = this._contextProvider.CreateNewTypedContext<GameClientDefinition>();
-            var definition = context.GetAsync<GameClientDefinition>().AsTask().WaitAndUnwrapException().FirstOrDefault();
-            return definition is { } ? new ClientVersion(definition.Season, definition.Episode, definition.Language) : null;
-        }
+        using var context = this._contextProvider.CreateNewTypedContext<GameClientDefinition>();
+        var definition = (await context.GetAsync<GameClientDefinition>().ConfigureAwait(false)).FirstOrDefault();
+        return definition is { } ? new ClientVersion(definition.Season, definition.Episode, definition.Language) : null;
     }
 
     /// <summary>

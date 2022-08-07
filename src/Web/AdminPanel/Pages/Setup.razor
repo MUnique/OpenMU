@@ -24,13 +24,13 @@ else if (this.SetupService.IsUpdateRequired)
 else
 {
     <p>Database status: <span class="badge bg-success">Up-to-date</span></p>
-    @if (!this.SetupService.IsDataInitialized)
+    @if (!this._isDataInitialized)
     {
         <p>Initialized game version: <span class="badge bg-warning text-dark">No initialized data found!</span></p>
     }
     else
     {
-        <p>Initialized game version: <span class="badge bg-success">@this.SetupService.CurrentGameClientVersion</span></p>
+        <p>Initialized game version: <span class="badge bg-success">@this._gameClientVersion</span></p>
     }
 
     <button class="btn bg-warning text-dark" @onclick="this.OnReInstallClickAsync">Re-install</button>
