@@ -163,8 +163,7 @@ public static class Extensions
             .WriteTo
             .GrafanaLoki(
                 uri: "http://loki:3100",
-                filtrationLabels: includeLabels,
-                filtrationMode: LokiLabelFiltrationMode.Include)
+                propertiesAsLabels: includeLabels)
             .WriteTo
             .Console(LogEventLevel.Information)
             .Filter.ByExcluding(Matching.FromSource("Microsoft")) // We don't want all of the ASP.NET logging, because that really keeps loki and the console pretty busy
