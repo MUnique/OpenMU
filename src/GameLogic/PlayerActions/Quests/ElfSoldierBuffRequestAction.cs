@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
@@ -19,7 +20,7 @@ public class ElfSoldierBuffRequestAction
 {
     private static readonly short ElfSoldierNumber = 257;
 
-    private static readonly MagicEffectDefinition BuffEffect = new ()
+    private static readonly MagicEffectDefinition BuffEffect = new SoldierBuffMagicEffectDefinition()
     {
         InformObservers = true,
         Name = "Elf Soldier Buff",
@@ -51,5 +52,13 @@ public class ElfSoldierBuffRequestAction
             BuffEffect,
             new MagicEffect.ElementWithTarget(new ConstantElement(50 + (player.Level / 5)), Stats.DefenseBase),
             new MagicEffect.ElementWithTarget(new ConstantElement(45 + (player.Level / 3)), Stats.BaseDamageBonus))).ConfigureAwait(false);
+    }
+
+    private sealed class SoldierBuffMagicEffectDefinition : MagicEffectDefinition
+    {
+        public SoldierBuffMagicEffectDefinition()
+        {
+            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
+        }
     }
 }
