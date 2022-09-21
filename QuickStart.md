@@ -11,7 +11,8 @@ General requirements:
 * A game client (check our Discord FAQs)
 * Knowledge or way to start the game client, so that it connects to the server. Our Launcher will do that.
 
-  * Launcher binaries: [MUnique.OpenMU.ClientLauncher.v0.4.0.zip](https://github.com/MUnique/OpenMU/releases/download/v0.4.0/MUnique.OpenMU.ClientLauncher.v0.4.0.zip)
+  * Launcher binaries: [MUnique.OpenMU.ClientLauncher v0.6.5.zip](https://github.com/MUnique/OpenMU/releases/download/v0.6.5/MUnique.OpenMU.ClientLauncher_0.6.5.zip)
+    * It requires the [.NET 6 runtime](https://dotnet.microsoft.com/download/dotnet/6.0)
   * If your server and client runs on your local host, use any IP of 127.x.x.x, except 127.0.0.1, because this one is blocked by the client. For example, you could use 127.127.127.127
 
 This guide describes two ways of starting the server. Use Docker, if you just
@@ -58,10 +59,10 @@ Requirements:
 
   * PostgreSQL installed
 
-  * Visual Studio 2022 (17.0) installed
+  * Visual Studio 2022 (17.0+) installed
 
-  * [.NET Core SDK SDK 6.0.100](https://dotnet.microsoft.com/download/dotnet/6.0)
-    (it should be included in Visual Studio 17.0)
+  * [.NET SDK 6](https://dotnet.microsoft.com/download/dotnet/6.0)
+    (it should be included in Visual Studio 17.0+)
 
   * [Saxon HE 9.9.1.6](https://sourceforge.net/projects/saxon/files/Saxon-HE/9.9/SaxonHE9-9-1-6N-setup.exe/download) installed
 
