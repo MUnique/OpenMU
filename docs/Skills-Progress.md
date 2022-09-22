@@ -115,12 +115,12 @@ Some general notes:
 | 237    | Gigantic Storm              | works                                                            |
 | 238    | Chaotic Diseier             | works                                                            |
 | 239    | Doppelganger Self Explosion | ?                                                                |
-| 260    | Killing Blow                | ?                                                                |
-| 261    | Beast Uppercut              | ?                                                                |
-| 262    | Chain Drive                 | ?                                                                |
+| 260    | Killing Blow                | works                                                            |
+| 261    | Beast Uppercut              | works                                                            |
+| 262    | Chain Drive                 | works                                                            |
 | 263    | Dark Side                   | ?                                                                |
-| 264    | Dragon Roar                 | ?                                                                |
-| 265    | Dragon Slasher              | ?                                                                |
+| 264    | Dragon Roar                 | works                                                            |
+| 265    | Dragon Slasher              | works                                                            |
 | 266    | Ignore Defense              | not implemented                                                  |
 | 267    | Increase Health             | not implemented                                                  |
 | 268    | Increase Block              | not implemented                                                  |

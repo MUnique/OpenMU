@@ -1636,6 +1636,48 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>4A</Code>
+      <Name>RageAttackRequest</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
+      <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>4B</Code>
+      <Name>RageAttackRangeRequest</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player (rage fighter) performs the dark side skill on a target.</SentWhen>
+      <CausedReaction>The targets (up to 5) are determined and sent back to the player with the RageAttackRangeResponse.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>3D</Code>
       <Name>TradeCancel</Name>

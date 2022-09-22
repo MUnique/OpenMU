@@ -186,13 +186,13 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.BeastUppercut, "Beast Uppercut", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Fire);
         this.CreateSkill(SkillNumber.ChainDrive, "Chain Drive", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 20, manaConsumption: 15, levelRequirement: 150, elementalModifier: ElementalType.Ice);
         this.CreateSkill(SkillNumber.DarkSide, "Dark Side", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 70, levelRequirement: 180, elementalModifier: ElementalType.Wind);
-        this.CreateSkill(SkillNumber.DragonRoar, "Dragon Roar", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 30, manaConsumption: 50, levelRequirement: 150, elementalModifier: ElementalType.Earth);
+        this.CreateSkill(SkillNumber.DragonRoar, "Dragon Roar", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 30, manaConsumption: 50, levelRequirement: 150, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.DragonSlasher, "Dragon Slasher", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 100, manaConsumption: 100, levelRequirement: 200, elementalModifier: ElementalType.Wind);
         this.CreateSkill(SkillNumber.IgnoreDefense, "Ignore Defense", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 120, energyRequirement: 404);
         this.CreateSkill(SkillNumber.IncreaseHealth, "Increase Health", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 80, energyRequirement: 132);
         this.CreateSkill(SkillNumber.IncreaseBlock, "Increase Block", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 50, energyRequirement: 80);
         this.CreateSkill(SkillNumber.Charge, "Charge", CharacterClasses.AllFighters, DamageType.Physical, 90, 4, 15, 20);
-        this.CreateSkill(SkillNumber.PhoenixShot, "Phoenix Shot", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 30, elementalModifier: ElementalType.Earth);
+        this.CreateSkill(SkillNumber.PhoenixShot, "Phoenix Shot", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 30, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillAutomaticHits, skillTarget: SkillTarget.Explicit); // todo: IAreaSkillTargetFilter to filter out all except the first target?
 
         // Generic monster skills:
         this.CreateSkill(SkillNumber.MonsterSkill, "Generic Monster Skill", distance: 5, elementalModifier: ElementalType.Ice, skillType: SkillType.Other);
