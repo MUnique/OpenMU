@@ -585,6 +585,7 @@ public class AncientSets : InitializerBase
             itemOfSet.AncientSetDiscriminator = itemTuple.Discriminator;
             itemOfSet.ItemDefinition = item;
             itemOfSet.BonusOption = this.CreateAncientBonusOption(itemTuple.BonusOption);
+            itemOfSet.ItemSetGroup = set;
             set.Items.Add(itemOfSet);
             item.PossibleItemSetGroups.Add(set);
         }

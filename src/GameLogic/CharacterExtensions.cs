@@ -52,7 +52,7 @@ public static class CharacterExtensions
                 && i.ItemSetGroups.Any(group => group.AncientSetDiscriminator > 0))
             .Select(i => new { Item = i.Definition, Set = i.ItemSetGroups.First(s => s.AncientSetDiscriminator > 0) });
         var ancientSets = equippedAncientSetItems.Select(i => i.Set).Distinct();
-        return ancientSets.Any(set => set.ItemSetGroup!.Items.All(setItem => equippedAncientSetItems.Any(i => i.Item == setItem.ItemDefinition && i.Set == set)));
+        return ancientSets.Any(set => set.ItemSetGroup?.Items.All(setItem => equippedAncientSetItems.Any(i => i.Item == setItem.ItemDefinition && i.Set == set)) ?? false);
     }
 
     /// <summary>
