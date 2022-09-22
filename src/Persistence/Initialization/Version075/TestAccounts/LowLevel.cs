@@ -38,7 +38,6 @@ internal class LowLevel : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateArmorItem(63, 5, 10)); // Leather Gloves
         character.Inventory.Items.Add(this.CreateArmorItem(65, 5, 11)); // Leather Boots
         this.AddTestJewelsAndPotions(character.Inventory);
-        this.AddPets(character.Inventory);
         return character;
     }
 
