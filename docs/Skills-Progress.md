@@ -125,7 +125,7 @@ Some general notes:
 | 267    | Increase Health             | not implemented                                                  |
 | 268    | Increase Block              | not implemented                                                  |
 | 269    | Charge                      | ?                                                                |
-| 270    | Phoenix Shot                | ?                                                                |
+| 270    | Phoenix Shot                | works                                                            |
 
 ## Master Skills
 
