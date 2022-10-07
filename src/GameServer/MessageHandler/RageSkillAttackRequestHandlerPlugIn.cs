@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(6, 0, ClientLanguage.Invariant)]
 internal class RageSkillAttackRequestHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private RageSkillAttackAction _attackAction = new();
+    private readonly RageSkillAttackAction _attackAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;
