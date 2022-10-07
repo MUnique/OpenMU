@@ -15,8 +15,8 @@ The targets are attacked with visual effects.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   16   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x4B  | Packet header - packet type identifier |
-| 3 | 2 | ShortBigEndian |  | SkillId |
-| 5 | RageTarget.Length *  | Array of RageTarget |  | Targets |
+| 4 | 2 | ShortLittleEndian |  | SkillId |
+| 6 | RageTarget.Length *  | Array of RageTarget |  | Targets |
 
 ### RageTarget Structure
 
@@ -26,4 +26,4 @@ Length: 2 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 2 | ShortBigEndian | 10000 | TargetId |
+| 0 | 2 | ShortLittleEndian | 10000 | TargetId |

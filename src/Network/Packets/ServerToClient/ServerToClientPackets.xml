@@ -1450,7 +1450,7 @@
       </Fields>
     </Packet>
     <Packet>
-      <HeaderType>C1Header</HeaderType>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>4B</Code>
       <Name>RageAttackRangeResponse</Name>
       <Length>16</Length>
@@ -1459,12 +1459,12 @@
       <CausedReaction>The targets are attacked with visual effects.</CausedReaction>
       <Fields>
         <Field>
-          <Index>3</Index>
-          <Type>ShortBigEndian</Type>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
           <Name>SkillId</Name>
         </Field>
         <Field>
-          <Index>5</Index>
+          <Index>6</Index>
           <Type>Structure[]</Type>
           <TypeName>RageTarget</TypeName>
           <Name>Targets</Name>
@@ -1478,7 +1478,7 @@
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>ShortBigEndian</Type>
+              <Type>ShortLittleEndian</Type>
               <Name>TargetId</Name>
               <DefaultValue>10000</DefaultValue>
             </Field>

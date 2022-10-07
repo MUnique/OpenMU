@@ -3809,21 +3809,21 @@ public readonly ref struct RageAttackRangeResponseRef
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
-    public C1HeaderRef Header => new (this._data);
+    public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
     /// Gets or sets the skill id.
     /// </summary>
     public ushort SkillId
     {
-        get => ReadUInt16BigEndian(this._data[3..]);
-        set => WriteUInt16BigEndian(this._data[3..], value);
+        get => ReadUInt16LittleEndian(this._data[4..]);
+        set => WriteUInt16LittleEndian(this._data[4..], value);
     }
 
     /// <summary>
     /// Gets the <see cref="RageTargetRef"/> of the specified index.
     /// </summary>
-        public RageTargetRef this[int index] => new (this._data[(5 + index * RageTargetRef.Length)..]);
+        public RageTargetRef this[int index] => new (this._data[(6 + index * RageTargetRef.Length)..]);
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="RageAttackRangeResponse"/>.
@@ -3844,7 +3844,7 @@ public readonly ref struct RageAttackRangeResponseRef
     /// </summary>
     /// <param name="targetsCount">The count of <see cref="RageTargetRef"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int targetsCount) => targetsCount * RageTargetRef.Length + 5;
+    public static int GetRequiredSize(int targetsCount) => targetsCount * RageTargetRef.Length + 6;
 
 
 /// <summary>
@@ -3873,8 +3873,8 @@ public readonly ref struct RageTargetRef
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16BigEndian(this._data);
-        set => WriteUInt16BigEndian(this._data, value);
+        get => ReadUInt16LittleEndian(this._data);
+        set => WriteUInt16LittleEndian(this._data, value);
     }
 }
 }

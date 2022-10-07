@@ -118,7 +118,7 @@ Some general notes:
 | 260    | Killing Blow                | works                                                            |
 | 261    | Beast Uppercut              | works                                                            |
 | 262    | Chain Drive                 | works                                                            |
-| 263    | Dark Side                   | ?                                                                |
+| 263    | Dark Side                   | works                                                            |
 | 264    | Dragon Roar                 | works                                                            |
 | 265    | Dragon Slasher              | works                                                            |
 | 266    | Ignore Defense              | not implemented                                                  |
