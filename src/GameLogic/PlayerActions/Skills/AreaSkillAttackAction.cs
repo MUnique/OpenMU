@@ -37,7 +37,7 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (skill.SkillType == SkillType.AreaSkillAutomaticHits)
+        if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget)
         {
             await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill, rotation).ConfigureAwait(false);
         }
@@ -68,10 +68,12 @@ public class AreaSkillAttackAction
         var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
 
         var attackablesInRange =
-            player.CurrentMap?
-            .GetAttackablesInRange(targetAreaCenter, skill.Range)
-            .Where(a => a != player)
-            .Where(a => !a.IsAtSafezone());
+            skill.SkillType == SkillType.AreaSkillExplicitTarget
+                ? null
+                : player.CurrentMap?
+                    .GetAttackablesInRange(targetAreaCenter, skill.Range)
+                    .Where(a => a != player)
+                    .Where(a => !a.IsAtSafezone());
 
         if (attackablesInRange is not null)
         {

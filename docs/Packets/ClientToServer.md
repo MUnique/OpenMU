@@ -44,6 +44,8 @@
   * [C1 41 - PartyInviteResponse (by client)](C1-41-PartyInviteResponse_by-client.md)
   * [C1 42 - PartyListRequest (by client)](C1-42-PartyListRequest_by-client.md)
   * [C1 43 - PartyPlayerKickRequest (by client)](C1-43-PartyPlayerKickRequest_by-client.md)
+  * [C3 4A - RageAttackRequest (by client)](C3-4A-RageAttackRequest_by-client.md)
+  * [C1 4B - RageAttackRangeRequest (by client)](C1-4B-RageAttackRangeRequest_by-client.md)
   * [C1 50 - GuildJoinRequest (by client)](C1-50-GuildJoinRequest_by-client.md)
   * [C1 51 - GuildJoinResponse (by client)](C1-51-GuildJoinResponse_by-client.md)
   * [C1 52 - GuildListRequest (by client)](C1-52-GuildListRequest_by-client.md)

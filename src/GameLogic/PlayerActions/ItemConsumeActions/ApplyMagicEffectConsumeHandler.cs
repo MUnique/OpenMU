@@ -41,7 +41,7 @@ public class ApplyMagicEffectConsumeHandler : BaseConsumeHandler
             return false;
         }
 
-        var effect = new MagicEffect(TimeSpan.FromSeconds(durationInSeconds), effectDefinition!, boosts!);
+        var effect = new MagicEffect(TimeSpan.FromSeconds(durationInSeconds), effectDefinition, boosts!);
         await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
         return true;
     }

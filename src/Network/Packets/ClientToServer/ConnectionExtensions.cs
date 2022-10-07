@@ -1743,6 +1743,66 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="RageAttackRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static async ValueTask SendRageAttackRequestAsync(this IConnection? connection, ushort @skillId, ushort @targetId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RageAttackRequestRef.Length;
+            var packet = new RageAttackRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillId = @skillId;
+            packet.TargetId = @targetId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RageAttackRangeRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player (rage fighter) performs the dark side skill on a target.
+    /// Causes reaction on server side: The targets (up to 5) are determined and sent back to the player with the RageAttackRangeResponse.
+    /// </remarks>
+    public static async ValueTask SendRageAttackRangeRequestAsync(this IConnection? connection, ushort @skillId, ushort @targetId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RageAttackRangeRequestRef.Length;
+            var packet = new RageAttackRangeRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillId = @skillId;
+            packet.TargetId = @targetId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="TradeCancel" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

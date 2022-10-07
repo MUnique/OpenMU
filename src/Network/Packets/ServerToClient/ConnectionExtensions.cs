@@ -459,6 +459,38 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="RageAttack" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <param name="sourceId">The source id.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the server when: A player (rage fighter) performs the dark side skill on a target and sent a RageAttackRangeRequest.
+    /// Causes reaction on client side: The targets are attacked with visual effects.
+    /// </remarks>
+    public static async ValueTask SendRageAttackAsync(this IConnection? connection, ushort @skillId, ushort @sourceId, ushort @targetId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RageAttackRef.Length;
+            var packet = new RageAttackRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillId = @skillId;
+            packet.SourceId = @sourceId;
+            packet.TargetId = @targetId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="AppearanceChanged" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

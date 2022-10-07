@@ -80,6 +80,8 @@
   * [C2 45 - AddTransformedCharactersToScope (by server)](C2-45-AddTransformedCharactersToScope_by-server.md)
   * [C1 46 - ChangeTerrainAttributes (by server)](C1-46-ChangeTerrainAttributes_by-server.md)
   * [C1 48 - ShowEffect (by server)](C1-48-ShowEffect_by-server.md)
+  * [C3 4A - RageAttack (by server)](C3-4A-RageAttack_by-server.md)
+  * [C1 4B - RageAttackRangeResponse (by server)](C1-4B-RageAttackRangeResponse_by-server.md)
   * [C1 50 - GuildJoinRequest (by server)](C1-50-GuildJoinRequest_by-server.md)
   * [C1 51 - GuildJoinResponse (by server)](C1-51-GuildJoinResponse_by-server.md)
   * [C2 52 - GuildList (by server)](C2-52-GuildList_by-server.md)

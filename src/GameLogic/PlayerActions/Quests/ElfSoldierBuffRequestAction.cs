@@ -58,7 +58,7 @@ public class ElfSoldierBuffRequestAction
     {
         public SoldierBuffMagicEffectDefinition()
         {
-            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
+            this.PowerUpDefinitions = new List<PowerUpDefinition>(2);
         }
     }
 }
