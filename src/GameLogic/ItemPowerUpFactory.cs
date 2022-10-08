@@ -55,6 +55,11 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         {
             yield return powerUp;
         }
+
+        if (this.GetPetLevel(item, attributeHolder) is { } petLevel)
+        {
+            yield return petLevel;
+        }
     }
 
     /// <inheritdoc/>
@@ -209,5 +214,20 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 yield return wrapper;
             }
         }
+    }
+
+    private PowerUpWrapper? GetPetLevel(Item item, AttributeSystem attributeHolder)
+    {
+        const byte darkHorseNumber = 4;
+
+        if (!item.IsTrainablePet())
+        {
+            return null;
+        }
+
+        return new PowerUpWrapper(
+            new SimpleElement(item.PetLevel, AggregateType.AddRaw),
+            item.Definition?.Number == darkHorseNumber ? Stats.HorseLevel : Stats.RavenLevel,
+            attributeHolder);
     }
 }

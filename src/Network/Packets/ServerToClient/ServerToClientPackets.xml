@@ -7189,7 +7189,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>A9</Code>
       <Name>PetInfoResponse</Name>
-      <Length>12</Length>
+      <Length>13</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the client sent a PetInfoRequest for a pet (dark raven, horse).</SentWhen>
       <CausedReaction>The client shows the information about the pet.</CausedReaction>
@@ -7217,12 +7217,12 @@
           <Name>Level</Name>
         </Field>
         <Field>
-          <Index>7</Index>
+          <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>Experience</Name>
         </Field>
         <Field>
-          <Index>11</Index>
+          <Index>12</Index>
           <Type>Byte</Type>
           <Name>Health</Name>
         </Field>

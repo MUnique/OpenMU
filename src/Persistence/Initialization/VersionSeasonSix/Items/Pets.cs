@@ -17,6 +17,8 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// </summary>
 public class Pets : InitializerBase
 {
+    private const string PetExperienceFormula = "level * level * level * 100 * (level + 10)";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Pets"/> class.
     /// </summary>
@@ -35,10 +37,16 @@ public class Pets : InitializerBase
         this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true);
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true, (Stats.DamageReceiveDecrement, 0.1f), (Stats.AttackDamageIncrease, 0.15f), (Stats.CanFly, 1.0f));
         this.AddDinorantOptions(dinorant);
+
         var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
+        darkHorse.PetExperienceFormula = PetExperienceFormula;
+        darkHorse.MaximumItemLevel = 50;
+
         var darkRaven = this.CreatePet(5, 0, 1, 1, "Dark Raven", 218, false, false);
         darkRaven.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(1));
+        darkRaven.PetExperienceFormula = PetExperienceFormula;
+        darkRaven.MaximumItemLevel = 50;
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkRaven.QualifiedCharacters.Add);
 
         var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true, (Stats.CanFly, 1.0f));

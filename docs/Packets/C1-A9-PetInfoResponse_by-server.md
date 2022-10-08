@@ -13,11 +13,11 @@ The client shows the information about the pet.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   12   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   13   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xA9  | Packet header - packet type identifier |
 | 3 | 1 | ClientToServer.PetType |  | Pet |
 | 4 | 1 | ClientToServer.StorageType |  | Storage |
 | 5 | 1 | Byte |  | ItemSlot |
 | 6 | 1 | Byte |  | Level |
-| 7 | 4 | IntegerLittleEndian |  | Experience |
-| 11 | 1 | Byte |  | Health |
+| 8 | 4 | IntegerLittleEndian |  | Experience |
+| 12 | 1 | Byte |  | Health |
