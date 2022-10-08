@@ -1125,9 +1125,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("PetExperience")
                         .HasColumnType("integer");
 
-                    b.Property<byte>("PetLevel")
-                        .HasColumnType("smallint");
-
                     b.Property<int>("SocketCount")
                         .HasColumnType("integer");
 
@@ -1409,9 +1406,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<string>("PetExperienceFormula")
                         .HasColumnType("text");
-
-                    b.Property<byte>("PetMaximumLevel")
-                        .HasColumnType("smallint");
 
                     b.Property<Guid?>("SkillId")
                         .HasColumnType("uuid");

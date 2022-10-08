@@ -96,7 +96,9 @@ public class ItemSerializer : IItemSerializer
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
         target[0] = (byte)item.Definition.Number;
-        target[1] = (byte)((item.Level << 3) & LevelMask);
+
+        var itemLevel = item.IsTrainablePet() ? 0 : item.Level;
+        target[1] = (byte)((itemLevel << 3) & LevelMask);
 
         var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
         if (itemOption != null)

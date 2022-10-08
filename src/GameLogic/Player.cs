@@ -1643,13 +1643,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask DecreaseDefenseItemDurabilityAsync(Item targetItem, HitInfo hitInfo)
     {
-        var itemDurationIncrease = targetItem.IsPet() ? this.Attributes?[Stats.PetDurationIncrease] : this.Attributes?[Stats.ItemDurationIncrease];
+        var itemDurationIncrease = targetItem.IsTrainablePet() ? this.Attributes?[Stats.PetDurationIncrease] : this.Attributes?[Stats.ItemDurationIncrease];
         if (itemDurationIncrease == 0)
         {
             itemDurationIncrease = 1;
         }
 
-        var damageDivisor = targetItem.IsPet() ? this.GameContext.Configuration.DamagePerOnePetDurability : this.GameContext.Configuration.DamagePerOneItemDurability;
+        var damageDivisor = targetItem.IsTrainablePet() ? this.GameContext.Configuration.DamagePerOnePetDurability : this.GameContext.Configuration.DamagePerOneItemDurability;
         if (itemDurationIncrease.HasValue)
         {
             damageDivisor /= (double)itemDurationIncrease;
@@ -1683,9 +1683,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             pet.PetExperience += (int)experience;
 
-            while (pet.PetExperience >= pet.Definition!.GetExperienceOfPetLevel((byte)(pet.PetLevel + 1), pet.Definition!.PetMaximumLevel))
+            while (pet.PetExperience >= pet.Definition!.GetExperienceOfPetLevel((byte)(pet.PetLevel + 1), pet.Definition!.MaximumItemLevel))
             {
-                pet.PetLevel++;
+                pet.Level++;
 
                 await this.InvokeViewPlugInAsync<IPetInfoViewPlugIn>(p => p.ShowPetInfoAsync(pet, pet.ItemSlot, PetStorageLocation.InventoryPetSlot)).ConfigureAwait(false);
             }
@@ -1695,11 +1695,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             if (this.Inventory?.GetItem(inventorySlot) is
                 {
-                    Definition.PetMaximumLevel: > 0,
                     Definition.PetExperienceFormula: not null,
+                    Definition.MaximumItemLevel: > 0,
                     Durability: > 0
                 } pet
-                && pet.PetLevel < pet.Definition.PetMaximumLevel)
+                && pet.PetLevel < pet.Definition.MaximumItemLevel)
             {
                 return pet;
             }

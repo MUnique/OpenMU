@@ -171,9 +171,9 @@ public static class ItemExtensions
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns><see langword="true"/>, if the item is a pet.</returns>
-    public static bool IsPet(this Item item)
+    public static bool IsTrainablePet(this Item item)
     {
-        return item.Definition?.PetMaximumLevel > 0;
+        return item.Definition?.PetExperienceFormula is not null;
     }
 
     /// <summary>

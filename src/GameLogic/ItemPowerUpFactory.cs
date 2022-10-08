@@ -220,7 +220,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     {
         const byte darkHorseNumber = 4;
 
-        if (!item.IsPet())
+        if (!item.IsTrainablePet())
         {
             return null;
         }

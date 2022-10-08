@@ -41,12 +41,12 @@ public class Pets : InitializerBase
         var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;
-        darkHorse.PetMaximumLevel = 50;
+        darkHorse.MaximumItemLevel = 50;
 
         var darkRaven = this.CreatePet(5, 0, 1, 1, "Dark Raven", 218, false, false);
         darkRaven.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(1));
         darkRaven.PetExperienceFormula = PetExperienceFormula;
-        darkRaven.PetMaximumLevel = 50;
+        darkRaven.MaximumItemLevel = 50;
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkRaven.QualifiedCharacters.Add);
 
         var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true, (Stats.CanFly, 1.0f));

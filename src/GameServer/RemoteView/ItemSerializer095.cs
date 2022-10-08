@@ -60,7 +60,8 @@ public class ItemSerializer095 : IItemSerializer
             target[3] = 0x80;
         }
 
-        target[1] = (byte)((item.Level << 3) & LevelMask);
+        var itemLevel = item.IsTrainablePet() ? 0 : item.Level;
+        target[1] = (byte)((itemLevel << 3) & LevelMask);
 
         var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
         if (itemOption != null)

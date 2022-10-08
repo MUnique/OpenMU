@@ -32,7 +32,7 @@ public class PetInfoRequestAction
             return;
         }
 
-        if (!pet.IsPet())
+        if (!pet.IsTrainablePet())
         {
             player.Logger.LogDebug($"Requested pet info for item at slot {slot}, storage type {petStorageLocation}, but item is not a pet. Item: {pet}");
             return;
