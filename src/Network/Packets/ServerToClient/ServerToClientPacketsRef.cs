@@ -18876,7 +18876,7 @@ public readonly ref struct PetInfoResponseRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 12;
+    public static int Length => 13;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -18924,8 +18924,8 @@ public readonly ref struct PetInfoResponseRef
     /// </summary>
     public uint Experience
     {
-        get => ReadUInt32LittleEndian(this._data[7..]);
-        set => WriteUInt32LittleEndian(this._data[7..], value);
+        get => ReadUInt32LittleEndian(this._data[8..]);
+        set => WriteUInt32LittleEndian(this._data[8..], value);
     }
 
     /// <summary>
@@ -18933,8 +18933,8 @@ public readonly ref struct PetInfoResponseRef
     /// </summary>
     public byte Health
     {
-        get => this._data[11];
-        set => this._data[11] = value;
+        get => this._data[12];
+        set => this._data[12] = value;
     }
 
     /// <summary>

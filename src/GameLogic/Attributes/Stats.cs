@@ -569,6 +569,16 @@ public class Stats
     public static AttributeDefinition PetDurationIncrease { get; } = new (new Guid("B4455150-D3A9-4A5F-914B-F41F9387FE9A"), "Pet Duraction Increase", string.Empty);
 
     /// <summary>
+    /// Gets the horse level attribute definition.
+    /// </summary>
+    public static AttributeDefinition HorseLevel { get; } = new(new Guid("9AF1F91F-6093-4CDE-BEDA-A118F10F2E29"), "Dark Horse Level", string.Empty);
+
+    /// <summary>
+    /// Gets the raven level attribute definition.
+    /// </summary>
+    public static AttributeDefinition RavenLevel { get; } = new(new Guid("2C9AA85C-AB8B-4E0F-8F0B-BC6E49EE134E"), "Dark Raven Level", string.Empty);
+
+    /// <summary>
     /// Gets the maximum guild size attribute definition.
     /// </summary>
     public static AttributeDefinition MaximumGuildSize { get; } = new (new Guid("898EF69B-3965-4DBF-9783-E9709698236B"), "Maximum Guild Size", string.Empty);

@@ -173,11 +173,7 @@ public static class ItemExtensions
     /// <returns><see langword="true"/>, if the item is a pet.</returns>
     public static bool IsPet(this Item item)
     {
-        // TODO: Change this as soon as the pet system is implemented. The code shouldn't be aware of item numbers.
-        const byte darkHorseNumber = 4;
-        const byte darkRavenNumber = 5;
-        return (item.Definition?.Number == darkHorseNumber || item.Definition?.Number == darkRavenNumber)
-               && item.Definition.Number == 13;
+        return item.Definition?.PetMaximumLevel > 0;
     }
 
     /// <summary>
@@ -214,7 +210,7 @@ public static class ItemExtensions
         }
 
         var random = Rand.NextInt(3, 6);
-        Item? result = left ?? right ?? pendant;
+        var result = left ?? right ?? pendant;
         if (result is null)
         {
             return null;

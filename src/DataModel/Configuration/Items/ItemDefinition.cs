@@ -78,6 +78,19 @@ public class ItemDefinition
     public int Value { get; set; }
 
     /// <summary>
+    /// Gets or sets the maximum level.
+    /// Only applies, if this item is actually a trainable pet.
+    /// </summary>
+    public byte PetMaximumLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the formula to calculate the required experience for a specific pet level.
+    /// Only applies, if this item is actually a trainable pet.
+    /// The variable for the pet level is "level".
+    /// </summary>
+    public string? PetExperienceFormula { get; set; }
+
+    /// <summary>
     /// Gets or sets the class name of the consumer handler.
     /// </summary>
     public string? ConsumeHandlerClass { get; set; }

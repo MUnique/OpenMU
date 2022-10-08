@@ -5,13 +5,13 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Threading;
-using Nito.AsyncEx;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
@@ -22,6 +22,7 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The base implementation of a player.
@@ -373,6 +374,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets the mini game, which the player has currently entered.
     /// </summary>
     public MiniGameContext? CurrentMiniGame { get; set; }
+
+    /// <summary>
+    /// Gets or sets the last requested player store.
+    /// </summary>
+    public WeakReference<Player>? LastRequestedPlayerStore { get; set; }
 
     /// <summary>
     /// Sets the selected character.
@@ -803,6 +809,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await this.AddExperienceAsync((int)experience, killedObject).ConfigureAwait(false);
         }
+
+        await this.AddPetExperienceAsync(experience).ConfigureAwait(false);
 
         return (int)experience;
     }
@@ -1666,6 +1674,69 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (targetItem.DecreaseDurability(decrement))
         {
             await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask AddPetExperienceAsync(double gainedExperience)
+    {
+        async ValueTask AddExpToPetAsync(Item pet, double experience)
+        {
+            pet.PetExperience += (int)experience;
+
+            while (pet.PetExperience >= pet.Definition!.GetExperienceOfPetLevel((byte)(pet.PetLevel + 1), pet.Definition!.PetMaximumLevel))
+            {
+                pet.PetLevel++;
+
+                await this.InvokeViewPlugInAsync<IPetInfoViewPlugIn>(p => p.ShowPetInfoAsync(pet, pet.ItemSlot, PetStorageLocation.InventoryPetSlot)).ConfigureAwait(false);
+            }
+        }
+
+        Item? GetTrainablePet(byte inventorySlot)
+        {
+            if (this.Inventory?.GetItem(inventorySlot) is
+                {
+                    Definition.PetMaximumLevel: > 0,
+                    Definition.PetExperienceFormula: not null,
+                    Durability: > 0
+                } pet
+                && pet.PetLevel < pet.Definition.PetMaximumLevel)
+            {
+                return pet;
+            }
+
+            return null;
+        }
+
+        const double petShare = 0.2;
+        Item? movePet = GetTrainablePet(InventoryConstants.PetSlot);
+        Item? attackPet = GetTrainablePet(InventoryConstants.RightHandSlot);
+
+        if (movePet is null && attackPet is null)
+        {
+            return;
+        }
+
+        var petExperience = (int)(gainedExperience * petShare);
+
+        if (movePet is not null && attackPet is not null)
+        {
+            // Both are there, so each gains just the half.
+            petExperience /= 2;
+        }
+
+        if (petExperience < 1)
+        {
+            return;
+        }
+
+        if (movePet is { })
+        {
+            await AddExpToPetAsync(movePet, petExperience).ConfigureAwait(false);
+        }
+
+        if (attackPet is { })
+        {
+            await AddExpToPetAsync(attackPet, petExperience).ConfigureAwait(false);
         }
     }
 
