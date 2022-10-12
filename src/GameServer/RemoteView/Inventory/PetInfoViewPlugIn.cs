@@ -38,7 +38,7 @@ public class PetInfoViewPlugIn : IPetInfoViewPlugIn
                 DeterminePetType(petItem),
                 ConvertStorageLocation(petStorageLocation),
                 slot,
-                petItem.PetLevel,
+                petItem.Level,
                 (uint)petItem.PetExperience,
                 petItem.Durability())
             .ConfigureAwait(false);
