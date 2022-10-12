@@ -59,12 +59,6 @@ public class Item
     public int? StorePrice { get; set; }
 
     /// <summary>
-    /// Gets or sets the pet level.
-    /// Only applies, if this item is actually a trainable pet.
-    /// </summary>
-    public byte PetLevel { get; set; }
-
-    /// <summary>
     /// Gets or sets the pet experience.
     /// Only applies, if this item is actually a trainable pet.
     /// </summary>
@@ -81,7 +75,6 @@ public class Item
         this.Level = otherItem.Level;
         this.HasSkill = otherItem.HasSkill;
         this.SocketCount = otherItem.SocketCount;
-        this.PetLevel = otherItem.PetLevel;
         this.PetExperience = otherItem.PetExperience;
         if (otherItem.ItemOptions != null && otherItem.ItemOptions.Any())
         {
@@ -143,11 +136,6 @@ public class Item
         if (this.SocketCount > 0)
         {
             stringBuilder.Append("+").Append(this.SocketCount).Append("S");
-        }
-
-        if (this.PetLevel > 0)
-        {
-            stringBuilder.Append(" (Level").Append(this.PetLevel).Append(")");
         }
 
         return stringBuilder.ToString();

@@ -226,7 +226,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         }
 
         return new PowerUpWrapper(
-            new SimpleElement(item.PetLevel, AggregateType.AddRaw),
+            new SimpleElement(item.Level, AggregateType.AddRaw),
             item.Definition?.Number == darkHorseNumber ? Stats.HorseLevel : Stats.RavenLevel,
             attributeHolder);
     }

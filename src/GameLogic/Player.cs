@@ -1683,7 +1683,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             pet.PetExperience += (int)experience;
 
-            while (pet.PetExperience >= pet.Definition!.GetExperienceOfPetLevel((byte)(pet.PetLevel + 1), pet.Definition!.MaximumItemLevel))
+            while (pet.PetExperience >= pet.Definition!.GetExperienceOfPetLevel((byte)(pet.Level + 1), pet.Definition!.MaximumItemLevel))
             {
                 pet.Level++;
 
@@ -1699,7 +1699,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     Definition.MaximumItemLevel: > 0,
                     Durability: > 0
                 } pet
-                && pet.PetLevel < pet.Definition.MaximumItemLevel)
+                && pet.Level < pet.Definition.MaximumItemLevel)
             {
                 return pet;
             }
