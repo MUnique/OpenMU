@@ -1575,9 +1575,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Vault = null; // vault storage is getting set when vault npc is opened.
         this.SkillList = new SkillList(this);
         this.SetReclaimableAttributesBeforeEnterGame();
-        await this.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.UpdateSkillListAsync()).ConfigureAwait(false);
+
         await this.InvokeViewPlugInAsync<IUpdateCharacterStatsPlugIn>(p => p.UpdateCharacterStatsAsync()).ConfigureAwait(false);
         await this.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
+        await this.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.UpdateSkillListAsync()).ConfigureAwait(false);
         await this.InvokeViewPlugInAsync<IQuestStateResponsePlugIn>(p => p.ShowQuestStateAsync(null)).ConfigureAwait(false); // Legacy quest system
         await this.InvokeViewPlugInAsync<ICurrentlyActiveQuestsPlugIn>(p => p.ShowActiveQuestsAsync()).ConfigureAwait(false); // New quest system
 
