@@ -7108,7 +7108,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>A7</Code>
       <Name>PetMode</Name>
-      <Length>6</Length>
+      <Length>7</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the client sent a PetAttackCommand (as confirmation), or when the previous command finished and the pet is reset to Normal-mode.</SentWhen>
       <CausedReaction>The client updates the pet mode in its user interface.</CausedReaction>
@@ -7128,7 +7128,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetId</Name>
         </Field>
       </Fields>
@@ -7137,7 +7137,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>A8</Code>
       <Name>PetAttack</Name>
-      <Length>8</Length>
+      <Length>9</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the client sent a PetAttackCommand, the pet attacks automatically. For each attack, the player and all observing players get this message.</SentWhen>
       <CausedReaction>The client shows the pet attacking the target.</CausedReaction>
@@ -7157,12 +7157,12 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>OwnerId</Name>
         </Field>
         <Field>
           <Index>7</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetId</Name>
         </Field>
       </Fields>

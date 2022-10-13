@@ -2636,7 +2636,7 @@ public static class ConnectionExtensions
     /// Is sent by the client when: The player wants to command its equipped pet (raven).
     /// Causes reaction on server side: 
     /// </remarks>
-    public static async ValueTask SendPetCommandRequestAsync(this IConnection? connection, byte @petType, PetCommandMode @commandMode, ushort @targetId)
+    public static async ValueTask SendPetCommandRequestAsync(this IConnection? connection, PetType @petType, PetCommandMode @commandMode, ushort @targetId)
     {
         if (connection is null)
         {

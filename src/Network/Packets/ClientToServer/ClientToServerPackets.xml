@@ -2272,7 +2272,8 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>PetType</TypeName>
           <Name>PetType</Name>
         </Field>
         <Field>
