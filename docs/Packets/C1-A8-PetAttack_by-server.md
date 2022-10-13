@@ -13,12 +13,12 @@ The client shows the pet attacking the target.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   8   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   9   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xA8  | Packet header - packet type identifier |
 | 3 | 1 | ClientToServer.PetType | ClientToServer.PetType.DarkRaven | Pet |
 | 4 | 1 | PetSkillType |  | SkillType |
-| 5 | 2 | ShortLittleEndian |  | OwnerId |
-| 7 | 2 | ShortLittleEndian |  | TargetId |
+| 5 | 2 | ShortBigEndian |  | OwnerId |
+| 7 | 2 | ShortBigEndian |  | TargetId |
 
 ### PetSkillType Enum
 

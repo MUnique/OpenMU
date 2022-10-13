@@ -60,19 +60,14 @@ public class ItemConsumeAction
 
         if (item.Durability == 0)
         {
-            await player.Inventory.RemoveItemAsync(item).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<Views.Inventory.IItemRemovedPlugIn>(p => p.RemoveItemAsync(inventorySlot)).ConfigureAwait(false);
+            await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
         }
         else
         {
             await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, true)).ConfigureAwait(false);
         }
 
-        player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemConsumedPlugIn>()?.ItemConsumed(player, item, targetItem);
-        if (item.Durability == 0)
-        {
-            player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(item);
-        }
+        player.GameContext.PlugInManager.GetPlugInPoint<IItemConsumedPlugIn>()?.ItemConsumed(player, item, targetItem);
     }
 
     private void InitializeConsumeHandlersIfRequired(IGameContext gameContext)

@@ -19720,7 +19720,7 @@ public readonly struct PetMode
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 6;
+    public static int Length => 7;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -19750,8 +19750,8 @@ public readonly struct PetMode
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[5..]);
-        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
@@ -19834,7 +19834,7 @@ public readonly struct PetAttack
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 8;
+    public static int Length => 9;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -19864,8 +19864,8 @@ public readonly struct PetAttack
     /// </summary>
     public ushort OwnerId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[5..]);
-        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
@@ -19873,8 +19873,8 @@ public readonly struct PetAttack
     /// </summary>
     public ushort TargetId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[7..]);
-        set => WriteUInt16LittleEndian(this._data.Span[7..], value);
+        get => ReadUInt16BigEndian(this._data.Span[7..]);
+        set => WriteUInt16BigEndian(this._data.Span[7..], value);
     }
 
     /// <summary>

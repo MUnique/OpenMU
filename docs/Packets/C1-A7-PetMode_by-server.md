@@ -13,8 +13,8 @@ The client updates the pet mode in its user interface.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   6   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   7   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xA7  | Packet header - packet type identifier |
 | 3 | 1 | ClientToServer.PetType | ClientToServer.PetType.DarkRaven | Pet |
 | 4 | 1 | ClientToServer.PetCommandMode |  | PetCommandMode |
-| 5 | 2 | ShortLittleEndian |  | TargetId |
+| 5 | 2 | ShortBigEndian |  | TargetId |

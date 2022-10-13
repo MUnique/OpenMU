@@ -139,6 +139,7 @@ public class TargetedSkillAction
                 if (!target.IsAtSafezone() && !player.IsAtSafezone())
                 {
                     await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
+                    player.LastAttackedTarget.SetTarget(target);
                     success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
                 }
             }

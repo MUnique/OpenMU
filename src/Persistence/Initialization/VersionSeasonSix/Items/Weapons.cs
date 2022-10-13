@@ -32,9 +32,13 @@ internal class Weapons : InitializerBase
 
     private static readonly float[] StaffRiseIncreaseByLevel = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 };
 
+    private static readonly float[] ScepterRiseIncreaseByLevel = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 };
+
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
     private ItemLevelBonusTable? _staffRiseTable;
+
+    private ItemLevelBonusTable? _scepterRiseTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Weapons" /> class.
@@ -101,6 +105,7 @@ internal class Weapons : InitializerBase
     {
         this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
         this._staffRiseTable = this.CreateItemBonusTable(StaffRiseIncreaseByLevel, "Staff Rise", "The staff rise bonus per item level.");
+        this._scepterRiseTable = this.CreateItemBonusTable(ScepterRiseIncreaseByLevel, "Scepter Rise", "The scepter rise bonus per item level.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -345,9 +350,18 @@ internal class Weapons : InitializerBase
                 item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
                 item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
 
-                var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise);
-                staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
-                item.BasePowerUpAttributes.Add(staffRisePowerUp);
+                if (darkLordClass > 0)
+                {
+                    var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, staffRise);
+                    scepterRisePowerUp.BonusPerLevelTable = this._scepterRiseTable;
+                    item.BasePowerUpAttributes.Add(scepterRisePowerUp);
+                }
+                else
+                {
+                    var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise);
+                    staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
+                    item.BasePowerUpAttributes.Add(staffRisePowerUp);
+                }
             }
         }
 

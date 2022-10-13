@@ -15,9 +15,18 @@ The player wants to command its equipped pet (raven).
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   7   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xA7  | Packet header - packet type identifier |
-| 3 | 1 | Byte |  | PetType |
+| 3 | 1 | PetType |  | PetType |
 | 4 | 1 | PetCommandMode |  | CommandMode |
 | 5 | 2 | ShortBigEndian |  | TargetId |
+
+### PetType Enum
+
+Describes the type of pet.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | DarkRaven | The dark raven pet. |
+| 1 | DarkHorse | The dark horse pet. |
 
 ### PetCommandMode Enum
 

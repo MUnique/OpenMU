@@ -8293,10 +8293,10 @@ public readonly ref struct PetCommandRequestRef
     /// <summary>
     /// Gets or sets the pet type.
     /// </summary>
-    public byte PetType
+    public PetType PetType
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => (PetType)this._data[3];
+        set => this._data[3] = (byte)value;
     }
 
     /// <summary>

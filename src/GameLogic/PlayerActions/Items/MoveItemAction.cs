@@ -79,9 +79,10 @@ public class MoveItemAction
                 break;
         }
 
-        if (movement != Movement.None)
+        if (movement != Movement.None
+            && player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemMovedPlugIn>() is { } itemMovedPlugIn)
         {
-            player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemMovedPlugIn>()?.ItemMoved(player, item);
+            await itemMovedPlugIn.ItemMovedAsync(player, item).ConfigureAwait(false);
         }
     }
 
