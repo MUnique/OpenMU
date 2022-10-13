@@ -10,12 +10,14 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.Views.Pet;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
@@ -52,6 +54,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private Account? _account;
 
     private SkillHitValidator? _skillHitValidator;
+    private IPetCommandManager? _petCommandManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
@@ -376,6 +379,31 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public MiniGameContext? CurrentMiniGame { get; set; }
 
     /// <summary>
+    /// Gets the pet command manager.
+    /// </summary>
+    public IPetCommandManager? PetCommandManager
+    {
+        get
+        {
+            if (this._petCommandManager is null
+                && this.Inventory?.GetItem(InventoryConstants.RightHandSlot) is { } pet && pet.IsTrainablePet())
+            {
+                // Since the Raven is currently the only pet which can attack, we directly use it.
+                // However, in the future we might use a factory as strategy plugin here which creates the command manager
+                // depending on the actual pet.
+                this._petCommandManager = new RavenCommandManager(this, pet);
+            }
+
+            return this._petCommandManager;
+        }
+    }
+
+    /// <summary>
+    /// Gets the last attacked target.
+    /// </summary>
+    public WeakReference<IAttackable?> LastAttackedTarget { get; } = new(null);
+
+    /// <summary>
     /// Gets or sets the last requested player store.
     /// </summary>
     public WeakReference<Player>? LastRequestedPlayerStore { get; set; }
@@ -393,6 +421,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (character is null)
         {
+            this.RemovePetCommandManager();
+            this.LastAttackedTarget.SetTarget(null);
+
             this._appearanceData.RaiseAppearanceChanged();
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
             this._selectedCharacter = null;
@@ -456,7 +487,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
         await this.DecreaseItemDurabilityAfterHitAsync(hitInfo).ConfigureAwait(false);
 
-        (attacker as Player)?.AfterHitTargetAsync();
+        if (attacker as IPlayerSurrogate is { } playerSurrogate)
+        {
+            await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
+        }
+
+        if (attacker is Player attackerPlayer)
+        {
+            await attackerPlayer.AfterHitTargetAsync().ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -1195,6 +1234,27 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Summon = null;
     }
 
+    /// <summary>
+    /// Removes the pet command manager.
+    /// </summary>
+    public void RemovePetCommandManager()
+    {
+        this._petCommandManager?.Dispose();
+        this._petCommandManager = null;
+    }
+
+    /// <summary>
+    /// Destroys an item of the <see cref="Inventory"/>.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    public async ValueTask DestroyInventoryItemAsync(Item item)
+    {
+        await this.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
+        await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+        await this.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
+        this.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(item);
+    }
+
     /// <inheritdoc/>
     public override string ToString()
     {
@@ -1215,6 +1275,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
+        this._petCommandManager?.Dispose();
+        this._petCommandManager = null;
+        this.LastAttackedTarget.SetTarget(null);
+
         this.PersistenceContext.Dispose();
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         if (this.Party is { } party)
@@ -1530,6 +1594,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
 
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
+        if (this.PetCommandManager is { } petCommandManager)
+        {
+            await petCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
+        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -1595,9 +1663,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 ammoItem.Durability = value;
                 if (ammoItem.Durability == 0)
                 {
-                    await this.Inventory!.RemoveItemAsync(ammoItem).ConfigureAwait(false);
-                    await this.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(ammoItem.ItemSlot)).ConfigureAwait(false);
-                    this.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(ammoItem);
+                    await this.DestroyInventoryItemAsync(ammoItem).ConfigureAwait(false);
                 }
                 else
                 {
@@ -1635,9 +1701,21 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.DecreaseDefenseItemDurabilityAsync(randomArmorItem, hitInfo).ConfigureAwait(false);
         }
 
-        if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is { } pet)
+        if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is { Durability: > 0.0 } pet)
         {
             await this.DecreaseDefenseItemDurabilityAsync(pet, hitInfo).ConfigureAwait(false);
+            if (pet.Durability == 0.0)
+            {
+                if (pet.IsTrainablePet())
+                {
+                    var minimumExp = pet.Definition!.GetExperienceOfPetLevel(pet.Level, pet.Definition!.MaximumItemLevel);
+                    pet.PetExperience = (int)Math.Max((int)(pet.PetExperience * 0.9), minimumExp);
+                }
+                else
+                {
+                    await this.DestroyInventoryItemAsync(pet).ConfigureAwait(false);
+                }
+            }
         }
     }
 
@@ -1665,7 +1743,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private async ValueTask DecreaseWeaponDurabilityAfterHitAsync()
     {
         var targetItem = this.Inventory?.GetRandomOffensiveItem();
-        if (targetItem is null)
+        if (targetItem is null || targetItem.Durability == 0)
         {
             return;
         }
@@ -1674,6 +1752,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (targetItem.DecreaseDurability(decrement))
         {
             await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
+
+            if (targetItem is { Durability: 0.0 } pet && pet.IsTrainablePet())
+            {
+                var minimumExp = pet.Definition!.GetExperienceOfPetLevel(pet.Level, pet.Definition!.MaximumItemLevel);
+                pet.PetExperience = (int)Math.Max((int)(pet.PetExperience * 0.9), minimumExp);
+                if (this.PetCommandManager is { } petCommandManager)
+                {
+                    await petCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
+                }
+            }
         }
     }
 

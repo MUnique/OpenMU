@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
@@ -109,6 +110,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             {
                 await player.AfterHitTargetAsync().ConfigureAwait(false);
             }
+
+            if (attacker as IPlayerSurrogate is { } playerSurrogate)
+            {
+                await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
+            }
         }
     }
 
@@ -187,7 +193,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <returns>The target player of a hit notification.</returns>
     protected virtual Player? GetHitNotificationTarget(IAttacker attacker)
     {
-        return attacker as Player;
+        return attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
     }
 
     /// <summary>
