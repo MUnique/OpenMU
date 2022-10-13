@@ -292,7 +292,7 @@ public class ItemPriceCalculator
         }
 
         const long maximumBasePrice = 400000000;
-        var isPet = item.ItemSlot == InventoryConstants.PetSlot;
+        var isPet = item.IsTrainablePet();
         var maximumDurability = item.GetMaximumDurabilityOfOnePiece();
         var basePrice = Math.Min(isPet ? CalculateBuyingPrice(item, maximumDurability) : CalculateBuyingPrice(item, maximumDurability) / 3, maximumBasePrice);
         basePrice = RoundPrice(basePrice);
