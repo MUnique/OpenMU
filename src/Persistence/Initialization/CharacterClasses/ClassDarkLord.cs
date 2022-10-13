@@ -83,6 +83,7 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.SkillMultiplier, 0.0005f, Stats.TotalEnergy));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.PetAttackDamageIncrease, 1.0f / 100, Stats.ScepterRise));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.TotalLeadership));
@@ -95,14 +96,18 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalEnergy));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalLeadership));
 
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMinimumDamage, 1.0f / 8, Stats.TotalLeadership));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMinimumDamage, 15, Stats.RavenLevel));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMaximumDamage, 1.0f / 4, Stats.TotalLeadership));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMaximumDamage, 15, Stats.RavenLevel));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackSpeed, 1.0f / 50, Stats.TotalLeadership));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackSpeed, 4.0f / 5, Stats.RavenLevel));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackRate, 16, Stats.RavenLevel));
         /* TODO: Add these stats
                                     Critical dmg = cmd/25+str/30
                                     Fireburst bonus min dmg = 100+str/25+ene/50
                                     Fireburst bonus max dmg = 150+str/25+ene/50
                                     Horse bonus dmg = 100+horseLvl*10+lvl*2.5+str/10+cmd/5
-                                    Raven speed = 20+(ravenLvl*4)/5+cmd/50
-                                    Raven min dmg = 180+ravenLvl*15+cmd/8
-                                    Raven max dmg = 200+ravenLvl*15+cmd/4
                                 */
         if (this.UseClassicPvp)
         {
@@ -136,6 +141,12 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.PetDurationIncrease));
+
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(180, Stats.RavenMinimumDamage));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(200, Stats.RavenMaximumDamage));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(20, Stats.RavenAttackSpeed));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1000, Stats.RavenAttackRate));
+
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 
         return result;

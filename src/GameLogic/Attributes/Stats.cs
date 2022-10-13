@@ -217,6 +217,11 @@ public class Stats
     public static AttributeDefinition StaffRise { get; } = new(new Guid("DB2F48FD-42AB-4204-B863-AFEE138A9D43"), "Staff Rise Percentage", string.Empty);
 
     /// <summary>
+    /// Gets the scepter rise percentage attribute definition.
+    /// </summary>
+    public static AttributeDefinition ScepterRise { get; } = new(new Guid("FB374862-D360-4FF0-AB88-2C170E6A9F85"), "Scepter Rise Percentage", string.Empty);
+
+    /// <summary>
     /// Gets the minimum curse base DMG attribute definition.
     /// </summary>
     public static AttributeDefinition MinimumCurseBaseDmg { get; } = new (new Guid("B8AE2D6B-05CE-43A9-B2BB-3C32F288A043"), "Minimum Curse Base Damage", string.Empty);
@@ -280,6 +285,11 @@ public class Stats
     /// Gets the wizardry attack damage increase attribute definition.
     /// </summary>
     public static AttributeDefinition WizardryAttackDamageIncrease { get; } = new (new Guid("8F1CD5A5-3792-42FC-89B8-E6D50F997F4B"), "Wizardry Attack Damage Increase Multiplier", "The wizardry damage increase which is multiplied with the min/max wiz base damage and added to it.");
+
+    /// <summary>
+    /// Gets the pet attack damage increase attribute definition.
+    /// </summary>
+    public static AttributeDefinition PetAttackDamageIncrease { get; } = new(new Guid("662467B2-CBCF-4347-9B39-A2BBEE04E6D7"), "Pet Attack Damage Increase Multiplier", "The pet damage increase which is multiplied with the min/max wiz base damage and added to it.");
 
     /// <summary>
     /// Gets the curse attack damage increase attribute definition.
@@ -577,6 +587,26 @@ public class Stats
     /// Gets the raven level attribute definition.
     /// </summary>
     public static AttributeDefinition RavenLevel { get; } = new(new Guid("2C9AA85C-AB8B-4E0F-8F0B-BC6E49EE134E"), "Dark Raven Level", string.Empty);
+
+    /// <summary>
+    /// Gets the raven minimum damage definition.
+    /// </summary>
+    public static AttributeDefinition RavenMinimumDamage { get; } = new(new Guid("D03B0A96-8233-42A5-9EA1-D92D5F91CE13"), "Minimum damage of the dark raven.", string.Empty);
+
+    /// <summary>
+    /// Gets the raven maximum damage definition.
+    /// </summary>
+    public static AttributeDefinition RavenMaximumDamage { get; } = new(new Guid("9F427253-7D5E-4766-BDD7-A8D7AE9DC715"), "Maximum damage of the dark raven.", string.Empty);
+
+    /// <summary>
+    /// Gets the raven attack rate definition.
+    /// </summary>
+    public static AttributeDefinition RavenAttackRate { get; } = new(new Guid("740634FF-9DA3-4642-807F-89A30F3DC5D6"), "Attack rate of the dark raven.", string.Empty);
+
+    /// <summary>
+    /// Gets the raven attack speed definition.
+    /// </summary>
+    public static AttributeDefinition RavenAttackSpeed { get; } = new(new Guid("3359F7E9-936C-48DD-BB0A-E44E2347D3CA"), "Attack speed of the dark raven.", string.Empty);
 
     /// <summary>
     /// Gets the maximum guild size attribute definition.
