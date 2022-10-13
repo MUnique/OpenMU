@@ -83,7 +83,7 @@ public sealed class Bucket<T> : IEnumerable<T>
     /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator()
     {
-        return new LockingEnumerator<T>(this._locker, this._innerList.GetEnumerator());
+        return new LockingEnumerator<T>(this._locker, this._innerList);
     }
 
     /// <inheritdoc/>
@@ -94,33 +94,49 @@ public sealed class Bucket<T> : IEnumerable<T>
 
     private sealed class LockingEnumerator<TEnumerated> : IEnumerator<TEnumerated>
     {
-        private readonly IDisposable _lockRelease;
-        private readonly IEnumerator<TEnumerated> _enumerator;
+        private readonly AsyncReaderWriterLock _locker;
+        private readonly IEnumerable<TEnumerated> _enumerable;
+        private IEnumerator<TEnumerated>? _enumerator;
+        private IDisposable? _lockRelease;
 
-        public LockingEnumerator(AsyncReaderWriterLock locker, IEnumerator<TEnumerated> innerEnumerator)
+        public LockingEnumerator(AsyncReaderWriterLock locker, IEnumerable<TEnumerated> enumerable)
         {
-            this._lockRelease = locker.ReaderLock();
-            this._enumerator = innerEnumerator;
+            this._locker = locker;
+            this._enumerable = enumerable;
         }
 
-        public TEnumerated Current => this._enumerator.Current;
+        private IEnumerator<TEnumerated> Enumerator
+        {
+            get
+            {
+                if (this._enumerator is { })
+                {
+                    return this._enumerator;
+                }
 
-        object IEnumerator.Current => this.Current!;
+                this._lockRelease = this._locker.ReaderLock();
+                return this._enumerator ??= this._enumerable.GetEnumerator();
+            }
+        }
+
+        public TEnumerated Current => this.Enumerator.Current;
+
+        object IEnumerator.Current => ((IEnumerator)this.Enumerator).Current!;
 
         public bool MoveNext()
         {
-            return this._enumerator.MoveNext();
+            return this.Enumerator.MoveNext();
         }
 
         public void Reset()
         {
-            this._enumerator.Reset();
+            this.Enumerator.Reset();
         }
 
         public void Dispose()
         {
-            this._enumerator.Dispose();
-            this._lockRelease.Dispose();
+            this._enumerator?.Dispose();
+            this._lockRelease?.Dispose();
         }
     }
 }
