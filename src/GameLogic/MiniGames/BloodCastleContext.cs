@@ -314,9 +314,7 @@ public sealed class BloodCastleContext : MiniGameContext
             return false;
         }
 
-        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
-        await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
+        await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
 
         this._questItem = null;
         this._questItemOwner = null;

@@ -89,8 +89,7 @@ public class EnterMiniGameAction
                 await inventory.RemoveItemAsync(ticketItem).ConfigureAwait(false);
             }
 
-            await player.PersistenceContext.DeleteAsync(ticketItem).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
+            await player.DestroyInventoryItemAsync(ticketItem).ConfigureAwait(false);
         }
         else
         {
