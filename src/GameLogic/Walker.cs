@@ -196,7 +196,7 @@ public sealed class Walker : IDisposable
             }
 
             bool stop;
-            using (await this._walkLock.ReaderLockAsync())
+            using (await this._walkLock.ReaderLockAsync(cancellationToken))
             {
                 stop = !cancellationToken.IsCancellationRequested && this.ShouldWalkerStop();
             }
@@ -212,6 +212,10 @@ public sealed class Walker : IDisposable
             {
                 this.WalkNextStepIfStepAvailable();
             }
+        }
+        catch (OperationCanceledException)
+        {
+            // we can ignore those
         }
         catch (Exception ex)
         {
