@@ -80,6 +80,8 @@ public class RavenCommandManager : Disposable, IPetCommandManager
             case PetBehaviour.AttackWithOwner:
                 _ = this.AttackSameAsOwnerAsync(this._attackCts.Token);
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(newBehaviour), $"Unknown behavior: {newBehaviour}");
         }
     }
 
