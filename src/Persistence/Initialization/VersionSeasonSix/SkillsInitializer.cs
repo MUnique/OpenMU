@@ -195,7 +195,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.PhoenixShot, "Phoenix Shot", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 30, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillExplicitTarget);
 
         // Generic monster skills:
-        this.CreateSkill(SkillNumber.MonsterSkill, "Generic Monster Skill", distance: 5, elementalModifier: ElementalType.Ice, skillType: SkillType.Other);
+        this.CreateSkill(SkillNumber.MonsterSkill, "Generic Monster Skill", distance: 5, skillType: SkillType.Other);
 
         // Master skills:
         // Common:
