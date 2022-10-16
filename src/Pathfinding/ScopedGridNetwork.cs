@@ -14,7 +14,7 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
     private readonly Node?[] _gridNodes;
     private readonly byte _maximumSegmentSideLength;
     private readonly byte _minimumSegmentSideLength;
-    private int _heightLog2;
+    private int _bitsPerCoordinate;
     private byte _actualSegmentSideLength;
 
     /// <summary>
@@ -65,17 +65,14 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
             return false;
         }
 
-        if (diffX < this._minimumSegmentSideLength && diffY < this._minimumSegmentSideLength)
+        this._actualSegmentSideLength = this._minimumSegmentSideLength;
+        while ((diffX > this._actualSegmentSideLength || diffY > this._actualSegmentSideLength)
+               && this._actualSegmentSideLength < this._maximumSegmentSideLength)
         {
-            this._actualSegmentSideLength = this._minimumSegmentSideLength;
-        }
-        else
-        {
-            // TODO: Try to find something between, too.
-            this._actualSegmentSideLength = this._maximumSegmentSideLength;
+            this._actualSegmentSideLength *= 2;
         }
 
-        this._heightLog2 = (int)Math.Log(this._actualSegmentSideLength, 2);
+        this._bitsPerCoordinate = (int)Math.Log(this._actualSegmentSideLength, 2);
         var avg = (start / 2) + (end / 2);
 
         var offsetX = GetOffset(avg.X, grid.GetUpperBound(0) + 1);
@@ -119,6 +116,6 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
             return -1;
         }
 
-        return (y << this._heightLog2) + x;
+        return (y << this._bitsPerCoordinate) + x;
     }
 }
