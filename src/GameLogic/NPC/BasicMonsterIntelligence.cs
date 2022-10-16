@@ -221,16 +221,17 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         }
 
         // Target in View Range?
-        else if (target.IsInRange(this.Monster.Position, this.Monster.Definition.ViewRange + 1))
+        if (target.IsInRange(this.Monster.Position, this.Monster.Definition.ViewRange + 1))
         {
             // no, walk to the target
             var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, this.Monster.Definition.AttackRange);
-            await this.Monster.WalkToAsync(walkTarget).ConfigureAwait(false);
+            if (await this.Monster.WalkToAsync(walkTarget).ConfigureAwait(false))
+            {
+                return;
+            }
         }
-        else
-        {
-            // we move around randomly, so the monster does not look dead when watched from distance.
-            await this.Monster.RandomMoveAsync().ConfigureAwait(false);
-        }
+
+        // we move around randomly, so the monster does not look dead when watched from distance.
+        await this.Monster.RandomMoveAsync().ConfigureAwait(false);
     }
 }
