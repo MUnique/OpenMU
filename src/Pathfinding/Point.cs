@@ -15,6 +15,36 @@ using System.Runtime.InteropServices;
 public record struct Point(byte X, byte Y)
 {
     /// <summary>
+    /// Implements the Addition operator between two points.
+    /// </summary>
+    /// <param name="a">The first point.</param>
+    /// <param name="b">The second point.</param>
+    /// <returns>
+    /// The result of the operator.
+    /// </returns>
+    public static Point operator +(Point a, Point b) => new((byte)(a.X + b.X), (byte)(a.Y + b.Y));
+
+    /// <summary>
+    /// Implements the Subtraction operator between two points.
+    /// </summary>
+    /// <param name="a">The first point.</param>
+    /// <param name="b">The second point.</param>
+    /// <returns>
+    /// The result of the operator.
+    /// </returns>
+    public static Point operator -(Point a, Point b) => new((byte)(a.X - b.X), (byte)(a.Y - b.Y));
+
+    /// <summary>
+    /// Implements the Subtraction operator between a point and an integer.
+    /// </summary>
+    /// <param name="a">The first point.</param>
+    /// <param name="d">The divisor.</param>
+    /// <returns>
+    /// The result of the operator.
+    /// </returns>
+    public static Point operator /(Point a, int d) => new((byte)(a.X / d), (byte)(a.Y / d));
+
+    /// <summary>
     /// Gets the euclidean distance between this point and another point.
     /// </summary>
     /// <param name="otherPoint">The other point.</param>

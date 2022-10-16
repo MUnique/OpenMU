@@ -37,8 +37,9 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// </summary>
     private readonly AttributeDefinition? _skillPowerUpTarget;
 
+    private readonly IObjectPool<PathFinder> _pathFinderPool;
+
     private bool _isCalculatingPath;
-    private PathFinder? _pathFinder;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Monster" /> class.
@@ -49,10 +50,12 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <param name="dropGenerator">The drop generator.</param>
     /// <param name="npcIntelligence">The monster intelligence.</param>
     /// <param name="plugInManager">The plug in manager.</param>
+    /// <param name="pathFinderPool">The path finder pool.</param>
     /// <param name="eventStateProvider">The event state provider.</param>
-    public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager, IEventStateProvider? eventStateProvider = null)
+    public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager, IObjectPool<PathFinder> pathFinderPool, IEventStateProvider? eventStateProvider = null)
         : base(spawnInfo, stats, map, eventStateProvider, dropGenerator, plugInManager)
     {
+        this._pathFinderPool = pathFinderPool;
         this._walker = new Walker(this, () => this.StepDelay);
         this._intelligence = npcIntelligence;
 
@@ -102,40 +105,38 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// Walks to the target coordinates.
     /// </summary>
     /// <param name="target">The target object.</param>
-    public async ValueTask WalkToAsync(Point target)
+    public async ValueTask<bool> WalkToAsync(Point target)
     {
         if (this._isCalculatingPath || this.IsWalking)
         {
-            return;
+            return false;
         }
 
         IList<PathResultNode>? calculatedPath;
         this._isCalculatingPath = true;
+        PathFinder? pathFinder = null;
         try
         {
-            if (this._pathFinder is null)
-            {
-                this._pathFinder = new PathFinder(new GridNetwork(this.CurrentMap.Terrain.AIgrid, true));
-            }
-            else
-            {
-                this._pathFinder.ResetPathFinder();
-            }
-
-            calculatedPath = this._pathFinder.FindPath(this.Position, target);
+            pathFinder = await this._pathFinderPool.GetAsync().ConfigureAwait(false);
+            pathFinder.ResetPathFinder();
+            calculatedPath = pathFinder.FindPath(this.Position, target, this.CurrentMap.Terrain.AIgrid);
             if (calculatedPath is null)
             {
-                return;
+                return false;
             }
         }
         finally
         {
             this._isCalculatingPath = false;
+            if (pathFinder is not null)
+            {
+                this._pathFinderPool.Return(pathFinder);
+            }
         }
 
         if (calculatedPath.Count == 0)
         {
-            return;
+            return false;
         }
 
         // The walker just supports maximum 16 steps.
@@ -155,13 +156,14 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         }
 
         await this.WalkToAsync(new Point(targetNode.X, targetNode.Y), steps).ConfigureAwait(false);
+        return true;
     }
 
     /// <summary>
     /// Walks to the target object.
     /// </summary>
     /// <param name="target">The target object.</param>
-    public ValueTask WalkToAsync(ILocateable target) => this.WalkToAsync(target.Position);
+    public ValueTask<bool> WalkToAsync(ILocateable target) => this.WalkToAsync(target.Position);
 
     /// <summary>
     /// Walks to the specified target coordinates using the specified steps.

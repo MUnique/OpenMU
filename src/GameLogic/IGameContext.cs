@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
@@ -68,6 +69,11 @@ public interface IGameContext
     /// Gets the drop generator.
     /// </summary>
     IDropGenerator DropGenerator { get; }
+
+    /// <summary>
+    /// Gets the object pool for path finders.
+    /// </summary>
+    IObjectPool<PathFinder> PathFinderPool { get; }
 
     /// <summary>
     /// Gets the initialized maps which are hosted on this context.

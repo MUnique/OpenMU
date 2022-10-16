@@ -15,7 +15,6 @@ public class PathFinder : IPathFinder
 {
     private readonly INetwork _network;
     private readonly IPriorityQueue<Node> _openList;
-    private readonly IList<PathResultNode> _resultList = new List<PathResultNode>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PathFinder"/> class.
@@ -58,7 +57,7 @@ public class PathFinder : IPathFinder
     public IHeuristic Heuristic { get; set; } = new NoHeuristic();
 
     /// <inheritdoc/>
-    public IList<PathResultNode>? FindPath(Point start, Point end, CancellationToken cancellationToken = default)
+    public IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken = default)
     {
         if (this.MaximumDistanceExceeded(start, end))
         {
@@ -67,7 +66,11 @@ public class PathFinder : IPathFinder
 
         var pathFound = false;
         this._openList.Clear();
-        this._network.ResetStatus();
+        if (!this._network.Prepare(start, end, terrain))
+        {
+            return null;
+        }
+
         if (this.Heuristic != null)
         {
             this.Heuristic.HeuristicEstimateMultiplier = this.HeuristicEstimate;
@@ -75,6 +78,10 @@ public class PathFinder : IPathFinder
 
         var closeNodeCounter = 0;
         var startNode = this._network.GetNodeAt(start);
+        if (startNode is null)
+        {
+            return null;
+        }
         startNode.PredictedTotalCost = 2;
         startNode.PreviousNode = startNode;
         startNode.Status = NodeStatus.Open;
@@ -106,8 +113,8 @@ public class PathFinder : IPathFinder
 
         if (pathFound)
         {
-            this.BuildResultList(end);
-            return this._resultList;
+            var resultList = this.GetCalculatedPath(end).Reverse().ToList();
+            return resultList;
         }
 
         return null;
@@ -119,7 +126,6 @@ public class PathFinder : IPathFinder
     public void ResetPathFinder()
     {
         this._openList.Clear();
-        this._resultList.Clear();
     }
 
     private void ExpandNodes(Node node, Point start, Point end)
@@ -136,15 +142,6 @@ public class PathFinder : IPathFinder
             newNode.Status = NodeStatus.Open;
             newNode.PreviousNode = node;
             this._openList.Push(newNode);
-        }
-    }
-
-    private void BuildResultList(Point end)
-    {
-        this._resultList.Clear();
-        foreach (var node in this.GetCalculatedPath(end).Reverse())
-        {
-            this._resultList.Add(node);
         }
     }
 

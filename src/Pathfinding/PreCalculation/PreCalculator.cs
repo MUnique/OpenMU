@@ -28,7 +28,7 @@ public class PreCalculator
         var resultList = new List<PathInfo>[256];
         Parallel.For(0, 256, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (x) =>
         {
-            var network = new GridNetwork(grid, true);
+            var network = new FullGridNetwork(true);
             var pathFinder = new PathFinder(network);
             var result = new List<PathInfo>();
             resultList[x] = result;
@@ -39,7 +39,7 @@ public class PreCalculator
                     continue;
                 }
 
-                result.AddRange(this.FindPaths(new Point((byte)x, (byte)y), walkMap, pathFinder, maximumRange));
+                result.AddRange(this.FindPaths(new Point((byte)x, (byte)y), walkMap, aiGrid, pathFinder, maximumRange));
             }
 
             Interlocked.Increment(ref finished);
@@ -48,7 +48,7 @@ public class PreCalculator
         return resultList.SelectMany(pathInfo => pathInfo);
     }
 
-    private IEnumerable<PathInfo> FindPaths(Point start, bool[,] map, IPathFinder pathFinder, int maxDistance)
+    private IEnumerable<PathInfo> FindPaths(Point start, bool[,] map, byte[,] aiGrid, IPathFinder pathFinder, int maxDistance)
     {
         byte toX = (byte)Math.Min(start.X + maxDistance - 1, 0xFF);
         byte toY = (byte)Math.Min(start.Y + maxDistance - 1, 0xFF);
@@ -63,7 +63,7 @@ public class PreCalculator
                     continue;
                 }
 
-                var nodes = pathFinder.FindPath(new Point(x, y), start);
+                var nodes = pathFinder.FindPath(new Point(x, y), start, aiGrid);
                 if (nodes is { Count: > 0 })
                 {
                     var firstNode = nodes[0];

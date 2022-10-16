@@ -1220,7 +1220,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue),
         };
         var intelligence = new SummonedMonsterIntelligence(this);
-        var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager);
+        var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager, this.GameContext.PathFinderPool);
         this.Summon = (monster, intelligence);
         monster.Initialize();
         await gameMap.AddAsync(monster).ConfigureAwait(false);

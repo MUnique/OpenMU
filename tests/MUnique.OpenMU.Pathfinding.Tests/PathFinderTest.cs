@@ -13,6 +13,7 @@ using MUnique.OpenMU.Pathfinding;
 public class PathFinderTest
 {
     private IPathFinder _pathFinder = null!;
+    private byte[,] _grid = null!;
 
     /// <summary>
     /// Sets up the path finder with a basic, unrestricted grid.
@@ -20,16 +21,16 @@ public class PathFinderTest
     [SetUp]
     public void SetUp()
     {
-        var grid = new byte[0x100, 0x100];
+        this._grid = new byte[0x100, 0x100];
         for (int x = 100; x < 200; x++)
         {
             for (int y = 100; y < 200; y++)
             {
-                grid[x, y] = 10;
+                this._grid[x, y] = 10;
             }
         }
 
-        this._pathFinder = new PathFinder(new GridNetwork(grid, true));
+        this._pathFinder = new PathFinder(new ScopedGridNetwork());
     }
 
     /// <summary>
@@ -40,7 +41,7 @@ public class PathFinderTest
     {
         var start = new Point(110, 100);
         var end = new Point(115, 100);
-        var result = this._pathFinder.FindPath(start, end);
+        var result = this._pathFinder.FindPath(start, end, this._grid);
         Assert.That(result, Is.Not.Null);
         var lastNode = result!.LastOrDefault();
         Assert.That(lastNode, Is.Not.Null);
@@ -56,7 +57,7 @@ public class PathFinderTest
     {
         var start = new Point(100, 100);
         var end = new Point(110, 110);
-        var result = this._pathFinder.FindPath(start, end);
+        var result = this._pathFinder.FindPath(start, end, this._grid);
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Count, Is.EqualTo(10));
         for (int i = 1; i <= 10; i++)
@@ -77,7 +78,7 @@ public class PathFinderTest
     {
         var start = new Point(110, 100);
         var end = new Point(115, 99);
-        var result = this._pathFinder.FindPath(start, end);
+        var result = this._pathFinder.FindPath(start, end, this._grid);
         Assert.That(result, Is.Null);
     }
 }
