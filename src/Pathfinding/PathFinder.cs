@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Pathfinding;
 
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Threading;
 
 /// <summary>
@@ -13,6 +15,13 @@ using System.Threading;
 /// </summary>
 public class PathFinder : IPathFinder
 {
+    private static readonly Meter Meter = new(MeterName);
+    private static readonly Counter<long> CurrentSearches = Meter.CreateCounter<long>("CurrentSearches");
+    private static readonly Counter<long> CompletedSearches = Meter.CreateCounter<long>("CompletedSearches");
+    private static readonly Counter<long> FailedSearches = Meter.CreateCounter<long>("FailedSearches");
+    private static readonly Histogram<double> DurationCompletedMs = Meter.CreateHistogram<double>("DurationCompletedMs");
+    private static readonly Histogram<double> DurationFailedMs = Meter.CreateHistogram<double>("DurationFailedMs");
+
     private readonly INetwork _network;
     private readonly IPriorityQueue<Node> _openList;
 
@@ -37,6 +46,11 @@ public class PathFinder : IPathFinder
     }
 
     /// <summary>
+    /// Gets the name of the meter of this class.
+    /// </summary>
+    public static string MeterName => typeof(PathFinder).FullName ?? nameof(PathFinder);
+
+    /// <summary>
     /// Gets or sets the maximum distance until which the path should be resolved.
     /// </summary>
     public int MaximumDistance { get; set; }
@@ -58,6 +72,33 @@ public class PathFinder : IPathFinder
 
     /// <inheritdoc/>
     public IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken = default)
+    {
+        CurrentSearches.Add(1);
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var result = this.FindPathInner(start, end, terrain, cancellationToken);
+            var elapsedMs = (double)stopwatch.ElapsedTicks / TimeSpan.TicksPerMillisecond;
+            if (result is null)
+            {
+                FailedSearches.Add(1);
+                DurationFailedMs.Record(elapsedMs);
+            }
+            else
+            {
+                CompletedSearches.Add(1);
+                DurationCompletedMs.Record(elapsedMs);
+            }
+
+            return result;
+        }
+        finally
+        {
+            CurrentSearches.Add(-1);
+        }
+    }
+
+    private IList<PathResultNode>? FindPathInner(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken)
     {
         if (this.MaximumDistanceExceeded(start, end))
         {
@@ -82,6 +123,7 @@ public class PathFinder : IPathFinder
         {
             return null;
         }
+
         startNode.PredictedTotalCost = 2;
         startNode.PreviousNode = startNode;
         startNode.Status = NodeStatus.Open;
@@ -113,8 +155,7 @@ public class PathFinder : IPathFinder
 
         if (pathFound)
         {
-            var resultList = this.GetCalculatedPath(end).Reverse().ToList();
-            return resultList;
+            return this.GetCalculatedPath(end).Reverse().ToList();
         }
 
         return null;
