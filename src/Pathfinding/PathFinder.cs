@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Pathfinding;
 
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Threading;
 
 /// <summary>
@@ -13,9 +15,15 @@ using System.Threading;
 /// </summary>
 public class PathFinder : IPathFinder
 {
+    private static readonly Meter Meter = new(MeterName);
+    private static readonly Counter<long> CurrentSearches = Meter.CreateCounter<long>("CurrentSearches");
+    private static readonly Counter<long> CompletedSearches = Meter.CreateCounter<long>("CompletedSearches");
+    private static readonly Counter<long> FailedSearches = Meter.CreateCounter<long>("FailedSearches");
+    private static readonly Histogram<double> DurationCompletedMs = Meter.CreateHistogram<double>("DurationCompletedMs");
+    private static readonly Histogram<double> DurationFailedMs = Meter.CreateHistogram<double>("DurationFailedMs");
+
     private readonly INetwork _network;
     private readonly IPriorityQueue<Node> _openList;
-    private readonly IList<PathResultNode> _resultList = new List<PathResultNode>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PathFinder"/> class.
@@ -38,6 +46,11 @@ public class PathFinder : IPathFinder
     }
 
     /// <summary>
+    /// Gets the name of the meter of this class.
+    /// </summary>
+    public static string MeterName => typeof(PathFinder).FullName ?? nameof(PathFinder);
+
+    /// <summary>
     /// Gets or sets the maximum distance until which the path should be resolved.
     /// </summary>
     public int MaximumDistance { get; set; }
@@ -58,7 +71,34 @@ public class PathFinder : IPathFinder
     public IHeuristic Heuristic { get; set; } = new NoHeuristic();
 
     /// <inheritdoc/>
-    public IList<PathResultNode>? FindPath(Point start, Point end, CancellationToken cancellationToken = default)
+    public IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken = default)
+    {
+        CurrentSearches.Add(1);
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var result = this.FindPathInner(start, end, terrain, cancellationToken);
+            var elapsedMs = (double)stopwatch.ElapsedTicks / TimeSpan.TicksPerMillisecond;
+            if (result is null)
+            {
+                FailedSearches.Add(1);
+                DurationFailedMs.Record(elapsedMs);
+            }
+            else
+            {
+                CompletedSearches.Add(1);
+                DurationCompletedMs.Record(elapsedMs);
+            }
+
+            return result;
+        }
+        finally
+        {
+            CurrentSearches.Add(-1);
+        }
+    }
+
+    private IList<PathResultNode>? FindPathInner(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken)
     {
         if (this.MaximumDistanceExceeded(start, end))
         {
@@ -67,7 +107,11 @@ public class PathFinder : IPathFinder
 
         var pathFound = false;
         this._openList.Clear();
-        this._network.ResetStatus();
+        if (!this._network.Prepare(start, end, terrain))
+        {
+            return null;
+        }
+
         if (this.Heuristic != null)
         {
             this.Heuristic.HeuristicEstimateMultiplier = this.HeuristicEstimate;
@@ -75,6 +119,11 @@ public class PathFinder : IPathFinder
 
         var closeNodeCounter = 0;
         var startNode = this._network.GetNodeAt(start);
+        if (startNode is null)
+        {
+            return null;
+        }
+
         startNode.PredictedTotalCost = 2;
         startNode.PreviousNode = startNode;
         startNode.Status = NodeStatus.Open;
@@ -106,8 +155,7 @@ public class PathFinder : IPathFinder
 
         if (pathFound)
         {
-            this.BuildResultList(end);
-            return this._resultList;
+            return this.GetCalculatedPath(end).Reverse().ToList();
         }
 
         return null;
@@ -119,7 +167,6 @@ public class PathFinder : IPathFinder
     public void ResetPathFinder()
     {
         this._openList.Clear();
-        this._resultList.Clear();
     }
 
     private void ExpandNodes(Node node, Point start, Point end)
@@ -136,15 +183,6 @@ public class PathFinder : IPathFinder
             newNode.Status = NodeStatus.Open;
             newNode.PreviousNode = node;
             this._openList.Push(newNode);
-        }
-    }
-
-    private void BuildResultList(Point end)
-    {
-        this._resultList.Clear();
-        foreach (var node in this.GetCalculatedPath(end).Reverse())
-        {
-            this._resultList.Add(node);
         }
     }
 

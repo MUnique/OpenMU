@@ -7,9 +7,8 @@ namespace MUnique.OpenMU.Pathfinding.PreCalculation;
 using System.Threading;
 
 /// <summary>
-/// Path finder which uses pre calculated paths.
+/// Path finder which uses pre calculated paths of one specific map.
 /// </summary>
-/// <seealso cref="OpenMU.Pathfinding.IPathFinder" />
 public class PreCalculatedPathFinder : IPathFinder
 {
     private readonly IDictionary<PointCombination, Point> _nextSteps;
@@ -24,7 +23,7 @@ public class PreCalculatedPathFinder : IPathFinder
     }
 
     /// <inheritdoc/>
-    public IList<PathResultNode>? FindPath(Point start, Point end, CancellationToken cancellationToken = default)
+    public IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken = default)
     {
         var result = new List<PathResultNode>();
         Point nextStep;

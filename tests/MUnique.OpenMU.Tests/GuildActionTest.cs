@@ -167,6 +167,7 @@ public class GuildActionTest : GuildTestBase
             new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLoggerFactory(), null),
             NullDropGenerator.Instance);
         mapInitializer.PlugInManager = gameServer.PlugInManager;
+        mapInitializer.PathFinderPool = gameServer.PathFinderPool;
         return gameServer;
     }
 }

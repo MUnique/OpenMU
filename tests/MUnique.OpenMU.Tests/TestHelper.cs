@@ -44,6 +44,7 @@ public static class TestHelper
         var mapInitializer = new MapInitializer(gameConfig.Object, new NullLogger<MapInitializer>(), NullDropGenerator.Instance);
         var gameContext = new GameContext(gameConfig.Object, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null), NullDropGenerator.Instance);
         mapInitializer.PlugInManager = gameContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
         return await CreatePlayerAsync(gameContext).ConfigureAwait(false);
     }
 

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -36,6 +37,14 @@ public class MapInitializer : IMapInitializer
     /// Gets or sets the plug in manager.
     /// </summary>
     public PlugInManager? PlugInManager { get; set; }
+
+    /// <summary>
+    /// Gets or sets the path finder pool.
+    /// </summary>
+    /// <value>
+    /// The path finder pool.
+    /// </value>
+    public IObjectPool<PathFinder>? PathFinderPool { get; set; }
 
     /// <summary>
     /// Gets or sets the duration of the item drop on created <see cref="GameMap"/>s.
@@ -78,10 +87,8 @@ public class MapInitializer : IMapInitializer
     /// <inheritdoc />
     public async ValueTask InitializeStateAsync(GameMap createdMap)
     {
-        if (this.PlugInManager is null)
-        {
-            throw new InvalidOperationException("PlugInManager must be set first");
-        }
+        _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
+        _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
 
         this._logger.LogDebug("Start creating monster instances for map {createdMap}", createdMap);
         var automaticSpawns = createdMap.Definition.MonsterSpawns
@@ -105,10 +112,8 @@ public class MapInitializer : IMapInitializer
     /// <param name="eventStateProvider">The event state provider.</param>
     public async ValueTask InitializeNpcsOnEventStartAsync(GameMap createdMap, IEventStateProvider eventStateProvider)
     {
-        if (this.PlugInManager is null)
-        {
-            throw new InvalidOperationException("PlugInManager must be set first");
-        }
+        _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
+        _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
 
         this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap);
         var eventSpawns = createdMap.Definition.MonsterSpawns
@@ -129,10 +134,8 @@ public class MapInitializer : IMapInitializer
     /// <inheritdoc />
     public async ValueTask InitializeNpcsOnWaveStartAsync(GameMap createdMap, IEventStateProvider eventStateProvider, byte waveNumber)
     {
-        if (this.PlugInManager is null)
-        {
-            throw new InvalidOperationException("PlugInManager must be set first");
-        }
+        _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
+        _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
 
         this._logger.LogDebug("Start creating event monster instances for map {createdMap}", createdMap);
         var waveSpawns = createdMap.Definition.MonsterSpawns
@@ -154,6 +157,9 @@ public class MapInitializer : IMapInitializer
     /// <inheritdoc />
     public async ValueTask InitializeSpawnAsync(GameMap createdMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null)
     {
+        _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
+        _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
+
         var monsterDef = spawnArea.MonsterDefinition!;
         NonPlayerCharacter npc;
 
@@ -162,7 +168,7 @@ public class MapInitializer : IMapInitializer
         if (monsterDef.ObjectKind == NpcObjectKind.Monster)
         {
             this._logger.LogDebug("Creating monster {spawn}", spawnArea);
-            npc = new Monster(spawnArea, monsterDef, createdMap, this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager!, eventStateProvider);
+            npc = new Monster(spawnArea, monsterDef, createdMap, this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager, this.PathFinderPool,  eventStateProvider);
         }
         else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
         {

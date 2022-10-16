@@ -21,6 +21,7 @@ internal class GameServerMapInitializer : MapInitializer
     /// <param name="serverDefinition">The server definition.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="dropGenerator">The drop generator.</param>
+    /// <param name="pathFinderPool">The path finder pool.</param>
     public GameServerMapInitializer(GameServerDefinition serverDefinition, ILogger<GameServerMapInitializer> logger, IDropGenerator dropGenerator)
         : base(serverDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"), logger, dropGenerator)
     {

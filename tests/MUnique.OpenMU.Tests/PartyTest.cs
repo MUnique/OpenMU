@@ -207,6 +207,7 @@ public class PartyTest
         var gameContext = new GameContext(gameConfig, contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(new List<PlugInConfiguration>(), new NullLoggerFactory(), null), NullDropGenerator.Instance);
         gameContext.Configuration.MaximumPartySize = 5;
         mapInitializer.PlugInManager = gameContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
 
         return gameContext;
     }
