@@ -5,12 +5,10 @@ ones need some rework.
 
 Some general notes:
 
-* Elemental effects (poison, ice, etc.) are not yet implemented at all
-
 * Area Damage Skills with explicit damage packets work, but are still vulnerable
   to advanced cheaters
 
-* All kind of skills which are somehow special are not working
+* All kind of skills which are somehow special are not working, except listed otherwise
 
 ## Normal Skills
 
