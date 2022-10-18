@@ -68,6 +68,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Rectangle>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Skill>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.SkillComboStep>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.WarpInfo>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition>();

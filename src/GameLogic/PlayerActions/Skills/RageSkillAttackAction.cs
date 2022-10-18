@@ -56,10 +56,20 @@ public class RageSkillAttackAction
             await player.ForEachWorldObserverAsync<IShowRageAttackPlugIn>(p => p.ShowAttackAsync(player, targets.First(), skillId), true).ConfigureAwait(false);
         }
 
-        _ = this.RunAttacksAsync(player, skill, targets);
+        bool isCombo = false;
+        if (player.ComboState is { } comboState)
+        {
+            isCombo = await comboState.RegisterSkillAsync(skill.Skill).ConfigureAwait(false);
+            if (isCombo)
+            {
+                await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, explicitTarget), true).ConfigureAwait(false);
+            }
+        }
+
+        _ = this.RunAttacksAsync(player, skill, targets, isCombo);
     }
 
-    private async ValueTask RunAttacksAsync(Player player, SkillEntry skill, List<IAttackable> targets)
+    private async ValueTask RunAttacksAsync(Player player, SkillEntry skill, List<IAttackable> targets, bool isCombo)
     {
         try
         {
@@ -68,7 +78,7 @@ public class RageSkillAttackAction
                 await Task.Delay(200).ConfigureAwait(false);
                 foreach (var target in targets)
                 {
-                    await target.AttackByAsync(player, skill).ConfigureAwait(false);
+                    await target.AttackByAsync(player, skill, isCombo).ConfigureAwait(false);
                 }
             }
         }

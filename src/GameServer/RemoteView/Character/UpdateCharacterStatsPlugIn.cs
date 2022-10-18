@@ -71,7 +71,5 @@ public class UpdateCharacterStatsPlugIn : IUpdateCharacterStatsPlugIn
         {
             await this._player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
         }
-
-        await this._player.InvokeViewPlugInAsync<IApplyKeyConfigurationPlugIn>(p => p.ApplyKeyConfigurationAsync()).ConfigureAwait(false);
     }
 }

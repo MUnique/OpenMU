@@ -32,7 +32,7 @@ public static class AttackableExtensions
     /// <param name="defender">The object which is defending.</param>
     /// <param name="skill">The skill which is used.</param>
     /// <returns>The hit information.</returns>
-    public static HitInfo CalculateDamage(this IAttacker attacker, IAttackable defender, SkillEntry? skill)
+    public static async ValueTask<HitInfo> CalculateDamageAsync(this IAttacker attacker, IAttackable defender, SkillEntry? skill, bool isCombo)
     {
         if (!attacker.IsAttackSuccessfulTo(defender))
         {
@@ -99,6 +99,12 @@ public static class AttackableExtensions
         if (attacker is Player && defender is Player)
         {
             dmg += (int)attacker.Attributes[Stats.FinalDamageIncreasePvp];
+        }
+
+        if (isCombo)
+        {
+            dmg += (int)attacker.Attributes[Stats.ComboBonus];
+            attributes |= DamageAttributes.Combo;
         }
 
         bool isDoubleDamage = Rand.NextRandomBool(attacker.Attributes[Stats.DoubleDamageChance]);

@@ -54,7 +54,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private Account? _account;
 
     private SkillHitValidator? _skillHitValidator;
+
     private IPetCommandManager? _petCommandManager;
+
+    private Lazy<ComboStateMachine>? _comboStateLazy;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
@@ -253,6 +256,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public ISkillList? SkillList { get; private set; }
 
+    /// <inheritdoc />
+    public ComboStateMachine? ComboState => this.Attributes?[Stats.IsSkillComboAvailable] > 0 ? this._comboStateLazy?.Value : null;
+
     /// <summary>
     /// Gets the summon.
     /// </summary>
@@ -423,6 +429,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             this.RemovePetCommandManager();
             this.LastAttackedTarget.SetTarget(null);
+            this._comboStateLazy = null;
 
             this._appearanceData.RaiseAppearanceChanged();
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
@@ -450,14 +457,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <inheritdoc/>
-    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill)
+    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo)
     {
         if (this.Attributes is null)
         {
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
-        var hitInfo = attacker.CalculateDamage(this, skill);
+        var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo).ConfigureAwait(false);
 
         if (hitInfo.HealthDamage == 0)
         {
@@ -1566,6 +1573,24 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return null;
     }
 
+    private SkillComboDefinition? DetermineComboDefinition()
+    {
+        var characterClass = this.SelectedCharacter!.CharacterClass;
+
+        while (characterClass is { })
+        {
+            if (characterClass.ComboDefinition is { } comboDefinition)
+            {
+                return comboDefinition;
+            }
+
+            // Check previous class
+            characterClass = this.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.NextGenerationClass == characterClass);
+        }
+
+        return null;
+    }
+
     private async ValueTask OnPlayerEnteredWorldAsync()
     {
         this.Attributes = new ItemAwareAttributeSystem(this.SelectedCharacter!);
@@ -1575,10 +1600,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Vault = null; // vault storage is getting set when vault npc is opened.
         this.SkillList = new SkillList(this);
         this.SetReclaimableAttributesBeforeEnterGame();
+        if (this.DetermineComboDefinition() is { } comboDefinition)
+        {
+            this._comboStateLazy = new Lazy<ComboStateMachine>(() => ComboStateMachine.Create(comboDefinition));
+        }
 
         await this.InvokeViewPlugInAsync<IUpdateCharacterStatsPlugIn>(p => p.UpdateCharacterStatsAsync()).ConfigureAwait(false);
         await this.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
         await this.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.UpdateSkillListAsync()).ConfigureAwait(false);
+        await this.InvokeViewPlugInAsync<IApplyKeyConfigurationPlugIn>(p => p.ApplyKeyConfigurationAsync()).ConfigureAwait(false);
         await this.InvokeViewPlugInAsync<IQuestStateResponsePlugIn>(p => p.ShowQuestStateAsync(null)).ConfigureAwait(false); // Legacy quest system
         await this.InvokeViewPlugInAsync<ICurrentlyActiveQuestsPlugIn>(p => p.ShowActiveQuestsAsync()).ConfigureAwait(false); // New quest system
 

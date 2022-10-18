@@ -132,13 +132,24 @@ public class TargetedSkillAction
         var skill = skillEntry.Skill;
         var success = false;
         var targets = this.DetermineTargets(player, targetedTarget, skill);
+        bool isCombo = false;
+        if (skill.SkillType is SkillType.DirectHit or SkillType.CastleSiegeSkill
+            && player.ComboState is { } comboState
+            && !targetedTarget.IsAtSafezone()
+            && !player.IsAtSafezone()
+            && targetedTarget.IsActive()
+            && player.IsActive())
+        {
+            isCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
+        }
+
         foreach (var target in targets)
         {
             if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
             {
                 if (!target.IsAtSafezone() && !player.IsAtSafezone())
                 {
-                    await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
+                    await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
                     player.LastAttackedTarget.SetTarget(target);
                     success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
                 }
@@ -172,6 +183,11 @@ public class TargetedSkillAction
             {
                 player.Logger.LogWarning($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
             }
+        }
+
+        if (isCombo)
+        {
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, targetedTarget), true).ConfigureAwait(false);
         }
 
         return success;

@@ -29,6 +29,13 @@ public class AttackerSurrogate : IAttacker, IWorldObserver, IPlayerSurrogate
     /// <inheritdoc />
     public Player Owner { get; }
 
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Pets don't use "skills", so it doesn't make sense to pass the
+    /// combo state of the player here.
+    /// </remarks>
+    public ComboStateMachine? ComboState => null;
+
     /// <inheritdoc />
     public ushort Id => this.Owner.Id;
 
