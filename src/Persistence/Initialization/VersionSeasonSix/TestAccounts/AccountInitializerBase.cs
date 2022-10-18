@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.TestAccounts;
 
+using System;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -253,6 +254,16 @@ internal abstract class AccountInitializerBase : InitializerBase
                 questInfo220.Group = QuestConstants.LegacyQuestGroup;
                 questInfo220.LastFinishedQuest = marlonQuest;
                 character.QuestStates.Add(questInfo220);
+            }
+
+            var comboQuest = marlonNpc.Quests
+                .Where(q => q.QualifiedCharacter == character.CharacterClass
+                            || q.QualifiedCharacter!.NextGenerationClass == character.CharacterClass)
+                .FirstOrDefault(q => q.Rewards.Any(r => r.AttributeReward == Stats.IsSkillComboAvailable));
+            if (comboQuest is { })
+            {
+                var attribute = this.Context.CreateNew<StatAttribute>(Stats.IsSkillComboAvailable.GetPersistent(this.GameConfiguration), 1);
+                character.Attributes.Add(attribute);
             }
         }
 

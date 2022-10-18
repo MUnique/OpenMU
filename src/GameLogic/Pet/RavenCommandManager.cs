@@ -115,7 +115,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
 
         if (attackType == PetAttackType.SingleTarget)
         {
-            await target.AttackByAsync(this._petAttackerSurrogate, null).ConfigureAwait(false);
+            await target.AttackByAsync(this._petAttackerSurrogate, null, false).ConfigureAwait(false);
         }
         else
         {
@@ -152,7 +152,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
                         true)
                     .ConfigureAwait(false);
 
-                await target.AttackByAsync(this._petAttackerSurrogate, null).ConfigureAwait(false);
+                await target.AttackByAsync(this._petAttackerSurrogate, null, false).ConfigureAwait(false);
                 await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
             }
         }

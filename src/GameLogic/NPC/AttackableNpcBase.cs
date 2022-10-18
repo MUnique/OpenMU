@@ -99,9 +99,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                                   || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this._eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
 
     /// <inheritdoc />
-    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill)
+    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo)
     {
-        var hitInfo = attacker.CalculateDamage(this, skill);
+        var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo).ConfigureAwait(false);
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
         if (hitInfo.HealthDamage > 0)
         {

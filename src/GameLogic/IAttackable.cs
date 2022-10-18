@@ -58,7 +58,8 @@ public interface IAttackable : IIdentifiable, ILocateable
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     /// <param name="skill">The skill.</param>
-    ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill);
+    /// <param name="isCombo">If set to <c>true</c>, the attacker did a combination of skills.</param>
+    ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo);
 
     /// <summary>
     /// Reflects the damage which was done previously with <see cref="AttackByAsync" /> or even <see cref="ReflectDamageAsync" /> to the <paramref name="reflector" />.

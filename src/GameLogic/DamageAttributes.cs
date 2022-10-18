@@ -49,4 +49,9 @@ public enum DamageAttributes
     /// The damage was reflected.
     /// </summary>
     Reflected = 64,
+
+    /// <summary>
+    /// The damage includes the combo bonus.
+    /// </summary>
+    Combo = 128,
 }

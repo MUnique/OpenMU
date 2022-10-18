@@ -84,13 +84,17 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <inheritdoc/>
     public TimeSpan StepDelay => this.Definition.MoveDelay;
 
+    /// <inheritdoc/>
+    /// <remarks>Monsters don't do combos.</remarks>
+    public ComboStateMachine? ComboState => null;
+
     /// <summary>
     /// Attacks the specified target.
     /// </summary>
     /// <param name="target">The target.</param>
     public async ValueTask AttackAsync(IAttackable target)
     {
-        await target.AttackByAsync(this, null).ConfigureAwait(false);
+        await target.AttackByAsync(this, null, false).ConfigureAwait(false);
 
         await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowMonsterAttackAnimationAsync(this, target, this.GetDirectionTo(target)), true).ConfigureAwait(false);
         if (this.Definition.AttackSkill is { } attackSkill)

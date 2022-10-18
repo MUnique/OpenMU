@@ -134,6 +134,26 @@ public partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.Cha
         set => base.HomeMap = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="ComboDefinition" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("comboDefinition")]
+    [System.Text.Json.Serialization.JsonPropertyName("comboDefinition")]
+    public SkillComboDefinition RawComboDefinition
+    {
+        get => base.ComboDefinition as SkillComboDefinition;
+        set => base.ComboDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition ComboDefinition
+    {
+        get => base.ComboDefinition;
+        set => base.ComboDefinition = value;
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

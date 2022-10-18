@@ -107,6 +107,32 @@ internal partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.C
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="ComboDefinition"/>.
+    /// </summary>
+    public Guid? ComboDefinitionId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ComboDefinition" />.
+    /// </summary>
+    [ForeignKey(nameof(ComboDefinitionId))]
+    public SkillComboDefinition RawComboDefinition
+    {
+        get => base.ComboDefinition as SkillComboDefinition;
+        set => base.ComboDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition ComboDefinition
+    {
+        get => base.ComboDefinition;set
+        {
+            base.ComboDefinition = value;
+            this.ComboDefinitionId = this.RawComboDefinition?.Id;
+        }
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

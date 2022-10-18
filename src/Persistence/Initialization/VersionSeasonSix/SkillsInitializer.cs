@@ -489,6 +489,42 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.MapSkillsToEffects();
         this.InitializeMasterSkillData();
         this.CreateSpecialSummonMonsters();
+        this.CreateSkillCombos();
+    }
+
+    private void CreateSkillCombos()
+    {
+        var bladeKnightCombo = this.Context.CreateNew<SkillComboDefinition>();
+        var bladeKnight = this.GameConfiguration.CharacterClasses.First(c => c.Number == (byte)CharacterClassNumber.BladeKnight);
+        bladeKnight.ComboDefinition = bladeKnightCombo;
+
+        bladeKnightCombo.Name = "Blade Knight Combo";
+
+        this.AddComboStep(SkillNumber.Slash, 1, bladeKnightCombo);
+        this.AddComboStep(SkillNumber.Cyclone, 1, bladeKnightCombo);
+        this.AddComboStep(SkillNumber.Lunge, 1, bladeKnightCombo);
+        this.AddComboStep(SkillNumber.FallingSlash, 1, bladeKnightCombo);
+        this.AddComboStep(SkillNumber.Uppercut, 1, bladeKnightCombo);
+
+        this.AddComboStep(SkillNumber.TwistingSlash, 2, bladeKnightCombo);
+        this.AddComboStep(SkillNumber.RagefulBlow, 2, bladeKnightCombo);
+        this.AddComboStep(SkillNumber.DeathStab, 2, bladeKnightCombo);
+        this.AddComboStep(SkillNumber.StrikeofDestruction, 2, bladeKnightCombo);
+
+        this.AddComboStep(SkillNumber.TwistingSlash, 3, bladeKnightCombo, true);
+        this.AddComboStep(SkillNumber.RagefulBlow, 3, bladeKnightCombo, true);
+        this.AddComboStep(SkillNumber.DeathStab, 3, bladeKnightCombo, true);
+    }
+
+    private void AddComboStep(SkillNumber skillNumber, int order, SkillComboDefinition comboDefinition, bool isFinal = false)
+    {
+        var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
+        var step = this.Context.CreateNew<SkillComboStep>();
+        comboDefinition.Steps.Add(step);
+        comboDefinition.MaximumCompletionTime = TimeSpan.FromSeconds(3);
+        step.Skill = skill;
+        step.Order = order;
+        step.IsFinalStep = isFinal;
     }
 
     private void InitializeEffects()

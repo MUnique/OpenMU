@@ -15,4 +15,9 @@ public interface IAttacker : IIdentifiable, ILocateable
     /// Gets the attributes.
     /// </summary>
     IAttributeSystem Attributes { get; }
+
+    /// <summary>
+    /// Gets the state of the combo, if the attacker supports combos.
+    /// </summary>
+    ComboStateMachine? ComboState { get; }
 }

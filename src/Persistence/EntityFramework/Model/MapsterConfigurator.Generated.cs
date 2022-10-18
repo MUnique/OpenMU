@@ -170,6 +170,12 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Skill, MUnique.OpenMU.DataModel.Configuration.Skill>()
             .Include<Skill, BasicModel.Skill>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition, MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition>()
+            .Include<SkillComboDefinition, BasicModel.SkillComboDefinition>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.SkillComboStep, MUnique.OpenMU.DataModel.Configuration.SkillComboStep>()
+            .Include<SkillComboStep, BasicModel.SkillComboStep>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition, MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>()
             .Include<StatAttributeDefinition, BasicModel.StatAttributeDefinition>();
 

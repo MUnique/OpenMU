@@ -42,4 +42,10 @@ public class ShowSkillAnimationPlugIn075 : IShowSkillAnimationPlugIn
 
         await this._player.Connection.SendSkillAnimation075Async(skillId, playerId, targetId, effectApplied).ConfigureAwait(false);
     }
+
+    /// <inheritdoc/>
+    public ValueTask ShowComboAnimationAsync(IAttacker attacker, IAttackable? target)
+    {
+        return ValueTask.CompletedTask;
+    }
 }

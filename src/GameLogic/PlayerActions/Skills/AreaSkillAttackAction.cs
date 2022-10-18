@@ -75,6 +75,12 @@ public class AreaSkillAttackAction
                     .Where(a => a != player)
                     .Where(a => !a.IsAtSafezone());
 
+        bool isCombo = false;
+        if (player.ComboState is { } comboState)
+        {
+            isCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
+        }
+
         if (attackablesInRange is not null)
         {
             if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillTargetFilter>(skill.Number) is { } filterPlugin)
@@ -89,7 +95,7 @@ public class AreaSkillAttackAction
 
             foreach (var target in attackablesInRange)
             {
-                await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter).ConfigureAwait(false);
+                await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
 
                 if (target == extraTarget)
                 {
@@ -104,17 +110,22 @@ public class AreaSkillAttackAction
             && player.IsInRange(extraTarget.Position, skill.Range + 2)
             && !player.IsAtSafezone())
         {
-            await this.ApplySkillAsync(player, skillEntry, extraTarget, targetAreaCenter).ConfigureAwait(false);
+            await this.ApplySkillAsync(player, skillEntry, extraTarget, targetAreaCenter, isCombo).ConfigureAwait(false);
+        }
+
+        if (isCombo)
+        {
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, extraTarget), true).ConfigureAwait(false);
         }
     }
 
-    private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter)
+    private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter, bool isCombo)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
 
         if (target.CheckSkillTargetRestrictions(player, skillEntry.Skill))
         {
-            await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
+            await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
             await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
             if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number) is { } strategy)
             {
