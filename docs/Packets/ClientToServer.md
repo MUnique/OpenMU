@@ -71,6 +71,7 @@
   * [C1 A2 - LegacyQuestStateSetRequest (by client)](C1-A2-LegacyQuestStateSetRequest_by-client.md)
   * [C1 A7 - PetCommandRequest (by client)](C1-A7-PetCommandRequest_by-client.md)
   * [C1 A9 - PetInfoRequest (by client)](C1-A9-PetInfoRequest_by-client.md)
+  * [C3 B0 - TeleportTarget (by client)](C3-B0-TeleportTarget_by-client.md)
   * [C1 BC - LahapJewelMixRequest (by client)](C1-BC-LahapJewelMixRequest_by-client.md)
   * [C1 C1 - FriendAddRequest (by client)](C1-C1-FriendAddRequest_by-client.md)
   * [C1 C2 - FriendAddResponse (by client)](C1-C2-FriendAddResponse_by-client.md)

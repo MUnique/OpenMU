@@ -2433,6 +2433,103 @@ public readonly ref struct EnterGateRequest075Ref
 
 
 /// <summary>
+/// Is sent by the client when: A wizard uses the 'Teleport Ally' skill to teleport a party member of his view range to a nearby coordinate.
+/// Causes reaction on server side: If the target player is in the same party and in the range, it will teleported to the specified coordinates.
+/// </summary>
+public readonly ref struct TeleportTargetRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TeleportTargetRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public TeleportTargetRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TeleportTargetRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private TeleportTargetRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC3;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB0;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C3HeaderRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the target id.
+    /// </summary>
+    public ushort TargetId
+    {
+        get => ReadUInt16LittleEndian(this._data[3..]);
+        set => WriteUInt16LittleEndian(this._data[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the teleport target x.
+    /// </summary>
+    public byte TeleportTargetX
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the teleport target y.
+    /// </summary>
+    public byte TeleportTargetY
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="TeleportTarget"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator TeleportTargetRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="TeleportTarget"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(TeleportTargetRef packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the client when: The player wants to unlock the protected vault with a pin.
 /// Causes reaction on server side: The vault lock state on the server is updated. VaultProtectionInformation is sent as response.
 /// </summary>
