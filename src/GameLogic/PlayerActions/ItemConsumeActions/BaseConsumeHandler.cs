@@ -35,16 +35,6 @@ public class BaseConsumeHandler : IItemConsumeHandler
         {
             item.Durability -= 1;
         }
-
-        if (item.Durability == 0)
-        {
-            if (player.Inventory is { } inventory)
-            {
-                await inventory.RemoveItemAsync(item).ConfigureAwait(false);
-            }
-
-            await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
-        }
     }
 
     /// <summary>
