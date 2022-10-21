@@ -821,6 +821,38 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="TeleportTarget" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <param name="teleportTargetX">The teleport target x.</param>
+    /// <param name="teleportTargetY">The teleport target y.</param>
+    /// <remarks>
+    /// Is sent by the client when: A wizard uses the 'Teleport Ally' skill to teleport a party member of his view range to a nearby coordinate.
+    /// Causes reaction on server side: If the target player is in the same party and in the range, it will teleported to the specified coordinates.
+    /// </remarks>
+    public static async ValueTask SendTeleportTargetAsync(this IConnection? connection, ushort @targetId, byte @teleportTargetX, byte @teleportTargetY)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = TeleportTargetRef.Length;
+            var packet = new TeleportTargetRef(connection.Output.GetSpan(length)[..length]);
+            packet.TargetId = @targetId;
+            packet.TeleportTargetX = @teleportTargetX;
+            packet.TeleportTargetY = @teleportTargetY;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="UnlockVault" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

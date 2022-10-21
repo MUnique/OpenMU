@@ -658,6 +658,32 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>B0</Code>
+      <Name>TeleportTarget</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A wizard uses the 'Teleport Ally' skill to teleport a party member of his view range to a nearby coordinate.</SentWhen>
+      <CausedReaction>If the target player is in the same party and in the range, it will teleported to the specified coordinates.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TeleportTargetX</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>TeleportTargetY</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>82</Code>
       <SubCode>00</SubCode>
