@@ -131,7 +131,19 @@ public class EntityFrameworkContextBase : IContext
         where T : class
     {
         using var l = await this._lock.LockAsync();
-        var result = this.Context.Remove(obj) is { };
+
+        var result = false;
+        if (this.Context.Entry(obj) is { } entry)
+        {
+            if (entry.State == EntityState.Detached)
+            {
+                return true;
+            }
+
+            this.Context.Remove(obj);
+            result = true;
+        }
+
         if (result)
         {
             this.ForEachAggregate(obj, a => this.Context.Remove(a));
