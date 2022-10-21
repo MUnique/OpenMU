@@ -28,7 +28,7 @@ Some general notes:
 | 12     | Aqua Beam                   | works                                                            |
 | 13     | Cometfall                   | works                                                            |
 | 14     | Inferno                     | works                                                            |
-| 15     | Teleport Ally               | not implemented yet                                              |
+| 15     | Teleport Ally               | works                                                            |
 | 16     | Soul Barrier                | works                                                            |
 | 17     | Energy Ball                 | works                                                            |
 | 18     | Defense                     | works                                                            |
