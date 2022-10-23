@@ -85,6 +85,8 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 7, Stats.TotalVitality));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalEnergy));
 
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.NovaBonusDamage, 1.0f / 2, Stats.TotalStrength));
+
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(30, Stats.MaximumHealth));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));

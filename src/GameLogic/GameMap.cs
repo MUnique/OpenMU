@@ -109,7 +109,7 @@ public class GameMap
     /// <param name="point">The coordinates.</param>
     /// <param name="range">The range.</param>
     /// <returns>The attackables in range of the specified coordinate.</returns>
-    public IEnumerable<IAttackable> GetAttackablesInRange(Point point, int range)
+    public IList<IAttackable> GetAttackablesInRange(Point point, int range)
     {
         return this._areaOfInterestManager.GetInRange(point, range).OfType<IAttackable>().ToList();
     }

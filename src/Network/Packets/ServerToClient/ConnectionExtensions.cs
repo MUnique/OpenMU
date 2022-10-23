@@ -4030,6 +4030,38 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="SkillStageUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="stage">The stage.</param>
+    /// <param name="skillNumber">The skill number.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a player started a skill which needs to load up, like Nova.
+    /// Causes reaction on client side: The client may show the loading intensity.
+    /// </remarks>
+    public static async ValueTask SendSkillStageUpdateAsync(this IConnection? connection, ushort @objectId, byte @stage, byte @skillNumber = 0x28)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SkillStageUpdateRef.Length;
+            var packet = new SkillStageUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.ObjectId = @objectId;
+            packet.SkillNumber = @skillNumber;
+            packet.Stage = @stage;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="FriendAdded" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

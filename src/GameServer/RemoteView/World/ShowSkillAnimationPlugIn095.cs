@@ -21,6 +21,7 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(0, 95, ClientLanguage.Invariant)]
 public class ShowSkillAnimationPlugIn095 : IShowSkillAnimationPlugIn
 {
+    private const byte NovaStartSkillId = 58;
     private const byte ComboSkillId = 59;
     private readonly RemotePlayer _player;
 
@@ -50,5 +51,12 @@ public class ShowSkillAnimationPlugIn095 : IShowSkillAnimationPlugIn
         var playerId = attacker.GetId(this._player);
         var targetId = ((IIdentifiable?)target ?? attacker).GetId(this._player);
         await this._player.Connection.SendSkillAnimation095Async(ComboSkillId, playerId, targetId, false).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ShowNovaStartAsync(IAttacker attacker)
+    {
+        var playerId = attacker.GetId(this._player);
+        await this._player.Connection.SendSkillAnimation095Async(NovaStartSkillId, playerId, 0, false).ConfigureAwait(false);
     }
 }

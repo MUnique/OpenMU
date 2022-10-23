@@ -48,4 +48,10 @@ public class ShowSkillAnimationPlugIn075 : IShowSkillAnimationPlugIn
     {
         return ValueTask.CompletedTask;
     }
+
+    /// <inheritdoc/>
+    public ValueTask ShowNovaStartAsync(IAttacker attacker)
+    {
+        return ValueTask.CompletedTask;
+    }
 }

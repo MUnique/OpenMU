@@ -65,6 +65,8 @@ internal enum SkillNumber
     FireSlash = 55,
     PowerSlash = 56,
     SpiralSlash = 57,
+    NovaStart = 58,
+    Combo = 59,
     Force = 60,
     FireBurst = 61,
     Earthshake = 62,

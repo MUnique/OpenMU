@@ -22,8 +22,11 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
 {
     private const ushort ForceSkillId = 60;
     private const ushort ForceWaveSkillId = 66;
+    private const ushort NovaSkillId = 40;
+    private const ushort NovaStartId = 58;
 
-    private readonly TargetedSkillAction _attackAction = new ();
+    private readonly TargetedSkillAction _attackAction = new();
+    private readonly NovaSkillAction _novaSkillAction = new();
 
     /// <inheritdoc/>
     public virtual bool IsEncryptionExpected => true;
@@ -35,6 +38,7 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
     public virtual async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         TargetedSkill message = packet;
+
         await this.HandleAsync(player, message.SkillId, message.TargetId).ConfigureAwait(false);
     }
 
@@ -46,7 +50,8 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
     /// <param name="targetId">The target identifier.</param>
     protected async ValueTask HandleAsync(Player player, ushort skillId, ushort targetId)
     {
-        if (player.SkillList is null || !player.SkillList.ContainsSkill(skillId))
+        var checkSkill = skillId == NovaStartId ? NovaSkillId : skillId;
+        if (player.SkillList is null || !player.SkillList.ContainsSkill(checkSkill))
         {
             return;
         }
@@ -56,6 +61,20 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
         if (skillId == ForceSkillId && player.SkillList.ContainsSkill(ForceWaveSkillId))
         {
             skillId = ForceWaveSkillId;
+        }
+
+        if (skillId is NovaSkillId or NovaStartId)
+        {
+            if (skillId == NovaStartId)
+            {
+                await this._novaSkillAction.StartNovaSkillAsync(player).ConfigureAwait(false);
+            }
+            else
+            {
+                await this._novaSkillAction.StopNovaSkillAsync(player, targetId).ConfigureAwait(false);
+            }
+
+            return;
         }
 
         // The target can be the own player too, for example when using buff skills.

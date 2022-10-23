@@ -84,6 +84,11 @@ public enum SkillType
     AreaSkillExplicitTarget = 5,
 
     /// <summary>
+    /// The nova skill which hits all targets in range and applies some bonus damage.
+    /// </summary>
+    Nova = 6,
+
+    /// <summary>
     /// The buff skill type. Applies magic effects on players.
     /// </summary>
     Buff = 10,

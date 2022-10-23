@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
@@ -415,6 +416,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public WeakReference<Player>? LastRequestedPlayerStore { get; set; }
 
     /// <summary>
+    /// Gets or sets the cancellation token source for the nova skill.
+    /// </summary>
+    public NovaCancellationTokenSource? NovaCancellationTokenSource { get; set; }
+
+    /// <summary>
     /// Sets the selected character.
     /// </summary>
     /// <param name="character">The character.</param>
@@ -542,6 +548,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.IsTeleporting = true;
         try
         {
+            this.NovaCancellationTokenSource?.Cancel();
+
             await this._walker.StopAsync().ConfigureAwait(false);
 
             var previous = this.Position;

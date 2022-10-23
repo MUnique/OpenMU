@@ -22,7 +22,12 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
 {
-    private const ushort ComboSkillId = 59;
+    /// <summary>
+    /// The combo skill identifier.
+    /// </summary>
+    internal const ushort ComboSkillId = 59;
+
+    private const ushort NovaStartSkillId = 58;
     private const short ForceSkillId = 60;
     private const short ForceWaveSkillId = 66;
 
@@ -60,5 +65,12 @@ public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
         var playerId = attacker.GetId(this._player);
         var targetId = ((IIdentifiable?)target ?? attacker).GetId(this._player);
         await this._player.Connection.SendSkillAnimationAsync(ComboSkillId, playerId, targetId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ShowNovaStartAsync(IAttacker attacker)
+    {
+        var playerId = attacker.GetId(this._player);
+        await this._player.Connection.SendSkillAnimationAsync(NovaStartSkillId, playerId, 0).ConfigureAwait(false);
     }
 }
