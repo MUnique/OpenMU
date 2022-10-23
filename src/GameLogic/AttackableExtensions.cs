@@ -486,6 +486,14 @@ public static class AttackableExtensions
             var skillDamage = skill.GetDamage();
             minimumBaseDamage += skillDamage;
             maximumBaseDamage += skillDamage;
+
+            if (skill.Skill.SkillType == SkillType.Nova)
+            {
+                var novaDamage = (int)(attackerStats[Stats.NovaBonusDamage] + attackerStats[Stats.NovaStageDamage]);
+
+                minimumBaseDamage += novaDamage;
+                maximumBaseDamage += novaDamage;
+            }
         }
 
         switch (damageType)

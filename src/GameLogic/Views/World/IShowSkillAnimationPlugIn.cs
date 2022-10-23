@@ -33,4 +33,10 @@ public interface IShowSkillAnimationPlugIn : IViewPlugIn
     /// <param name="attacker">The attacking object.</param>
     /// <param name="target">The optional target.</param>
     ValueTask ShowComboAnimationAsync(IAttacker attacker, IAttackable? target);
+
+    /// <summary>
+    /// Shows the nova start skill animation.
+    /// </summary>
+    /// <param name="attacker">The attacking object.</param>
+    ValueTask ShowNovaStartAsync(IAttacker attacker);
 }

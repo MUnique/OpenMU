@@ -705,6 +705,16 @@ public class Stats
     public static AttributeDefinition RequiredLeadershipReduction { get; } = new (new Guid("8E6244B8-8E88-4413-B18E-0D2812830DFE"), "Leadership Requirement reduction", "Items with this option require less leadership, according to the option's value.");
 
     /// <summary>
+    /// Gets the attribute for the nova bonus damage which depends on other stats.
+    /// </summary>
+    public static AttributeDefinition NovaBonusDamage { get; } = new(new Guid("0ABE8432-7F23-4CE9-BBCC-B8A633DAC08B"), "Nova Bonus Damage", "The nova bonus bonus damage, which depends on other stats.");
+
+    /// <summary>
+    /// Gets the attribute for the nova stage damage which depends on the duration of the skill.
+    /// </summary>
+    public static AttributeDefinition NovaStageDamage { get; } = new(new Guid("9185A46A-4C56-4FF1-A0D2-C0CD58CB17FB"), "Nova Stage Damage", "The currently reached nova stage bonus which depends on the duration of the skill.");
+
+    /// <summary>
     /// Gets the attributes which are regenerated in an interval.
     /// </summary>
     public static IEnumerable<Regeneration> IntervalRegenerationAttributes

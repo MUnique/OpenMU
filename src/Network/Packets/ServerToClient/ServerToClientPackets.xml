@@ -7228,6 +7228,33 @@
         </Field>
       </Fields>
     </Packet>
+	<Packet>
+	  <HeaderType>C1Header</HeaderType>
+	  <Code>BA</Code>
+	  <Name>SkillStageUpdate</Name>
+	  <Length>7</Length>
+	  <Direction>ServerToClient</Direction>
+	  <SentWhen>After a player started a skill which needs to load up, like Nova.</SentWhen>
+	  <CausedReaction>The client may show the loading intensity.</CausedReaction>
+	  <Fields>
+		  <Field>
+			  <Index>3</Index>
+			  <Type>ShortLittleEndian</Type>
+			  <Name>ObjectId</Name>
+		  </Field>
+		  <Field>
+			  <Index>5</Index>
+			  <Type>Byte</Type>
+			  <Name>SkillNumber</Name>
+			  <DefaultValue>0x28</DefaultValue>
+		  </Field>
+		  <Field>
+			  <Index>6</Index>
+			  <Type>Byte</Type>
+			  <Name>Stage</Name>
+		  </Field>
+	  </Fields>
+	</Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>
       <Code>C0</Code>

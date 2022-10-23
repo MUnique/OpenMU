@@ -50,7 +50,7 @@ Some general notes:
 | 36     | Summon Soldier              | works                                                            |
 | 38     | Decay                       | works                                                            |
 | 39     | Ice Storm                   | works                                                            |
-| 40     | Nova                        | not implemented yet                                              |
+| 40     | Nova                        | works                                                            |
 | 41     | Twisting Slash              | works                                                            |
 | 42     | Rageful Blow                | works                                                            |
 | 43     | Death Stab                  | works                                                            |
