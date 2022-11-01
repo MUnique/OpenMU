@@ -18,7 +18,8 @@ public class LocalIpResolver : IIpAddressResolver
         {
             var localHostEntry = await Dns.GetHostEntryAsync(Dns.GetHostName()).ConfigureAwait(false);
             var localAddress = localHostEntry.AddressList
-                .FirstOrDefault(address => address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+                .FirstOrDefault(address => address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
+                    && !IPAddress.IsLoopback(address));
             if (localAddress != null)
             {
                 return localAddress;
