@@ -22,7 +22,6 @@ You can start the server with the following parameters:
 | -version:[season6\|0.75]    | Defines the version of the game client. Has only effect with *-reinit* or *-demo* and affects the initial data creation. Default: season6|
 | -demo       | Instead of using an external database, it uses in-memory repositories and data is initialized at each start. Only for testing, not for production usage, as player progress is **not saved** to a database or file. |
 | -deamon     | Deactivates handling of console inputs |
-| -adminport:[1 to 65535] | Defines the tcp port which should be used for the admin panel. Default: 1234 |
 | -adminpanel:[enabled\|disabled] | Defines if the admin panel is available. If disabled, *-autostart* is applied automatically. Default: enabled |
 
 ### -resolveIP
@@ -42,3 +41,17 @@ It supports the following values:
 | local  | Determines a local ip. If none is found, a loopback IP is used (127.127.127.127). | -resolveIP:local |
 | loopback  | For testing on the same machine, a loopback IP is used (127.127.127.127). | -resolveIP:loopback |
 | [An IPv4-Address] | Defines a custom and constant IP address| -resolveIP:140.82.118.4 |
+
+## Environment variables
+
+Additionally (and optionally), there are some settings which can be controlled with environment variables.
+They may be helpful when running the server in a container or under linux.
+
+| Variable    | Description       |
+|-------------|-------------------|
+| RESOLVE_IP  | See *-resolveIP* parameter. Same description and values applies here. Is only considered, when there is no *-resolveIP* parameter. |
+| ASPNETCORE_ENVIRONMENT | If no *-resolveIP* parameter and no *RESOLVE_IP* variable is defined, the variable *ASPNETCORE_ENVIRONMENT* is considered to find the optimal ip resolver. If the value is "Development", it uses 'loopback'; Otherwise, it uses 'public'. |
+| ASPNETCORE_URLS | Defines the address of the admin panel. Example: 'http://+:80' |
+| DB_HOST | Host name/address of the postgres database |
+| DB_ADMIN_USER | User name of the admin user of the postgres database |
+| DB_ADMIN_PW   | Password of the admin user of the postgres database |
