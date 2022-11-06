@@ -21,7 +21,7 @@ internal class SkillsInitializer : SkillsInitializerBase
     private const string Formula51173 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 5"; // 13
     private const string Formula181 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 1.5"; // 7
     private const string FormulaRecoveryIncrease181 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 1.5 * 0.01"; // 7
-    private const string Formula120 = "1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)"; // 1    // about 1.2 to 9.0
+    private const string Formula120 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12))"; // 1    // about 1.2 to 9.0
     private const string Formula120Value = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 0.01"; // 1    // about 0.012 to 0.09
     private const string FormulaRecoveryIncrease120 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) / 100"; // 1
     private const string FormulaIncreaseMultiplicator120 = "(101 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) / 100"; // 1
@@ -730,7 +730,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         // DL
         this.AddMasterSkillDefinition(SkillNumber.FireBurstStreng, SkillNumber.FireBurst, SkillNumber.Undefined, 2, 2, SkillNumber.FireBurst, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.ForceWaveStreng, SkillNumber.Force, SkillNumber.Undefined, 2, 2, SkillNumber.Force, 20, Formula632);
-        this.AddMasterSkillDefinition(SkillNumber.DarkHorseStreng1, SkillNumber.Undefined, SkillNumber.Undefined, 2, 2, SkillNumber.Undefined, 20, Formula1204);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.DarkHorseStreng1, Stats.BonusDefenseWithHorse, AggregateType.AddRaw, Formula1204, 2, 2);
         this.AddMasterSkillDefinition(SkillNumber.CriticalDmgIncPowUp, SkillNumber.IncreaseCriticalDamage, SkillNumber.Undefined, 2, 3, SkillNumber.IncreaseCriticalDamage, 20, Formula632);
         this.AddMasterSkillDefinition(SkillNumber.EarthshakeStreng, SkillNumber.Earthshake, SkillNumber.DarkHorseStreng1, 2, 3, SkillNumber.Earthshake, 20, Formula502);
         this.AddPassiveMasterSkillDefinition(SkillNumber.WeaponMasteryLordEmperor, Stats.PhysicalBaseDmg, AggregateType.AddRaw, Formula502, 3, 2);
@@ -739,15 +739,17 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddMasterSkillDefinition(SkillNumber.EarthshakeMastery, SkillNumber.EarthshakeStreng, SkillNumber.Undefined, 2, 4, SkillNumber.Earthshake, 20, Formula120);
         this.AddMasterSkillDefinition(SkillNumber.CritDmgIncPowUp3, SkillNumber.CritDmgIncPowUp2, SkillNumber.Undefined, 2, 5, SkillNumber.IncreaseCriticalDamage, 20, Formula181);
         this.AddMasterSkillDefinition(SkillNumber.FireScreamStren, SkillNumber.FireScream, SkillNumber.Undefined, 2, 5, SkillNumber.FireScream, 20, Formula502);
-        this.AddMasterSkillDefinition(SkillNumber.DarkSpiritStr, SkillNumber.Undefined, SkillNumber.Undefined, 3, 2, SkillNumber.Undefined, 20, Formula632);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.DarkSpiritStr, Stats.RavenBaseDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.ScepterStrengthener, Stats.ScepterBonusBaseDamage, AggregateType.AddRaw, Formula502, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.ShieldStrengthenerLordEmperor, Stats.BonusDefenseWithShield, AggregateType.AddRaw, Formula803, 2, 3);
-        this.AddMasterSkillDefinition(SkillNumber.UseScepterPetStr, SkillNumber.Undefined, SkillNumber.Undefined, 3, 2, SkillNumber.Undefined, 20, Formula632);
-        this.AddMasterSkillDefinition(SkillNumber.DarkSpiritStr2, SkillNumber.DarkSpiritStr, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula181);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.ScepterMastery, Stats.ScepterBonusBaseDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.ScepterStrengthener);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.UseScepterPetStr, Stats.ScepterPetBonusBaseDamage, AggregateType.AddRaw, Formula632, 2, 3);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.DarkSpiritStr2, Stats.RavenCriticalDamageChanceBonus, AggregateType.AddRaw, $"{Formula181} / 100", Formula181, 3, 3, SkillNumber.DarkSpiritStr);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.ScepterMastery, Stats.ScepterBonusBaseDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.ScepterStrengthener); // todo pvp
         this.AddPassiveMasterSkillDefinition(SkillNumber.ShieldMastery, Stats.BonusDefenseWithShield, AggregateType.AddRaw, Formula1204, 3, 3, SkillNumber.ShieldStrengthenerLordEmperor);
+        
+        // todo Gets additional 1 Defense per x command stat while equipping scepter
         this.AddMasterSkillDefinition(SkillNumber.CommandAttackInc, SkillNumber.UseScepterPetStr, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula3822);
-        this.AddMasterSkillDefinition(SkillNumber.DarkSpiritStr3, SkillNumber.DarkSpiritStr2, SkillNumber.Undefined, 3, 5, SkillNumber.Undefined, 20, Formula120);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.DarkSpiritStr3, Stats.RavenExcDamageChanceBonus, AggregateType.AddRaw, $"{Formula120} / 100", Formula120,5, 3, SkillNumber.DarkSpiritStr2);
         this.AddPassiveMasterSkillDefinition(SkillNumber.PetDurabilityStr, Stats.PetDurationIncrease, AggregateType.Multiplicate, Formula1204, 5, 3);
 
         // RF
@@ -777,6 +779,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.IncreaseMaximumMana, Stats.MaximumMana, AggregateType.AddRaw, Formula5418, 5, 2, SkillNumber.IncreaseMaximumHp);
         this.AddMasterSkillDefinition(SkillNumber.DragonRoarStrengthener, SkillNumber.DragonRoar, SkillNumber.Undefined, 2, 5, SkillNumber.DragonRoar, 20, Formula502);
         this.AddPassiveMasterSkillDefinition(SkillNumber.IncreasePvPAttackRate, Stats.AttackRatePvp, AggregateType.AddRaw, Formula32751, 1, 3);
+        
+        // todo
         this.AddMasterSkillDefinition(SkillNumber.EquippedWeaponStrengthener, SkillNumber.Undefined, SkillNumber.Undefined, 3, 2, SkillNumber.Undefined, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.DefSuccessRateIncPowUp, SkillNumber.IncreaseBlock, SkillNumber.Undefined, 3, 2, SkillNumber.IncreaseBlock, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.EquippedWeaponMastery, SkillNumber.EquippedWeaponStrengthener, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula120);

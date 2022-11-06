@@ -90,15 +90,18 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalEnergy));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalLeadership));
 
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMinimumDamage, 1, Stats.RavenBaseDamage));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMinimumDamage, 1.0f / 8, Stats.TotalLeadership));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMinimumDamage, 15, Stats.RavenLevel));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMaximumDamage, 1.0f / 4, Stats.TotalLeadership));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMaximumDamage, 15, Stats.RavenLevel));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMaximumDamage, 1, Stats.RavenBaseDamage));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackSpeed, 1.0f / 50, Stats.TotalLeadership));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackSpeed, 4.0f / 5, Stats.RavenLevel));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackRate, 16, Stats.RavenLevel));
 
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.PhysicalBaseDmg, Stats.IsScepterEquipped, Stats.ScepterBonusBaseDamage));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.RavenBaseDamage, Stats.IsScepterEquipped, Stats.ScepterPetBonusBaseDamage));
 
         /* TODO: Add these stats
                                     Critical dmg = cmd/25+str/30

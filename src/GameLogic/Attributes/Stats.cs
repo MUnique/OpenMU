@@ -417,6 +417,16 @@ public class Stats
     public static AttributeDefinition ScepterBonusBaseDamage { get; } = new(new Guid("4E4373A5-F5DB-4D06-B5C1-EE798B58017E"), "Scepter Bonus Base Damage", string.Empty);
 
     /// <summary>
+    /// Gets the scepter pet bonus base damage.
+    /// </summary>
+    public static AttributeDefinition ScepterPetBonusBaseDamage { get; } = new(new Guid("5706451D-6A73-4462-B559-31C7F847994E"), "Scepter Pet Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a horse equipped.
+    /// </summary>
+    public static AttributeDefinition IsHorseEquipped { get; } = new(new Guid("4CDC3CCC-9266-4EEE-9C91-0E6AAFA8B636"), "Is Horse equipped", string.Empty);
+
+    /// <summary>
     /// Gets the is a glove weapon equipped.
     /// </summary>
     public static AttributeDefinition IsGloveWeaponEquipped { get; } = new(new Guid("BC8FFFCA-A593-4B64-BE37-BF7EDC97CA1E"), "Is Glove Weapon Equipped", string.Empty);
@@ -500,7 +510,12 @@ public class Stats
     /// <summary>
     /// Gets the bonus defense (absolute) with an equipped shield attribute definition.
     /// </summary>
-    public static AttributeDefinition BonusDefenseWithShield { get; } = new(new Guid("05F08D89-9BC6-4164-9B30-26EFAF4C0E0F"), "Defense Increase Bonus (absolute) With Equipped Shield", string.Empty);
+    public static AttributeDefinition BonusDefenseWithShield { get; } = new(new Guid("05F08D89-9BC6-4164-9B30-26EFAF4C0E0F"), "Defense Increase Bonus (absolute) With equipped Shield", string.Empty);
+
+    /// <summary>
+    /// Gets the bonus defense (absolute) with an equipped dark horse attribute definition.
+    /// </summary>
+    public static AttributeDefinition BonusDefenseWithHorse { get; } = new(new Guid("8D22E36C-EB36-47DB-8CE0-9ABD599C533C"), "Defense Increase Bonus (absolute) With equipped Horse", string.Empty);
 
     /// <summary>
     /// Gets the 'is shield equipped' attribute definition.
@@ -724,6 +739,11 @@ public class Stats
     public static AttributeDefinition RavenLevel { get; } = new(new Guid("2C9AA85C-AB8B-4E0F-8F0B-BC6E49EE134E"), "Dark Raven Level", string.Empty);
 
     /// <summary>
+    /// Gets the raven base damage definition.
+    /// </summary>
+    public static AttributeDefinition RavenBaseDamage { get; } = new(new Guid("3F77AD23-3833-4F2F-A264-23F7A4688FDA"), "Min and Max damage of the dark raven.", string.Empty);
+
+    /// <summary>
     /// Gets the raven minimum damage definition.
     /// </summary>
     public static AttributeDefinition RavenMinimumDamage { get; } = new(new Guid("D03B0A96-8233-42A5-9EA1-D92D5F91CE13"), "Minimum damage of the dark raven.", string.Empty);
@@ -742,6 +762,16 @@ public class Stats
     /// Gets the raven attack speed definition.
     /// </summary>
     public static AttributeDefinition RavenAttackSpeed { get; } = new(new Guid("3359F7E9-936C-48DD-BB0A-E44E2347D3CA"), "Attack speed of the dark raven.", string.Empty);
+
+    /// <value>
+    /// Gets the raven critical damage chance bonus.
+    /// </value>
+    public static AttributeDefinition RavenCriticalDamageChanceBonus { get; } = new(new Guid("D9C8D708-F94A-430E-B812-99A2F3F0768E"), "Raven critical damage chance bonus", string.Empty);
+
+    /// <value>
+    /// Gets the raven excellent damage chance bonus.
+    /// </value>
+    public static AttributeDefinition RavenExcDamageChanceBonus { get; } = new(new Guid("31EF09B0-0F79-439B-900C-C9350BAD99DF"), "Raven exc damage chance bonus", string.Empty);
 
     /// <summary>
     /// Gets the maximum guild size attribute definition.

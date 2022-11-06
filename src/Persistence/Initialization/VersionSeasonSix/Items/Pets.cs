@@ -38,7 +38,7 @@ public class Pets : InitializerBase
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true, (Stats.DamageReceiveDecrement, 0.1f), (Stats.AttackDamageIncrease, 0.15f), (Stats.CanFly, 1.0f));
         this.AddDinorantOptions(dinorant);
 
-        var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false);
+        var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false, (Stats.IsHorseEquipped, 1));
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;
         darkHorse.MaximumItemLevel = 50;

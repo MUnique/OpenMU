@@ -246,31 +246,31 @@ Some general notes:
 | 490    | Blood Attack Strengthen       | works           |
 | 508    | Fire Burst Streng             | works           |
 | 509    | Force Wave Streng             | works           |
-| 510    | Dark Horse Streng (1)         | not implemented |
+| 510    | Dark Horse Streng (1)         | works           |
 | 511    | Critical DMG Inc PowUp        | not implemented |
-| 512    | Earthshake Streng             | not implemented |
-| 513    | Weapon Mastery                | not implemented |
-| 514    | Fire Burst Mastery            | not implemented |
+| 512    | Earthshake Streng             | works           |
+| 513    | Weapon Mastery                | works           |
+| 514    | Fire Burst Mastery            | not implemented, stuns target |
 | 515    | Crit DMG Inc PowUp (2)        | not implemented |
-| 516    | Earthshake Mastery            | not implemented |
+| 516    | Earthshake Mastery            | not implemented, stuns target |
 | 517    | Crit DMG Inc PowUp (3)        | not implemented |
-| 518    | Fire Scream Stren             | not implemented |
-| 526    | Dark Spirit Str               | not implemented |
-| 527    | Scepter Strengthener          | not implemented |
-| 528    | Shield Strengthener           | not implemented |
-| 529    | Use Scepter : Pet Str         | not implemented |
-| 530    | Dark Spirit Str (2)           | not implemented |
-| 531    | Scepter Mastery               | not implemented |
-| 532    | Shield Mastery                | not implemented |
-| 533    | Command Attack Inc            | not implemented |
-| 534    | Dark Spirit Str (3)           | not implemented |
-| 535    | Pet Durability Str            | not implemented |
-| 551    | Killing Blow Strengthener     | not implemented |
-| 552    | Beast Uppercut Strengthener   | not implemented |
-| 554    | Killing Blow Mastery          | not implemented |
-| 555    | Beast Uppercut Mastery        | not implemented |
-| 557    | Weapon Mastery                | not implemented |
-| 558    | Chain Drive Strengthener      | not implemented |
+| 518    | Fire Scream Stren             | works           |
+| 526    | Dark Spirit Str               | works           |
+| 527    | Scepter Strengthener          | works           |
+| 528    | Shield Strengthener           | works           |
+| 529    | Use Scepter : Pet Str         | works           |
+| 530    | Dark Spirit Str (2)           | works           |
+| 531    | Scepter Mastery               | works           |
+| 532    | Shield Mastery                | works           |
+| 533    | Command Attack Inc            | not implemented, additional 1 Defense per x command stat while equipping scepter |
+| 534    | Dark Spirit Str (3)           | works           |
+| 535    | Pet Durability Str            | works           |
+| 551    | Killing Blow Strengthener     | works           |
+| 552    | Beast Uppercut Strengthener   | works           |
+| 554    | Killing Blow Mastery          | works           |
+| 555    | Beast Uppercut Mastery        | works           |
+| 557    | Weapon Mastery                | works           |
+| 558    | Chain Drive Strengthener      | works           |
 | 559    | Dark Side Strengthener        | not implemented |
 | 560    | Dragon Roar Strengthener      | not implemented |
 | 568    | Equipped Weapon Strengthener  | not implemented |
