@@ -31,8 +31,14 @@ public partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.Attr
     }
 
     /// <inheritdoc />
-    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator)
-        : base(targetAttribute, inputOperand, inputAttribute, inputOperator)
+    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute)
+        : base(targetAttribute, inputOperand, inputAttribute)
+    {
+    }
+
+    /// <inheritdoc />
+    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator, MUnique.OpenMU.AttributeSystem.AttributeDefinition operandAttribute)
+        : base(targetAttribute, inputOperand, inputAttribute, inputOperator, operandAttribute)
     {
     }
 
@@ -79,6 +85,26 @@ public partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.Attr
     {
         get => base.InputAttribute;
         set => base.InputAttribute = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="OperandAttribute" />.
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty("operandAttribute")]
+    [System.Text.Json.Serialization.JsonPropertyName("operandAttribute")]
+    public AttributeDefinition RawOperandAttribute
+    {
+        get => base.OperandAttribute as AttributeDefinition;
+        set => base.OperandAttribute = value;
+    }
+
+    /// <inheritdoc/>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition OperandAttribute
+    {
+        get => base.OperandAttribute;
+        set => base.OperandAttribute = value;
     }
 
 

@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.AttributeSystem;
 
+using System.Globalization;
+
 /// <summary>
 /// The operator which is applied between the input attribute and the input operand.
 /// </summary>
@@ -32,6 +34,7 @@ public class AttributeRelationship
 {
     private AttributeDefinition? _targetAttribute;
     private AttributeDefinition? _inputAttribute;
+    private AttributeDefinition? _operandAttribute;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AttributeRelationship"/> class.
@@ -57,13 +60,26 @@ public class AttributeRelationship
     /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="inputOperand">The multiplier.</param>
     /// <param name="inputAttribute">The input attribute.</param>
+    public AttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition inputOperand, AttributeDefinition inputAttribute)
+        : this(targetAttribute, 1, inputAttribute, InputOperator.Multiply, inputOperand)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AttributeRelationship" /> class.
+    /// </summary>
+    /// <param name="targetAttribute">The target attribute.</param>
+    /// <param name="inputOperand">The multiplier.</param>
+    /// <param name="inputAttribute">The input attribute.</param>
     /// <param name="inputOperator">The input operator.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, InputOperator inputOperator)
+    /// <param name="operandAttribute">The operand attribute.</param>
+    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, InputOperator inputOperator, AttributeDefinition? operandAttribute = null)
     {
         this.InputOperand = inputOperand;
         this.InputOperator = inputOperator;
         this._targetAttribute = targetAttribute;
         this._inputAttribute = inputAttribute;
+        this._operandAttribute = operandAttribute;
     }
 
     /// <summary>
@@ -85,12 +101,22 @@ public class AttributeRelationship
     }
 
     /// <summary>
+    /// Gets or sets the operand attribute which replaces the <see cref="InputOperand"/>, if set.
+    /// </summary>
+    public virtual AttributeDefinition? OperandAttribute
+    {
+        get => this._operandAttribute;
+        set => this._operandAttribute = value;
+    }
+
+    /// <summary>
     /// Gets or sets the operator which is applied between the input attribute and the input operand.
     /// </summary>
     public InputOperator InputOperator { get; set; }
 
     /// <summary>
     /// Gets or sets the operand which is applied to the input attribute before adding to the target attribute.
+    /// Has only effect, when <see cref="OperandAttribute"/> is <see langword="null"/>.
     /// </summary>
     public float InputOperand { get; set; }
 
@@ -99,9 +125,9 @@ public class AttributeRelationship
     {
         if (this.TargetAttribute is null)
         {
-            return $"{this.InputAttribute} {this.InputOperator.AsString()} {this.InputOperand}";
+            return $"{this.InputAttribute} {this.InputOperator.AsString()} {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)}";
         }
 
-        return $"{this.TargetAttribute} += {this.InputAttribute} {this.InputOperator.AsString()} {this.InputOperand}";
+        return $"{this.TargetAttribute} += {this.InputAttribute} {this.InputOperator.AsString()} {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)}";
     }
 }

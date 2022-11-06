@@ -28,7 +28,7 @@ public static class AttributeSystemExtensions
             var elements = relations
                 .Select(r => new AttributeRelationshipElement(
                     new[] { attributeSystem.GetOrCreateAttribute(r.InputAttribute ?? throw new InvalidOperationException($"InputAttribute value not set for AttributeRelationship {r.GetId()}.")) },
-                    r.InputOperand,
+                    r.GetOperandElement(attributeSystem),
                     r.InputOperator))
                 .Cast<IElement>();
             if (value.ConstantValue != null)
@@ -36,7 +36,7 @@ public static class AttributeSystemExtensions
                 elements = elements.Concat(value.ConstantValue.GetAsEnumerable());
             }
 
-            result = new AttributeRelationshipElement(elements.ToList(), 1.0F, InputOperator.Multiply);
+            result = new AttributeRelationshipElement(elements.ToList(), new ConstantElement(1.0F), InputOperator.Multiply);
         }
 
         if (result is null)
