@@ -68,11 +68,6 @@ public static class AttackableExtensions
         {
             var defenseAttribute = defender.GetDefenseAttribute(attacker);
             var defense = (int)defender.Attributes[defenseAttribute];
-            if (defender.Attributes[Stats.IsShieldEquipped] > 0)
-            {
-                defense += (int)(defense * defender.Attributes[Stats.DefenseIncreaseWithEquippedShield]);
-            }
-
             dmg -= defense;
         }
         else
@@ -499,13 +494,13 @@ public static class AttackableExtensions
         switch (damageType)
         {
             case DamageType.Wizardry:
-                minimumBaseDamage += (int)(attackerStats[Stats.MinimumWizBaseDmg] * attackerStats[Stats.WizardryAttackDamageIncrease]);
-                maximumBaseDamage += (int)(attackerStats[Stats.MaximumWizBaseDmg] * attackerStats[Stats.WizardryAttackDamageIncrease]);
+                minimumBaseDamage = (int)((minimumBaseDamage + attackerStats[Stats.MinimumWizBaseDmg]) * attackerStats[Stats.WizardryAttackDamageIncrease]);
+                maximumBaseDamage = (int)((maximumBaseDamage + attackerStats[Stats.MaximumWizBaseDmg]) * attackerStats[Stats.WizardryAttackDamageIncrease]);
 
                 break;
             case DamageType.Curse:
-                minimumBaseDamage += (int)(attackerStats[Stats.MinimumCurseBaseDmg] * attackerStats[Stats.CurseAttackDamageIncrease]);
-                maximumBaseDamage += (int)(attackerStats[Stats.MaximumCurseBaseDmg] * attackerStats[Stats.CurseAttackDamageIncrease]);
+                minimumBaseDamage += (int)((minimumBaseDamage + attackerStats[Stats.MinimumCurseBaseDmg]) * attackerStats[Stats.CurseAttackDamageIncrease]);
+                maximumBaseDamage += (int)((maximumBaseDamage + attackerStats[Stats.MaximumCurseBaseDmg]) * attackerStats[Stats.CurseAttackDamageIncrease]);
 
                 break;
             case DamageType.Physical:

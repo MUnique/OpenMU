@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
 /// Helper class to create weapon item definitions.
@@ -367,20 +368,68 @@ internal class Weapons : InitializerBase
 
         if (group == (int)ItemGroups.Bows && height > 1)
         {
-            var ammunitionConsumption = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            ammunitionConsumption.TargetAttribute = Stats.AmmunitionConsumptionRate.GetPersistent(this.GameConfiguration);
-            ammunitionConsumption.BaseValue = 1.0f;
-            item.BasePowerUpAttributes.Add(ammunitionConsumption);
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1));
         }
 
         item.IsAmmunition = group == (int)ItemGroups.Bows && height == 1;
 
         if (group != (int)ItemGroups.Bows && width == 2)
         {
-            var isTwoHandedWeapon = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            isTwoHandedWeapon.TargetAttribute = Stats.IsTwoHandedWeaponEquipped.GetPersistent(this.GameConfiguration);
-            isTwoHandedWeapon.BaseValue = 1.0f;
-            item.BasePowerUpAttributes.Add(isTwoHandedWeapon);
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1));
+        }
+
+        if (group == (int)ItemGroups.Swords)
+        {
+            if (ragefighterClass == 0 || number < 3)
+            {
+                if (width == 1)
+                {
+                    item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsOneHandedSwordEquipped, 1));
+                }
+                else
+                {
+                    item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedSwordEquipped, 1));
+                }
+            }
+            else
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsGloveWeaponEquipped, 1));
+            }
+        }
+
+        if (group == (int)ItemGroups.Spears)
+        {
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsSpearEquipped, 1));
+        }
+
+        if (group == (int)ItemGroups.Scepters)
+        {
+            // todo... some are maces, some are scepters
+            if (skillNumber == (int)SkillNumber.ForceWave)
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsScepterEquipped, 1));
+            }
+            else if (knightClass > 0 && (skillNumber == (int)SkillNumber.FallingSlash || number < 5))
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsMaceEquipped, 1));
+            }
+        }
+
+        if (group == (int)ItemGroups.Staff)
+        {
+            if (wizardClass == 0 && summonerClass > 0)
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsStickEquipped, 1));
+            }
+            else
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(width == 1 ? Stats.IsOneHandedStaffEquipped : Stats.IsTwoHandedStaffEquipped, 1));
+            }
+        }
+
+        if (group == (int)ItemGroups.Bows && !item.IsAmmunition)
+        {
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1));
         }
     }
 

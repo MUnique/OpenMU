@@ -202,6 +202,11 @@ public class Stats
     public static AttributeDefinition MaximumPhysBaseDmg { get; } = new (new Guid("8A918EA2-893A-48B2-A684-3E71526CA71F"), "Maximum Physical Base Damage", string.Empty);
 
     /// <summary>
+    /// Gets the min and max physical base DMG attribute definition.
+    /// </summary>
+    public static AttributeDefinition PhysicalBaseDmg { get; } = new(new Guid("DD1E13E4-BFFD-45B5-9B91-9080710324B2"), "Physical Base Damage (min and max)", string.Empty);
+
+    /// <summary>
     /// Gets the minimum wiz base DMG attribute definition.
     /// </summary>
     public static AttributeDefinition MinimumWizBaseDmg { get; } = new (new Guid("65583A02-AB94-4A17-9B79-86ECC82DC835"), "Minimum Wizardry Base Damage", string.Empty);
@@ -210,6 +215,11 @@ public class Stats
     /// Gets the maximum wiz base DMG attribute definition.
     /// </summary>
     public static AttributeDefinition MaximumWizBaseDmg { get; } = new (new Guid("44B8236A-BF5B-4082-BA8B-5DEDA1458D33"), "Maximum Wizardry Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the min and max wiz base DMG attribute definition.
+    /// </summary>
+    public static AttributeDefinition WizardryBaseDmg { get; } = new(new Guid("7F4F3646-33A6-40AC-8DA6-29A0A0F46016"), "Wizardry Base Damage (min and max)", string.Empty);
 
     /// <summary>
     /// Gets the staff rise percentage attribute definition.
@@ -307,6 +317,126 @@ public class Stats
     public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new (new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "Is Two-Handed Weapon Equipped", string.Empty);
 
     /// <summary>
+    /// Gets the is a bow equipped.
+    /// </summary>
+    public static AttributeDefinition IsBowEquipped { get; } = new(new Guid("8B1135B7-C323-4822-9B98-1A56C802BB6A"), "Is Bow Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the bow bonus base damage.
+    /// </summary>
+    public static AttributeDefinition BowBonusBaseDamage { get; } = new(new Guid("AF19A56D-2F31-4A80-8DF7-B99ADF7D275B"), "Bow Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a cross bow equipped.
+    /// </summary>
+    public static AttributeDefinition IsCrossBowEquipped { get; } = new(new Guid("EDB70177-D824-45FC-8B76-7AE26859B7E5"), "Is Cross Bow Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the bow bonus base damage.
+    /// </summary>
+    public static AttributeDefinition CrossBowBonusBaseDamage { get; } = new(new Guid("DBAD454A-EB1C-4FEE-9B40-97EA70278BB5"), "Cross Bow Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a one handed sword equipped.
+    /// </summary>
+    public static AttributeDefinition IsOneHandedSwordEquipped { get; } = new(new Guid("21B71774-EB4F-41F6-A0AA-0E600F41226C"), "Is One Handed Sword Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the one handed sword bonus base damage.
+    /// </summary>
+    public static AttributeDefinition OneHandedSwordBonusBaseDamage { get; } = new(new Guid("60FA78A3-4E8C-4304-9077-5D3312EB1BE8"), "One Handed Sword Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a two handed sword equipped.
+    /// </summary>
+    public static AttributeDefinition IsTwoHandedSwordEquipped { get; } = new(new Guid("15530767-556E-45F6-8C2D-9AC71FC4070F"), "Is Two Handed Sword Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the two handed sword bonus base damage.
+    /// </summary>
+    public static AttributeDefinition TwoHandedSwordBonusBaseDamage { get; } = new(new Guid("C77F9C38-336B-43AE-8B82-A8D73612E9D2"), "Two Handed Sword Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a mace equipped.
+    /// </summary>
+    public static AttributeDefinition IsMaceEquipped { get; } = new(new Guid("47BD42D1-2E27-407B-92B5-925F418C30DE"), "Is Mace Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the mace bonus base damage.
+    /// </summary>
+    public static AttributeDefinition MaceBonusBaseDamage { get; } = new(new Guid("E7F2A75F-E8F5-4877-A0D8-59D59041A973"), "Mace Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a spear equipped.
+    /// </summary>
+    public static AttributeDefinition IsSpearEquipped { get; } = new(new Guid("5CBBD700-B897-4425-AADE-FDE249318505"), "Is Spear Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the spear bonus base damage.
+    /// </summary>
+    public static AttributeDefinition SpearBonusBaseDamage { get; } = new(new Guid("207DA941-CDDC-4231-A82C-B76A2441B77A"), "Spear Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a one handed staff equipped.
+    /// </summary>
+    public static AttributeDefinition IsOneHandedStaffEquipped { get; } = new(new Guid("C452EFD8-9FFE-4015-BE93-8BC8D5D81572"), "Is One Handed Staff Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the one handed staff bonus base damage.
+    /// </summary>
+    public static AttributeDefinition OneHandedStaffBonusBaseDamage { get; } = new(new Guid("12F2F553-DA04-432F-83E0-28F30C1B93A2"), "One Handed Staff Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a two handed staff equipped.
+    /// </summary>
+    public static AttributeDefinition IsTwoHandedStaffEquipped { get; } = new(new Guid("FE669B70-D36D-4F56-A1DA-4A4B98ED503D"), "Is Two Handed Staff Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the two handed staff bonus base damage.
+    /// </summary>
+    public static AttributeDefinition TwoHandedStaffBonusBaseDamage { get; } = new(new Guid("8A46D105-4B58-4E42-B602-52715F6BEE61"), "Two Handed Staff Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a stick equipped.
+    /// </summary>
+    public static AttributeDefinition IsStickEquipped { get; } = new(new Guid("85C46193-8EC9-4CCE-B18B-F79E938FE9C3"), "Is Stick Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the stick bonus base damage.
+    /// </summary>
+    public static AttributeDefinition StickBonusBaseDamage { get; } = new(new Guid("0EF0D78B-9518-445B-BE5A-469962AF7C9D"), "Stick Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a scepter equipped.
+    /// </summary>
+    public static AttributeDefinition IsScepterEquipped { get; } = new(new Guid("8650DE3B-BE11-458E-B352-4046CE264402"), "Is Scepter Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the scepter bonus base damage.
+    /// </summary>
+    public static AttributeDefinition ScepterBonusBaseDamage { get; } = new(new Guid("4E4373A5-F5DB-4D06-B5C1-EE798B58017E"), "Scepter Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the is a glove weapon equipped.
+    /// </summary>
+    public static AttributeDefinition IsGloveWeaponEquipped { get; } = new(new Guid("BC8FFFCA-A593-4B64-BE37-BF7EDC97CA1E"), "Is Glove Weapon Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the glove weapon bonus base damage.
+    /// </summary>
+    public static AttributeDefinition GloveWeaponBonusBaseDamage { get; } = new(new Guid("F9CB1174-0184-4F21-B71D-AFC7359BC594"), "Glove Weapon Bonus Base Damage", string.Empty);
+
+    /// <summary>
+    /// The summoned monster health increase, percentage.
+    /// </summary>
+    public static AttributeDefinition SummonedMonsterHealthIncrease { get; } = new(new Guid("7B0625C8-DA1A-4A5D-BCA5-26AACDA0BDC6"), "Summoned Monster Health Increase %", string.Empty);
+
+    /// <summary>
+    /// The summoned monster defense increase, absolute.
+    /// </summary>
+    public static AttributeDefinition SummonedMonsterDefenseIncrease { get; } = new(new Guid("0D55CFCA-751F-4E66-B327-635576A9A0B3"), "Summoned Monster Defense Increase", string.Empty);
+
+    /// <summary>
     /// Gets the combo bonus attribute definition.
     /// </summary>
     public static AttributeDefinition ComboBonus { get; } = new (new Guid("53A479FE-8A73-4A45-AACA-5B1AA4362CF9"), "Combo Bonus", string.Empty);
@@ -368,6 +498,11 @@ public class Stats
     public static AttributeDefinition DefenseIncreaseWithEquippedShield { get; } = new (new Guid("41BCEC8D-A7A8-4930-AB2E-A07D8BF1B86C"), "Defense Increase Multiplier With Equipped Shield", string.Empty);
 
     /// <summary>
+    /// Gets the bonus defense (absolute) with an equipped shield attribute definition.
+    /// </summary>
+    public static AttributeDefinition BonusDefenseWithShield { get; } = new(new Guid("05F08D89-9BC6-4164-9B30-26EFAF4C0E0F"), "Defense Increase Bonus (absolute) With Equipped Shield", string.Empty);
+
+    /// <summary>
     /// Gets the 'is shield equipped' attribute definition.
     /// </summary>
     public static AttributeDefinition IsShieldEquipped { get; } = new (new Guid("394DFAA0-B18D-44DA-A99D-094BC5E7C9C5"), "Is Shield Equipped", string.Empty);
@@ -393,37 +528,37 @@ public class Stats
     public static AttributeDefinition IsStunned { get; } = new (new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is poisoned and loses health");
 
     /// <summary>
-    /// Gets the ice resistance attribute definition.
+    /// Gets the ice resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition IceResistance { get; } = new (new Guid("47235C36-41BB-44B4-8823-6FC415709F59"), "Ice Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the fire resistance attribute definition.
+    /// Gets the fire resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition FireResistance { get; } = new (new Guid("9AE4D80D-5706-48B9-AD11-EAC4FE088A81"), "Fire Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the water resistance attribute definition.
+    /// Gets the water resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition WaterResistance { get; } = new (new Guid("3AF88672-D8DB-44E1-937A-7E6484134C39"), "Water Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the earth resistance attribute definition.
+    /// Gets the earth resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition EarthResistance { get; } = new (new Guid("4470890F-00CE-44A6-BADB-203684B6014D"), "Earth Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the wind resistance attribute definition.
+    /// Gets the wind resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition WindResistance { get; } = new (new Guid("03A29C46-7B7E-424D-8325-8390692570C3"), "Wind Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the poison resistance attribute definition.
+    /// Gets the poison resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition PoisonResistance { get; } = new (new Guid("3D50D0B7-63A2-4DA9-8855-12173EAE6B39"), "Poison Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the lightning resistance attribute definition.
+    /// Gets the lightning resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition LightningResistance { get; } = new (new Guid("3E339393-2D17-452E-81D9-3987947A407F"), "Lightning Resistance", string.Empty);
 
@@ -484,12 +619,12 @@ public class Stats
     public static AttributeDefinition ShieldRecoveryEverywhere { get; } = new (new Guid("3D0A78FF-CCD4-442E-8B4E-64E5082ABD78"), "Is Shield Recovery Active Everwhere", "By default, shield recovery is limited to the safezone only. With this attribute (value >= 1), recovery works everywhere on a map.");
 
     /// <summary>
-    /// Gets the ability usage reduction attribute definition.
+    /// Gets the ability usage reduction attribute definition. Value ranges from 0 (no reduction) to 1 (full reduction).
     /// </summary>
     public static AttributeDefinition AbilityUsageReduction { get; } = new (new Guid("5A712BEF-EA3C-404A-90DB-0FC37CDC65D4"), "Ability Usage Reduction", "Factor (0~1) which describes how much of required ability of a skill is not consumed.");
 
     /// <summary>
-    /// Gets the ability usage reduction attribute definition.
+    /// Gets the mana usage reduction attribute definition. Value ranges from 0 (no reduction) to 1 (full reduction).
     /// </summary>
     public static AttributeDefinition ManaUsageReduction { get; } = new (new Guid("95548E17-F00E-4B22-A1AE-4CBB0C84C7D1"), "Mana Usage Reduction", "Factor (0~1) which describes how much of required mana of a skill is not consumed.");
 
