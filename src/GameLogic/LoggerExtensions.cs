@@ -15,7 +15,7 @@ public static class LoggerExtensions
     /// <param name="logger">The logger.</param>
     /// <param name="values">The key value pairs which describe the scope.</param>
     /// <returns>An <see cref="T:System.IDisposable" /> that ends the logical operation scope on dispose.</returns>
-    public static IDisposable BeginScope(this ILogger logger, params (string Key, object Value)[] values)
+    public static IDisposable? BeginScope(this ILogger logger, params (string Key, object Value)[] values)
     {
         return logger.BeginScope(values.Select(pair => new KeyValuePair<string, object>(pair.Key, pair.Value)));
     }

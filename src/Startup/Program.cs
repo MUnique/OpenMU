@@ -236,15 +236,11 @@ internal sealed class Program : IDisposable
                     .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
                     .AddHostedService<ChatServerContainer>()
                     .AddHostedService<GameServerContainer>()
-                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>());
+                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!);
             });
         var host = builder.Build();
 
         this._logger.Information("Host created");
-        if (host.Services.GetService<ILoggerFactory>() is { } loggerFactory)
-        {
-            NpgsqlLoggingProvider.Initialize(loggerFactory);
-        }
 
         if (addAdminPanel)
         {
