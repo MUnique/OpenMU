@@ -164,8 +164,8 @@ Some general notes:
 | 351    | Spear Strengthener            | works           |
 | 352    | Two-handed Sword Mast         | works           |
 | 353    | One-handed Sword Mast         | works           |
-| 354    | Mace Mastery                  | not implemented |
-| 355    | Spear Mastery                 | not implemented |
+| 354    | Mace Mastery                  | not implemented, stuns target |
+| 355    | Spear Mastery                 | not implemented, stuns target |
 | 356    | Swell Life Strengt            | works           |
 | 357    | Mana Reduction                | works           |
 | 358    | Monster Attack SD Inc         | works           |
@@ -196,11 +196,11 @@ Some general notes:
 | 405    | Minimum Wizardry Inc          | works           |
 | 413    | Heal Strengthener             | works           |
 | 414    | Triple Shot Strengthener      | works           |
-| 415    | Summoned Monster Str (1)      | not implemented |
+| 415    | Summoned Monster Str (1)      | works           |
 | 416    | Penetration Strengthener      | works           |
-| 417    | Defense Increase Str          | not implemented |
+| 417    | Defense Increase Str          | works           |
 | 418    | Triple Shot Mastery           | works           |
-| 419    | Summoned Monster Str (2)      | not implemented |
+| 419    | Summoned Monster Str (2)      | works           |
 | 420    | Attack Increase Str           | works           |
 | 421    | Weapon Mastery                | works           |
 | 422    | Attack Increase Mastery       | works           |
@@ -212,7 +212,7 @@ Some general notes:
 | 438    | Bow Mastery                   | works           |
 | 439    | Crossbow Mastery              | works           |
 | 440    | Shield Mastery                | works           |
-| 441    | Infinity Arrow Str            | not implemented |
+| 441    | Infinity Arrow Str            | works           |
 | 442    | Minimum Att Power Inc         | works           |
 | 448    | Fire Tome Strengthener        | not implemented |
 | 449    | Wind Tome Strengthener        | not implemented |
@@ -247,13 +247,13 @@ Some general notes:
 | 508    | Fire Burst Streng             | works           |
 | 509    | Force Wave Streng             | works           |
 | 510    | Dark Horse Streng (1)         | works           |
-| 511    | Critical DMG Inc PowUp        | not implemented |
+| 511    | Critical DMG Inc PowUp        | works           |
 | 512    | Earthshake Streng             | works           |
 | 513    | Weapon Mastery                | works           |
 | 514    | Fire Burst Mastery            | not implemented, stuns target |
-| 515    | Crit DMG Inc PowUp (2)        | not implemented |
+| 515    | Crit DMG Inc PowUp (2)        | not implemented, increases duration |
 | 516    | Earthshake Mastery            | not implemented, stuns target |
-| 517    | Crit DMG Inc PowUp (3)        | not implemented |
+| 517    | Crit DMG Inc PowUp (3)        | not implemented, increases chance of critical damage |
 | 518    | Fire Scream Stren             | works           |
 | 526    | Dark Spirit Str               | works           |
 | 527    | Scepter Strengthener          | works           |
