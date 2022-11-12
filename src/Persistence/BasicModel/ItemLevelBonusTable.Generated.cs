@@ -28,12 +28,10 @@ public partial class ItemLevelBonusTable : MUnique.OpenMU.DataModel.Configuratio
     /// <summary>
     /// Gets the raw collection of <see cref="BonusPerLevel" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("bonusPerLevel")]
     [System.Text.Json.Serialization.JsonPropertyName("bonusPerLevel")]
     public ICollection<LevelBonus> RawBonusPerLevel { get; } = new List<LevelBonus>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus> BonusPerLevel
     {

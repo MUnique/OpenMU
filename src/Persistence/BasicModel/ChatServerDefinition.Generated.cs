@@ -28,12 +28,10 @@ public partial class ChatServerDefinition : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw collection of <see cref="Endpoints" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("endpoints")]
     [System.Text.Json.Serialization.JsonPropertyName("endpoints")]
     public ICollection<ChatServerEndpoint> RawEndpoints { get; } = new List<ChatServerEndpoint>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint> Endpoints
     {

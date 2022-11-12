@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.BasicModel;
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// A plain implementation of <see cref="MUnique.OpenMU.AttributeSystem.ConstValueAttribute"/>.
@@ -25,7 +25,7 @@ public partial class ConstValueAttribute
     /// Required, because we need a setter for the json deserialization.
     /// Because we just can't add a setter to an existing property, we have to add a new one.
     /// </remarks>
-    [JsonProperty(nameof(Value))]
+    [JsonPropertyName(nameof(Value))]
     public float RawValue
     {
         get => base.Value;

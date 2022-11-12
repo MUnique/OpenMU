@@ -28,12 +28,10 @@ public partial class IncreasableItemOption : MUnique.OpenMU.DataModel.Configurat
     /// <summary>
     /// Gets the raw collection of <see cref="LevelDependentOptions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("levelDependentOptions")]
     [System.Text.Json.Serialization.JsonPropertyName("levelDependentOptions")]
     public ICollection<ItemOptionOfLevel> RawLevelDependentOptions { get; } = new List<ItemOptionOfLevel>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionOfLevel> LevelDependentOptions
     {
@@ -51,7 +49,6 @@ public partial class IncreasableItemOption : MUnique.OpenMU.DataModel.Configurat
     /// <summary>
     /// Gets the raw object of <see cref="OptionType" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("optionType")]
     [System.Text.Json.Serialization.JsonPropertyName("optionType")]
     public ItemOptionType RawOptionType
     {
@@ -60,7 +57,6 @@ public partial class IncreasableItemOption : MUnique.OpenMU.DataModel.Configurat
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
     {
@@ -71,7 +67,6 @@ public partial class IncreasableItemOption : MUnique.OpenMU.DataModel.Configurat
     /// <summary>
     /// Gets the raw object of <see cref="PowerUpDefinition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
     [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
     public PowerUpDefinition RawPowerUpDefinition
     {
@@ -80,7 +75,6 @@ public partial class IncreasableItemOption : MUnique.OpenMU.DataModel.Configurat
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition PowerUpDefinition
     {

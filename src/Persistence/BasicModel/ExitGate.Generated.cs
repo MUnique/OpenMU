@@ -28,7 +28,6 @@ public partial class ExitGate : MUnique.OpenMU.DataModel.Configuration.ExitGate,
     /// <summary>
     /// Gets the raw object of <see cref="Map" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("map")]
     [System.Text.Json.Serialization.JsonPropertyName("map")]
     public GameMapDefinition RawMap
     {
@@ -37,7 +36,6 @@ public partial class ExitGate : MUnique.OpenMU.DataModel.Configuration.ExitGate,
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition Map
     {

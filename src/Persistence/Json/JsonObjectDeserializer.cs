@@ -4,11 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.Json;
 
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using MUnique.OpenMU.AttributeSystem;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// A json deserializer which is able to resolve circular references.
@@ -16,50 +14,33 @@ using Newtonsoft.Json.Serialization;
 public class JsonObjectDeserializer
 {
     /// <summary>
-    /// Gets or sets a value indicating whether circular references are expected to happen, or not.
-    /// </summary>
-    public bool AreCircularReferencesExpected { get; set; }
-
-    /// <summary>
     /// Deserializes the json string to an object of <typeparamref name="T" />.
     /// </summary>
     /// <typeparam name="T">The type of an object to which the json string should be serialized to.</typeparam>
     /// <param name="textReader">The text reader with the json result string.</param>
-    /// <param name="referenceResolver">The reference resolver.</param>
+    /// <param name="referenceHandler">The reference resolver.</param>
     /// <returns>
     /// The resulting object which has been deserialized from the <paramref name="textReader" />.
     /// </returns>
-    [return: MaybeNull]
-    public T Deserialize<T>(TextReader textReader, IReferenceResolver referenceResolver)
+    public T? Deserialize<T>(Stream textReader, ReferenceHandler referenceHandler)
     {
-        var serializer = new JsonSerializer
+        var options = new JsonSerializerOptions
         {
-            ReferenceResolver = referenceResolver,
-            ContractResolver = new IgnoringTypesContractResolver(typeof(ConstantElement)),
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            ReferenceHandler = referenceHandler,
+            Converters = { new ReferenceResolvingConverterFactory() },
         };
 
-        this.BeforeDeserialize(serializer);
-        DelayedReferenceResolvingConverter? deferredConverter = null;
-        if (this.AreCircularReferencesExpected)
-        {
-            // For circular references, we add a converter which collects actions to resolve unresolved references, so they can be resolved after deserializing.
-            deferredConverter = new DelayedReferenceResolvingConverter();
-            serializer.Converters.Add(deferredConverter);
-        }
+        this.BeforeDeserialize(options);
 
-        using var jsonReader = new JsonTextReader(textReader);
-        var result = serializer.Deserialize<T>(jsonReader);
-        deferredConverter?.ResolveDelayedReferences();
+        var result = JsonSerializer.Deserialize<T>(textReader, options);
         return result;
     }
 
     /// <summary>
     /// Called before the deserialization happens. Can be overwritten to apply additional settings.
     /// </summary>
-    /// <param name="serializer">The serializer.</param>
-    protected virtual void BeforeDeserialize(JsonSerializer serializer)
+    /// <param name="options">The serializer options.</param>
+    protected virtual void BeforeDeserialize(JsonSerializerOptions options)
     {
         // can be overwritten to apply additional settings.
     }

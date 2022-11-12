@@ -28,12 +28,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="JewelMixes" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("jewelMixes")]
     [System.Text.Json.Serialization.JsonPropertyName("jewelMixes")]
     public ICollection<JewelMix> RawJewelMixes { get; } = new List<JewelMix>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.JewelMix> JewelMixes
     {
@@ -51,12 +49,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="WarpList" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("warpList")]
     [System.Text.Json.Serialization.JsonPropertyName("warpList")]
     public ICollection<WarpInfo> RawWarpList { get; } = new List<WarpInfo>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.WarpInfo> WarpList
     {
@@ -74,12 +70,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="DropItemGroups" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("dropItemGroups")]
     [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
     public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
     {
@@ -97,12 +91,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="Skills" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("skills")]
     [System.Text.Json.Serialization.JsonPropertyName("skills")]
     public ICollection<Skill> RawSkills { get; } = new List<Skill>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Skill> Skills
     {
@@ -120,12 +112,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="CharacterClasses" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("characterClasses")]
     [System.Text.Json.Serialization.JsonPropertyName("characterClasses")]
     public ICollection<CharacterClass> RawCharacterClasses { get; } = new List<CharacterClass>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.CharacterClass> CharacterClasses
     {
@@ -143,12 +133,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="Items" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("items")]
     [System.Text.Json.Serialization.JsonPropertyName("items")]
     public ICollection<ItemDefinition> RawItems { get; } = new List<ItemDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition> Items
     {
@@ -166,12 +154,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="ItemLevelBonusTables" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemLevelBonusTables")]
     [System.Text.Json.Serialization.JsonPropertyName("itemLevelBonusTables")]
     public ICollection<ItemLevelBonusTable> RawItemLevelBonusTables { get; } = new List<ItemLevelBonusTable>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable> ItemLevelBonusTables
     {
@@ -189,12 +175,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="ItemSlotTypes" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemSlotTypes")]
     [System.Text.Json.Serialization.JsonPropertyName("itemSlotTypes")]
     public ICollection<ItemSlotType> RawItemSlotTypes { get; } = new List<ItemSlotType>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType> ItemSlotTypes
     {
@@ -212,12 +196,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="ItemOptions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemOptions")]
     [System.Text.Json.Serialization.JsonPropertyName("itemOptions")]
     public ICollection<ItemOptionDefinition> RawItemOptions { get; } = new List<ItemOptionDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition> ItemOptions
     {
@@ -235,12 +217,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="ItemOptionTypes" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemOptionTypes")]
     [System.Text.Json.Serialization.JsonPropertyName("itemOptionTypes")]
     public ICollection<ItemOptionType> RawItemOptionTypes { get; } = new List<ItemOptionType>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType> ItemOptionTypes
     {
@@ -258,12 +238,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="ItemSetGroups" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemSetGroups")]
     [System.Text.Json.Serialization.JsonPropertyName("itemSetGroups")]
     public ICollection<ItemSetGroup> RawItemSetGroups { get; } = new List<ItemSetGroup>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup> ItemSetGroups
     {
@@ -281,12 +259,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="ItemOptionCombinationBonuses" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemOptionCombinationBonuses")]
     [System.Text.Json.Serialization.JsonPropertyName("itemOptionCombinationBonuses")]
     public ICollection<ItemOptionCombinationBonus> RawItemOptionCombinationBonuses { get; } = new List<ItemOptionCombinationBonus>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus> ItemOptionCombinationBonuses
     {
@@ -304,12 +280,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="Maps" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("maps")]
     [System.Text.Json.Serialization.JsonPropertyName("maps")]
     public ICollection<GameMapDefinition> RawMaps { get; } = new List<GameMapDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition> Maps
     {
@@ -327,12 +301,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="Monsters" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("monsters")]
     [System.Text.Json.Serialization.JsonPropertyName("monsters")]
     public ICollection<MonsterDefinition> RawMonsters { get; } = new List<MonsterDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterDefinition> Monsters
     {
@@ -350,12 +322,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="Attributes" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("attributes")]
     [System.Text.Json.Serialization.JsonPropertyName("attributes")]
     public ICollection<AttributeDefinition> RawAttributes { get; } = new List<AttributeDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeDefinition> Attributes
     {
@@ -373,12 +343,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="MagicEffects" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("magicEffects")]
     [System.Text.Json.Serialization.JsonPropertyName("magicEffects")]
     public ICollection<MagicEffectDefinition> RawMagicEffects { get; } = new List<MagicEffectDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition> MagicEffects
     {
@@ -396,12 +364,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="MasterSkillRoots" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("masterSkillRoots")]
     [System.Text.Json.Serialization.JsonPropertyName("masterSkillRoots")]
     public ICollection<MasterSkillRoot> RawMasterSkillRoots { get; } = new List<MasterSkillRoot>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot> MasterSkillRoots
     {
@@ -419,12 +385,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="PlugInConfigurations" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("plugInConfigurations")]
     [System.Text.Json.Serialization.JsonPropertyName("plugInConfigurations")]
     public ICollection<PlugInConfiguration> RawPlugInConfigurations { get; } = new List<PlugInConfiguration>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.PlugIns.PlugInConfiguration> PlugInConfigurations
     {
@@ -442,12 +406,10 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="MiniGameDefinitions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("miniGameDefinitions")]
     [System.Text.Json.Serialization.JsonPropertyName("miniGameDefinitions")]
     public ICollection<MiniGameDefinition> RawMiniGameDefinitions { get; } = new List<MiniGameDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition> MiniGameDefinitions
     {

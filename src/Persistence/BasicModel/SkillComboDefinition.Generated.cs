@@ -28,12 +28,10 @@ public partial class SkillComboDefinition : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw collection of <see cref="Steps" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("steps")]
     [System.Text.Json.Serialization.JsonPropertyName("steps")]
     public ICollection<SkillComboStep> RawSteps { get; } = new List<SkillComboStep>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.SkillComboStep> Steps
     {

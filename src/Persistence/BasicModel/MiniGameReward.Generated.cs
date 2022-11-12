@@ -28,7 +28,6 @@ public partial class MiniGameReward : MUnique.OpenMU.DataModel.Configuration.Min
     /// <summary>
     /// Gets the raw object of <see cref="ItemReward" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemReward")]
     [System.Text.Json.Serialization.JsonPropertyName("itemReward")]
     public DropItemGroup RawItemReward
     {
@@ -37,7 +36,6 @@ public partial class MiniGameReward : MUnique.OpenMU.DataModel.Configuration.Min
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.DropItemGroup ItemReward
     {
@@ -48,7 +46,6 @@ public partial class MiniGameReward : MUnique.OpenMU.DataModel.Configuration.Min
     /// <summary>
     /// Gets the raw object of <see cref="RequiredKill" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requiredKill")]
     [System.Text.Json.Serialization.JsonPropertyName("requiredKill")]
     public MonsterDefinition RawRequiredKill
     {
@@ -57,7 +54,6 @@ public partial class MiniGameReward : MUnique.OpenMU.DataModel.Configuration.Min
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition RequiredKill
     {

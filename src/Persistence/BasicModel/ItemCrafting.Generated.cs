@@ -28,7 +28,6 @@ public partial class ItemCrafting : MUnique.OpenMU.DataModel.Configuration.ItemC
     /// <summary>
     /// Gets the raw object of <see cref="SimpleCraftingSettings" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("simpleCraftingSettings")]
     [System.Text.Json.Serialization.JsonPropertyName("simpleCraftingSettings")]
     public SimpleCraftingSettings RawSimpleCraftingSettings
     {
@@ -37,7 +36,6 @@ public partial class ItemCrafting : MUnique.OpenMU.DataModel.Configuration.ItemC
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings SimpleCraftingSettings
     {

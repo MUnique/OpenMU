@@ -28,7 +28,6 @@ public partial class ItemOptionOfLevel : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw object of <see cref="PowerUpDefinition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
     [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
     public PowerUpDefinition RawPowerUpDefinition
     {
@@ -37,7 +36,6 @@ public partial class ItemOptionOfLevel : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition PowerUpDefinition
     {

@@ -28,12 +28,10 @@ public partial class GameServerConfiguration : MUnique.OpenMU.DataModel.Configur
     /// <summary>
     /// Gets the raw collection of <see cref="Maps" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("maps")]
     [System.Text.Json.Serialization.JsonPropertyName("maps")]
     public ICollection<GameMapDefinition> RawMaps { get; } = new List<GameMapDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameMapDefinition> Maps
     {

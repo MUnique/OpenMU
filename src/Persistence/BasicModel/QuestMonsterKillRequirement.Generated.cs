@@ -28,7 +28,6 @@ public partial class QuestMonsterKillRequirement : MUnique.OpenMU.DataModel.Conf
     /// <summary>
     /// Gets the raw object of <see cref="Monster" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("monster")]
     [System.Text.Json.Serialization.JsonPropertyName("monster")]
     public MonsterDefinition RawMonster
     {
@@ -37,7 +36,6 @@ public partial class QuestMonsterKillRequirement : MUnique.OpenMU.DataModel.Conf
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
     {

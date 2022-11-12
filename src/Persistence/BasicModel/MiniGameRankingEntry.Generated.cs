@@ -28,7 +28,6 @@ public partial class MiniGameRankingEntry : MUnique.OpenMU.DataModel.Statistics.
     /// <summary>
     /// Gets the raw object of <see cref="Character" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("character")]
     [System.Text.Json.Serialization.JsonPropertyName("character")]
     public Character RawCharacter
     {
@@ -37,7 +36,6 @@ public partial class MiniGameRankingEntry : MUnique.OpenMU.DataModel.Statistics.
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Entities.Character Character
     {
@@ -48,7 +46,6 @@ public partial class MiniGameRankingEntry : MUnique.OpenMU.DataModel.Statistics.
     /// <summary>
     /// Gets the raw object of <see cref="MiniGame" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("miniGame")]
     [System.Text.Json.Serialization.JsonPropertyName("miniGame")]
     public MiniGameDefinition RawMiniGame
     {
@@ -57,7 +54,6 @@ public partial class MiniGameRankingEntry : MUnique.OpenMU.DataModel.Statistics.
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition MiniGame
     {

@@ -5,29 +5,29 @@
 namespace MUnique.OpenMU.Persistence.Json;
 
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 /// <summary>
-/// Class to serialize an object to a json string or textwriter.
+/// Class to serialize an object to a json string or stream.
 /// </summary>
 public class JsonObjectSerializer
 {
     /// <summary>
-    /// Serializes the specified object into a text writer.
+    /// Serializes the specified object into a stream.
     /// </summary>
     /// <typeparam name="T">The type of the object.</typeparam>
     /// <param name="obj">The object.</param>
-    /// <param name="textWriter">The text writer.</param>
-    public void Serialize<T>(T obj, TextWriter textWriter)
+    /// <param name="stream">The stream.</param>
+    public void Serialize<T>(T obj, Stream stream)
     {
-        var serializer = new JsonSerializer
+        var options = new JsonSerializerOptions
         {
-            ReferenceResolver = new IdReferenceResolver(),
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-            Formatting = Formatting.Indented,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            WriteIndented = true,
         };
-        serializer.Serialize(textWriter, obj);
+
+        JsonSerializer.Serialize(stream, obj, options); // todo: async
     }
 
     /// <summary>
@@ -38,8 +38,9 @@ public class JsonObjectSerializer
     /// <returns>The serialized object as string.</returns>
     public string Serialize<T>(T obj)
     {
-        using var textWriter = new StringWriter();
-        this.Serialize(obj, textWriter);
-        return textWriter.ToString();
+        using var stream = new MemoryStream();
+        this.Serialize(obj, stream);
+
+        return Encoding.UTF8.GetString(stream.GetBuffer(), 0, (int)stream.Length);
     }
 }

@@ -28,7 +28,6 @@ public partial class EnterGate : MUnique.OpenMU.DataModel.Configuration.EnterGat
     /// <summary>
     /// Gets the raw object of <see cref="TargetGate" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("targetGate")]
     [System.Text.Json.Serialization.JsonPropertyName("targetGate")]
     public ExitGate RawTargetGate
     {
@@ -37,7 +36,6 @@ public partial class EnterGate : MUnique.OpenMU.DataModel.Configuration.EnterGat
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.ExitGate TargetGate
     {

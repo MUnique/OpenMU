@@ -4,23 +4,23 @@
 
 namespace MUnique.OpenMU.Persistence.Json;
 
-using Newtonsoft.Json.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// A reference resolver which can resolve references by using multiple reference resolvers itself.
 /// </summary>
-public class MultipleSourceReferenceResolver : IReferenceResolver
+public class MultipleSourceReferenceResolver : ReferenceResolver
 {
-    private readonly IList<IReferenceResolver> _resolvers;
+    private readonly IList<ReferenceResolver> _resolvers;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MultipleSourceReferenceResolver"/> class.
     /// </summary>
     /// <param name="mainResolver">The main resolver, used to add references.</param>
     /// <param name="fallbackResolvers">The fallback resolvers.</param>
-    public MultipleSourceReferenceResolver(IReferenceResolver mainResolver, params IReferenceResolver[] fallbackResolvers)
+    public MultipleSourceReferenceResolver(ReferenceResolver mainResolver, params ReferenceResolver[] fallbackResolvers)
     {
-        this._resolvers = new List<IReferenceResolver> { mainResolver };
+        this._resolvers = new List<ReferenceResolver> { mainResolver };
         foreach (var resolver in fallbackResolvers)
         {
             this._resolvers.Add(resolver);
@@ -28,12 +28,12 @@ public class MultipleSourceReferenceResolver : IReferenceResolver
     }
 
     /// <inheritdoc />
-    public object ResolveReference(object context, string reference)
+    public override object ResolveReference(string referenceId)
     {
         foreach (var resolver in this._resolvers)
         {
-            var resolved = resolver.ResolveReference(context, reference);
-            if (resolved != null!)
+            var resolved = resolver.ResolveReference(referenceId);
+            if (resolved is { })
             {
                 return resolved;
             }
@@ -43,20 +43,14 @@ public class MultipleSourceReferenceResolver : IReferenceResolver
     }
 
     /// <inheritdoc />
-    public string GetReference(object context, object value)
+    public override string GetReference(object value, out bool alreadyExists)
     {
-        return this._resolvers.First().GetReference(context, value);
+        return this._resolvers.First().GetReference(value, out alreadyExists);
     }
 
     /// <inheritdoc />
-    public bool IsReferenced(object context, object value)
+    public override void AddReference(string referenceId, object value)
     {
-        return this._resolvers.Any(resolver => resolver.IsReferenced(context, value));
-    }
-
-    /// <inheritdoc />
-    public void AddReference(object context, string reference, object value)
-    {
-        this._resolvers.First().AddReference(context, reference, value);
+        this._resolvers.First().AddReference(referenceId, value);
     }
 }

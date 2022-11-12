@@ -28,12 +28,10 @@ public partial class PowerUpDefinitionValue : MUnique.OpenMU.DataModel.Attribute
     /// <summary>
     /// Gets the raw collection of <see cref="RelatedValues" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("relatedValues")]
     [System.Text.Json.Serialization.JsonPropertyName("relatedValues")]
     public ICollection<AttributeRelationship> RawRelatedValues { get; } = new List<AttributeRelationship>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> RelatedValues
     {

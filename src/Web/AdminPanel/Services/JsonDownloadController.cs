@@ -45,7 +45,9 @@ public class JsonDownloadController<T, TSerializable> : ControllerBase
         var item = context.GetByIdAsync<T>(objectId);
         if (item is IConvertibleTo<TSerializable> convertibleTo)
         {
-            return this.Content(convertibleTo.Convert().ToJson(), "application/json");
+            convertibleTo.Convert().ToJson(this.Response.Body);
+            this.Response.ContentType = "application/json";
+            return this.Ok();
         }
 
         return null;

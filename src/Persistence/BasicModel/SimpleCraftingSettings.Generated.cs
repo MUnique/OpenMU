@@ -28,12 +28,10 @@ public partial class SimpleCraftingSettings : MUnique.OpenMU.DataModel.Configura
     /// <summary>
     /// Gets the raw collection of <see cref="RequiredItems" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requiredItems")]
     [System.Text.Json.Serialization.JsonPropertyName("requiredItems")]
     public ICollection<ItemCraftingRequiredItem> RawRequiredItems { get; } = new List<ItemCraftingRequiredItem>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingRequiredItem> RequiredItems
     {
@@ -51,12 +49,10 @@ public partial class SimpleCraftingSettings : MUnique.OpenMU.DataModel.Configura
     /// <summary>
     /// Gets the raw collection of <see cref="ResultItems" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("resultItems")]
     [System.Text.Json.Serialization.JsonPropertyName("resultItems")]
     public ICollection<ItemCraftingResultItem> RawResultItems { get; } = new List<ItemCraftingResultItem>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem> ResultItems
     {

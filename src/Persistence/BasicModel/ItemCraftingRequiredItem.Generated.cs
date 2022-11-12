@@ -28,12 +28,10 @@ public partial class ItemCraftingRequiredItem : MUnique.OpenMU.DataModel.Configu
     /// <summary>
     /// Gets the raw collection of <see cref="PossibleItems" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("possibleItems")]
     [System.Text.Json.Serialization.JsonPropertyName("possibleItems")]
     public ICollection<ItemDefinition> RawPossibleItems { get; } = new List<ItemDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition> PossibleItems
     {
@@ -51,12 +49,10 @@ public partial class ItemCraftingRequiredItem : MUnique.OpenMU.DataModel.Configu
     /// <summary>
     /// Gets the raw collection of <see cref="RequiredItemOptions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requiredItemOptions")]
     [System.Text.Json.Serialization.JsonPropertyName("requiredItemOptions")]
     public ICollection<ItemOptionType> RawRequiredItemOptions { get; } = new List<ItemOptionType>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType> RequiredItemOptions
     {

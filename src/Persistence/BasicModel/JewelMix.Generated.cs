@@ -28,7 +28,6 @@ public partial class JewelMix : MUnique.OpenMU.DataModel.Configuration.JewelMix,
     /// <summary>
     /// Gets the raw object of <see cref="SingleJewel" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("singleJewel")]
     [System.Text.Json.Serialization.JsonPropertyName("singleJewel")]
     public ItemDefinition RawSingleJewel
     {
@@ -37,7 +36,6 @@ public partial class JewelMix : MUnique.OpenMU.DataModel.Configuration.JewelMix,
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition SingleJewel
     {
@@ -48,7 +46,6 @@ public partial class JewelMix : MUnique.OpenMU.DataModel.Configuration.JewelMix,
     /// <summary>
     /// Gets the raw object of <see cref="MixedJewel" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("mixedJewel")]
     [System.Text.Json.Serialization.JsonPropertyName("mixedJewel")]
     public ItemDefinition RawMixedJewel
     {
@@ -57,7 +54,6 @@ public partial class JewelMix : MUnique.OpenMU.DataModel.Configuration.JewelMix,
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition MixedJewel
     {

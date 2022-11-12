@@ -131,7 +131,6 @@ public partial class {className} : {fullName}, IIdentifiable, IConvertibleTo<{cl
     /// <summary>
     /// Gets the raw object of <see cref=""{property.Name}"" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty(""{property.Name.ToCamelCase()}"")]
     [System.Text.Json.Serialization.JsonPropertyName(""{property.Name.ToCamelCase()}"")]
     public {propertyTypeName} Raw{property.Name}
     {{
@@ -140,7 +139,6 @@ public partial class {className} : {fullName}, IIdentifiable, IConvertibleTo<{cl
     }}
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override {propertyType.FullName} {property.Name}
     {{
@@ -169,12 +167,10 @@ public partial class {className} : {fullName}, IIdentifiable, IConvertibleTo<{cl
     /// <summary>
     /// Gets the raw collection of <see cref=""{property.Name}"" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty(""{property.Name.ToCamelCase()}"")]
     [System.Text.Json.Serialization.JsonPropertyName(""{property.Name.ToCamelCase()}"")]
     public {propertyTypeName} Raw{property.Name} {{ get; }} = new List<{persistentClassName}>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override {originalPropertyTypeName} {property.Name}
     {{

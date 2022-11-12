@@ -28,12 +28,10 @@ public partial class ItemStorage : MUnique.OpenMU.DataModel.Entities.ItemStorage
     /// <summary>
     /// Gets the raw collection of <see cref="Items" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("items")]
     [System.Text.Json.Serialization.JsonPropertyName("items")]
     public ICollection<Item> RawItems { get; } = new List<Item>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.Item> Items
     {
