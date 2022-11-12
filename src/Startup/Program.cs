@@ -205,39 +205,35 @@ internal sealed class Program : IDisposable
             builder.AddAdminPanel(includeMapApp: true);
         }
 
-        builder.Host
-            .ConfigureServices(c =>
-            {
-                c.AddSingleton(this._servers)
-                    .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
-                    .AddIpResolver(args)
-                    .AddSingleton(this._gameServers)
-                    .AddSingleton(this._gameServers.Values)
-                    .AddSingleton(s =>
-                        this.DeterminePersistenceContextProviderAsync(
-                            args,
-                            s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."))
-                            .WaitAndUnwrapException())
-                    .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
-                    .AddSingleton<ILoginServer, LoginServer>()
-                    .AddSingleton<IGuildServer, GuildServer>()
-                    .AddSingleton<IFriendServer, FriendServer>()
-                    .AddSingleton<ChatServer>()
-                    .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
-                    .AddSingleton<ConnectServerFactory>()
-                    .AddSingleton<ConnectServerContainer>()
-                    .AddScoped<IMapFactory, JavascriptMapFactory>()
-                    .AddSingleton<SetupService>()
-                    .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
-                    .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
-                    .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
-                    .AddSingleton<PlugInManager>()
-                    .AddSingleton<IServerProvider, LocalServerProvider>()
-                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
-                    .AddHostedService<ChatServerContainer>()
-                    .AddHostedService<GameServerContainer>()
-                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!);
-            });
+        builder.Services.AddSingleton(this._servers)
+            .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
+            .AddIpResolver(args)
+            .AddSingleton(this._gameServers)
+            .AddSingleton(this._gameServers.Values)
+            .AddSingleton(s =>
+                this.DeterminePersistenceContextProviderAsync(
+                    args,
+                    s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."))
+                    .WaitAndUnwrapException())
+            .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
+            .AddSingleton<ILoginServer, LoginServer>()
+            .AddSingleton<IGuildServer, GuildServer>()
+            .AddSingleton<IFriendServer, FriendServer>()
+            .AddSingleton<ChatServer>()
+            .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
+            .AddSingleton<ConnectServerFactory>()
+            .AddSingleton<ConnectServerContainer>()
+            .AddScoped<IMapFactory, JavascriptMapFactory>()
+            .AddSingleton<SetupService>()
+            .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
+            .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
+            .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
+            .AddSingleton<PlugInManager>()
+            .AddSingleton<IServerProvider, LocalServerProvider>()
+            .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
+            .AddHostedService<ChatServerContainer>()
+            .AddHostedService<GameServerContainer>()
+            .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!);
         var host = builder.Build();
 
         this._logger.Information("Host created");
