@@ -51,7 +51,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.22" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.23" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MUnique.OpenMU.Network.csproj" />
