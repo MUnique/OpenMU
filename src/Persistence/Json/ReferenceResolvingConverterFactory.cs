@@ -18,6 +18,11 @@ public class ReferenceResolvingConverterFactory : JsonConverterFactory
     /// </summary>
     private static readonly ConcurrentDictionary<Type, JsonConverter> ConvertersCache = new();
 
+    /// <summary>
+    /// Gets or sets the types which are ignored during deserialization.
+    /// </summary>
+    public Type[] IgnoredTypes { get; set; } = Array.Empty<Type>();
+
     /// <inheritdoc />
     public override bool CanConvert(Type objectType) =>
         !objectType.IsEnum
@@ -31,7 +36,7 @@ public class ReferenceResolvingConverterFactory : JsonConverterFactory
         return ConvertersCache.GetOrAdd(typeToConvert, type =>
         {
             var converterType = typeof(ReferenceResolvingConverter<>).MakeGenericType(typeToConvert);
-            return (JsonConverter)Activator.CreateInstance(converterType)!;
+            return (JsonConverter)Activator.CreateInstance(converterType, new object[] { this.IgnoredTypes })!;
         });
     }
 }

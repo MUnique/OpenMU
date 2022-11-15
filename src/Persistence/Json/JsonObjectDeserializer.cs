@@ -7,12 +7,15 @@ namespace MUnique.OpenMU.Persistence.Json;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
 /// A json deserializer which is able to resolve circular references.
 /// </summary>
 public class JsonObjectDeserializer
 {
+    private static readonly Type[] IgnoredTypes = { typeof(ConstantElement) };
+
     /// <summary>
     /// Deserializes the json string to an object of <typeparamref name="T" />.
     /// </summary>
@@ -27,7 +30,7 @@ public class JsonObjectDeserializer
         var options = new JsonSerializerOptions
         {
             ReferenceHandler = referenceHandler,
-            Converters = { new ReferenceResolvingConverterFactory() },
+            Converters = { new ReferenceResolvingConverterFactory { IgnoredTypes = IgnoredTypes } },
         };
 
         this.BeforeDeserialize(options);

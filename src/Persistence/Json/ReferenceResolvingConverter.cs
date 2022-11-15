@@ -1,27 +1,25 @@
-﻿// <copyright file="DelayedReferenceResolvingConverter.cs" company="MUnique">
+﻿// <copyright file="ReferenceResolvingConverter.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
-
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MUnique.OpenMU.AttributeSystem;
 
 namespace MUnique.OpenMU.Persistence.Json;
 
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json;
-using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 
 /// <summary>
 /// A json converter which is able to resolve (circular) references.
 /// </summary>
+/// <typeparam name="T">The <see cref="Type"/> to convert.</typeparam>
 public class ReferenceResolvingConverter<T> : JsonConverter<T>
     where T : class, IIdentifiable, new()
 {
-    private static readonly Type[] IgnoredTypes = { typeof(ConstantElement) };
-
     private static readonly Dictionary<string, (Type PropertyType, Action<T, object>? Setter, Action<T, object>? Adder)> PropertyHandlers;
+
+    private readonly Type[] _ignoredTypes;
 
     static ReferenceResolvingConverter()
     {
@@ -52,7 +50,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                             objParam)
                         .Compile();
                 }
-                else if(x.CollectionInterface != null && (x.Property.Name.StartsWith("Raw") || x.Property.Name.StartsWith("Joined")))
+                else if (x.CollectionInterface != null && (x.Property.Name.StartsWith("Raw") || x.Property.Name.StartsWith("Joined")))
                 {
                     propertyType = x.CollectionInterface.GetGenericArguments()[0];
                     adder = Expression.Lambda<Action<T, object>>(
@@ -73,18 +71,25 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                     Name: x.Property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? x.Property.Name,
                     Setter: setter,
                     Adder: adder,
-                    PropertyType: propertyType
-                );
+                    PropertyType: propertyType);
             })
             .Where(x => x.PropertyType is not null)
-            .Where(x =>  !IgnoredTypes.Contains(x.PropertyType) && !IgnoredTypes.Contains(x.PropertyType!.BaseType))
             .ToDictionary(x => x.Name, x => (x.PropertyType!, x.Setter, x.Adder));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReferenceResolvingConverter{T}"/> class.
+    /// </summary>
+    /// <param name="ignoredTypes">The ignored types.</param>
+    public ReferenceResolvingConverter(Type[] ignoredTypes)
+    {
+        this._ignoredTypes = ignoredTypes;
     }
 
     /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
-        throw new InvalidOperationException("Use default serialization.");
+        throw new NotImplementedException($"Don't use {nameof(ReferenceResolvingConverterFactory)} for writing.");
     }
 
     /// <inheritdoc/>
@@ -108,10 +113,10 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                 else if (propertyName is "$ref" or "$id"
                          && JsonSerializer.Deserialize<string>(ref reader, options) is { } referenceId)
                 {
-                    
-                    item ??= this.ResolveObjectReference(options, referenceId);
+                    item ??= ResolveObjectReference(options, referenceId);
                 }
-                else if (PropertyHandlers.TryGetValue(propertyName, out var handler))
+                else if (PropertyHandlers.TryGetValue(propertyName, out var handler)
+                         && !this._ignoredTypes.Contains(handler.PropertyType) && !this._ignoredTypes.Contains(handler.PropertyType!.BaseType))
                 {
                     ReadProperty(ref reader, options, item, handler);
                 }
@@ -187,7 +192,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
     ///   - the object wasn't created before: we create a new one.
     /// This implies, that any object should have $id as first property.
     /// </remarks>
-    private T? ResolveObjectReference(JsonSerializerOptions serializer, string id)
+    private static T? ResolveObjectReference(JsonSerializerOptions serializer, string id)
     {
         if (string.IsNullOrEmpty(id))
         {
