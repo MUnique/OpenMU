@@ -4,14 +4,15 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// This converter converts a hex string to a byte array.
 /// Newtonsoft.Json expects a base64 string, but postgres delivers us a hex string,
 /// so this converter is needed.
 /// </summary>
-public class BinaryAsHexJsonConverter : JsonConverter
+public class BinaryAsHexJsonConverter : JsonConverter<byte[]>
 {
     /// <summary>
     /// The prefix of a byte array string, provided by postgres.
@@ -48,56 +49,45 @@ public class BinaryAsHexJsonConverter : JsonConverter
     }
 
     /// <inheritdoc />
-    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, byte[] value, JsonSerializerOptions options)
     {
-        var array = value as byte[];
-        if (array is null)
-        {
-            writer.WriteNull();
-            return;
-        }
-
-        var arrayString = ByteArrayPrefix + BitConverter.ToString(array)
+        var arrayString = ByteArrayPrefix + BitConverter.ToString(value)
             .Replace("-", string.Empty, StringComparison.InvariantCulture)
             .ToLowerInvariant();
-        writer.WriteValue(arrayString);
+        writer.WriteStringValue(arrayString);
     }
 
     /// <inheritdoc />
-    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+    public override byte[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TokenType == JsonToken.Null)
+        if (reader.TokenType == JsonTokenType.Null)
         {
             return null;
         }
 
-        if (reader.TokenType == JsonToken.String)
+        if (reader.TokenType == JsonTokenType.String)
         {
-            var prefixSize = ByteArrayPrefix.Length;
-            if (reader.Value is string value)
+            var prefixSize = ByteArrayPrefix.Length + 1; // +1 for escaping
+            var hexData = reader.ValueSpan.Slice(prefixSize);
+            var data = new byte[(hexData.Length - prefixSize) / 2];
+            for (var i = 0; i < data.Length; i++)
             {
-                var data = new byte[(value.Length - prefixSize) / 2];
-                for (var i = 0; i < data.Length; i++)
-                {
-                    var index = prefixSize + (i * 2);
-                    int highNibble = this.ParseCharacter(value[index]);
-                    int lowNibble = this.ParseCharacter(value[index + 1]);
-                    data[i] = (byte)((highNibble << 4) | lowNibble);
-                }
-
-                return data;
+                var index = i * 2;
+                int highNibble = this.ParseCharacter(hexData[index]);
+                int lowNibble = this.ParseCharacter(hexData[index + 1]);
+                data[i] = (byte)((highNibble << 4) | lowNibble);
             }
 
-            return default(byte[]);
+            return data;
         }
 
-        throw new JsonSerializationException($"Unexpected token parsing binary. Expected String, got {reader.TokenType}.");
+        throw new Exception($"Unexpected token parsing binary. Expected String, got {reader.TokenType}.");
     }
 
     /// <inheritdoc />
     public override bool CanConvert(Type objectType) => objectType == typeof(byte[]);
 
-    private int ParseCharacter(char character)
+    private int ParseCharacter(byte character)
     {
         var value = this._characterToValue[character];
         if (value == int.MaxValue)

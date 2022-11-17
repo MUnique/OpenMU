@@ -28,12 +28,10 @@ public partial class AppearanceData : MUnique.OpenMU.DataModel.Entities.Appearan
     /// <summary>
     /// Gets the raw collection of <see cref="EquippedItems" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("equippedItems")]
     [System.Text.Json.Serialization.JsonPropertyName("equippedItems")]
     public ICollection<ItemAppearance> RawEquippedItems { get; } = new List<ItemAppearance>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.ItemAppearance> EquippedItems
     {
@@ -51,7 +49,6 @@ public partial class AppearanceData : MUnique.OpenMU.DataModel.Entities.Appearan
     /// <summary>
     /// Gets the raw object of <see cref="CharacterClass" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("characterClass")]
     [System.Text.Json.Serialization.JsonPropertyName("characterClass")]
     public CharacterClass RawCharacterClass
     {
@@ -60,7 +57,6 @@ public partial class AppearanceData : MUnique.OpenMU.DataModel.Entities.Appearan
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
     {

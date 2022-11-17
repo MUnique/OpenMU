@@ -28,7 +28,6 @@ public partial class ItemCraftingResultItem : MUnique.OpenMU.DataModel.Configura
     /// <summary>
     /// Gets the raw object of <see cref="ItemDefinition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemDefinition")]
     [System.Text.Json.Serialization.JsonPropertyName("itemDefinition")]
     public ItemDefinition RawItemDefinition
     {
@@ -37,7 +36,6 @@ public partial class ItemCraftingResultItem : MUnique.OpenMU.DataModel.Configura
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
     {

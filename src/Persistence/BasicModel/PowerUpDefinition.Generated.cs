@@ -28,7 +28,6 @@ public partial class PowerUpDefinition : MUnique.OpenMU.DataModel.Attributes.Pow
     /// <summary>
     /// Gets the raw object of <see cref="TargetAttribute" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("targetAttribute")]
     [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
     public AttributeDefinition RawTargetAttribute
     {
@@ -37,7 +36,6 @@ public partial class PowerUpDefinition : MUnique.OpenMU.DataModel.Attributes.Pow
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
     {
@@ -48,7 +46,6 @@ public partial class PowerUpDefinition : MUnique.OpenMU.DataModel.Attributes.Pow
     /// <summary>
     /// Gets the raw object of <see cref="Boost" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("boost")]
     [System.Text.Json.Serialization.JsonPropertyName("boost")]
     public PowerUpDefinitionValue RawBoost
     {
@@ -57,7 +54,6 @@ public partial class PowerUpDefinition : MUnique.OpenMU.DataModel.Attributes.Pow
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Boost
     {

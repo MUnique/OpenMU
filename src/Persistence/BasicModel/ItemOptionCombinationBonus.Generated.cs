@@ -28,12 +28,10 @@ public partial class ItemOptionCombinationBonus : MUnique.OpenMU.DataModel.Confi
     /// <summary>
     /// Gets the raw collection of <see cref="Requirements" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requirements")]
     [System.Text.Json.Serialization.JsonPropertyName("requirements")]
     public ICollection<CombinationBonusRequirement> RawRequirements { get; } = new List<CombinationBonusRequirement>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.CombinationBonusRequirement> Requirements
     {
@@ -51,7 +49,6 @@ public partial class ItemOptionCombinationBonus : MUnique.OpenMU.DataModel.Confi
     /// <summary>
     /// Gets the raw object of <see cref="Bonus" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("bonus")]
     [System.Text.Json.Serialization.JsonPropertyName("bonus")]
     public PowerUpDefinition RawBonus
     {
@@ -60,7 +57,6 @@ public partial class ItemOptionCombinationBonus : MUnique.OpenMU.DataModel.Confi
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition Bonus
     {

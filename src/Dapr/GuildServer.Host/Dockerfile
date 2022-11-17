@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
 WORKDIR /src
 COPY ["Dapr/GuildServer.Host/MUnique.OpenMU.GuildServer.Host.csproj", "Dapr/GuildServer.Host/"]
 RUN dotnet restore "Dapr/GuildServer.Host/MUnique.OpenMU.GuildServer.Host.csproj"

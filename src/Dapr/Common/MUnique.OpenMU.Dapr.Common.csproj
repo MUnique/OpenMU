@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
@@ -17,23 +17,23 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Dapr.AspNetCore" Version="1.8.0" />
-    <PackageReference Include="Dapr.Client" Version="1.8.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.OpenApi" Version="1.3.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.2.32">
+    <PackageReference Include="Dapr.AspNetCore" Version="1.9.0" />
+    <PackageReference Include="Dapr.Client" Version="1.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.4.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.4.27">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.3.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.3.1" />
     <PackageReference Include="OpenTelemetry.Exporter.Prometheus" Version="1.2.0-rc5" />
-    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.3.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.3.1" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9.5" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.5" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-    <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+    <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="8.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
       <PrivateAssets>all</PrivateAssets>

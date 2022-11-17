@@ -28,7 +28,6 @@ public partial class SkillEntry : MUnique.OpenMU.DataModel.Entities.SkillEntry, 
     /// <summary>
     /// Gets the raw object of <see cref="Skill" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("skill")]
     [System.Text.Json.Serialization.JsonPropertyName("skill")]
     public Skill RawSkill
     {
@@ -37,7 +36,6 @@ public partial class SkillEntry : MUnique.OpenMU.DataModel.Entities.SkillEntry, 
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Skill Skill
     {

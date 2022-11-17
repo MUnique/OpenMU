@@ -28,7 +28,6 @@ public partial class QuestItemRequirement : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw object of <see cref="Item" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("item")]
     [System.Text.Json.Serialization.JsonPropertyName("item")]
     public ItemDefinition RawItem
     {
@@ -37,7 +36,6 @@ public partial class QuestItemRequirement : MUnique.OpenMU.DataModel.Configurati
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Item
     {
@@ -48,7 +46,6 @@ public partial class QuestItemRequirement : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw object of <see cref="DropItemGroup" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("dropItemGroup")]
     [System.Text.Json.Serialization.JsonPropertyName("dropItemGroup")]
     public DropItemGroup RawDropItemGroup
     {
@@ -57,7 +54,6 @@ public partial class QuestItemRequirement : MUnique.OpenMU.DataModel.Configurati
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.DropItemGroup DropItemGroup
     {

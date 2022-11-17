@@ -28,12 +28,10 @@ public partial class ItemSetGroup : MUnique.OpenMU.DataModel.Configuration.Items
     /// <summary>
     /// Gets the raw collection of <see cref="Options" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("options")]
     [System.Text.Json.Serialization.JsonPropertyName("options")]
     public ICollection<IncreasableItemOption> RawOptions { get; } = new List<IncreasableItemOption>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> Options
     {
@@ -51,12 +49,10 @@ public partial class ItemSetGroup : MUnique.OpenMU.DataModel.Configuration.Items
     /// <summary>
     /// Gets the raw collection of <see cref="Items" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("items")]
     [System.Text.Json.Serialization.JsonPropertyName("items")]
     public ICollection<ItemOfItemSet> RawItems { get; } = new List<ItemOfItemSet>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet> Items
     {

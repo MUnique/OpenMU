@@ -28,7 +28,6 @@ public partial class MonsterAttribute : MUnique.OpenMU.DataModel.Configuration.M
     /// <summary>
     /// Gets the raw object of <see cref="AttributeDefinition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("attributeDefinition")]
     [System.Text.Json.Serialization.JsonPropertyName("attributeDefinition")]
     public AttributeDefinition RawAttributeDefinition
     {
@@ -37,7 +36,6 @@ public partial class MonsterAttribute : MUnique.OpenMU.DataModel.Configuration.M
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition AttributeDefinition
     {

@@ -28,12 +28,10 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     /// <summary>
     /// Gets the raw collection of <see cref="Requirements" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requirements")]
     [System.Text.Json.Serialization.JsonPropertyName("requirements")]
     public ICollection<AttributeRequirement> RawRequirements { get; } = new List<AttributeRequirement>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> Requirements
     {
@@ -51,12 +49,10 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     /// <summary>
     /// Gets the raw collection of <see cref="ConsumeRequirements" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("consumeRequirements")]
     [System.Text.Json.Serialization.JsonPropertyName("consumeRequirements")]
     public ICollection<AttributeRequirement> RawConsumeRequirements { get; } = new List<AttributeRequirement>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> ConsumeRequirements
     {
@@ -74,12 +70,10 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     /// <summary>
     /// Gets the raw collection of <see cref="QualifiedCharacters" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("qualifiedCharacters")]
     [System.Text.Json.Serialization.JsonPropertyName("qualifiedCharacters")]
     public ICollection<CharacterClass> RawQualifiedCharacters { get; } = new List<CharacterClass>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.CharacterClass> QualifiedCharacters
     {
@@ -97,7 +91,6 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     /// <summary>
     /// Gets the raw object of <see cref="ElementalModifierTarget" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("elementalModifierTarget")]
     [System.Text.Json.Serialization.JsonPropertyName("elementalModifierTarget")]
     public AttributeDefinition RawElementalModifierTarget
     {
@@ -106,7 +99,6 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition ElementalModifierTarget
     {
@@ -117,7 +109,6 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     /// <summary>
     /// Gets the raw object of <see cref="MagicEffectDef" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("magicEffectDef")]
     [System.Text.Json.Serialization.JsonPropertyName("magicEffectDef")]
     public MagicEffectDefinition RawMagicEffectDef
     {
@@ -126,7 +117,6 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition MagicEffectDef
     {
@@ -137,7 +127,6 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     /// <summary>
     /// Gets the raw object of <see cref="MasterDefinition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("masterDefinition")]
     [System.Text.Json.Serialization.JsonPropertyName("masterDefinition")]
     public MasterSkillDefinition RawMasterDefinition
     {
@@ -146,7 +135,6 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition MasterDefinition
     {

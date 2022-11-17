@@ -288,7 +288,8 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
-    /// Tests if the consume of the item causes the removal of the item, when the durability reaches 0.
+    /// Tests if the consume of the item not causes the removal of the item, when the durability reaches 0.
+    /// The removal is handled in the <see cref="ItemConsumeAction"/>.
     /// </summary>
     [Test]
     public async ValueTask ItemRemovalAsync()
@@ -300,7 +301,7 @@ public class ItemConsumptionTest
         var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(item.Durability, Is.EqualTo(0));
-        Assert.That(player.Inventory.Items.Any(), Is.False);
+        Assert.That(player.Inventory.Items.Any(), Is.True);
     }
 
     /// <summary>
@@ -332,7 +333,6 @@ public class ItemConsumptionTest
         var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(success, Is.True);
-        Assert.That(player.Inventory.Items.Any(), Is.False);
         Mock.Get(player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()).Verify(view => view!.DrinkAlcoholAsync(), Times.Once);
     }
 

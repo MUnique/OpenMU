@@ -34,7 +34,6 @@ public partial class ConstValueAttribute : MUnique.OpenMU.AttributeSystem.ConstV
     /// <summary>
     /// Gets the raw object of <see cref="Definition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("definition")]
     [System.Text.Json.Serialization.JsonPropertyName("definition")]
     public AttributeDefinition RawDefinition
     {
@@ -43,7 +42,6 @@ public partial class ConstValueAttribute : MUnique.OpenMU.AttributeSystem.ConstV
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Definition
     {

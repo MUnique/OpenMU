@@ -32,12 +32,10 @@ internal partial class ItemSlotType : MUnique.OpenMU.DataModel.Configuration.Ite
     /// Gets the raw string of <see cref="ItemSlots" />.
     /// </summary>
     [Column(nameof(ItemSlots))]
-    [Newtonsoft.Json.JsonProperty(nameof(ItemSlots))]
     [System.Text.Json.Serialization.JsonPropertyName("itemSlots")]
     public string RawItemSlots { get; set; }
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [NotMapped]
     public override ICollection<System.Int32> ItemSlots

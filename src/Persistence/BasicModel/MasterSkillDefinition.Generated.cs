@@ -28,12 +28,10 @@ public partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configurat
     /// <summary>
     /// Gets the raw collection of <see cref="RequiredMasterSkills" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requiredMasterSkills")]
     [System.Text.Json.Serialization.JsonPropertyName("requiredMasterSkills")]
     public ICollection<Skill> RawRequiredMasterSkills { get; } = new List<Skill>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Skill> RequiredMasterSkills
     {
@@ -51,7 +49,6 @@ public partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configurat
     /// <summary>
     /// Gets the raw object of <see cref="Root" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("root")]
     [System.Text.Json.Serialization.JsonPropertyName("root")]
     public MasterSkillRoot RawRoot
     {
@@ -60,7 +57,6 @@ public partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configurat
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot Root
     {
@@ -71,7 +67,6 @@ public partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configurat
     /// <summary>
     /// Gets the raw object of <see cref="TargetAttribute" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("targetAttribute")]
     [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
     public AttributeDefinition RawTargetAttribute
     {
@@ -80,7 +75,6 @@ public partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configurat
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
     {
@@ -91,7 +85,6 @@ public partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configurat
     /// <summary>
     /// Gets the raw object of <see cref="ReplacedSkill" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("replacedSkill")]
     [System.Text.Json.Serialization.JsonPropertyName("replacedSkill")]
     public Skill RawReplacedSkill
     {
@@ -100,7 +93,6 @@ public partial class MasterSkillDefinition : MUnique.OpenMU.DataModel.Configurat
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Skill ReplacedSkill
     {

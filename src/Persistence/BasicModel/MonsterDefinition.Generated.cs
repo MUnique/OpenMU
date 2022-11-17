@@ -28,12 +28,10 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="ItemCraftings" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemCraftings")]
     [System.Text.Json.Serialization.JsonPropertyName("itemCraftings")]
     public ICollection<ItemCrafting> RawItemCraftings { get; } = new List<ItemCrafting>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting> ItemCraftings
     {
@@ -51,12 +49,10 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="DropItemGroups" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("dropItemGroups")]
     [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
     public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
     {
@@ -74,12 +70,10 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="Attributes" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("attributes")]
     [System.Text.Json.Serialization.JsonPropertyName("attributes")]
     public ICollection<MonsterAttribute> RawAttributes { get; } = new List<MonsterAttribute>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterAttribute> Attributes
     {
@@ -97,12 +91,10 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="Quests" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("quests")]
     [System.Text.Json.Serialization.JsonPropertyName("quests")]
     public ICollection<QuestDefinition> RawQuests { get; } = new List<QuestDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition> Quests
     {
@@ -120,7 +112,6 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw object of <see cref="AttackSkill" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("attackSkill")]
     [System.Text.Json.Serialization.JsonPropertyName("attackSkill")]
     public Skill RawAttackSkill
     {
@@ -129,7 +120,6 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Skill AttackSkill
     {
@@ -140,7 +130,6 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw object of <see cref="MerchantStore" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("merchantStore")]
     [System.Text.Json.Serialization.JsonPropertyName("merchantStore")]
     public ItemStorage RawMerchantStore
     {
@@ -149,7 +138,6 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Entities.ItemStorage MerchantStore
     {

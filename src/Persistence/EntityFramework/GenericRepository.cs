@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Reflection;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Reflection;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 

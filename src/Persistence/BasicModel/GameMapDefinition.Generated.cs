@@ -28,12 +28,10 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="MonsterSpawns" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("monsterSpawns")]
     [System.Text.Json.Serialization.JsonPropertyName("monsterSpawns")]
     public ICollection<MonsterSpawnArea> RawMonsterSpawns { get; } = new List<MonsterSpawnArea>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea> MonsterSpawns
     {
@@ -51,12 +49,10 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="EnterGates" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("enterGates")]
     [System.Text.Json.Serialization.JsonPropertyName("enterGates")]
     public ICollection<EnterGate> RawEnterGates { get; } = new List<EnterGate>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.EnterGate> EnterGates
     {
@@ -74,12 +70,10 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="ExitGates" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("exitGates")]
     [System.Text.Json.Serialization.JsonPropertyName("exitGates")]
     public ICollection<ExitGate> RawExitGates { get; } = new List<ExitGate>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.ExitGate> ExitGates
     {
@@ -97,12 +91,10 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="DropItemGroups" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("dropItemGroups")]
     [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
     public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
     {
@@ -120,12 +112,10 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="MapRequirements" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("mapRequirements")]
     [System.Text.Json.Serialization.JsonPropertyName("mapRequirements")]
     public ICollection<AttributeRequirement> RawMapRequirements { get; } = new List<AttributeRequirement>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> MapRequirements
     {
@@ -143,7 +133,6 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw object of <see cref="SafezoneMap" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("safezoneMap")]
     [System.Text.Json.Serialization.JsonPropertyName("safezoneMap")]
     public GameMapDefinition RawSafezoneMap
     {
@@ -152,7 +141,6 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition SafezoneMap
     {
@@ -163,7 +151,6 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw object of <see cref="BattleZone" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("battleZone")]
     [System.Text.Json.Serialization.JsonPropertyName("battleZone")]
     public BattleZoneDefinition RawBattleZone
     {
@@ -172,7 +159,6 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition BattleZone
     {

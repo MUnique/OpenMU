@@ -50,7 +50,7 @@ public static class PetLevelHelper
             results[i] = (uint)expression.calculate();
         }
 
-        ValueResultCache.TryAdd((formula, petLevel), results);
+        ValueResultCache.TryAdd((formula, maximumLevel), results);
 
         return results[petLevel - 1];
     }

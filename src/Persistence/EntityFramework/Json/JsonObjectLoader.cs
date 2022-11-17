@@ -5,9 +5,10 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
 using System.Data;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Newtonsoft.Json.Serialization;
 
 /// <summary>
 /// A class which allows to load objects from the database by using a query provided by the <see cref="JsonQueryBuilder"/>
@@ -17,19 +18,18 @@ public class JsonObjectLoader
 {
     private readonly JsonQueryBuilder _queryBuilder;
     private readonly JsonObjectDeserializer _deserializer;
-    private readonly IReferenceResolver _referenceResolver;
+    private readonly ReferenceHandler _referenceHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonObjectLoader"/> class.
     /// </summary>
     /// <param name="queryBuilder">The query builder.</param>
     /// <param name="deserializer">The deserializer.</param>
-    /// <param name="referenceResolver">The reference resolver.</param>
-    public JsonObjectLoader(JsonQueryBuilder queryBuilder, JsonObjectDeserializer deserializer, IReferenceResolver referenceResolver)
+    public JsonObjectLoader(JsonQueryBuilder queryBuilder, JsonObjectDeserializer deserializer, ReferenceHandler referenceHandler)
     {
         this._queryBuilder = queryBuilder;
         this._deserializer = deserializer;
-        this._referenceResolver = referenceResolver;
+        this._referenceHandler = referenceHandler;
     }
 
     /// <summary>
@@ -52,8 +52,8 @@ public class JsonObjectLoader
         {
             while (await reader.ReadAsync().ConfigureAwait(false))
             {
-                using var textReader = reader.GetTextReader(2);
-                if (this._deserializer.Deserialize<T>(textReader, this._referenceResolver) is { } item)
+                await using var textReader = reader.GetStream(2);
+                if (this._deserializer.Deserialize<T>(textReader, this._referenceHandler) is { } item)
                 {
                     result.Add(item);
                 }
@@ -75,7 +75,7 @@ public class JsonObjectLoader
         where T : class, IIdentifiable
     {
         IEntityType type;
-        using (var completeContext = new EntityDataContext())
+        await using (var completeContext = new EntityDataContext())
         {
             type = completeContext.Model.FindEntityType(typeof(T)) ?? throw new ArgumentException($"{typeof(T)} is not included in the model of the context.");
         }
@@ -92,8 +92,8 @@ public class JsonObjectLoader
         await using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess | CommandBehavior.SingleResult).ConfigureAwait(false);
         if (reader.HasRows && await reader.ReadAsync().ConfigureAwait(false))
         {
-            using var textReader = reader.GetTextReader(2);
-            return this._deserializer.Deserialize<T>(textReader, this._referenceResolver);
+            await using var textReader = reader.GetStream(2);
+            return this._deserializer.Deserialize<T>(textReader, this._referenceHandler);
         }
 
         return default;

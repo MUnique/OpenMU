@@ -33,7 +33,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
 
     private readonly IPipelinedEncryptor? _encryptionPipe;
     private readonly ILogger<Connection> _logger;
-    private readonly EndPoint? _remoteEndPoint;
+    private readonly EndPoint _remoteEndPoint;
 
     private IDuplexPipe? _duplexPipe;
     private bool _disconnected;
@@ -52,7 +52,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._encryptionPipe = encryptionPipe;
         this._logger = logger;
         this.Source = decryptionPipe?.Reader ?? this._duplexPipe!.Input;
-        this._remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint;
+        this._remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint ?? new IPEndPoint(IPAddress.Any, 0);
         this.OutputLock = new();
     }
 

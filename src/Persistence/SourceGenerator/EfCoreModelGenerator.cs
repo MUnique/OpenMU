@@ -383,12 +383,10 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     /// Gets the raw string of <see cref=""{property.Name}"" />.
     /// </summary>
     [Column(nameof({property.Name}))]
-    [Newtonsoft.Json.JsonProperty(nameof({property.Name}))]
     [System.Text.Json.Serialization.JsonPropertyName(""{property.Name.ToCamelCase()}"")]
     public string Raw{property.Name} {{ get; set; }}
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [NotMapped]
     public override {originalPropertyTypeName} {property.Name}

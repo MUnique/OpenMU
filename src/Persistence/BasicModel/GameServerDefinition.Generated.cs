@@ -28,12 +28,10 @@ public partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw collection of <see cref="Endpoints" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("endpoints")]
     [System.Text.Json.Serialization.JsonPropertyName("endpoints")]
     public ICollection<GameServerEndpoint> RawEndpoints { get; } = new List<GameServerEndpoint>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint> Endpoints
     {
@@ -51,7 +49,6 @@ public partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw object of <see cref="ServerConfiguration" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("serverConfiguration")]
     [System.Text.Json.Serialization.JsonPropertyName("serverConfiguration")]
     public GameServerConfiguration RawServerConfiguration
     {
@@ -60,7 +57,6 @@ public partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configurati
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration ServerConfiguration
     {
@@ -71,7 +67,6 @@ public partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw object of <see cref="GameConfiguration" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("gameConfiguration")]
     [System.Text.Json.Serialization.JsonPropertyName("gameConfiguration")]
     public GameConfiguration RawGameConfiguration
     {
@@ -80,7 +75,6 @@ public partial class GameServerDefinition : MUnique.OpenMU.DataModel.Configurati
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration GameConfiguration
     {

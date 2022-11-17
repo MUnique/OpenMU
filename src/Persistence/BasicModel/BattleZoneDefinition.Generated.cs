@@ -28,7 +28,6 @@ public partial class BattleZoneDefinition : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw object of <see cref="Ground" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("ground")]
     [System.Text.Json.Serialization.JsonPropertyName("ground")]
     public Rectangle RawGround
     {
@@ -37,7 +36,6 @@ public partial class BattleZoneDefinition : MUnique.OpenMU.DataModel.Configurati
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Rectangle Ground
     {
@@ -48,7 +46,6 @@ public partial class BattleZoneDefinition : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw object of <see cref="LeftGoal" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("leftGoal")]
     [System.Text.Json.Serialization.JsonPropertyName("leftGoal")]
     public Rectangle RawLeftGoal
     {
@@ -57,7 +54,6 @@ public partial class BattleZoneDefinition : MUnique.OpenMU.DataModel.Configurati
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Rectangle LeftGoal
     {
@@ -68,7 +64,6 @@ public partial class BattleZoneDefinition : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw object of <see cref="RightGoal" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("rightGoal")]
     [System.Text.Json.Serialization.JsonPropertyName("rightGoal")]
     public Rectangle RawRightGoal
     {
@@ -77,7 +72,6 @@ public partial class BattleZoneDefinition : MUnique.OpenMU.DataModel.Configurati
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Rectangle RightGoal
     {

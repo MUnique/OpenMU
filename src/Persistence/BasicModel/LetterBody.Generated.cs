@@ -25,7 +25,6 @@ public partial class LetterBody : MUnique.OpenMU.DataModel.Entities.LetterBody, 
     /// <summary>
     /// Gets the raw object of <see cref="Header" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("header")]
     [System.Text.Json.Serialization.JsonPropertyName("header")]
     public LetterHeader RawHeader
     {
@@ -34,7 +33,6 @@ public partial class LetterBody : MUnique.OpenMU.DataModel.Entities.LetterBody, 
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.Interfaces.LetterHeader Header
     {
@@ -45,7 +43,6 @@ public partial class LetterBody : MUnique.OpenMU.DataModel.Entities.LetterBody, 
     /// <summary>
     /// Gets the raw object of <see cref="SenderAppearance" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("senderAppearance")]
     [System.Text.Json.Serialization.JsonPropertyName("senderAppearance")]
     public AppearanceData RawSenderAppearance
     {
@@ -54,7 +51,6 @@ public partial class LetterBody : MUnique.OpenMU.DataModel.Entities.LetterBody, 
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Entities.AppearanceData SenderAppearance
     {
