@@ -28,12 +28,10 @@ public partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configurat
     /// <summary>
     /// Gets the raw collection of <see cref="PowerUpDefinitions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("powerUpDefinitions")]
     [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinitions")]
     public ICollection<PowerUpDefinition> RawPowerUpDefinitions { get; } = new List<PowerUpDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PowerUpDefinitions
     {
@@ -51,7 +49,6 @@ public partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configurat
     /// <summary>
     /// Gets the raw object of <see cref="Duration" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("duration")]
     [System.Text.Json.Serialization.JsonPropertyName("duration")]
     public PowerUpDefinitionValue RawDuration
     {
@@ -60,7 +57,6 @@ public partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configurat
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Duration
     {

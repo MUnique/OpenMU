@@ -18,8 +18,8 @@ public class GameConfigurationJsonObjectLoader : JsonObjectLoader
     public GameConfigurationJsonObjectLoader()
         : base(
             new GameConfigurationJsonQueryBuilder(),
-            new JsonObjectDeserializer { AreCircularReferencesExpected = true },
-            new IdReferenceResolver())
+            new JsonObjectDeserializer(),
+            new IdReferenceHandler())
     {
     }
 }

@@ -28,12 +28,10 @@ public partial class MiniGameChangeEvent : MUnique.OpenMU.DataModel.Configuratio
     /// <summary>
     /// Gets the raw collection of <see cref="TerrainChanges" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("terrainChanges")]
     [System.Text.Json.Serialization.JsonPropertyName("terrainChanges")]
     public ICollection<MiniGameTerrainChange> RawTerrainChanges { get; } = new List<MiniGameTerrainChange>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameTerrainChange> TerrainChanges
     {
@@ -51,7 +49,6 @@ public partial class MiniGameChangeEvent : MUnique.OpenMU.DataModel.Configuratio
     /// <summary>
     /// Gets the raw object of <see cref="TargetDefinition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("targetDefinition")]
     [System.Text.Json.Serialization.JsonPropertyName("targetDefinition")]
     public MonsterDefinition RawTargetDefinition
     {
@@ -60,7 +57,6 @@ public partial class MiniGameChangeEvent : MUnique.OpenMU.DataModel.Configuratio
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition TargetDefinition
     {
@@ -71,7 +67,6 @@ public partial class MiniGameChangeEvent : MUnique.OpenMU.DataModel.Configuratio
     /// <summary>
     /// Gets the raw object of <see cref="SpawnArea" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("spawnArea")]
     [System.Text.Json.Serialization.JsonPropertyName("spawnArea")]
     public MonsterSpawnArea RawSpawnArea
     {
@@ -80,7 +75,6 @@ public partial class MiniGameChangeEvent : MUnique.OpenMU.DataModel.Configuratio
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea SpawnArea
     {

@@ -70,7 +70,14 @@ public class MonsterAttributeHolder : IAttributeSystem
     /// <inheritdoc/>
     public float GetValueOfAttribute(AttributeDefinition attributeDefinition)
     {
-        if (this._attributes != null && this._attributes.TryGetValue(attributeDefinition, out var attribute))
+        IDictionary<AttributeDefinition, IComposableAttribute>? attributes;
+        lock (this._attributesLock)
+        {
+            attributes = this._attributes;
+        }
+
+        if (attributes is not null
+            && attributes.TryGetValue(attributeDefinition, out var attribute))
         {
             return attribute.Value;
         }
@@ -108,24 +115,31 @@ public class MonsterAttributeHolder : IAttributeSystem
     /// <inheritdoc/>
     public void RemoveElement(IElement element, AttributeDefinition targetAttribute)
     {
-        var attributeDictionary = this._attributes;
-        if (attributeDictionary != null)
+        IDictionary<AttributeDefinition, IComposableAttribute>? attributes;
+        lock (this._attributesLock)
         {
-            if (attributeDictionary.TryGetValue(targetAttribute, out var attribute))
-            {
-                attribute.RemoveElement(element);
-                if (attribute.Elements.Skip(1).Take(1).Any())
-                {
-                    attributeDictionary.Remove(targetAttribute);
-                }
-            }
+            attributes = this._attributes;
+        }
 
-            if (attributeDictionary.Count == 0)
+        if (attributes is null)
+        {
+            return;
+        }
+
+        if (attributes.TryGetValue(targetAttribute, out var attribute))
+        {
+            attribute.RemoveElement(element);
+            if (attribute.Elements.Skip(1).Take(1).Any())
             {
-                lock (this._attributesLock)
-                {
-                    this._attributes = null;
-                }
+                attributes.Remove(targetAttribute);
+            }
+        }
+
+        if (attributes.Count == 0)
+        {
+            lock (this._attributesLock)
+            {
+                this._attributes = null;
             }
         }
     }
@@ -157,17 +171,16 @@ public class MonsterAttributeHolder : IAttributeSystem
 
     private IDictionary<AttributeDefinition, IComposableAttribute> GetAttributeDictionary()
     {
-        if (this._attributes is null)
+        lock (this._attributesLock)
         {
-            lock (this._attributesLock)
+            var attributes = this._attributes;
+            if (attributes is null)
             {
-                if (this._attributes is null)
-                {
-                    this._attributes = new Dictionary<AttributeDefinition, IComposableAttribute>();
-                }
+                attributes = new Dictionary<AttributeDefinition, IComposableAttribute>();
+                this._attributes = attributes;
             }
-        }
 
-        return this._attributes;
+            return attributes;
+        }
     }
 }

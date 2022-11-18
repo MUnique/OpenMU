@@ -28,12 +28,10 @@ public partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.Cha
     /// <summary>
     /// Gets the raw collection of <see cref="RequirementStates" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requirementStates")]
     [System.Text.Json.Serialization.JsonPropertyName("requirementStates")]
     public ICollection<QuestMonsterKillRequirementState> RawRequirementStates { get; } = new List<QuestMonsterKillRequirementState>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState> RequirementStates
     {
@@ -51,7 +49,6 @@ public partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.Cha
     /// <summary>
     /// Gets the raw object of <see cref="LastFinishedQuest" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("lastFinishedQuest")]
     [System.Text.Json.Serialization.JsonPropertyName("lastFinishedQuest")]
     public QuestDefinition RawLastFinishedQuest
     {
@@ -60,7 +57,6 @@ public partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.Cha
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition LastFinishedQuest
     {
@@ -71,7 +67,6 @@ public partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.Cha
     /// <summary>
     /// Gets the raw object of <see cref="ActiveQuest" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("activeQuest")]
     [System.Text.Json.Serialization.JsonPropertyName("activeQuest")]
     public QuestDefinition RawActiveQuest
     {
@@ -80,7 +75,6 @@ public partial class CharacterQuestState : MUnique.OpenMU.DataModel.Entities.Cha
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition ActiveQuest
     {

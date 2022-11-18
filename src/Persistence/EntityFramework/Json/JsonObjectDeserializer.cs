@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 /// <summary>
 /// A deserializer which parses the json retrieved from the postgres database by using a query built by the <see cref="JsonQueryBuilder"/>.
@@ -13,9 +13,9 @@ using Newtonsoft.Json;
 public class JsonObjectDeserializer : MUnique.OpenMU.Persistence.Json.JsonObjectDeserializer
 {
     /// <inheritdoc/>
-    protected override void BeforeDeserialize(JsonSerializer serializer)
+    protected override void BeforeDeserialize(JsonSerializerOptions options)
     {
-        base.BeforeDeserialize(serializer);
-        serializer.Converters.Add(new BinaryAsHexJsonConverter());
+        base.BeforeDeserialize(options);
+        options.Converters.Add(new BinaryAsHexJsonConverter());
     }
 }

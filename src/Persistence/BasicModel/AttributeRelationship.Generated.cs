@@ -50,7 +50,6 @@ public partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.Attr
     /// <summary>
     /// Gets the raw object of <see cref="TargetAttribute" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("targetAttribute")]
     [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
     public AttributeDefinition RawTargetAttribute
     {
@@ -59,7 +58,6 @@ public partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.Attr
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
     {
@@ -70,7 +68,6 @@ public partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.Attr
     /// <summary>
     /// Gets the raw object of <see cref="InputAttribute" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("inputAttribute")]
     [System.Text.Json.Serialization.JsonPropertyName("inputAttribute")]
     public AttributeDefinition RawInputAttribute
     {
@@ -79,7 +76,6 @@ public partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.Attr
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition InputAttribute
     {

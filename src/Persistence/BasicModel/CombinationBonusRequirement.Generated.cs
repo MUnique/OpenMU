@@ -28,7 +28,6 @@ public partial class CombinationBonusRequirement : MUnique.OpenMU.DataModel.Conf
     /// <summary>
     /// Gets the raw object of <see cref="OptionType" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("optionType")]
     [System.Text.Json.Serialization.JsonPropertyName("optionType")]
     public ItemOptionType RawOptionType
     {
@@ -37,7 +36,6 @@ public partial class CombinationBonusRequirement : MUnique.OpenMU.DataModel.Conf
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
     {

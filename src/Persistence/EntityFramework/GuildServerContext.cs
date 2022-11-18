@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Microsoft.Extensions.Logging;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>

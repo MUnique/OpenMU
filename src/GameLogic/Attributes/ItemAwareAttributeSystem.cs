@@ -9,7 +9,7 @@ using MUnique.OpenMU.AttributeSystem;
 /// <summary>
 /// An attribute system which considers items of a character.
 /// </summary>
-public class ItemAwareAttributeSystem : AttributeSystem
+public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemAwareAttributeSystem"/> class.
@@ -30,4 +30,25 @@ public class ItemAwareAttributeSystem : AttributeSystem
     /// Gets or sets the item set power ups.
     /// </summary>
     public IReadOnlyList<PowerUpWrapper>? ItemSetPowerUps { get; set; }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        foreach (var powerUpWrapper in this.ItemPowerUps.SelectMany(p => p.Value))
+        {
+            powerUpWrapper.Dispose();
+        }
+
+        this.ItemPowerUps.Clear();
+
+        if (this.ItemSetPowerUps is { } itemSetPowerUps)
+        {
+            foreach (var powerUp in itemSetPowerUps)
+            {
+                powerUp.Dispose();
+            }
+
+            this.ItemSetPowerUps = null;
+        }
+    }
 }

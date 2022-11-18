@@ -28,12 +28,10 @@ public partial class ItemAppearance : MUnique.OpenMU.DataModel.Entities.ItemAppe
     /// <summary>
     /// Gets the raw collection of <see cref="VisibleOptions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("visibleOptions")]
     [System.Text.Json.Serialization.JsonPropertyName("visibleOptions")]
     public ICollection<ItemOptionType> RawVisibleOptions { get; } = new List<ItemOptionType>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType> VisibleOptions
     {
@@ -51,7 +49,6 @@ public partial class ItemAppearance : MUnique.OpenMU.DataModel.Entities.ItemAppe
     /// <summary>
     /// Gets the raw object of <see cref="Definition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("definition")]
     [System.Text.Json.Serialization.JsonPropertyName("definition")]
     public ItemDefinition RawDefinition
     {
@@ -60,7 +57,6 @@ public partial class ItemAppearance : MUnique.OpenMU.DataModel.Entities.ItemAppe
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Definition
     {

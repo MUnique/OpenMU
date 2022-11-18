@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.PlugIns;
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 /// <summary>
 /// Extension methods for the plugin configuration.
@@ -27,7 +27,7 @@ public static class PlugInConfigurationExtensions
             return default;
         }
 
-        return JsonConvert.DeserializeObject<T>(configuration.CustomConfiguration);
+        return JsonSerializer.Deserialize<T>(configuration.CustomConfiguration);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public static class PlugInConfigurationExtensions
             return default;
         }
 
-        return JsonConvert.DeserializeObject(configuration.CustomConfiguration, configurationType);
+        return JsonSerializer.Deserialize(configuration.CustomConfiguration, configurationType);
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public static class PlugInConfigurationExtensions
     /// <param name="configuration">The configuration.</param>
     public static void SetConfiguration<T>(this PlugInConfiguration plugInConfiguration, T configuration)
     {
-        plugInConfiguration.CustomConfiguration = JsonConvert.SerializeObject(configuration, Formatting.Indented);
+        plugInConfiguration.CustomConfiguration = JsonSerializer.Serialize(configuration, new JsonSerializerOptions { WriteIndented = true });
     }
 
     /// <summary>
@@ -66,6 +66,6 @@ public static class PlugInConfigurationExtensions
     /// <param name="configuration">The configuration.</param>
     public static void SetConfiguration(this PlugInConfiguration plugInConfiguration, object configuration)
     {
-        plugInConfiguration.CustomConfiguration = JsonConvert.SerializeObject(configuration, Formatting.Indented);
+        plugInConfiguration.CustomConfiguration = JsonSerializer.Serialize(configuration, new JsonSerializerOptions { WriteIndented = true });
     }
 }

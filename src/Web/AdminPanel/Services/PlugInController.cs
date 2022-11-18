@@ -182,7 +182,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         var configuration = item.Configuration.GetConfiguration(item.ConfigurationType)
                             ?? Activator.CreateInstance(item.ConfigurationType);
         var parameters = new ModalParameters();
-        parameters.Add(nameof(ModalCreateNew<object>.Item), configuration);
+        parameters.Add(nameof(ModalCreateNew<object>.Item), configuration!);
         var options = new ModalOptions
         {
             DisableBackgroundCancel = true,
@@ -190,7 +190,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
         var modal = this._modalService.Show(
             typeof(ModalCreateNew<>).MakeGenericType(item.ConfigurationType),
-            item.PlugInName,
+            item.PlugInName ?? string.Empty,
             parameters,
             options);
         var result = await modal.Result.ConfigureAwait(false);

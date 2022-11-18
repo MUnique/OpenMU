@@ -28,7 +28,6 @@ public partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.Item
     /// <summary>
     /// Gets the raw object of <see cref="ItemSetGroup" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemSetGroup")]
     [System.Text.Json.Serialization.JsonPropertyName("itemSetGroup")]
     public ItemSetGroup RawItemSetGroup
     {
@@ -37,7 +36,6 @@ public partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.Item
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup ItemSetGroup
     {
@@ -48,7 +46,6 @@ public partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.Item
     /// <summary>
     /// Gets the raw object of <see cref="ItemDefinition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemDefinition")]
     [System.Text.Json.Serialization.JsonPropertyName("itemDefinition")]
     public ItemDefinition RawItemDefinition
     {
@@ -57,7 +54,6 @@ public partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.Item
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition ItemDefinition
     {
@@ -68,7 +64,6 @@ public partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.Item
     /// <summary>
     /// Gets the raw object of <see cref="BonusOption" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("bonusOption")]
     [System.Text.Json.Serialization.JsonPropertyName("bonusOption")]
     public IncreasableItemOption RawBonusOption
     {
@@ -77,7 +72,6 @@ public partial class ItemOfItemSet : MUnique.OpenMU.DataModel.Configuration.Item
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption BonusOption
     {

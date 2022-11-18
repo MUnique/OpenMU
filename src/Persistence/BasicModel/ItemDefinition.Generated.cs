@@ -28,12 +28,10 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <summary>
     /// Gets the raw collection of <see cref="QualifiedCharacters" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("qualifiedCharacters")]
     [System.Text.Json.Serialization.JsonPropertyName("qualifiedCharacters")]
     public ICollection<CharacterClass> RawQualifiedCharacters { get; } = new List<CharacterClass>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.CharacterClass> QualifiedCharacters
     {
@@ -51,12 +49,10 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <summary>
     /// Gets the raw collection of <see cref="PossibleItemSetGroups" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("possibleItemSetGroups")]
     [System.Text.Json.Serialization.JsonPropertyName("possibleItemSetGroups")]
     public ICollection<ItemSetGroup> RawPossibleItemSetGroups { get; } = new List<ItemSetGroup>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup> PossibleItemSetGroups
     {
@@ -74,12 +70,10 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <summary>
     /// Gets the raw collection of <see cref="PossibleItemOptions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("possibleItemOptions")]
     [System.Text.Json.Serialization.JsonPropertyName("possibleItemOptions")]
     public ICollection<ItemOptionDefinition> RawPossibleItemOptions { get; } = new List<ItemOptionDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition> PossibleItemOptions
     {
@@ -97,12 +91,10 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <summary>
     /// Gets the raw collection of <see cref="Requirements" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requirements")]
     [System.Text.Json.Serialization.JsonPropertyName("requirements")]
     public ICollection<AttributeRequirement> RawRequirements { get; } = new List<AttributeRequirement>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> Requirements
     {
@@ -120,12 +112,10 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <summary>
     /// Gets the raw collection of <see cref="BasePowerUpAttributes" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("basePowerUpAttributes")]
     [System.Text.Json.Serialization.JsonPropertyName("basePowerUpAttributes")]
     public ICollection<ItemBasePowerUpDefinition> RawBasePowerUpAttributes { get; } = new List<ItemBasePowerUpDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemBasePowerUpDefinition> BasePowerUpAttributes
     {
@@ -143,12 +133,10 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <summary>
     /// Gets the raw collection of <see cref="DropItems" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("dropItems")]
     [System.Text.Json.Serialization.JsonPropertyName("dropItems")]
     public ICollection<ItemDropItemGroup> RawDropItems { get; } = new List<ItemDropItemGroup>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup> DropItems
     {
@@ -166,7 +154,6 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <summary>
     /// Gets the raw object of <see cref="ItemSlot" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemSlot")]
     [System.Text.Json.Serialization.JsonPropertyName("itemSlot")]
     public ItemSlotType RawItemSlot
     {
@@ -175,7 +162,6 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType ItemSlot
     {
@@ -186,7 +172,6 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <summary>
     /// Gets the raw object of <see cref="ConsumeEffect" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("consumeEffect")]
     [System.Text.Json.Serialization.JsonPropertyName("consumeEffect")]
     public MagicEffectDefinition RawConsumeEffect
     {
@@ -195,7 +180,6 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition ConsumeEffect
     {
@@ -206,7 +190,6 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <summary>
     /// Gets the raw object of <see cref="Skill" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("skill")]
     [System.Text.Json.Serialization.JsonPropertyName("skill")]
     public Skill RawSkill
     {
@@ -215,7 +198,6 @@ public partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.Ite
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Skill Skill
     {

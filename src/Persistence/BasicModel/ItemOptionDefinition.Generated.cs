@@ -28,12 +28,10 @@ public partial class ItemOptionDefinition : MUnique.OpenMU.DataModel.Configurati
     /// <summary>
     /// Gets the raw collection of <see cref="PossibleOptions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("possibleOptions")]
     [System.Text.Json.Serialization.JsonPropertyName("possibleOptions")]
     public ICollection<IncreasableItemOption> RawPossibleOptions { get; } = new List<IncreasableItemOption>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> PossibleOptions
     {

@@ -33,6 +33,7 @@ public static class TestHelper
         gameConfig.Setup(c => c.Items).Returns(new List<ItemDefinition>());
         gameConfig.Setup(c => c.Skills).Returns(new List<Skill>());
         gameConfig.Setup(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration>());
+        gameConfig.Setup(c => c.CharacterClasses).Returns(new List<CharacterClass>());
         var map = new Mock<GameMapDefinition>();
         map.SetupAllProperties();
         map.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());

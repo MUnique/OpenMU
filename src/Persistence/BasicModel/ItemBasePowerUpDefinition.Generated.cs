@@ -28,7 +28,6 @@ public partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Config
     /// <summary>
     /// Gets the raw object of <see cref="TargetAttribute" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("targetAttribute")]
     [System.Text.Json.Serialization.JsonPropertyName("targetAttribute")]
     public AttributeDefinition RawTargetAttribute
     {
@@ -37,7 +36,6 @@ public partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Config
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition TargetAttribute
     {
@@ -48,7 +46,6 @@ public partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Config
     /// <summary>
     /// Gets the raw object of <see cref="BonusPerLevelTable" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("bonusPerLevelTable")]
     [System.Text.Json.Serialization.JsonPropertyName("bonusPerLevelTable")]
     public ItemLevelBonusTable RawBonusPerLevelTable
     {
@@ -57,7 +54,6 @@ public partial class ItemBasePowerUpDefinition : MUnique.OpenMU.DataModel.Config
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable BonusPerLevelTable
     {
