@@ -86,7 +86,6 @@ public partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.Attr
     /// <summary>
     /// Gets the raw object of <see cref="OperandAttribute" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("operandAttribute")]
     [System.Text.Json.Serialization.JsonPropertyName("operandAttribute")]
     public AttributeDefinition RawOperandAttribute
     {
@@ -95,7 +94,6 @@ public partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.Attr
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition OperandAttribute
     {
