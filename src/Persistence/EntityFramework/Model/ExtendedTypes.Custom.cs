@@ -230,6 +230,7 @@ internal partial class LetterHeader
     /// Gets or sets the receiver of the letter.
     /// </summary>
     [ForeignKey(nameof(ReceiverId))]
+    [InverseProperty(nameof(Character.RawLetters))]
     public Character? Receiver { get; set; }
 
     /// <summary>

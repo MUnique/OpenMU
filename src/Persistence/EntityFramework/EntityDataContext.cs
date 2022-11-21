@@ -57,9 +57,6 @@ public class EntityDataContext : ExtendedTypeContext
             entity.HasIndex(character => character.Name).IsUnique();
             entity.Metadata.FindNavigation(nameof(Character.RawCharacterClass))!.ForeignKey.IsRequired = true;
             entity.Property(character => character.CharacterSlot).IsRequired();
-            var accountKey = entity.Metadata.GetForeignKeys().First(key => key.PrincipalEntityType == modelBuilder.Entity<Account>().Metadata);
-            accountKey.DeleteBehavior = DeleteBehavior.Cascade;
-
             entity.HasMany(character => character.RawLetters).WithOne(letter => letter.Receiver!).OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -83,7 +80,6 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<CharacterClass>()
             .HasMany(c => c.RawBaseAttributeValues)
             .WithOne(c => c.CharacterClass!);
-        modelBuilder.Entity<Model.StatAttribute>().Ignore("ValueGetter");
 
         modelBuilder.Entity<MasterSkillDefinition>().HasOne(s => s.RawRoot);
         modelBuilder.Entity<LetterBody>().HasOne(body => body.RawHeader);
