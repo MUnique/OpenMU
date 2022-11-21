@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Composition;
 
 /// <summary>
 /// Source Generator which creates classes of the our entities specifically for the entity framework core.
@@ -20,6 +22,8 @@ public class EfCoreModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
     internal const string TargetAssemblyName = "MUnique.OpenMU.Persistence.EntityFramework";
 
     private const string GameConfigurationFullName = "MUnique.OpenMU.DataModel.Configuration.GameConfiguration";
+
+    private static readonly Type[] IgnoredTypes = { typeof(SimpleElement) };
 
     /// <summary>
     /// The standalone types which should not contain additional foreign key, because they were used somewhere in collections (except at GameConfiguration).
@@ -196,6 +200,16 @@ public static class MapsterConfigurator
         return source;
     }
 
+    private static bool IsMemberOfAggregate(PropertyInfo propertyInfo)
+    {
+        if (propertyInfo?.Name.StartsWith("Raw") ?? false)
+        {
+            propertyInfo = propertyInfo.DeclaringType?.GetProperty(propertyInfo.Name.Substring(3), BindingFlags.Instance | BindingFlags.Public);
+        }
+
+        return propertyInfo?.GetCustomAttribute<MemberOfAggregateAttribute>() is { };
+    }
+
     private string GenerateDbContext()
     {
         var ignores = new StringBuilder();
@@ -221,11 +235,33 @@ public static class MapsterConfigurator
                 .AppendLine($"        modelBuilder.Entity<{joinTypeName}>().HasKey(join => new {{ join.{propertyInfo.ReflectedType.Name}Id, join.{elementType.Name}Id }});");
         }
 
+        var deleteCascades = new StringBuilder();
+        deleteCascades.AppendLine("        // All members which are marked with the MemberOfAggregateAttribute, should be defined with ON DELETE CASCADE.");
+        foreach (var type in this.CustomTypes)
+        {
+            foreach (var propertyInfo in type.GetProperties()
+                         .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { })
+                         .Where(p => !IgnoredTypes.Contains(p.PropertyType)))
+            {
+                var propertyType = propertyInfo.PropertyType;
+                var isCollection = propertyType.IsGenericType;
+                if (isCollection)
+                {
+                    deleteCascades.AppendLine($"        modelBuilder.Entity<{type.Name}>().HasMany(entity => entity.Raw{propertyInfo.Name}).WithOne().OnDelete(DeleteBehavior.Cascade);");
+                }
+                else
+                {
+                    deleteCascades.AppendLine($"        modelBuilder.Entity<{type.Name}>().HasOne(entity => entity.Raw{propertyInfo.Name}).WithOne().OnDelete(DeleteBehavior.Cascade);");
+                }
+            }
+        }
+
         var source = $@"{string.Format(FileHeaderTemplate, "ExtendedTypeContext")}
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -237,6 +273,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     protected override void OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
     {{
 {ignores}
+{deleteCascades}
     }}
 
     /// <summary>
