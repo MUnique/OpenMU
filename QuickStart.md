@@ -64,7 +64,7 @@ Requirements:
   * [.NET SDK 7](https://dotnet.microsoft.com/download/dotnet/7.0)
     (it should be included in Visual Studio 17.4+)
 
-  * [Saxon HE 9.9.1.6](https://sourceforge.net/projects/saxon/files/Saxon-HE/9.9/SaxonHE9-9-1-6N-setup.exe/download) installed
+  * [NodeJS 16+](https://nodejs.org) installed
 
   * This repository cloned
 
