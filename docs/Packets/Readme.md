@@ -1,4 +1,4 @@
-﻿# Packet documentation
+# Packet documentation
 
 In this folder you find the documentation of the packet messages which are getting
 exchanged between client and server. 
@@ -10,8 +10,8 @@ There is one file for each packet. The packet documentation is generated through
 XSLT. The source XML files are at [MUnique.OpenMU.Network.Packets](../../src/Network/Packets/).
 
 In case you want to contribute packet documentations, please extend these source
-files accordingly. If you want to build the markdown files as well (Windows only),
-you need to install Saxon HE 9.9N, and execute the ```GenerateMarkdownDocs.cmd```.
+files accordingly. If you want to build the markdown files as well,
+you need to install `NodeJS 16+` and rebuild the `MUnique.OpenMU.Network.Packets` project.
 
 ## Packet types
 
