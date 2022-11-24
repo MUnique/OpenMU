@@ -262,7 +262,7 @@ Some general notes:
 | 530    | Dark Spirit Str (2)           | works           |
 | 531    | Scepter Mastery               | works           |
 | 532    | Shield Mastery                | works           |
-| 533    | Command Attack Inc            | not implemented, additional 1 Defense per x command stat while equipping scepter |
+| 533    | Command Attack Inc            | works           |
 | 534    | Dark Spirit Str (3)           | works           |
 | 535    | Pet Durability Str            | works           |
 | 551    | Killing Blow Strengthener     | works           |
@@ -273,7 +273,7 @@ Some general notes:
 | 558    | Chain Drive Strengthener      | works           |
 | 559    | Dark Side Strengthener        | not implemented |
 | 560    | Dragon Roar Strengthener      | not implemented |
-| 568    | Equipped Weapon Strengthener  | not implemented |
+| 568    | Equipped Weapon Strengthener  | works           |
 | 569    | Def SuccessRate IncPowUp      | not implemented |
 | 571    | Equipped Weapon Mastery       | not implemented |
 | 572    | DefSuccessRate IncMastery     | not implemented |
@@ -282,14 +282,14 @@ Some general notes:
 | 579    | Increase PvP Defense Rate     | works           |
 | 580    | Increase Maximum SD           | works           |
 | 581    | Increase Mana Recovery Rate   | works           |
-| 582    | Increase Poison Resistance    | not implemented |
+| 582    | Increase Poison Resistance    | works           |
 | 583    | Durability Reduction (2)      | works           |
 | 584    | Increase SD Recovery Rate     | works           |
 | 585    | Increase HP Recovery Rate     | works           |
-| 586    | Increase Lightning Resistance | not implemented |
+| 586    | Increase Lightning Resistance | works           |
 | 587    | Increases Defense             | works           |
 | 588    | Increases AG Recovery Rate    | not implemented |
-| 589    | Increase Ice Resistance       | not implemented |
+| 589    | Increase Ice Resistance       | works           |
 | 590    | Durability Reduction(3)       | works           |
 | 591    | Increase Defense Success Rate | works           |
 | 599    | Increase Attack Success Rate  | works           |

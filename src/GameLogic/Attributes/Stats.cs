@@ -513,6 +513,16 @@ public class Stats
     public static AttributeDefinition BonusDefenseWithShield { get; } = new(new Guid("05F08D89-9BC6-4164-9B30-26EFAF4C0E0F"), "Defense Increase Bonus (absolute) With equipped Shield", string.Empty);
 
     /// <summary>
+    /// Gets the bonus defense (absolute) with an equipped scepter attribute definition.
+    /// </summary>
+    public static AttributeDefinition BonusDefenseWithScepter { get; } = new(new Guid("7977FE44-FC22-4A6B-A4E0-BA522FE807DF"), "Defense Increase Bonus (absolute) with equipped Scepter", string.Empty);
+
+    /// <summary>
+    /// Gets the bonus defense (absolute) command/leadership divisor with an equipped shield attribute definition.
+    /// </summary>
+    public static AttributeDefinition BonusDefenseWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Defense Increase Bonus (absolute) with equipped Scepter", string.Empty);
+
+    /// <summary>
     /// Gets the bonus defense (absolute) with an equipped dark horse attribute definition.
     /// </summary>
     public static AttributeDefinition BonusDefenseWithHorse { get; } = new(new Guid("8D22E36C-EB36-47DB-8CE0-9ABD599C533C"), "Defense Increase Bonus (absolute) With equipped Horse", string.Empty);
