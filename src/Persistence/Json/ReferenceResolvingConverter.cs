@@ -74,7 +74,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                     PropertyType: propertyType);
             })
             .Where(x => x.PropertyType is not null)
-            .ToDictionary(x => x.Name, x => (x.PropertyType!, x.Setter, x.Adder));
+            .ToDictionary(x => x.Name, x => (x.PropertyType!, x.Setter, x.Adder), StringComparer.InvariantCultureIgnoreCase);
     }
 
     /// <summary>
