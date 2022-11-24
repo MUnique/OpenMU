@@ -16,8 +16,8 @@ public class MonsterAttributeHolder : IAttributeSystem
         new Dictionary<AttributeDefinition, Func<AttackableNpcBase, float>>
         {
             { Stats.CurrentHealth, m => m.Health },
-            { Stats.DefensePvm, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) },
-            { Stats.DefensePvp, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) },
+            { Stats.DefensePvm, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
+            { Stats.DefensePvp, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
             { Stats.DamageReceiveDecrement, m => 1.0f },
             { Stats.AttackDamageIncrease, m => 1.0f },
             { Stats.ShieldBypassChance, m => 1.0f },

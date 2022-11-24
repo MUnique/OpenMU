@@ -39,6 +39,17 @@ public static class MasterSkillExtensions
         return skillEntry.Skill?.MasterDefinition.CalculateDisplayValue(level) ?? 0;
     }
 
+    public static Skill GetBaseSkill(this SkillEntry skillEntry)
+    {
+        var skill = skillEntry.Skill!;
+        while (skill?.MasterDefinition?.ReplacedSkill is { } replacedSkill)
+        {
+            skill = replacedSkill;
+        }
+
+        return skill!;
+    }
+
     private static float CalculateValue(this MasterSkillDefinition? skillDefinition, int level) => skillDefinition?.ValueFormula.GetValue(level, skillDefinition.MaximumLevel) ?? 0;
 
     private static float CalculateDisplayValue(this MasterSkillDefinition? skillDefinition, int level) => skillDefinition?.DisplayValueFormula.GetValue(level, skillDefinition.MaximumLevel) ?? 0;

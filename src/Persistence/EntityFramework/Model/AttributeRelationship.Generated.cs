@@ -35,8 +35,15 @@ internal partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.At
     }
 
     /// <inheritdoc />
-    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator)
-        : base(targetAttribute, inputOperand, inputAttribute, inputOperator)
+    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute)
+        : base(targetAttribute, inputOperand, inputAttribute)
+    {
+
+    }
+
+    /// <inheritdoc />
+    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator, MUnique.OpenMU.AttributeSystem.AttributeDefinition operandAttribute)
+        : base(targetAttribute, inputOperand, inputAttribute, inputOperator, operandAttribute)
     {
 
     }
@@ -96,6 +103,32 @@ internal partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.At
         {
             base.InputAttribute = value;
             this.InputAttributeId = this.RawInputAttribute?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="OperandAttribute"/>.
+    /// </summary>
+    public Guid? OperandAttributeId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="OperandAttribute" />.
+    /// </summary>
+    [ForeignKey(nameof(OperandAttributeId))]
+    public AttributeDefinition RawOperandAttribute
+    {
+        get => base.OperandAttribute as AttributeDefinition;
+        set => base.OperandAttribute = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.AttributeSystem.AttributeDefinition OperandAttribute
+    {
+        get => base.OperandAttribute;set
+        {
+            base.OperandAttribute = value;
+            this.OperandAttributeId = this.RawOperandAttribute?.Id;
         }
     }
 

@@ -18,7 +18,7 @@ public class AttributeRelationshipElement : SimpleElement
     /// <param name="inputElements">The input elements which are summed up.</param>
     /// <param name="inputOperand">The operand which is applied to the summed up input elements.</param>
     /// <param name="inputOperator">The input operator.</param>
-    public AttributeRelationshipElement(IEnumerable<IElement> inputElements, float inputOperand, InputOperator inputOperator)
+    public AttributeRelationshipElement(IEnumerable<IElement> inputElements, IElement inputOperand, InputOperator inputOperator)
     {
         this.InputElements = inputElements;
         this.InputOperand = inputOperand;
@@ -27,6 +27,9 @@ public class AttributeRelationshipElement : SimpleElement
         {
             element.ValueChanged += this.ElementChanged;
         }
+
+        inputOperand.ValueChanged += this.ElementChanged;
+        // TODO: Is Dispose required?
     }
 
     /// <summary>
@@ -37,7 +40,7 @@ public class AttributeRelationshipElement : SimpleElement
     /// <summary>
     /// Gets or sets the multiplier with which the sum of all input element values are multiplied.
     /// </summary>
-    public float InputOperand { get; set; }
+    public IElement InputOperand { get; set; }
 
     /// <summary>
     /// Gets or sets the input operator.
@@ -65,11 +68,11 @@ public class AttributeRelationshipElement : SimpleElement
     {
         return this.InputOperator switch
         {
-            InputOperator.Multiply => this.InputElements.Sum(a => a.Value) * this.InputOperand,
-            InputOperator.Add => this.InputElements.Sum(a => a.Value) + this.InputOperand,
+            InputOperator.Multiply => this.InputElements.Sum(a => a.Value) * this.InputOperand.Value,
+            InputOperator.Add => this.InputElements.Sum(a => a.Value) + this.InputOperand.Value,
             InputOperator.Exponentiate => (float)Math.Pow(
                 this.InputElements.Sum(a => a.Value),
-                this.InputOperand),
+                this.InputOperand.Value),
             _ => throw new InvalidOperationException($"Input operator {this.InputOperator} unknown")
         };
     }

@@ -12,7 +12,10 @@ public class AttributeSystemTests
 {
     private readonly AttributeDefinition _attributeA = new (Guid.NewGuid(), "A", "The A attribute");
     private readonly AttributeDefinition _attributeB = new (Guid.NewGuid(), "B", "The B attribute");
+    private readonly AttributeDefinition _attributeC = new(Guid.NewGuid(), "C", "The C attribute");
+    private readonly AttributeDefinition _attributeD = new(Guid.NewGuid(), "D", "The D attribute");
     private readonly AttributeDefinition _attributeAplusB = new (Guid.NewGuid(), "A+B", "The A+B attribute");
+    private readonly AttributeDefinition _attributeAtimesB = new(Guid.NewGuid(), "A*B", "The A*B attribute");
     private readonly AttributeDefinition _attributeAchained = new (Guid.NewGuid(), "A'", "The chained A attribute");
 
     private List<IAttribute> _statAttributes = null!;
@@ -150,11 +153,90 @@ public class AttributeSystemTests
     }
 
     /// <summary>
+    /// Tests if using another attribute as operand results in a correct value.
+    /// </summary>
+    [Test]
+    public void MultipliedAttributes()
+    {
+        const int attributeAValue = 1234;
+        const int attributeBValue = 2;
+
+        var statAttributeA = new StatAttribute(this._attributeA, attributeAValue);
+        var statAttributeB = new StatAttribute(this._attributeB, attributeBValue);
+        this._statAttributes.Add(statAttributeA);
+        this._statAttributes.Add(statAttributeB);
+
+        this._relationShips.Add(new AttributeRelationship(this._attributeAtimesB, this._attributeB, this._attributeA));
+        var system = this.CreateAttributeSystem();
+
+        var value = system[this._attributeAtimesB];
+        Assert.That(value, Is.EqualTo(attributeAValue * attributeBValue));
+    }
+
+    /// <summary>
+    /// Tests if using another attribute as operand results in a correct value.
+    /// </summary>
+    [TestCase(true, 2)]
+    [TestCase(false, 0)]
+    public void ConditionalAttributes(bool conditionMet, float expected)
+    {
+        const int bonusValue = 2;
+        var targetAttribute = this._attributeAplusB;
+        var bonusIfConditionMet = new StatAttribute(this._attributeB, bonusValue);
+
+        var conditionalAttribute = new StatAttribute(this._attributeC, conditionMet ? 1 : 0);
+
+        this._statAttributes.Add(bonusIfConditionMet);
+        this._statAttributes.Add(conditionalAttribute);
+
+        this._relationShips.Add(new AttributeRelationship(targetAttribute, conditionalAttribute.Definition, bonusIfConditionMet.Definition));
+
+        var system = this.CreateAttributeSystem();
+        var value = system[targetAttribute];
+        Assert.That(value, Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// Tests the use case of multiplying a base value with a conditional bonus multiplier.
+    /// This is how Stats.DefenseIncreaseWithEquippedShield is intended to work.
+    /// </summary>
+    [TestCase(true, 105)]
+    [TestCase(false, 100)]
+    public void ConditionalAttributes_Multiply(bool conditionMet, float expected)
+    {
+        const float bonusMultiplier = 0.05f;
+        const float baseValue = 100f;
+        var targetAttribute = this._attributeAplusB;
+        var baseAttribute = new StatAttribute(this._attributeA, baseValue);
+        var bonusIfConditionMet = new StatAttribute(this._attributeB, bonusMultiplier);
+        var conditionalAttribute = new StatAttribute(this._attributeC, conditionMet ? 1 : 0);
+
+        var tempAttribute = this._attributeD;
+
+        this._statAttributes.Add(baseAttribute);
+        this._statAttributes.Add(bonusIfConditionMet);
+        this._statAttributes.Add(conditionalAttribute);
+
+        // First, we copy our base value to the target
+        this._relationShips.Add(new AttributeRelationship(targetAttribute, 1, baseAttribute.Definition));
+
+        // Then, we calculate the bonus into a temporary attribute, depending on the condition
+        this._relationShips.Add(new AttributeRelationship(tempAttribute, conditionalAttribute.Definition, bonusIfConditionMet.Definition));
+
+        // Finally, we apply the temporary attribute as multiplier for the base value and add it to the target
+        this._relationShips.Add(new AttributeRelationship(targetAttribute, tempAttribute, baseAttribute.Definition));
+
+        var system = this.CreateAttributeSystem();
+        var value = system[targetAttribute];
+        Assert.That(value, Is.EqualTo(expected));
+    }
+
+    /// <summary>
     /// Creates the attribute system for testing, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.
     /// </summary>
     /// <returns>The acreated attribute system, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.</returns>
     private AttributeSystem CreateAttributeSystem()
     {
-        return new (this._statAttributes, this._baseAttributes, this._relationShips);
+        return new(this._statAttributes, this._baseAttributes, this._relationShips);
     }
 }

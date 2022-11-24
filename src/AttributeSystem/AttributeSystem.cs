@@ -64,7 +64,7 @@ public class AttributeSystem : IAttributeSystem
     public IElement CreateRelatedAttribute(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
     {
         var inputElements = new[] { sourceAttributeHolder.GetOrCreateAttribute(relationship.GetInputAttribute()) };
-        return new AttributeRelationshipElement(inputElements, relationship.InputOperand, relationship.InputOperator);
+        return new AttributeRelationshipElement(inputElements, relationship.GetOperandElement(sourceAttributeHolder), relationship.InputOperator);
     }
 
     /// <summary>

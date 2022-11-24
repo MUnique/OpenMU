@@ -22,7 +22,8 @@ public class AttributeRelationshipElementTests
         const int inputOperand = 10;
         var element1 = new SimpleElement { Value = element1Value };
         var element2 = new SimpleElement { Value = element2Value };
-        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, inputOperand, InputOperator.Add);
+        var operandElement = new ConstantElement(inputOperand);
+        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, operandElement, InputOperator.Add);
         Assert.That(relationshipElement.Value, Is.EqualTo(element1Value + element2Value + inputOperand));
     }
 
@@ -38,7 +39,8 @@ public class AttributeRelationshipElementTests
         const int inputOperand = 10;
         var element1 = new SimpleElement { Value = element1Value };
         var element2 = new SimpleElement { Value = element2Value };
-        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, inputOperand, InputOperator.Multiply);
+        var operandElement = new ConstantElement(inputOperand);
+        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, operandElement, InputOperator.Multiply);
         Assert.That(relationshipElement.Value, Is.EqualTo((element1Value + element2Value) * inputOperand));
     }
 
@@ -54,7 +56,8 @@ public class AttributeRelationshipElementTests
         const int inputOperand = 10;
         var element1 = new SimpleElement { Value = element1Value };
         var element2 = new SimpleElement { Value = element2Value };
-        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, inputOperand, InputOperator.Exponentiate);
+        var operandElement = new ConstantElement(inputOperand);
+        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, operandElement, InputOperator.Exponentiate);
         Assert.That(relationshipElement.Value, Is.EqualTo(Math.Pow(element1Value + element2Value, inputOperand)));
     }
 
@@ -69,7 +72,8 @@ public class AttributeRelationshipElementTests
         const int inputOperand = 10;
         var element1 = new SimpleElement { Value = element1Value };
         var element2 = new SimpleElement { Value = element2Value };
-        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, inputOperand, InputOperator.Add);
+        var operandElement = new ConstantElement(inputOperand);
+        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, operandElement, InputOperator.Add);
         Assert.That(relationshipElement.Value, Is.EqualTo(element1Value + element2Value + inputOperand));
         const int element1NewValue = 2;
         element1.Value = element1NewValue;
@@ -87,7 +91,8 @@ public class AttributeRelationshipElementTests
         const int inputOperand = 10;
         var element1 = new SimpleElement { Value = element1Value };
         var element2 = new SimpleElement { Value = element2Value };
-        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, inputOperand, InputOperator.Add);
+        var operandElement = new ConstantElement(inputOperand);
+        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, operandElement, InputOperator.Add);
         var eventCalled = false;
         relationshipElement.ValueChanged += (sender, e) => eventCalled = true;
         element1.Value = 2;

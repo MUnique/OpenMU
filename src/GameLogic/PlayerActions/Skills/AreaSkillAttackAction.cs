@@ -127,7 +127,9 @@ public class AreaSkillAttackAction
         {
             await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
             await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
-            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number) is { } strategy)
+            var baseSkill = skillEntry.GetBaseSkill();
+
+            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(baseSkill.Number) is { } strategy)
             {
                 await strategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter).ConfigureAwait(false);
             }

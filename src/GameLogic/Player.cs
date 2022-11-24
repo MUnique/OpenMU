@@ -1199,6 +1199,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     var additionalValue = new SimpleElement(skillEntry.CalculateValue(), skillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
                     powerUp = new CombinedElement(powerUp, additionalValue);
                 }
+
+                // todo: add values of previous master skill as well. E.g. swell life strengthener, swell life proficiency
             }
             else
             {
@@ -1238,6 +1240,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         };
         var intelligence = new SummonedMonsterIntelligence(this);
         var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager, this.GameContext.PathFinderPool);
+        area.MaximumHealthOverride = (int)monster.Attributes[Stats.MaximumHealth];
+        area.MaximumHealthOverride += (int)(monster.Attributes[Stats.MaximumHealth] * this.Attributes?[Stats.SummonedMonsterHealthIncrease] ?? 0);
+        // todo: Stats.SummonedMonsterDefenseIncrease
         this.Summon = (monster, intelligence);
         monster.Initialize();
         await gameMap.AddAsync(monster).ConfigureAwait(false);
