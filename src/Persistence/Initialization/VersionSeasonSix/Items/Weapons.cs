@@ -404,7 +404,6 @@ internal class Weapons : InitializerBase
 
         if (group == (int)ItemGroups.Scepters)
         {
-            // todo... some are maces, some are scepters
             if (skillNumber == (int)SkillNumber.ForceWave)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsScepterEquipped, 1));
@@ -412,6 +411,10 @@ internal class Weapons : InitializerBase
             else if (knightClass > 0 && (skillNumber == (int)SkillNumber.FallingSlash || number < 5))
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsMaceEquipped, 1));
+            }
+            else
+            {
+                // not a relevant mace or scepter ...
             }
         }
 

@@ -1200,8 +1200,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     powerUp = new CombinedElement(powerUp, additionalValue);
                 }
 
-                // if (skillEntry.Skill.MasterDefinition?.RequiredMasterSkills.FirstOrDefault(s => ))
-
                 // todo: add values of previous master skill as well. E.g. swell life strengthener, swell life proficiency
             }
             else

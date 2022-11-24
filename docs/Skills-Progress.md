@@ -302,7 +302,6 @@ Some general notes:
 | 607    | Increase Minimum Attack Power | works           |
 | 608    | Recover Mana Monster Kills    | works           |
 
-
 ## Newer master skills
 
 The following skills have the state *unused*. They're not used in the game at
