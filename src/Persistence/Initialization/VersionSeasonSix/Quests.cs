@@ -33,7 +33,7 @@ internal class Quests : InitializerBase
         this.FindScrollOfEmperor(CharacterClassNumber.DarkKnight);
         this.FindScrollOfEmperor(CharacterClassNumber.FairyElf);
         this.FindScrollOfEmperor(CharacterClassNumber.DarkWizard);
-        this.FindScrollOfEmperor(CharacterClassNumber.DarkKnight);
+        this.FindScrollOfEmperor(CharacterClassNumber.Summoner);
         this.TreasuresOfMu(CharacterClassNumber.DarkKnight, Quest.BrokenSwordNumber);
         this.TreasuresOfMu(CharacterClassNumber.FairyElf, Quest.TearOfElfNumber);
         this.TreasuresOfMu(CharacterClassNumber.DarkWizard, Quest.SoulShardOfWizardNumber);
