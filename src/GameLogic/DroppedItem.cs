@@ -32,10 +32,10 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
     private bool _availableToPick = true;
 
     /// <summary>
-    /// Indicates if the item was persistent when it was dropped.
+    /// Indicates if the item was persistent (exists on the database) when it was dropped.
     /// If it wasn't and we clean it up, then we don't need to delete it.
     /// </summary>
-    private bool _itemIsPersistent;
+    private readonly bool _wasItemPersisted;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DroppedItem" /> class.
@@ -52,18 +52,20 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
     /// <summary>
     /// Initializes a new instance of the <see cref="DroppedItem" /> class.
     /// </summary>
-    /// <param name="item">The item.</param>
+    /// <param name="item">The item, which should be detached from any player persistence context.</param>
     /// <param name="position">The position where the item was dropped on the map.</param>
     /// <param name="map">The map.</param>
     /// <param name="dropper">The dropper.</param>
     /// <param name="owners">The owners.</param>
-    public DroppedItem(Item item, Point position, GameMap map, Player? dropper, IEnumerable<object>? owners)
+    /// <param name="wasItemPersisted">If set to <c>true</c>, the item was persisted before and exists on the database.</param>
+    public DroppedItem(Item item, Point position, GameMap map, Player? dropper, IEnumerable<object>? owners, bool wasItemPersisted = false)
     {
         this.Item = item;
         this.Position = position;
         this.CurrentMap = map;
         this._dropper = dropper;
         this._owners = owners;
+        this._wasItemPersisted = wasItemPersisted;
         this._removeTimer = new Timer(this.DisposeAndDelete, null, map.ItemDropDuration * 1000, Timeout.Infinite);
     }
 
@@ -195,9 +197,21 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
                 return false;
             }
 
+            if (!itemWasTemporary)
+            {
+                // We already attach it here, so that the next changes are in the context.
+                player.PersistenceContext.Attach(this.Item);
+            }
+
             if (!await player.Inventory!.AddItemAsync((byte)slot, this.Item).ConfigureAwait(false))
             {
                 player.Logger.LogDebug("Item could not be added to the inventory, Player {0}, Item {1}", player, this);
+
+                if (!itemWasTemporary)
+                {
+                    player.PersistenceContext.Detach(this.Item);
+                }
+
                 return false;
             }
 
@@ -214,16 +228,6 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
 
         player.Logger.LogInformation("Item '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
         await this.DisposeAsync().ConfigureAwait(false);
-        if (this._dropper != null && !this._dropper.PlayerState.Finished)
-        {
-            await this._dropper.PersistenceContext.SaveChangesAsync().ConfigureAwait(false); // Otherwise, if the item got modified since last save point by the dropper, changes would not be saved by the picking up player!
-            this._itemIsPersistent = this._dropper.PersistenceContext.Detach(this.Item);
-        }
-
-        if (!itemWasTemporary)
-        {
-            player.PersistenceContext.Attach(this.Item);
-        }
 
         return true;
     }
@@ -251,12 +255,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
     private async ValueTask DeleteItemAsync(Player player)
     {
         player.Logger.LogInformation("Item '{0}' which was dropped by player '{1}' is getting deleted.", this, player);
-        if (!player.PlayerState.Finished && this.Item is not TemporaryItem)
-        {
-            this._itemIsPersistent = player.PersistenceContext.Detach(this.Item);
-        }
-
-        if (!this._itemIsPersistent)
+        if (!this._wasItemPersisted)
         {
             return;
         }
