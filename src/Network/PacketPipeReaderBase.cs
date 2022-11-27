@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network;
 
 using System.Buffers;
 using System.IO.Pipelines;
+using Pipelines.Sockets.Unofficial;
 
 /// <summary>
 /// Base class for all classes which read mu online data packets from a <see cref="PipeReader"/>.
@@ -55,6 +56,10 @@ public abstract class PacketPipeReaderBase
                     break;
                 }
             }
+        }
+        catch (ConnectionAbortedException)
+        {
+            // we can ignore that.
         }
         catch (Exception e)
         {

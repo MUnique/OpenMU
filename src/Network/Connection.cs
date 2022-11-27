@@ -157,6 +157,14 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
             {
                 this._logger.LogInformation(exception, "Connection was closed.");
             }
+            else if (exception is ConnectionAbortedException)
+            {
+                this._logger.LogInformation(exception, "Connection was aborted by the server.");
+            }
+            else if (exception is InvalidOperationException && exception.Message == "Reading is not allowed after reader was completed.")
+            {
+                this._logger.LogInformation(exception, "Reader was completed.");
+            }
             else
             {
                 this._logger.LogError(exception, "Connection will be disconnected, because of an exception");
