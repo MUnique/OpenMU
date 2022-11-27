@@ -30,7 +30,7 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
             .Select(x => new
             {
                 Property = x,
-                CollectionInterface = !x.CanWrite && x.PropertyType.IsGenericType ? DetermineCollectionInterface(x) : null,
+                CollectionInterface = x.PropertyType.IsGenericType ? DetermineCollectionInterface(x) : null,
             })
             .Select(x =>
             {
@@ -39,18 +39,12 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                 Action<T, object>? setter = null;
                 Action<T, object>? adder = null;
                 Type? propertyType = null;
-                if (x.Property.CanWrite)
+                var jsonPropertyName = x.Property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? x.Property.Name;
+                if (x.Property.GetCustomAttribute<JsonIgnoreAttribute>() is not null)
                 {
-                    propertyType = x.Property.PropertyType;
-                    setter = Expression.Lambda<Action<T, object>>(
-                            Expression.Assign(
-                                Expression.Property(tParam, x.Property),
-                                Expression.Convert(objParam, propertyType)),
-                            tParam,
-                            objParam)
-                        .Compile();
+                    // ignore ...
                 }
-                else if (x.CollectionInterface != null && (x.Property.Name.StartsWith("Raw") || x.Property.Name.StartsWith("Joined")))
+                else if (x.CollectionInterface != null && x.Property.Name.StartsWith("Raw"))
                 {
                     propertyType = x.CollectionInterface.GetGenericArguments()[0];
                     adder = Expression.Lambda<Action<T, object>>(
@@ -62,13 +56,43 @@ public class ReferenceResolvingConverter<T> : JsonConverter<T>
                             objParam)
                         .Compile();
                 }
+                else if (x.CollectionInterface != null && x.Property.Name.StartsWith("Joined"))
+                {
+                    var basePropertyName = x.Property.Name.Substring("Joined".Length);
+                    var baseCollectionProperty = properties.First(p => p.Name == basePropertyName);
+                    var baseType = baseCollectionProperty.PropertyType.GetGenericArguments()[0];
+
+                    propertyType = x.CollectionInterface.GetGenericArguments()[0];
+
+                    propertyType = propertyType.GetProperties().First(p => p.PropertyType.BaseType == baseType).PropertyType;
+                    jsonPropertyName = basePropertyName;
+                    adder = Expression.Lambda<Action<T, object>>(
+                            Expression.Call(
+                                Expression.Property(tParam, baseCollectionProperty),
+                                baseCollectionProperty.PropertyType.GetMethod("Add")!,
+                                Expression.Convert(objParam, propertyType)),
+                            tParam,
+                            objParam)
+                        .Compile();
+                }
+                else if (x.Property.CanWrite && properties.All(p => p.Name != "Joined" + x.Property.Name))
+                {
+                    propertyType = x.Property.PropertyType;
+                    setter = Expression.Lambda<Action<T, object>>(
+                            Expression.Assign(
+                                Expression.Property(tParam, x.Property),
+                                Expression.Convert(objParam, propertyType)),
+                            tParam,
+                            objParam)
+                        .Compile();
+                }
                 else
                 {
                     // not supported property, ignore...
                 }
 
                 return (
-                    Name: x.Property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? x.Property.Name,
+                    Name: jsonPropertyName,
                     Setter: setter,
                     Adder: adder,
                     PropertyType: propertyType);
