@@ -85,13 +85,8 @@ public class ItemDefinition
     public string? PetExperienceFormula { get; set; }
 
     /// <summary>
-    /// Gets or sets the class name of the consumer handler.
-    /// </summary>
-    public string? ConsumeHandlerClass { get; set; }
-
-    /// <summary>
     /// Gets or sets the effect which is applied when this item is consumed.
-    /// Setting the <see cref="ConsumeHandlerClass"/> is not required when this effect definition is set.
+    /// Creating a consume handler plugin is not required when this effect definition is set.
     /// </summary>
     public virtual MagicEffectDefinition? ConsumeEffect { get; set; }
 

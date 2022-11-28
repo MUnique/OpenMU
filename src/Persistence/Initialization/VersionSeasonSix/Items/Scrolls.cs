@@ -85,7 +85,6 @@ public class Scrolls : InitializerBase
         scroll.DropLevel = dropLevel;
         scroll.DropsFromMonsters = true;
         scroll.Durability = 1;
-        scroll.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.LearnablesConsumeHandler).FullName;
 
         this.CreateItemRequirementIfNeeded(scroll, Stats.Level, levelRequirement);
         this.CreateItemRequirementIfNeeded(scroll, Stats.TotalEnergyRequirementValue, energyRequirement);

@@ -69,7 +69,6 @@ public class Potions : InitializerBase
         alcohol.Group = 14;
         alcohol.DropsFromMonsters = true;
         alcohol.DropLevel = 15;
-        alcohol.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.AlcoholConsumeHandler).FullName;
         alcohol.Durability = 1;
         alcohol.Value = 30;
         alcohol.Width = 1;
@@ -90,7 +89,6 @@ public class Potions : InitializerBase
         apple.DropsFromMonsters = true;
         apple.DropLevel = 1;
         apple.MaximumItemLevel = 1;
-        apple.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.AppleConsumeHandler).FullName;
         apple.Durability = 3;
         apple.Value = 5;
         apple.Width = 1;
@@ -111,7 +109,6 @@ public class Potions : InitializerBase
         potion.DropsFromMonsters = true;
         potion.MaximumItemLevel = 1;
         potion.DropLevel = 10;
-        potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SmallHealthPotionConsumeHandler).FullName;
         potion.Durability = 3;
         potion.Value = 10;
         potion.Width = 1;
@@ -132,7 +129,6 @@ public class Potions : InitializerBase
         potion.DropsFromMonsters = true;
         potion.MaximumItemLevel = 1;
         potion.DropLevel = 25;
-        potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.MiddleHealthPotionConsumeHandler).FullName;
         potion.Durability = 3;
         potion.Value = 20;
         potion.Width = 1;
@@ -153,7 +149,6 @@ public class Potions : InitializerBase
         definition.DropsFromMonsters = true;
         definition.MaximumItemLevel = 1;
         definition.DropLevel = 40;
-        definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.BigHealthPotionConsumeHandler).FullName;
         definition.Durability = 3;
         definition.Value = 30;
         definition.Width = 1;
@@ -174,7 +169,6 @@ public class Potions : InitializerBase
         potion.DropsFromMonsters = true;
         potion.MaximumItemLevel = 1;
         potion.DropLevel = 10;
-        potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SmallManaPotionConsumeHandler).FullName;
         potion.Durability = 3;
         potion.Value = 10;
         potion.Width = 1;
@@ -195,7 +189,6 @@ public class Potions : InitializerBase
         potion.DropsFromMonsters = true;
         potion.MaximumItemLevel = 1;
         potion.DropLevel = 25;
-        potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.MiddleManaPotionConsumeHandler).FullName;
         potion.Durability = 3;
         potion.Value = 20;
         potion.Width = 1;
@@ -216,7 +209,6 @@ public class Potions : InitializerBase
         definition.DropsFromMonsters = true;
         definition.MaximumItemLevel = 1;
         definition.DropLevel = 40;
-        definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.BigManaPotionConsumeHandler).FullName;
         definition.Durability = 3;
         definition.Value = 30;
         definition.Width = 1;
@@ -236,7 +228,6 @@ public class Potions : InitializerBase
         potion.Group = 14;
         potion.DropsFromMonsters = true;
         potion.DropLevel = 50;
-        potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SmallShieldPotionConsumeHandler).FullName;
         potion.Durability = 3;
         potion.Width = 1;
         potion.Height = 1;
@@ -255,7 +246,6 @@ public class Potions : InitializerBase
         potion.Group = 14;
         potion.DropsFromMonsters = false;
         potion.DropLevel = 80;
-        potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.MiddleShieldPotionConsumeHandler).FullName;
         potion.Durability = 3;
         potion.Width = 1;
         potion.Height = 1;
@@ -274,7 +264,6 @@ public class Potions : InitializerBase
         definition.Group = 14;
         definition.DropsFromMonsters = false;
         definition.DropLevel = 100;
-        definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.BigShieldPotionConsumeHandler).FullName;
         definition.Durability = 3;
         definition.Width = 1;
         definition.Height = 1;
@@ -294,7 +283,6 @@ public class Potions : InitializerBase
         potion.DropsFromMonsters = true;
         potion.DropLevel = 68;
         potion.Value = 20;
-        potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SmallComplexPotionConsumeHandler).FullName;
         potion.Durability = 3;
         potion.Width = 1;
         potion.Height = 1;
@@ -314,7 +302,6 @@ public class Potions : InitializerBase
         potion.DropsFromMonsters = true;
         potion.DropLevel = 96;
         potion.Value = 40;
-        potion.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.MediumComplexPotionConsumeHandler).FullName;
         potion.Durability = 3;
         potion.Width = 1;
         potion.Height = 1;
@@ -334,7 +321,6 @@ public class Potions : InitializerBase
         definition.DropsFromMonsters = true;
         definition.DropLevel = 118;
         definition.Value = 60;
-        definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.LargeComplexPotionConsumeHandler).FullName;
         definition.Durability = 3;
         definition.Width = 1;
         definition.Height = 1;
@@ -353,7 +339,6 @@ public class Potions : InitializerBase
         definition.Group = 14;
         definition.DropsFromMonsters = true;
         definition.DropLevel = 10;
-        definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.AntidoteConsumeHandler).FullName;
         definition.Durability = 3;
         definition.Value = 10;
         definition.Width = 1;
@@ -369,7 +354,6 @@ public class Potions : InitializerBase
         definition.Group = 14;
         definition.DropsFromMonsters = true;
         definition.DropLevel = 30;
-        definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.TownPortalScrollConsumeHandler).FullName;
         definition.Durability = 1;
         definition.Value = 30;
         definition.Width = 1;
@@ -383,8 +367,6 @@ public class Potions : InitializerBase
         definition.Name = "Siege Potion";
         definition.Number = 7;
         definition.Group = 14;
-
-        // todo definition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SiegePotionConsumeHandler).FullName;
         definition.Durability = 1;
         definition.Value = 30;
         definition.Width = 1;
@@ -403,7 +385,6 @@ public class Potions : InitializerBase
         fruits.Number = 15;
         fruits.Group = 13;
         fruits.MaximumItemLevel = 4;
-        fruits.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.FruitConsumeHandler).FullName;
         fruits.Durability = 1;
         fruits.Width = 1;
         fruits.Height = 1;

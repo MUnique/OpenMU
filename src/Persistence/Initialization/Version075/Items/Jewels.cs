@@ -42,7 +42,6 @@ public class Jewels : InitializerBase
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = true;
         itemDefinition.DropLevel = 25;
-        itemDefinition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.BlessJewelConsumeHandler).FullName;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
@@ -62,7 +61,6 @@ public class Jewels : InitializerBase
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = true;
         itemDefinition.DropLevel = 30;
-        itemDefinition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SoulJewelConsumeHandler).FullName;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;

@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="SmallManaPotionConsumeHandler.cs" company="MUnique">
+// <copyright file="SmallHealthPotionConsumeHandlerPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -12,12 +12,12 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Consume handler for small health potions.
 /// </summary>
-[Guid("A55849BC-7BD7-4444-A35A-F1AC1D48F179")]
-[PlugIn(nameof(SmallManaPotionConsumeHandler), "Plugin which handles the small mana potion consumption.")]
-public class SmallManaPotionConsumeHandler : ManaPotionConsumehandler
+[Guid("BF28D5A4-D97E-44AA-88CB-D448B1BF7A75")]
+[PlugIn(nameof(SmallHealthPotionConsumeHandlerPlugIn), "Plugin which handles the small health potion consumption.")]
+public class SmallHealthPotionConsumeHandlerPlugIn : HealthPotionConsumeHandlerPlugIn
 {
     /// <inheritdoc />
-    public override ItemIdentifier Key => ItemConstants.SmallManaPotion;
+    public override ItemIdentifier Key => ItemConstants.SmallHealingPotion;
 
     /// <inheritdoc/>
     protected override int Multiplier => 1;

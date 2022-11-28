@@ -64,11 +64,6 @@ internal class Orbs : InitializerBase
         orb.DropLevel = dropLevel;
         orb.DropsFromMonsters = true;
         orb.Durability = 1;
-        orb.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.LearnablesConsumeHandler).FullName;
-        if (skillNumber == SkillNumber.SummonGoblin)
-        {
-            orb.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.SummoningOrbConsumeHandler).FullName;
-        }
 
         this.CreateItemRequirementIfNeeded(orb, Stats.Level, levelRequirement);
         this.CreateItemRequirementIfNeeded(orb, Stats.TotalEnergy, energyRequirement);
