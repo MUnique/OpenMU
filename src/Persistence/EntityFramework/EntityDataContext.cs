@@ -45,6 +45,9 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<PowerUpDefinitionValue>().Ignore(p => p.ConstantValue);
         modelBuilder.Entity<Model.ConstValueAttribute>().Ignore(c => c.AggregateType);
 
+        modelBuilder.Entity<GameConfiguration>()
+            .Property(c => c.ItemDropDuration).HasDefaultValue(TimeSpan.FromSeconds(60));
+
         modelBuilder.Entity<Account>(entity =>
         {
             entity.Property(account => account.LoginName).HasMaxLength(10).IsRequired();

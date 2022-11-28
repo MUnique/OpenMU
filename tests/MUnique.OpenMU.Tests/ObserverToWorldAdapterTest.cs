@@ -32,7 +32,7 @@ public class ObserverToWorldAdapterTest
         viewPlugIns.Setup(v => v.GetPlugIn<INewNpcsInScopePlugIn>()).Returns(view.Object);
         worldObserver.Setup(o => o.ViewPlugIns).Returns(viewPlugIns.Object);
         var adapter = new ObserverToWorldViewAdapter(worldObserver.Object, 12);
-        var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8);
+        var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), TimeSpan.FromSeconds(10), 8);
         var nonPlayer = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
         {
             Position = new Point(128, 128),
@@ -62,7 +62,7 @@ public class ObserverToWorldAdapterTest
         viewPlugIns.Setup(v => v.GetPlugIn<IObjectMovedPlugIn>()).Returns(view3.Object);
         worldObserver.Setup(o => o.ViewPlugIns).Returns(viewPlugIns.Object);
         var adapter = new ObserverToWorldViewAdapter(worldObserver.Object, 12);
-        var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), 10, 8);
+        var map = new GameMap(new DataModel.Configuration.GameMapDefinition(), TimeSpan.FromSeconds(10), 8);
         var nonPlayer1 = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea(), new DataModel.Configuration.MonsterDefinition(), map)
         {
             Position = new Point(128, 128),

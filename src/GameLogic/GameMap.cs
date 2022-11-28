@@ -38,7 +38,7 @@ public class GameMap
     /// <param name="mapDefinition">The map definition.</param>
     /// <param name="itemDropDuration">Duration of the item drop.</param>
     /// <param name="chunkSize">Size of the chunk.</param>
-    public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize)
+    public GameMap(GameMapDefinition mapDefinition, TimeSpan itemDropDuration, byte chunkSize)
     {
         this.Id = Guid.NewGuid();
         this.Definition = mapDefinition;
@@ -78,9 +78,9 @@ public class GameMap
     public ExitGate? SafeZoneSpawnGate => this._safezoneSpawnGate;
 
     /// <summary>
-    /// Gets the time in seconds of how long drops are laying on the ground until they are disappearing.
+    /// Gets the duration about how long drops are laying on the ground until they are disappearing.
     /// </summary>
-    public int ItemDropDuration { get; }
+    public TimeSpan ItemDropDuration { get; }
 
     /// <summary>
     /// Gets the definition of the map.

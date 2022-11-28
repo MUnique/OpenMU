@@ -46,6 +46,7 @@ public class GameConfigurationInitializer : InitializerBase
         this.GameConfiguration.MaximumPasswordLength = 20;
         this.GameConfiguration.MaximumPartySize = 5;
         this.GameConfiguration.ShouldDropMoney = true;
+        this.GameConfiguration.ItemDropDuration = TimeSpan.FromSeconds(60);
         this.GameConfiguration.DamagePerOneItemDurability = 2000;
         this.GameConfiguration.DamagePerOnePetDurability = 100000;
         this.GameConfiguration.HitsPerOneItemDurability = 10000;

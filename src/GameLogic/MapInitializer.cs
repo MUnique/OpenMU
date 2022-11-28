@@ -29,7 +29,6 @@ public class MapInitializer : IMapInitializer
         this._dropGenerator = dropGenerator;
         this._configuration = configuration;
         this._logger = logger;
-        this.ItemDropDuration = 60;
         this.ChunkSize = 8;
     }
 
@@ -45,14 +44,6 @@ public class MapInitializer : IMapInitializer
     /// The path finder pool.
     /// </value>
     public IObjectPool<PathFinder>? PathFinderPool { get; set; }
-
-    /// <summary>
-    /// Gets or sets the duration of the item drop on created <see cref="GameMap"/>s.
-    /// </summary>
-    /// <value>
-    /// The duration of the item drop on created <see cref="GameMap"/>s.
-    /// </value>
-    protected int ItemDropDuration { get; set; }
 
     /// <summary>
     /// Gets or sets the size of the chunk of created <see cref="GameMap"/>s.
@@ -224,8 +215,8 @@ public class MapInitializer : IMapInitializer
     {
         this._logger.LogDebug("Creating GameMap {0}", definition);
         return definition.BattleZone?.Type == BattleType.Soccer
-            ? new SoccerGameMap(definition, this.ItemDropDuration, this.ChunkSize)
-            : new GameMap(definition, this.ItemDropDuration, this.ChunkSize);
+            ? new SoccerGameMap(definition, this._configuration.ItemDropDuration, this.ChunkSize)
+            : new GameMap(definition, this._configuration.ItemDropDuration, this.ChunkSize);
     }
 
     private INpcIntelligence? TryCreateConfiguredNpcIntelligence(MonsterDefinition monsterDefinition, GameMap createdMap)

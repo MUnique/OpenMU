@@ -32,7 +32,7 @@ public class GameMapTest
     [Test]
     public async ValueTask TestPlayerEntersMapAsync()
     {
-        var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+        var map = new GameMap(new GameMapDefinition(), TimeSpan.FromSeconds(60), ChunkSize);
         var player1 = this.GetPlayer();
         player1.Object.Position = new Point(100, 100);
         await map.AddAsync(player1.Object).ConfigureAwait(false);
@@ -51,7 +51,7 @@ public class GameMapTest
     [Test]
     public async ValueTask TestPlayerMovesInMapAsync()
     {
-        var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+        var map = new GameMap(new GameMapDefinition(), TimeSpan.FromSeconds(60), ChunkSize);
         var player1 = this.GetPlayer();
 
         await map.AddAsync(player1.Object).ConfigureAwait(false);
@@ -74,7 +74,7 @@ public class GameMapTest
     [Test]
     public async ValueTask PlayerMovesOutOfRangeAsync()
     {
-        var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+        var map = new GameMap(new GameMapDefinition(), TimeSpan.FromSeconds(60), ChunkSize);
         var player1 = this.GetPlayer();
         player1.Object.Position = new Point(101, 100);
         await map.AddAsync(player1.Object).ConfigureAwait(false);
@@ -94,7 +94,7 @@ public class GameMapTest
     [Test]
     public async ValueTask PlayerMovesOutAndIntoTheRangeAsync()
     {
-        var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+        var map = new GameMap(new GameMapDefinition(), TimeSpan.FromSeconds(60), ChunkSize);
         var player1 = this.GetPlayer();
         player1.Object.Position = new Point(101, 100);
         await map.AddAsync(player1.Object).ConfigureAwait(false);
@@ -125,7 +125,7 @@ public class GameMapTest
     /// [Test]
     public async ValueTask TestPerformanceMoveAsync()
     {
-        var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+        var map = new GameMap(new GameMapDefinition(), TimeSpan.FromSeconds(60), ChunkSize);
         var player1 = this.GetPlayer();
         await map.AddAsync(player1.Object).ConfigureAwait(false);
         var player2 = this.GetPlayer();
@@ -150,7 +150,7 @@ public class GameMapTest
     [Test]
     public async ValueTask TestPlayerLeavesMapAsync()
     {
-        var map = new GameMap(new GameMapDefinition(), 60, ChunkSize);
+        var map = new GameMap(new GameMapDefinition(), TimeSpan.FromSeconds(60), ChunkSize);
         var player1 = this.GetPlayer();
         player1.Object.Position = new Point(100, 100);
         await map.AddAsync(player1.Object).ConfigureAwait(false);
