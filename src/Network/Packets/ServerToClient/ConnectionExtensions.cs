@@ -4693,4 +4693,34 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MapEventState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="enable">The enable.</param>
+    /// <param name="event">The event.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of event is about to change.
+    /// Causes reaction on client side: The event's effect is shown.
+    /// </remarks>
+    public static async ValueTask SendMapEventStateAsync(this IConnection? connection, bool @enable, MapEventState.Events @event)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MapEventStateRef.Length;
+            var packet = new MapEventStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.Enable = @enable;
+            packet.Event = @event;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

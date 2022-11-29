@@ -8303,6 +8303,46 @@
         </Enum>
       </Enums>
     </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>0B</Code>
+      <Name>MapEventState</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of event is about to change.</SentWhen>
+      <CausedReaction>The event's effect is shown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Enable</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>Events</TypeName>
+          <Name>Event</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>Events</Name>
+          <Description>Defines all events.</Description>
+          <Values>
+            <EnumValue>
+              <Name>RedDragon</Name>
+              <Description>Red dragon invasion.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GoldenDragon</Name>
+              <Description>Golden dragon invasion.</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>
