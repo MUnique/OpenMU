@@ -140,13 +140,17 @@ public class EntityFrameworkContextBase : IContext
                 return true;
             }
 
-            this.Context.Remove(obj);
-            result = true;
-        }
+            if (entry.State == EntityState.Added)
+            {
+                this.Detach(obj);
+            }
+            else
+            {
+                this.Context.Remove(obj);
+                this.ForEachAggregate(obj, a => this.Context.Remove(a));
+            }
 
-        if (result)
-        {
-            this.ForEachAggregate(obj, a => this.Context.Remove(a));
+            result = true;
         }
 
         return result;

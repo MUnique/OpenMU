@@ -93,7 +93,7 @@ public class Storage : IStorage
     protected Item?[] ItemArray { get; }
 
     /// <inheritdoc/>
-    public virtual ValueTask<bool> AddItemAsync(byte slot, Item item)
+    public virtual async ValueTask<bool> AddItemAsync(byte slot, Item item)
     {
         var result = this.AddItemInternal((byte)(slot - this._slotOffset), item);
         if (result)
@@ -102,7 +102,7 @@ public class Storage : IStorage
             item.ItemSlot = slot;
         }
 
-        return ValueTask.FromResult(result);
+        return result;
     }
 
     /// <inheritdoc/>

@@ -268,6 +268,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
             // So we use a new temporary persistence context instead.
             // We use a trade-context as it just focuses on the items. Otherwise, we would track a lot more items.
             using var context = repositoryManager.CreateNewTradeContext();
+            context.Attach(this.Item);
             await context.DeleteAsync(this.Item).ConfigureAwait(false);
             await context.SaveChangesAsync().ConfigureAwait(false);
         }

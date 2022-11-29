@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.PlugIns;
-
 namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.PlugIns;
 using static OpenMU.GameLogic.InventoryConstants;
 
 /// <summary>
@@ -67,7 +66,7 @@ public class InventoryStorage : Storage, IInventoryStorage
         var success = await base.AddItemAsync(slot, convertedItem ?? item).ConfigureAwait(false);
         if (!success && convertedItem != null)
         {
-            await this._player.PersistenceContext.DeleteAsync(convertedItem).ConfigureAwait(false);
+            this._player.PersistenceContext.Detach(convertedItem);
         }
 
         if (success)
