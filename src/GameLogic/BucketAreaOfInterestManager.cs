@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx;
-
 namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
+using Nito.AsyncEx;
 
 /// <summary>
 /// A area of interest manager which works with a bucket map.

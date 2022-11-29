@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Reflection;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 

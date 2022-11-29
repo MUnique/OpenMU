@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.PlugIns;
-
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
 
 /// <summary>
