@@ -3,6 +3,7 @@
   * [C1 00 - ChatMessage (by server)](C1-00-ChatMessage_by-server.md)
   * [C1 01 - ObjectMessage (by server)](C1-01-ObjectMessage_by-server.md)
   * [C1 07 - MagicEffectStatus (by server)](C1-07-MagicEffectStatus_by-server.md)
+  * [C1 0B - MapEventState (by server)](C1-0B-MapEventState_by-server.md)
   * [C1 0D - ServerMessage (by server)](C1-0D-ServerMessage_by-server.md)
   * [C1 0F - WeatherStatusUpdate (by server)](C1-0F-WeatherStatusUpdate_by-server.md)
   * [C1 10 - ObjectWalked075 (by server)](C1-10-ObjectWalked075_by-server.md)
