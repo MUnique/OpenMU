@@ -402,7 +402,7 @@ public class DefaultDropGenerator : IDropGenerator
 
     private DropItemGroup? SelectRandomGroup(IEnumerable<DropItemGroup> dropGroups)
     {
-        var sum = dropGroups.Sum(group => group.Chance);
+        var sum = Math.Max(1.0, dropGroups.Sum(group => group.Chance));
         double lot = this._randomizer.NextDouble() * sum;
 
         foreach (var group in dropGroups)
