@@ -103,6 +103,7 @@ public class GameConfigurationInitializer : InitializerBase
         new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
         new Gates(this.Context, this.GameConfiguration).Initialize();
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
+        new GoldenInvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
         //// TODO: ItemSetGroups for set bonus
     }
 

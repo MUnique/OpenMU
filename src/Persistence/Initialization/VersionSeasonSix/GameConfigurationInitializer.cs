@@ -122,6 +122,7 @@ public class GameConfigurationInitializer : InitializerBase
         new Quests(this.Context, this.GameConfiguration).Initialize();
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
         new BloodCastleInitializer(this.Context, this.GameConfiguration).Initialize();
+        new Version095d.GoldenInvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
         //// TODO: ItemSetGroups
     }
 
