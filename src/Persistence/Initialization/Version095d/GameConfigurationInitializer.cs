@@ -97,13 +97,13 @@ public class GameConfigurationInitializer : InitializerBase
         new Version075.Items.Potions(this.Context, this.GameConfiguration).Initialize();
         new Jewelery(this.Context, this.GameConfiguration).Initialize();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
+        new GoldenInvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
 
         new GameMapsInitializer(this.Context, this.GameConfiguration).Initialize();
         this.AssignCharacterClassHomeMaps();
         new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
         new Gates(this.Context, this.GameConfiguration).Initialize();
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
-        new GoldenInvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
         //// TODO: ItemSetGroups for set bonus
     }
 

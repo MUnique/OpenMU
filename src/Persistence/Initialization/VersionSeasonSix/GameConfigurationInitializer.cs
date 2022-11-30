@@ -113,6 +113,7 @@ public class GameConfigurationInitializer : InitializerBase
         new BoxOfLuck(this.Context, this.GameConfiguration).Initialize();
         this.CreateJewelMixes();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
+        new Version095d.GoldenInvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
         new GameMapsInitializer(this.Context, this.GameConfiguration).Initialize();
         this.AssignCharacterClassHomeMaps();
         new SocketSystem(this.Context, this.GameConfiguration).Initialize();
@@ -122,7 +123,6 @@ public class GameConfigurationInitializer : InitializerBase
         new Quests(this.Context, this.GameConfiguration).Initialize();
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
         new BloodCastleInitializer(this.Context, this.GameConfiguration).Initialize();
-        new Version095d.GoldenInvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
         //// TODO: ItemSetGroups
     }
 
