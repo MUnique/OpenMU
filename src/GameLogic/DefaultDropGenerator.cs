@@ -63,7 +63,7 @@ public class DefaultDropGenerator : IDropGenerator
                     map.DropItemGroups,
                     questGroups)
                 .Where(group => IsGroupRelevant(monster, group))
-                .OrderBy(group => group.Chance);
+                .OrderByDescending(group => group.Chance);
 
         IList<Item>? droppedItems = null;
         for (int i = 0; i < monster.NumberOfMaximumItemDrops; i++)
