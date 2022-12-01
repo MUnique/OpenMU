@@ -8,6 +8,7 @@ using System.ComponentModel.Design;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
 using MUnique.OpenMU.Network.PlugIns;
@@ -129,6 +130,10 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             {
                 plugInConfiguration.IsActive = false;
                 plugInConfiguration.SetConfiguration(new ResetConfiguration());
+            }
+            else if (plugInType == typeof(GoldenInvasionPlugIn))
+            {
+                plugInConfiguration.SetConfiguration(new GoldenInvasionConfiguration());
             }
 
             // We don't move the player anymore by his request. This was usually requested after a player performed a skill.

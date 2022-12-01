@@ -25,19 +25,38 @@ public enum MobsInvasionState : byte
     Started,
 }
 
-public class PeriodicInvasionConfiguration
+/// <summary>
+/// Abstract configuration for periodic invasions.
+/// </summary>
+public abstract class PeriodicInvasionConfiguration
 {
-    public bool IsActive { get; set; }
-    public List<TimeOnly> Timetable { get; set; } = new();
-    public int EventDuration { get; set; }
-    public int PreStartMessageDelay { get; set; }
-    public string? Message { get; set; }
+    public bool IsActive { get; set; } = true;
+    public List<TimeOnly> Timetable { get; set; } = new(GenerateTimeSequence(TimeSpan.FromMinutes(1)));
+    public TimeSpan EventDuration { get; set; } = TimeSpan.FromMinutes(5);
+    public TimeSpan PreStartMessageDelay { get; set; } = TimeSpan.FromSeconds(3);
+    public string? Message { get; set; } = "Invasion's been started!";
+
+    /// <summary>
+    /// Generate a sequnce of time points like [00:00, 00:01, ...].
+    /// </summary>
+    /// <param name="duration">The duration.</param>
+    public static IEnumerable<TimeOnly> GenerateTimeSequence(TimeSpan duration)
+    {
+        var limit = TimeSpan.FromDays(1);
+        var current = TimeSpan.FromDays(0);
+
+        while (current < limit)
+        {
+            yield return TimeOnly.FromTimeSpan(current);
+            current = current.Add(duration);
+        }
+    }
 
     /// <summary>
     /// Check if current time is OK for starting an invasion.
     /// </summary>
     /// <returns>Returns true if the invasion can be started.</returns>
-    public bool IsRightTime()
+    public bool IsItTimeToStartInvasion()
     {
         if (this.Timetable.Count == 0)
         {
@@ -52,9 +71,20 @@ public class PeriodicInvasionConfiguration
     }
 }
 
+/// <summary>
+/// Configuration for golden invasion.
+/// </summary>
+public class GoldenInvasionConfiguration : PeriodicInvasionConfiguration
+{
+    public GoldenInvasionConfiguration()
+    {
+        this.Message = "[{mapName}] Golden Invasion!";
+    }
+}
+
 [PlugIn(nameof(GoldenInvasionPlugIn), "Handle Golden Invasion event")]
 [Guid("06D18A9E-2919-4C17-9DBC-6E4F7756495C")]
-public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<PeriodicInvasionConfiguration>
+public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<GoldenInvasionConfiguration>
 {
     private class GameServerState
     {
@@ -75,15 +105,6 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
             this.Context = ctx;
         }
     }
-
-    private static readonly PeriodicInvasionConfiguration DefaultConfiguration = new()
-    {
-        EventDuration = 300000,
-        PreStartMessageDelay = 3000,
-        IsActive = true,
-        Message = "[{mapName}] Golden Invasion!",
-        Timetable = new(GeneratePeriodsSequence(TimeSpan.FromMinutes(1))),
-    };
 
     private static readonly ushort LorenciaId = 0;
     private static readonly ushort DeviasId = 2;
@@ -157,7 +178,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     /// <summary>
     /// Gets or sets configuration for periodic invasion.
     /// </summary>
-    public PeriodicInvasionConfiguration? Configuration { get; set; }
+    public GoldenInvasionConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
@@ -171,7 +192,13 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
             return;
         }
 
-        var configuration = this.Configuration ?? DefaultConfiguration;
+        var configuration = this.Configuration;
+
+        if (configuration is null)
+        {
+            logger.LogWarning("configuration is not set.");
+            return;
+        }
 
         if (!configuration.IsActive)
         {
@@ -183,12 +210,12 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         {
             case MobsInvasionState.NotStarted:
                 {
-                    if (!configuration.IsRightTime())
+                    if (!configuration.IsItTimeToStartInvasion())
                     {
                         return;
                     }
 
-                    state.NextRunUtc = DateTime.UtcNow.AddMilliseconds(configuration.PreStartMessageDelay);
+                    state.NextRunUtc = DateTime.UtcNow.Add(configuration.PreStartMessageDelay);
                     state.MapId = PossibleMaps[_random.Next(0, PossibleMaps.Length)];
                     state.State = MobsInvasionState.Initialized;
 
@@ -210,7 +237,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
             case MobsInvasionState.Initialized:
                 {
                     logger.LogInformation($"{state.MapName}: spawning mobs ...");
-                    state.NextRunUtc = DateTime.UtcNow.AddMilliseconds(configuration.EventDuration);
+                    state.NextRunUtc = DateTime.UtcNow.Add(configuration.EventDuration);
                     state.State = MobsInvasionState.Started;
 
                     await this.SpawnGeneralMobsAsync(state).ConfigureAwait(false);
@@ -312,7 +339,12 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
 
     private async Task TrySendStartMessageAsync(Player player, string mapName)
     {
-        var configuration = this.Configuration ?? DefaultConfiguration;
+        var configuration = this.Configuration;
+
+        if (configuration is null)
+        {
+            return;
+        }
 
         var message = (configuration.Message ?? "[{mapName}] Golden Invasion!").Replace("{mapName}", mapName, StringComparison.InvariantCulture);
 
@@ -374,17 +406,5 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         await gameMap.AddAsync(monster).ConfigureAwait(false);
 
         return monster;
-    }
-
-    private static IEnumerable<TimeOnly> GeneratePeriodsSequence(TimeSpan duration)
-    {
-        var limit = TimeSpan.FromDays(1);
-        var current = TimeSpan.FromDays(0);
-
-        while (current < limit)
-        {
-            yield return TimeOnly.FromTimeSpan(current);
-            current = current.Add(duration);
-        }
     }
 }
