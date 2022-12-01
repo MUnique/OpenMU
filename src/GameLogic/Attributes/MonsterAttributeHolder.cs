@@ -159,19 +159,9 @@ public class MonsterAttributeHolder : IAttributeSystem
 
     private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDef)
     {
-        if (!MonsterStatAttributesCache.TryGetValue(monsterDef, out var result))
-        {
-            result = monsterDef.Attributes.ToDictionary(
+        return MonsterStatAttributesCache.GetOrAdd(monsterDef, m => monsterDef.Attributes.ToDictionary(
                 m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
-                m => m.Value);
-
-            if (!MonsterStatAttributesCache.TryAdd(monsterDef, result))
-            {
-                return GetStatAttributeOfMonster(monsterDef);
-            }
-        }
-
-        return result;
+                m => m.Value));
     }
 
     private IDictionary<AttributeDefinition, IComposableAttribute> GetAttributeDictionary()
