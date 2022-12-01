@@ -157,9 +157,9 @@ public class MonsterAttributeHolder : IAttributeSystem
         throw new NotImplementedException();
     }
 
-    private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDef)
+    private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDefinition)
     {
-        return MonsterStatAttributesCache.GetOrAdd(monsterDef, m => monsterDef.Attributes.ToDictionary(
+        return MonsterStatAttributesCache.GetOrAdd(monsterDefinition, monsterDef => monsterDef.Attributes.ToDictionary(
                 m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
                 m => m.Value));
     }
