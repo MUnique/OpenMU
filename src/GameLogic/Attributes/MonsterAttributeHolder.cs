@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Attributes;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.NPC;
 
@@ -29,13 +30,13 @@ public class MonsterAttributeHolder : IAttributeSystem
             { Stats.CurrentHealth, (m, v) => m.Health = (int)v },
         };
 
-    private static readonly IDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new Dictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>>();
+    private static readonly ConcurrentDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new();
 
     private readonly AttackableNpcBase _monster;
 
     private readonly IDictionary<AttributeDefinition, float> _statAttributes;
 
-    private readonly object _attributesLock = new ();
+    private readonly object _attributesLock = new();
 
     /// <summary>
     /// Attribute dictionary of a monster instance.
@@ -163,7 +164,7 @@ public class MonsterAttributeHolder : IAttributeSystem
             result = monsterDef.Attributes.ToDictionary(
                 m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
                 m => m.Value);
-            MonsterStatAttributesCache.Add(monsterDef, result);
+            MonsterStatAttributesCache.TryAdd(monsterDef, result);
         }
 
         return result;
