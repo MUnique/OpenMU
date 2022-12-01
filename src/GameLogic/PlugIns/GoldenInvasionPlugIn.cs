@@ -310,9 +310,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
             foreach (var (mobId, mobsCount) in mobs)
             {
                 var monsterDefinition = gameContext.Configuration.Monsters.First(m => m.Number == mobId);
-
-                var tasks = Enumerable.Repeat(() => CreateMonsterAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240), mobsCount).Select(c => c());
-                await Task.WhenAll(tasks).ConfigureAwait(false);
+                await CreateMonstersAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240, mobsCount).ConfigureAwait(false);
             }
         }
     }
@@ -331,9 +329,8 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         foreach (var (mobId, mobsCount) in GeneralMobsCountOnSelectedMap)
         {
             var monsterDefinition = gameContext.Configuration.Monsters.First(m => m.Number == mobId);
+            await CreateMonstersAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240, mobsCount).ConfigureAwait(false);
 
-            var tasks = Enumerable.Repeat(() => CreateMonsterAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240), mobsCount).Select(c => c());
-            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }
 
@@ -383,28 +380,29 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         }
     }
 
-    private static async Task<Monster> CreateMonsterAsync(IGameContext gameContext, GameMap gameMap, MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2)
+    private static async Task CreateMonstersAsync(IGameContext gameContext, GameMap gameMap, MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2, ushort quantity)
     {
-        var area = new MonsterSpawnArea
+        while (quantity-- > 0)
         {
-            GameMap = gameMap.Definition,
-            MonsterDefinition = monsterDefinition,
-            SpawnTrigger = SpawnTrigger.Automatic,
-            Quantity = 1,
-            X1 = x1,
-            X2 = x2,
-            Y1 = y1,
-            Y2 = y2,
-        };
+            var area = new MonsterSpawnArea
+            {
+                GameMap = gameMap.Definition,
+                MonsterDefinition = monsterDefinition,
+                SpawnTrigger = SpawnTrigger.Automatic,
+                Quantity = 1,
+                X1 = x1,
+                X2 = x2,
+                Y1 = y1,
+                Y2 = y2,
+            };
 
-        var intelligence = new BasicMonsterIntelligence();
+            var intelligence = new BasicMonsterIntelligence();
 
-        var monster = new Monster(area, monsterDefinition, gameMap, gameContext.DropGenerator, intelligence, gameContext.PlugInManager, gameContext.PathFinderPool);
+            var monster = new Monster(area, monsterDefinition, gameMap, gameContext.DropGenerator, intelligence, gameContext.PlugInManager, gameContext.PathFinderPool);
 
-        monster.Initialize();
+            monster.Initialize();
 
-        await gameMap.AddAsync(monster).ConfigureAwait(false);
-
-        return monster;
+            await gameMap.AddAsync(monster).ConfigureAwait(false);
+        }
     }
 }
