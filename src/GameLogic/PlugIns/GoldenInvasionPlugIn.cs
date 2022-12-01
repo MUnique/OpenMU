@@ -18,9 +18,9 @@ using MUnique.OpenMU.PlugIns;
 public class GoldenInvasionConfiguration
 {
     public bool IsActive { get; set; }
-    public List<int> Timetable { get; set; } = new();
-    public int EventDuration { get; set; } = 5 * 60 * 1000; // ms
-    public int PreStartMessageDelay { get; set; } = 3 * 1000; // ms
+    public List<int> Timetable { get; set; }
+    public int EventDuration { get; set; }
+    public int PreStartMessageDelay { get; set; }
     public string? Message { get; set; }
 }
 
@@ -28,7 +28,7 @@ public class GoldenInvasionConfiguration
 [Guid("06D18A9E-2919-4C17-9DBC-6E4F7756495C")]
 public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<GoldenInvasionConfiguration>
 {
-    private static readonly GoldenInvasionConfiguration DefaultConfiguration = new() { EventDuration = 30000, PreStartMessageDelay = 3000, IsActive = true, Message = "[{0}] Golden Invasion!" };
+    private static readonly GoldenInvasionConfiguration DefaultConfiguration = new() { EventDuration = 300000, PreStartMessageDelay = 3000, IsActive = true, Message = "[{0}] Golden Invasion!" };
     /// <summary>
     /// Gets or sets configuration for Golden invasion.
     /// </summary>
