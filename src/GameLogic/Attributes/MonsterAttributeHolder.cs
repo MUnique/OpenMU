@@ -164,7 +164,11 @@ public class MonsterAttributeHolder : IAttributeSystem
             result = monsterDef.Attributes.ToDictionary(
                 m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
                 m => m.Value);
-            MonsterStatAttributesCache.TryAdd(monsterDef, result);
+
+            if (!MonsterStatAttributesCache.TryAdd(monsterDef, result))
+            {
+                return GetStatAttributeOfMonster(monsterDef);
+            }
         }
 
         return result;
