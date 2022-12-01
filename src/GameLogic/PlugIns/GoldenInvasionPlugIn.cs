@@ -15,24 +15,75 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
 
-public class GoldenInvasionConfiguration
+/// <summary>
+/// Describe the state of invasion.
+/// </summary>
+public enum MobsInvasionState : byte
+{
+    NotStarted,
+    Initialized,
+    Started,
+}
+
+public class PeriodicInvasionConfiguration
 {
     public bool IsActive { get; set; }
-    public List<int> Timetable { get; set; }
+    public List<TimeOnly> Timetable { get; set; } = new();
     public int EventDuration { get; set; }
     public int PreStartMessageDelay { get; set; }
     public string? Message { get; set; }
+
+    /// <summary>
+    /// Check if current time is OK for starting an invasion.
+    /// </summary>
+    /// <returns>Returns true if the invasion can be started.</returns>
+    public bool IsRightTime()
+    {
+        if (this.Timetable.Count == 0)
+        {
+            return true;
+        }
+
+        var nowTime = TimeOnly.FromDateTime(DateTime.UtcNow);
+        var erlier = nowTime.Add(TimeSpan.FromSeconds(-5));
+
+        // For example, p = 00:00. Check that time between 00:00:00 and 00:00:05
+        return this.Timetable.Any(p => p.IsBetween(erlier, nowTime));
+    }
 }
 
 [PlugIn(nameof(GoldenInvasionPlugIn), "Handle Golden Invasion event")]
 [Guid("06D18A9E-2919-4C17-9DBC-6E4F7756495C")]
-public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<GoldenInvasionConfiguration>
+public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<PeriodicInvasionConfiguration>
 {
-    private static readonly GoldenInvasionConfiguration DefaultConfiguration = new() { EventDuration = 300000, PreStartMessageDelay = 3000, IsActive = true, Message = "[{0}] Golden Invasion!" };
-    /// <summary>
-    /// Gets or sets configuration for Golden invasion.
-    /// </summary>
-    public GoldenInvasionConfiguration? Configuration { get; set; }
+    private class GameServerState
+    {
+        public DateTime NextRunUtc { get; set; } = DateTime.UtcNow;
+
+        public MobsInvasionState State { get; set; } = MobsInvasionState.NotStarted;
+
+        public ushort MapId { get; set; } = LorenciaId;
+
+        public readonly IGameContext Context;
+
+        public GameMapDefinition Map => this.Context.Configuration.Maps.First(m => m.Number == this.MapId);
+
+        public string MapName => this.Map.Name;
+
+        public GameServerState(IGameContext ctx)
+        {
+            this.Context = ctx;
+        }
+    }
+
+    private static readonly PeriodicInvasionConfiguration DefaultConfiguration = new()
+    {
+        EventDuration = 300000,
+        PreStartMessageDelay = 3000,
+        IsActive = true,
+        Message = "[{mapName}] Golden Invasion!",
+        Timetable = new(GeneratePeriodsSequence(TimeSpan.FromMinutes(1))),
+    };
 
     private static readonly ushort LorenciaId = 0;
     private static readonly ushort DeviasId = 2;
@@ -49,13 +100,6 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     private static readonly ushort GoldenLizardKingId = 80;
     private static readonly ushort GoldenWheelId = 83; // ?
     private static readonly ushort GoldenTantallosId = 82;
-
-    private enum State : byte
-    {
-        NotStarted,
-        Initialized,
-        Started,
-    }
 
     private static readonly Random _random = new();
 
@@ -108,48 +152,12 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         },
     };
 
-    private static int idCounter = 0;
-
-    class GameServerState
-    {
-        public int Id => this._id;
-
-        private int _id = 0;
-
-        public DateTime NextRunUtc = DateTime.UtcNow;
-
-        public State State { get; set; } = State.NotStarted;
-
-        public ushort MapId { get; set; } = LorenciaId;
-
-        public readonly IGameContext Context;
-
-        public GameMapDefinition Map => this.Context.Configuration.Maps.First(m => m.Number == this.MapId);
-        public string MapName => this.Map.Name;
-
-        public GameServerState(IGameContext ctx)
-        {
-            this.Context = ctx;
-            this._id = ++idCounter;
-            Console.WriteLine($"instantiate GoldeInvasionPlugin state id:{this._id}");
-        }
-    }
-
     private static readonly ConcurrentDictionary<IGameContext, GameServerState> _states = new();
 
-    private static GameServerState GetStateByGameContext(IGameContext gameContext)
-    {
-        if (!_states.TryGetValue(gameContext, out var state))
-        {
-            state = new GameServerState(gameContext);
-            if (_states.TryAdd(gameContext, state))
-            {
-                return state;
-            }
-        }
-
-        return state;
-    }
+    /// <summary>
+    /// Gets or sets configuration for periodic invasion.
+    /// </summary>
+    public PeriodicInvasionConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
@@ -167,19 +175,24 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
 
         if (!configuration.IsActive)
         {
-            logger.LogWarning("Golden Invasion is not activated.");
+            logger.LogWarning("plugin is not activated.");
             return;
         }
 
         switch (state.State)
         {
-            case State.NotStarted:
+            case MobsInvasionState.NotStarted:
                 {
+                    if (!configuration.IsRightTime())
+                    {
+                        return;
+                    }
+
                     state.NextRunUtc = DateTime.UtcNow.AddMilliseconds(configuration.PreStartMessageDelay);
                     state.MapId = PossibleMaps[_random.Next(0, PossibleMaps.Length)];
-                    state.State = State.Initialized;
+                    state.State = MobsInvasionState.Initialized;
 
-                    logger.LogInformation($"[Golden invasion][{state.Id}] starts at {state.MapName}");
+                    logger.LogInformation($"{state.MapName}: initialized");
 
                     try
                     {
@@ -194,25 +207,25 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
                     break;
                 }
 
-            case State.Initialized:
+            case MobsInvasionState.Initialized:
                 {
-                    logger.LogInformation($"[Golden invasion][{state.Id}] spawn mobs at {state.MapName} ...");
+                    logger.LogInformation($"{state.MapName}: spawning mobs ...");
                     state.NextRunUtc = DateTime.UtcNow.AddMilliseconds(configuration.EventDuration);
-                    state.State = State.Started;
+                    state.State = MobsInvasionState.Started;
 
                     await this.SpawnGeneralMobsAsync(state).ConfigureAwait(false);
                     await this.SpawnUniqueMobsAsync(state).ConfigureAwait(false);
 
-                    logger.LogInformation($"[Golden invasion][{state.Id}] spawn mobs at {state.MapName} finished");
+                    logger.LogInformation($"{state.MapName}: spawning finished");
 
                     break;
                 }
 
-            case State.Started:
+            case MobsInvasionState.Started:
                 {
-                    logger.LogInformation($"[Golden invasion][{state.Id}] finished at {state.MapName}");
+                    logger.LogInformation($"{state.MapName}: event finished");
 
-                    state.State = State.NotStarted;
+                    state.State = MobsInvasionState.NotStarted;
 
                     try
                     {
@@ -226,6 +239,32 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
                     break;
                 }
         }
+    }
+
+    /// <inheritdoc />
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    public async void ObjectAddedToMap(GameMap map, ILocateable addedObject)
+    {
+        try
+        {
+            if (addedObject is Player player)
+            {
+                var state = GetStateByGameContext(player.GameContext);
+
+                var flyingEnabled = state.State != MobsInvasionState.NotStarted;
+
+                await this.TrySendFlyingDragonsAsync(player, flyingEnabled).ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            // must be catched because it's an async void method.
+        }
+    }
+
+    private static GameServerState GetStateByGameContext(IGameContext gameContext)
+    {
+        return _states.GetOrAdd(gameContext, gameCtx => new GameServerState(gameContext));
     }
 
     private async Task SpawnUniqueMobsAsync(GameServerState state)
@@ -245,7 +284,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
             {
                 var monsterDefinition = gameContext.Configuration.Monsters.First(m => m.Number == mobId);
 
-                var tasks = Enumerable.Repeat(() => this.CreateMonsterAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240), mobsCount).Select(c => c());
+                var tasks = Enumerable.Repeat(() => CreateMonsterAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240), mobsCount).Select(c => c());
                 await Task.WhenAll(tasks).ConfigureAwait(false);
             }
         }
@@ -266,31 +305,8 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         {
             var monsterDefinition = gameContext.Configuration.Monsters.First(m => m.Number == mobId);
 
-            var tasks = Enumerable.Repeat(() => this.CreateMonsterAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240), mobsCount).Select(c => c());
+            var tasks = Enumerable.Repeat(() => CreateMonsterAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240), mobsCount).Select(c => c());
             await Task.WhenAll(tasks).ConfigureAwait(false);
-        }
-    }
-
-    /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
-    public async void ObjectAddedToMap(GameMap map, ILocateable addedObject)
-    {
-        try
-        {
-            if (addedObject is Player player)
-            {
-                var state = GetStateByGameContext(player.GameContext);
-
-                var flyingEnabled = state.State != State.NotStarted;
-
-                Console.WriteLine($"[{state.Id}] Obj added, flying:{flyingEnabled} state: {state.State} map:{state.MapName}");
-
-                await this.TrySendFlyingDragonsAsync(player, flyingEnabled).ConfigureAwait(false);
-            }
-        }
-        catch
-        {
-            // must be catched because it's an async void method.
         }
     }
 
@@ -298,7 +314,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     {
         var configuration = this.Configuration ?? DefaultConfiguration;
 
-        var message = (configuration.Message ?? "[{0}] Golden Invasion!").Replace("{0}", mapName);
+        var message = (configuration.Message ?? "[{mapName}] Golden Invasion!").Replace("{mapName}", mapName, StringComparison.InvariantCulture);
 
         if (player.CurrentMap is { } map
            && player.PlayerState.CurrentState != PlayerState.Disconnected
@@ -335,7 +351,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         }
     }
 
-    private async Task<Monster> CreateMonsterAsync(IGameContext gameContext, GameMap gameMap, MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2)
+    private static async Task<Monster> CreateMonsterAsync(IGameContext gameContext, GameMap gameMap, MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2)
     {
         var area = new MonsterSpawnArea
         {
@@ -358,5 +374,17 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         await gameMap.AddAsync(monster).ConfigureAwait(false);
 
         return monster;
+    }
+
+    private static IEnumerable<TimeOnly> GeneratePeriodsSequence(TimeSpan duration)
+    {
+        var limit = TimeSpan.FromDays(1);
+        var current = TimeSpan.FromDays(0);
+
+        while (current < limit)
+        {
+            yield return TimeOnly.FromTimeSpan(current);
+            current = current.Add(duration);
+        }
     }
 }
