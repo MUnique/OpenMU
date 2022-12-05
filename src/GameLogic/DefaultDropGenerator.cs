@@ -48,22 +48,30 @@ public class DefaultDropGenerator : IDropGenerator
             return Enumerable.Empty<Item>();
         }
 
-        var questGroups = character.QuestStates?
-                              .SelectMany(q => q.ActiveQuest?.RequiredItems
-                                                   .Where(i => i.DropItemGroup is { })
-                                                   .Select(i => i.DropItemGroup!)
-                                               ?? Enumerable.Empty<DropItemGroup>())
-                          ?? Enumerable.Empty<DropItemGroup>();
-        var dropGroups = 
-            monster.ObjectKind == NpcObjectKind.Destructible
-                ? (IEnumerable<DropItemGroup>)monster.DropItemGroups
+        IEnumerable<DropItemGroup> dropGroups;
+        if (monster.DropItemGroups.MaxBy(g => g.Chance) is { Chance: >= 1.0 } alwaysDrops)
+        {
+            dropGroups = alwaysDrops.GetAsEnumerable();
+        }
+        else
+        {
+            var questGroups = character.QuestStates?
+                            .SelectMany(q => q.ActiveQuest?.RequiredItems
+                                                 .Where(i => i.DropItemGroup is { })
+                                                 .Select(i => i.DropItemGroup!)
+                                             ?? Enumerable.Empty<DropItemGroup>())
+                        ?? Enumerable.Empty<DropItemGroup>();
+
+            dropGroups = monster.ObjectKind == NpcObjectKind.Destructible
+                ? monster.DropItemGroups
                 : CombineDropGroups(
-                    monster.DropItemGroups,
-                    character.DropItemGroups,
-                    map.DropItemGroups,
-                    questGroups)
-                .Where(group => IsGroupRelevant(monster, group))
-                .OrderBy(group => group.Chance);
+                        monster.DropItemGroups,
+                        character.DropItemGroups,
+                        map.DropItemGroups,
+                        questGroups)
+                    .Where(group => IsGroupRelevant(monster, group))
+                    .OrderBy(group => group.Chance);
+        }
 
         IList<Item>? droppedItems = null;
         for (int i = 0; i < monster.NumberOfMaximumItemDrops; i++)
