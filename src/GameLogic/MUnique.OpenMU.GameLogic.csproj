@@ -27,6 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="PlugIns\InvasionEvents\" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
@@ -55,4 +58,7 @@
     <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="PlugIns\InvasionEvents\" />
+  </ItemGroup>
 </Project>
