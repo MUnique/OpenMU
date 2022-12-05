@@ -17,7 +17,7 @@ public abstract class PeriodicInvasionConfiguration
     /// <summary>
     /// Gets or sets a timetable for the event.
     /// </summary>
-    public List<TimeOnly> Timetable { get; set; } = new(GenerateTimeSequence(TimeSpan.FromMinutes(1)));
+    public List<TimeOnly> Timetable { get; set; } = new(GenerateTimeSequence(TimeSpan.FromHours(4)));
 
     /// <summary>
     /// Gets or sets an event's duration.
