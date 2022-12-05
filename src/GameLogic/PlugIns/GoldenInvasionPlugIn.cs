@@ -46,8 +46,19 @@ public abstract class PeriodicInvasionConfiguration
     /// </summary>
     public bool IsActive { get; set; } = true;
 
+    /// <summary>
+    /// Gets or sets a timetable for the event.
+    /// </summary>
     public List<TimeOnly> Timetable { get; set; } = new(GenerateTimeSequence(TimeSpan.FromMinutes(1)));
+
+    /// <summary>
+    /// Gets or sets an event's duration.
+    /// </summary>
     public TimeSpan EventDuration { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// Gets or sets a time delay.
+    /// </summary>
     public TimeSpan PreStartMessageDelay { get; set; } = TimeSpan.FromSeconds(3);
 
     /// <summary>

@@ -26,7 +26,7 @@ internal partial class GoldenInvasionMobsInitialization : InitializerBase
     }
 
     /// <summary>
-    /// Creates all gold mobs.
+    /// Creates all golden mobs.
     /// </summary>
     public override void Initialize()
     {
