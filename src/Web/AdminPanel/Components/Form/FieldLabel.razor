@@ -3,7 +3,10 @@
 @using System.Reflection
 @typeparam TValue
 
+@if (this._actualLabel != string.Empty)
+{
 <label for="@this._fieldIdentifier.FieldName">@this._actualLabel</label>
+}
 
 @code {
     private string _actualLabel = null!;
