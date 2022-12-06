@@ -134,7 +134,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             }
             else if (plugInType == typeof(GoldenInvasionPlugIn))
             {
-                plugInConfiguration.SetConfiguration(new GoldenInvasionConfiguration());
+                plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultGoldenInvasion);
             }
 
             // We don't move the player anymore by his request. This was usually requested after a player performed a skill.

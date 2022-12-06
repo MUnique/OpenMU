@@ -8,11 +8,8 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -20,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(nameof(GoldenInvasionPlugIn), "Handle Golden Invasion event")]
 [Guid("06D18A9E-2919-4C17-9DBC-6E4F7756495C")]
-public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<GoldenInvasionConfiguration>
+public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<PeriodicInvasionConfiguration>
 {
     private class GameServerState
     {
@@ -57,8 +54,6 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     private static readonly ushort GoldenLizardKingId = 80;
     private static readonly ushort GoldenWheelId = 83;
     private static readonly ushort GoldenTantallosId = 82;
-
-    private static readonly Random _random = new();
 
     private static readonly ushort[] PossibleMaps = new[] { LorenciaId, NoriaId, DeviasId };
 
@@ -114,7 +109,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     /// <summary>
     /// Gets or sets configuration for periodic invasion.
     /// </summary>
-    public GoldenInvasionConfiguration? Configuration { get; set; }
+    public PeriodicInvasionConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
@@ -136,12 +131,6 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
             return;
         }
 
-        if (!configuration.IsActive)
-        {
-            logger.LogWarning("plugin is not activated.");
-            return;
-        }
-
         switch (state.State)
         {
             case InvasionEventState.NotStarted:
@@ -152,7 +141,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
                     }
 
                     state.NextRunUtc = DateTime.UtcNow.Add(configuration.PreStartMessageDelay);
-                    state.MapId = PossibleMaps[_random.Next(0, PossibleMaps.Length)];
+                    state.MapId = PossibleMaps[Rand.NextInt(0, PossibleMaps.Length)];
                     state.State = InvasionEventState.Prepared;
 
                     logger.LogInformation($"{state.MapName}: initialized");

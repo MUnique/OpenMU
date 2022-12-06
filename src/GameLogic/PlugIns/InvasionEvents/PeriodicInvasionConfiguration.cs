@@ -7,17 +7,23 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 /// <summary>
 /// Abstract configuration for periodic invasions.
 /// </summary>
-public abstract class PeriodicInvasionConfiguration
+public class PeriodicInvasionConfiguration
 {
     /// <summary>
-    /// Gets or sets a value indicating whether event is enabled/disabled.
+    /// Gets the default configuration
     /// </summary>
-    public bool IsActive { get; set; } = true;
+    public static PeriodicInvasionConfiguration DefaultGoldenInvasion => new()
+    {
+        EventDuration = TimeSpan.FromMinutes(5),
+        PreStartMessageDelay = TimeSpan.FromSeconds(3),
+        Message = "[{mapName}] Golden Invasion!",
+        Timetable = GenerateTimeSequence(TimeSpan.FromHours(4)).ToList(), // Every 4 hours
+    };
 
     /// <summary>
     /// Gets or sets a timetable for the event.
     /// </summary>
-    public List<TimeOnly> Timetable { get; set; } = new(GenerateTimeSequence(TimeSpan.FromHours(4)));
+    public IList<TimeOnly> Timetable { get; set; } = new List<TimeOnly>();
 
     /// <summary>
     /// Gets or sets an event's duration.
@@ -62,9 +68,9 @@ public abstract class PeriodicInvasionConfiguration
         }
 
         var nowTime = TimeOnly.FromDateTime(DateTime.UtcNow);
-        var erlier = nowTime.Add(TimeSpan.FromSeconds(-5));
+        var earlier = nowTime.Add(TimeSpan.FromSeconds(-5));
 
         // For example, p = 00:00. Check that time between 00:00:00 and 00:00:05
-        return this.Timetable.Any(p => p.IsBetween(erlier, nowTime));
+        return this.Timetable.Any(p => p.IsBetween(earlier, nowTime));
     }
 }
