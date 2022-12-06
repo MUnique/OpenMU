@@ -39,27 +39,27 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         public string MapName => this.Map.Name;
     }
 
-    private static readonly ushort LorenciaId = 0;
-    private static readonly ushort DeviasId = 2;
-    private static readonly ushort NoriaId = 3;
-    private static readonly ushort AtlansId = 7;
-    private static readonly ushort TarkanId = 8;
+    private const ushort LorenciaId = 0;
+    private const ushort DeviasId = 2;
+    private const ushort NoriaId = 3;
+    private const ushort AtlansId = 7;
+    private const ushort TarkanId = 8;
 
-    private static readonly ushort GoldenBudgeDragonId = 43;
-    private static readonly ushort GoldenGoblinId = 78;
-    private static readonly ushort GoldenSoldierId = 54;
-    private static readonly ushort GoldenTitanId = 53;
-    private static readonly ushort GoldenDragonId = 79;
-    private static readonly ushort GoldenVeparId = 81;
-    private static readonly ushort GoldenLizardKingId = 80;
-    private static readonly ushort GoldenWheelId = 83;
-    private static readonly ushort GoldenTantallosId = 82;
+    private const ushort GoldenBudgeDragonId = 43;
+    private const ushort GoldenGoblinId = 78;
+    private const ushort GoldenSoldierId = 54;
+    private const ushort GoldenTitanId = 53;
+    private const ushort GoldenDragonId = 79;
+    private const ushort GoldenVeparId = 81;
+    private const ushort GoldenLizardKingId = 80;
+    private const ushort GoldenWheelId = 83;
+    private const ushort GoldenTantallosId = 82;
 
-    private static readonly ushort[] PossibleMaps = new[] { LorenciaId, NoriaId, DeviasId };
+    private static readonly ushort[] PossibleMaps = { LorenciaId, NoriaId, DeviasId };
 
     private static readonly List<(ushort MonsterId, ushort Count)> GeneralMobsCountOnSelectedMap = new()
     {
-         ( GoldenDragonId, 10 ),
+         (GoldenDragonId, 10),
     };
 
     private static readonly (ushort MapId, ushort MonsterId, ushort Count)[] UniqueMobsCountByMapId =
