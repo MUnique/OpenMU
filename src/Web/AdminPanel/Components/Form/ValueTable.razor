@@ -1,0 +1,55 @@
+﻿@typeparam TValue
+
+@inherits InputBase<IList<TValue>>
+
+<div class="card">
+    <h5 class="card-header">
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        @if (this._isStartingCollapsed)
+    {
+        @if (this._isCollapsed)
+        {
+        <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
+        }
+        else
+        {
+        <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+        }
+    }
+    </h5>
+    @if (!this._isCollapsed)
+    {
+        <div class="card-body card-text">
+            <table>
+                <tbody>
+                @if (this.WrappedList is not null)
+                {
+                    for (int i = 0; i < this.WrappedList.Count; i++)
+                    {
+                        var index = i;
+                        <tr>
+                            <td>
+                                <EditForm Model="@this.WrappedList[index]">
+                                    <DataAnnotationsValidator/>
+                                    <AutoFields/>
+                                    <ValidationSummary/>
+                                </EditForm>
+                            </td>
+                            <td>
+                                <button type="button" class="btn-danger" @onclick="@(() => OnRemoveClickAsync(index))">Remove</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+                <tfooter>
+                    <tr>
+                        <td colspan="2">
+                            <button type="button" class="btn-primary" @onclick="@OnAddClickAsync">Add Value</button>
+                        </td>
+                    </tr>
+                </tfooter>
+            </table>
+        </div>
+    }
+    </div>

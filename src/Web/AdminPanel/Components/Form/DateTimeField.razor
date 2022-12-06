@@ -1,10 +1,10 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using System.Diagnostics.CodeAnalysis
-@inherits NotifyableInputBase<DateOnly>
+@inherits NotifyableInputBase<DateTime>
 
     <div>
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-        <input type="date" @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
+        <input type="datetime" @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
         <ValidationMessage For=@this.ValueExpression />
     </div>
 
@@ -18,9 +18,9 @@
     public string? Label { get; set; }
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out DateOnly result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out DateTime result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        if (DateOnly.TryParse(value, out result))
+        if (DateTime.TryParse(value, out result))
         {
             validationErrorMessage = null;
             return true;
