@@ -217,7 +217,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         }
     }
 
-    private static async Task CreateMonstersAsync(IGameContext gameContext, GameMap gameMap, MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2, ushort quantity)
+    private static async ValueTask CreateMonstersAsync(IGameContext gameContext, GameMap gameMap, MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2, ushort quantity)
     {
         var area = new MonsterSpawnArea
         {
@@ -248,7 +248,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         return _states.GetOrAdd(gameContext, gameCtx => new GameServerState(gameContext));
     }
 
-    private async Task SpawnUniqueMobsAsync(GameServerState state)
+    private async ValueTask SpawnUniqueMobsAsync(GameServerState state)
     {
         var gameContext = state.Context;
 
@@ -269,7 +269,7 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         }
     }
 
-    private async Task SpawnGeneralMobsAsync(GameServerState state)
+    private async ValueTask SpawnGeneralMobsAsync(GameServerState state)
     {
         var gameContext = state.Context;
 
