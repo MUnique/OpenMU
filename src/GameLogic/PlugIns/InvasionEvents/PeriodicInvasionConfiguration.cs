@@ -64,7 +64,7 @@ public class PeriodicInvasionConfiguration
     {
         if (this.Timetable.Count == 0)
         {
-            return true;
+            return false;
         }
 
         var nowTime = TimeOnly.FromDateTime(DateTime.UtcNow);
