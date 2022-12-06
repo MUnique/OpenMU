@@ -57,51 +57,21 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
 
     private static readonly ushort[] PossibleMaps = new[] { LorenciaId, NoriaId, DeviasId };
 
-    private static readonly Dictionary<ushort, ushort> GeneralMobsCountOnSelectedMap = new()
+    private static readonly List<(ushort MonsterId, ushort Count)> GeneralMobsCountOnSelectedMap = new()
     {
-         { GoldenDragonId, 10 },
+         ( GoldenDragonId, 10 ),
     };
 
-    private static readonly Dictionary<ushort, Dictionary<ushort, ushort>> UniqueMobsCountByMapId = new()
+    private static readonly (ushort MapId, ushort MonsterId, ushort Count)[] UniqueMobsCountByMapId =
     {
-        {
-            LorenciaId,
-            new()
-            {
-                { GoldenBudgeDragonId, 20 },
-            }
-        },
-        {
-            NoriaId,
-            new()
-            {
-                { GoldenGoblinId, 20 },
-            }
-        },
-        {
-            DeviasId,
-            new()
-            {
-                { GoldenSoldierId, 20 },
-                { GoldenTitanId, 10 },
-            }
-        },
-        {
-            AtlansId,
-            new()
-            {
-                { GoldenVeparId, 20 },
-                { GoldenLizardKingId, 10 },
-            }
-        },
-        {
-            TarkanId,
-            new()
-            {
-                { GoldenWheelId, 20 },
-                { GoldenTantallosId, 10 },
-            }
-        },
+        (LorenciaId, GoldenBudgeDragonId, 20),
+        (NoriaId, GoldenGoblinId, 20),
+        (DeviasId, GoldenSoldierId, 20),
+        (DeviasId, GoldenTitanId, 10),
+        (AtlansId, GoldenVeparId, 20),
+        (AtlansId, GoldenLizardKingId, 10),
+        (TarkanId, GoldenWheelId, 20),
+        (TarkanId, GoldenTantallosId, 10),
     };
 
     private static readonly ConcurrentDictionary<IGameContext, GameServerState> _states = new();
@@ -252,19 +222,19 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     {
         var gameContext = state.Context;
 
-        foreach (var (mapId, mobs) in UniqueMobsCountByMapId)
+        foreach (var group in UniqueMobsCountByMapId.GroupBy(tuple => tuple.MapId))
         {
-            var gameMap = await gameContext.GetMapAsync(mapId).ConfigureAwait(false);
+            var gameMap = await gameContext.GetMapAsync(group.Key).ConfigureAwait(false);
 
             if (gameMap is null)
             {
                 continue;
             }
 
-            foreach (var (mobId, mobsCount) in mobs)
+            foreach (var (_, monsterId, count) in group)
             {
-                var monsterDefinition = gameContext.Configuration.Monsters.First(m => m.Number == mobId);
-                await CreateMonstersAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240, mobsCount).ConfigureAwait(false);
+                var monsterDefinition = gameContext.Configuration.Monsters.First(m => m.Number == monsterId);
+                await CreateMonstersAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240, count).ConfigureAwait(false);
             }
         }
     }
