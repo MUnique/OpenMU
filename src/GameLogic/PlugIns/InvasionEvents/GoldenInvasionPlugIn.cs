@@ -190,6 +190,9 @@ public class GoldenInvasionPlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
 
                     break;
                 }
+
+            default:
+                throw new NotImplementedException("Unknown state.");
         }
     }
 

@@ -132,7 +132,8 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.IsActive = false;
                 plugInConfiguration.SetConfiguration(new ResetConfiguration());
             }
-            else if (plugInType == typeof(GoldenInvasionPlugIn))
+
+            if (plugInType == typeof(GoldenInvasionPlugIn))
             {
                 plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultGoldenInvasion);
             }
