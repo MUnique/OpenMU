@@ -121,7 +121,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
                     state.NextRunUtc = DateTime.UtcNow.Add(configuration.EventDuration);
                     state.State = InvasionEventState.Started;
 
-                    await this.OnFinishedAsync(state).ConfigureAwait(false);
+                    await this.OnStartedAsync(state).ConfigureAwait(false);
 
                     logger.LogInformation($"{state.MapName}: event started");
 
