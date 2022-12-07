@@ -1,4 +1,4 @@
-﻿// <copyright file="GoldenInvasionMobsInitialization.cs" company="MUnique">
+﻿// <copyright file="InvasionMobsInitialization.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,24 +11,30 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
-/// The initialization of all NPCs, which are no monsters.
+/// The initialization of all monsters.
 /// </summary>
-internal partial class GoldenInvasionMobsInitialization : InitializerBase
+internal partial class InvasionMobsInitialization : InitializerBase
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="GoldenInvasionMobsInitialization" /> class.
+    /// Initializes a new instance of the <see cref="InvasionMobsInitialization" /> class.
     /// </summary>
     /// <param name="context">The persistence context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
-    public GoldenInvasionMobsInitialization(IContext context, GameConfiguration gameConfiguration)
+    public InvasionMobsInitialization(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration)
     {
     }
 
     /// <summary>
-    /// Creates all golden mobs.
+    /// Creates all mobs.
     /// </summary>
     public override void Initialize()
+    {
+        this.InitializeGoldenInvasionMobs();
+        this.InitializeRedDragonInvasionMobs();
+    }
+
+    private void InitializeGoldenInvasionMobs()
     {
         {
             var monster = this.Context.CreateNew<MonsterDefinition>();
@@ -319,6 +325,50 @@ internal partial class GoldenInvasionMobsInitialization : InitializerBase
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
 
             this.AddBoxOfKundunToMonster(5, monster);
+        }
+    }
+
+    private void InitializeRedDragonInvasionMobs()
+    {
+        {
+            var monster = this.Context.CreateNew<MonsterDefinition>();
+            this.GameConfiguration.Monsters.Add(monster);
+            monster.Number = 44;
+            monster.Designation = "Red Dragon";
+            monster.MoveRange = 3;
+            monster.AttackRange = 2;
+            monster.ViewRange = 7;
+            monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1800 * TimeSpan.TicksPerMillisecond);
+            monster.RespawnDelay = new TimeSpan(100 * TimeSpan.TicksPerSecond);
+            monster.Attribute = 2;
+            monster.NumberOfMaximumItemDrops = 1;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.Level, 47 },
+                { Stats.MaximumHealth, 15000 },
+                { Stats.MinimumPhysBaseDmg, 190 },
+                { Stats.MaximumPhysBaseDmg, 210 },
+                { Stats.DefenseBase, 120 },
+                { Stats.AttackRatePvm, 400 },
+                { Stats.DefenseRatePvm, 88 },
+                { Stats.PoisonResistance, 9f / 255 },
+                { Stats.IceResistance, 7f / 255 },
+                { Stats.WaterResistance, 9f / 255 },
+                { Stats.FireResistance, 9f / 255 },
+            };
+            monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+
+            var itemDrop = this.Context.CreateNew<DropItemGroup>();
+
+            itemDrop.Chance = 1;
+            itemDrop.Description = "Items from red dragon";
+            itemDrop.Monster = monster;
+            itemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == 13)); // Jewel of Bless
+            itemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == 14)); // Jewel of Soul
+            itemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 15)); // Jewel of Chaos
+            monster.DropItemGroups.Add(itemDrop);
+            this.GameConfiguration.DropItemGroups.Add(itemDrop);
         }
     }
 

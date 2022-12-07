@@ -97,7 +97,7 @@ public class GameConfigurationInitializer : InitializerBase
         new Version075.Items.Potions(this.Context, this.GameConfiguration).Initialize();
         new Jewelery(this.Context, this.GameConfiguration).Initialize();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
-        new GoldenInvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
+        new InvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
 
         new GameMapsInitializer(this.Context, this.GameConfiguration).Initialize();
         this.AssignCharacterClassHomeMaps();
