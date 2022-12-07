@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 public class PeriodicInvasionConfiguration
 {
     /// <summary>
-    /// Gets the default configuration
+    /// Gets the default configuration.
     /// </summary>
     public static PeriodicInvasionConfiguration DefaultGoldenInvasion => new()
     {
@@ -55,10 +55,12 @@ public class PeriodicInvasionConfiguration
     /// Generate a sequnce of time points like [00:00, 00:01, ...].
     /// </summary>
     /// <param name="duration">The duration.</param>
-    public static IEnumerable<TimeOnly> GenerateTimeSequence(TimeSpan duration)
+    /// <param name="startLimit">The start limit, inclusive.</param>
+    /// <param name="endLimit">The end limit, exclusive.</param>
+    public static IEnumerable<TimeOnly> GenerateTimeSequence(TimeSpan duration, TimeOnly? startLimit = null, TimeOnly? endLimit = null)
     {
-        var limit = TimeSpan.FromDays(1);
-        var current = TimeSpan.FromDays(0);
+        var limit = endLimit?.ToTimeSpan() ?? TimeSpan.FromDays(1);
+        var current = startLimit?.ToTimeSpan() ?? TimeSpan.Zero;
 
         while (current < limit)
         {
