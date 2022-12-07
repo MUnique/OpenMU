@@ -54,7 +54,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
         public string MapName => this.Map.Name;
     }
 
-    private static readonly ConcurrentDictionary<IGameContext, GameServerState> _states = new();
+    private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<IGameContext, GameServerState>> _states = new();
 
     /// <summary>
     /// Gets or sets configuration for periodic invasion.
@@ -81,7 +81,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
     {
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
 
-        var state = GetStateByGameContext(gameContext);
+        var state = this.GetStateByGameContext(gameContext);
 
         if (state.NextRunUtc > DateTime.UtcNow)
         {
@@ -180,30 +180,6 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
     }
 
     /// <summary>
-    /// Get a unique state per GameContext.
-    /// </summary>
-    /// <param name="gameContext">GameContext.</param>
-    protected static GameServerState GetStateByGameContext(IGameContext gameContext)
-    {
-        return _states.GetOrAdd(gameContext, gameCtx => new GameServerState(gameContext));
-    }
-
-    /// <summary>
-    /// Returns true if the player stays on the map.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="checkForCurrentMap">True, if need to check current event map.</param>
-    protected static bool IsPlayerOnMap(Player player, bool checkForCurrentMap = false)
-    {
-        var state = GetStateByGameContext(player.GameContext);
-
-        return player.CurrentMap is { } map
-            && player.PlayerState.CurrentState != PlayerState.Disconnected
-            && player.PlayerState.CurrentState != PlayerState.Finished
-            && (!checkForCurrentMap || map.MapId == state.MapId);
-    }
-
-    /// <summary>
     /// Spawn mobs on the map.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
@@ -226,6 +202,34 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
     }
 
     /// <summary>
+    /// Get a unique state per GameContext.
+    /// </summary>
+    /// <param name="gameContext">GameContext.</param>
+    protected GameServerState GetStateByGameContext(IGameContext gameContext)
+    {
+        var type = this.GetType();
+
+        var statesPerType = _states.GetOrAdd(type, newType => new() { });
+
+        return statesPerType.GetOrAdd(gameContext, gameCtx => new GameServerState(gameContext));
+    }
+
+    /// <summary>
+    /// Returns true if the player stays on the map.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="checkForCurrentMap">True, if need to check current event map.</param>
+    protected bool IsPlayerOnMap(Player player, bool checkForCurrentMap = false)
+    {
+        var state = this.GetStateByGameContext(player.GameContext);
+
+        return player.CurrentMap is { } map
+            && player.PlayerState.CurrentState != PlayerState.Disconnected
+            && player.PlayerState.CurrentState != PlayerState.Finished
+            && (!checkForCurrentMap || map.MapId == state.MapId);
+    }
+
+    /// <summary>
     /// Send a golden message to player's client.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -241,7 +245,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
 
         var message = (configuration.Message ?? "[{mapName}] Invasion!").Replace("{mapName}", mapName, StringComparison.InvariantCulture);
 
-        if (IsPlayerOnMap(player))
+        if (this.IsPlayerOnMap(player))
         {
             try
             {

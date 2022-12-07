@@ -54,11 +54,11 @@ public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfigura
         {
             if (addedObject is Player player)
             {
-                var state = GetStateByGameContext(player.GameContext);
+                var state = this.GetStateByGameContext(player.GameContext);
 
                 var flyingEnabled = state.State != InvasionEventState.NotStarted;
 
-                await TrySendFlyingDragonsAsync(player, flyingEnabled).ConfigureAwait(false);
+                await this.TrySendFlyingDragonsAsync(player, flyingEnabled).ConfigureAwait(false);
             }
         }
         catch
@@ -72,7 +72,7 @@ public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfigura
     {
         await base.OnPreparedAsync(state).ConfigureAwait(false);
 
-        await state.Context.ForEachPlayerAsync(p => TrySendFlyingDragonsAsync(p, true)).ConfigureAwait(false);
+        await state.Context.ForEachPlayerAsync(p => this.TrySendFlyingDragonsAsync(p, true)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -80,14 +80,14 @@ public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfigura
     {
         await base.OnFinishedAsync(state).ConfigureAwait(false);
 
-        await state.Context.ForEachPlayerAsync(p => TrySendFlyingDragonsAsync(p, false)).ConfigureAwait(false);
+        await state.Context.ForEachPlayerAsync(p => this.TrySendFlyingDragonsAsync(p, false)).ConfigureAwait(false);
     }
 
-    private static async Task TrySendFlyingDragonsAsync(Player player, bool enabled)
+    private async Task TrySendFlyingDragonsAsync(Player player, bool enabled)
     {
-        var state = GetStateByGameContext(player.GameContext);
+        var state = this.GetStateByGameContext(player.GameContext);
 
-        if (!IsPlayerOnMap(player, true))
+        if (!this.IsPlayerOnMap(player, true))
         {
             return;
         }
