@@ -2,12 +2,12 @@
   "profiles": {
     "MUnique.OpenMU.Startup": {
       "commandName": "Project",
-      "commandLineArgs": "-autostart -resolveIp:local --demo --reinit",
+      "commandLineArgs": "-autostart -resolveIp:local -demo -reinit",
+      "applicationUrl": "http://localhost",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "http://+:80"
-      },
-      "applicationUrl": "http://localhost"
+      }
     }
   }
 }
