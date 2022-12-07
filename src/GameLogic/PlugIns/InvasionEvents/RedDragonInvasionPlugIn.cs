@@ -16,63 +16,11 @@ public class RedDragonInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfig
 {
     private const ushort RedDragonId = 44;
 
-    /// <inheritdoc />
-    protected override (ushort MonsterId, ushort Count)[] MobsOnSelectedMap { get; } =
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedDragonInvasionPlugIn"/> class.
+    /// </summary>
+    public RedDragonInvasionPlugIn()
+        : base(MapEventType.RedDragonInvasion, null, new[] { (RedDragonId, (ushort)5) })
     {
-         (RedDragonId, 5),
-    };
-
-    /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
-    public override async void ObjectAddedToMap(GameMap map, ILocateable addedObject)
-    {
-        try
-        {
-            if (addedObject is Player player)
-            {
-                var state = this.GetStateByGameContext(player.GameContext);
-
-                var flyingEnabled = state.State != InvasionEventState.NotStarted;
-
-                await this.TrySendFlyingDragonsAsync(player, flyingEnabled).ConfigureAwait(false);
-            }
-        }
-        catch
-        {
-            // must be catched because it's an async void method.
-        }
-    }
-
-    /// <inheritdoc />
-    protected override async ValueTask OnPreparedAsync(GameServerState state)
-    {
-        await base.OnPreparedAsync(state).ConfigureAwait(false);
-
-        await state.Context.ForEachPlayerAsync(p => this.TrySendFlyingDragonsAsync(p, true)).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc />
-    protected override async ValueTask OnFinishedAsync(GameServerState state)
-    {
-        await base.OnFinishedAsync(state).ConfigureAwait(false);
-
-        await state.Context.ForEachPlayerAsync(p => this.TrySendFlyingDragonsAsync(p, false)).ConfigureAwait(false);
-    }
-
-    private async Task TrySendFlyingDragonsAsync(Player player, bool enabled)
-    {
-        if (!this.IsPlayerOnMap(player, true))
-        {
-            return;
-        }
-
-        try
-        {
-            await player.InvokeViewPlugInAsync<IMapEventStateUpdatePlugIn>(p => p.UpdateStateAsync(enabled, MapEventType.RedDragonInvasion)).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            player.Logger.LogDebug(ex, "Unexpected error sending flying dragons update.");
-        }
     }
 }

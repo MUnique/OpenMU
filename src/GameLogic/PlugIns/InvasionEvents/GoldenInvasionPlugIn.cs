@@ -27,78 +27,24 @@ public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfigura
     private const ushort GoldenWheelId = 83;
     private const ushort GoldenTantallosId = 82;
 
-    /// <inheritdoc />
-    protected override (ushort MapId, ushort MonsterId, ushort Count)[] Mobs { get; } =
-    {
-        (LorenciaId, GoldenBudgeDragonId, 20),
-        (NoriaId, GoldenGoblinId, 20),
-        (DeviasId, GoldenSoldierId, 20),
-        (DeviasId, GoldenTitanId, 10),
-        (AtlansId, GoldenVeparId, 20),
-        (AtlansId, GoldenLizardKingId, 10),
-        (TarkanId, GoldenWheelId, 20),
-        (TarkanId, GoldenTantallosId, 10),
-    };
-
-    /// <inheritdoc />
-    protected override (ushort MonsterId, ushort Count)[] MobsOnSelectedMap { get; } =
-    {
-         (GoldenDragonId, 10),
-    };
-
-    /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
-    public override async void ObjectAddedToMap(GameMap map, ILocateable addedObject)
-    {
-        try
-        {
-            if (addedObject is Player player)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GoldenInvasionPlugIn"/> class.
+    /// </summary>
+    public GoldenInvasionPlugIn()
+        : base(
+            MapEventType.GoldenDragonInvasion,
+            new (ushort MapId, ushort MonsterId, ushort Count)[]
             {
-                var state = this.GetStateByGameContext(player.GameContext);
-
-                var flyingEnabled = state.State != InvasionEventState.NotStarted;
-
-                await this.TrySendFlyingDragonsAsync(player, flyingEnabled).ConfigureAwait(false);
-            }
-        }
-        catch
-        {
-            // must be catched because it's an async void method.
-        }
-    }
-
-    /// <inheritdoc />
-    protected override async ValueTask OnPreparedAsync(GameServerState state)
+                (LorenciaId, GoldenBudgeDragonId, 20),
+                (NoriaId, GoldenGoblinId, 20),
+                (DeviasId, GoldenSoldierId, 20),
+                (DeviasId, GoldenTitanId, 10),
+                (AtlansId, GoldenVeparId, 20),
+                (AtlansId, GoldenLizardKingId, 10),
+                (TarkanId, GoldenWheelId, 20),
+                (TarkanId, GoldenTantallosId, 10),
+            },
+            new (ushort MonsterId, ushort Count)[] { (GoldenDragonId, 10) })
     {
-        await base.OnPreparedAsync(state).ConfigureAwait(false);
-
-        await state.Context.ForEachPlayerAsync(p => this.TrySendFlyingDragonsAsync(p, true)).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc />
-    protected override async ValueTask OnFinishedAsync(GameServerState state)
-    {
-        await base.OnFinishedAsync(state).ConfigureAwait(false);
-
-        await state.Context.ForEachPlayerAsync(p => this.TrySendFlyingDragonsAsync(p, false)).ConfigureAwait(false);
-    }
-
-    private async Task TrySendFlyingDragonsAsync(Player player, bool enabled)
-    {
-        var state = this.GetStateByGameContext(player.GameContext);
-
-        if (!this.IsPlayerOnMap(player, true))
-        {
-            return;
-        }
-
-        try
-        {
-            await player.InvokeViewPlugInAsync<IMapEventStateUpdatePlugIn>(p => p.UpdateStateAsync(enabled, MapEventType.GoldenDragonInvasion)).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            player.Logger.LogDebug(ex, "Unexpected error sending flying dragons update.");
-        }
     }
 }
