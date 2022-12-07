@@ -138,6 +138,11 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultGoldenInvasion);
             }
 
+            if (plugInType == typeof(RedDragonInvasionPlugIn))
+            {
+                plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultRedDragonInvasion);
+            }
+
             // We don't move the player anymore by his request. This was usually requested after a player performed a skill.
             // However, it adds way for cheaters to move through the map.
             // The plugin is therefore deactivated by default.

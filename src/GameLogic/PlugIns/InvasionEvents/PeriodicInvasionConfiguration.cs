@@ -21,6 +21,17 @@ public class PeriodicInvasionConfiguration
     };
 
     /// <summary>
+    /// Gets the default configuration for the red dragon invasion.
+    /// </summary>
+    public static PeriodicInvasionConfiguration DefaultRedDragonInvasion => new()
+    {
+        EventDuration = TimeSpan.FromMinutes(10),
+        PreStartMessageDelay = TimeSpan.FromSeconds(3),
+        Message = "[{mapName}] Red Dragon Invasion!",
+        Timetable = GenerateTimeSequence(TimeSpan.FromHours(6)).ToList(), // Every 6 hours
+    };
+
+    /// <summary>
     /// Gets or sets a timetable for the event.
     /// </summary>
     public IList<TimeOnly> Timetable { get; set; } = new List<TimeOnly>();
