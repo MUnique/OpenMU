@@ -28,7 +28,7 @@ public class PeriodicInvasionConfiguration
         EventDuration = TimeSpan.FromMinutes(10),
         PreStartMessageDelay = TimeSpan.FromSeconds(3),
         Message = "[{mapName}] Red Dragon Invasion!",
-        Timetable = GenerateTimeSequence(TimeSpan.FromHours(6)).ToList(), // Every 6 hours
+        Timetable = GenerateTimeSequence(TimeSpan.FromHours(6), new TimeOnly(2, 0)).ToList(), // Every 6 hours, starting from 02:00
     };
 
     /// <summary>
