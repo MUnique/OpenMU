@@ -270,18 +270,19 @@ public class Gates : InitializerBase
         targetGates.Add(134, this.CreateExitGate(maps[39], 78, 93, 82, 95, 0));
         targetGates.Add(135, this.CreateExitGate(maps[39], 78, 93, 82, 95, 0));
 
-        // Kanturu III
+        // Kanturu
         targetGates.Add(138, this.CreateExitGate(maps[37], 19, 217, 21, 219, 0, true));
         targetGates.Add(141, this.CreateExitGate(maps[37], 205, 36, 208, 41, 0));
         targetGates.Add(334, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0));
         targetGates.Add(126, this.CreateExitGate(maps[37], 17, 219, 21, 220, 0));
         targetGates.Add(132, this.CreateExitGate(maps[37], 85, 89, 86, 92, 0));
 
-        // Kanturu I
-        targetGates.Add(136, this.CreateExitGate(maps[38], 137, 162, 143, 163, 0, true));
-        targetGates.Add(137, this.CreateExitGate(maps[38], 71, 104, 72, 107, 0));
+        // Kanturu Relics
+        targetGates.Add(137, this.CreateExitGate(maps[38], 71, 102, 82, 109, 0, true));
         targetGates.Add(139, this.CreateExitGate(maps[38], 71, 104, 72, 107, 0));
         targetGates.Add(130, this.CreateExitGate(maps[38], 70, 104, 70, 107, 0));
+        targetGates.Add(136, this.CreateExitGate(maps[38], 137, 162, 143, 163, 0));
+
 
         // Illusion Temple 1
         targetGates.Add(142, this.CreateExitGate(maps[45], 98, 128, 108, 137, 0, true));
