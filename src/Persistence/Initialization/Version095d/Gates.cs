@@ -132,6 +132,7 @@ public class Gates : InitializerBase
         targetGates.Add(19, this.CreateExitGate(maps[2], 242, 34, 243, 37, 7));
         targetGates.Add(44, this.CreateExitGate(maps[2], 2, 246, 3, 247, 2));
 
+        // Arena
         targetGates.Add(50, this.CreateExitGate(maps[6], 101, 115, 103, 117, 0, true));
         targetGates.Add(51, this.CreateExitGate(maps[6], 107, 115, 107, 115, 0, true));
         targetGates.Add(52, this.CreateExitGate(maps[6], 107, 114, 107, 114, 0, true));
