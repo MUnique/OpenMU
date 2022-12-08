@@ -160,7 +160,7 @@ public class Gates : InitializerBase
 
         // Atlans
         targetGates.Add(49, this.CreateExitGate(maps[7], 15, 11, 27, 23, 0, true));
-        targetGates.Add(46, this.CreateExitGate(maps[7], 14, 12, 15, 13, 3, true));
+        targetGates.Add(46, this.CreateExitGate(maps[7], 14, 12, 15, 13, 3));
 
         return targetGates;
     }
