@@ -135,101 +135,263 @@ public class Gates : InitializerBase
     {
         var targetGates = new Dictionary<short, ExitGate>();
 
+        // Lorencia
         targetGates.Add(17, this.CreateExitGate(maps[0], 133, 118, 151, 135, 0, true));
+        targetGates.Add(4, this.CreateExitGate(maps[0], 121, 231, 123, 231, 1));
+        targetGates.Add(21, this.CreateExitGate(maps[0], 7, 38, 8, 41, 3));
+        targetGates.Add(26, this.CreateExitGate(maps[0], 213, 244, 217, 245, 1));
+        targetGates.Add(108, this.CreateExitGate(maps[0], 235, 13, 239, 13, 0));
+
+        // Dungeon
+        targetGates.Add(2, this.CreateExitGate(maps[1], 107, 247, 110, 247, 1));
+        targetGates.Add(6, this.CreateExitGate(maps[1], 231, 126, 234, 127, 1));
+        targetGates.Add(8, this.CreateExitGate(maps[1], 240, 148, 241, 151, 3));
+        targetGates.Add(10, this.CreateExitGate(maps[1], 3, 83, 4, 86, 3));
+        targetGates.Add(12, this.CreateExitGate(maps[1], 3, 16, 6, 17, 3));
+        targetGates.Add(14, this.CreateExitGate(maps[1], 29, 125, 30, 126, 1));
+        targetGates.Add(16, this.CreateExitGate(maps[1], 5, 32, 7, 33, 1));
+
+        // Devias
         targetGates.Add(22, this.CreateExitGate(maps[2], 197, 35, 218, 50, 0, true));
+        targetGates.Add(72, this.CreateExitGate(maps[2], 23, 24, 27, 27, 0));
+        targetGates.Add(73, this.CreateExitGate(maps[2], 224, 227, 227, 231, 0));
+        targetGates.Add(74, this.CreateExitGate(maps[2], 69, 178, 72, 181, 0));
+        targetGates.Add(289, this.CreateExitGate(maps[2], 52, 88, 54, 89, 0));
+        targetGates.Add(19, this.CreateExitGate(maps[2], 242, 34, 243, 37, 7));
+        targetGates.Add(44, this.CreateExitGate(maps[2], 2, 246, 3, 247, 2));
+        targetGates.Add(262, this.CreateExitGate(maps[2], 161, 241, 163, 242, 0));
+
+        // Noria
         targetGates.Add(27, this.CreateExitGate(maps[3], 171, 108, 177, 117, 0, true));
+        targetGates.Add(24, this.CreateExitGate(maps[3], 148, 5, 155, 6, 5));
+        targetGates.Add(48, this.CreateExitGate(maps[3], 240, 240, 241, 243, 7));
+        targetGates.Add(122, this.CreateExitGate(maps[3], 220, 31, 226, 34, 0));
+
+        // Lost Tower
         targetGates.Add(42, this.CreateExitGate(maps[4], 203, 70, 213, 81, 0, true));
-        targetGates.Add(49, this.CreateExitGate(maps[7], 15, 11, 27, 23, 0, true));
+        targetGates.Add(29, this.CreateExitGate(maps[4], 162, 2, 166, 3, 5));
+        targetGates.Add(31, this.CreateExitGate(maps[4], 241, 237, 244, 238, 1));
+        targetGates.Add(33, this.CreateExitGate(maps[4], 86, 166, 87, 168, 3));
+        targetGates.Add(35, this.CreateExitGate(maps[4], 87, 86, 88, 89, 3));
+        targetGates.Add(37, this.CreateExitGate(maps[4], 128, 53, 131, 54, 1));
+        targetGates.Add(39, this.CreateExitGate(maps[4], 52, 53, 55, 54, 1));
+        targetGates.Add(41, this.CreateExitGate(maps[4], 8, 85, 9, 87, 1));
+        targetGates.Add(65, this.CreateExitGate(maps[4], 17, 249, 19, 249, 1));
+
+        // Exile
+        // Arena
         targetGates.Add(50, this.CreateExitGate(maps[6], 101, 115, 103, 117, 0, true));
         targetGates.Add(51, this.CreateExitGate(maps[6], 107, 115, 107, 115, 0, true));
         targetGates.Add(52, this.CreateExitGate(maps[6], 107, 114, 107, 114, 0, true));
+
+        // Atlans
+        targetGates.Add(49, this.CreateExitGate(maps[7], 15, 11, 27, 23, 0, true));
+        targetGates.Add(75, this.CreateExitGate(maps[7], 225, 50, 228, 53, 0));
+        targetGates.Add(76, this.CreateExitGate(maps[7], 62, 157, 68, 163, 0));
+        targetGates.Add(46, this.CreateExitGate(maps[7], 14, 12, 15, 13, 3));
+        targetGates.Add(56, this.CreateExitGate(maps[7], 16, 225, 17, 230, 3));
+        targetGates.Add(266, this.CreateExitGate(maps[7], 16, 19, 17, 20, 0));
+
+        // Tarkan
         targetGates.Add(57, this.CreateExitGate(maps[8], 187, 54, 203, 69, 0, true));
+        targetGates.Add(77, this.CreateExitGate(maps[8], 91, 160, 93, 161, 0));
+        targetGates.Add(54, this.CreateExitGate(maps[8], 248, 40, 251, 44, 7));
+        targetGates.Add(128, this.CreateExitGate(maps[8], 7, 199, 7, 201, 0));
 
-        // devil square:
-        targetGates.Add(58, this.CreateExitGate(maps[new (9, 1)], 133, 91, 141, 99, 0, true));
-        targetGates.Add(59, this.CreateExitGate(maps[new (9, 2)], 135, 162, 142, 170, 0, true));
-        targetGates.Add(60, this.CreateExitGate(maps[new (9, 3)], 62, 150, 70, 158, 0, true));
-        targetGates.Add(61, this.CreateExitGate(maps[new (9, 4)], 66, 84, 74, 92, 0, true));
-        targetGates.Add(111, this.CreateExitGate(maps[new (32, 5)], 133, 91, 141, 99, 0, true));
-        targetGates.Add(112, this.CreateExitGate(maps[new (32, 6)], 135, 162, 142, 170, 0, true));
-        targetGates.Add(270, this.CreateExitGate(maps[new (32, 7)], 62, 150, 70, 158, 0, true));
+        // Devil Square
+        targetGates.Add(58, this.CreateExitGate(maps[new(9, 1)], 133, 91, 141, 99, 0));
+        targetGates.Add(59, this.CreateExitGate(maps[new(9, 2)], 135, 162, 142, 170, 0));
+        targetGates.Add(60, this.CreateExitGate(maps[new(9, 3)], 62, 150, 70, 158, 0));
+        targetGates.Add(61, this.CreateExitGate(maps[new(9, 4)], 66, 84, 74, 92, 0));
+        targetGates.Add(111, this.CreateExitGate(maps[new(32, 5)], 133, 91, 141, 99, 0));
+        targetGates.Add(112, this.CreateExitGate(maps[new(32, 6)], 135, 162, 142, 170, 0));
+        targetGates.Add(270, this.CreateExitGate(maps[new(32, 7)], 62, 150, 70, 158, 0));
 
-        targetGates.Add(66, this.CreateExitGate(maps[11], 12, 5, 14, 10, 0, true));
-        targetGates.Add(67, this.CreateExitGate(maps[12], 12, 5, 14, 10, 0, true));
-        targetGates.Add(68, this.CreateExitGate(maps[13], 12, 5, 14, 10, 0, true));
-        targetGates.Add(69, this.CreateExitGate(maps[14], 12, 5, 14, 10, 0, true));
-        targetGates.Add(70, this.CreateExitGate(maps[15], 12, 5, 14, 10, 0, true));
-        targetGates.Add(71, this.CreateExitGate(maps[16], 12, 5, 14, 10, 0, true));
-        targetGates.Add(72, this.CreateExitGate(maps[2], 23, 24, 27, 27, 0, true));
-        targetGates.Add(73, this.CreateExitGate(maps[2], 224, 227, 227, 231, 0, true));
-        targetGates.Add(74, this.CreateExitGate(maps[2], 69, 178, 72, 181, 0, true));
-        targetGates.Add(75, this.CreateExitGate(maps[7], 225, 50, 228, 53, 0, true));
-        targetGates.Add(76, this.CreateExitGate(maps[7], 62, 157, 68, 163, 0, true));
-        targetGates.Add(77, this.CreateExitGate(maps[8], 91, 160, 93, 161, 0, true));
-        targetGates.Add(80, this.CreateExitGate(maps[17], 12, 5, 14, 10, 0, true));
-        targetGates.Add(82, this.CreateExitGate(maps[18], 31, 88, 36, 95, 0, true));
-        targetGates.Add(83, this.CreateExitGate(maps[19], 31, 88, 36, 95, 0, true));
-        targetGates.Add(84, this.CreateExitGate(maps[20], 31, 88, 36, 95, 0, true));
-        targetGates.Add(85, this.CreateExitGate(maps[21], 31, 88, 36, 95, 0, true));
-        targetGates.Add(86, this.CreateExitGate(maps[22], 31, 88, 36, 95, 0, true));
-        targetGates.Add(87, this.CreateExitGate(maps[23], 31, 88, 36, 95, 0, true));
-        targetGates.Add(88, this.CreateExitGate(maps[24], 10, 16, 17, 22, 0, true));
-        targetGates.Add(89, this.CreateExitGate(maps[25], 10, 16, 17, 22, 0, true));
-        targetGates.Add(90, this.CreateExitGate(maps[26], 10, 16, 17, 22, 0, true));
-        targetGates.Add(91, this.CreateExitGate(maps[27], 10, 16, 17, 22, 0, true));
-        targetGates.Add(92, this.CreateExitGate(maps[28], 10, 16, 17, 22, 0, true));
-        targetGates.Add(93, this.CreateExitGate(maps[29], 10, 16, 17, 22, 0, true));
+        // Icarus
+        targetGates.Add(63, this.CreateExitGate(maps[10], 14, 13, 16, 13, 5));
+
+        // Blood Castle
+        targetGates.Add(66, this.CreateExitGate(maps[11], 12, 5, 14, 10, 0));
+        targetGates.Add(67, this.CreateExitGate(maps[12], 12, 5, 14, 10, 0));
+        targetGates.Add(68, this.CreateExitGate(maps[13], 12, 5, 14, 10, 0));
+        targetGates.Add(69, this.CreateExitGate(maps[14], 12, 5, 14, 10, 0));
+        targetGates.Add(70, this.CreateExitGate(maps[15], 12, 5, 14, 10, 0));
+        targetGates.Add(71, this.CreateExitGate(maps[16], 12, 5, 14, 10, 0));
+        targetGates.Add(80, this.CreateExitGate(maps[17], 12, 5, 14, 10, 0));
+        targetGates.Add(271, this.CreateExitGate(maps[52], 12, 5, 14, 10, 0));
+
+        // Chaos Castle
+        targetGates.Add(82, this.CreateExitGate(maps[18], 31, 88, 36, 95, 0));
+        targetGates.Add(83, this.CreateExitGate(maps[19], 31, 88, 36, 95, 0));
+        targetGates.Add(84, this.CreateExitGate(maps[20], 31, 88, 36, 95, 0));
+        targetGates.Add(85, this.CreateExitGate(maps[21], 31, 88, 36, 95, 0));
+        targetGates.Add(86, this.CreateExitGate(maps[22], 31, 88, 36, 95, 0));
+        targetGates.Add(87, this.CreateExitGate(maps[23], 31, 88, 36, 95, 0));
+        targetGates.Add(272, this.CreateExitGate(maps[53], 31, 88, 36, 95, 0));
+
+        // Kalima
+        targetGates.Add(88, this.CreateExitGate(maps[24], 10, 16, 17, 22, 0));
+        targetGates.Add(89, this.CreateExitGate(maps[25], 10, 16, 17, 22, 0));
+        targetGates.Add(90, this.CreateExitGate(maps[26], 10, 16, 17, 22, 0));
+        targetGates.Add(91, this.CreateExitGate(maps[27], 10, 16, 17, 22, 0));
+        targetGates.Add(92, this.CreateExitGate(maps[28], 10, 16, 17, 22, 0));
+        targetGates.Add(93, this.CreateExitGate(maps[29], 10, 16, 17, 22, 0));
+        targetGates.Add(116, this.CreateExitGate(maps[36], 10, 16, 17, 22, 0));
+
+        // Valley of Loren
         targetGates.Add(94, this.CreateExitGate(maps[30], 88, 31, 102, 46, 0, true));
-        targetGates.Add(95, this.CreateExitGate(maps[31], 60, 10, 69, 19, 0, true));
         targetGates.Add(100, this.CreateExitGate(maps[30], 39, 14, 142, 50, 0, true));
         targetGates.Add(101, this.CreateExitGate(maps[30], 84, 180, 100, 222, 0, true));
         targetGates.Add(104, this.CreateExitGate(maps[30], 87, 209, 100, 232, 0, true));
         targetGates.Add(105, this.CreateExitGate(maps[30], 72, 10, 104, 199, 0, true));
         targetGates.Add(106, this.CreateExitGate(maps[30], 131, 92, 138, 94, 0, true));
-        targetGates.Add(116, this.CreateExitGate(maps[36], 10, 16, 17, 22, 0, true));
+        targetGates.Add(97, this.CreateExitGate(maps[30], 164, 198, 187, 209, 0));
+        targetGates.Add(99, this.CreateExitGate(maps[30], 90, 236, 99, 239, 0));
+        targetGates.Add(103, this.CreateExitGate(maps[30], 29, 37, 30, 42, 0));
+        targetGates.Add(110, this.CreateExitGate(maps[30], 131, 92, 138, 94, 0));
+        targetGates.Add(124, this.CreateExitGate(maps[30], 155, 37, 158, 43, 0));
+
+        // Land of Trials
+        targetGates.Add(95, this.CreateExitGate(maps[31], 60, 10, 69, 19, 0));
+
+        // Crywolf Fortress
         targetGates.Add(118, this.CreateExitGate(maps[34], 229, 37, 239, 46, 0, true));
-        targetGates.Add(119, this.CreateExitGate(maps[33], 82, 8, 87, 14, 0, true));
-        targetGates.Add(133, this.CreateExitGate(maps[39], 196, 56, 201, 57, 0, true));
-        targetGates.Add(134, this.CreateExitGate(maps[39], 78, 93, 82, 95, 0, true));
-        targetGates.Add(135, this.CreateExitGate(maps[39], 78, 93, 82, 95, 0, true));
-        targetGates.Add(136, this.CreateExitGate(maps[38], 137, 162, 143, 163, 0, true));
-        targetGates.Add(137, this.CreateExitGate(maps[38], 71, 104, 72, 107, 0, true));
-        targetGates.Add(138, this.CreateExitGate(maps[37], 19, 217, 21, 219, 0, true));
-        targetGates.Add(139, this.CreateExitGate(maps[38], 71, 104, 72, 107, 0, true));
-        targetGates.Add(140, this.CreateExitGate(maps[33], 186, 173, 190, 177, 0, true));
-        targetGates.Add(141, this.CreateExitGate(maps[37], 205, 36, 208, 41, 0, true));
-        targetGates.Add(142, this.CreateExitGate(maps[45], 98, 128, 108, 137, 0, true));
-        targetGates.Add(143, this.CreateExitGate(maps[46], 98, 128, 108, 137, 0, true));
-        targetGates.Add(144, this.CreateExitGate(maps[47], 98, 128, 108, 137, 0, true));
-        targetGates.Add(145, this.CreateExitGate(maps[48], 98, 128, 108, 137, 0, true));
-        targetGates.Add(146, this.CreateExitGate(maps[49], 98, 128, 108, 137, 0, true));
-        targetGates.Add(147, this.CreateExitGate(maps[50], 98, 128, 108, 137, 0, true));
-        targetGates.Add(148, this.CreateExitGate(maps[45], 141, 41, 146, 45, 0, true));
-        targetGates.Add(149, this.CreateExitGate(maps[46], 141, 41, 146, 45, 0, true));
-        targetGates.Add(150, this.CreateExitGate(maps[47], 141, 41, 146, 45, 0, true));
-        targetGates.Add(151, this.CreateExitGate(maps[48], 141, 41, 146, 45, 0, true));
-        targetGates.Add(152, this.CreateExitGate(maps[49], 141, 41, 146, 45, 0, true));
-        targetGates.Add(153, this.CreateExitGate(maps[50], 141, 41, 146, 45, 0, true));
-        targetGates.Add(154, this.CreateExitGate(maps[45], 194, 124, 198, 127, 0, true));
-        targetGates.Add(155, this.CreateExitGate(maps[46], 194, 124, 198, 127, 0, true));
-        targetGates.Add(156, this.CreateExitGate(maps[47], 194, 124, 198, 127, 0, true));
-        targetGates.Add(157, this.CreateExitGate(maps[48], 194, 124, 198, 127, 0, true));
-        targetGates.Add(158, this.CreateExitGate(maps[49], 194, 124, 198, 127, 0, true));
-        targetGates.Add(159, this.CreateExitGate(maps[50], 194, 124, 198, 127, 0, true));
-        targetGates.Add(256, this.CreateExitGate(maps[41], 29, 79, 31, 82, 0, true));
-        targetGates.Add(257, this.CreateExitGate(maps[42], 104, 178, 107, 181, 0, true));
         targetGates.Add(258, this.CreateExitGate(maps[34], 227, 41, 229, 43, 0, true));
+        targetGates.Add(114, this.CreateExitGate(maps[34], 231, 37, 234, 45, 0));
+
+        // Aida
+        targetGates.Add(119, this.CreateExitGate(maps[33], 82, 8, 87, 14, 0, true));
+        targetGates.Add(140, this.CreateExitGate(maps[33], 186, 173, 190, 177, 0));
+        targetGates.Add(113, this.CreateExitGate(maps[33], 76, 9, 78, 16, 0));
+        targetGates.Add(339, this.CreateExitGate(maps[33], 237, 166, 240, 166, 1));
+
+        // Kanturu Event
+        targetGates.Add(133, this.CreateExitGate(maps[39], 196, 56, 201, 57, 0, true));
+        targetGates.Add(134, this.CreateExitGate(maps[39], 78, 93, 82, 95, 0));
+        targetGates.Add(135, this.CreateExitGate(maps[39], 78, 93, 82, 95, 0));
+
+        // Kanturu III
+        targetGates.Add(138, this.CreateExitGate(maps[37], 19, 217, 21, 219, 0, true));
+        targetGates.Add(141, this.CreateExitGate(maps[37], 205, 36, 208, 41, 0));
+        targetGates.Add(334, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0));
+        targetGates.Add(126, this.CreateExitGate(maps[37], 17, 219, 21, 220, 0));
+        targetGates.Add(132, this.CreateExitGate(maps[37], 85, 89, 86, 92, 0));
+
+        // Kanturu I
+        targetGates.Add(136, this.CreateExitGate(maps[38], 137, 162, 143, 163, 0, true));
+        targetGates.Add(137, this.CreateExitGate(maps[38], 71, 104, 72, 107, 0));
+        targetGates.Add(139, this.CreateExitGate(maps[38], 71, 104, 72, 107, 0));
+        targetGates.Add(130, this.CreateExitGate(maps[38], 70, 104, 70, 107, 0));
+
+        // Illusion Temple 1
+        targetGates.Add(142, this.CreateExitGate(maps[45], 98, 128, 108, 137, 0, true));
+        targetGates.Add(148, this.CreateExitGate(maps[45], 141, 41, 146, 45, 0, true));
+        targetGates.Add(154, this.CreateExitGate(maps[45], 194, 124, 198, 127, 0, true));
+        targetGates.Add(161, this.CreateExitGate(maps[45], 170, 101, 170, 103, 0));
+        targetGates.Add(163, this.CreateExitGate(maps[45], 149, 84, 152, 84, 0));
+        targetGates.Add(165, this.CreateExitGate(maps[45], 149, 122, 151, 122, 0));
+        targetGates.Add(167, this.CreateExitGate(maps[45], 132, 99, 132, 103, 0));
+        targetGates.Add(169, this.CreateExitGate(maps[45], 207, 65, 207, 68, 0));
+        targetGates.Add(171, this.CreateExitGate(maps[45], 186, 47, 189, 47, 0));
+        targetGates.Add(173, this.CreateExitGate(maps[45], 186, 84, 189, 84, 0));
+        targetGates.Add(175, this.CreateExitGate(maps[45], 169, 65, 169, 68, 0));
+
+        // Illusion Temple 2
+        targetGates.Add(143, this.CreateExitGate(maps[46], 98, 128, 108, 137, 0, true));
+        targetGates.Add(149, this.CreateExitGate(maps[46], 141, 41, 146, 45, 0, true));
+        targetGates.Add(155, this.CreateExitGate(maps[46], 194, 124, 198, 127, 0, true));
+        targetGates.Add(177, this.CreateExitGate(maps[46], 170, 101, 170, 103, 0));
+        targetGates.Add(179, this.CreateExitGate(maps[46], 149, 84, 152, 84, 0));
+        targetGates.Add(181, this.CreateExitGate(maps[46], 149, 122, 151, 122, 0));
+        targetGates.Add(183, this.CreateExitGate(maps[46], 132, 99, 132, 103, 0));
+        targetGates.Add(185, this.CreateExitGate(maps[46], 207, 65, 207, 68, 0));
+        targetGates.Add(187, this.CreateExitGate(maps[46], 186, 47, 189, 47, 0));
+        targetGates.Add(189, this.CreateExitGate(maps[46], 186, 84, 189, 84, 0));
+        targetGates.Add(191, this.CreateExitGate(maps[46], 169, 65, 169, 68, 0));
+
+        // Illusion Temple 3
+        targetGates.Add(144, this.CreateExitGate(maps[47], 98, 128, 108, 137, 0, true));
+        targetGates.Add(150, this.CreateExitGate(maps[47], 141, 41, 146, 45, 0, true));
+        targetGates.Add(156, this.CreateExitGate(maps[47], 194, 124, 198, 127, 0, true));
+        targetGates.Add(193, this.CreateExitGate(maps[47], 170, 101, 170, 103, 0));
+        targetGates.Add(195, this.CreateExitGate(maps[47], 149, 84, 152, 84, 0));
+        targetGates.Add(197, this.CreateExitGate(maps[47], 149, 122, 151, 122, 0));
+        targetGates.Add(199, this.CreateExitGate(maps[47], 132, 99, 132, 103, 0));
+        targetGates.Add(201, this.CreateExitGate(maps[47], 207, 65, 207, 68, 0));
+        targetGates.Add(203, this.CreateExitGate(maps[47], 186, 47, 189, 47, 0));
+        targetGates.Add(205, this.CreateExitGate(maps[47], 186, 84, 189, 84, 0));
+        targetGates.Add(207, this.CreateExitGate(maps[47], 169, 65, 169, 68, 0));
+
+        // Illusion Temple 4
+        targetGates.Add(145, this.CreateExitGate(maps[48], 98, 128, 108, 137, 0, true));
+        targetGates.Add(151, this.CreateExitGate(maps[48], 141, 41, 146, 45, 0, true));
+        targetGates.Add(157, this.CreateExitGate(maps[48], 194, 124, 198, 127, 0, true));
+        targetGates.Add(209, this.CreateExitGate(maps[48], 170, 101, 170, 103, 0));
+        targetGates.Add(211, this.CreateExitGate(maps[48], 149, 84, 152, 84, 0));
+        targetGates.Add(213, this.CreateExitGate(maps[48], 149, 122, 151, 122, 0));
+        targetGates.Add(215, this.CreateExitGate(maps[48], 132, 99, 132, 103, 0));
+        targetGates.Add(217, this.CreateExitGate(maps[48], 207, 65, 207, 68, 0));
+        targetGates.Add(219, this.CreateExitGate(maps[48], 186, 47, 189, 47, 0));
+        targetGates.Add(221, this.CreateExitGate(maps[48], 186, 84, 189, 84, 0));
+        targetGates.Add(223, this.CreateExitGate(maps[48], 169, 65, 169, 68, 0));
+
+        // Illusion Temple 5
+        targetGates.Add(146, this.CreateExitGate(maps[49], 98, 128, 108, 137, 0, true));
+        targetGates.Add(152, this.CreateExitGate(maps[49], 141, 41, 146, 45, 0, true));
+        targetGates.Add(158, this.CreateExitGate(maps[49], 194, 124, 198, 127, 0, true));
+        targetGates.Add(225, this.CreateExitGate(maps[49], 170, 101, 170, 103, 0));
+        targetGates.Add(227, this.CreateExitGate(maps[49], 149, 84, 152, 84, 0));
+        targetGates.Add(229, this.CreateExitGate(maps[49], 149, 122, 151, 122, 0));
+        targetGates.Add(231, this.CreateExitGate(maps[49], 132, 99, 132, 103, 0));
+        targetGates.Add(233, this.CreateExitGate(maps[49], 207, 65, 207, 68, 0));
+        targetGates.Add(235, this.CreateExitGate(maps[49], 186, 47, 189, 47, 0));
+        targetGates.Add(237, this.CreateExitGate(maps[49], 186, 84, 189, 84, 0));
+        targetGates.Add(239, this.CreateExitGate(maps[49], 169, 65, 169, 68, 0));
+
+        // Illusion Temple 6
+        targetGates.Add(147, this.CreateExitGate(maps[50], 98, 128, 108, 137, 0, true));
+        targetGates.Add(153, this.CreateExitGate(maps[50], 141, 41, 146, 45, 0, true));
+        targetGates.Add(159, this.CreateExitGate(maps[50], 194, 124, 198, 127, 0, true));
+        targetGates.Add(241, this.CreateExitGate(maps[50], 170, 101, 170, 103, 0));
+        targetGates.Add(243, this.CreateExitGate(maps[50], 149, 84, 152, 84, 0));
+        targetGates.Add(245, this.CreateExitGate(maps[50], 149, 122, 151, 122, 0));
+        targetGates.Add(247, this.CreateExitGate(maps[50], 132, 99, 132, 103, 0));
+        targetGates.Add(249, this.CreateExitGate(maps[50], 207, 65, 207, 68, 0));
+        targetGates.Add(251, this.CreateExitGate(maps[50], 186, 47, 189, 47, 0));
+        targetGates.Add(253, this.CreateExitGate(maps[50], 186, 84, 189, 84, 0));
+        targetGates.Add(255, this.CreateExitGate(maps[50], 169, 65, 169, 68, 0));
+
+        // Barracks of Balgass
+        targetGates.Add(256, this.CreateExitGate(maps[41], 29, 79, 31, 82, 0, true));
+
+        // Balgass Refuge
+        targetGates.Add(257, this.CreateExitGate(maps[42], 104, 178, 107, 181, 0));
+
+        // Elveland
         targetGates.Add(267, this.CreateExitGate(maps[51], 51, 224, 54, 227, 0, true));
-        targetGates.Add(268, this.CreateExitGate(maps[51], 99, 55, 100, 57, 0, true));
-        targetGates.Add(269, this.CreateExitGate(maps[51], 191, 148, 193, 150, 0, true));
-        targetGates.Add(271, this.CreateExitGate(maps[52], 12, 5, 14, 10, 0, true));
-        targetGates.Add(272, this.CreateExitGate(maps[53], 31, 88, 36, 95, 0, true));
+        targetGates.Add(268, this.CreateExitGate(maps[51], 99, 55, 100, 57, 0));
+        targetGates.Add(269, this.CreateExitGate(maps[51], 191, 148, 193, 150, 0));
+        targetGates.Add(260, this.CreateExitGate(maps[51], 26, 29, 27, 30, 0));
+        targetGates.Add(264, this.CreateExitGate(maps[51], 243, 149, 244, 150, 0));
+
+        // Swamp Of Calmness
         targetGates.Add(273, this.CreateExitGate(maps[56], 135, 105, 142, 111, 0, true));
+        targetGates.Add(275, this.CreateExitGate(maps[56], 189, 190, 191, 193, 0));
+        targetGates.Add(278, this.CreateExitGate(maps[56], 204, 10, 206, 14, 0));
+        targetGates.Add(281, this.CreateExitGate(maps[56], 65, 47, 67, 48, 0));
+        targetGates.Add(284, this.CreateExitGate(maps[56], 62, 174, 63, 179, 0));
+
+        // LaCleon
         targetGates.Add(287, this.CreateExitGate(maps[57], 222, 211, 225, 212, 0, true));
-        targetGates.Add(289, this.CreateExitGate(maps[2], 52, 88, 54, 89, 0, true));
-        targetGates.Add(291, this.CreateExitGate(maps[58], 160, 24, 161, 27, 0, true));
-        targetGates.Add(293, this.CreateExitGate(maps[57], 174, 23, 175, 25, 0, true));
+        targetGates.Add(293, this.CreateExitGate(maps[57], 174, 23, 175, 25, 0));
+
+        // LaCleon Boss
+        targetGates.Add(291, this.CreateExitGate(maps[58], 160, 24, 161, 27, 0));
+
+        // Vulcanus
         targetGates.Add(294, this.CreateExitGate(maps[63], 120, 129, 126, 134, 0, true));
+
+        // Duel Arena
         targetGates.Add(295, this.CreateExitGate(maps[64], 101, 64, 101, 64, 0, true));
         targetGates.Add(296, this.CreateExitGate(maps[64], 101, 75, 101, 75, 0, true));
         targetGates.Add(297, this.CreateExitGate(maps[64], 101, 113, 101, 113, 0, true));
@@ -242,6 +404,8 @@ public class Gates : InitializerBase
         targetGates.Add(304, this.CreateExitGate(maps[64], 100, 120, 100, 120, 0, true));
         targetGates.Add(305, this.CreateExitGate(maps[64], 150, 70, 150, 70, 0, true));
         targetGates.Add(306, this.CreateExitGate(maps[64], 150, 120, 150, 120, 0, true));
+
+        // Fortress of Imperial Guardian
         targetGates.Add(307, this.CreateExitGate(maps[69], 231, 15, 233, 17, 0, true));
         targetGates.Add(309, this.CreateExitGate(maps[69], 202, 24, 203, 27, 0, true));
         targetGates.Add(311, this.CreateExitGate(maps[69], 179, 65, 181, 67, 0, true));
@@ -255,114 +419,25 @@ public class Gates : InitializerBase
         targetGates.Add(324, this.CreateExitGate(maps[72], 32, 162, 34, 164, 0, true));
         targetGates.Add(326, this.CreateExitGate(maps[72], 145, 155, 147, 157, 0, true));
         targetGates.Add(328, this.CreateExitGate(maps[72], 241, 23, 243, 25, 0, true));
+
+        // Doppelgaenger
         targetGates.Add(329, this.CreateExitGate(maps[65], 193, 26, 200, 32, 0, true));
         targetGates.Add(330, this.CreateExitGate(maps[66], 133, 68, 139, 74, 0, true));
         targetGates.Add(331, this.CreateExitGate(maps[67], 106, 58, 111, 62, 0, true));
         targetGates.Add(332, this.CreateExitGate(maps[68], 90, 10, 97, 17, 0, true));
-        targetGates.Add(333, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));
-        targetGates.Add(334, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0, true));
-        targetGates.Add(335, this.CreateExitGate(maps[80], 124, 123, 127, 125, 0, true));
-        targetGates.Add(344, this.CreateExitGate(maps[81], 162, 16, 163, 17, 5, true));
 
-        targetGates.Add(2, this.CreateExitGate(maps[1], 107, 247, 110, 247, 1));
-        targetGates.Add(4, this.CreateExitGate(maps[0], 121, 231, 123, 231, 1));
-        targetGates.Add(6, this.CreateExitGate(maps[1], 231, 126, 234, 127, 1));
-        targetGates.Add(8, this.CreateExitGate(maps[1], 240, 148, 241, 151, 3));
-        targetGates.Add(10, this.CreateExitGate(maps[1], 3, 83, 4, 86, 3));
-        targetGates.Add(12, this.CreateExitGate(maps[1], 3, 16, 6, 17, 3));
-        targetGates.Add(14, this.CreateExitGate(maps[1], 29, 125, 30, 126, 1));
-        targetGates.Add(16, this.CreateExitGate(maps[1], 5, 32, 7, 33, 1));
-        targetGates.Add(19, this.CreateExitGate(maps[2], 242, 34, 243, 37, 7));
-        targetGates.Add(21, this.CreateExitGate(maps[0], 7, 38, 8, 41, 3));
-        targetGates.Add(24, this.CreateExitGate(maps[3], 148, 5, 155, 6, 5));
-        targetGates.Add(26, this.CreateExitGate(maps[0], 213, 244, 217, 245, 1));
-        targetGates.Add(29, this.CreateExitGate(maps[4], 162, 2, 166, 3, 5));
-        targetGates.Add(31, this.CreateExitGate(maps[4], 241, 237, 244, 238, 1));
-        targetGates.Add(33, this.CreateExitGate(maps[4], 86, 166, 87, 168, 3));
-        targetGates.Add(35, this.CreateExitGate(maps[4], 87, 86, 88, 89, 3));
-        targetGates.Add(37, this.CreateExitGate(maps[4], 128, 53, 131, 54, 1));
-        targetGates.Add(39, this.CreateExitGate(maps[4], 52, 53, 55, 54, 1));
-        targetGates.Add(41, this.CreateExitGate(maps[4], 8, 85, 9, 87, 1));
-        targetGates.Add(44, this.CreateExitGate(maps[2], 2, 246, 3, 247, 2));
-        targetGates.Add(46, this.CreateExitGate(maps[7], 14, 12, 15, 13, 3));
-        targetGates.Add(48, this.CreateExitGate(maps[3], 240, 240, 241, 243, 7));
-        targetGates.Add(54, this.CreateExitGate(maps[8], 248, 40, 251, 44, 7));
-        targetGates.Add(56, this.CreateExitGate(maps[7], 16, 225, 17, 230, 3));
-        targetGates.Add(63, this.CreateExitGate(maps[10], 14, 13, 16, 13, 5));
-        targetGates.Add(65, this.CreateExitGate(maps[4], 17, 249, 19, 249, 1));
-        targetGates.Add(97, this.CreateExitGate(maps[30], 164, 198, 187, 209, 0));
-        targetGates.Add(99, this.CreateExitGate(maps[30], 90, 236, 99, 239, 0));
-        targetGates.Add(103, this.CreateExitGate(maps[30], 29, 37, 30, 42, 0));
-        targetGates.Add(108, this.CreateExitGate(maps[0], 235, 13, 239, 13, 0));
-        targetGates.Add(110, this.CreateExitGate(maps[30], 131, 92, 138, 94, 0));
-        targetGates.Add(113, this.CreateExitGate(maps[33], 76, 9, 78, 16, 0));
-        targetGates.Add(114, this.CreateExitGate(maps[34], 231, 37, 234, 45, 0));
-        targetGates.Add(122, this.CreateExitGate(maps[3], 220, 31, 226, 34, 0));
-        targetGates.Add(124, this.CreateExitGate(maps[30], 155, 37, 158, 43, 0));
-        targetGates.Add(126, this.CreateExitGate(maps[37], 17, 219, 21, 220, 0));
-        targetGates.Add(128, this.CreateExitGate(maps[8], 7, 199, 7, 201, 0));
-        targetGates.Add(130, this.CreateExitGate(maps[38], 70, 104, 70, 107, 0));
-        targetGates.Add(132, this.CreateExitGate(maps[37], 85, 89, 86, 92, 0));
-        targetGates.Add(161, this.CreateExitGate(maps[45], 170, 101, 170, 103, 0));
-        targetGates.Add(163, this.CreateExitGate(maps[45], 149, 84, 152, 84, 0));
-        targetGates.Add(165, this.CreateExitGate(maps[45], 149, 122, 151, 122, 0));
-        targetGates.Add(167, this.CreateExitGate(maps[45], 132, 99, 132, 103, 0));
-        targetGates.Add(169, this.CreateExitGate(maps[45], 207, 65, 207, 68, 0));
-        targetGates.Add(171, this.CreateExitGate(maps[45], 186, 47, 189, 47, 0));
-        targetGates.Add(173, this.CreateExitGate(maps[45], 186, 84, 189, 84, 0));
-        targetGates.Add(175, this.CreateExitGate(maps[45], 169, 65, 169, 68, 0));
-        targetGates.Add(177, this.CreateExitGate(maps[46], 170, 101, 170, 103, 0));
-        targetGates.Add(179, this.CreateExitGate(maps[46], 149, 84, 152, 84, 0));
-        targetGates.Add(181, this.CreateExitGate(maps[46], 149, 122, 151, 122, 0));
-        targetGates.Add(183, this.CreateExitGate(maps[46], 132, 99, 132, 103, 0));
-        targetGates.Add(185, this.CreateExitGate(maps[46], 207, 65, 207, 68, 0));
-        targetGates.Add(187, this.CreateExitGate(maps[46], 186, 47, 189, 47, 0));
-        targetGates.Add(189, this.CreateExitGate(maps[46], 186, 84, 189, 84, 0));
-        targetGates.Add(191, this.CreateExitGate(maps[46], 169, 65, 169, 68, 0));
-        targetGates.Add(193, this.CreateExitGate(maps[47], 170, 101, 170, 103, 0));
-        targetGates.Add(195, this.CreateExitGate(maps[47], 149, 84, 152, 84, 0));
-        targetGates.Add(197, this.CreateExitGate(maps[47], 149, 122, 151, 122, 0));
-        targetGates.Add(199, this.CreateExitGate(maps[47], 132, 99, 132, 103, 0));
-        targetGates.Add(201, this.CreateExitGate(maps[47], 207, 65, 207, 68, 0));
-        targetGates.Add(203, this.CreateExitGate(maps[47], 186, 47, 189, 47, 0));
-        targetGates.Add(205, this.CreateExitGate(maps[47], 186, 84, 189, 84, 0));
-        targetGates.Add(207, this.CreateExitGate(maps[47], 169, 65, 169, 68, 0));
-        targetGates.Add(209, this.CreateExitGate(maps[48], 170, 101, 170, 103, 0));
-        targetGates.Add(211, this.CreateExitGate(maps[48], 149, 84, 152, 84, 0));
-        targetGates.Add(213, this.CreateExitGate(maps[48], 149, 122, 151, 122, 0));
-        targetGates.Add(215, this.CreateExitGate(maps[48], 132, 99, 132, 103, 0));
-        targetGates.Add(217, this.CreateExitGate(maps[48], 207, 65, 207, 68, 0));
-        targetGates.Add(219, this.CreateExitGate(maps[48], 186, 47, 189, 47, 0));
-        targetGates.Add(221, this.CreateExitGate(maps[48], 186, 84, 189, 84, 0));
-        targetGates.Add(223, this.CreateExitGate(maps[48], 169, 65, 169, 68, 0));
-        targetGates.Add(225, this.CreateExitGate(maps[49], 170, 101, 170, 103, 0));
-        targetGates.Add(227, this.CreateExitGate(maps[49], 149, 84, 152, 84, 0));
-        targetGates.Add(229, this.CreateExitGate(maps[49], 149, 122, 151, 122, 0));
-        targetGates.Add(231, this.CreateExitGate(maps[49], 132, 99, 132, 103, 0));
-        targetGates.Add(233, this.CreateExitGate(maps[49], 207, 65, 207, 68, 0));
-        targetGates.Add(235, this.CreateExitGate(maps[49], 186, 47, 189, 47, 0));
-        targetGates.Add(237, this.CreateExitGate(maps[49], 186, 84, 189, 84, 0));
-        targetGates.Add(239, this.CreateExitGate(maps[49], 169, 65, 169, 68, 0));
-        targetGates.Add(241, this.CreateExitGate(maps[50], 170, 101, 170, 103, 0));
-        targetGates.Add(243, this.CreateExitGate(maps[50], 149, 84, 152, 84, 0));
-        targetGates.Add(245, this.CreateExitGate(maps[50], 149, 122, 151, 122, 0));
-        targetGates.Add(247, this.CreateExitGate(maps[50], 132, 99, 132, 103, 0));
-        targetGates.Add(249, this.CreateExitGate(maps[50], 207, 65, 207, 68, 0));
-        targetGates.Add(251, this.CreateExitGate(maps[50], 186, 47, 189, 47, 0));
-        targetGates.Add(253, this.CreateExitGate(maps[50], 186, 84, 189, 84, 0));
-        targetGates.Add(255, this.CreateExitGate(maps[50], 169, 65, 169, 68, 0));
-        targetGates.Add(260, this.CreateExitGate(maps[51], 26, 29, 27, 30, 0));
-        targetGates.Add(262, this.CreateExitGate(maps[2], 161, 241, 163, 242, 0));
-        targetGates.Add(264, this.CreateExitGate(maps[51], 243, 149, 244, 150, 0));
-        targetGates.Add(266, this.CreateExitGate(maps[7], 16, 19, 17, 20, 0));
-        targetGates.Add(275, this.CreateExitGate(maps[56], 189, 190, 191, 193, 0));
-        targetGates.Add(278, this.CreateExitGate(maps[56], 204, 10, 206, 14, 0));
-        targetGates.Add(281, this.CreateExitGate(maps[56], 65, 47, 67, 48, 0));
-        targetGates.Add(284, this.CreateExitGate(maps[56], 62, 174, 63, 179, 0));
+        // Loren Market
+        targetGates.Add(333, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));
+
+        // Karutan 1
+        targetGates.Add(335, this.CreateExitGate(maps[80], 124, 123, 127, 125, 0, true));
         targetGates.Add(337, this.CreateExitGate(maps[80], 118, 44, 119, 46, 3));
-        targetGates.Add(339, this.CreateExitGate(maps[33], 237, 166, 240, 166, 1));
-        targetGates.Add(341, this.CreateExitGate(maps[81], 162, 12, 164, 14, 5));
         targetGates.Add(343, this.CreateExitGate(maps[80], 188, 207, 189, 208, 1));
+
+        // Karutan 2
+        targetGates.Add(344, this.CreateExitGate(maps[81], 162, 16, 163, 17, 5));
+        targetGates.Add(341, this.CreateExitGate(maps[81], 162, 12, 164, 14, 5));
+
         return targetGates;
     }
 
