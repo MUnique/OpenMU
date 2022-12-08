@@ -112,11 +112,26 @@ public class Gates : InitializerBase
     {
         var targetGates = new Dictionary<short, ExitGate>();
 
+        // Lorencia
         targetGates.Add(17, this.CreateExitGate(maps[0], 133, 118, 151, 135, 0, true));
+        targetGates.Add(4, this.CreateExitGate(maps[0], 121, 231, 123, 231, 1));
+        targetGates.Add(21, this.CreateExitGate(maps[0], 7, 38, 8, 41, 3));
+        targetGates.Add(26, this.CreateExitGate(maps[0], 213, 244, 217, 245, 1));
+
+        // Dungeon
+        targetGates.Add(2, this.CreateExitGate(maps[1], 107, 247, 110, 247, 1));
+        targetGates.Add(6, this.CreateExitGate(maps[1], 231, 126, 234, 127, 1));
+        targetGates.Add(8, this.CreateExitGate(maps[1], 240, 148, 241, 151, 3));
+        targetGates.Add(10, this.CreateExitGate(maps[1], 3, 83, 4, 86, 3));
+        targetGates.Add(12, this.CreateExitGate(maps[1], 3, 16, 6, 17, 3));
+        targetGates.Add(14, this.CreateExitGate(maps[1], 29, 125, 30, 126, 1));
+        targetGates.Add(16, this.CreateExitGate(maps[1], 5, 32, 7, 33, 1));
+
+        // Devias
         targetGates.Add(22, this.CreateExitGate(maps[2], 197, 35, 218, 50, 0, true));
-        targetGates.Add(27, this.CreateExitGate(maps[3], 171, 108, 177, 117, 0, true));
-        targetGates.Add(42, this.CreateExitGate(maps[4], 203, 70, 213, 81, 0, true));
-        targetGates.Add(49, this.CreateExitGate(maps[7], 15, 11, 27, 23, 0, true));
+        targetGates.Add(19, this.CreateExitGate(maps[2], 242, 34, 243, 37, 7));
+        targetGates.Add(44, this.CreateExitGate(maps[2], 2, 246, 3, 247, 2));
+
         targetGates.Add(50, this.CreateExitGate(maps[6], 101, 115, 103, 117, 0, true));
         targetGates.Add(51, this.CreateExitGate(maps[6], 107, 115, 107, 115, 0, true));
         targetGates.Add(52, this.CreateExitGate(maps[6], 107, 114, 107, 114, 0, true));
@@ -127,18 +142,13 @@ public class Gates : InitializerBase
         targetGates.Add(60, this.CreateExitGate(maps[new (9, 3)], 62, 150, 70, 158, 0, true));
         targetGates.Add(61, this.CreateExitGate(maps[new (9, 4)], 66, 84, 74, 92, 0, true));
 
-        targetGates.Add(2, this.CreateExitGate(maps[1], 107, 247, 110, 247, 1));
-        targetGates.Add(4, this.CreateExitGate(maps[0], 121, 231, 123, 231, 1));
-        targetGates.Add(6, this.CreateExitGate(maps[1], 231, 126, 234, 127, 1));
-        targetGates.Add(8, this.CreateExitGate(maps[1], 240, 148, 241, 151, 3));
-        targetGates.Add(10, this.CreateExitGate(maps[1], 3, 83, 4, 86, 3));
-        targetGates.Add(12, this.CreateExitGate(maps[1], 3, 16, 6, 17, 3));
-        targetGates.Add(14, this.CreateExitGate(maps[1], 29, 125, 30, 126, 1));
-        targetGates.Add(16, this.CreateExitGate(maps[1], 5, 32, 7, 33, 1));
-        targetGates.Add(19, this.CreateExitGate(maps[2], 242, 34, 243, 37, 7));
-        targetGates.Add(21, this.CreateExitGate(maps[0], 7, 38, 8, 41, 3));
+        // Noria
+        targetGates.Add(27, this.CreateExitGate(maps[3], 171, 108, 177, 117, 0, true));
         targetGates.Add(24, this.CreateExitGate(maps[3], 148, 5, 155, 6, 5));
-        targetGates.Add(26, this.CreateExitGate(maps[0], 213, 244, 217, 245, 1));
+        targetGates.Add(48, this.CreateExitGate(maps[3], 240, 240, 241, 243, 7));
+
+        // Lost Tower
+        targetGates.Add(42, this.CreateExitGate(maps[4], 203, 70, 213, 81, 0, true));
         targetGates.Add(29, this.CreateExitGate(maps[4], 162, 2, 166, 3, 5));
         targetGates.Add(31, this.CreateExitGate(maps[4], 241, 237, 244, 238, 1));
         targetGates.Add(33, this.CreateExitGate(maps[4], 86, 166, 87, 168, 3));
@@ -146,9 +156,10 @@ public class Gates : InitializerBase
         targetGates.Add(37, this.CreateExitGate(maps[4], 128, 53, 131, 54, 1));
         targetGates.Add(39, this.CreateExitGate(maps[4], 52, 53, 55, 54, 1));
         targetGates.Add(41, this.CreateExitGate(maps[4], 8, 85, 9, 87, 1));
-        targetGates.Add(44, this.CreateExitGate(maps[2], 2, 246, 3, 247, 2));
-        targetGates.Add(46, this.CreateExitGate(maps[7], 14, 12, 15, 13, 3));
-        targetGates.Add(48, this.CreateExitGate(maps[3], 240, 240, 241, 243, 7));
+
+        // Atlans
+        targetGates.Add(49, this.CreateExitGate(maps[7], 15, 11, 27, 23, 0, true));
+        targetGates.Add(46, this.CreateExitGate(maps[7], 14, 12, 15, 13, 3, true));
 
         return targetGates;
     }
