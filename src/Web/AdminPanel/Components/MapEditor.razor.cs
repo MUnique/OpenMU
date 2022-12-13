@@ -147,7 +147,7 @@ public partial class MapEditor : IDisposable
     private bool ShowResizers(object obj)
     {
         if (obj is MonsterSpawnArea spawn
-            && spawn.X1 == spawn.X2 && spawn.Y1 == spawn.Y2)
+            && spawn.IsPoint())
         {
             return false;
         }
@@ -160,8 +160,7 @@ public partial class MapEditor : IDisposable
         spawn = obj as MonsterSpawnArea;
         return spawn is not null
                && this._focusedObject == spawn
-               && spawn.X1 == spawn.X2
-               && spawn.Y1 == spawn.Y2;
+               && spawn.IsPoint();
     }
 
     private string GetCssClass(object obj)
@@ -176,7 +175,7 @@ public partial class MapEditor : IDisposable
                 result = "gate-exit";
                 break;
             case MonsterSpawnArea spawn:
-                result = spawn.X1 != spawn.X2 || spawn.Y1 != spawn.Y2 ? "spawn-area" : "spawn-single";
+                result = spawn.IsPoint() ? "spawn-single" : "spawn-area";
                 break;
             default:
                 // we have no specific css class for others
@@ -222,7 +221,7 @@ public partial class MapEditor : IDisposable
 
         var result = new StringBuilder();
 
-        if (spawn.X1 == spawn.X2 && spawn.Y1 == spawn.Y2)
+        if (spawn.IsPoint())
         {
             // We want the small point to be more visible, so it's bigger and has a higher opacity.
             objScale = 1.75f;
