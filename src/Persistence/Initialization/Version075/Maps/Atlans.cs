@@ -171,7 +171,7 @@ internal class Atlans : BaseMapInitializer
         yield return this.CreateMonsterSpawn(this.NpcDictionary[52], 138, 167);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[52], 147, 164);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[52], 170, 145);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[52], 163, 138);
+        yield return this.CreateMonsterSpawn(this.NpcDictionary[52], 167, 140);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[52], 53, 220);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[52], 41, 222);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[52], 29, 231);
@@ -214,7 +214,7 @@ internal class Atlans : BaseMapInitializer
         yield return this.CreateMonsterSpawn(this.NpcDictionary[47], 196, 27);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[47], 200, 17);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[47], 208, 9);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[47], 218, 47);
+        yield return this.CreateMonsterSpawn(this.NpcDictionary[47], 222, 48);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[47], 222, 14);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[47], 117, 74);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[47], 139, 61);
@@ -236,7 +236,7 @@ internal class Atlans : BaseMapInitializer
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 237, 26);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 238, 40);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 235, 48);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 251, 51);
+        yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 240, 51);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 206, 55);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 200, 49);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 193, 52);
@@ -267,7 +267,7 @@ internal class Atlans : BaseMapInitializer
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 62, 140);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 70, 133);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 168, 54);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 7, 52);
+        // yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 7, 52);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 225, 45);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 207, 9);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[51], 154, 69);

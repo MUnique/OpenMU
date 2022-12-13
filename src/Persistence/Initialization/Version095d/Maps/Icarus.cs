@@ -93,7 +93,7 @@ internal class Icarus : BaseMapInitializer
         yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 66, 37);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 80, 41);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 43, 238);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 25, 231);
+        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 30, 231);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 44, 221);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 40, 34);
         yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 31, 37);
