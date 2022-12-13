@@ -13,7 +13,12 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// </summary>
 internal class GameConfigurationContext : CachingEntityFrameworkContext, IConfigurationContext
 {
-    public GameConfigurationContext(RepositoryManager repositoryManager, ILogger<CachingEntityFrameworkContext> logger)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameConfigurationContext"/> class.
+    /// </summary>
+    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="logger">The logger.</param>
+    public GameConfigurationContext(RepositoryManager repositoryManager, ILogger<GameConfigurationContext> logger)
         : base(new ConfigurationContext(), repositoryManager, logger)
     {
     }
