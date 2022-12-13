@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(nameof(RedDragonInvasionPlugIn), "Handle red dragon invasion event")]
 [Guid("548A76CC-242C-441C-BC9D-6C22745A2D72")]
-public class RedDragonInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfiguration>
+public class RedDragonInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfiguration>, ISupportDefaultCustomConfiguration
 {
     private const ushort RedDragonId = 44;
 
@@ -23,4 +23,7 @@ public class RedDragonInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfig
         : base(MapEventType.RedDragonInvasion, null, new[] { (RedDragonId, (ushort)5) })
     {
     }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => PeriodicInvasionConfiguration.DefaultRedDragonInvasion;
 }

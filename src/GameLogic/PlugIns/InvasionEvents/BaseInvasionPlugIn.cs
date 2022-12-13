@@ -66,7 +66,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
     /// </summary>
     private readonly (ushort MapId, ushort MonsterId, ushort Count)[] _mobs;
 
-    private MapEventType? _mapEventType;
+    private readonly MapEventType? _mapEventType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseInvasionPlugIn{TConfiguration}" /> class.
@@ -105,9 +105,15 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
 
         var configuration = this.Configuration;
 
+        if (configuration is null && this is ISupportDefaultCustomConfiguration defaultConfigSupporter)
+        {
+            logger.LogWarning("configuration is not set. Using default configuration.");
+            this.Configuration = configuration = defaultConfigSupporter.CreateDefaultConfig() as TConfiguration;
+        }
+
         if (configuration is null)
         {
-            logger.LogWarning("configuration is not set.");
+            logger.LogError("no configuration available; can't execute invasion plugin.");
             return;
         }
 

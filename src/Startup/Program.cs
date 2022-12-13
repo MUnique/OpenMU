@@ -13,11 +13,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx.Synchronous;
-using Serilog;
-using Serilog.Debugging;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
@@ -32,6 +30,9 @@ using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Map.Map;
+using Nito.AsyncEx.Synchronous;
+using Serilog;
+using Serilog.Debugging;
 
 /// <summary>
 /// The startup class for an all-in-one game server.
@@ -230,7 +231,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
             .AddSingleton<PlugInManager>()
             .AddSingleton<IServerProvider, LocalServerProvider>()
-            .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
+            .AddSingleton<ICollection<PlugInConfiguration>>(this.PlugInConfigurationsFactory)
             .AddHostedService<ChatServerContainer>()
             .AddHostedService<GameServerContainer>()
             .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!);
@@ -251,6 +252,62 @@ internal sealed class Program : IDisposable
         stopwatch.Stop();
         this._logger.Information($"Host started, elapsed time: {stopwatch.Elapsed}");
         return host;
+    }
+
+    private ICollection<PlugInConfiguration> PlugInConfigurationsFactory(IServiceProvider serviceProvider)
+    {
+        var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+        using var context = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>();
+        var configs = context.GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList();
+
+        // We check if we miss any plugin configurations in the database. If we do, we try to add them.
+        var pluginManager = new PlugInManager(null, serviceProvider.GetService<ILoggerFactory>()!, serviceProvider);
+        pluginManager.DiscoverAndRegisterPlugInsOf<ISupportDefaultCustomConfiguration>();
+        var typesWithMissingConfigs = pluginManager.KnownPlugInTypes.Where(t => configs.All(c => c.TypeId != t.GUID)).ToList();
+        if (!typesWithMissingConfigs.Any())
+        {
+            return configs;
+        }
+
+        configs.AddRange(this.CreateMissingPlugInConfigurations(typesWithMissingConfigs, persistenceContextProvider));
+        return configs;
+    }
+
+    private IEnumerable<PlugInConfiguration> CreateMissingPlugInConfigurations(IEnumerable<Type> plugInTypes, IPersistenceContextProvider persistenceContextProvider)
+    {
+        GameConfiguration gameConfiguration;
+
+        using (var context = persistenceContextProvider.CreateNewContext())
+        {
+            gameConfiguration = context.GetAsync<GameConfiguration>().AsTask().WaitAndUnwrapException().First();
+        }
+
+        using var saveContext = persistenceContextProvider.CreateNewContext(gameConfiguration);
+        saveContext.Attach(gameConfiguration);
+        foreach (var plugInType in plugInTypes)
+        {
+            var plugInConfiguration = saveContext.CreateNew<PlugInConfiguration>();
+            plugInConfiguration.TypeId = plugInType.GUID;
+            plugInConfiguration.IsActive = true;
+            gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
+            if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
+            {
+                try
+                {
+                    var plugin = (ISupportDefaultCustomConfiguration)Activator.CreateInstance(plugInType)!;
+                    var defaultConfig = plugin.CreateDefaultConfig();
+                    plugInConfiguration.SetConfiguration(defaultConfig);
+                }
+                catch (Exception ex)
+                {
+                    this._logger.Warning(ex, "Could not create custom default configuration for plugin type {plugInType}", plugInType);
+                }
+            }
+
+            yield return plugInConfiguration;
+        }
+
+        saveContext.SaveChanges();
     }
 
     private ushort DetermineUshort(string parameterName, string[] args, ushort defaultValue)

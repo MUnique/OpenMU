@@ -66,6 +66,6 @@ public static class PlugInConfigurationExtensions
     /// <param name="configuration">The configuration.</param>
     public static void SetConfiguration(this PlugInConfiguration plugInConfiguration, object configuration)
     {
-        plugInConfiguration.CustomConfiguration = JsonSerializer.Serialize(configuration, new JsonSerializerOptions { WriteIndented = true });
+        plugInConfiguration.CustomConfiguration = JsonSerializer.Serialize(configuration, configuration.GetType(), new JsonSerializerOptions { WriteIndented = true });
     }
 }

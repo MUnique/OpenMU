@@ -16,3 +16,15 @@ public interface ISupportCustomConfiguration<TCustomConfig>
     /// </summary>
     TCustomConfig? Configuration { get; set; }
 }
+
+/// <summary>
+/// Interface for a plugin which provides a method to create a default configuration which should be saved in <see cref="PlugInConfiguration.CustomConfiguration"/>.
+/// </summary>
+public interface ISupportDefaultCustomConfiguration
+{
+    /// <summary>
+    /// Creates the default configuration.
+    /// </summary>
+    /// <returns>The default configuration.</returns>
+    object CreateDefaultConfig();
+}

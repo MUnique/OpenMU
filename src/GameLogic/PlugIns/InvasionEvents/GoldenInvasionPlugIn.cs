@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(nameof(GoldenInvasionPlugIn), "Handle Golden Invasion event")]
 [Guid("06D18A9E-2919-4C17-9DBC-6E4F7756495C")]
-public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfiguration>
+public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfiguration>, ISupportDefaultCustomConfiguration
 {
     private const ushort AtlansId = 7;
     private const ushort TarkanId = 8;
@@ -47,4 +47,7 @@ public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfigura
             new (ushort MonsterId, ushort Count)[] { (GoldenDragonId, 10) })
     {
     }
+
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => PeriodicInvasionConfiguration.DefaultGoldenInvasion;
 }
