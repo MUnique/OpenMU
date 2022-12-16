@@ -28,6 +28,9 @@ internal class SantaVillage : BaseMapInitializer
     protected override string MapName => "Santa Village";
 
     /// <inheritdoc/>
+    protected override byte SafezoneMapNumber => 2;
+
+    /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
         yield return this.CreateMonsterSpawn(this.NpcDictionary[467], 202, 041, Direction.SouthWest); // Snowman

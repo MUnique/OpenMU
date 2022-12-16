@@ -30,6 +30,9 @@ internal class RaklionBoss : BaseMapInitializer
     /// <inheritdoc />
     protected override string MapName => "LaCleon Boss";
 
+    /// <inheritdoc/>
+    protected override byte SafezoneMapNumber => 57;
+
     /// <inheritdoc />
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {

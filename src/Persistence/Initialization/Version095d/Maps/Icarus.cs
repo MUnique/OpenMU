@@ -31,6 +31,9 @@ internal class Icarus : BaseMapInitializer
     protected override string MapName => "Icarus";
 
     /// <inheritdoc/>
+    protected override byte SafezoneMapNumber => 4;
+
+    /// <inheritdoc/>
     protected override void CreateMapAttributeRequirements()
     {
         this.CreateRequirement(Stats.CanFly, 1);

@@ -30,6 +30,9 @@ internal class Karutan2 : BaseMapInitializer
     protected override string MapName => "Karutan2";
 
     /// <inheritdoc/>
+    protected override byte SafezoneMapNumber => 80;
+
+    /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
         yield return this.CreateMonsterSpawn(this.NpcDictionary[571], 058, 160); // Orcus
