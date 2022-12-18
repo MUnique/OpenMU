@@ -8,7 +8,7 @@ using System.ComponentModel.Design;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
@@ -141,6 +141,11 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             if (plugInType == typeof(RedDragonInvasionPlugIn))
             {
                 plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultRedDragonInvasion);
+            }
+
+            if (plugInType == typeof(MuHelperFeaturePlugIn))
+            {
+                plugInConfiguration.SetConfiguration(new MuHelperConfiguration());
             }
 
             // We don't move the player anymore by his request. This was usually requested after a player performed a skill.

@@ -18,6 +18,7 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.Views.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.Pet;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -39,6 +40,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private readonly AppearanceDataAdapter _appearanceData;
 
     private readonly ObserverToWorldViewAdapter _observerToWorldViewAdapter;
+
+    private readonly Lazy<MuHelper.MuHelper> _muHelperLazy;
 
     private CancellationTokenSource? _respawnAfterDeathCts;
 
@@ -76,6 +79,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.PlayerState.StateChanged += (sender, args) => this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChanged(this);
         this.PlayerState.StateChanges += (sender, args) => this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChanging(this, args);
         this._observerToWorldViewAdapter = new ObserverToWorldViewAdapter(this, this.InfoRange);
+        this._muHelperLazy = new Lazy<MuHelper.MuHelper>(() => new MuHelper.MuHelper(this));
     }
 
     /// <summary>
@@ -421,6 +425,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public NovaCancellationTokenSource? NovaCancellationTokenSource { get; set; }
 
     /// <summary>
+    /// Gets the mu helper.
+    /// </summary>
+    public MuHelper.MuHelper MuHelper => this._muHelperLazy.Value;
+
+    /// <summary>
     /// Sets the selected character.
     /// </summary>
     /// <param name="character">The character.</param>
@@ -433,6 +442,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (character is null)
         {
+            if (this._muHelperLazy.IsValueCreated)
+            {
+                await this._muHelperLazy.Value.StopAsync().ConfigureAwait(false);
+            }
+
             this.RemovePetCommandManager();
             this.LastAttackedTarget.SetTarget(null);
             this._comboStateLazy = null;
@@ -1643,6 +1657,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (this.PetCommandManager is { } petCommandManager)
         {
             await petCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
+        }
+
+        if (this.SelectedCharacter?.MuHelperConfiguration is { } muHelperConfiguration)
+        {
+            await this.InvokeViewPlugInAsync<IMuHelperConfigurationUpdatePlugIn>(p => p.UpdateMuHelperConfigurationAsync(muHelperConfiguration)).ConfigureAwait(false);
         }
     }
 

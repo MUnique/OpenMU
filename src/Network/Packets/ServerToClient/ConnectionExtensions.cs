@@ -4062,6 +4062,66 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MuHelperStatusUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="consumeMoney">The consume money.</param>
+    /// <param name="money">The money.</param>
+    /// <param name="pauseStatus">The pause status.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server validated or changed the status of the MU Helper.
+    /// Causes reaction on client side: The client toggle the MU Helper status.
+    /// </remarks>
+    public static async ValueTask SendMuHelperStatusUpdateAsync(this IConnection? connection, bool @consumeMoney, uint @money, bool @pauseStatus)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperStatusUpdateRef.Length;
+            var packet = new MuHelperStatusUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.ConsumeMoney = @consumeMoney;
+            packet.Money = @money;
+            packet.PauseStatus = @pauseStatus;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuHelperConfigurationData" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="helperData">The helper data.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server saved the users MU Helper data.
+    /// Causes reaction on client side: The user wants to save the MU Helper data.
+    /// </remarks>
+    public static async ValueTask SendMuHelperConfigurationDataAsync(this IConnection? connection, Memory<byte> @helperData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperConfigurationDataRef.Length;
+            var packet = new MuHelperConfigurationDataRef(connection.Output.GetSpan(length)[..length]);
+            @helperData.Span.CopyTo(packet.HelperData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="FriendAdded" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

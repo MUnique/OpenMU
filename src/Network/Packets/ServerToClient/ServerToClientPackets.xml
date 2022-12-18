@@ -7255,6 +7255,50 @@
 		  </Field>
 	  </Fields>
 	</Packet>
+	  <Packet>
+		  <HeaderType>C1HeaderWithSubCode</HeaderType>
+		  <Code>BF</Code>
+		  <SubCode>51</SubCode>
+		  <Name>MuHelperStatusUpdate</Name>
+		  <Length>16</Length>
+		  <Direction>ServerToClient</Direction>
+		  <SentWhen>The server validated or changed the status of the MU Helper.</SentWhen>
+		  <CausedReaction>The client toggle the MU Helper status.</CausedReaction>
+		  <Fields>
+			  <Field>
+				  <Index>4</Index>
+				  <Type>Boolean</Type>
+				  <Name>ConsumeMoney</Name>
+			  </Field>
+			  <Field>
+				  <Index>8</Index>
+				  <Type>IntegerLittleEndian</Type>
+				  <Name>Money</Name>
+			  </Field>
+			  <Field>
+				  <Index>12</Index>
+				  <Type>Boolean</Type>
+				  <Name>PauseStatus</Name>
+			  </Field>
+		  </Fields>
+	  </Packet>
+	  <Packet>
+		  <HeaderType>C2Header</HeaderType>
+		  <Code>AE</Code>
+		  <Name>MuHelperConfigurationData</Name>
+		  <Length>261</Length>
+		  <Direction>ServerToClient</Direction>
+		  <SentWhen>The server saved the users MU Helper data.</SentWhen>
+          <CausedReaction>The user wants to save the MU Helper data.</CausedReaction>
+		  <Fields>
+			  <Field>
+				  <Index>4</Index>
+				  <Type>Binary</Type>
+				  <Name>HelperData</Name>
+				  <Length>257</Length>
+			  </Field>
+		  </Fields>
+    </Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>
       <Code>C0</Code>
