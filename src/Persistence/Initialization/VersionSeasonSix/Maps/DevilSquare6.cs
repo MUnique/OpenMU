@@ -13,6 +13,21 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 internal class DevilSquare6 : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 32;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Devil Square 6";
+
+    /// <summary>
+    /// The MapDiscriminator of the Map.
+    /// </summary>
+    internal const byte Discriminator = 6;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquare6"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -23,13 +38,13 @@ internal class DevilSquare6 : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 32;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Devil Square 6";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
-    protected override int Discriminator => 6;
+    protected override byte MapDiscriminator => Discriminator;
 
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Noria.Number;

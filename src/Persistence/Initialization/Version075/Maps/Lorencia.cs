@@ -15,9 +15,14 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 internal class Lorencia : BaseMapInitializer
 {
     /// <summary>
-    /// The default number of the lorencia map.
+    /// The default number of the map.
     /// </summary>
-    public static readonly byte Number = 0;
+    internal const byte Number = 0;
+
+    /// <summary>
+    /// The default name of the map.
+    /// </summary>
+    internal const string Name = "Lorencia";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Lorencia"/> class.
@@ -33,7 +38,7 @@ internal class Lorencia : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Lorencia";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

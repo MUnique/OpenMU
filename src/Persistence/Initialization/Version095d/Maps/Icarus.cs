@@ -8,12 +8,23 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
+using MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
 
 /// <summary>
 /// The initialization for the Icarus map.
 /// </summary>
 internal class Icarus : BaseMapInitializer
 {
+    /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 10;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Icarus";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Icarus"/> class.
     /// </summary>
@@ -25,13 +36,13 @@ internal class Icarus : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 10;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Icarus";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
-    protected override byte SafezoneMapNumber => 4;
+    protected override byte SafezoneMapNumber => LostTower.Number;
 
     /// <inheritdoc/>
     protected override void CreateMapAttributeRequirements()

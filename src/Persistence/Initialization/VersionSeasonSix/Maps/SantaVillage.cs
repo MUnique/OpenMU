@@ -12,6 +12,18 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class SantaVillage : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 62;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Santa Village";
+
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SantaVillage"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,13 +34,13 @@ internal class SantaVillage : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 62;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Santa Village";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
-    protected override byte SafezoneMapNumber => 2;
+    protected override byte SafezoneMapNumber => Devias.Number;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class Doppelgaenger4 : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 68;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Doppelgaenger 4";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Doppelgaenger4"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,8 +32,8 @@ internal class Doppelgaenger4 : BaseMapInitializer
     }
 
     /// <inheritdoc />
-    protected override byte MapNumber => 68;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc />
-    protected override string MapName => "Doppelgaenger 4";
+    protected override string MapName => Name;
 }

@@ -20,6 +20,11 @@ internal class Devias : BaseMapInitializer
     internal const byte Number = 2;
 
     /// <summary>
+    /// The name of the map.
+    /// </summary>
+    internal const string Name = "Devias";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Devias"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,7 +38,7 @@ internal class Devias : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Devias";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

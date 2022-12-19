@@ -14,9 +14,14 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal class Noria : BaseMapInitializer
 {
     /// <summary>
-    /// The default number of the noria map.
+    /// The default number of the map.
     /// </summary>
-    public static readonly byte Number = 3;
+    internal const byte Number = 3;
+
+    /// <summary>
+    /// The default name of the map.
+    /// </summary>
+    internal const string Name = "Noria";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Noria"/> class.
@@ -32,7 +37,7 @@ internal class Noria : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Noria";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

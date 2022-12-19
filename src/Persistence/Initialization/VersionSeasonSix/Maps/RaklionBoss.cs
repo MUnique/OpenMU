@@ -15,6 +15,16 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal class RaklionBoss : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 58;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "LaCleon Boss";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="RaklionBoss"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -25,13 +35,13 @@ internal class RaklionBoss : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 58;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc />
-    protected override string MapName => "LaCleon Boss";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
-    protected override byte SafezoneMapNumber => 57;
+    protected override byte SafezoneMapNumber => Raklion.Number;
 
     /// <inheritdoc />
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()

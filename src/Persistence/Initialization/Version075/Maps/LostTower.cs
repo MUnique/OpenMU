@@ -16,6 +16,16 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 internal class LostTower : BaseMapInitializer
 {
     /// <summary>
+    /// The default number of the map.
+    /// </summary>
+    internal const byte Number = 4;
+
+    /// <summary>
+    /// The default name of the map.
+    /// </summary>
+    internal const string Name = "Lost Tower";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LostTower"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -26,10 +36,10 @@ internal class LostTower : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 4;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Lost Tower";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

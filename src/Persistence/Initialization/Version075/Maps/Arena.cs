@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class Arena : Initialization.BaseMapInitializer
 {
     /// <summary>
+    /// The default number of the map.
+    /// </summary>
+    internal const byte Number = 6;
+
+    /// <summary>
+    /// The default name of the map.
+    /// </summary>
+    internal const string Name = "Arena";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Arena"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,10 +32,10 @@ internal class Arena : Initialization.BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 6;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Arena";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

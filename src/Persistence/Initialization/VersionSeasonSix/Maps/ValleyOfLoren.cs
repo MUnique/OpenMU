@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class ValleyOfLoren : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 30;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Valley of Loren";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ValleyOfLoren"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,10 +32,10 @@ internal class ValleyOfLoren : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 30;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Valley of Loren";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

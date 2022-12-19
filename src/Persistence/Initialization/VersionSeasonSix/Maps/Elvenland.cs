@@ -14,10 +14,12 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// </summary>
 internal class Elvenland : BaseMapInitializer
 {
-    /// <summary>
-    /// The default number of the elvenland map.
-    /// </summary>
+    /// <inheritdoc/>
     public static readonly byte Number = 51;
+
+    /// <inheritdoc/>
+    private static readonly string Name = "Elvenland";
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Elvenland"/> class.
@@ -33,7 +35,7 @@ internal class Elvenland : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Elvenland";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

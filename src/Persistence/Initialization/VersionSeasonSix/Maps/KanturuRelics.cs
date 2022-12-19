@@ -15,6 +15,16 @@ using MUnique.OpenMU.GameLogic.NPC;
 internal class KanturuRelics : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 38;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Kanturu_III"; // Kanturu Relics, Kanturu Remain
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="KanturuRelics"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -25,10 +35,10 @@ internal class KanturuRelics : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 38;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Kanturu_III"; // Kanturu Relics, Kanturu Remain
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

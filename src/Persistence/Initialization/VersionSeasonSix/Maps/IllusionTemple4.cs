@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class IllusionTemple4 : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 48;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Illusion Temple 4";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="IllusionTemple4"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,10 +32,10 @@ internal class IllusionTemple4 : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 48;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Illusion Temple 4";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()

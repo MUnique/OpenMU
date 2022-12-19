@@ -14,6 +14,16 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal class KanturuRuins : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 37;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Kanturu_I"; // Kanturu Ruins (1, 2), Kanturu Ruins (3) Island
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="KanturuRuins"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -24,10 +34,10 @@ internal class KanturuRuins : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 37;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Kanturu_I"; // Kanturu Ruins (1, 2), Kanturu Ruins (3) Island
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
