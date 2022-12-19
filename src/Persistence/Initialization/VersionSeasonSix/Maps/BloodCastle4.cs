@@ -15,6 +15,16 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 internal class BloodCastle4 : BloodCastleBase
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 14;
+
+    /// <summary>
+    /// The MapDiscriminator of the Map.
+    /// </summary>
+    internal const byte Discriminator = 4;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastle4"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -25,10 +35,10 @@ internal class BloodCastle4 : BloodCastleBase
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 14;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override int CastleLevel => 4;
+    protected override byte MapDiscriminator => Discriminator;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()

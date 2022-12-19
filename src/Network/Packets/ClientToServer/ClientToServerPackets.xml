@@ -2610,7 +2610,7 @@
         <Field>
           <Index>3</Index>
           <Type>Byte</Type>
-          <Name>CastleLevel</Name>
+          <Name>Discriminator</Name>
           <Description>The level of the battle square.</Description>
         </Field>
         <Field>

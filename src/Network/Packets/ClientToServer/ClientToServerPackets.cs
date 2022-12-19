@@ -9863,7 +9863,7 @@ public readonly struct BloodCastleEnterRequest
     /// <summary>
     /// Gets or sets the level of the battle square.
     /// </summary>
-    public byte CastleLevel
+    public byte Discriminator
     {
         get => this._data.Span[3];
         set => this._data.Span[3] = value;

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Initialization for the Blood Castle.
@@ -35,18 +36,13 @@ internal abstract class BloodCastleBase : BaseMapInitializer
     protected override byte SafezoneMapNumber => Lorencia.Number;
 
     /// <inheritdoc />
-    protected override string MapName => $"Blood Castle {this.CastleLevel}";
-
-    /// <summary>
-    /// Gets the castle level.
-    /// </summary>
-    protected abstract int CastleLevel { get; }
+    protected override string MapName => $"Blood Castle {this.MapDiscriminator}";
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
         var castleDoor = this.CreateMonsterSpawn(this.NpcDictionary[131], 014, 075, Direction.SouthWest, SpawnTrigger.OnceAtEventStart); // Castle Gate
-        castleDoor.MaximumHealthOverride = CastleDoorHealthPerLevel[this.CastleLevel];
+        castleDoor.MaximumHealthOverride = CastleDoorHealthPerLevel[this.MapDiscriminator];
         yield return castleDoor;
         yield return this.CreateMonsterSpawn(this.NpcDictionary[232], 010, 009, Direction.SouthWest, SpawnTrigger.Automatic); // Archangel
     }
