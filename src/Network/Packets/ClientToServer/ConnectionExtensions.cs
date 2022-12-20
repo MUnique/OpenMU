@@ -3069,13 +3069,13 @@ public static class ConnectionExtensions
     /// Sends a <see cref="BloodCastleEnterRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="discriminator">The level of the battle square.</param>
+    /// <param name="castleLevel">The level of the battle square.</param>
     /// <param name="ticketItemInventoryIndex">The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</param>
     /// <remarks>
     /// Is sent by the client when: The player requests to enter the blood castle through the Archangel Messenger NPC.
     /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0x9A) back to the client. If it was successful, the character gets moved to the event map.
     /// </remarks>
-    public static async ValueTask SendBloodCastleEnterRequestAsync(this IConnection? connection, byte @discriminator, byte @ticketItemInventoryIndex)
+    public static async ValueTask SendBloodCastleEnterRequestAsync(this IConnection? connection, byte @castleLevel, byte @ticketItemInventoryIndex)
     {
         if (connection is null)
         {
@@ -3086,7 +3086,7 @@ public static class ConnectionExtensions
         {
             var length = BloodCastleEnterRequestRef.Length;
             var packet = new BloodCastleEnterRequestRef(connection.Output.GetSpan(length)[..length]);
-            packet.Discriminator = @discriminator;
+            packet.CastleLevel = @castleLevel;
             packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
 
             return packet.Header.Length;

@@ -128,7 +128,7 @@ internal class BloodCastleInitializer : InitializerBase
     /// A set of monster ids which should count as kill after the gate has been destroyed.
     /// These are all for "Spirit Sorcerer" monsters, for the different levels of blood castle.
     /// </summary>
-    private static readonly short[] SpiritSorcererPerDifferentiator = { -1, 89, 95, 112, 118, 124, 130, 143, 433 };
+    private static readonly short[] SpiritSorcererPerCastleLevel = { -1, 89, 95, 112, 118, 124, 130, 143, 433 };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleInitializer" /> class.
@@ -297,7 +297,7 @@ internal class BloodCastleInitializer : InitializerBase
         spawnStatueEvent.Description = "Statue Spawn Event";
         spawnStatueEvent.Message = "Kundun minions have been subdued! Destroy the Crystal Statue!";
         spawnStatueEvent.Target = KillTarget.Specific;
-        spawnStatueEvent.TargetDefinition = this.GameConfiguration.Monsters.First(m => m.Number == SpiritSorcererPerDifferentiator[level]);
+        spawnStatueEvent.TargetDefinition = this.GameConfiguration.Monsters.First(m => m.Number == SpiritSorcererPerCastleLevel[level]);
         spawnStatueEvent.NumberOfKills = RequiredKillsAfterGatePerPlayer;
         spawnStatueEvent.MultiplyKillsByPlayers = true;
 
