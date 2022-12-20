@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic.Views.MuHelper;
 /// <summary>
 /// Mu Bot Class.
 /// </summary>
-public class MuHelper
+public class MuHelper : AsyncDisposable
 {
     /// <summary>
     /// The <see cref="IElement"/> which is added to the players <see cref="IAttributeSystem"/>
@@ -112,6 +112,12 @@ public class MuHelper
         {
             this._player.Logger.LogWarning(ex, "Exception during stopping the mu helper: {0}", ex);
         }
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        await this.StopAsync().ConfigureAwait(false);
     }
 
     /// <summary>

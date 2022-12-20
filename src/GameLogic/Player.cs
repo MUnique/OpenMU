@@ -33,7 +33,7 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
-    private readonly AsyncLock _moveLock = new ();
+    private readonly AsyncLock _moveLock = new();
 
     private readonly Walker _walker;
 
@@ -1311,6 +1311,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
+        await this._muHelperLazy.DisposeIfCreatedAsync().ConfigureAwait(false);
+
         this._petCommandManager?.Dispose();
         this._petCommandManager = null;
         this.LastAttackedTarget.SetTarget(null);
