@@ -32,7 +32,7 @@ internal abstract class BaseMapInitializer : IMapInitializer
     {
         this.Context = context;
         this.GameConfiguration = gameConfiguration;
-        this._mapDefinition = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == this.MapNumber && map.Discriminator == this.MapDiscriminator);
+        this._mapDefinition = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == this.MapNumber && map.Discriminator == this.Discriminator);
     }
 
     /// <summary>
@@ -77,9 +77,9 @@ internal abstract class BaseMapInitializer : IMapInitializer
     protected virtual string TerrainVersionPrefix => string.Empty;
 
     /// <summary>
-    /// Gets the MapDiscriminator of the map definition.
+    /// Gets the discriminator of the map definition.
     /// </summary>
-    protected virtual byte MapDiscriminator { get; }
+    protected virtual byte Discriminator { get; }
 
     /// <summary>
     /// Gets the map number of the safezone map where a player respawns after death.
@@ -93,9 +93,9 @@ internal abstract class BaseMapInitializer : IMapInitializer
         this._mapDefinition = this.Context.CreateNew<GameMapDefinition>();
         this._mapDefinition.Number = this.MapNumber;
         this._mapDefinition.Name = this.MapName;
-        this._mapDefinition.Discriminator = this.MapDiscriminator;
+        this._mapDefinition.Discriminator = this.Discriminator;
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = $"{assembly.GetName().Name}.Resources.{this.TerrainVersionPrefix}Terrain{this.MapNumber + 1}{(this.MapDiscriminator > 0 ? ("_" + this.MapDiscriminator) : string.Empty)}.att";
+        var resourceName = $"{assembly.GetName().Name}.Resources.{this.TerrainVersionPrefix}Terrain{this.MapNumber + 1}{(this.Discriminator > 0 ? ("_" + this.Discriminator) : string.Empty)}.att";
         using (var stream = assembly.GetManifestResourceStream(resourceName))
         {
             if (stream != null)

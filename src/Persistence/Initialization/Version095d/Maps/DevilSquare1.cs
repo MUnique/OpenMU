@@ -23,11 +23,6 @@ internal class DevilSquare1 : BaseMapInitializer
     internal const string Name = "Devil Square 1";
 
     /// <summary>
-    /// The Discriminator of the map.
-    /// </summary>
-    internal const byte Discriminator = 1;
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquare1"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -44,7 +39,7 @@ internal class DevilSquare1 : BaseMapInitializer
     protected override string MapName => Name;
 
     /// <inheritdoc/>
-    protected override byte MapDiscriminator => Discriminator;
+    protected override byte Discriminator => 1;
 
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Noria.Number;
