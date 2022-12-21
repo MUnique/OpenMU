@@ -13,6 +13,16 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal class KanturuEvent : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 39;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Kanturu Event";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="KanturuEvent"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -23,10 +33,10 @@ internal class KanturuEvent : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 39;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Kanturu Event";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override void CreateMapAttributeRequirements()

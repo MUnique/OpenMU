@@ -14,6 +14,16 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal class CrywolfFortress : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 34;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Crywolf Fortress";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="CrywolfFortress"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -24,10 +34,10 @@ internal class CrywolfFortress : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 34;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Crywolf Fortress";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

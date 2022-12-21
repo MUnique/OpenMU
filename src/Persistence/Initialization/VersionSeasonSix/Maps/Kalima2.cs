@@ -15,6 +15,16 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 internal class Kalima2 : KalimaBase
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 25;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Kalima 2";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Kalima2"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -25,10 +35,10 @@ internal class Kalima2 : KalimaBase
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 25;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Kalima 2";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()

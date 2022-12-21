@@ -14,6 +14,16 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal class Karutan1 : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 80;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Karutan 1";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Karutan1"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -24,10 +34,10 @@ internal class Karutan1 : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 80;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Karutan1";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

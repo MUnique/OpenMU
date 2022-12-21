@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class LorenMarket : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 79;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "LorenMarket";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LorenMarket"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,10 +32,10 @@ internal class LorenMarket : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 79;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "LorenMarket";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()

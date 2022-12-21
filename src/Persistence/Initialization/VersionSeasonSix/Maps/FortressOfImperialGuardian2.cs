@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class FortressOfImperialGuardian2 : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 70;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Fortress of Imperial Guardian 2";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="FortressOfImperialGuardian2"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,10 +32,10 @@ internal class FortressOfImperialGuardian2 : BaseMapInitializer
     }
 
     /// <inheritdoc />
-    protected override byte MapNumber => 70;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc />
-    protected override string MapName => "Fortress of Imperial Guardian 2";
+    protected override string MapName => Name;
 
     /// <inheritdoc />
     protected override void CreateMonsters()

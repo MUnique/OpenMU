@@ -14,6 +14,16 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal class BarracksOfBalgass : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 41;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Barracks of Balgass";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="BarracksOfBalgass"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -24,10 +34,10 @@ internal class BarracksOfBalgass : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 41;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Barracks of Balgass";
+    protected override string MapName => Name;
 
     /// <inheritdoc />
     protected override void InitializeDropItemGroups()

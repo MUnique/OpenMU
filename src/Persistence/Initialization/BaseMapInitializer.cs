@@ -79,7 +79,7 @@ internal abstract class BaseMapInitializer : IMapInitializer
     /// <summary>
     /// Gets the discriminator of the map definition.
     /// </summary>
-    protected virtual int Discriminator { get; }
+    protected virtual byte Discriminator { get; }
 
     /// <summary>
     /// Gets the map number of the safezone map where a player respawns after death.

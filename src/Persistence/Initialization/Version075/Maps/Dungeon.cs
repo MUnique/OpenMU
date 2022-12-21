@@ -16,6 +16,16 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 internal class Dungeon : BaseMapInitializer
 {
     /// <summary>
+    /// The number of the map.
+    /// </summary>
+    internal const byte Number = 1;
+
+    /// <summary>
+    /// The name of the map.
+    /// </summary>
+    internal const string Name = "Dungeon";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Dungeon"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -26,10 +36,10 @@ internal class Dungeon : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 1;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Dungeon";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()

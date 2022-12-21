@@ -15,6 +15,16 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 internal class ChaosCastle2 : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 19;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Chaos Castle 2";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ChaosCastle2"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -25,10 +35,10 @@ internal class ChaosCastle2 : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 19;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Chaos Castle 2";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()

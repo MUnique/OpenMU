@@ -15,6 +15,16 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 internal class SwampOfCalmness : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 56;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Swamp Of Calmness";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SwampOfCalmness"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -25,10 +35,10 @@ internal class SwampOfCalmness : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 56;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Swamp Of Calmness";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()

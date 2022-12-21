@@ -14,6 +14,16 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal class Aida : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 33;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Aida";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Aida"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -24,10 +34,10 @@ internal class Aida : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 33;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Aida";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
