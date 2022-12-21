@@ -63,7 +63,7 @@ public class MuHelper : AsyncDisposable
             return false;
         }
 
-        if (this._player.Level >= this._configuration.MaxLevel)
+        if (this._player.Level > this._configuration.MaxLevel)
         {
             await this._player.ShowMessageAsync($"MU Helper cannot be used after level {this._configuration.MaxLevel}.").ConfigureAwait(false);
             return false;
