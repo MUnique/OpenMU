@@ -55,7 +55,10 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     public void Start()
     {
         // TODO: Optimize this: start timer when first observer is added. stop timer when last observer is removed.
-        this._aiTimer = new Timer(_ => this.SafeTick(), null, this.Npc.Definition.AttackDelay, this.Npc.Definition.AttackDelay);
+        TimeSpan randomizedInit = this.Npc.Definition.AttackDelay + TimeSpan.FromMilliseconds(Rand.NextInt(0, 1000));
+        Console.WriteLine("Old" + this.Npc.Definition.AttackDelay.TotalMilliseconds);
+        Console.WriteLine("New" + randomizedInit.TotalMilliseconds);
+        this._aiTimer = new Timer(_ => this.SafeTick(), null, randomizedInit, this.Npc.Definition.AttackDelay);
     }
 
     /// <inheritdoc/>
