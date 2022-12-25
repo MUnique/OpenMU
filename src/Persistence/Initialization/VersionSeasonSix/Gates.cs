@@ -211,14 +211,14 @@ public class Gates : InitializerBase
         targetGates.Add(63, this.CreateExitGate(maps[10], 14, 13, 16, 13, 5));
 
         // Blood Castle
-        targetGates.Add(66, this.CreateExitGate(maps[new(11, 1)], 12, 5, 14, 10, 0));
-        targetGates.Add(67, this.CreateExitGate(maps[new(12, 2)], 12, 5, 14, 10, 0));
-        targetGates.Add(68, this.CreateExitGate(maps[new(13, 3)], 12, 5, 14, 10, 0));
-        targetGates.Add(69, this.CreateExitGate(maps[new(14, 4)], 12, 5, 14, 10, 0));
-        targetGates.Add(70, this.CreateExitGate(maps[new(15, 5)], 12, 5, 14, 10, 0));
-        targetGates.Add(71, this.CreateExitGate(maps[new(16, 6)], 12, 5, 14, 10, 0));
-        targetGates.Add(80, this.CreateExitGate(maps[new(17, 7)], 12, 5, 14, 10, 0));
-        targetGates.Add(271, this.CreateExitGate(maps[new(52, 8)], 12, 5, 14, 10, 0));
+        targetGates.Add(66, this.CreateExitGate(maps[11], 12, 5, 14, 10, 0));
+        targetGates.Add(67, this.CreateExitGate(maps[12], 12, 5, 14, 10, 0));
+        targetGates.Add(68, this.CreateExitGate(maps[13], 12, 5, 14, 10, 0));
+        targetGates.Add(69, this.CreateExitGate(maps[14], 12, 5, 14, 10, 0));
+        targetGates.Add(70, this.CreateExitGate(maps[15], 12, 5, 14, 10, 0));
+        targetGates.Add(71, this.CreateExitGate(maps[16], 12, 5, 14, 10, 0));
+        targetGates.Add(80, this.CreateExitGate(maps[17], 12, 5, 14, 10, 0));
+        targetGates.Add(271, this.CreateExitGate(maps[52], 12, 5, 14, 10, 0));
 
         // Chaos Castle
         targetGates.Add(82, this.CreateExitGate(maps[18], 31, 88, 36, 95, 0));
