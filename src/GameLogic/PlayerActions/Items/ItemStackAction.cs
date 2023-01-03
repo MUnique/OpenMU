@@ -41,7 +41,7 @@ public class ItemStackAction
         var jewels = player.Inventory.Items.Where(item => item.Definition == mix.SingleJewel).Take(stackSize).ToList();
         if (jewels.Count == stackSize)
         {
-            foreach (Item jewel in jewels)
+            foreach (var jewel in jewels)
             {
                 await player.Inventory.RemoveItemAsync(jewel).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(jewel.ItemSlot)).ConfigureAwait(false);
@@ -49,7 +49,7 @@ public class ItemStackAction
 
             var stacked = player.PersistenceContext.CreateNew<Item>();
             stacked.Definition = mix.MixedJewel;
-            stacked.Level = (byte)(stackSize / 10);
+            stacked.Level = (byte)((stackSize / 10) - 1);
             stacked.Durability = 1;
             await player.Inventory.AddItemAsync(stacked).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(stacked)).ConfigureAwait(false);
@@ -87,7 +87,7 @@ public class ItemStackAction
             return;
         }
 
-        if (stacked.Definition != mix.SingleJewel)
+        if (stacked.Definition != mix.MixedJewel)
         {
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Selected Item is not a stacked Jewel.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;

@@ -71,13 +71,14 @@ public class Storage : IStorage
     {
         get
         {
-            for (int x = 0; x < InventoryConstants.RowSize; x++)
+            for (int row = 0; row < this._rows; row++)
             {
-                for (int y = 0; y < this._rows; y++)
+                for (int column = 0; column < InventoryConstants.RowSize; column++)
                 {
-                    if (!this._usedSlots[x, y])
+
+                    if (!this._usedSlots[row, column])
                     {
-                        yield return this.GetSlot(x, y);
+                        yield return this.GetSlot(column, row);
                     }
                 }
             }
