@@ -16,3 +16,9 @@ dotnet_diagnostic.VSTHRD103.severity = error
 
 # VSTHRD111: Use ConfigureAwait(bool)
 dotnet_diagnostic.VSTHRD111.severity = warning
+
+[*.xml]
+
+tab_width = 2
+indent_size = 2
+end_of_line = crlf

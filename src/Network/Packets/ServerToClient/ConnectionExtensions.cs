@@ -4065,9 +4065,9 @@ public static class ConnectionExtensions
     /// Sends a <see cref="MuHelperStatusUpdate" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="consumeMoney">The consume money.</param>
+    /// <param name="consumeMoney">The flag, if money should be consumed. If this is 'true', setting PauseStatus to 'false' doesn't cause starting the helper.</param>
     /// <param name="money">The money.</param>
-    /// <param name="pauseStatus">The pause status.</param>
+    /// <param name="pauseStatus">The pause status. A value of 'true' always works to stop the helper. However, it can only be started, with ConsumeMoney set to 'false'.</param>
     /// <remarks>
     /// Is sent by the server when: The server validated or changed the status of the MU Helper.
     /// Causes reaction on client side: The client toggle the MU Helper status.

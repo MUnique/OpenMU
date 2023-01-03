@@ -19113,7 +19113,7 @@ public readonly ref struct MuHelperStatusUpdateRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the consume money.
+    /// Gets or sets the flag, if money should be consumed. If this is 'true', setting PauseStatus to 'false' doesn't cause starting the helper.
     /// </summary>
     public bool ConsumeMoney
     {
@@ -19131,7 +19131,7 @@ public readonly ref struct MuHelperStatusUpdateRef
     }
 
     /// <summary>
-    /// Gets or sets the pause status.
+    /// Gets or sets the pause status. A value of 'true' always works to stop the helper. However, it can only be started, with ConsumeMoney set to 'false'.
     /// </summary>
     public bool PauseStatus
     {

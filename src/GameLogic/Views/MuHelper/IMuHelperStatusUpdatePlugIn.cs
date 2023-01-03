@@ -4,17 +4,24 @@
 
 namespace MUnique.OpenMU.GameLogic.Views.MuHelper;
 
-using MUnique.OpenMU.GameLogic.MuHelper;
-
 /// <summary>
 /// Interface of a view whose implementation toggles the MU Helper status.
 /// </summary>
 public interface IMuHelperStatusUpdatePlugIn : IViewPlugIn
 {
     /// <summary>
-    /// Updates the MU Helper status.
+    /// Starts the MU Helper.
     /// </summary>
-    /// <param name="status">The desired status.</param>
-    /// <param name="money">Cost of the helper for the current usage. 0, if the MU Helper is currently inactive.</param>
-    ValueTask UpdateStatusAsync(MuHelperStatus status, uint money = 0);
+    ValueTask StartAsync();
+
+    /// <summary>
+    /// Stops the MU Helper.
+    /// </summary>
+    ValueTask StopAsync();
+
+    /// <summary>
+    /// Consumes the money during running the helper.
+    /// </summary>
+    /// <param name="money">Cost of the helper for the current usage.</param>
+    ValueTask ConsumeMoneyAsync(uint money);
 }

@@ -12,7 +12,7 @@ using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 
 /// <summary>
-/// Mu Bot Class.
+/// Implements the logic of the 'MU Helper'.
 /// </summary>
 public class MuHelper : AsyncDisposable
 {
@@ -78,6 +78,9 @@ public class MuHelper : AsyncDisposable
             return false;
         }
 
+        await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.StartAsync()).ConfigureAwait(false);
+        await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.ConsumeMoneyAsync((uint)requiredMoney)).ConfigureAwait(false);
+
         this._player.Attributes?.AddElement(ActiveElement, Stats.IsMuHelperActive);
         this._stopCts = new CancellationTokenSource();
         var cts = this._stopCts.Token;
@@ -106,7 +109,7 @@ public class MuHelper : AsyncDisposable
             stopCts.Dispose();
             this._stopCts = null;
 
-            await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.UpdateStatusAsync(MuHelperStatus.Disabled)).ConfigureAwait(false);
+            await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.StopAsync()).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -141,7 +144,6 @@ public class MuHelper : AsyncDisposable
         try
         {
             using var timer = new PeriodicTimer(this._configuration.PayInterval);
-            await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.UpdateStatusAsync(MuHelperStatus.Enabled)).ConfigureAwait(false);
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -167,7 +169,7 @@ public class MuHelper : AsyncDisposable
         var amount = this.CalculateRequiredMoney();
         if (amount > 0 && this._player.TryRemoveMoney(amount))
         {
-            await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.UpdateStatusAsync(MuHelperStatus.Enabled, (uint)amount)).ConfigureAwait(false);
+            await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.ConsumeMoneyAsync((uint)amount)).ConfigureAwait(false);
         }
         else
         {
