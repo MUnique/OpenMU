@@ -834,6 +834,11 @@ public class Stats
     public static AttributeDefinition IsInSafezone { get; } = new (new Guid("82044DF9-F528-4AD6-9AAA-6FEAA4C786E7"), "Flag, if the character is located in a safezone of a game map", "Characters at the safezone recover additional health and shield.");
 
     /// <summary>
+    /// Gets the attribute definition, which defines if a player has MU Helper activated.
+    /// </summary>
+    public static AttributeDefinition IsMuHelperActive { get; } = new(new Guid("1FBD3CC0-DFDC-4A19-9B73-5B2DC0E12983"), "Is MU Helper active", "");
+
+    /// <summary>
     /// Gets the <see cref="TransformationSkin"/> attribute which defines if and how the character is skinned as a monster.
     /// This value is > 0, when the character got skinned as a monster, by wearing a transformation ring. The value specifies the type of monster (skin).
     /// </summary>

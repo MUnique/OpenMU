@@ -2722,6 +2722,62 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MuHelperStatusChangeRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="pauseStatus">The pause status.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client clicked on MU Helper play or pause button.
+    /// Causes reaction on server side: The server validates, if user can use the helper and sends the status back.
+    /// </remarks>
+    public static async ValueTask SendMuHelperStatusChangeRequestAsync(this IConnection? connection, bool @pauseStatus)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperStatusChangeRequestRef.Length;
+            var packet = new MuHelperStatusChangeRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.PauseStatus = @pauseStatus;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuHelperSaveDataRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="helperData">The helper data.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client want to save current MU Helper data.
+    /// Causes reaction on server side: The server should save supplied MU Helper data.
+    /// </remarks>
+    public static async ValueTask SendMuHelperSaveDataRequestAsync(this IConnection? connection, Memory<byte> @helperData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperSaveDataRequestRef.Length;
+            var packet = new MuHelperSaveDataRequestRef(connection.Output.GetSpan(length)[..length]);
+            @helperData.Span.CopyTo(packet.HelperData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="QuestSelectRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

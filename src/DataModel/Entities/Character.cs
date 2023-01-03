@@ -210,6 +210,11 @@ public class Character
     public byte[]? KeyConfiguration { get; set; }
 
     /// <summary>
+    /// Gets or sets the configuration of the mu helper, which is set by the client and just saved as is.
+    /// </summary>
+    public byte[]? MuHelperConfiguration { get; set; }
+
+    /// <summary>
     /// Gets or sets the stat attributes.
     /// </summary>
     [MemberOfAggregate]
