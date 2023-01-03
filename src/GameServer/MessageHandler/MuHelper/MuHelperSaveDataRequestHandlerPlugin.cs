@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.MuHelper;
 
+using System.Buffers;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.MuHelper;
@@ -29,6 +30,10 @@ public class MuHelperSaveDataRequestHandlerPlugin : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         MuHelperSaveDataRequest message = packet;
-        await this._updateMuBotConfigurationAction.SaveDataAsync(player, message.HelperData.ToArray()).ConfigureAwait(false); // todo check if we can return HelperData as Memory
+        var dataSize = message.HelperData.Length;
+        using var memoryOwner = MemoryPool<byte>.Shared.Rent(dataSize);
+        var memory = memoryOwner.Memory[..dataSize];
+        message.HelperData.CopyTo(memory.Span);
+        await this._updateMuBotConfigurationAction.SaveDataAsync(player, memory).ConfigureAwait(false);
     }
 }
