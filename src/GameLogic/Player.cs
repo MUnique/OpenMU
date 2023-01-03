@@ -861,8 +861,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return 0;
         }
 
-        var isMasterClass = characterClass.IsMasterClass;
-        var expRateAttribute = isMasterClass ? Stats.MasterExperienceRate : Stats.ExperienceRate;
+        var addMasterExperience = characterClass.IsMasterClass
+                            && (short)this.Attributes![Stats.Level] == this.GameContext.Configuration.MaximumLevel;
+        var expRateAttribute = addMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
 
         var totalLevel = this.Attributes![Stats.Level] + this.Attributes![Stats.MasterLevel];
         var experience = killedObject.CalculateBaseExperience(totalLevel);
@@ -871,7 +872,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
         experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
 
-        if (isMasterClass)
+        if (addMasterExperience)
         {
             await this.AddMasterExperienceAsync((int)experience, killedObject).ConfigureAwait(false);
         }
