@@ -4,13 +4,13 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization;
 
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
 
 /// <summary>
 /// Base class for a map initializer which provides some common basic functionality.
@@ -84,7 +84,7 @@ internal abstract class BaseMapInitializer : IMapInitializer
     /// <summary>
     /// Gets the map number of the safezone map where a player respawns after death.
     /// </summary>
-    protected virtual byte SafezoneMapNumber => (byte)(this._mapDefinition?.ExitGates.Any(g => g.IsSpawnGate) ?? false ? this._mapDefinition.Number : Lorencia.Number);
+    protected virtual byte SafezoneMapNumber => (byte)(this._mapDefinition?.ExitGates.Any(g => g.IsSpawnGate) ?? false ? this._mapDefinition.Number : Version075.Maps.Lorencia.Number);
 
     /// <inheritdoc />
     public void Initialize()
@@ -95,14 +95,22 @@ internal abstract class BaseMapInitializer : IMapInitializer
         this._mapDefinition.Name = this.MapName;
         this._mapDefinition.Discriminator = this.Discriminator;
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = $"{assembly.GetName().Name}.Resources.{this.TerrainVersionPrefix}Terrain{this.MapNumber + 1}{(this.Discriminator > 0 ? ("_" + this.Discriminator) : string.Empty)}.att";
-        using (var stream = assembly.GetManifestResourceStream(resourceName))
+        if (this.GetTerrainFileName() is { } resourceName)
         {
+            using var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream != null)
             {
                 using var reader = new BinaryReader(stream);
-                this._mapDefinition.TerrainData = reader.ReadBytes((int)stream.Length);
+                this._mapDefinition.TerrainData = reader.ReadBytes(3 * ushort.MaxValue);
             }
+            else
+            {
+                Debug.Fail("Couldn't get terrain resource stream for map " + this.MapName);
+            }
+        }
+        else
+        {
+            Debug.Fail("Couldn't find terrain resource for map " + this.MapName);
         }
 
         this._mapDefinition.ExpMultiplier = 1;
@@ -267,12 +275,42 @@ internal abstract class BaseMapInitializer : IMapInitializer
     {
         if (this._mapDefinition is null)
         {
-            throw new InvalidOperationException("MapDefiniton not set yet.");
+            throw new InvalidOperationException("MapDefinition not set yet.");
         }
 
         var requirement = this.Context.CreateNew<AttributeRequirement>();
         requirement.Attribute = attribute.GetPersistent(this.GameConfiguration);
         requirement.MinimumValue = minimumValue;
         this._mapDefinition.MapRequirements.Add(requirement);
+    }
+
+    private string? GetTerrainFileName()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var resourceNames = assembly.GetManifestResourceNames();
+        for (var mapNumber = this.MapNumber + 1; mapNumber > 0 && mapNumber > this.MapNumber - 10; mapNumber--)
+        {
+            var candidate = $"{assembly.GetName().Name}.Resources.{this.TerrainVersionPrefix}Terrain{mapNumber}{(this.Discriminator > 0 ? ("_" + this.Discriminator) : string.Empty)}.att";
+            if (resourceNames.Contains(candidate))
+            {
+                return candidate;
+            }
+
+            if (this.Discriminator > 0)
+            {
+                var candidate2 = $"{assembly.GetName().Name}.Resources.{this.TerrainVersionPrefix}Terrain{mapNumber}.att";
+                if (resourceNames.Contains(candidate2))
+                {
+                    return candidate2;
+                }
+            }
+
+            if (!char.IsDigit(this.MapName[^1]))
+            {
+                break;
+            }
+        }
+
+        return null;
     }
 }

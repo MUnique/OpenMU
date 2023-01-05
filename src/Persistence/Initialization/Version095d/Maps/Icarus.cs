@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
-using MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
 
 /// <summary>
 /// The initialization for the Icarus map.
@@ -42,7 +41,7 @@ internal class Icarus : BaseMapInitializer
     protected override string MapName => Name;
 
     /// <inheritdoc/>
-    protected override byte SafezoneMapNumber => LostTower.Number;
+    protected override byte SafezoneMapNumber => Version075.Maps.LostTower.Number;
 
     /// <inheritdoc/>
     protected override void CreateMapAttributeRequirements()
