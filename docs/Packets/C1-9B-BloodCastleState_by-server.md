@@ -28,7 +28,13 @@ Defines the status of the event.
 
 | Value | Name | Description |
 |-------|------|-------------|
-| 0 | Started | The event has just started and is running. |
-| 1 | GateNotDestroyed | The event is running, but the gate is not destroyed. |
-| 2 | Ended | The event has ended. |
-| 4 | GateDestroyed | The event is running and the gate is destroyed. |
+| 0 | BloodCastleStarted | The blood castle event has just started and is running. |
+| 1 | BloodCastleGateNotDestroyed | The blood castle event is running, but the gate is not destroyed. |
+| 2 | BloodCastleEnded | The blood castle event has ended. |
+| 4 | BloodCastleGateDestroyed | The blood castle event is running and the gate is destroyed. |
+| 5 | ChaosCastleStarted | The chaos castle event has just started and is running. |
+| 6 | ChaosCastleRunning | The chaos castle event is running. |
+| 7 | ChaosCastleEnded | The chaos castle event has ended. |
+| 8 | ChaosCastleStageOne | The chaos castle event reached the first stage of map shrinking. |
+| 9 | ChaosCastleStageTwo | The chaos castle event reached the second stage of map shrinking. |
+| 10 | ChaosCastleStageThree | The chaos castle event reached the third stage of map shrinking. |

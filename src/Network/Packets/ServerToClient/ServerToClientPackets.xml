@@ -8326,24 +8326,54 @@
           <Description>Defines the status of the event.</Description>
           <Values>
             <EnumValue>
-              <Name>Started</Name>
-              <Description>The event has just started and is running.</Description>
+              <Name>BloodCastleStarted</Name>
+              <Description>The blood castle event has just started and is running.</Description>
               <Value>0</Value>
             </EnumValue>
             <EnumValue>
-              <Name>GateNotDestroyed</Name>
-              <Description>The event is running, but the gate is not destroyed.</Description>
+              <Name>BloodCastleGateNotDestroyed</Name>
+              <Description>The blood castle event is running, but the gate is not destroyed.</Description>
               <Value>1</Value>
             </EnumValue>
             <EnumValue>
-              <Name>Ended</Name>
-              <Description>The event has ended.</Description>
+              <Name>BloodCastleEnded</Name>
+              <Description>The blood castle event has ended.</Description>
               <Value>2</Value>
             </EnumValue>
             <EnumValue>
-              <Name>GateDestroyed</Name>
-              <Description>The event is running and the gate is destroyed.</Description>
+              <Name>BloodCastleGateDestroyed</Name>
+              <Description>The blood castle event is running and the gate is destroyed.</Description>
               <Value>4</Value>
+            </EnumValue>
+						<EnumValue>
+              <Name>ChaosCastleStarted</Name>
+              <Description>The chaos castle event has just started and is running.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCastleRunning</Name>
+              <Description>The chaos castle event is running.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCastleEnded</Name>
+              <Description>The chaos castle event has ended.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCastleStageOne</Name>
+              <Description>The chaos castle event reached the first stage of map shrinking.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCastleStageTwo</Name>
+              <Description>The chaos castle event reached the second stage of map shrinking.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ChaosCastleStageThree</Name>
+              <Description>The chaos castle event reached the third stage of map shrinking.</Description>
+              <Value>10</Value>
             </EnumValue>
           </Values>
         </Enum>

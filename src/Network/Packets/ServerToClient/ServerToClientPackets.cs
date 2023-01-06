@@ -23184,24 +23184,54 @@ public readonly struct BloodCastleState
     public enum Status
     {
         /// <summary>
-        /// The event has just started and is running.
+        /// The blood castle event has just started and is running.
         /// </summary>
-            Started = 0,
+            BloodCastleStarted = 0,
 
         /// <summary>
-        /// The event is running, but the gate is not destroyed.
+        /// The blood castle event is running, but the gate is not destroyed.
         /// </summary>
-            GateNotDestroyed = 1,
+            BloodCastleGateNotDestroyed = 1,
 
         /// <summary>
-        /// The event has ended.
+        /// The blood castle event has ended.
         /// </summary>
-            Ended = 2,
+            BloodCastleEnded = 2,
 
         /// <summary>
-        /// The event is running and the gate is destroyed.
+        /// The blood castle event is running and the gate is destroyed.
         /// </summary>
-            GateDestroyed = 4,
+            BloodCastleGateDestroyed = 4,
+
+        /// <summary>
+        /// The chaos castle event has just started and is running.
+        /// </summary>
+            ChaosCastleStarted = 5,
+
+        /// <summary>
+        /// The chaos castle event is running.
+        /// </summary>
+            ChaosCastleRunning = 6,
+
+        /// <summary>
+        /// The chaos castle event has ended.
+        /// </summary>
+            ChaosCastleEnded = 7,
+
+        /// <summary>
+        /// The chaos castle event reached the first stage of map shrinking.
+        /// </summary>
+            ChaosCastleStageOne = 8,
+
+        /// <summary>
+        /// The chaos castle event reached the second stage of map shrinking.
+        /// </summary>
+            ChaosCastleStageTwo = 9,
+
+        /// <summary>
+        /// The chaos castle event reached the third stage of map shrinking.
+        /// </summary>
+            ChaosCastleStageThree = 10,
     }
 
     private readonly Memory<byte> _data;

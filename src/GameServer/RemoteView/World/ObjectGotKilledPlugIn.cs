@@ -28,7 +28,7 @@ public class ObjectGotKilledPlugIn : IObjectGotKilledPlugIn
     public ObjectGotKilledPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ObjectGotKilledAsync(IAttackable killed, IAttacker killer)
+    public async ValueTask ObjectGotKilledAsync(IAttackable killed, IAttacker? killer)
     {
         if (this._player.Connection is not { } connection)
         {

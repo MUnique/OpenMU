@@ -96,7 +96,10 @@ public class DefaultDropGenerator : IDropGenerator
     /// <inheritdoc/>
     public Item? GenerateItemDrop(DropItemGroup selectedGroup)
     {
-        var item = this.GenerateRandomItem(selectedGroup.PossibleItems);
+        var item = selectedGroup.ItemType == SpecialItemType.Ancient
+            ? this.GenerateRandomAncient()
+            : this.GenerateRandomItem(selectedGroup.PossibleItems);
+
         if (item is null)
         {
             return null;

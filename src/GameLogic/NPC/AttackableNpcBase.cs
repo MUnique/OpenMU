@@ -125,6 +125,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     public abstract ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
 
     /// <inheritdoc/>
+    public ValueTask KillInstantlyAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();

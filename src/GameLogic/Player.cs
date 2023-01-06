@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Runtime;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -101,6 +102,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Occurs when the player picked up an item.
     /// </summary>
     public event AsyncEventHandler<(Player, ILocateable)>? PlayerPickedUpItem;
+
+    /// <summary>
+    /// Occurs when this instance died.
+    /// </summary>
+    public event EventHandler<DeathInformation>? Died;
 
     /// <inheritdoc />
     ILogger ILoggerOwner.Logger => this.Logger;
@@ -476,6 +482,21 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await eventHandler((this, item)).ConfigureAwait(false);
         }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask KillInstantlyAsync()
+    {
+        if (this.Attributes is null)
+        {
+            throw new InvalidOperationException("AttributeSystem not set.");
+        }
+
+        var hitInfo = new HitInfo((uint)this.Attributes[Stats.CurrentHealth], (uint)this.Attributes[Stats.CurrentShield], DamageAttributes.Undefined);
+        this.Attributes[Stats.CurrentHealth] = 0;
+
+        this.LastDeath = new DeathInformation(0, string.Empty, hitInfo, 0);
+        await this.OnDeathAsync(null).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -1549,7 +1570,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask OnDeathAsync(IAttacker killer)
+    private async ValueTask OnDeathAsync(IAttacker? killer)
     {
         if (!await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
         {
@@ -1586,6 +1607,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         _ = RespawnAsync(this._respawnAfterDeathCts.Token);
 
         this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, killer);
+        if (this.LastDeath is { } deathInformation)
+        {
+            this.Died?.Invoke(this, deathInformation);
+        }
     }
 
     private Item? GetAmmunitionItem()
