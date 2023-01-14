@@ -76,8 +76,15 @@ public enum FieldType
 
     /// <summary>
     /// The field is a float value and has a length of four bytes.
+    /// It's encoded as little endian.
     /// </summary>
     Float,
+
+    /// <summary>
+    /// The field is a double value and has a length of eight bytes.
+    /// It's encoded as little endian.
+    /// </summary>
+    Double,
 
     /// <summary>
     /// The field is a structure and has the length of the structure.

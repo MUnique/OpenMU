@@ -16140,8 +16140,8 @@ public readonly struct MasterSkillLevelUpdate
     /// </summary>
     public float DisplayValue
     {
-        get => BitConverter.ToSingle(this._data.Span[20..]);
-        set => BitConverter.GetBytes(value).CopyTo(this._data.Span[20..]);
+        get => ReadSingleLittleEndian(this._data.Span[20..]);
+        set => WriteSingleLittleEndian(this._data.Span[20..], value);
     }
 
     /// <summary>
@@ -16149,8 +16149,8 @@ public readonly struct MasterSkillLevelUpdate
     /// </summary>
     public float DisplayValueOfNextLevel
     {
-        get => BitConverter.ToSingle(this._data.Span[24..]);
-        set => BitConverter.GetBytes(value).CopyTo(this._data.Span[24..]);
+        get => ReadSingleLittleEndian(this._data.Span[24..]);
+        set => WriteSingleLittleEndian(this._data.Span[24..], value);
     }
 
     /// <summary>
@@ -16305,8 +16305,8 @@ public readonly struct MasterSkillEntry
     /// </summary>
     public float DisplayValue
     {
-        get => BitConverter.ToSingle(this._data.Span[4..]);
-        set => BitConverter.GetBytes(value).CopyTo(this._data.Span[4..]);
+        get => ReadSingleLittleEndian(this._data.Span[4..]);
+        set => WriteSingleLittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -16314,8 +16314,8 @@ public readonly struct MasterSkillEntry
     /// </summary>
     public float DisplayValueOfNextLevel
     {
-        get => BitConverter.ToSingle(this._data.Span[8..]);
-        set => BitConverter.GetBytes(value).CopyTo(this._data.Span[8..]);
+        get => ReadSingleLittleEndian(this._data.Span[8..]);
+        set => WriteSingleLittleEndian(this._data.Span[8..], value);
     }
 }
 }
