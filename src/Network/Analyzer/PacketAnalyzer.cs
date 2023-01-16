@@ -278,8 +278,9 @@ public sealed class PacketAnalyzer : IDisposable
             FieldType.LongBigEndian => ReadUInt64BigEndian(data[field.Index..]).ToString(CultureInfo.InvariantCulture),
             FieldType.Enum => this.ExtractEnumValue(data, field, packet, definitions),
             FieldType.StructureArray => this.ExtractStructureArrayValues(data, field, packet, definitions),
-            FieldType.Float => BitConverter.ToSingle(data[field.Index..]).ToString(CultureInfo.InvariantCulture),
-            _ => string.Empty
+            FieldType.Float => ReadSingleLittleEndian(data[field.Index..]).ToString(CultureInfo.InvariantCulture),
+            FieldType.Double => ReadDoubleBigEndian(data[field.Index..]).ToString(CultureInfo.InvariantCulture),
+            _ => string.Empty,
         };
     }
 
