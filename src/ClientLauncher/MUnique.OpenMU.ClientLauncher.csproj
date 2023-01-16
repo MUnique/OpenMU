@@ -25,11 +25,14 @@
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Rocket_16x.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
   <PropertyGroup>
     <ApplicationManifest>MUnique.OpenMU.ClientLauncher.exe.manifest</ApplicationManifest>
-    <ApplicationIcon />
+    <ApplicationIcon>Rocket_16x.ico</ApplicationIcon>
     <StartupObject>MUnique.OpenMU.ClientLauncher.Program</StartupObject>
   </PropertyGroup>
   
