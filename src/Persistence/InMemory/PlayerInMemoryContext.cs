@@ -35,6 +35,13 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask<MUnique.OpenMU.DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName)
+    {
+        var allAccounts = await this.Manager.GetRepository<Account>().GetAllAsync().ConfigureAwait(false);
+        return allAccounts.FirstOrDefault(account => account.LoginName == loginName);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<IEnumerable<MUnique.OpenMU.DataModel.Entities.Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count)
     {
         var allAccounts = await this.Manager.GetRepository<Account>().GetAllAsync().ConfigureAwait(false);
@@ -45,5 +52,12 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     public async ValueTask<bool> CanSaveLetterAsync(Interfaces.LetterHeader letterHeader)
     {
         return true;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName)
+    {
+        var allAccounts = await this.Manager.GetRepository<Account>().GetAllAsync().ConfigureAwait(false);
+        return allAccounts.FirstOrDefault(account => account.Characters.Any(c => c.Name == characterName));
     }
 }

@@ -35,10 +35,24 @@ public interface IPlayerContext : IContext
     ValueTask<Account?> GetAccountByLoginNameAsync(string loginName, string password);
 
     /// <summary>
+    /// Gets the account by login name.
+    /// </summary>
+    /// <param name="loginName">The login name.</param>
+    /// <returns>The account, if exist. Otherwise, null.</returns>
+    ValueTask<Account?> GetAccountByLoginNameAsync(string loginName);
+
+    /// <summary>
     /// Gets the accounts ordered by login name.
     /// </summary>
     /// <param name="skip">The skip count.</param>
     /// <param name="count">The count.</param>
     /// <returns>The account objects, without depending data.</returns>
     ValueTask<IEnumerable<Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count);
+
+    /// <summary>
+    /// Gets the account by character name.
+    /// </summary>
+    /// <param name="characterName">The character name.</param>
+    /// <returns>The account Otherwise, null.</returns>
+    ValueTask<Account?> GetAccountByCharacterNameAsync(string characterName);
 }

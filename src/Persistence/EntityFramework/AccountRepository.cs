@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
+using System.Linq;
 
 /// <summary>
 /// Repository for accounts.
@@ -53,6 +54,25 @@ internal class AccountRepository : CachingGenericRepository<Account>
     }
 
     /// <summary>
+    /// Gets the account by character name.
+    /// </summary>
+    /// <param name="characterName">The character name.</param>
+    /// <returns>The account Otherwise, null.</returns>
+    internal async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName)
+    {
+        using var context = this.GetContext();
+        var accountInfo = await context.Context.Set<Account>()
+            .AsNoTracking().FirstOrDefaultAsync(a => a.RawCharacters.Any(c => c.Name == characterName)).ConfigureAwait(false);
+
+        if (accountInfo != null)
+        {
+            return await this.GetByIdAsync(accountInfo.Id).ConfigureAwait(false);
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Gets the account by login name if the password is correct.
     /// </summary>
     /// <param name="loginName">The login name.</param>
@@ -62,6 +82,28 @@ internal class AccountRepository : CachingGenericRepository<Account>
     {
         using var context = this.GetContext();
         return await this.LoadAccountByLoginNameByJsonQueryAsync(loginName, password, context).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the account by login name.
+    /// </summary>
+    /// <param name="loginName">The login name.</param>
+    /// <returns>The account, if exist. Otherwise, null.</returns>
+    internal async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName)
+    {
+        using var context = this.GetContext();
+
+        var accountInfo = await context.Context.Set<Account>()
+           .Select(a => new { a.Id, a.LoginName })
+           .AsNoTracking()
+           .FirstOrDefaultAsync(a => a.LoginName == loginName).ConfigureAwait(false);
+
+        if (accountInfo != null)
+        {
+            return await this.GetByIdAsync(accountInfo.Id).ConfigureAwait(false);
+        }
+
+        return null;
     }
 
     private async ValueTask<Account?> LoadAccountByLoginNameByJsonQueryAsync(string loginName, string password, EntityFrameworkContextBase context)
