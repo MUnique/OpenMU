@@ -27,25 +27,8 @@ public class UnBanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatComma
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, BanCharChatCommandArgs arguments)
     {
-        if (string.IsNullOrEmpty(arguments.CharacterName))
-        {
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Character name is required.").ConfigureAwait(false);
-            return;
-        }
+        await this.ChangeAccountStateByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty, AccountState.Normal).ConfigureAwait(false);
 
-        using var context = gameMaster.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameMaster.GameContext.Configuration);
-        var account = await context.GetAccountByCharacterNameAsync(arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
-
-        if (account != null)
-        {
-            account.State = AccountState.Normal;
-            await context.SaveChangesAsync().ConfigureAwait(false);
-
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {arguments.CharacterName} has been unbanned.").ConfigureAwait(false);
-        }
-        else
-        {
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Character {arguments.CharacterName} not found.\"").ConfigureAwait(false);
-        }
+        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account from {arguments.CharacterName} has been unbanned.").ConfigureAwait(false);
     }
 }

@@ -27,37 +27,8 @@ public class BanAccChatCommandPlugIn : ChatCommandPlugInBase<BanAccChatCommandAr
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, BanAccChatCommandArgs arguments)
     {
-        if (string.IsNullOrEmpty(arguments.AccountName))
-        {
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account name is required.").ConfigureAwait(false);
-            return;
-        }
+        await this.ChangeAccountStateByLoginNameAsync(gameMaster, arguments.AccountName ?? string.Empty, AccountState.Banned).ConfigureAwait(false);
 
-        using var context = gameMaster.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameMaster.GameContext.Configuration);
-        var account = await context.GetAccountByLoginNameAsync(arguments.AccountName ?? string.Empty).ConfigureAwait(false);
-
-        if (account != null)
-        {
-            foreach (var character in account.Characters)
-            {
-                var player = gameMaster.GameContext.GetPlayerByCharacterName(character.Name ?? string.Empty);
-
-                // disconect to change account
-                if (player != null)
-                {
-                    await player.DisconnectAsync().ConfigureAwait(false);
-                    break;
-                }
-            }
-
-            account.State = AccountState.Banned;
-            await context.SaveChangesAsync().ConfigureAwait(false);
-
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account {arguments.AccountName} has been banned.").ConfigureAwait(false);
-        }
-        else
-        {
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account {arguments.AccountName} not found.\"").ConfigureAwait(false);
-        }
+        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account {arguments.AccountName} has been banned.").ConfigureAwait(false);
     }
 }

@@ -140,4 +140,64 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
             ? warpList.FirstOrDefault(info => info.Gate?.Map?.Number == mapId)
             : warpList.FirstOrDefault(info => info.Name.Equals(map, StringComparison.OrdinalIgnoreCase));
     }
+
+    /// <summary>
+    /// Change <see cref="AccountState"/> from Account by character name.
+    /// </summary>
+    /// <param name="gameMaster">GameMaster Player.</param>
+    /// <param name="name">Name of character to be changed.</param>
+    /// <param name="accountState">New <see cref="AccountState"/>.</param>
+    protected ValueTask ChangeAccountStateByCharacterNameAsync(Player gameMaster, string? name, AccountState accountState)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException($"name is required.");
+        }
+
+        return this.ChangeAccountStateAsync(gameMaster, (MUnique.OpenMU.Persistence.IPlayerContext context) => context.GetAccountByCharacterNameAsync(name), accountState);
+    }
+
+    /// <summary>
+    /// Change <see cref="AccountState"/> from Account by login name.
+    /// </summary>
+    /// <param name="gameMaster">GameMaster Player.</param>
+    /// <param name="loginName">Login from account to be changed.</param>
+    /// <param name="accountState">New <see cref="AccountState"/>.</param>
+    protected ValueTask ChangeAccountStateByLoginNameAsync(Player gameMaster, string? loginName, AccountState accountState)
+    {
+        if (string.IsNullOrEmpty(loginName))
+        {
+            throw new ArgumentException($"loginName is required.");
+        }
+
+        return this.ChangeAccountStateAsync(gameMaster, (MUnique.OpenMU.Persistence.IPlayerContext context) => context.GetAccountByLoginNameAsync(loginName), accountState);
+    }
+
+    private async ValueTask ChangeAccountStateAsync(Player gameMaster, Func<MUnique.OpenMU.Persistence.IPlayerContext, ValueTask<Account?>> accountSelector, AccountState accountState)
+    {
+        using var context = gameMaster.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameMaster.GameContext.Configuration);
+        var account = await accountSelector(context).ConfigureAwait(false);
+
+        if (account != null)
+        {
+            foreach (var character in account.Characters)
+            {
+                var player = gameMaster.GameContext.GetPlayerByCharacterName(character.Name ?? string.Empty);
+
+                // disconect to change account
+                if (player != null)
+                {
+                    await player.DisconnectAsync().ConfigureAwait(false);
+                    break;
+                }
+            }
+
+            account.State = accountState;
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+        else
+        {
+            throw new ArgumentException($"account not found.");
+        }
+    }
 }
