@@ -65,11 +65,39 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName)
+    {
+        using (this.RepositoryManager.ContextStack.UseContext(this))
+        {
+            if (this.RepositoryManager.GetRepository<Account, AccountRepository>() is { } accountRepository)
+            {
+                return await accountRepository.GetAccountByLoginNameAsync(loginName).ConfigureAwait(false);
+            }
+        }
+
+        return null;
+    }
+
+    /// <inheritdoc />
     public async ValueTask<IEnumerable<DataModel.Entities.Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count)
     {
         using (this.RepositoryManager.ContextStack.UseContext(this))
         {
             return await this.Context.Set<Account>().OrderBy(a => a.LoginName).Skip(skip).Take(count).ToListAsync().ConfigureAwait(false);
         }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName)
+    {
+        using (this.RepositoryManager.ContextStack.UseContext(this))
+        {
+            if (this.RepositoryManager.GetRepository<Account, AccountRepository>() is { } accountRepository)
+            {
+                return await accountRepository.GetAccountByCharacterNameAsync(characterName).ConfigureAwait(false);
+            }
+        }
+
+        return null;
     }
 }
