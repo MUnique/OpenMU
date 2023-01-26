@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
+using System.Xml.Linq;
 
 /// <summary>
 /// The base of every chat command plug in.
@@ -151,7 +152,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     {
         if (string.IsNullOrEmpty(name))
         {
-            throw new ArgumentException($"name is required.");
+            throw new ArgumentException($"{nameof(name)} is required.");
         }
 
         return this.ChangeAccountStateAsync(gameMaster, (MUnique.OpenMU.Persistence.IPlayerContext context) => context.GetAccountByCharacterNameAsync(name), accountState);
@@ -167,7 +168,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     {
         if (string.IsNullOrEmpty(loginName))
         {
-            throw new ArgumentException($"loginName is required.");
+            throw new ArgumentException($"{nameof(loginName)} is required.");
         }
 
         return this.ChangeAccountStateAsync(gameMaster, (MUnique.OpenMU.Persistence.IPlayerContext context) => context.GetAccountByLoginNameAsync(loginName), accountState);
