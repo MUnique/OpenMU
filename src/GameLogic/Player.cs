@@ -908,7 +908,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Adds the master experience.
+    /// Adds the master experience to the current character.
     /// </summary>
     /// <param name="experience">The experience which should be added.</param>
     /// <param name="killedObject">The killed object which caused the experience gain.</param>
@@ -955,7 +955,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Adds the experience.
+    /// Adds the experience to the current character.
     /// </summary>
     /// <param name="experience">The experience which should be added.</param>
     /// <param name="killedObject">The killed object which caused the experience gain.</param>
@@ -968,14 +968,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         long exp = experience;
-
-        // Add the Exp
-        bool lvlup = false;
+        bool isLevelUp = false;
         var expTable = this.GameContext.Configuration.ExperienceTable ?? throw Error.NotInitializedProperty(this.GameContext.Configuration, nameof(GameConfiguration.ExperienceTable));
-        if (expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter!.Experience < exp)
+        var expForNextLevel = expTable[(int)this.Attributes[Stats.Level] + 1];
+        if (expForNextLevel - this.SelectedCharacter!.Experience < exp)
         {
-            exp = expTable[(int)this.Attributes[Stats.Level] + 1] - this.SelectedCharacter.Experience;
-            lvlup = true;
+            exp = expForNextLevel - this.SelectedCharacter.Experience;
+            isLevelUp = true;
         }
 
         this.SelectedCharacter.Experience += exp;
@@ -984,7 +983,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject)).ConfigureAwait(false);
 
         // Check the lvl up
-        if (lvlup)
+        if (isLevelUp)
         {
             this.Attributes[Stats.Level]++;
             this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
@@ -995,6 +994,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
             await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
+
+            var remainingExp = experience - exp;
+            if (remainingExp > 0 && this.Attributes![Stats.Level] < this.GameContext.Configuration.MaximumLevel)
+            {
+                await this.AddExperienceAsync((int)remainingExp, killedObject).ConfigureAwait(false);
+            }
         }
     }
 

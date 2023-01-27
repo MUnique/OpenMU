@@ -79,7 +79,7 @@
     <XslTransformation OutputPaths="ServerToClient\ConnectionExtensions.cs" XmlInputPaths="ServerToClient\ServerToClientPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ServerToClient'/&gt;" />
     <XslTransformation OutputPaths="ChatServer\ConnectionExtensions.cs" XmlInputPaths="ChatServer\ChatServerPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ChatServer'/&gt;" />
     <XslTransformation OutputPaths="ConnectServer\ConnectionExtensions.cs" XmlInputPaths="ConnectServer\ConnectServerPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ConnectServer'/&gt;" />
-    <Exec Command="npx rimraf ../../../docs/Packets/C*.md"></Exec>
+    <Exec Command="npx rimraf@3.0.2 ../../../docs/Packets/C*.md"></Exec>
     <Exec Command="npx xslt3 -xsl:GenerateMarkdownDocs.xslt -o:../../../docs/Packets/ClientToServer.md -s:ClientToServer/ClientToServerPackets.xml"></Exec>
     <Exec Command="npx xslt3 -xsl:GenerateMarkdownDocs.xslt -o:../../../docs/Packets/ServerToClient.md -s:ServerToClient/ServerToClientPackets.xml"></Exec>
     <Exec Command="npx xslt3 -xsl:GenerateMarkdownDocs.xslt -o:../../../docs/Packets/ConnectServer.md -s:ConnectServer/ConnectServerPackets.xml"></Exec>
