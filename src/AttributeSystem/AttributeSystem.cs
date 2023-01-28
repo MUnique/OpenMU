@@ -159,13 +159,13 @@ public class AttributeSystem : IAttributeSystem
         stringBuilder.AppendLine("Stat Attributes:");
         foreach (var statAttribute in this._attributes.OfType<StatAttribute>())
         {
-            stringBuilder.AppendLine(statAttribute.Value.ToString(CultureInfo.InvariantCulture));
+            stringBuilder.AppendLine($"  {statAttribute.Definition}: {statAttribute.Value}");
         }
 
         stringBuilder.AppendLine("Others:");
         foreach (var attribute in this._attributes.OfType<IComposableAttribute>())
         {
-            stringBuilder.AppendLine(attribute.Value.ToString(CultureInfo.InvariantCulture));
+            stringBuilder.AppendLine($"  {attribute.Definition}: {attribute.Value}");
         }
 
         return stringBuilder.ToString();
