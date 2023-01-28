@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
+using MUnique.OpenMU.Persistence.BasicModel;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -30,26 +31,29 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CharInfoChatCommandArgs arguments)
     {
-        if (string.IsNullOrEmpty(arguments.CharacterName))
-        {
-            throw new ArgumentException($"{nameof(arguments.CharacterName)} is required.");
-        }
-
-        string characterName = arguments.CharacterName ?? string.Empty;
-
-        using var context = gameMaster.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameMaster.GameContext.Configuration);
-        var account = await context.GetAccountByCharacterNameAsync(characterName).ConfigureAwait(false);
+        var player = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
+        var account = player.Account;
 
         if (account == null)
         {
-            throw new ArgumentException($"Character account not found.");
+            return;
         }
 
         await this.ShowMessageToAsync(gameMaster, $"Account Name: {account.LoginName}").ConfigureAwait(false);
 
-        var character = account.Characters.First(c => c.Name == characterName);
+        await this.ShowAllLinesMessageToAsync(gameMaster, player.SelectedCharacter?.ToString()).ConfigureAwait(false);
 
-        using var reader = new StringReader(character.ToString());
+        await this.ShowAllLinesMessageToAsync(gameMaster, player?.Attributes?.ToString()).ConfigureAwait(false);
+    }
+
+    private async ValueTask ShowAllLinesMessageToAsync(Player gameMaster, string? message)
+    {
+        if (string.IsNullOrEmpty(message))
+        {
+            return;
+        }
+
+        using var reader = new StringReader(message);
 
         while (true)
         {

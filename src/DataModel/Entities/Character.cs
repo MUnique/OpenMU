@@ -252,7 +252,7 @@ public class Character
     /// <inheritdoc />
     public override string ToString()
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.AppendLine($"Id: {this.Id}");
         sb.AppendLine($"Name: {this.Name}");
@@ -277,7 +277,6 @@ public class Character
             sb.AppendLine($"Att( {attribute.Definition?.Designation} ): {attribute.Value}");
         }
 
-        // return this.Name;
         return sb.ToString();
     }
 }
