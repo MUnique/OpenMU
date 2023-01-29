@@ -84,6 +84,12 @@ public sealed class PowerUpWrapper : IElement, IDisposable
         }
     }
 
+    /// <inheritdoc/>
+    public override string? ToString()
+    {
+        return $"{this._parentAttribute?.Definition.Designation}: {this._element}";
+    }
+
     private void OnValueChanged(object? sender, EventArgs eventArgs)
     {
         this.ValueChanged?.Invoke(sender, eventArgs);

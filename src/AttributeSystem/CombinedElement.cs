@@ -39,4 +39,10 @@ public class CombinedElement : IElement
 
     /// <inheritdoc />
     public AggregateType AggregateType => this._element1.AggregateType;
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{this.Value} ({this.AggregateType})";
+    }
 }
