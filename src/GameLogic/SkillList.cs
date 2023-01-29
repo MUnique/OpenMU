@@ -210,6 +210,12 @@ public sealed class SkillList : ISkillList, IDisposable
             this._skillEntry.PropertyChanged -= this.OnSkillEntryOnPropertyChanged;
         }
 
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{this.Value} ({this.AggregateType})";
+        }
+
         private void OnSkillEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
         {
             if (eventArgs.PropertyName == nameof(SkillEntry.Level))
