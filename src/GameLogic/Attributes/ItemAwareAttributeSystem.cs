@@ -59,9 +59,13 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
         var stringBuilder = new StringBuilder();
         stringBuilder.Append(base.ToString());
         stringBuilder.AppendLine("Item Power Ups:");
-        foreach (var itemPowerUp in this.ItemPowerUps)
+        foreach (var (item, powerUps) in this.ItemPowerUps)
         {
-            stringBuilder.AppendLine(itemPowerUp.Key.ToString());
+            stringBuilder.Append(" ").AppendLine(item.ToString());
+            foreach (var powerUp in powerUps)
+            {
+                stringBuilder.Append("  ").AppendLine(powerUp.ToString());
+            }
         }
 
         if (this.ItemSetPowerUps != null)
@@ -69,7 +73,7 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
             stringBuilder.AppendLine("Item Set Power Ups:");
             foreach (var attribute in this.ItemSetPowerUps)
             {
-                stringBuilder.AppendLine(attribute.ToString());
+                stringBuilder.Append(" ").AppendLine(attribute.ToString());
             }
         }
 
