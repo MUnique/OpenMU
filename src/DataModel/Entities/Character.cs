@@ -252,31 +252,6 @@ public class Character
     /// <inheritdoc />
     public override string ToString()
     {
-        var sb = new StringBuilder();
-
-        sb.AppendLine($"Id: {this.Id}");
-        sb.AppendLine($"Name: {this.Name}");
-        sb.AppendLine($"Class: {this.CharacterClass?.Name}");
-        sb.AppendLine($"Slot: {this.CharacterSlot}");
-        sb.AppendLine($"Create Date: {this.CreateDate}");
-        sb.AppendLine($"Exp: {this.Experience}");
-        sb.AppendLine($"Level Up Points: {this.LevelUpPoints}");
-        sb.AppendLine($"Master Exp: {this.MasterExperience}");
-        sb.AppendLine($"Master Lv Up Points: {this.MasterLevelUpPoints}");
-        sb.AppendLine($"Location: {this.CurrentMap?.Name}({this.PositionX}, {this.PositionY})");
-        sb.AppendLine($"Kill Count: {this.PlayerKillCount}");
-        sb.AppendLine($"State Remaining Seconds: {this.StateRemainingSeconds}");
-        sb.AppendLine($"State: {Enum.GetName(this.State)}");
-        sb.AppendLine($"Status: {Enum.GetName(this.CharacterStatus)}");
-        sb.AppendLine($"Used Fruit Points: {this.UsedFruitPoints}");
-        sb.AppendLine($"Used Neg Fruit Points: {this.UsedNegFruitPoints}");
-        sb.AppendLine($"Inventory Extensions: {this.InventoryExtensions}");
-
-        foreach (var attribute in this.Attributes)
-        {
-            sb.AppendLine($"Att( {attribute.Definition?.Designation} ): {attribute.Value}");
-        }
-
-        return sb.ToString();
+        return this.Name;
     }
 }

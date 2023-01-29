@@ -5,11 +5,9 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
-using MUnique.OpenMU.Persistence.BasicModel;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -32,18 +30,42 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CharInfoChatCommandArgs arguments)
     {
         var player = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
-        var account = player.Account;
 
-        if (account == null)
+        if (player.Account is not { } account
+            || player.SelectedCharacter is not { } character)
         {
             return;
         }
 
         await this.ShowMessageToAsync(gameMaster, $"Account Name: {account.LoginName}").ConfigureAwait(false);
 
-        await this.ShowAllLinesMessageToAsync(gameMaster, player.SelectedCharacter?.ToString()).ConfigureAwait(false);
+        await this.ShowAllLinesMessageToAsync(gameMaster, GetCharacterInfo(character)).ConfigureAwait(false);
 
-        await this.ShowAllLinesMessageToAsync(gameMaster, player?.Attributes?.ToString()).ConfigureAwait(false);
+        await this.ShowAllLinesMessageToAsync(gameMaster, player.Attributes?.ToString()).ConfigureAwait(false);
+    }
+
+    private static string GetCharacterInfo(Character character)
+    {
+        var stringBuilder = new StringBuilder()
+            .AppendLine($"Id: {character.Id}")
+            .AppendLine($"Name: {character.Name}")
+            .AppendLine($"Class: {character.CharacterClass?.Name}")
+            .AppendLine($"Slot: {character.CharacterSlot}")
+            .AppendLine($"Create Date: {character.CreateDate}")
+            .AppendLine($"Exp: {character.Experience}")
+            .AppendLine($"Level Up Points: {character.LevelUpPoints}")
+            .AppendLine($"Master Exp: {character.MasterExperience}")
+            .AppendLine($"Master Lv Up Points: {character.MasterLevelUpPoints}")
+            .AppendLine($"Location: {character.CurrentMap?.Name}({character.PositionX}, {character.PositionY})")
+            .AppendLine($"Kill Count: {character.PlayerKillCount}")
+            .AppendLine($"State Remaining Seconds: {character.StateRemainingSeconds}")
+            .AppendLine($"State: {Enum.GetName(character.State)}")
+            .AppendLine($"Status: {Enum.GetName(character.CharacterStatus)}")
+            .AppendLine($"Used Fruit Points: {character.UsedFruitPoints}")
+            .AppendLine($"Used Neg Fruit Points: {character.UsedNegFruitPoints}")
+            .AppendLine($"Inventory Extensions: {character.InventoryExtensions}");
+
+        return stringBuilder.ToString();
     }
 
     private async ValueTask ShowAllLinesMessageToAsync(Player gameMaster, string? message)
