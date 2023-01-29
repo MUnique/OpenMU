@@ -39,4 +39,10 @@ public class ConstantElement : IElement
 
     /// <inheritdoc/>
     public AggregateType AggregateType { get; } = AggregateType.AddRaw;
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{this.Value} ({this.AggregateType})";
+    }
 }

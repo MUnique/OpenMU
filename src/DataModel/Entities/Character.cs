@@ -55,17 +55,17 @@ public enum HeroState
 public enum CharacterStatus
 {
     /// <summary>
-    /// The character is normal
+    /// The character is normal.
     /// </summary>
     Normal = 0,
 
     /// <summary>
-    /// The character is banned
+    /// The character is banned.
     /// </summary>
     Banned = 1,
 
     /// <summary>
-    /// The character is a GameMaster (have mu logo on the head)
+    /// The character is a GameMaster (have mu logo on the head).
     /// </summary>
     GameMaster = 32,
 }
