@@ -6,9 +6,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Immutable;
 using System.Threading;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Pathfinding;
 using Nito.Disposables.Internals;
@@ -24,7 +22,8 @@ using Nito.Disposables.Internals;
 ///     * The map terrain is redefined of not being a safezone anymore.
 ///     * The map is filled up to 100 objects with NPCs
 ///   Then, these objects fight each other. If the player dies, the event is over for that player.
-///   If a npc dies, it doesn't re-spawn. There is a 50% chance, that a died monster explodes and moves players nearby (range 3) by one coordinate.
+///   If a npc dies, it doesn't re-spawn. There is a 50% chance, that a died monster explodes and moves players nearby (range 3)
+///   by <see cref="BlowOutDistance"/>, depending on the distance to the killed monster.
 ///   During the game, the map is getting smaller (so-called "Trap Status") after a certain amount of objects died
 ///   at the following number of remaining objects:
 ///     * less than 40
@@ -33,7 +32,7 @@ using Nito.Disposables.Internals;
 /// A player has won, if:
 ///   1) It's the last remaining object on the map
 ///   2) The time is up and it has the highest kill count
-/// Rewards: A jewel or an ancient item.
+/// Rewards: A jewel and/or an ancient item.
 ///
 /// Different to the original chaos castle, we don't apply additional damage when players get moved.
 /// </remarks>
@@ -52,26 +51,10 @@ public sealed class ChaosCastleContext : MiniGameContext
         (0, 1),
     };
 
-    // private static readonly uint[] BlowOutDamage = { 15, 15, 10, 5 };
-
-    private static readonly IImmutableList<(int Blesses, int Souls)> MonsterJewelDropsPerLevel = new List<(int Blesses, int Souls)>
-    {
-        new(0, 0), // Dummy
-        new(0, 2), // Chaos Castle 1
-        new(1, 1), // Chaos Castle 2
-        new(1, 2), // Chaos Castle 3
-        new(1, 2), // Chaos Castle 4
-        new(2, 1), // Chaos Castle 5
-        new(2, 2), // Chaos Castle 6
-        new(2, 3), // Chaos Castle 7
-    }.ToImmutableList();
-
     private readonly IGameContext _gameContext;
     private readonly IMapInitializer _mapInitializer;
-
-    private readonly Dictionary<Monster, ItemDefinition> _monsterDrops = new();
-
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new();
+    private readonly ConcurrentDictionary<Monster, byte> _monsters = new();
 
     private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
     private TimeSpan _remainingTime;
@@ -80,7 +63,7 @@ public sealed class ChaosCastleContext : MiniGameContext
     private ChaosCastleStatus _currentCastleStatus = ChaosCastleStatus.Running;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BloodCastleContext"/> class.
+    /// Initializes a new instance of the <see cref="ChaosCastleContext"/> class.
     /// </summary>
     /// <param name="key">The key of this context.</param>
     /// <param name="definition">The definition of the mini game.</param>
@@ -91,6 +74,8 @@ public sealed class ChaosCastleContext : MiniGameContext
     {
         this._gameContext = gameContext;
         this._mapInitializer = mapInitializer;
+
+        this.Logger.LogDebug("Event {0} created, game id {1}", this.Definition.Name, (this._gameContext as IGameServerContext)?.Id ?? 0);
     }
 
     /// <inheritdoc />
@@ -104,16 +89,17 @@ public sealed class ChaosCastleContext : MiniGameContext
     {
         if (args.Object is Player player)
         {
-            await this.UpdateStateAsync(ChaosCastleStatus.Ended, player).ConfigureAwait(false);
+            await this.UpdateStateAsync(ChaosCastleStatus.Ended, player, 0).ConfigureAwait(false);
         }
 
         await base.OnObjectRemovedFromMapAsync(args).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    protected override async ValueTask OnTerrainChangedAsync(MiniGameChangeEvent changeEvent)
+    protected override async ValueTask OnTerrainChangingAsync(MiniGameChangeEvent changeEvent)
     {
-        await base.OnTerrainChangedAsync(changeEvent).ConfigureAwait(false);
+        await base.OnTerrainChangingAsync(changeEvent).ConfigureAwait(false);
+        this.Logger.LogDebug("Terrain changing by event index {0}. Event: {1}, game id {2}", changeEvent.Index, this.Definition.Name, (this._gameContext as IGameServerContext)?.Id ?? 0);
         switch (changeEvent.Index)
         {
             case 1:
@@ -129,19 +115,31 @@ public sealed class ChaosCastleContext : MiniGameContext
                 // no action required;
                 break;
         }
+    }
 
-        //// TODO: Pull monsters inside
+    /// <inheritdoc />
+    protected override async ValueTask OnTerrainChangedAsync(MiniGameChangeEvent changeEvent)
+    {
+        await base.OnTerrainChangedAsync(changeEvent).ConfigureAwait(false);
+
+        if (changeEvent.TerrainChanges.All(c => c.TerrainAttribute != TerrainAttributeType.NoGround))
+        {
+            return;
+        }
+
+        await this.CheckForFallenUsersAsync().ConfigureAwait(false);
+        await this.PullMonstersAsync(changeEvent).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     protected override async ValueTask OnGameStartAsync(ICollection<Player> players)
     {
+        this.Logger.LogDebug("Starting the game... Event: {0}, game id {1}", this.Definition.Name, (this._gameContext as IGameServerContext)?.Id ?? 0);
         foreach (var player in players)
         {
             this._gameStates.TryAdd(player.Name, new PlayerGameState(player));
         }
 
-        // todo: change map to be non-safezone and send packet to all players about it -> by definition, MiniGameChangeEvent
         await base.OnGameStartAsync(players).ConfigureAwait(false);
 
         await this.SpawnMonstersAsync().ConfigureAwait(false);
@@ -152,9 +150,9 @@ public sealed class ChaosCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
+        this.Logger.LogDebug("Game ended... Event: {0}, game id {1}", this.Definition.Name, (this._gameContext as IGameServerContext)?.Id ?? 0);
         this._currentCastleStatus = ChaosCastleStatus.Ended;
         await this.UpdateStateForAllAsync().ConfigureAwait(false);
-        //// TODO: Change terrain, make everything a safezone.
 
         var sortedFinishers = finishers
             .Select(f => this._gameStates[f.Name])
@@ -221,16 +219,7 @@ public sealed class ChaosCastleContext : MiniGameContext
                 return;
             }
 
-            if (this._monsterDrops.TryGetValue(monster, out var drop))
-            {
-                var item = new TemporaryItem
-                {
-                    Definition = drop,
-                    Durability = 1,
-                };
-                var droppedItem = new DroppedItem(item, monster.Position, this.Map, this.Map.GetObject(e.KillerId) as Player, null);
-                await this.Map.AddAsync(droppedItem).ConfigureAwait(false);
-            }
+            this._monsters.Remove(monster, out _);
 
             if (this._gameStates.TryGetValue(e.KillerName, out var playerState))
             {
@@ -323,9 +312,11 @@ public sealed class ChaosCastleContext : MiniGameContext
             targetY = Math.Max(0, targetY);
             targetY = Math.Min(0xFF, targetY);
 
-            var moved = await this.SetPlayerPositionAsync(player, new Point((byte)targetX, (byte)targetY)).ConfigureAwait(false);
+            var targetPoint = new Point((byte)targetX, (byte)targetY);
+            var moved = await this.SetPlayerPositionAsync(player, targetPoint).ConfigureAwait(false);
             if (moved)
             {
+                this.Logger.LogDebug("Player {player} was moved to {targetPoint}.", player, targetPoint);
                 await this.CheckPlayerPositionAsync(player).ConfigureAwait(false);
                 break;
             }
@@ -344,14 +335,6 @@ public sealed class ChaosCastleContext : MiniGameContext
             return true;
         }
 
-        // TODO: If target point is blocked or occupied, return false
-        /* This probably prevents that the player falls down, so it's not valid
-         var targetAttr = this.Map.Terrain.WalkMap[point.X, point.Y];
-        if (!targetAttr)
-        {
-            return false;
-        }*/
-
         await player.MoveAsync(point).ConfigureAwait(false);
 
         return true;
@@ -361,6 +344,7 @@ public sealed class ChaosCastleContext : MiniGameContext
     {
         try
         {
+            this.Logger.LogDebug("Starting event loop... Event: {0}, game id {1}", this.Definition.Name, (this._gameContext as IGameServerContext)?.Id ?? 0);
             var timerInterval = TimeSpan.FromSeconds(1);
             using var timer = new PeriodicTimer(timerInterval);
             var maximumGameDuration = this.Definition.GameDuration;
@@ -370,16 +354,16 @@ public sealed class ChaosCastleContext : MiniGameContext
             this._remainingTime = maximumGameDuration;
             this._currentCastleStatus = ChaosCastleStatus.Started;
             await this.UpdateStateForAllAsync().ConfigureAwait(false);
+            this._currentCastleStatus = ChaosCastleStatus.Running;
             while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 await this.UpdateStateForAllAsync().ConfigureAwait(false);
 
-                // await this.CheckForFallenUsers().ConfigureAwait(false);
-
                 if (this.HasGameEnded())
                 {
+                    this.FinishEvent();
                     break;
                 }
 
@@ -388,9 +372,10 @@ public sealed class ChaosCastleContext : MiniGameContext
 
             this._remainingTime = TimeSpan.Zero;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
             // Expected exception when the game ends before running into the timeout.
+            this.Logger.LogDebug(ex, "Stopped Event: {0}, game id {1}", this.Definition.Name, (this._gameContext as IGameServerContext)?.Id ?? 0);
         }
         catch (Exception ex)
         {
@@ -403,26 +388,26 @@ public sealed class ChaosCastleContext : MiniGameContext
         var playerCount = this.PlayerCount;
         if (playerCount <= 0)
         {
-            this.Logger.LogInformation("Game ended - all players dead");
+            this.Logger.LogDebug("Game ended - all players dead. Event: {0}, game id {1}", this.Definition.Name, (this._gameContext as IGameServerContext)?.Id ?? 0);
             return true;
         }
 
         if (playerCount == 1 && this._aliveMonstersCount == 0)
         {
-            this.Logger.LogInformation("Game ended - last player remaining");
+            this.Logger.LogDebug("Game ended - last player remaining. Event: {0}, game id {1}", this.Definition.Name, (this._gameContext as IGameServerContext)?.Id ?? 0);
             return true;
         }
 
         return false;
     }
 
-    //private async ValueTask CheckForFallenUsers()
-    //{
-    //    // Players which are on a terrain without ground, fall down
-    //    await this.ForEachPlayerAsync(CheckPlayerPositionAsync).ConfigureAwait(false);
-    //}
+    private async ValueTask CheckForFallenUsersAsync()
+    {
+        // Players which are on a terrain without ground, fall down
+        await this.ForEachPlayerAsync(this.CheckPlayerPositionAsync).ConfigureAwait(false);
+    }
 
-    private async ValueTask CheckPlayerPositionAsync(Player player)
+    private async Task CheckPlayerPositionAsync(Player player)
     {
         var position = player.Position;
         var terrainIsWalkable = this.Map.Terrain.WalkMap[position.X, position.Y];
@@ -431,84 +416,157 @@ public sealed class ChaosCastleContext : MiniGameContext
             return;
         }
 
+        this.Logger.LogInformation("Player {0} is at a blocked position, it will be killed instantly.", player);
         await player.KillInstantlyAsync().ConfigureAwait(false);
     }
 
-    private ValueTask UpdateStateForAllAsync()
-    {
-        return this.ForEachPlayerAsync(player => this.UpdateStateAsync(this._currentCastleStatus, player).AsTask());
-    }
-
-    private ValueTask UpdateStateAsync(ChaosCastleStatus status, Player player)
+    private async ValueTask UpdateStateForAllAsync()
     {
         var objectCount = this._aliveMonstersCount + this.PlayerCount;
-        return player.InvokeViewPlugInAsync<IChaosCastleStateViewPlugin>(
+        var currentStatus = this._currentCastleStatus;
+        this.Logger.LogDebug("UpdateState {0} for all players. Object Count: {1}", currentStatus, objectCount);
+        await this.ForEachPlayerAsync(player => this.UpdateStateAsync(currentStatus, player, objectCount)).ConfigureAwait(false);
+        if (currentStatus is ChaosCastleStatus.RunningShrinkingStageOne or ChaosCastleStatus.RunningShrinkingStageTwo or ChaosCastleStatus.RunningShrinkingStageThree)
+        {
+            await this.ForEachPlayerAsync(player => this.UpdateStateAsync(ChaosCastleStatus.Running, player, objectCount)).ConfigureAwait(false);
+        }
+    }
+
+    private async Task UpdateStateAsync(ChaosCastleStatus status, Player player, int objectCount)
+    {
+        await player.InvokeViewPlugInAsync<IChaosCastleStateViewPlugin>(
             p =>
                 p.UpdateStateAsync(
                     status,
                     this._remainingTime,
                     MaxObjectsCount,
-                    objectCount));
+                    objectCount))
+            .ConfigureAwait(false);
     }
 
     private async Task SpawnMonstersAsync()
     {
         var requiredMonsters = MaxObjectsCount - this.PlayerCount;
+
+        this.Logger.LogDebug("{0}: Spawning {1} monsters...", this.Definition.Description, requiredMonsters);
         var spawnAreas = this.Map.Definition.MonsterSpawns.AsList();
+        this.DropGenerator = new ChaosCastleDropGenerator(this._gameContext, this, requiredMonsters);
 
-        var addedMonsters = new List<Monster>();
-        this.Map.ObjectAdded += OnObjectAdded;
-        try
+        for (var i = 0; i < requiredMonsters && i < spawnAreas.Count; i++)
         {
-            for (var i = 0; i < requiredMonsters && i < spawnAreas.Count; i++)
+            var spawnArea = spawnAreas[i];
+
+            if (await this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this, this.DropGenerator).ConfigureAwait(false) is Monster monster)
             {
-                var spawnArea = spawnAreas[i];
-
-                await this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this).ConfigureAwait(false);
+                this._monsters.TryAdd(monster, default);
             }
-        }
-        finally
-        {
-            this.Map.ObjectAdded -= OnObjectAdded;
         }
 
         this._aliveMonstersCount = requiredMonsters;
+        this.Logger.LogDebug("Monsters created.");
+    }
 
-        // TODO: This should rather be configurable...
-        var blessDefinition = this._gameContext.Configuration.Items.First(item => item is { Group: 14, Number: 13 });
-        var soulDefinition = this._gameContext.Configuration.Items.First(item => item is { Group: 14, Number: 14 });
-        var drops = MonsterJewelDropsPerLevel[this.Definition.GameLevel];
-        AddItems(drops.Blesses, blessDefinition);
-        AddItems(drops.Souls, soulDefinition);
+    private async ValueTask PullMonstersAsync(MiniGameChangeEvent changeEvent)
+    {
+        // Determine middle:
+        var minX = changeEvent.TerrainChanges.Min(c => c.StartX);
+        var maxX = changeEvent.TerrainChanges.Max(c => c.EndX);
+        var minY = changeEvent.TerrainChanges.Min(c => c.StartY);
+        var maxY = changeEvent.TerrainChanges.Max(x => x.EndY);
 
-        void AddItems(int count, ItemDefinition definition)
+        var middlePoint = new Point((byte)((minX + maxX) / 2), (byte)((minY + maxY) / 2));
+
+        var walkMap = this.Map.Terrain.WalkMap;
+
+        var monstersNeedPull = this._monsters.Keys
+            .Where(m => !walkMap[m.Position.X, m.Position.Y])
+            .Where(m => m.IsAlive);
+
+        bool MoveByX(byte distance, ref Point resultTarget, bool setTargetAnyway = false)
         {
-            for (var i = 0; i < count; i++)
+            var offset = new Point(0, distance);
+            var target = resultTarget;
+            if (target.Y < middlePoint.Y)
             {
-                bool assigned;
-                do
-                {
-                    var randomMonster = addedMonsters.SelectRandom();
-                    if (randomMonster is null)
-                    {
-                        // should never happen, but prevent endless loop
-                        break;
-                    }
-
-                    assigned = this._monsterDrops.TryAdd(randomMonster, definition);
-                }
-                while (!assigned);
+                target += offset;
             }
+            else if (target.Y > middlePoint.Y)
+            {
+                target -= offset;
+            }
+            else
+            {
+                // we're already good to go!
+            }
+
+            return EvaluateTarget(target, ref resultTarget, setTargetAnyway);
         }
 
-        ValueTask OnObjectAdded((GameMap Map, ILocateable Object) args)
+        bool MoveByY(byte distance, ref Point resultTarget, bool setTargetAnyway = false)
         {
-            if (args.Object is Monster monster)
+            var offset = new Point(distance, 0);
+            var target = resultTarget;
+            if (target.X < middlePoint.X)
             {
-                addedMonsters.Add(monster);
+                target += offset;
+            }
+            else if (target.X > middlePoint.X)
+            {
+                target -= offset;
+            }
+            else
+            {
+                // we're already good to go!
             }
 
-            return ValueTask.CompletedTask;
+            return EvaluateTarget(target, ref resultTarget, setTargetAnyway);
+        }
+
+        bool MoveByXandY(byte distance, ref Point resultTarget)
+        {
+            var target = resultTarget;
+            MoveByX(distance, ref target, true);
+            MoveByY(distance, ref target, true);
+            return EvaluateTarget(target, ref resultTarget, false);
+        }
+
+        bool EvaluateTarget(Point target, ref Point resultTarget, bool setTargetAnyway)
+        {
+            if (walkMap[target.X, target.Y])
+            {
+                resultTarget = target;
+                return true;
+            }
+
+            if (setTargetAnyway)
+            {
+                resultTarget = target;
+            }
+
+            return false;
+        }
+
+        foreach (var monster in monstersNeedPull)
+        {
+            var moved = false;
+            for (byte dist = 1; dist <= 5; dist++)
+            {
+                var target = monster.Position;
+                if (MoveByX(dist, ref target)
+                    || MoveByY(dist, ref target)
+                    || MoveByXandY(dist, ref target))
+                {
+                    this.Logger.LogInformation("Moving {monster} by {dist} steps to {target}", monster, dist, target);
+                    await monster.MoveAsync(target).ConfigureAwait(false);
+                    moved = true;
+                    break;
+                }
+            }
+
+            if (!moved)
+            {
+                this.Logger.LogInformation("Couldn't move monster {monster} to valid coordinate.", monster);
+            }
         }
     }
 

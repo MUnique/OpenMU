@@ -9886,25 +9886,25 @@ public readonly struct DevilSquareEnterRequest
 /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
 /// Causes reaction on server side: The remaining time is sent back to the client.
 /// </summary>
-public readonly struct RequestEventRemainingTime
+public readonly struct MiniGameOpeningStateRequest
 {
     private readonly Memory<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RequestEventRemainingTime"/> struct.
+    /// Initializes a new instance of the <see cref="MiniGameOpeningStateRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public RequestEventRemainingTime(Memory<byte> data)
+    public MiniGameOpeningStateRequest(Memory<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RequestEventRemainingTime"/> struct.
+    /// Initializes a new instance of the <see cref="MiniGameOpeningStateRequest"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private RequestEventRemainingTime(Memory<byte> data, bool initialize)
+    private MiniGameOpeningStateRequest(Memory<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -9939,10 +9939,10 @@ public readonly struct RequestEventRemainingTime
     /// <summary>
     /// Gets or sets the event type.
     /// </summary>
-    public byte EventType
+    public MiniGameType EventType
     {
-        get => this._data.Span[3];
-        set => this._data.Span[3] = value;
+        get => (MiniGameType)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
     }
 
     /// <summary>
@@ -9955,18 +9955,18 @@ public readonly struct RequestEventRemainingTime
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RequestEventRemainingTime"/>.
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MiniGameOpeningStateRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator RequestEventRemainingTime(Memory<byte> packet) => new (packet, false);
+    public static implicit operator MiniGameOpeningStateRequest(Memory<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="RequestEventRemainingTime"/> to a Memory of bytes.
+    /// Performs an implicit conversion from <see cref="MiniGameOpeningStateRequest"/> to a Memory of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(RequestEventRemainingTime packet) => packet._data; 
+    public static implicit operator Memory<byte>(MiniGameOpeningStateRequest packet) => packet._data; 
 }
 
 
@@ -10055,6 +10055,101 @@ public readonly struct BloodCastleEnterRequest
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(BloodCastleEnterRequest packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: The player requests to enter the chaos castle by using the 'Armor of Guardsman' item.
+/// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0xAF) back to the client. If it was successful, the character gets moved to the event map.
+/// </summary>
+public readonly struct ChaosCastleEnterRequest
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleEnterRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChaosCastleEnterRequest(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleEnterRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChaosCastleEnterRequest(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xAF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the level of the chaos castle. Appears to always be 0.
+    /// </summary>
+    public byte CastleLevel
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the index of the ticket item in the inventory.
+    /// </summary>
+    public byte TicketItemInventoryIndex
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChaosCastleEnterRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChaosCastleEnterRequest(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChaosCastleEnterRequest"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(ChaosCastleEnterRequest packet) => packet._data; 
 }
     /// <summary>
     /// The state of the trade button.

@@ -1,26 +1,26 @@
-﻿// <copyright file="InvasionEventState.cs" company="MUnique">
+﻿// <copyright file="PeriodicTaskState.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
+namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
 /// <summary>
 /// Describe the state of invasion.
 /// </summary>
-public enum InvasionEventState : byte
+public enum PeriodicTaskState : byte
 {
     /// <summary>
-    /// Not started.
+    /// Task not started.
     /// </summary>
     NotStarted,
 
     /// <summary>
-    /// Event prepared.
+    /// Task prepared.
     /// </summary>
     Prepared,
 
     /// <summary>
-    /// Event started.
+    /// Task started.
     /// </summary>
     Started,
 }

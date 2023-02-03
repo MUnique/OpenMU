@@ -8035,7 +8035,8 @@
         <Field>
           <Index>6</Index>
           <Type>Byte</Type>
-          <Name>RemainingEnteringTimeMinutes2</Name>
+          <Name>RemainingEnteringTimeMinutesLow</Name>
+					<Description>Just used for Chaos Castle. In this case, this field contains the lower byte of the remaining minutes. For other event types, this field is not used.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -8379,6 +8380,62 @@
         </Enum>
       </Enums>
     </Packet>
+		<Packet>
+			<HeaderType>C1HeaderWithSubCode</HeaderType>
+			<Code>AF</Code>
+			<SubCode>01</SubCode>
+			<Name>ChaosCastleEnterResult</Name>
+			<Length>5</Length>
+			<Direction>ServerToClient</Direction>
+			<SentWhen>The player requested to enter the chaos castle mini game by using the 'Armor of Guardsman' item.</SentWhen>
+			<CausedReaction>In case it failed, it shows the corresponding error message.</CausedReaction>
+			<Fields>
+				<Field>
+					<Index>4</Index>
+					<Type>Enum</Type>
+					<TypeName>EnterResult</TypeName>
+					<Name>Result</Name>
+				</Field>
+			</Fields>
+			<Enums>
+				<Enum>
+					<Name>EnterResult</Name>
+					<Description>Defines the result of the enter request.</Description>
+					<Values>
+						<EnumValue>
+							<Name>Success</Name>
+							<Description>The event has been entered.</Description>
+							<Value>0</Value>
+						</EnumValue>
+						<EnumValue>
+							<Name>Failed</Name>
+							<Description>Entering the event failed, e.g. by missing event ticket or level range.</Description>
+							<Value>1</Value>
+						</EnumValue>
+						<EnumValue>
+							<Name>NotOpen</Name>
+							<Description>Entering the event failed, because it's not opened.</Description>
+							<Value>2</Value>
+						</EnumValue>
+						<EnumValue>
+							<Name>Full</Name>
+							<Description>Entering the event failed, because it's full.</Description>
+							<Value>5</Value>
+						</EnumValue>
+            <EnumValue>
+              <Name>NotEnoughMoney</Name>
+              <Description>Entering the event failed, because the player doesn't have enough money for the entrance fee.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>PlayerKillerCantEnter</Name>
+              <Description>Entering the event failed, because the player has a pk state.</Description>
+              <Value>8</Value>
+            </EnumValue>
+					</Values>
+				</Enum>
+			</Enums>
+		</Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>0B</Code>
@@ -8421,42 +8478,6 @@
     </Packet>
   </Packets>
   <Enums>
-    <Enum>
-      <Name>MiniGameType</Name>
-      <Description>Defines the type of the mini game.</Description>
-      <Values>
-        <EnumValue>
-          <Name>Undefined</Name>
-          <Description>Undefined mini game type.</Description>
-          <Value>0</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>DevilSquare</Name>
-          <Description>The devil square mini game.</Description>
-          <Value>1</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>BloodCastle</Name>
-          <Description>The blood castle mini game.</Description>
-          <Value>2</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>ChaosCastle</Name>
-          <Description>The chaos castle mini game.</Description>
-          <Value>4</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>IllusionTemple</Name>
-          <Description>The illusion temple mini game.</Description>
-          <Value>5</Value>
-        </EnumValue>
-        <EnumValue>
-          <Name>Doppelganger</Name>
-          <Description>The doppelgänger mini game.</Description>
-          <Value>6</Value>
-        </EnumValue>
-      </Values>
-    </Enum>
     <Enum>
       <Name>GuildMemberRole</Name>
       <Description>Defines the role of a guild member.</Description>

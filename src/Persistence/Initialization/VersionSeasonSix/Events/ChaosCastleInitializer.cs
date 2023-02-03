@@ -26,43 +26,43 @@ internal class ChaosCastleInitializer : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        var chaosCastle1 = this.CreateChaosCastleDefinition(1, ChaosCastle1.Number);
+        var chaosCastle1 = this.CreateChaosCastleDefinition(1, ChaosCastle1.Number, 25000);
         chaosCastle1.MinimumCharacterLevel = 15;
         chaosCastle1.MaximumCharacterLevel = 49;
         chaosCastle1.MinimumSpecialCharacterLevel = 15;
         chaosCastle1.MaximumSpecialCharacterLevel = 29;
 
-        var chaosCastle2 = this.CreateChaosCastleDefinition(2, ChaosCastle2.Number);
+        var chaosCastle2 = this.CreateChaosCastleDefinition(2, ChaosCastle2.Number, 80000);
         chaosCastle2.MinimumCharacterLevel = 50;
         chaosCastle2.MaximumCharacterLevel = 119;
         chaosCastle2.MinimumSpecialCharacterLevel = 30;
         chaosCastle2.MaximumSpecialCharacterLevel = 99;
 
-        var chaosCastle3 = this.CreateChaosCastleDefinition(3, ChaosCastle3.Number);
+        var chaosCastle3 = this.CreateChaosCastleDefinition(3, ChaosCastle3.Number, 150000);
         chaosCastle3.MinimumCharacterLevel = 120;
         chaosCastle3.MaximumCharacterLevel = 179;
         chaosCastle3.MinimumSpecialCharacterLevel = 100;
         chaosCastle3.MaximumSpecialCharacterLevel = 159;
 
-        var chaosCastle4 = this.CreateChaosCastleDefinition(4, ChaosCastle4.Number);
+        var chaosCastle4 = this.CreateChaosCastleDefinition(4, ChaosCastle4.Number, 250000);
         chaosCastle4.MinimumCharacterLevel = 180;
         chaosCastle4.MaximumCharacterLevel = 239;
         chaosCastle4.MinimumSpecialCharacterLevel = 160;
         chaosCastle4.MaximumSpecialCharacterLevel = 219;
 
-        var chaosCastle5 = this.CreateChaosCastleDefinition(5, ChaosCastle5.Number);
+        var chaosCastle5 = this.CreateChaosCastleDefinition(5, ChaosCastle5.Number, 400000);
         chaosCastle5.MinimumCharacterLevel = 240;
         chaosCastle5.MaximumCharacterLevel = 299;
         chaosCastle5.MinimumSpecialCharacterLevel = 220;
         chaosCastle5.MaximumSpecialCharacterLevel = 279;
 
-        var chaosCastle6 = this.CreateChaosCastleDefinition(6, ChaosCastle6.Number);
+        var chaosCastle6 = this.CreateChaosCastleDefinition(6, ChaosCastle6.Number, 650000);
         chaosCastle6.MinimumCharacterLevel = 300;
         chaosCastle6.MaximumCharacterLevel = 400;
         chaosCastle6.MinimumSpecialCharacterLevel = 280;
         chaosCastle6.MaximumSpecialCharacterLevel = 400;
 
-        var chaosCastle7 = this.CreateChaosCastleDefinition(7, ChaosCastle7.Number);
+        var chaosCastle7 = this.CreateChaosCastleDefinition(7, ChaosCastle7.Number, 1000000);
         chaosCastle7.RequiresMasterClass = true;
         chaosCastle7.MinimumCharacterLevel = 400;
         chaosCastle7.MaximumCharacterLevel = 400;
@@ -76,7 +76,7 @@ internal class ChaosCastleInitializer : InitializerBase
     /// <param name="level">The level of the event.</param>
     /// <param name="mapNumber">The map number.</param>
     /// <returns>The created <see cref="MiniGameDefinition"/>.</returns>
-    protected MiniGameDefinition CreateChaosCastleDefinition(byte level, short mapNumber)
+    protected MiniGameDefinition CreateChaosCastleDefinition(byte level, short mapNumber, int entranceFee)
     {
         var chaosCastle = this.Context.CreateNew<MiniGameDefinition>();
         this.GameConfiguration.MiniGameDefinitions.Add(chaosCastle);
@@ -92,6 +92,7 @@ internal class ChaosCastleInitializer : InitializerBase
         chaosCastle.GameLevel = level;
         chaosCastle.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
         chaosCastle.SaveRankingStatistics = true;
+        chaosCastle.EntranceFee = entranceFee;
 
         this.CreateRewards(level, chaosCastle);
         this.CreateEvents(level, chaosCastle);
@@ -101,6 +102,9 @@ internal class ChaosCastleInitializer : InitializerBase
 
     private void CreateEvents(byte level, MiniGameDefinition chaosCastle)
     {
+        AddStage(0, 0);
+        AddSafezoneToggle(0, 23, 75, 44, 108, false);
+
         AddStage(1, 60);
         AddStage(2, 10);
         AddStage(3, 10);
@@ -129,6 +133,12 @@ internal class ChaosCastleInitializer : InitializerBase
         }
 
         void AddTerrainBlocking(int index, byte startX, byte startY, byte endX, byte endY)
+            => AddTerrainChange(index, startX, startY, endX, endY, true, TerrainAttributeType.NoGround);
+
+        void AddSafezoneToggle(int index, byte startX, byte startY, byte endX, byte endY, bool makeSafe)
+            => AddTerrainChange(index, startX, startY, endX, endY, makeSafe, TerrainAttributeType.Safezone);
+
+        void AddTerrainChange(int index, byte startX, byte startY, byte endX, byte endY, bool setAttribute, TerrainAttributeType attribute)
         {
             var changeEvent = chaosCastle.ChangeEvents.Single(e => e.Index == index);
             var terrainChange = this.Context.CreateNew<MiniGameTerrainChange>();
@@ -137,8 +147,13 @@ internal class ChaosCastleInitializer : InitializerBase
             terrainChange.StartY = startY;
             terrainChange.EndX = endX;
             terrainChange.EndY = endY;
-            terrainChange.SetTerrainAttribute = true;
-            terrainChange.TerrainAttribute = TerrainAttributeType.Blocked;
+            terrainChange.SetTerrainAttribute = setAttribute;
+            terrainChange.TerrainAttribute = attribute;
+
+            // Only Safezone-Changes at start and end are required to be sent to the client.
+            // The Blockings are automatically done by the client when updating the event state.
+            // Unfortunately, these areas are hardcoded at client-side.
+            terrainChange.IsClientUpdateRequired = attribute == TerrainAttributeType.Safezone;
         }
     }
 

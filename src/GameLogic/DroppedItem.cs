@@ -138,6 +138,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
     {
         return $"{this.Id}: {this.Item} at {this.CurrentMap.Definition.Name} ({this.Position})";
     }
+
     /// <inheritdoc/>
     protected override async ValueTask DisposeAsyncCore()
     {

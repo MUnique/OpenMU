@@ -2171,12 +2171,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("ArePlayerKillersAllowedToEnter")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<TimeSpan>("EnterDuration")
                         .HasColumnType("interval");
+
+                    b.Property<int>("EntranceFee")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("EntranceId")
                         .HasColumnType("uuid");
@@ -2354,6 +2360,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("EndY")
                         .HasColumnType("smallint");
+
+                    b.Property<bool>("IsClientUpdateRequired")
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<Guid?>("MiniGameChangeEventId")
                         .HasColumnType("uuid");

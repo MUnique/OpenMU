@@ -25,15 +25,15 @@ public class MiniGameContext : Disposable, IEventStateProvider
 {
     private readonly IGameContext _gameContext;
     private readonly IMapInitializer _mapInitializer;
-    private readonly AsyncLock _enterLock = new ();
+    private readonly AsyncReaderWriterLock _enterLock = new();
 
-    private readonly HashSet<Player> _enteredPlayers = new ();
+    private readonly HashSet<Player> _enteredPlayers = new();
     private readonly ConcurrentDictionary<MonsterDefinition, bool> _rewardRelatedKills;
 
-    private readonly CancellationTokenSource _gameEndedCts = new ();
+    private readonly CancellationTokenSource _gameEndedCts = new();
 
-    private readonly HashSet<byte> _currentSpawnWaves = new ();
-    private readonly List<ChangeEventContext> _remainingEvents = new ();
+    private readonly HashSet<byte> _currentSpawnWaves = new();
+    private readonly List<ChangeEventContext> _remainingEvents = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MiniGameContext"/> class.
@@ -49,10 +49,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
         this.Key = key;
         this.Definition = definition;
         this.Logger = this._gameContext.LoggerFactory.CreateLogger(this.GetType());
+        this.DropGenerator = this._gameContext.DropGenerator;
 
         this.Map = this.CreateMap();
 
-        this._rewardRelatedKills = new (
+        this._rewardRelatedKills = new(
             this.Definition.Rewards
                 .Where(r => r.RequiredKill is not null)
                 .Select(r => new KeyValuePair<MonsterDefinition, bool>(r.RequiredKill!, false))
@@ -87,6 +88,18 @@ public class MiniGameContext : Disposable, IEventStateProvider
     public bool IsEventRunning => this.State == MiniGameState.Playing;
 
     /// <summary>
+    /// Gets the player count.
+    /// </summary>
+    public int PlayerCount
+    {
+        get
+        {
+            using var l = this._enterLock.ReaderLock();
+            return this._enteredPlayers.Count(p => p.IsAlive);
+        }
+    }
+
+    /// <summary>
     /// Gets the remaining time of the event, in case it has been finished by the player earlier than the timeout.
     /// </summary>
     protected virtual TimeSpan RemainingTime => TimeSpan.Zero;
@@ -112,16 +125,9 @@ public class MiniGameContext : Disposable, IEventStateProvider
     protected ChangeEventContext? NextEvent { get; private set; }
 
     /// <summary>
-    /// Gets the player count.
+    /// Gets the drop generator which should be used during the mini game.
     /// </summary>
-    protected int PlayerCount
-    {
-        get
-        {
-            using var l = this._enterLock.Lock();
-            return this._enteredPlayers.Count(p => p.IsAlive);
-        }
-    }
+    protected IDropGenerator DropGenerator { get; set; }
 
     /// <summary>
     /// Tries to enter the mini game. It will fail, if it's full, of if it's not in an open state.
@@ -130,7 +136,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <returns>A value indicating whether entering had success.</returns>
     public async ValueTask<EnterResult> TryEnterAsync(Player player)
     {
-        using (await this._enterLock.LockAsync().ConfigureAwait(false))
+        using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
         {
             if (this.State != MiniGameState.Open)
             {
@@ -160,10 +166,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
+        this.Logger.LogInformation("Disposing mini game ...");
         base.Dispose(disposing);
 
         // TODO: implement AsyncDisposable
-        using (this._enterLock.Lock())
+        using (this._enterLock.WriterLock())
         {
             this.State = MiniGameState.Disposed;
         }
@@ -191,7 +198,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// <param name="playerAction">The action which should be executed for each player of the game.</param>
     protected async ValueTask ForEachPlayerAsync(Func<Player, Task> playerAction)
     {
-        using var @lock = await this._enterLock.LockAsync().ConfigureAwait(false);
+        using var @lock = await this._enterLock.ReaderLockAsync().ConfigureAwait(false);
         await this._enteredPlayers.Select(playerAction).WhenAll().ConfigureAwait(false);
     }
 
@@ -344,7 +351,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
             player.CurrentMiniGame = null;
             bool cantGameProceed;
-            using (await this._enterLock.LockAsync().ConfigureAwait(false))
+            using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
             {
                 player.Died -= this.OnPlayerDied;
                 this._enteredPlayers.Remove(player);
@@ -375,6 +382,15 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// </summary>
     /// <param name="changeEvent">The change event.</param>
     protected virtual ValueTask OnTerrainChangedAsync(MiniGameChangeEvent changeEvent)
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Called before the map terrain is changing due to an <see cref="MiniGameChangeEvent"/>.
+    /// </summary>
+    /// <param name="changeEvent">The change event.</param>
+    protected virtual ValueTask OnTerrainChangingAsync(MiniGameChangeEvent changeEvent)
     {
         return ValueTask.CompletedTask;
     }
@@ -578,24 +594,46 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
     private async ValueTask RunGameAsync(CancellationToken cancellationToken)
     {
+        this.Logger.LogInformation("Running the game ...");
         var countdownMessageDuration = TimeSpan.FromSeconds(30);
         try
         {
-            var enterDuration = this.Definition.EnterDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
+            var enterDuration = this.Definition.EnterDuration.AtLeast(countdownMessageDuration);
             var gameDuration = this.Definition.GameDuration.AtLeast(countdownMessageDuration);
             var exitDuration = this.Definition.ExitDuration.Subtract(countdownMessageDuration).AtLeast(countdownMessageDuration);
 
-            await Task.Delay(enterDuration, cancellationToken).ConfigureAwait(false);
+            this.Logger.LogInformation("Waiting for entering players for {enterDuration}", enterDuration);
+
+            var messagePeriod = TimeSpan.FromMinutes(1);
+            for (; enterDuration >= messagePeriod; enterDuration = enterDuration.Subtract(messagePeriod))
+            {
+                if (this.Definition.MapCreationPolicy != MiniGameMapCreationPolicy.Shared)
+                {
+                    await this.ShowMessageAsync($"{this.Definition.Name} starts in {(int)enterDuration.TotalMinutes} minutes.").ConfigureAwait(false);
+                }
+
+                await Task.Delay(messagePeriod, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (enterDuration >= TimeSpan.Zero)
+            {
+                await Task.Delay(enterDuration, cancellationToken).ConfigureAwait(false);
+            }
+
+            await this.CloseEntranceAsync().ConfigureAwait(false);
             if (this._enteredPlayers.Count == 0)
             {
                 return;
             }
 
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
-            await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
+            this.Logger.LogInformation("Waiting for the countdown duration of {countdownMessageDuration}", countdownMessageDuration);
+            await Task.Delay(countdownMessageDuration, cancellationToken).ConfigureAwait(false);
 
+            this.Logger.LogInformation("Starting the game...");
             await this.StartAsync().ConfigureAwait(false);
 
+            this.Logger.LogInformation("Waiting for the game duration of {gameDuration}", gameDuration);
             try
             {
                 await Task.Delay(gameDuration, cancellationToken).ConfigureAwait(false);
@@ -605,9 +643,14 @@ public class MiniGameContext : Disposable, IEventStateProvider
                 this.Logger.LogInformation("Finished event earlier");
             }
 
+            this.Logger.LogInformation("Stopping the game...");
             await this.StopAsync().ConfigureAwait(false);
+
+            this.Logger.LogInformation("Waiting for the exit duration of {exitDuration}", exitDuration);
             await Task.Delay(exitDuration).ConfigureAwait(false);
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
+
+            this.Logger.LogInformation("Waiting for the exit countdown duration of {countdownMessageDuration}", countdownMessageDuration);
             await Task.Delay(countdownMessageDuration).ConfigureAwait(false);
 
             this.Logger.LogInformation("Shutting down event");
@@ -627,10 +670,18 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
     }
 
+    private async ValueTask CloseEntranceAsync()
+    {
+        using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
+        {
+            this.State = MiniGameState.Closed;
+        }
+    }
+
     private async ValueTask StartAsync()
     {
         ICollection<Player> players;
-        using (await this._enterLock.LockAsync().ConfigureAwait(false))
+        using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
         {
             this.State = MiniGameState.Playing;
             players = this._enteredPlayers.ToList();
@@ -653,7 +704,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
     private async ValueTask StopAsync()
     {
-        using (await this._enterLock.LockAsync().ConfigureAwait(false))
+        using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
         {
             this.State = MiniGameState.Ended;
             this._gameEndedCts.Cancel();
@@ -663,7 +714,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
         await this.Map.ClearEventSpawnedNpcsAsync().ConfigureAwait(false);
 
         List<Player> players;
-        using (await this._enterLock.LockAsync().ConfigureAwait(false))
+        using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
         {
             players = this._enteredPlayers.ToList();
         }
@@ -696,7 +747,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     private async ValueTask MovePlayersToSafezoneAsync()
     {
         List<Player> players;
-        using (await this._enterLock.LockAsync().ConfigureAwait(false))
+        using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
         {
             players = this._enteredPlayers.ToList();
             this._enteredPlayers.Clear();
@@ -773,9 +824,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     {
         if (changeEvent.TerrainChanges.Any())
         {
+            await this.OnTerrainChangingAsync(changeEvent).ConfigureAwait(false);
             await this.UpdateClientTerrainAsync(changeEvent.TerrainChanges).ConfigureAwait(false);
             this.UpdateServerTerrain(changeEvent.TerrainChanges);
-            await this.OnTerrainChangedAsync(changeEvent);
+            await this.Map.ClearDropsOnInvalidTerrain().ConfigureAwait(false);
+            await this.OnTerrainChangedAsync(changeEvent).ConfigureAwait(false);
         }
 
         if (changeEvent.SpawnArea is { } spawnArea)
@@ -798,12 +851,12 @@ public class MiniGameContext : Disposable, IEventStateProvider
         {
             var isSafezone = change.TerrainAttribute is TerrainAttributeType.Safezone;
             var map = isSafezone ? this.Map.Terrain.SafezoneMap : this.Map.Terrain.WalkMap;
-
+            var targetValue = isSafezone ? change.SetTerrainAttribute : !change.SetTerrainAttribute;
             for (var x = change.StartX; x <= change.EndX; x++)
             {
                 for (var y = change.StartY; y <= change.EndY; y++)
                 {
-                    map[x, y] = isSafezone ? change.SetTerrainAttribute : !change.SetTerrainAttribute;
+                    map[x, y] = targetValue;
                     this.Map.Terrain.UpdateAiGridValue(x, y);
                 }
             }
@@ -813,6 +866,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
     private async ValueTask UpdateClientTerrainAsync(ICollection<MiniGameTerrainChange> changes)
     {
         var groupedChanges = changes
+            .Where(c => c.IsClientUpdateRequired)
             .GroupBy(
                 c => (c.SetTerrainAttribute, c.TerrainAttribute),
                 c => (c.StartX, c.StartY, c.EndX, c.EndY))

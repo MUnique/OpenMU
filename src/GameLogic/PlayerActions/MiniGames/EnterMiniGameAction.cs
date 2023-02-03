@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 
 /// <summary>
@@ -35,15 +36,17 @@ public class EnterMiniGameAction
             return;
         }
 
-        // todo: consider special characters
+        var isSpecialCharacter = player.Attributes![Stats.PointsPerLevelUp] > 6;
         var characterLevel = player.Attributes![Stats.Level];
-        if (characterLevel < miniGameDefinition.MinimumCharacterLevel)
+        var minLevel = isSpecialCharacter ? miniGameDefinition.MinimumSpecialCharacterLevel : miniGameDefinition.MinimumCharacterLevel;
+        var maxLevel = isSpecialCharacter ? miniGameDefinition.MaximumSpecialCharacterLevel : miniGameDefinition.MaximumCharacterLevel;
+        if (characterLevel < minLevel)
         {
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.CharacterLevelTooLow)).ConfigureAwait(false);
             return;
         }
 
-        if (characterLevel > miniGameDefinition.MaximumCharacterLevel)
+        if (characterLevel > maxLevel)
         {
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.CharacterLevelTooHigh)).ConfigureAwait(false);
             return;
@@ -55,11 +58,39 @@ public class EnterMiniGameAction
             return;
         }
 
+        if (!this.CheckEntranceFee(miniGameDefinition, player, out var entranceFee))
+        {
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.NotEnoughMoney)).ConfigureAwait(false);
+            return;
+        }
+
+        if (!this.CheckPlayerKillState(miniGameDefinition, player))
+        {
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.PlayerKillerCantEnter)).ConfigureAwait(false);
+            return;
+        }
+
+        if (miniGameDefinition.MapCreationPolicy == MiniGameMapCreationPolicy.Shared)
+        {
+            var miniGameStrategy = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(miniGameDefinition.Type);
+            if (miniGameStrategy is null
+                || await miniGameStrategy.GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition).ConfigureAwait(false) != TimeSpan.Zero)
+            {
+                await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.NotOpen)).ConfigureAwait(false);
+                return;
+            }
+        }
+
         var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
         var miniGame = await player.GameContext.GetMiniGameAsync(miniGameDefinition, player).ConfigureAwait(false);
         var enterResult = await miniGame.TryEnterAsync(player).ConfigureAwait(false);
         if (enterResult == EnterResult.Success)
         {
+            if (entranceFee > 0)
+            {
+                player.TryRemoveMoney(entranceFee);
+            }
+
             await this.ConsumeTicketItemAsync(ticketItem, player).ConfigureAwait(false);
             await player.WarpToAsync(entrance).ConfigureAwait(false);
         }
@@ -67,6 +98,16 @@ public class EnterMiniGameAction
         {
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, enterResult)).ConfigureAwait(false);
         }
+    }
+
+    private bool CheckPlayerKillState(MiniGameDefinition miniGameDefinition, Player player)
+    {
+        if (miniGameDefinition.ArePlayerKillersAllowedToEnter)
+        {
+            return true;
+        }
+
+        return player.SelectedCharacter?.State < HeroState.PlayerKiller1stStage;
     }
 
     private async ValueTask ConsumeTicketItemAsync(Item? ticketItem, Player player)
@@ -83,7 +124,6 @@ public class EnterMiniGameAction
 
         if (ticketItem.Durability == 0)
         {
-            var slot = ticketItem.ItemSlot;
             if (player.Inventory is { } inventory)
             {
                 await inventory.RemoveItemAsync(ticketItem).ConfigureAwait(false);
@@ -107,5 +147,17 @@ public class EnterMiniGameAction
 
         ticketItem = player.Inventory?.GetItem(gameTicketInventoryIndex);
         return ticketItemDefinition == ticketItem?.Definition && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel;
+    }
+
+    private bool CheckEntranceFee(MiniGameDefinition miniGameDefinition, Player player, out int entranceFee)
+    {
+        entranceFee = miniGameDefinition.EntranceFee;
+        if (entranceFee <= 0)
+        {
+            entranceFee = 0;
+            return true;
+        }
+
+        return entranceFee <= player.Money;
     }
 }

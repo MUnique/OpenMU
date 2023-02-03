@@ -2614,7 +2614,7 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>91</Code>
-      <Name>RequestEventRemainingTime</Name>
+      <Name>MiniGameOpeningStateRequest</Name>
       <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player requests to get the remaining time of the currently entered event.</SentWhen>
@@ -2622,7 +2622,8 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+					<TypeName>MiniGameType</TypeName>
           <Name>EventType</Name>
         </Field>
         <Field>
@@ -2652,6 +2653,30 @@
           <Type>Byte</Type>
           <Name>TicketItemInventoryIndex</Name>
           <Description>The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AF</Code>
+			<SubCode>01</SubCode>
+			<Name>ChaosCastleEnterRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player requests to enter the chaos castle by using the 'Armor of Guardsman' item.</SentWhen>
+      <CausedReaction>The server checks if the player can enter the event and sends a response (Code 0xAF) back to the client. If it was successful, the character gets moved to the event map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CastleLevel</Name>
+          <Description>The level of the chaos castle. Appears to always be 0.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TicketItemInventoryIndex</Name>
+          <Description>The index of the ticket item in the inventory.</Description>
         </Field>
       </Fields>
     </Packet>

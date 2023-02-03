@@ -3092,7 +3092,7 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="RequestEventRemainingTime" /> to this connection.
+    /// Sends a <see cref="MiniGameOpeningStateRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="eventType">The event type.</param>
@@ -3101,7 +3101,7 @@ public static class ConnectionExtensions
     /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
     /// Causes reaction on server side: The remaining time is sent back to the client.
     /// </remarks>
-    public static async ValueTask SendRequestEventRemainingTimeAsync(this IConnection? connection, byte @eventType, byte @eventLevel)
+    public static async ValueTask SendMiniGameOpeningStateRequestAsync(this IConnection? connection, MiniGameType @eventType, byte @eventLevel)
     {
         if (connection is null)
         {
@@ -3110,8 +3110,8 @@ public static class ConnectionExtensions
 
         int WritePacket()
         {
-            var length = RequestEventRemainingTimeRef.Length;
-            var packet = new RequestEventRemainingTimeRef(connection.Output.GetSpan(length)[..length]);
+            var length = MiniGameOpeningStateRequestRef.Length;
+            var packet = new MiniGameOpeningStateRequestRef(connection.Output.GetSpan(length)[..length]);
             packet.EventType = @eventType;
             packet.EventLevel = @eventLevel;
 
@@ -3142,6 +3142,36 @@ public static class ConnectionExtensions
         {
             var length = BloodCastleEnterRequestRef.Length;
             var packet = new BloodCastleEnterRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.CastleLevel = @castleLevel;
+            packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChaosCastleEnterRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="castleLevel">The level of the chaos castle. Appears to always be 0.</param>
+    /// <param name="ticketItemInventoryIndex">The index of the ticket item in the inventory.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to enter the chaos castle by using the 'Armor of Guardsman' item.
+    /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0xAF) back to the client. If it was successful, the character gets moved to the event map.
+    /// </remarks>
+    public static async ValueTask SendChaosCastleEnterRequestAsync(this IConnection? connection, byte @castleLevel, byte @ticketItemInventoryIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ChaosCastleEnterRequestRef.Length;
+            var packet = new ChaosCastleEnterRequestRef(connection.Output.GetSpan(length)[..length]);
             packet.CastleLevel = @castleLevel;
             packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
 

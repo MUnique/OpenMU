@@ -4596,12 +4596,12 @@ public static class ConnectionExtensions
     /// <param name="gameType">The game type.</param>
     /// <param name="remainingEnteringTimeMinutes">The remaining entering time minutes.</param>
     /// <param name="userCount">The user count.</param>
-    /// <param name="remainingEnteringTimeMinutes2">The remaining entering time minutes 2.</param>
+    /// <param name="remainingEnteringTimeMinutesLow">Just used for Chaos Castle. In this case, this field contains the lower byte of the remaining minutes. For other event types, this field is not used.</param>
     /// <remarks>
     /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
     /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
     /// </remarks>
-    public static async ValueTask SendMiniGameOpeningStateAsync(this IConnection? connection, MiniGameType @gameType, byte @remainingEnteringTimeMinutes, byte @userCount, byte @remainingEnteringTimeMinutes2)
+    public static async ValueTask SendMiniGameOpeningStateAsync(this IConnection? connection, MiniGameType @gameType, byte @remainingEnteringTimeMinutes, byte @userCount, byte @remainingEnteringTimeMinutesLow)
     {
         if (connection is null)
         {
@@ -4615,7 +4615,7 @@ public static class ConnectionExtensions
             packet.GameType = @gameType;
             packet.RemainingEnteringTimeMinutes = @remainingEnteringTimeMinutes;
             packet.UserCount = @userCount;
-            packet.RemainingEnteringTimeMinutes2 = @remainingEnteringTimeMinutes2;
+            packet.RemainingEnteringTimeMinutesLow = @remainingEnteringTimeMinutesLow;
 
             return packet.Header.Length;
         }
@@ -4748,6 +4748,34 @@ public static class ConnectionExtensions
             packet.CurMonster = @curMonster;
             packet.ItemOwnerId = @itemOwnerId;
             packet.ItemLevel = @itemLevel;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChaosCastleEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the chaos castle mini game by using the 'Armor of Guardsman' item.
+    /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+    /// </remarks>
+    public static async ValueTask SendChaosCastleEnterResultAsync(this IConnection? connection, ChaosCastleEnterResult.EnterResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ChaosCastleEnterResultRef.Length;
+            var packet = new ChaosCastleEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
 
             return packet.Header.Length;
         }
