@@ -463,6 +463,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.OnPlayerEnteredWorldAsync().ConfigureAwait(false);
             await this.PlayerEnteredWorld.SafeInvokeAsync(this).ConfigureAwait(false);
             this._appearanceData.RaiseAppearanceChanged();
+            await this.GameContext.SendGlobalMessageAsync($"Player {character.Name} is online", MessageType.BlueNormal);
         }
     }
 
