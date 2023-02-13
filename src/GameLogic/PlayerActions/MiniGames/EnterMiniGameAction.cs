@@ -92,6 +92,7 @@ public class EnterMiniGameAction
             }
 
             await this.ConsumeTicketItemAsync(ticketItem, player).ConfigureAwait(false);
+            await player.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
             await player.WarpToAsync(entrance).ConfigureAwait(false);
         }
         else

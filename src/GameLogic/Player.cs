@@ -1605,6 +1605,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 this.Summon = null;
             }
 
+            await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
             this.SetReclaimableAttributesToMaximum();
             await this.RespawnAtAsync(await this.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
