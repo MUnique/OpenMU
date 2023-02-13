@@ -84,6 +84,9 @@ public sealed class ChaosCastleContext : MiniGameContext
     /// <inheritdoc />
     protected override TimeSpan RemainingTime => this._remainingTime;
 
+    /// <inheritdoc />
+    protected override int MinimumPlayerCount => 2;
+
     /// <inheritdoc/>
     protected override async ValueTask OnObjectRemovedFromMapAsync((GameMap Map, ILocateable Object) args)
     {

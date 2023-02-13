@@ -130,6 +130,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     protected IDropGenerator DropGenerator { get; set; }
 
     /// <summary>
+    /// Gets the minimum player count to start the game.
+    /// </summary>
+    protected virtual int MinimumPlayerCount => 1;
+
+    /// <summary>
     /// Tries to enter the mini game. It will fail, if it's full, of if it's not in an open state.
     /// </summary>
     /// <param name="player">The player which tries to enter.</param>
@@ -621,8 +626,9 @@ public class MiniGameContext : Disposable, IEventStateProvider
             }
 
             await this.CloseEntranceAsync().ConfigureAwait(false);
-            if (this._enteredPlayers.Count == 0)
+            if (this.PlayerCount < this.MinimumPlayerCount)
             {
+                await this.ShowMessageAsync($"Can't start with less than {this.MinimumPlayerCount} players.").ConfigureAwait(false);
                 return;
             }
 
