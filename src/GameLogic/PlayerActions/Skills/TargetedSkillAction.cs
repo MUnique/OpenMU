@@ -34,9 +34,9 @@ public class TargetedSkillAction
     public async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
-        if (player.IsAtSafezone())
+
+        if (target is null)
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
             return;
         }
 
@@ -58,8 +58,11 @@ public class TargetedSkillAction
             return;
         }
 
-        if (target is null)
+        var inMiniGame = player.CurrentMiniGame is { };
+        var isBuff = skill.SkillType is SkillType.Buff or SkillType.Regeneration;
+        if (player.IsAtSafezone() && !(inMiniGame && isBuff))
         {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
             return;
         }
 
