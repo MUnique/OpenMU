@@ -110,6 +110,11 @@ public class MiniGameDefinition
     public bool ArePlayerKillersAllowedToEnter { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether to allow being in a party during the event.
+    /// </summary>
+    public bool AllowParty { get; set; }
+
+    /// <summary>
     /// Gets or sets the entrance gate to the mini game map.
     /// </summary>
     [Required]

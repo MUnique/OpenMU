@@ -92,6 +92,11 @@ public class EnterMiniGameAction
             }
 
             await this.ConsumeTicketItemAsync(ticketItem, player).ConfigureAwait(false);
+            if (!miniGameDefinition.AllowParty && player.Party is { } party)
+            {
+                await party.KickMySelfAsync(player).ConfigureAwait(false);
+            }
+
             await player.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
             await player.WarpToAsync(entrance).ConfigureAwait(false);
         }

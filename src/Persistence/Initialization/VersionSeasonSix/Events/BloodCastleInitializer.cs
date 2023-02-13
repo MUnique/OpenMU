@@ -216,6 +216,7 @@ internal class BloodCastleInitializer : InitializerBase
         bloodCastle.GameLevel = level;
         bloodCastle.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
         bloodCastle.SaveRankingStatistics = true;
+        bloodCastle.AllowParty = true;
 
         this.CreateRewards(level, bloodCastle);
         this.CreateEvents(level, bloodCastle);

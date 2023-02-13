@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    [Migration("20230201210042_MiniGameExt2")]
-    partial class MiniGameExt2
+    [Migration("20230213200558_MiniGameExt")]
+    partial class MiniGameExt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2174,6 +2174,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("AllowParty")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("ArePlayerKillersAllowedToEnter")
                         .HasColumnType("boolean");
 
@@ -2365,8 +2368,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<bool>("IsClientUpdateRequired")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
+                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("MiniGameChangeEventId")
                         .HasColumnType("uuid");

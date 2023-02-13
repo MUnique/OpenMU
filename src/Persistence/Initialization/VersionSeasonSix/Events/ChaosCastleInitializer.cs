@@ -93,6 +93,7 @@ internal class ChaosCastleInitializer : InitializerBase
         chaosCastle.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
         chaosCastle.SaveRankingStatistics = true;
         chaosCastle.EntranceFee = entranceFee;
+        chaosCastle.AllowParty = false;
 
         this.CreateRewards(level, chaosCastle);
         this.CreateEvents(level, chaosCastle);

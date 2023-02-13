@@ -89,7 +89,6 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<LetterHeader>().Ignore(header => header.ReceiverName);
         modelBuilder.Entity<MonsterDefinition>().HasMany<QuestDefinition>().WithOne(q => q.RawQuestGiver);
         modelBuilder.Entity<MiniGameRankingEntry>();
-        modelBuilder.Entity<MiniGameTerrainChange>(entity => entity.Property(c => c.IsClientUpdateRequired).HasDefaultValue(true));
 
         // TODO:
         modelBuilder.Entity<GameConfiguration>().Ignore(c => c.ExperienceTable)
