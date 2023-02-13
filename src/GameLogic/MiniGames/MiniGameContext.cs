@@ -697,9 +697,9 @@ public class MiniGameContext : Disposable, IEventStateProvider
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IUpdateMiniGameStateViewPlugIn>(p => p.UpdateStateAsync(this.Definition.Type, this.State)).AsTask()).ConfigureAwait(false);
     }
 
-    private async ValueTask ShowMessageAsync(string message)
+    private async ValueTask ShowMessageAsync(string message, MessageType messageType = MessageType.GoldenCenter)
     {
-        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.GoldenCenter)).AsTask()).ConfigureAwait(false);
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType)).AsTask()).ConfigureAwait(false);
     }
 
     private async ValueTask StopAsync()
@@ -841,7 +841,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
         if (changeEvent.Message is { } message)
         {
-            await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(string.Format(message, triggeredBy), Interfaces.MessageType.GoldenCenter)).AsTask()).ConfigureAwait(false);
+            await this.ShowMessageAsync(string.Format(message, triggeredBy)).ConfigureAwait(false);
         }
     }
 
