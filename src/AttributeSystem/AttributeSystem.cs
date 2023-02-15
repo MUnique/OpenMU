@@ -157,13 +157,13 @@ public class AttributeSystem : IAttributeSystem
     {
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendLine("Stat Attributes:");
-        foreach (var statAttribute in this._attributes.OfType<StatAttribute>())
+        foreach (var statAttribute in this._attributes.Values.OfType<StatAttribute>())
         {
             stringBuilder.AppendLine($"  {statAttribute.Definition}: {statAttribute.Value}");
         }
 
         stringBuilder.AppendLine("Others:");
-        foreach (var attribute in this._attributes.OfType<IComposableAttribute>())
+        foreach (var attribute in this._attributes.Values.OfType<IComposableAttribute>())
         {
             stringBuilder.AppendLine($"  {attribute.Definition}: {attribute.Value}");
         }

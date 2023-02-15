@@ -164,10 +164,17 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             return;
         }
 
+        var logger = gameContext.LoggerFactory.CreateLogger(this.GetType());
         foreach (var (mobId, mobsCount) in mobs)
         {
-            var monsterDefinition = gameContext.Configuration.Monsters.First(m => m.Number == mobId);
-            await this.CreateMonstersAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240, mobsCount).ConfigureAwait(false);
+            if (gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == mobId) is { } monsterDefinition)
+            {
+                await this.CreateMonstersAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240, mobsCount).ConfigureAwait(false);
+            }
+            else
+            {
+                logger.LogDebug("Skipping spawning of monster with number {mobId}, because monster definition wasn't found.", mobId);
+            }
         }
     }
 

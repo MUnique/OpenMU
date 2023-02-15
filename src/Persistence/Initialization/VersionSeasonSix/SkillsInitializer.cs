@@ -28,7 +28,7 @@ internal class SkillsInitializer : SkillsInitializerBase
     private const string Formula6020 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 50"; // 16
     private const string Formula6020Value = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 50 / 100"; // 16
     private const string Formula502 = "(0.8 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 5";
-    private const string Formula632 = "(0,85 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 6"; // 3
+    private const string Formula632 = "(0.85 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 6"; // 3
     private const string Formula883 = "(0.9 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 8"; // 4
     private const string Formula10235 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85"; // 9
     private const string Formula81877 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 8"; // 14
