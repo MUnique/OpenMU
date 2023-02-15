@@ -232,7 +232,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
     /// <param name="gameContext">The game context.</param>
     /// <param name="mapId">The map id.</param>
     /// <param name="mobs">The mobs.</param>
-    protected static async ValueTask SpawnMobsAsync(IGameContext gameContext, ushort mapId, IEnumerable<(ushort MonsterId, ushort Count)> mobs)
+    protected async ValueTask SpawnMobsAsync(IGameContext gameContext, ushort mapId, IEnumerable<(ushort MonsterId, ushort Count)> mobs)
     {
         var gameMap = await gameContext.GetMapAsync(mapId).ConfigureAwait(false);
 
@@ -241,10 +241,17 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : IPeriodicTaskPlugIn, 
             return;
         }
 
+        var logger = gameContext.LoggerFactory.CreateLogger(this.GetType());
         foreach (var (mobId, mobsCount) in mobs)
         {
-            var monsterDefinition = gameContext.Configuration.Monsters.First(m => m.Number == mobId);
-            await CreateMonstersAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240, mobsCount).ConfigureAwait(false);
+            if (gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == mobId) is { } monsterDefinition)
+            {
+                await CreateMonstersAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240, mobsCount).ConfigureAwait(false);
+            }
+            else
+            {
+                logger.LogDebug("Skipping spawning of monster with number {mobId}, because monster definition wasn't found.", mobId);
+            }
         }
     }
 

@@ -96,6 +96,7 @@ public class GameConfigurationInitializer : InitializerBase
         new Weapons(this.Context, this.GameConfiguration).Initialize();
         new Version075.Items.Potions(this.Context, this.GameConfiguration).Initialize();
         new Jewelery(this.Context, this.GameConfiguration).Initialize();
+        new BoxOfLuck(this.Context, this.GameConfiguration).Initialize();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
         new InvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
 
