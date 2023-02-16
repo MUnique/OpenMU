@@ -28,5 +28,5 @@ public interface IPlayerStateChangingPlugIn
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="eventArgs">The <see cref="StateMachine.StateChangeEventArgs"/> instance containing the event data.</param>
-    void PlayerStateChanging(Player player, StateMachine.StateChangeEventArgs eventArgs);
+    ValueTask PlayerStateChangingAsync(Player player, StateMachine.StateChangeEventArgs eventArgs);
 }
