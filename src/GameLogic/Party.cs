@@ -234,8 +234,10 @@ public sealed class Party : Disposable
         {
             if (player.SelectedCharacter?.CharacterClass?.IsMasterClass ?? false)
             {
-                var exp = (int)(randomizedTotalExperiencePerLevel * (player.Attributes![Stats.MasterLevel] + player.Attributes![Stats.Level]) * player.Attributes[Stats.MasterExperienceRate]);
-                await player.AddMasterExperienceAsync(exp, killedObject).ConfigureAwait(false);
+                var exp_master = (int)(randomizedTotalExperiencePerLevel * (player.Attributes![Stats.MasterLevel] + player.Attributes![Stats.Level]) * player.Attributes[Stats.MasterExperienceRate]);
+                await player.AddMasterExperienceAsync(exp_master, killedObject).ConfigureAwait(false);
+                var exp = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * player.Attributes[Stats.ExperienceRate]);
+                await player.AddExperienceAsync(exp, killedObject).ConfigureAwait(false);
             }
             else
             {
