@@ -97,7 +97,7 @@ public class StateMachineTest
     public async ValueTask ChangesEventStateObjectAsync()
     {
         State? stateInEvent = null;
-        this._stateMachine.StateChanges += (_, args) =>
+        this._stateMachine.StateChanges += async args =>
         {
             stateInEvent = args.NextState;
         };
@@ -111,7 +111,7 @@ public class StateMachineTest
     [Test]
     public async ValueTask ChangesEventCancelsAsync()
     {
-        this._stateMachine.StateChanges += (_, args) =>
+        this._stateMachine.StateChanges += async args =>
         {
             args.Cancel = true;
         };
@@ -127,7 +127,7 @@ public class StateMachineTest
     public async ValueTask ChangedEventAsync()
     {
         var stateChangeEventCalled = false;
-        this._stateMachine.StateChanged += (_, _) => stateChangeEventCalled = true;
+        this._stateMachine.StateChanged += async _ => stateChangeEventCalled = true;
         await this._stateMachine.TryAdvanceToAsync(this._nextState).ConfigureAwait(false);
         Assert.That(stateChangeEventCalled, Is.True);
     }
