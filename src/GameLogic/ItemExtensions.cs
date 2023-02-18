@@ -67,6 +67,11 @@ public static class ItemExtensions
             return 1;
         }
 
+        if (item.IsTrainablePet())
+        {
+            return 255;
+        }
+
         var result = item.Definition!.Durability + AdditionalDurabilityPerLevel[item.Level];
         if (item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.AncientBonus))
         {
