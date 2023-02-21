@@ -42,6 +42,7 @@ public class AutoFields : ComponentBase
         Builders.Add(new TimeSpanFieldBuilder());
         Builders.Add(new EnumFieldBuilder());
         Builders.Add(new ExitGateFieldBuilder());
+        Builders.Add(new ItemStorageFieldBuilder());
         Builders.Add(new LookupFieldBuilder());
         Builders.Add(new EmbeddedFormFieldBuilder());
         Builders.Add(new ObjectCollectionFieldBuilder());

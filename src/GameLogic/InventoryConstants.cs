@@ -162,9 +162,19 @@ public static class InventoryConstants
             throw new ArgumentException("Player has no selected character.", nameof(player));
         }
 
+        return (byte)GetInventorySize(player.SelectedCharacter.InventoryExtensions);
+    }
+
+    /// <summary>
+    /// Gets the size of the inventory with the specified number of extensions.
+    /// </summary>
+    /// <param name="numberOfExtensions">The number of inventory extensions.</param>
+    /// <returns>The size of the inventory.</returns>
+    public static byte GetInventorySize(int numberOfExtensions)
+    {
         var size = EquippableSlotsCount +
                    (InventoryRows * RowSize) +
-                   (RowsOfOneExtension * Math.Min(player.SelectedCharacter.InventoryExtensions, MaximumNumberOfExtensions));
+                   (RowsOfOneExtension * Math.Max(Math.Min(numberOfExtensions, MaximumNumberOfExtensions), 0));
 
         return (byte)size;
     }

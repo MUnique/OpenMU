@@ -149,6 +149,8 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose-all-in-one",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.ClientErrorLogDecryptor", "ClientErrorLogDecryptor\MUnique.OpenMU.ClientErrorLogDecryptor.csproj", "{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Web.ItemEditor", "Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj", "{298D1A42-8958-4662-8A05-E6B6F16F7268}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -339,6 +341,10 @@ Global
 		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -392,6 +398,7 @@ Global
 		{C154AA0C-4424-4D33-B6AF-39B2108EE7C4} = {BA9EABE2-F32F-446D-A8AA-56866A6B6CFD}
 		{6518D58A-5F07-4341-87AF-FCF3715D2554} = {565BED68-B303-4A3D-A8C0-0088D2A50C46}
 		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6} = {C814AC11-2CAD-44F2-80DF-B37FD785E80E}
+		{298D1A42-8958-4662-8A05-E6B6F16F7268} = {820453DE-DA7A-454C-A077-BED8F0FA9764}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28C13837-B616-4790-84D6-4BDCB4A8166D}

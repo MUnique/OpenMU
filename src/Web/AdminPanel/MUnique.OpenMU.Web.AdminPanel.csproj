@@ -70,6 +70,7 @@
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
     <ProjectReference Include="..\..\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\..\Persistence\MUnique.OpenMU.Persistence.csproj" />
+    <ProjectReference Include="..\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj" />
     <ProjectReference Include="..\Map\MUnique.OpenMU.Web.Map.csproj" />
   </ItemGroup>
 
