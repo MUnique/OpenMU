@@ -10,7 +10,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.Interfaces;
-using static OpenMU.GameLogic.InventoryConstants;
+using static OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
 /// Action to move an item between <see cref="Storages"/> or the same storage.
@@ -144,7 +144,7 @@ public class MoveItemAction
                     player.Inventory,
                     InventoryRows,
                     EquippableSlotsCount,
-                    (byte)(EquippableSlotsCount + GetInventorySize(player)));
+                    (byte)(EquippableSlotsCount + player.GetInventorySize()));
                 break;
             case Storages.PersonalStore when player.ShopStorage is not null:
                 result = new StorageInfo(

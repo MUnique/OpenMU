@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Inventory;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
