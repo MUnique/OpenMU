@@ -6,13 +6,13 @@ namespace MUnique.OpenMU.Tests;
 
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
 /// Tests the item consumption action.
