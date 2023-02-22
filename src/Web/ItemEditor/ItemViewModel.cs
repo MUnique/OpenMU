@@ -4,8 +4,6 @@
 
 namespace MUnique.OpenMU.Web.ItemEditor;
 
-using MUnique.OpenMU.GameLogic;
-
 /// <summary>
 /// View-Model for an <see cref="Item"/>.
 /// </summary>
@@ -45,7 +43,7 @@ public class ItemViewModel
     {
         get
         {
-            if (this.Item.IsTrainablePet())
+            if (this.Item.IsTrainablePet() || this.Item.IsWing())
             {
                 return 0;
             }
