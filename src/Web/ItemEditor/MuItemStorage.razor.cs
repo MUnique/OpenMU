@@ -2,26 +2,24 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
-using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
-
 namespace MUnique.OpenMU.Web.ItemEditor;
 
+using Microsoft.AspNetCore.Components;
+
+/// <summary>
+/// Component for a item box.
+/// </summary>
 public partial class MuItemStorage
 {
     private StorageViewModel? _viewModel;
 
+    /// <summary>
+    /// Gets or sets the type of the storage.
+    /// </summary>
     [Parameter]
     public StorageType StorageType { get; set; }
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         base.OnParametersSet();

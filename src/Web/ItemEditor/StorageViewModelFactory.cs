@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.ItemEditor;
 
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 
 /// <summary>
 /// Factory for <see cref="StorageViewModel"/>s.
