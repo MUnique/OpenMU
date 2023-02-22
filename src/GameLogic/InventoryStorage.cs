@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
-using static OpenMU.GameLogic.InventoryConstants;
+using static OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
 /// The storage of an inventory of a player, which also contains equippable slots. This class also manages the powerups which get created by equipped items.
@@ -24,10 +24,10 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// <param name="context">The game context.</param>
     public InventoryStorage(Player player, IGameContext context)
         : base(
-            GetInventorySize(player),
+            player.GetInventorySize(),
             EquippableSlotsCount,
             0,
-            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, GetInventorySize(player)))
+            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.GetInventorySize()))
     {
         this._player = player;
         this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item).ConfigureAwait(false);

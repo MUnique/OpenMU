@@ -22,7 +22,7 @@ You can start the server with the following parameters:
 |-------------|-------------------|
 | -autostart  | It automatically initializes the game servers and starts the tcp listeners of all (sub-)servers |
 | -reinit     | It recreates and reinitializes the database. It doesn't have any effect when *-demo* is used. |
-| -version:[season6\|0.75]    | Defines the version of the game client. Has only effect with *-reinit* or *-demo* and affects the initial data creation. Default: season6|
+| -version:[season6\|0.75\|0.95d]    | Defines the version of the game client. Has only effect with *-reinit* or *-demo* and affects the initial data creation. Default: season6|
 | -demo       | Instead of using an external database, it uses in-memory repositories and data is initialized at each start. Only for testing, not for production usage, as player progress is **not saved** to a database or file. |
 | -deamon     | Deactivates handling of console inputs |
 | -adminpanel:[enabled\|disabled] | Defines if the admin panel is available. If disabled, *-autostart* is applied automatically. Default: enabled |

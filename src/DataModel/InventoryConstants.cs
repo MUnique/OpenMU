@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic;
+namespace MUnique.OpenMU.DataModel;
 
 /// <summary>
 /// The constants for the players inventory.
@@ -151,20 +151,15 @@ public static class InventoryConstants
     public static readonly byte WarehouseSize = (byte)(WarehouseRows * RowSize);
 
     /// <summary>
-    /// Gets the size of the inventory of the specified player.
+    /// Gets the size of the inventory with the specified number of extensions.
     /// </summary>
-    /// <param name="player">The player.</param>
+    /// <param name="numberOfExtensions">The number of inventory extensions.</param>
     /// <returns>The size of the inventory.</returns>
-    public static byte GetInventorySize(Player player)
+    public static byte GetInventorySize(int numberOfExtensions)
     {
-        if (player.SelectedCharacter is null)
-        {
-            throw new ArgumentException("Player has no selected character.", nameof(player));
-        }
-
         var size = EquippableSlotsCount +
                    (InventoryRows * RowSize) +
-                   (RowsOfOneExtension * Math.Min(player.SelectedCharacter.InventoryExtensions, MaximumNumberOfExtensions));
+                   (RowsOfOneExtension * Math.Max(Math.Min(numberOfExtensions, MaximumNumberOfExtensions), 0));
 
         return (byte)size;
     }
