@@ -50,6 +50,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 
@@ -66,6 +67,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 
@@ -82,6 +84,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 
@@ -98,6 +101,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 
@@ -114,6 +118,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 
@@ -130,6 +135,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 
@@ -146,6 +152,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 
@@ -162,6 +169,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 
@@ -178,6 +186,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 
@@ -194,6 +203,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 2;
         return itemDefinition;
     }
 }
