@@ -1314,6 +1314,21 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return $"Account: [{accountName}], Character:[{characterName}]";
     }
 
+    /// <summary>
+    /// Gets the size of the inventory of the specified player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The size of the inventory.</returns>
+    public byte GetInventorySize()
+    {
+        if (this.SelectedCharacter is not { } selectedCharacter)
+        {
+            return 0;
+        }
+
+        return (byte)InventoryConstants.GetInventorySize(selectedCharacter.InventoryExtensions);
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {

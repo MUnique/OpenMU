@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.MiniGames;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
