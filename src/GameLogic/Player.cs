@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using System.Runtime;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -1295,6 +1294,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public void SummonDied()
     {
         this.Summon = null;
+    }
+
+    /// <summary>
+    /// Removes the summon.
+    /// </summary>
+    public async ValueTask RemoveSummonAsync()
+    {
+        if (this.Summon is { } summon)
+        {
+            // remove summon, if exists
+            await summon.Item1.CurrentMap.RemoveAsync(summon.Item1).ConfigureAwait(false);
+            summon.Item1.Dispose();
+            this.SummonDied();
+        }
     }
 
     /// <summary>

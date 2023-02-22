@@ -58,9 +58,15 @@ public class TargetedSkillAction
             return;
         }
 
-        var inMiniGame = player.CurrentMiniGame is { };
+        var miniGame = player.CurrentMiniGame;
+        var inMiniGame = miniGame is { };
         var isBuff = skill.SkillType is SkillType.Buff or SkillType.Regeneration;
         if (player.IsAtSafezone() && !(inMiniGame && isBuff))
+        {
+            return;
+        }
+
+        if (inMiniGame && !miniGame!.IsSkillAllowed(skill))
         {
             player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
             return;
@@ -87,12 +93,9 @@ public class TargetedSkillAction
             return;
         }
 
-        if (skill.SkillType == SkillType.SummonMonster && player.Summon is { } summon)
+        if (skill.SkillType == SkillType.SummonMonster && player.Summon is { })
         {
-            // remove summon, if exists
-            await summon.Item1.CurrentMap.RemoveAsync(summon.Item1).ConfigureAwait(false);
-            summon.Item1.Dispose();
-            player.SummonDied();
+            await player.RemoveSummonAsync().ConfigureAwait(false);
             return;
         }
 

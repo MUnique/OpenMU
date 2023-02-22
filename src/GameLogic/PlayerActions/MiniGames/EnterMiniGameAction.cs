@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 
@@ -30,7 +31,9 @@ public class EnterMiniGameAction
 
         var miniGameDefinition = player.GameContext.Configuration.MiniGameDefinitions
             .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel);
-        if (miniGameDefinition is null || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass))
+        if (miniGameDefinition is null
+            || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass)
+            || player.CurrentMiniGame is not null)
         {
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
             return;
@@ -92,11 +95,21 @@ public class EnterMiniGameAction
             }
 
             await this.ConsumeTicketItemAsync(ticketItem, player).ConfigureAwait(false);
+
             if (!miniGameDefinition.AllowParty && player.Party is { } party)
             {
                 await party.KickMySelfAsync(player).ConfigureAwait(false);
             }
 
+            await player.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
+
+            if (player.ShopStorage?.StoreOpen ?? false)
+            {
+                var storeCloseAction = new CloseStoreAction();
+                await storeCloseAction.CloseStoreAsync(player).ConfigureAwait(false);
+            }
+
+            await player.RemoveSummonAsync().ConfigureAwait(false);
             await player.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
             await player.WarpToAsync(entrance).ConfigureAwait(false);
         }

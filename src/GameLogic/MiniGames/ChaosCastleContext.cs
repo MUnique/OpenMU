@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Pathfinding;
 using Nito.Disposables.Internals;
@@ -86,6 +87,37 @@ public sealed class ChaosCastleContext : MiniGameContext
 
     /// <inheritdoc />
     protected override int MinimumPlayerCount => 2;
+
+    /// <inheritdoc />
+    public override bool IsItemAllowedToEquip(Item item)
+    {
+        if (item.Definition is not { } definition)
+        {
+            return false;
+        }
+
+        switch (definition.Group, definition.Number)
+        {
+            case (13, 2): // Uniria
+            case (13, 3): // Dino
+            case (13, 37): // Fenrir
+                return false;
+        }
+
+        if (definition.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.TransformationSkin))
+        {
+            return false;
+        }
+
+        return base.IsItemAllowedToEquip(item);
+    }
+
+    /// <inheritdoc />
+    public override bool IsSkillAllowed(Skill skill)
+    {
+        return base.IsSkillAllowed(skill)
+               && skill.SkillType != SkillType.SummonMonster;
+    }
 
     /// <inheritdoc/>
     protected override async ValueTask OnObjectRemovedFromMapAsync((GameMap Map, ILocateable Object) args)

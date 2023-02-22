@@ -153,6 +153,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
                 return EnterResult.Full;
             }
 
+            if (!await this.AreEquippedItemsAllowedAsync(player).ConfigureAwait(false))
+            {
+                return EnterResult.Failed;
+            }
+
             this._enteredPlayers.Add(player);
         }
 
@@ -166,6 +171,26 @@ public class MiniGameContext : Disposable, IEventStateProvider
     public bool IsSpawnWaveActive(byte waveNumber)
     {
         return this._currentSpawnWaves.Contains(waveNumber);
+    }
+
+    /// <summary>
+    /// Determines whether an item allowed to be equipped during this game.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    public virtual bool IsItemAllowedToEquip(Item item)
+    {
+        // Additional checks can be implemented in specific mini games.
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether performing the specified skill is allowed during the mini game.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    public virtual bool IsSkillAllowed(Skill skill)
+    {
+        // Additional checks can be implemented in specific mini games.
+        return true;
     }
 
     /// <inheritdoc />
@@ -927,6 +952,26 @@ public class MiniGameContext : Disposable, IEventStateProvider
         }
 
         return true;
+    }
+
+    private async ValueTask<bool> AreEquippedItemsAllowedAsync(Player player)
+    {
+        if (player.Inventory is not { } inventory)
+        {
+            return false;
+        }
+
+        var result = true;
+        foreach (var item in inventory.EquippedItems)
+        {
+            if (!this.IsItemAllowedToEquip(item))
+            {
+                await player.ShowMessageAsync($"Can't enter event with equipped item '{item.Definition?.Name ?? item.ToString()}'.").ConfigureAwait(false);
+                result = false;
+            }
+        }
+
+        return result;
     }
 
     /// <summary>
