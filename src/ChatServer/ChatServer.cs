@@ -292,14 +292,12 @@ public sealed class ChatServer : IChatServer, IDisposable
         e.Cancel = this.CurrentConnections >= this.Settings.MaximumConnections;
     }
 
-    private ValueTask ChatClientAcceptedAsync(ClientAcceptedEventArgs e)
+    private async ValueTask ChatClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
         var chatClient = new ChatClient(e.AcceptedConnection, this._manager, this._loggerFactory.CreateLogger<ChatClient>());
         this._connectedClients.Add(chatClient);
         this.RaisePropertyChanged(nameof(this.CurrentConnections));
         chatClient.Disconnected += this.ChatClientDisconnected;
-
-        return ValueTask.CompletedTask;
     }
 
     private void ChatClientDisconnected(object? sender, EventArgs e)
@@ -319,11 +317,12 @@ public sealed class ChatServer : IChatServer, IDisposable
         {
             var bottomDateTimeMargin = DateTime.Now.Subtract(this.Settings.ClientTimeout);
 
-            await Parallel.ForEachAsync(this._connectedClients, async (client, token) =>
+            for (int i = this._connectedClients.Count - 1; i >= 0; i--)
             {
+                var client = this._connectedClients[i];
                 if (client.LastActivity >= bottomDateTimeMargin)
                 {
-                    return;
+                    continue;
                 }
 
                 this._logger.LogDebug(
@@ -331,7 +330,7 @@ public sealed class ChatServer : IChatServer, IDisposable
                     client, client.LastActivity);
 
                 await client.LogOffAsync().ConfigureAwait(false);
-            }).ConfigureAwait(true);
+            }
         }
         catch (Exception ex)
         {
