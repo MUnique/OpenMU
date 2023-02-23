@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 internal static class CharacterExtensions
 {
+    /// <summary>
+    /// Extension for Character entity.
+    /// centralize logic for apply configuration on database with code first.
+    /// </summary>
     public static void Apply(this EntityTypeBuilder<Character> builder)
     {
         builder.Property(character => character.Name).HasMaxLength(10).IsRequired();
@@ -15,6 +19,10 @@ internal static class CharacterExtensions
         builder.HasMany(character => character.RawLetters).WithOne(letter => letter.Receiver!).OnDelete(DeleteBehavior.Cascade);
     }
 
+    /// <summary>
+    /// Extension for CharacterClass entity.
+    /// centralize logic for apply configuration on database with code first.
+    /// </summary>
     public static void Apply(this EntityTypeBuilder<CharacterClass> builder)
     {
         builder.HasMany(c => c.RawBaseAttributeValues)
