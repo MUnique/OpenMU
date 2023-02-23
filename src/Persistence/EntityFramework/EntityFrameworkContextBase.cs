@@ -133,25 +133,25 @@ public class EntityFrameworkContextBase : IContext
         using var l = await this._lock.LockAsync();
 
         var result = false;
-        if (this.Context.Entry(obj) is { } entry)
+        if (this.Context.Entry(obj) is not { } entry)
         {
-            if (entry.State == EntityState.Detached)
-            {
-                return true;
-            }
+            return result;
+        }
 
-            if (entry.State == EntityState.Added)
-            {
+        switch (entry.State)
+        {
+            case EntityState.Detached:
+                return true;
+            case EntityState.Added:
                 this.Detach(obj);
-            }
-            else
-            {
+                break;
+            default:
                 this.Context.Remove(obj);
                 this.ForEachAggregate(obj, a => this.Context.Remove(a));
-            }
-
-            result = true;
+                break;
         }
+
+        result = true;
 
         return result;
     }
@@ -200,11 +200,13 @@ public class EntityFrameworkContextBase : IContext
     /// <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool dispose)
     {
-        if (dispose && this._isOwner)
+        if (!dispose || !this._isOwner)
         {
-            this.Context.SavedChanges -= this.OnSavedChanges;
-            this.Context.Dispose();
+            return;
         }
+
+        this.Context.SavedChanges -= this.OnSavedChanges;
+        this.Context.Dispose();
     }
 
     private void ForEachAggregate(object obj, Action<object> action)
