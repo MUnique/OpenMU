@@ -1,15 +1,22 @@
-﻿namespace MUnique.OpenMU.Persistence.EntityFramework.Extensions.ModelBuilder;
+﻿// <copyright file="CharacterExtensions.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
+namespace MUnique.OpenMU.Persistence.EntityFramework.Extensions.ModelBuilder;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
-using Microsoft.EntityFrameworkCore;
 
+/// <summary>
+/// Extensions for the <see cref="EntityTypeBuilder{Account}"/>.
+/// </summary>
 internal static class CharacterExtensions
 {
     /// <summary>
-    /// Extension for Character entity.
-    /// centralize logic for apply configuration on database with code first.
+    /// Applies the settings for the <see cref="Character"/> entity.
     /// </summary>
+    /// <param name="builder">The builder.</param>
     public static void Apply(this EntityTypeBuilder<Character> builder)
     {
         builder.Property(character => character.Name).HasMaxLength(10).IsRequired();
@@ -20,9 +27,9 @@ internal static class CharacterExtensions
     }
 
     /// <summary>
-    /// Extension for CharacterClass entity.
-    /// centralize logic for apply configuration on database with code first.
+    /// Applies the settings for the <see cref="CharacterClass"/> entity.
     /// </summary>
+    /// <param name="builder">The builder.</param>
     public static void Apply(this EntityTypeBuilder<CharacterClass> builder)
     {
         builder.HasMany(c => c.RawBaseAttributeValues)
