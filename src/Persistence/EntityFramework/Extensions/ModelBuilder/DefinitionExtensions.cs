@@ -22,6 +22,6 @@ internal static class DefinitionExtensions
 
     public static void Apply(this EntityTypeBuilder<MasterSkillDefinition> builder)
     {
-        builder.HasOne(s => s.RawRoot);;
+        builder.HasOne(s => s.RawRoot);
     }
 }
