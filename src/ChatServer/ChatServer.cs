@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.ChatServer;
 
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Timers;
@@ -292,12 +292,14 @@ public sealed class ChatServer : IChatServer, IDisposable
         e.Cancel = this.CurrentConnections >= this.Settings.MaximumConnections;
     }
 
-    private async ValueTask ChatClientAcceptedAsync(ClientAcceptedEventArgs e)
+    private ValueTask ChatClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
         var chatClient = new ChatClient(e.AcceptedConnection, this._manager, this._loggerFactory.CreateLogger<ChatClient>());
         this._connectedClients.Add(chatClient);
         this.RaisePropertyChanged(nameof(this.CurrentConnections));
         chatClient.Disconnected += this.ChatClientDisconnected;
+
+        return ValueTask.CompletedTask;
     }
 
     private void ChatClientDisconnected(object? sender, EventArgs e)
@@ -316,15 +318,20 @@ public sealed class ChatServer : IChatServer, IDisposable
         try
         {
             var bottomDateTimeMargin = DateTime.Now.Subtract(this.Settings.ClientTimeout);
-            for (int i = this._connectedClients.Count - 1; i >= 0; i--)
+
+            await Parallel.ForEachAsync(this._connectedClients, async (client, token) =>
             {
-                var client = this._connectedClients[i];
-                if (client.LastActivity < bottomDateTimeMargin)
+                if (client.LastActivity >= bottomDateTimeMargin)
                 {
-                    this._logger.LogDebug($"Disconnecting client {client}, because of activity timeout. LastActivity: {client.LastActivity}");
-                    await client.LogOffAsync().ConfigureAwait(false);
+                    return;
                 }
-            }
+
+                this._logger.LogDebug(
+                    "Disconnecting client {Client}, because of activity timeout. LastActivity: {ClientLastActivity}",
+                    client, client.LastActivity);
+
+                await client.LogOffAsync().ConfigureAwait(false);
+            }).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
