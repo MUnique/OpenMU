@@ -85,7 +85,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
         var result = await context.Context.Set<T>().FindAsync(id).ConfigureAwait(false);
         if (result is null)
         {
-            this._logger.LogDebug($"Object with id {id} could not be found.");
+            this._logger.LogDebug("Object with id {Id} could not be found.", id);
         }
         else
         {
@@ -217,7 +217,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
         }
         else
         {
-            this._logger.LogWarning($"No repository found which supports loading by foreign key for type ${foreignKeyProperty.DeclaringEntityType.ClrType}.");
+            this._logger.LogWarning("No repository found which supports loading by foreign key for type {ClrType}.", foreignKeyProperty.DeclaringEntityType.ClrType);
             loadStatusAware.LoadingStatus = LoadingStatus.Failed;
         }
     }
@@ -255,19 +255,19 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
             }
             catch (RepositoryNotFoundException ex)
             {
-                this._logger.LogError(ex, $"Repository not found: {ex.Message}");
+                this._logger.LogError(ex, "Repository not found: {Message}", ex.Message);
             }
 
             if (repository != null)
             {
                 if (!navigation.TrySetClrValue(entityEntry.Entity, await repository.GetByIdAsync(id).ConfigureAwait(false)))
                 {
-                    this._logger.LogError($"Could not find setter for navigation {navigation}");
+                    this._logger.LogError("Could not find setter for navigation {Navigation}", navigation);
                 }
             }
             else
             {
-                this._logger.LogError($"Repository not found for navigation target type {navigation.TargetEntityType}.");
+                this._logger.LogError("Repository not found for navigation target type {TargetEntityType}.", navigation.TargetEntityType);
             }
         }
     }

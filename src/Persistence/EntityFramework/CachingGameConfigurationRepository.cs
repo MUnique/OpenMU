@@ -17,6 +17,8 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal class CachingGameConfigurationRepository : CachingGenericRepository<GameConfiguration>
 {
     private readonly JsonObjectLoader _objectLoader;
+    private const long MinLevel = 0;
+    private const long MaxLevel = 256;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingGameConfigurationRepository" /> class.
@@ -87,24 +89,29 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
             Enumerable.Range(0, 201).Select(level => this.CalcNeededMasterExp(level)).ToArray();
     }
 
+    /// <summary>
+    /// The equation
+    ///  f(x) = 505 * x^3 + 35278500 * x + 228045 * x^2
+    /// </summary>
+    /// <param name="lvl"></param>
+    /// <returns> long. </returns>
     private long CalcNeededMasterExp(long lvl)
     {
-        // f(x) = 505 * x^3 + 35278500 * x + 228045 * x^2
         return (505 * lvl * lvl * lvl) + (35278500 * lvl) + (228045 * lvl * lvl);
     }
 
+    /// <summary>
+    /// The equation for calculate needed experience.
+    /// </summary>
+    /// <param name="level"></param>
+    /// <returns> long. </returns>
     private long CalculateNeededExperience(long level)
     {
-        if (level == 0)
+        return level switch
         {
-            return 0;
-        }
-
-        if (level < 256)
-        {
-            return 10 * (level + 8) * (level - 1) * (level - 1);
-        }
-
-        return (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256));
+            MinLevel => 0,
+            < MaxLevel => 10 * (level + 8) * (level - 1) * (level - 1),
+            _ => (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256)),
+        };
     }
 }
