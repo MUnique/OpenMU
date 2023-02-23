@@ -5,6 +5,10 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 internal static class GameMapDefinitionExtensions
 {
+    /// <summary>
+    /// Extension for GameMapDefinition entity.
+    /// centralize logic for apply configuration on database with code first.
+    /// </summary>
     public static void Apply(this EntityTypeBuilder<GameMapDefinition> builder)
     {
         builder.HasMany(map => map.RawEnterGates);
