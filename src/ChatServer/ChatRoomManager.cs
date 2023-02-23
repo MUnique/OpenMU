@@ -45,15 +45,15 @@ internal class ChatRoomManager
     /// <returns>The Room-ID of the new room. Returns ushort.MaxValue, if there is no free chat room available.</returns>
     public ushort CreateChatRoom()
     {
-        if (this._freeRoomIds.TryTake(out ushort roomId))
+        if (!this._freeRoomIds.TryTake(out ushort roomId))
         {
-            var room = new ChatRoom(roomId, this._loggerFactory.CreateLogger<ChatRoom>());
-            room.RoomClosed += this.OnChatRoomClosed;
-            this._rooms.Add(roomId, room);
-            return roomId;
+            throw new InvalidOperationException("There is no free room id, so the chat room couldn't be created.");
         }
 
-        throw new InvalidOperationException("There is no free room id, so the chat room couldn't be created.");
+        var room = new ChatRoom(roomId, this._loggerFactory.CreateLogger<ChatRoom>());
+        room.RoomClosed += this.OnChatRoomClosed;
+        this._rooms.Add(roomId, room);
+        return roomId;
     }
 
     /// <summary>
