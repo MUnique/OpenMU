@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 internal static class GameConfigurationExtensions
 {
+    /// <summary>
+    /// Extension for GameConfiguration entity.
+    /// centralize logic for apply configuration on database with code first.
+    /// </summary>
     public static void Apply(this EntityTypeBuilder<GameConfiguration> builder)
     {
         builder.Property(c => c.ItemDropDuration).HasDefaultValue(TimeSpan.FromSeconds(60));
