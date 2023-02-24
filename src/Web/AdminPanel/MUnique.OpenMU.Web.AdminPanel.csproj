@@ -22,19 +22,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
-    <Compile Include="..\..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <None Include="compilerconfig.json" />
     <None Include="wwwroot\css\open-iconic\FONT-LICENSE" />
     <None Include="wwwroot\css\open-iconic\font\css\open-iconic-bootstrap.min.css" />
