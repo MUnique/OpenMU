@@ -2,25 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GameLogic.MiniGames;
-
 namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
+using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.PlugIns;
-
-public class ChaosCastleGameServerState : PeriodicTaskGameServerState
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ChaosCastleGameServerState"/> class.
-    /// </summary>
-    /// <param name="ctx">The CTX.</param>
-    public ChaosCastleGameServerState(IGameContext ctx)
-        : base(ctx)
-    {
-    }
-}
 
 /// <summary>
 /// This plugin enables the start of the chaos castle.
