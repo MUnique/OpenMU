@@ -19,7 +19,7 @@ public class ChaosCastleStartConfiguration : PeriodicTaskConfiguration
             EntranceOpenedMessage = "Chaos Castle entrance is open and closes in {0} minute(s).",
             EntranceClosedMessage = "Chaos Castle entrance closed.",
             TaskDuration = TimeSpan.FromMinutes(15),
-            Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromMinutes(20)).ToList(),
+            Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromMinutes(60)).ToList(),
         };
 
     /// <summary>
