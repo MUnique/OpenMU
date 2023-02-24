@@ -620,30 +620,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Is called after the player killed a <see cref="Player"/>.
-    /// Increment PK Level.
-    /// </summary>
-    public async ValueTask AfterKilledPlayerAsync()
-    {
-        // TODO: Self Defense System
-        if (this._selectedCharacter!.State != HeroState.PlayerKiller2ndStage)
-        {
-            if (this._selectedCharacter.State < HeroState.Normal)
-            {
-                this._selectedCharacter.State = HeroState.PlayerKillWarning;
-            }
-            else
-            {
-                this._selectedCharacter.State++;
-            }
-        }
-
-        this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
-        this._selectedCharacter.PlayerKillCount += 1;
-        await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Is called after the player killed a <see cref="Monster"/>.
     /// Adds recovered mana and health to the players attributes.
     /// </summary>
@@ -1616,7 +1592,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, killer), true).ConfigureAwait(false);
 
         if (killer is Player killerAfterKilled
-            && !(killerAfterKilled.GuildWarContext?.Score is { } score && score == this.GuildWarContext?.Score))
+            && !(killerAfterKilled.GuildWarContext?.Score is { } score && score == this.GuildWarContext?.Score)
+            && this.CurrentMiniGame?.AllowPlayerKilling is not true)
         {
             await killerAfterKilled.AfterKilledPlayerAsync().ConfigureAwait(false);
         }
@@ -1645,6 +1622,30 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             this.Died?.Invoke(this, deathInformation);
         }
+    }
+
+    /// <summary>
+    /// Is called after the player killed a <see cref="Player"/>.
+    /// Increment PK Level.
+    /// </summary>
+    private async ValueTask AfterKilledPlayerAsync()
+    {
+        // TODO: Self Defense System
+        if (this._selectedCharacter!.State != HeroState.PlayerKiller2ndStage)
+        {
+            if (this._selectedCharacter.State < HeroState.Normal)
+            {
+                this._selectedCharacter.State = HeroState.PlayerKillWarning;
+            }
+            else
+            {
+                this._selectedCharacter.State++;
+            }
+        }
+
+        this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
+        this._selectedCharacter.PlayerKillCount += 1;
+        await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
     }
 
     private Item? GetAmmunitionItem()

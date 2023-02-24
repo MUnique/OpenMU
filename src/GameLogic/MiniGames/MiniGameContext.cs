@@ -100,6 +100,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
     }
 
     /// <summary>
+    /// Gets a value indicating whether it's allowed to kill other players without consequences.
+    /// </summary>
+    public virtual bool AllowPlayerKilling { get; }
+
+    /// <summary>
     /// Gets the remaining time of the event, in case it has been finished by the player earlier than the timeout.
     /// </summary>
     protected virtual TimeSpan RemainingTime => TimeSpan.Zero;
@@ -187,7 +192,9 @@ public class MiniGameContext : Disposable, IEventStateProvider
     /// Determines whether performing the specified skill is allowed during the mini game.
     /// </summary>
     /// <param name="skill">The skill.</param>
-    public virtual bool IsSkillAllowed(Skill skill)
+    /// <param name="attacker">The attacker or skill performer.</param>
+    /// <param name="target">The target.</param>
+    public virtual bool IsSkillAllowed(Skill skill, Player attacker, IAttackable target)
     {
         // Additional checks can be implemented in specific mini games.
         return true;
@@ -654,6 +661,11 @@ public class MiniGameContext : Disposable, IEventStateProvider
             if (this.PlayerCount < this.MinimumPlayerCount)
             {
                 await this.ShowMessageAsync($"Can't start with less than {this.MinimumPlayerCount} players.").ConfigureAwait(false);
+                if (this.Definition.EntranceFee > 0)
+                {
+                    await this.ForEachPlayerAsync(async player => player.TryAddMoney(this.Definition.EntranceFee)).ConfigureAwait(false);
+                }
+
                 return;
             }
 

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
@@ -73,6 +74,14 @@ public class EnterMiniGameAction
             return;
         }
 
+        if (player.GuildWarContext is { State: GuildWarState.Started or GuildWarState.Requested })
+        {
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
+            return;
+        }
+
+        // TODO: Check Duel state when duels are implemented
+
         if (miniGameDefinition.MapCreationPolicy == MiniGameMapCreationPolicy.Shared)
         {
             var miniGameStrategy = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(miniGameDefinition.Type);
@@ -86,6 +95,7 @@ public class EnterMiniGameAction
 
         var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
         var miniGame = await player.GameContext.GetMiniGameAsync(miniGameDefinition, player).ConfigureAwait(false);
+
         var enterResult = await miniGame.TryEnterAsync(player).ConfigureAwait(false);
         if (enterResult == EnterResult.Success)
         {

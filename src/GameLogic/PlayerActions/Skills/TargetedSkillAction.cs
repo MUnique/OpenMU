@@ -66,9 +66,8 @@ public class TargetedSkillAction
             return;
         }
 
-        if (inMiniGame && !miniGame!.IsSkillAllowed(skill))
+        if (inMiniGame && !miniGame!.IsSkillAllowed(skill, player, target))
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
             return;
         }
 

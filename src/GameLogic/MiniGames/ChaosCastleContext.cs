@@ -80,6 +80,9 @@ public sealed class ChaosCastleContext : MiniGameContext
     }
 
     /// <inheritdoc />
+    public override bool AllowPlayerKilling => true;
+
+    /// <inheritdoc />
     protected override Player? Winner => this._winner;
 
     /// <inheritdoc />
@@ -113,10 +116,26 @@ public sealed class ChaosCastleContext : MiniGameContext
     }
 
     /// <inheritdoc />
-    public override bool IsSkillAllowed(Skill skill)
+    public override bool IsSkillAllowed(Skill skill, Player attacker, IAttackable target)
     {
-        return base.IsSkillAllowed(skill)
-               && skill.SkillType != SkillType.SummonMonster;
+        if (!base.IsSkillAllowed(skill, attacker, target))
+        {
+            return false;
+        }
+
+        if (skill.SkillType == SkillType.SummonMonster)
+        {
+            // It's not allowed to summon a monster.
+            return false;
+        }
+
+        if (skill.SkillType == SkillType.Buff && target != attacker)
+        {
+            // It's only allowed to buff the own player.
+            return false;
+        }
+
+        return true;
     }
 
     /// <inheritdoc/>
