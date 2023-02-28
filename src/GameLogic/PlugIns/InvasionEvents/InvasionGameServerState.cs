@@ -14,16 +14,16 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
     /// <summary>
     /// Initializes a new instance of the <see cref="InvasionGameServerState"/> class.
     /// </summary>
-    /// <param name="ctx">The CTX.</param>
-    public InvasionGameServerState(IGameContext ctx)
-        : base(ctx)
+    /// <param name="context">The context.</param>
+    public InvasionGameServerState(IGameContext context)
+        : base(context)
     {
     }
 
     /// <summary>
     /// Gets or sets the map identifier.
     /// </summary>
-    public ushort MapId { get; set; } = 0;
+    public ushort MapId { get; set; }
 
     /// <summary>
     /// Gets the map.

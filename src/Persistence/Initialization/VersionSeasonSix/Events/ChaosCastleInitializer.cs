@@ -96,12 +96,12 @@ internal class ChaosCastleInitializer : InitializerBase
         chaosCastle.AllowParty = false;
 
         this.CreateRewards(level, chaosCastle);
-        this.CreateEvents(level, chaosCastle);
+        this.CreateEvents(chaosCastle);
 
         return chaosCastle;
     }
 
-    private void CreateEvents(byte level, MiniGameDefinition chaosCastle)
+    private void CreateEvents(MiniGameDefinition chaosCastle)
     {
         AddStage(0, 0);
         AddSafezoneToggle(0, 23, 75, 44, 108, false);

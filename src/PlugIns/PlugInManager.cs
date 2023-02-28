@@ -23,7 +23,7 @@ public class PlugInManager
     private readonly IDictionary<Guid, Type> _knownPlugIns = new ConcurrentDictionary<Guid, Type>();
     private readonly ConcurrentDictionary<Type, ISet<Type>> _knownPlugInsPerInterfaceType = new ();
     private readonly ConcurrentDictionary<Guid, Type> _activePlugIns = new ();
-    private object? _lastCreatedPlugIn = null;
+    private object? _lastCreatedPlugIn;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlugInManager" /> class.

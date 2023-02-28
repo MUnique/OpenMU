@@ -12,10 +12,10 @@ public class PeriodicTaskGameServerState
     /// <summary>
     /// Initializes a new instance of the <see cref="PeriodicTaskGameServerState"/> class.
     /// </summary>
-    /// <param name="ctx">The CTX.</param>
-    public PeriodicTaskGameServerState(IGameContext ctx)
+    /// <param name="context">The context.</param>
+    public PeriodicTaskGameServerState(IGameContext context)
     {
-        this.Context = ctx;
+        this.Context = context;
     }
 
     /// <summary>

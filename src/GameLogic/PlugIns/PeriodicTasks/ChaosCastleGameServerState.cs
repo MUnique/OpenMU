@@ -12,9 +12,9 @@ public class ChaosCastleGameServerState : PeriodicTaskGameServerState
     /// <summary>
     /// Initializes a new instance of the <see cref="ChaosCastleGameServerState"/> class.
     /// </summary>
-    /// <param name="ctx">The context.</param>
-    public ChaosCastleGameServerState(IGameContext ctx)
-        : base(ctx)
+    /// <param name="context">The context.</param>
+    public ChaosCastleGameServerState(IGameContext context)
+        : base(context)
     {
     }
 }

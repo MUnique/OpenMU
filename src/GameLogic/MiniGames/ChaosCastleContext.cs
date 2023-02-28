@@ -105,11 +105,13 @@ public sealed class ChaosCastleContext : MiniGameContext
             case (13, 3): // Dino
             case (13, 37): // Fenrir
                 return false;
-        }
+            default:
+                if (definition.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.TransformationSkin))
+                {
+                    return false;
+                }
 
-        if (definition.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.TransformationSkin))
-        {
-            return false;
+                break;
         }
 
         return base.IsItemAllowedToEquip(item);
@@ -166,7 +168,7 @@ public sealed class ChaosCastleContext : MiniGameContext
                 this._currentCastleStatus = ChaosCastleStatus.RunningShrinkingStageThree;
                 break;
             default:
-                // no action required;
+                // no action required
                 break;
         }
     }
@@ -354,6 +356,10 @@ public sealed class ChaosCastleContext : MiniGameContext
             {
                 blowY = max;
                 blowX = min - Rand.NextInt(0, 2);
+            }
+            else
+            {
+                // leave the random values like they are
             }
 
             blowX = Math.Max(0, blowX);
