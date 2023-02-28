@@ -18,19 +18,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
-    <Compile Include="..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Nito.AsyncEx.Coordination" Version="5.1.2" />
   </ItemGroup>
 

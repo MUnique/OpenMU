@@ -71,14 +71,14 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// <inheritdoc />
     public async ValueTask<bool> DeleteAsync(object obj)
     {
-        if (obj is T item)
+        if (obj is not T item)
         {
-            var gameConfiguration = this.GetCurrentGameConfiguration();
-            var collection = this._collectionSelector(gameConfiguration);
-            return collection.Remove(item);
+            return false;
         }
 
-        return false;
+        var gameConfiguration = this.GetCurrentGameConfiguration();
+        var collection = this._collectionSelector(gameConfiguration);
+        return collection.Remove(item);
     }
 
     /// <inheritdoc />

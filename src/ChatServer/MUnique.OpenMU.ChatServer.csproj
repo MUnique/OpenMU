@@ -23,19 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
-    <Compile Include="..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\Network\MUnique.OpenMU.Network.csproj" />
     <ProjectReference Include="..\Network\Packets\MUnique.OpenMU.Network.Packets.csproj" />

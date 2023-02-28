@@ -12,19 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
-    <Compile Include="..\..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Dapr.Client" Version="1.9.0" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
   </ItemGroup>
