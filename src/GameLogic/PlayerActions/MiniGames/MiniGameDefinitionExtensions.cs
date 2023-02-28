@@ -42,7 +42,7 @@ public static class MiniGameDefinitionExtensions
             return true;
         }
 
-        var isSpecialCharacter = player.Attributes?[Stats.PointsPerLevelUp] > 6;
+        var isSpecialCharacter = player.SelectedCharacter!.IsSpecialCharacter();
         if (isSpecialCharacter)
         {
             return player.Level >= definition.MinimumSpecialCharacterLevel

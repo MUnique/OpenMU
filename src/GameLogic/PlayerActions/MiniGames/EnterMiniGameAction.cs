@@ -40,7 +40,7 @@ public class EnterMiniGameAction
             return;
         }
 
-        var isSpecialCharacter = player.Attributes![Stats.PointsPerLevelUp] > 6;
+        var isSpecialCharacter = player.SelectedCharacter.IsSpecialCharacter();
         var characterLevel = player.Attributes![Stats.Level];
         var minLevel = isSpecialCharacter ? miniGameDefinition.MinimumSpecialCharacterLevel : miniGameDefinition.MinimumCharacterLevel;
         var maxLevel = isSpecialCharacter ? miniGameDefinition.MaximumSpecialCharacterLevel : miniGameDefinition.MaximumCharacterLevel;

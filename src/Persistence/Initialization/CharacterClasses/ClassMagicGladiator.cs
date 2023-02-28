@@ -34,6 +34,7 @@ internal partial class CharacterClassInitialization
         var result = this.Context.CreateNew<CharacterClass>();
         this.GameConfiguration.CharacterClasses.Add(result);
         result.CanGetCreated = canGetCreated;
+        result.LevelWarpRequirementReductionPercent = 100 / 3;
         result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
         result.Number = (byte)number;
         result.Name = name;
