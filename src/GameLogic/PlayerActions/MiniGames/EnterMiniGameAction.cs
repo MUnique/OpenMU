@@ -180,13 +180,7 @@ public class EnterMiniGameAction
 
     private bool CheckEntranceFee(MiniGameDefinition miniGameDefinition, Player player, out int entranceFee)
     {
-        entranceFee = miniGameDefinition.EntranceFee;
-        if (entranceFee <= 0)
-        {
-            entranceFee = 0;
-            return true;
-        }
-
+        entranceFee = Math.Max(miniGameDefinition.EntranceFee, 0);
         return entranceFee <= player.Money;
     }
 }
