@@ -12,6 +12,11 @@ using MUnique.OpenMU.Persistence.BasicModel;
 public class InMemoryRepositoryManager : BaseRepositoryManager
 {
     /// <summary>
+    /// Gets all <see cref="IMemoryRepository"/> which were added to this manager.
+    /// </summary>
+    internal IEnumerable<IMemoryRepository> MemoryRepositories => base.Repositories.Values.OfType<IMemoryRepository>();
+
+    /// <summary>
     /// Gets the memory repository, and creates it if it wasn't created yet.
     /// </summary>
     /// <typeparam name="T">The type of the business object.</typeparam>
@@ -19,17 +24,29 @@ public class InMemoryRepositoryManager : BaseRepositoryManager
     public new IRepository<T> GetRepository<T>()
         where T : class
     {
-        var repository = this.InternalGetRepository(typeof(T)) ?? this.CreateAndRegisterMemoryRepository<T>();
+        var repository = this.InternalGetRepository(typeof(T)) ?? this.CreateAndRegisterMemoryRepository(typeof(T));
         return new InMemoryRepositoryAdapter<T>((IMemoryRepository)repository);
     }
 
-    private IRepository CreateAndRegisterMemoryRepository<T>()
+    /// <summary>
+    /// Gets the repository of the specified type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>The repository of the specified type.</returns>
+    public new IRepository GetRepository(Type objectType)
+    {
+        var repository = this.InternalGetRepository(objectType) ?? this.CreateAndRegisterMemoryRepository(objectType);
+
+        return repository;
+    }
+
+    private IRepository CreateAndRegisterMemoryRepository(Type type)
     {
         var baseModelAssembly = typeof(GameConfiguration).Assembly;
-        var persistentType = baseModelAssembly.GetPersistentTypeOf<T>() ?? typeof(T);
+        var persistentType = baseModelAssembly.GetPersistentTypeOf(type) ?? type;
         var repositoryType = typeof(MemoryRepository<>).MakeGenericType(persistentType);
         var repository = (IRepository)Activator.CreateInstance(repositoryType)!;
-        var baseType = typeof(T).Assembly == baseModelAssembly ? typeof(T).BaseType ?? typeof(T) : typeof(T);
+        var baseType = type.Assembly == baseModelAssembly ? type.BaseType ?? type : type;
         this.RegisterRepository(baseType, repository!);
         return repository;
     }

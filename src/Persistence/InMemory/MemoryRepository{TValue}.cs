@@ -13,6 +13,7 @@ using System.Collections;
 public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     where TValue : class
 {
+    private readonly List<Guid> _createdObjects = new();
     private readonly IDictionary<Guid, TValue> _values = new Dictionary<Guid, TValue>();
 
     /// <summary>
@@ -23,6 +24,7 @@ public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     public void Add(Guid key, TValue obj)
     {
         this._values.Add(key, obj);
+        this._createdObjects.Add(key);
     }
 
     /// <inheritdoc />
@@ -30,7 +32,7 @@ public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     {
         if (obj is TValue value)
         {
-            this._values[key] = value;
+            this.Add(key, value);
         }
         else
         {
@@ -49,6 +51,26 @@ public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     {
         this._values.TryGetValue(id, out var obj);
         return ValueTask.FromResult(obj);
+    }
+
+    /// <inheritdoc/>
+    public void OnSaveChanges()
+    {
+        foreach (var oldObjId in this._createdObjects)
+        {
+            if (this._values.TryGetValue(oldObjId, out var obj)
+                && obj.GetId() is var currentId
+                && currentId != oldObjId)
+            {
+                this._values.Remove(oldObjId);
+                if (!this._values.TryAdd(currentId, obj))
+                {
+                    throw new InvalidOperationException($"Duplicate ID {currentId}. Existing: {this._values[currentId]}, Wanted to add: {obj}");
+                }
+            }
+        }
+
+        this._createdObjects.Clear();
     }
 
     /// <inheritdoc/>

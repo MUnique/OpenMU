@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.Persistence.InMemory;
 /// <summary>
 /// An in-memory context which get it's data from the repositories of the <see cref="InMemoryPersistenceContextProvider"/>.
 /// </summary>
-/// <seealso cref="MUnique.OpenMU.Persistence.IContext" />
 public class InMemoryContext : IContext
 {
     /// <summary>
@@ -38,13 +37,18 @@ public class InMemoryContext : IContext
     /// <inheritdoc/>
     public bool SaveChanges()
     {
+        foreach (var repository in this.Manager.MemoryRepositories)
+        {
+            repository.OnSaveChanges();
+        }
+
         return true;
     }
 
     /// <inheritdoc/>
     public ValueTask<bool> SaveChangesAsync()
     {
-        return ValueTask.FromResult(true);
+        return ValueTask.FromResult(this.SaveChanges());
     }
 
     /// <inheritdoc/>
