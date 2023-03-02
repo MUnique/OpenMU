@@ -273,6 +273,7 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition CreateFireOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.SocketFire);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "Socket Options (Fire)";
         definition.MaximumOptionsPerItem = 1;
@@ -289,6 +290,7 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition CreateIceOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.SocketIce);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "Socket Options (Ice)";
         definition.MaximumOptionsPerItem = 1;
@@ -304,6 +306,7 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition CreateLightningOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.SocketLightning);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "Socket Options (Lightning)";
         definition.MaximumOptionsPerItem = 1;
@@ -318,6 +321,7 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition CreateWindOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.SocketWind);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "Socket Options (Wind)";
         definition.MaximumOptionsPerItem = 1;
@@ -334,6 +338,7 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition CreateWaterOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.SocketWater);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "Socket Options (Water)";
         definition.MaximumOptionsPerItem = 1;
@@ -349,6 +354,7 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition CreateEarthOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.SocketEarth);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "Socket Options (Earth)";
         definition.MaximumOptionsPerItem = 1;
@@ -360,6 +366,7 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition CreateBonusOptionForPhysicalWeapons()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.SocketBonus, 1);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "Socket Bonus Options (Physical)";
         definition.MaximumOptionsPerItem = 1;
@@ -372,6 +379,7 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition CreateBonusOptionForStaffs()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.SocketBonus, 2);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "Socket Bonus Options (Wizardry)";
         definition.MaximumOptionsPerItem = 1;
@@ -384,6 +392,7 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition CreateBonusOptionForArmorsOptionDefinition()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.SocketBonus, 3);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "Socket Bonus Options (Armors)";
         definition.MaximumOptionsPerItem = 1;
@@ -393,11 +402,13 @@ public class SocketSystem : InitializerBase
         return definition;
     }
 
-    private IncreasableItemOption CreateSocketBonusOption(int number, AttributeDefinition attributeDefinition, float value)
+    private IncreasableItemOption CreateSocketBonusOption(short number, AttributeDefinition attributeDefinition, float value)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.SetGuid(ItemOptionDefinitionNumbers.SocketBonus, number);
         itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.SocketBonusOption);
         itemOption.Number = number;
+
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         powerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
@@ -408,9 +419,10 @@ public class SocketSystem : InitializerBase
         return itemOption;
     }
 
-    private IncreasableItemOption CreateSocketOption(int number, SocketSubOptionType subOptionType, AttributeDefinition attributeDefinition, AggregateType aggregateType, params float[] values)
+    private IncreasableItemOption CreateSocketOption(short number, SocketSubOptionType subOptionType, AttributeDefinition attributeDefinition, AggregateType aggregateType, params float[] values)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.SetGuid((short)(ItemOptionDefinitionNumbers.SocketFire + subOptionType), number);
         itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.SocketOption);
         itemOption.Number = number;
         itemOption.SubOptionType = (int)subOptionType;
@@ -435,9 +447,10 @@ public class SocketSystem : InitializerBase
         return itemOption;
     }
 
-    private IncreasableItemOption CreateRelatedSocketOption(int number, SocketSubOptionType subOptionType, AttributeDefinition targetAttribute, AttributeDefinition sourceAttribute, params float[] multipliers)
+    private IncreasableItemOption CreateRelatedSocketOption(short number, SocketSubOptionType subOptionType, AttributeDefinition targetAttribute, AttributeDefinition sourceAttribute, params float[] multipliers)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.SetGuid((short)(ItemOptionDefinitionNumbers.SocketFire + subOptionType), number);
         itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.SocketOption);
         itemOption.Number = number;
         itemOption.SubOptionType = (int)subOptionType;
@@ -476,6 +489,7 @@ public class SocketSystem : InitializerBase
         itemDefinition.DropLevel = 150;
         itemDefinition.MaximumItemLevel = (byte)options.PossibleOptions.Max(o => o.Number);
         itemDefinition.PossibleItemOptions.Add(options);
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         this.GameConfiguration.Items.Add(itemDefinition);
     }
 
@@ -490,6 +504,7 @@ public class SocketSystem : InitializerBase
         itemDefinition.Height = 1;
         itemDefinition.DropLevel = dropLevel ?? 0;
         itemDefinition.DropsFromMonsters = dropLevel.HasValue;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         this.GameConfiguration.Items.Add(itemDefinition);
     }
 
@@ -503,6 +518,7 @@ public class SocketSystem : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.DropLevel = level;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         itemDefinition.PossibleItemOptions.Add(options);
         this.GameConfiguration.Items.Add(itemDefinition);
     }
@@ -512,11 +528,13 @@ public class SocketSystem : InitializerBase
         var crafting = this.Context.CreateNew<ItemCrafting>();
         crafting.Name = "Seed Creation";
         crafting.Number = 42;
+        crafting.SetGuid(crafting.Number);
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.SuccessPercent = 80;
         craftingSettings.MaximumSuccessPercent = 90;
         craftingSettings.Money = 1_000_000;
+        craftingSettings.SetGuid(crafting.Number);
 
         var randomExcItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         randomExcItem.MinimumAmount = 1;
@@ -574,8 +592,10 @@ public class SocketSystem : InitializerBase
         crafting.Name = "Seed Sphere Creation";
         crafting.Number = 43;
         crafting.ItemCraftingHandlerClassName = typeof(SeedSphereCrafting).FullName!;
+        crafting.SetGuid(crafting.Number);
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
         crafting.SimpleCraftingSettings = craftingSettings;
+        craftingSettings.SetGuid(crafting.Number);
         craftingSettings.SuccessPercent = 80;
         craftingSettings.MaximumSuccessPercent = 90;
         craftingSettings.Money = 1_000_000;
@@ -647,10 +667,12 @@ public class SocketSystem : InitializerBase
         crafting.Name = "Mount Seed Sphere";
         crafting.Number = 44;
         crafting.ItemCraftingHandlerClassName = typeof(MountSeedSphereCrafting).FullName!;
+        crafting.SetGuid(crafting.Number);
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.SuccessPercent = 100;
         craftingSettings.Money = 1_000_000;
+        craftingSettings.SetGuid(crafting.Number);
 
         var seedSphere = this.Context.CreateNew<ItemCraftingRequiredItem>();
         seedSphere.MinimumAmount = 1;
@@ -697,10 +719,12 @@ public class SocketSystem : InitializerBase
         crafting.Name = "Remove Seed Sphere";
         crafting.Number = 45;
         crafting.ItemCraftingHandlerClassName = typeof(RemoveSeedSphereCrafting).FullName!;
+        crafting.SetGuid(crafting.Number);
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.SuccessPercent = 100;
         craftingSettings.Money = 1_000_000;
+        craftingSettings.SetGuid(crafting.Number);
 
         var socketItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         socketItem.MinimumAmount = 1;

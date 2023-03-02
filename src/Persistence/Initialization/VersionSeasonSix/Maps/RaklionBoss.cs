@@ -46,38 +46,38 @@ internal class RaklionBoss : BaseMapInitializer
     /// <inheritdoc />
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.GameConfiguration.Monsters.First(m => m.Number == 459), 145, 31); // Selupan (the boss)
+        yield return this.CreateMonsterSpawn(1, this.GameConfiguration.Monsters.First(m => m.Number == 459), 145, 31); // Selupan (the boss)
 
         var spiderEggs1 = this.GameConfiguration.Monsters.First(m => m.Number == 460);
         var spiderEggs2 = this.GameConfiguration.Monsters.First(m => m.Number == 461);
         var spiderEggs3 = this.GameConfiguration.Monsters.First(m => m.Number == 462);
-        yield return this.CreateMonsterSpawn(spiderEggs1, 141, 27);
-        yield return this.CreateMonsterSpawn(spiderEggs2, 141, 28);
-        yield return this.CreateMonsterSpawn(spiderEggs3, 142, 28);
-        yield return this.CreateMonsterSpawn(spiderEggs1, 146, 34);
-        yield return this.CreateMonsterSpawn(spiderEggs3, 147, 34);
-        yield return this.CreateMonsterSpawn(spiderEggs2, 146, 33);
-        yield return this.CreateMonsterSpawn(spiderEggs1, 152, 31);
-        yield return this.CreateMonsterSpawn(spiderEggs1, 152, 30);
-        yield return this.CreateMonsterSpawn(spiderEggs2, 151, 30);
-        yield return this.CreateMonsterSpawn(spiderEggs3, 146, 29);
-        yield return this.CreateMonsterSpawn(spiderEggs3, 146, 30);
-        yield return this.CreateMonsterSpawn(spiderEggs2, 147, 29);
-        yield return this.CreateMonsterSpawn(spiderEggs1, 145, 24);
-        yield return this.CreateMonsterSpawn(spiderEggs1, 144, 24);
-        yield return this.CreateMonsterSpawn(spiderEggs2, 144, 25);
+        yield return this.CreateMonsterSpawn(100, spiderEggs1, 141, 27);
+        yield return this.CreateMonsterSpawn(101, spiderEggs2, 141, 28);
+        yield return this.CreateMonsterSpawn(102, spiderEggs3, 142, 28);
+        yield return this.CreateMonsterSpawn(103, spiderEggs1, 146, 34);
+        yield return this.CreateMonsterSpawn(104, spiderEggs3, 147, 34);
+        yield return this.CreateMonsterSpawn(105, spiderEggs2, 146, 33);
+        yield return this.CreateMonsterSpawn(106, spiderEggs1, 152, 31);
+        yield return this.CreateMonsterSpawn(107, spiderEggs1, 152, 30);
+        yield return this.CreateMonsterSpawn(108, spiderEggs2, 151, 30);
+        yield return this.CreateMonsterSpawn(109, spiderEggs3, 146, 29);
+        yield return this.CreateMonsterSpawn(110, spiderEggs3, 146, 30);
+        yield return this.CreateMonsterSpawn(111, spiderEggs2, 147, 29);
+        yield return this.CreateMonsterSpawn(112, spiderEggs1, 145, 24);
+        yield return this.CreateMonsterSpawn(113, spiderEggs1, 144, 24);
+        yield return this.CreateMonsterSpawn(114, spiderEggs2, 144, 25);
 
         var coolutin = this.GameConfiguration.Monsters.First(m => m.Number == 457);
-        yield return this.CreateMonsterSpawn(coolutin, 144, 25);
-        yield return this.CreateMonsterSpawn(coolutin, 144, 29);
-        yield return this.CreateMonsterSpawn(coolutin, 144, 32);
-        yield return this.CreateMonsterSpawn(coolutin, 144, 35);
-        yield return this.CreateMonsterSpawn(coolutin, 144, 38);
-        yield return this.CreateMonsterSpawn(coolutin, 153, 24);
-        yield return this.CreateMonsterSpawn(coolutin, 153, 28);
-        yield return this.CreateMonsterSpawn(coolutin, 153, 32);
-        yield return this.CreateMonsterSpawn(coolutin, 153, 35);
-        yield return this.CreateMonsterSpawn(coolutin, 153, 38);
+        yield return this.CreateMonsterSpawn(200, coolutin, 144, 25);
+        yield return this.CreateMonsterSpawn(201, coolutin, 144, 29);
+        yield return this.CreateMonsterSpawn(202, coolutin, 144, 32);
+        yield return this.CreateMonsterSpawn(203, coolutin, 144, 35);
+        yield return this.CreateMonsterSpawn(204, coolutin, 144, 38);
+        yield return this.CreateMonsterSpawn(205, coolutin, 153, 24);
+        yield return this.CreateMonsterSpawn(206, coolutin, 153, 28);
+        yield return this.CreateMonsterSpawn(207, coolutin, 153, 32);
+        yield return this.CreateMonsterSpawn(208, coolutin, 153, 35);
+        yield return this.CreateMonsterSpawn(209, coolutin, 153, 38);
     }
 
     /// <inheritdoc />
@@ -111,6 +111,7 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.FireResistance, 150f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -141,6 +142,7 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.FireResistance, 50f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -171,6 +173,7 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.FireResistance, 50f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -201,6 +204,7 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.FireResistance, 50f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

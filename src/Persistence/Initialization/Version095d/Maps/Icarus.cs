@@ -52,70 +52,70 @@ internal class Icarus : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[70], 66, 68);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[70], 85, 88);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[70], 80, 76);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[73], 70, 78);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[73], 45, 72);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[70], 60, 84);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 41, 113);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 42, 135);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[74], 29, 104);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[74], 38, 103);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[74], 35, 94);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[74], 32, 87);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[73], 35, 69);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[73], 26, 74);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[73], 36, 79);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[74], 39, 85);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 51, 126);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 88, 70);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 53, 138);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[73], 55, 73);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 44, 148);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 33, 119);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[74], 33, 111);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 84, 47);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 79, 33);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 58, 42);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[70], 89, 38);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 70, 43);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 64, 30);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 53, 27);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[70], 91, 59);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 41, 157);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 21, 39);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 44, 27);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 12, 27);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 13, 38);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 48, 40);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 42, 122);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 28, 28);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 93, 47);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 53, 150);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 50, 162);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 52, 174);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 55, 181);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 44, 212);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 38, 216);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 47, 189);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 59, 190);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 48, 200);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 57, 200);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 27, 220);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 66, 37);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 80, 41);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 43, 238);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 30, 231);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 44, 221);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 40, 34);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 31, 37);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[69], 18, 31);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 57, 34);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], 71, 33);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[72], 36, 226);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[75], 48, 228);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[77], 34, 238);
+        yield return this.CreateMonsterSpawn(100, this.NpcDictionary[70], 66, 68);
+        yield return this.CreateMonsterSpawn(101, this.NpcDictionary[70], 85, 88);
+        yield return this.CreateMonsterSpawn(102, this.NpcDictionary[70], 80, 76);
+        yield return this.CreateMonsterSpawn(103, this.NpcDictionary[73], 70, 78);
+        yield return this.CreateMonsterSpawn(104, this.NpcDictionary[73], 45, 72);
+        yield return this.CreateMonsterSpawn(105, this.NpcDictionary[70], 60, 84);
+        yield return this.CreateMonsterSpawn(106, this.NpcDictionary[72], 41, 113);
+        yield return this.CreateMonsterSpawn(107, this.NpcDictionary[72], 42, 135);
+        yield return this.CreateMonsterSpawn(108, this.NpcDictionary[74], 29, 104);
+        yield return this.CreateMonsterSpawn(109, this.NpcDictionary[74], 38, 103);
+        yield return this.CreateMonsterSpawn(110, this.NpcDictionary[74], 35, 94);
+        yield return this.CreateMonsterSpawn(111, this.NpcDictionary[74], 32, 87);
+        yield return this.CreateMonsterSpawn(112, this.NpcDictionary[73], 35, 69);
+        yield return this.CreateMonsterSpawn(113, this.NpcDictionary[73], 26, 74);
+        yield return this.CreateMonsterSpawn(114, this.NpcDictionary[73], 36, 79);
+        yield return this.CreateMonsterSpawn(115, this.NpcDictionary[74], 39, 85);
+        yield return this.CreateMonsterSpawn(116, this.NpcDictionary[72], 51, 126);
+        yield return this.CreateMonsterSpawn(117, this.NpcDictionary[71], 88, 70);
+        yield return this.CreateMonsterSpawn(118, this.NpcDictionary[72], 53, 138);
+        yield return this.CreateMonsterSpawn(119, this.NpcDictionary[73], 55, 73);
+        yield return this.CreateMonsterSpawn(120, this.NpcDictionary[72], 44, 148);
+        yield return this.CreateMonsterSpawn(121, this.NpcDictionary[72], 33, 119);
+        yield return this.CreateMonsterSpawn(122, this.NpcDictionary[74], 33, 111);
+        yield return this.CreateMonsterSpawn(123, this.NpcDictionary[71], 84, 47);
+        yield return this.CreateMonsterSpawn(124, this.NpcDictionary[71], 79, 33);
+        yield return this.CreateMonsterSpawn(125, this.NpcDictionary[71], 58, 42);
+        yield return this.CreateMonsterSpawn(126, this.NpcDictionary[70], 89, 38);
+        yield return this.CreateMonsterSpawn(127, this.NpcDictionary[71], 70, 43);
+        yield return this.CreateMonsterSpawn(128, this.NpcDictionary[71], 64, 30);
+        yield return this.CreateMonsterSpawn(129, this.NpcDictionary[71], 53, 27);
+        yield return this.CreateMonsterSpawn(130, this.NpcDictionary[70], 91, 59);
+        yield return this.CreateMonsterSpawn(131, this.NpcDictionary[72], 41, 157);
+        yield return this.CreateMonsterSpawn(132, this.NpcDictionary[69], 21, 39);
+        yield return this.CreateMonsterSpawn(133, this.NpcDictionary[69], 44, 27);
+        yield return this.CreateMonsterSpawn(134, this.NpcDictionary[69], 12, 27);
+        yield return this.CreateMonsterSpawn(135, this.NpcDictionary[69], 13, 38);
+        yield return this.CreateMonsterSpawn(136, this.NpcDictionary[69], 48, 40);
+        yield return this.CreateMonsterSpawn(137, this.NpcDictionary[72], 42, 122);
+        yield return this.CreateMonsterSpawn(138, this.NpcDictionary[69], 28, 28);
+        yield return this.CreateMonsterSpawn(139, this.NpcDictionary[71], 93, 47);
+        yield return this.CreateMonsterSpawn(140, this.NpcDictionary[72], 53, 150);
+        yield return this.CreateMonsterSpawn(141, this.NpcDictionary[75], 50, 162);
+        yield return this.CreateMonsterSpawn(142, this.NpcDictionary[75], 52, 174);
+        yield return this.CreateMonsterSpawn(143, this.NpcDictionary[75], 55, 181);
+        yield return this.CreateMonsterSpawn(144, this.NpcDictionary[75], 44, 212);
+        yield return this.CreateMonsterSpawn(145, this.NpcDictionary[72], 38, 216);
+        yield return this.CreateMonsterSpawn(146, this.NpcDictionary[75], 47, 189);
+        yield return this.CreateMonsterSpawn(147, this.NpcDictionary[75], 59, 190);
+        yield return this.CreateMonsterSpawn(148, this.NpcDictionary[75], 48, 200);
+        yield return this.CreateMonsterSpawn(149, this.NpcDictionary[75], 57, 200);
+        yield return this.CreateMonsterSpawn(150, this.NpcDictionary[75], 27, 220);
+        yield return this.CreateMonsterSpawn(151, this.NpcDictionary[69], 66, 37);
+        yield return this.CreateMonsterSpawn(152, this.NpcDictionary[69], 80, 41);
+        yield return this.CreateMonsterSpawn(153, this.NpcDictionary[75], 43, 238);
+        yield return this.CreateMonsterSpawn(154, this.NpcDictionary[75], 30, 231);
+        yield return this.CreateMonsterSpawn(155, this.NpcDictionary[72], 44, 221);
+        yield return this.CreateMonsterSpawn(156, this.NpcDictionary[69], 40, 34);
+        yield return this.CreateMonsterSpawn(157, this.NpcDictionary[69], 31, 37);
+        yield return this.CreateMonsterSpawn(158, this.NpcDictionary[69], 18, 31);
+        yield return this.CreateMonsterSpawn(159, this.NpcDictionary[71], 57, 34);
+        yield return this.CreateMonsterSpawn(160, this.NpcDictionary[71], 71, 33);
+        yield return this.CreateMonsterSpawn(161, this.NpcDictionary[72], 36, 226);
+        yield return this.CreateMonsterSpawn(162, this.NpcDictionary[75], 48, 228);
+        yield return this.CreateMonsterSpawn(163, this.NpcDictionary[77], 34, 238);
     }
 
     /// <inheritdoc/>
@@ -151,6 +151,7 @@ internal class Icarus : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -183,6 +184,7 @@ internal class Icarus : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -214,6 +216,7 @@ internal class Icarus : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -246,6 +249,7 @@ internal class Icarus : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -278,6 +282,7 @@ internal class Icarus : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -309,6 +314,7 @@ internal class Icarus : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -341,6 +347,7 @@ internal class Icarus : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -373,6 +380,7 @@ internal class Icarus : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -405,6 +413,7 @@ internal class Icarus : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

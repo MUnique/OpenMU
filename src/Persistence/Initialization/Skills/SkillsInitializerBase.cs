@@ -99,6 +99,8 @@ internal abstract class SkillsInitializerBase : InitializerBase
         {
             this.ApplyElementalModifier(elementalModifier, skill);
         }
+
+        skill.SetGuid(skill.Number);
     }
 
     private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)

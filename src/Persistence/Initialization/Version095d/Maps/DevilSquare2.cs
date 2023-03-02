@@ -53,15 +53,15 @@ internal class DevilSquare2 : BaseMapInitializer
         const byte y2 = 184;
         const byte quantity = 35;
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[10], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Dark Knight
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[39], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Poison Shadow
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[10], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Dark Knight
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[39], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Poison Shadow
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[34], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Cursed Wizard
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[41], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Death Cow
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[34], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Cursed Wizard
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[41], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Death Cow
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[40], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Death Knight
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[35], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Death Gorgon
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[40], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Death Knight
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[35], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Death Gorgon
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[49], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Hydra
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[49], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Hydra
     }
 }

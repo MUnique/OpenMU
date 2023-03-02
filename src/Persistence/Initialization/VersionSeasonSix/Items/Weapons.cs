@@ -292,6 +292,7 @@ internal class Weapons : InitializerBase
         item.DropLevel = dropLevel;
         item.MaximumItemLevel = MaximumItemLevel;
         item.DropsFromMonsters = dropsFromMonsters;
+        item.SetGuid(item.Group, item.Number);
         if (slot == 0 && knightClass > 0 && width == 1)
         {
             item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));

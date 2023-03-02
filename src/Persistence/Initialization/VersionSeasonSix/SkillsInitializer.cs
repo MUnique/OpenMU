@@ -883,6 +883,7 @@ internal class SkillsInitializer : SkillsInitializerBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -914,6 +915,7 @@ internal class SkillsInitializer : SkillsInitializerBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

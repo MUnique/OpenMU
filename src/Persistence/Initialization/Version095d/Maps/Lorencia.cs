@@ -29,6 +29,6 @@ internal class Lorencia : Version075.Maps.Lorencia
             yield return npc;
         }
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[236], 175, 120, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(15, this.NpcDictionary[236], 175, 120, Direction.SouthEast);
     }
 }

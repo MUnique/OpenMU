@@ -105,6 +105,7 @@ internal class InvasionMobsInitialization : InitializerBase
                 { Stats.FireResistance, 3f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {

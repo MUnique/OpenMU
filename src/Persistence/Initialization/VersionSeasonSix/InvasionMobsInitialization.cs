@@ -120,6 +120,7 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
                 { Stats.WaterResistance, 3f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -183,6 +184,7 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
                 { Stats.FireResistance, 9f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {

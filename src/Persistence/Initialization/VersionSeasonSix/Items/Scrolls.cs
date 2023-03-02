@@ -90,6 +90,7 @@ public class Scrolls : InitializerBase
         this.CreateItemRequirementIfNeeded(scroll, Stats.TotalEnergyRequirementValue, energyRequirement);
 
         scroll.Value = money;
+        scroll.SetGuid(scroll.Group, scroll.Number);
         var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
         foreach (var characterClass in classes)
         {
