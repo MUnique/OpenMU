@@ -19,4 +19,10 @@ public class QuestMonsterKillRequirement
     /// Gets or sets the minimum number of killed <see cref="Monster"/>s.
     /// </summary>
     public int MinimumNumber { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{this.MinimumNumber}x {this.Monster}";
+    }
 }
