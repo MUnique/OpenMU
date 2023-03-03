@@ -191,6 +191,10 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             entry.CreatedAt = update.CreatedAt;
             entry.InstalledAt = DateTime.UtcNow;
         }
+
+        var updateState = this.Context.CreateNew<ConfigurationUpdateState>();
+        updateState.InitializationKey = this.Key;
+        updateState.CurrentInstalledVersion = updates.Max(u => u.Version);
     }
 
     private async ValueTask CreateConnectServerDefinitionAsync()

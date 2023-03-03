@@ -42,6 +42,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdate>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdateState>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.DropItemGroup>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.EnterGate>();

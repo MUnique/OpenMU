@@ -10,7 +10,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Manager which applies updates of previously initialized data by a <see cref="IDataInitializationPlugIn"/>.
 /// </summary>
-internal class DataUpdateManager
+public class DataUpdateManager
 {
     private readonly IPersistenceContextProvider _contextProvider;
     private readonly PlugInManager _plugInManager;
@@ -27,39 +27,89 @@ internal class DataUpdateManager
     }
 
     /// <summary>
+    /// Occurs when updates have been installed.
+    /// </summary>
+    public event AsyncEventHandler? UpdatesInstalled; 
+
+    /// <summary>
     /// Determines the available updates.
     /// </summary>
     /// <returns></returns>
     /// <exception cref="System.InvalidOperationException">The plugin manager is not initialized.</exception>
-    public async ValueTask<IReadOnlyCollection<IConfigurationUpdatePlugIn>> DetermineAvailableUpdatesAsync(IDataInitializationPlugIn initializationPlugIn)
+    public async ValueTask<IReadOnlyCollection<IConfigurationUpdatePlugIn>> DetermineAvailableUpdatesAsync()
     {
         using var context = this._contextProvider.CreateNewContext();
         var updates = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).ToList();
-        var maxVersion = updates.Where(up => up.InstalledAt is not null).Max(up => up.Version);
-        var notInstalledUpdates = updates
-            .Where(up => up.InstalledAt is null)
+
+        var initializationKey = await DetermineInitializationKeyAsync(context);
+        var installedUpdates = updates
+            .Where(up => up.InstalledAt is not null)
             .Select(up => up.Version)
             .ToHashSet();
 
-        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<int, IConfigurationUpdatePlugIn>()
-                                     ?? throw new InvalidOperationException("The plugin manager is not initialized.");
+        var updateStrategyProvider = this._plugInManager.GetStrategyProvider<int, IConfigurationUpdatePlugIn>();
+        if (updateStrategyProvider is null)
+        {
+            // it's null when there are no plugins yet ...
+            return Array.Empty<IConfigurationUpdatePlugIn>();
+        }
 
         var availableUpdates = updateStrategyProvider.AvailableStrategies
-            .Where(up => up.DataInitializationKey == initializationPlugIn.Key)
-            .Where(up => up.Version > maxVersion || notInstalledUpdates.Contains(up.Version))
+            .Where(up => up.DataInitializationKey == initializationKey)
+            .Where(up => !installedUpdates.Contains(up.Version))
             .OrderBy(up => up.Version)
             .ToList();
 
         return availableUpdates;
     }
 
-    public async ValueTask ApplyUpdatesAsync(IEnumerable<IConfigurationUpdatePlugIn> updates)
+    /// <summary>
+    /// Applies the updates asynchronous.
+    /// </summary>
+    /// <param name="updates">The updates.</param>
+    /// <param name="progress">The progress provider. Reports b</param>
+    public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(int CurrentUpdatingVersion, bool IsCompleted)> progress)
     {
         using var context = this._contextProvider.CreateNewContext();
+        var updateStates = await context.GetAsync<ConfigurationUpdateState>();
+        var updateState = updateStates.FirstOrDefault() ?? context.CreateNew<ConfigurationUpdateState>();
         foreach (var update in updates)
         {
+            progress.Report((update.Version, false));
             await update.ApplyUpdateAsync(context).ConfigureAwait(false);
+            
+            updateState.CurrentInstalledVersion = Math.Max(update.Version, updateState.CurrentInstalledVersion);
+            updateState.InitializationKey = update.DataInitializationKey;
+
             await context.SaveChangesAsync().ConfigureAwait(false);
+            progress.Report((update.Version, true));
         }
+
+        progress.Report((-1, true));
+        this.UpdatesInstalled?.SafeInvokeAsync();
+    }
+
+    private async ValueTask<string> DetermineInitializationKeyAsync(IContext context)
+    {
+        var updateStates = await context.GetAsync<ConfigurationUpdateState>();
+        if (updateStates.FirstOrDefault() is { InitializationKey: not null } updateState)
+        {
+            return updateState.InitializationKey;
+        }
+        
+        // Now it's getting tricky ...
+        var clientDefinitions = await context.GetAsync<GameClientDefinition>();
+        if (clientDefinitions.FirstOrDefault() is not { } clientDefinition)
+        {
+            throw new InvalidOperationException("No data installed");
+        }
+
+        return (clientDefinition.Season, clientDefinition.Episode) switch
+        {
+            (6, 3) => VersionSeasonSix.DataInitialization.Id,
+            (0, 75) => Version075.DataInitialization.Id,
+            (0, 95) => Version095d.DataInitialization.Id,
+            _ => throw new InvalidOperationException($"Unknown client version: {clientDefinition}.")
+        };
     }
 }
