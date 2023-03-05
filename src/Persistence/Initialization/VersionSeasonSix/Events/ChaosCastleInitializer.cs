@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
@@ -71,14 +70,18 @@ internal class ChaosCastleInitializer : InitializerBase
     }
 
     /// <summary>
-    /// Creates a new <see cref="MiniGameDefinition"/> for a blood castle event.
+    /// Creates a new <see cref="MiniGameDefinition" /> for a blood castle event.
     /// </summary>
     /// <param name="level">The level of the event.</param>
     /// <param name="mapNumber">The map number.</param>
-    /// <returns>The created <see cref="MiniGameDefinition"/>.</returns>
+    /// <param name="entranceFee">The entrance fee.</param>
+    /// <returns>
+    /// The created <see cref="MiniGameDefinition" />.
+    /// </returns>
     protected MiniGameDefinition CreateChaosCastleDefinition(byte level, short mapNumber, int entranceFee)
     {
         var chaosCastle = this.Context.CreateNew<MiniGameDefinition>();
+        chaosCastle.SetGuid((short)MiniGameType.ChaosCastle, level);
         this.GameConfiguration.MiniGameDefinitions.Add(chaosCastle);
         chaosCastle.Name = $"Chaos Castle {level}";
         chaosCastle.Description = $"Event definition for chaos castle event, level {level}.";
