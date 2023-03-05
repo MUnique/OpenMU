@@ -66,7 +66,7 @@ public abstract class ArmorInitializerBase : InitializerBase
         for (byte setLevel = 10; setLevel <= this.MaximumArmorLevel; setLevel++)
         {
             defenseBonus.Add(setLevel, this.BuildDefenseBonusOption(1 + (setLevel - 9) * 0.05f, setLevel));
-        };
+        }
 
         foreach (var group in sets)
         {
@@ -203,7 +203,7 @@ public abstract class ArmorInitializerBase : InitializerBase
         setForDefense.Name = $"{group.First().Name.Split(' ')[0]} Defense Bonus (Level {setLevel})";
         setForDefense.MinimumItemCount = group.Count;
         setForDefense.Options.Add(option);
-        setForDefense.SetLevel = (byte)setLevel;
+        setForDefense.SetLevel = setLevel;
 
         foreach (var item in group)
         {
