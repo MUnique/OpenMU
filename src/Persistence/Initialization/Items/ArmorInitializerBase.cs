@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
+using static MUnique.OpenMU.Network.Packets.ClientToServer.LahapJewelMixRequest;
 
 namespace MUnique.OpenMU.Persistence.Initialization.Items;
 
@@ -76,7 +77,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             foreach (var item in group)
             {
                 var itemOfSet = this.Context.CreateNew<ItemOfItemSet>();
-                itemOfSet.SetGuid(item.GetItemId(), 0x100);
+                itemOfSet.SetGuid(item.Group, item.Number, 0xFF);
                 itemOfSet.ItemDefinition = item;
                 setForDefenseRate.Items.Add(itemOfSet);
             }
@@ -208,7 +209,7 @@ public abstract class ArmorInitializerBase : InitializerBase
         foreach (var item in group)
         {
             var itemOfSet = this.Context.CreateNew<ItemOfItemSet>();
-            itemOfSet.SetGuid(item.GetItemId(), setLevel);
+            itemOfSet.SetGuid(item.Group, item.Number, setLevel);
             itemOfSet.ItemDefinition = item;
             setForDefense.Items.Add(itemOfSet);
         }

@@ -75,19 +75,19 @@ public class ExcellentOptions : InitializerBase
     private void CreateWizardryAttackOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
-        definition.SetGuid(ItemOptionDefinitionNumbers.ExcellentWIzardry);
+        definition.SetGuid(ItemOptionDefinitionNumbers.ExcellentWizardry);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = WizardryAttackOptionsName;
         definition.AddChance = 0.001f;
         definition.AddsRandomly = true;
         definition.MaximumOptionsPerItem = 2;
 
-        definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWIzardry));
-        definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWIzardry));
-        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWIzardry));
-        definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumWizBaseDmg, 1.02f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.ExcellentWIzardry));
-        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumWizBaseDmg, Stats.Level, 20, ItemOptionDefinitionNumbers.ExcellentWIzardry));
-        definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWIzardry));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWizardry));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWizardry));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWizardry));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumWizBaseDmg, 1.02f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.ExcellentWizardry));
+        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumWizBaseDmg, Stats.Level, 20, ItemOptionDefinitionNumbers.ExcellentWizardry));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWizardry));
     }
 
     private void CreatePhysicalAttackOptions()

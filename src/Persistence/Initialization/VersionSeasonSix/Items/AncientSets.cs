@@ -660,7 +660,7 @@ public class AncientSets : InitializerBase
             itemOfSet.ItemDefinition = item;
             itemOfSet.BonusOption = this.CreateAncientBonusOption(itemTuple.BonusOption);
             itemOfSet.ItemSetGroup = set;
-            itemOfSet.SetGuid(item.GetItemId(), (short)itemTuple.Discriminator);
+            itemOfSet.SetGuid(item.Group, item.Number, (byte)itemTuple.Discriminator);
             set.Items.Add(itemOfSet);
             item.PossibleItemSetGroups.Add(set);
         }
