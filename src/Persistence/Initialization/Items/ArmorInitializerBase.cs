@@ -91,8 +91,7 @@ public abstract class ArmorInitializerBase : InitializerBase
 
     protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, string name, byte dropLevel, int defense, int defenseRate, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
     {
-        this.CreateShield(number, slot, skill, width, height, name, dropLevel, defense, defenseRate, durability, strengthRequirement, agilityRequirement, 0, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, 0, 0, 0, 0);
-        
+        this.CreateShield(number, slot, skill, width, height, name, dropLevel, defense, defenseRate, durability, 0, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, 0, 0, 0, 0);
     }
 
     protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, string name, byte dropLevel, int defense, int defenseRate, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
