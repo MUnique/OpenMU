@@ -43,7 +43,7 @@ public partial class Updates
     /// Gets or sets the update manager.
     /// </summary>
     [Inject]
-    public DataUpdateManager UpdateManager { get; set; } = null!;
+    public DataUpdateService UpdateService { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the javascript runtime.
@@ -62,7 +62,7 @@ public partial class Updates
         this._isDataInitialized = await this.SetupService.IsDataInitializedAsync().ConfigureAwait(false);
         if (this._isDataInitialized)
         {
-            var updates = await this.UpdateManager.DetermineAvailableUpdatesAsync();
+            var updates = await this.UpdateService.DetermineAvailableUpdatesAsync();
             this._availableUpdates = updates.Select(up => new UpdateViewModel(up)).ToList();
         }
     }
@@ -80,7 +80,7 @@ public partial class Updates
 
         try
         {
-            await this.UpdateManager.ApplyUpdatesAsync(selectedUpdates, progress).ConfigureAwait(true);
+            await this.UpdateService.ApplyUpdatesAsync(selectedUpdates, progress).ConfigureAwait(true);
             await this.DetermineUpdatesAsync().ConfigureAwait(true);
             this._overallState = UpdateState.Installed;
         }

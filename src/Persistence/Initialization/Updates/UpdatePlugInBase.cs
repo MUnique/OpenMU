@@ -45,7 +45,7 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     /// <param name="context">The persistence context.</param>
     /// <remarks>
     /// Calling <see cref="IContext.SaveChangesAsync"/> is not required in this implementation.
-    /// It will be called by <see cref="DataUpdateManager"/>.
+    /// It will be called by <see cref="DataUpdateService"/>.
     /// </remarks>
     protected abstract ValueTask ApplyAsync(IContext context);
 

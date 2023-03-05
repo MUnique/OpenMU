@@ -51,7 +51,7 @@ public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<int>
     /// <param name="context">The persistence context.</param>
     /// <remarks>
     /// Calling <see cref="IContext.SaveChangesAsync"/> is not required in this implementation.
-    /// It will be called by <see cref="DataUpdateManager"/>.
+    /// It will be called by <see cref="DataUpdateService"/>.
     /// </remarks>
     ValueTask ApplyUpdateAsync(IContext context);
 }

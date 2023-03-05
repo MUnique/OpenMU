@@ -60,7 +60,7 @@ public static class WebApplicationExtensions
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
         
         services.AddScoped<SetupService>();
-        services.AddScoped<DataUpdateManager>();
+        services.AddScoped<DataUpdateService>();
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
         services.AddScoped<PlugInController>();

@@ -1,4 +1,4 @@
-﻿// <copyright file="DataUpdateManager.cs" company="MUnique">
+﻿// <copyright file="DataUpdateService.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,19 +8,19 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Manager which applies updates of previously initialized data by a <see cref="IDataInitializationPlugIn"/>.
+/// Service which applies updates of previously initialized data by a <see cref="IDataInitializationPlugIn"/>.
 /// </summary>
-public class DataUpdateManager
+public class DataUpdateService
 {
     private readonly IPersistenceContextProvider _contextProvider;
     private readonly PlugInManager _plugInManager;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DataUpdateManager"/> class.
+    /// Initializes a new instance of the <see cref="DataUpdateService"/> class.
     /// </summary>
     /// <param name="contextProvider">The context provider.</param>
     /// <param name="plugInManager">The plug in manager.</param>
-    public DataUpdateManager(IPersistenceContextProvider contextProvider, PlugInManager plugInManager)
+    public DataUpdateService(IPersistenceContextProvider contextProvider, PlugInManager plugInManager)
     {
         this._contextProvider = contextProvider;
         this._plugInManager = plugInManager;

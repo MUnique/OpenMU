@@ -33,7 +33,7 @@ public partial class NavMenu : IDisposable
     private IUserService UserService { get; set; } = null!;
 
     [Inject]
-    private DataUpdateManager UpdateManager { get; set; } = null!;
+    private DataUpdateService UpdateService { get; set; } = null!;
 
     private Guid? GameConfigurationId { get; set; }
 
@@ -48,7 +48,7 @@ public partial class NavMenu : IDisposable
     public void Dispose()
     {
         this.SetupService.DatabaseInitialized -= this.OnDatabaseInitializedAsync;
-        this.UpdateManager.UpdatesInstalled -= this.OnUpdatesInstalledAsync;
+        this.UpdateService.UpdatesInstalled -= this.OnUpdatesInstalledAsync;
     }
 
     /// <inheritdoc />
@@ -56,7 +56,7 @@ public partial class NavMenu : IDisposable
     {
         await base.OnInitializedAsync().ConfigureAwait(false);
         this.SetupService.DatabaseInitialized += this.OnDatabaseInitializedAsync;
-        this.UpdateManager.UpdatesInstalled += this.OnUpdatesInstalledAsync;
+        this.UpdateService.UpdatesInstalled += this.OnUpdatesInstalledAsync;
         _ = Task.Run(this.LoadGameConfigurationAsync);
         _ = Task.Run(this.CheckForUpdatesAsync);
     }
@@ -103,7 +103,7 @@ public partial class NavMenu : IDisposable
     {
         try
         {
-            var updates = await this.UpdateManager.DetermineAvailableUpdatesAsync().ConfigureAwait(false);
+            var updates = await this.UpdateService.DetermineAvailableUpdatesAsync().ConfigureAwait(false);
             this._availableConfigUpdates = updates.Count;
         }
         catch
