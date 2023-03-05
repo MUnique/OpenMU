@@ -27,6 +27,8 @@ internal static class MonsterDefinitionExtensions
             attribute.AttributeDefinition = attributeWithValue.Key.GetPersistent(gameConfiguration);
             attribute.Value = attributeWithValue.Value;
             monsterDefinition.Attributes.Add(attribute);
+
+            attribute.SetGuid(monsterDefinition.Number, attribute.AttributeDefinition.Id.ExtractFirstTwoBytes());
         }
     }
 }

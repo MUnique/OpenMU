@@ -49,92 +49,39 @@ public static class CharacterClassHelper
     public static IEnumerable<CharacterClass> DetermineCharacterClasses(this GameConfiguration gameConfiguration, int wizardClass, int knightClass, int elfClass, int magicGladiatorClass, int darkLordClass, int summonerClass, int ragefighterClass)
     {
         var characterClasses = gameConfiguration.CharacterClasses;
-        if (wizardClass > 0)
+        IEnumerable<CharacterClass> DetermineClass(int classValue, CharacterClassNumber masterClass, CharacterClassNumber? secondClass, CharacterClassNumber firstClass)
         {
-            yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.GrandMaster);
-
-            if (wizardClass < 3)
+            if (classValue > 0)
             {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.SoulMaster);
-                if (wizardClass < 2)
+                if (characterClasses.FirstOrDefault(c => c.Number == (int)masterClass) is { } master)
                 {
-                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DarkWizard);
+                    yield return master;
+                }
+
+                if (classValue < 3)
+                {
+                    if (secondClass is { } && characterClasses.FirstOrDefault(c => c.Number == (int)secondClass) is { } second)
+                    {
+                        yield return second;
+                    }
+
+                    if (characterClasses.FirstOrDefault(c => c.Number == (int)firstClass) is { } first)
+                    {
+                        yield return first;
+                    }
                 }
             }
         }
 
-        if (knightClass > 0)
-        {
-            yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BladeMaster);
-            if (knightClass < 3)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BladeKnight);
-                if (knightClass < 2)
-                {
-                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DarkKnight);
-                }
-            }
-        }
-
-        if (elfClass > 0)
-        {
-            yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.HighElf);
-            if (elfClass < 3)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.MuseElf);
-                if (elfClass < 2)
-                {
-                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.FairyElf);
-                }
-            }
-        }
-
-        if (magicGladiatorClass > 0)
-        {
-            yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DuelMaster);
-            if (magicGladiatorClass < 3)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.MagicGladiator);
-            }
-        }
-
-        if (darkLordClass > 0)
-        {
-            yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.LordEmperor);
-            if (darkLordClass < 3)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DarkLord);
-            }
-        }
-
-        if (summonerClass > 0)
-        {
-            yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.DimensionMaster);
-            if (summonerClass < 3)
-            {
-                yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.BloodySummoner);
-                if (summonerClass < 2)
-                {
-                    yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.Summoner);
-                }
-            }
-        }
-
-        if (ragefighterClass > 0)
-        {
-            if (characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.FistMaster) is { } fistMaster)
-            {
-                yield return fistMaster;
-            }
-
-            if (ragefighterClass < 3)
-            {
-                if (characterClasses.FirstOrDefault(c => c.Number == (int)CharacterClassNumber.RageFighter) is { } rageFighter)
-                {
-                    yield return rageFighter;
-                }
-            }
-        }
+        var result = new List<CharacterClass>();
+        result.AddRange(DetermineClass(wizardClass, CharacterClassNumber.GrandMaster, CharacterClassNumber.SoulMaster, CharacterClassNumber.DarkWizard));
+        result.AddRange(DetermineClass(knightClass, CharacterClassNumber.BladeMaster, CharacterClassNumber.BladeKnight, CharacterClassNumber.DarkKnight));
+        result.AddRange(DetermineClass(elfClass, CharacterClassNumber.HighElf, CharacterClassNumber.MuseElf, CharacterClassNumber.FairyElf));
+        result.AddRange(DetermineClass(magicGladiatorClass, CharacterClassNumber.DuelMaster, null, CharacterClassNumber.MagicGladiator));
+        result.AddRange(DetermineClass(darkLordClass, CharacterClassNumber.LordEmperor, null, CharacterClassNumber.DarkLord));
+        result.AddRange(DetermineClass(summonerClass, CharacterClassNumber.DimensionMaster, CharacterClassNumber.BloodySummoner, CharacterClassNumber.Summoner));
+        result.AddRange(DetermineClass(ragefighterClass, CharacterClassNumber.FistMaster, null, CharacterClassNumber.RageFighter));
+        return result;
     }
 
     /// <summary>

@@ -51,6 +51,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -68,6 +69,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -85,6 +87,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -102,6 +105,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -119,6 +123,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -136,6 +141,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -153,6 +159,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -170,6 +177,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -187,6 +195,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -204,6 +213,7 @@ public class PackedJewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.MaximumItemLevel = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 }

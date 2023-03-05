@@ -89,6 +89,7 @@ public class Orbs : InitializerBase
             orb.QualifiedCharacters.Add(characterClass);
         }
 
+        orb.SetGuid(orb.Group, orb.Number);
         return orb;
     }
 }

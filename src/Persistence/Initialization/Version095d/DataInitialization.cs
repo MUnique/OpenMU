@@ -51,12 +51,13 @@ public class DataInitialization : DataInitializationBase
     /// <inheritdoc />
     protected override void CreateGameClientDefinition()
     {
-        var version075Definition = this.Context.CreateNew<GameClientDefinition>();
-        version075Definition.Season = 0;
-        version075Definition.Episode = 95;
-        version075Definition.Language = ClientLanguage.English;
-        version075Definition.Version = new byte[] { 0x30, 0x39, 0x35, 0x30, 0x34 };
-        version075Definition.Serial = Encoding.ASCII.GetBytes("4zYGWgYggf9ZENHc");
-        version075Definition.Description = "Version 0.95d Client";
+        var version095Definition = this.Context.CreateNew<GameClientDefinition>();
+        version095Definition.SetGuid(95);
+        version095Definition.Season = 0;
+        version095Definition.Episode = 95;
+        version095Definition.Language = ClientLanguage.English;
+        version095Definition.Version = new byte[] { 0x30, 0x39, 0x35, 0x30, 0x34 };
+        version095Definition.Serial = Encoding.ASCII.GetBytes("4zYGWgYggf9ZENHc");
+        version095Definition.Description = "Version 0.95d Client";
     }
 }

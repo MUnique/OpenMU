@@ -202,6 +202,7 @@ internal class BloodCastleInitializer : InitializerBase
     protected MiniGameDefinition CreateBloodCastleDefinition(byte level, short mapNumber)
     {
         var bloodCastle = this.Context.CreateNew<MiniGameDefinition>();
+        bloodCastle.SetGuid((short)MiniGameType.BloodCastle, level);
         this.GameConfiguration.MiniGameDefinitions.Add(bloodCastle);
         bloodCastle.Name = $"Blood Castle {level}";
         bloodCastle.Description = $"Event definition for blood castle event, level {level}.";

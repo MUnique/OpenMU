@@ -26,6 +26,7 @@ internal class Icarus : Version095d.Maps.Icarus
     {
         base.InitializeDropItemGroups();
         var feather = this.Context.CreateNew<DropItemGroup>();
+        feather.SetGuid(this.MapNumber, 1);
         feather.Chance = 0.001;
         feather.Description = "Loch's Feather";
         feather.MinimumMonsterLevel = 82;

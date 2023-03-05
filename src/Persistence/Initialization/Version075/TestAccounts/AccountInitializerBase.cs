@@ -169,7 +169,7 @@ internal abstract class AccountInitializerBase : InitializerBase
         }
 
         character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
-        character.Experience = GameConfigurationInitializer.CalculateNeededExperience(level);
+        character.Experience = GameConfigurationInitializerBase.CalculateNeededExperience(level);
         character.LevelUpPoints = (int)((character.Attributes.First(a => a.Definition == Stats.Level).Value - 1)
                                         * character.CharacterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
         character.Inventory = this.Context.CreateNew<ItemStorage>();

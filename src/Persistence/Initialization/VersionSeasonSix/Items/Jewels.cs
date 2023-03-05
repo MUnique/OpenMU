@@ -49,6 +49,7 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -68,6 +69,7 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 25;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -87,6 +89,7 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 25;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -106,6 +109,7 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 25;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -125,6 +129,7 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 25;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 }

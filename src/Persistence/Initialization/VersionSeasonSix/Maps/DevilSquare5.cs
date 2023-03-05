@@ -53,15 +53,15 @@ internal class DevilSquare5 : BaseMapInitializer
         const byte y2 = 115;
         const byte quantity = 35;
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[294], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Axe Warrior
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[60], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Bloody Wolf
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[294], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Axe Warrior
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[60], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Bloody Wolf
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[71], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Mega Crust
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Death Angel
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[71], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Mega Crust
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[190], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Death Angel
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[61], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Beam Knight
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[73], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Drakan
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[61], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Beam Knight
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[73], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Drakan
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[291], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Fire Golem
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[291], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Fire Golem
     }
 }

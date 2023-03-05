@@ -94,4 +94,10 @@ public class DropItemGroup
     /// Gets or sets the possible items which can be dropped.
     /// </summary>
     public virtual ICollection<ItemDefinition> PossibleItems { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Description;
+    }
 }

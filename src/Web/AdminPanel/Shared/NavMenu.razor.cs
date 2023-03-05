@@ -5,20 +5,23 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Shared;
 
 using Microsoft.AspNetCore.Components;
-using MUnique.OpenMU.DataModel.Configuration;
+
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// Navigation menu of the admin panel.
 /// </summary>
-public partial class NavMenu
+public partial class NavMenu : IDisposable
 {
     private bool _collapseNavMenu = true;
 
     private bool _isLoadingConfig = false;
 
     private bool _onlyShowSetup;
+
+    private int _availableConfigUpdates;
 
     [Inject]
     private IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
@@ -28,6 +31,9 @@ public partial class NavMenu
 
     [Inject]
     private IUserService UserService { get; set; } = null!;
+
+    [Inject]
+    private DataUpdateService UpdateService { get; set; } = null!;
 
     private Guid? GameConfigurationId { get; set; }
 
@@ -39,11 +45,26 @@ public partial class NavMenu
     private string NavMenuCssClass => this._collapseNavMenu ? "collapse" : string.Empty;
 
     /// <inheritdoc />
+    public void Dispose()
+    {
+        this.SetupService.DatabaseInitialized -= this.OnDatabaseInitializedAsync;
+        this.UpdateService.UpdatesInstalled -= this.OnUpdatesInstalledAsync;
+    }
+
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync().ConfigureAwait(false);
         this.SetupService.DatabaseInitialized += this.OnDatabaseInitializedAsync;
+        this.UpdateService.UpdatesInstalled += this.OnUpdatesInstalledAsync;
         _ = Task.Run(this.LoadGameConfigurationAsync);
+        _ = Task.Run(this.CheckForUpdatesAsync);
+    }
+
+    private async ValueTask OnUpdatesInstalledAsync()
+    {
+        this._availableConfigUpdates = 0;
+        _ = Task.Run(this.CheckForUpdatesAsync);
     }
 
     private async ValueTask OnDatabaseInitializedAsync()
@@ -76,6 +97,21 @@ public partial class NavMenu
         this._onlyShowSetup = this.GameConfigurationId is null;
         this._isLoadingConfig = false;
         await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            var updates = await this.UpdateService.DetermineAvailableUpdatesAsync().ConfigureAwait(false);
+            this._availableConfigUpdates = updates.Count;
+        }
+        catch
+        {
+            this._availableConfigUpdates = 0;
+        }
+
+        await this.InvokeAsync(this.StateHasChanged);
     }
 
     private void ToggleNavMenu()

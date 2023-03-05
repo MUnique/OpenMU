@@ -69,6 +69,7 @@ internal class EventTicketItems : InitializerBase
         item.Durability = 1;
         item.DropsFromMonsters = dropsFromMonsters;
         item.MaximumItemLevel = maxItemLevel;
+        item.SetGuid(item.Group, item.Number);
         if (dropLevels.Length == 1)
         {
             item.DropLevel = dropLevels.First();
