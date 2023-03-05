@@ -164,6 +164,7 @@ internal class ChaosCastleInitializer : InitializerBase
     private void CreateRewards(byte level, MiniGameDefinition chaosCastle)
     {
         var jewelDropItemGroup = this.Context.CreateNew<DropItemGroup>();
+        jewelDropItemGroup.SetGuid(chaosCastle.Entrance!.Map!.Number, 1, level);
         jewelDropItemGroup.Description = $"Rewarded jewels for Chaos Castle {level}";
         jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
         jewelDropItemGroup.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
@@ -184,6 +185,7 @@ internal class ChaosCastleInitializer : InitializerBase
         if (level > 1)
         {
             var ancientDropItemGroup = this.Context.CreateNew<DropItemGroup>();
+            ancientDropItemGroup.SetGuid(chaosCastle.Entrance!.Map!.Number, 2, level);
             ancientDropItemGroup.Description = $"Rewarded ancient items for Chaos Castle {level}";
             ancientDropItemGroup.ItemType = SpecialItemType.Ancient;
             ancientDropItemGroup.Chance = 0.1 * level;
