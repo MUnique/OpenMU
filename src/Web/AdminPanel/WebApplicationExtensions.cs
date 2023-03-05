@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Web.Map;
 using Nito.AsyncEx.Synchronous;
 
@@ -57,8 +58,9 @@ public static class WebApplicationExtensions
         services.AddBlazoredModal();
 
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
-        services.AddSingleton<SetupService>();
-
+        
+        services.AddScoped<SetupService>();
+        services.AddScoped<DataUpdateService>();
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
         services.AddScoped<PlugInController>();

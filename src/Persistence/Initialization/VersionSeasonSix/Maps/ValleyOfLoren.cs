@@ -40,16 +40,16 @@ internal class ValleyOfLoren : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[216], 176, 212, Direction.SouthWest); // Crown
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[216], 176, 212, Direction.SouthWest); // Crown
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[217], 167, 194, Direction.NorthWest); // Crown Switch1
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[218], 184, 195, Direction.NorthWest); // Crown Switch2
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[220], 139, 101, Direction.SouthEast); // Guard
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[223], 179, 214, Direction.SouthWest); // Sinior
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[224], 086, 061, Direction.SouthWest); // Guardsman
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[224], 099, 061, Direction.SouthWest); // Guardsman
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[376], 090, 043, Direction.SouthWest); // Pamela
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[377], 090, 218, Direction.SouthEast); // Angela
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[216], 176, 212, Direction.SouthWest); // Crown
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[216], 176, 212, Direction.SouthWest); // Crown
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[217], 167, 194, Direction.NorthWest); // Crown Switch1
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[218], 184, 195, Direction.NorthWest); // Crown Switch2
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[220], 139, 101, Direction.SouthEast); // Guard
+        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[223], 179, 214, Direction.SouthWest); // Sinior
+        yield return this.CreateMonsterSpawn(12, this.NpcDictionary[224], 086, 061, Direction.SouthWest); // Guardsman
+        yield return this.CreateMonsterSpawn(13, this.NpcDictionary[224], 099, 061, Direction.SouthWest); // Guardsman
+        yield return this.CreateMonsterSpawn(20, this.NpcDictionary[376], 090, 043, Direction.SouthWest); // Pamela
+        yield return this.CreateMonsterSpawn(21, this.NpcDictionary[377], 090, 218, Direction.SouthEast); // Angela
     }
 
     /// <inheritdoc/>

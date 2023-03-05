@@ -341,6 +341,6 @@ public class MonsterDefinition
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{this.Number} - {this.Designation}";
+        return $"{this.Designation} ({this.Number})";
     }
 }

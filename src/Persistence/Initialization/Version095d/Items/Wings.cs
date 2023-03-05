@@ -4,11 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
 /// <summary>
@@ -45,38 +43,6 @@ public class Wings : WingsInitializerBase
         this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12);
         this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12);
         this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12);
-    }
-
-    /// <summary>
-    /// Builds the options based on the given parameters.
-    /// </summary>
-    /// <remarks>
-    /// Some wings can possibly have different item options of <see cref="ItemOptionTypes.Option"/>, depending on the outcome of consumption of the 'Jewel of Life'.
-    /// Since webzen did a "great" job defining different numbers (representations in their transmitted item data) for the same options,
-    /// we have to build <see cref="IncreasableItemOption"/>s for each item separately.
-    /// We don't want to handle this stuff per-item in our <see cref="ItemSerializer"/> since we want a generic solution.
-    /// </remarks>
-    /// <param name="optionsWithNumbers">The tuples of option type with their number.</param>
-    /// <returns>The built <see cref="IncreasableItemOption"/>s.</returns>
-    private IEnumerable<IncreasableItemOption> BuildOptions(params (int, OptionType)[] optionsWithNumbers)
-    {
-        foreach (var tuple in optionsWithNumbers)
-        {
-            switch (tuple.Item2)
-            {
-                case OptionType.HealthRecover:
-                    yield return this.CreateOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f);
-                    break;
-                case OptionType.PhysDamage:
-                    yield return this.CreateOption(tuple.Item1, Stats.MaximumPhysBaseDmg, 0, AggregateType.AddRaw, 4f);
-                    break;
-                case OptionType.WizDamage:
-                    yield return this.CreateOption(tuple.Item1, Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, 4f);
-                    break;
-                default:
-                    throw new ArgumentException("unknown OptionType");
-            }
-        }
     }
 
     private void CreateWing(byte number, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial)
@@ -126,6 +92,7 @@ public class Wings : WingsInitializerBase
         wing.DropsFromMonsters = false;
         wing.Durability = durability;
         wing.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));
+        wing.SetGuid(wing.Group, wing.Number);
 
         //// TODO: each level increases the requirement by 5 Levels
         this.CreateItemRequirementIfNeeded(wing, Stats.Level, levelRequirement);
@@ -150,24 +117,5 @@ public class Wings : WingsInitializerBase
         wing.BasePowerUpAttributes.Add(canFlyPowerUp);
 
         return wing;
-    }
-
-    private IncreasableItemOption CreateOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, float valueIncrementPerLevel)
-    {
-        var itemOption = this.Context.CreateNew<IncreasableItemOption>();
-        itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
-        itemOption.Number = number;
-
-        itemOption.PowerUpDefinition = this.CreatePowerUpDefinition(attributeDefinition, value, aggregateType);
-
-        for (int level = 1; level <= Constants.MaximumOptionLevel; level++)
-        {
-            var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
-            optionOfLevel.Level = level;
-            optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(itemOption.PowerUpDefinition.TargetAttribute!, level * valueIncrementPerLevel, aggregateType);
-            itemOption.LevelDependentOptions.Add(optionOfLevel);
-        }
-
-        return itemOption;
     }
 }

@@ -32,7 +32,7 @@ internal class Jewelery : InitializerBase
     /// <inheritdoc/>
     public sealed override void Initialize()
     {
-        this._healthRecoverOptionDefinition = this.CreateOption("Health recover for jewelery", Stats.HealthRecoveryMultiplier, 0.01f);
+        this._healthRecoverOptionDefinition = this.CreateOption("Health recover for jewelery", Stats.HealthRecoveryMultiplier, 0.01f, ItemOptionDefinitionNumbers.JeweleryHealth);
         this._resistancesBonusTable = this.CreateItemBonusTable(ResistanceIncreaseByLevel, "Elemental resistances (Jewelery)", "Defines the elemental resistances for jewelery. It's 10 % per item level.");
         this.CreateItems();
     }
@@ -95,6 +95,7 @@ internal class Jewelery : InitializerBase
             ring.QualifiedCharacters.Add(characterClass);
         }
 
+        ring.SetGuid(ring.Group, ring.Number);
         return ring;
     }
 
@@ -104,32 +105,21 @@ internal class Jewelery : InitializerBase
     /// <param name="name">The name.</param>
     /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="boostPerLevel">The boost per level.</param>
+    /// <param name="optionNumber">The option number.</param>
     /// <param name="aggregateType">Type of the aggregate.</param>
-    /// <returns>The created option.</returns>
-    protected ItemOptionDefinition CreateOption(string name, AttributeDefinition targetAttribute, float boostPerLevel, AggregateType aggregateType = AggregateType.AddRaw)
+    /// <returns>
+    /// The created option.
+    /// </returns>
+    protected ItemOptionDefinition CreateOption(string name, AttributeDefinition targetAttribute, float boostPerLevel, short optionNumber, AggregateType aggregateType = AggregateType.AddRaw)
     {
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
+        optionDefinition.SetGuid(optionNumber, targetAttribute.Id.ExtractFirstTwoBytes());
         optionDefinition.AddsRandomly = true;
         optionDefinition.Name = name;
         optionDefinition.AddChance = 0.25f;
         optionDefinition.MaximumOptionsPerItem = 1;
 
-        var option = this.Context.CreateNew<IncreasableItemOption>();
-        option.OptionType = ItemOptionTypes.Option;
-        option.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        option.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
-        for (int i = 1; i <= 4; i++)
-        {
-            var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
-            optionOfLevel.Level = i;
-            optionOfLevel.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-            optionOfLevel.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-            optionOfLevel.PowerUpDefinition.Boost.ConstantValue.Value = boostPerLevel * i;
-            optionOfLevel.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
-            optionOfLevel.PowerUpDefinition.TargetAttribute = option.PowerUpDefinition.TargetAttribute;
-            option.LevelDependentOptions.Add(optionOfLevel);
-        }
-
+        var option = this.CreateItemOption(0, targetAttribute, 0, aggregateType, boostPerLevel, optionNumber);
         optionDefinition.PossibleOptions.Add(option);
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
         return optionDefinition;
@@ -181,6 +171,7 @@ internal class Jewelery : InitializerBase
             item.QualifiedCharacters.Add(characterClass);
         }
 
+        item.SetGuid(item.Group, item.Number);
         return item;
     }
 

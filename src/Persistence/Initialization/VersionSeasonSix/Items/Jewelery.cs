@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
+
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.AttributeSystem;
@@ -66,6 +68,7 @@ internal class Jewelery : Version095d.Items.Jewelery
         var eliteSkeletonRing = this.CreateTransformationRing(39, "Elite Transfer Skeleton Ring", 10, 255, CharacterTransformationSkin.EliteSkillSoldier);
         eliteSkeletonRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Elite Transfer Skeleton Ring",
+                ItemOptionDefinitionNumbers.EliteTransferSkeletonRing,
                 (Stats.DefenseBase, 10, AggregateType.AddRaw),
                 (Stats.MaximumHealth, 400, AggregateType.AddRaw)));
         this.CreateTransformationRing(40, "Jack Olantern Transformation Ring", 10, 100, CharacterTransformationSkin.JackOlantern);
@@ -75,11 +78,13 @@ internal class Jewelery : Version095d.Items.Jewelery
         var pandaRing = this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, CharacterTransformationSkin.Panda);
         pandaRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Panda Ring",
+                ItemOptionDefinitionNumbers.PandaRing,
                 (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
                 (Stats.BaseDamageBonus, 30, AggregateType.AddRaw)));
         var skeletonRing = this.CreateTransformationRing(122, "Skeleton Transformation Ring", 1, 255, CharacterTransformationSkin.Skeleton);
         skeletonRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Skeleton Transformation Ring",
+                ItemOptionDefinitionNumbers.SkeletonTransformationRing,
                 (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
                 (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate))); // todo: exp rate only with equipped skeleton pet
         this.CreateTransformationRing(163, "? Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
@@ -87,28 +92,30 @@ internal class Jewelery : Version095d.Items.Jewelery
         this.CreateTransformationRing(165, "??? Transformation Ring", 1, 255, (CharacterTransformationSkin)642);
     }
 
-    private ItemOptionDefinition CreateItemOptionDefinition(string name, params (AttributeDefinition targetOption, float value, AggregateType aggregateType)[] options)
+    private ItemOptionDefinition CreateItemOptionDefinition(string name, short number, params (AttributeDefinition targetOption, float value, AggregateType aggregateType)[] options)
     {
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
+        optionDefinition.SetGuid(number);
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
         optionDefinition.Name = name;
         foreach (var (targetOption, value, aggregateType) in options)
         {
-            optionDefinition.PossibleOptions.Add(this.CreateItemOption(targetOption, value, aggregateType));
+            optionDefinition.PossibleOptions.Add(this.CreateItemOption(targetOption, value, aggregateType, number));
         }
 
         return optionDefinition;
     }
 
-    private IncreasableItemOption CreateItemOption(AttributeDefinition targetOption, float value, AggregateType aggregateType)
+    private IncreasableItemOption CreateItemOption(AttributeDefinition targetOption, float value, AggregateType aggregateType, short number)
     {
-        var increaseDamage = this.Context.CreateNew<IncreasableItemOption>();
-        increaseDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        increaseDamage.PowerUpDefinition.TargetAttribute = targetOption.GetPersistent(this.GameConfiguration);
-        increaseDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        increaseDamage.PowerUpDefinition.Boost.ConstantValue.Value = value;
-        increaseDamage.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
-        return increaseDamage;
+        var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.SetGuid(number, targetOption.Id.ExtractFirstTwoBytes());
+        itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        itemOption.PowerUpDefinition.TargetAttribute = targetOption.GetPersistent(this.GameConfiguration);
+        itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        itemOption.PowerUpDefinition.Boost.ConstantValue.Value = value;
+        itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+        return itemOption;
     }
 
     /// <summary>
@@ -127,11 +134,13 @@ internal class Jewelery : Version095d.Items.Jewelery
         ring.MaximumItemLevel = 2;
         ring.IsBoundToCharacter = true;
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
+        optionDefinition.SetGuid(ItemOptionDefinitionNumbers.WizardRing);
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
         ring.PossibleItemOptions.Add(optionDefinition);
         optionDefinition.Name = "Wizard Ring Options";
 
         var increaseDamage = this.Context.CreateNew<IncreasableItemOption>();
+        increaseDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 1);
         increaseDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         increaseDamage.PowerUpDefinition.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
         increaseDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
@@ -139,6 +148,7 @@ internal class Jewelery : Version095d.Items.Jewelery
         optionDefinition.PossibleOptions.Add(increaseDamage);
 
         var increaseSpeed = this.Context.CreateNew<IncreasableItemOption>();
+        increaseSpeed.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 2);
         increaseSpeed.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         increaseSpeed.PowerUpDefinition.TargetAttribute = Stats.AttackSpeed.GetPersistent(this.GameConfiguration);
         increaseSpeed.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
@@ -196,7 +206,7 @@ internal class Jewelery : Version095d.Items.Jewelery
         if (optionTargetAttribute != Stats.HealthRecoveryMultiplier && optionTargetAttribute is not null)
         {
             // Then it's either maximum mana or ability increase by 1% for each option level
-            var option = this.CreateOption("Jewelery option " + optionTargetAttribute.Designation, optionTargetAttribute, 1.01f, AggregateType.Multiplicate);
+            var option = this.CreateOption("Jewelery option " + optionTargetAttribute.Designation, optionTargetAttribute, 1.01f, item.GetItemId(), AggregateType.Multiplicate);
 
             item.PossibleItemOptions.Add(option);
         }

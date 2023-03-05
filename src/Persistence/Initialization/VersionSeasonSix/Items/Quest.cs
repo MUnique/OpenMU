@@ -89,5 +89,6 @@ public class Quest : InitializerBase
         item.DropsFromMonsters = false; // it'll be added explicitly to a DropItemGroup
         item.Durability = 1;
         item.MaximumItemLevel = maximumLevel;
+        item.SetGuid(item.Group, item.Number);
     }
 }

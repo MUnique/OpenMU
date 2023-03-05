@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Network;
+
 namespace MUnique.OpenMU.Persistence.Initialization;
 
 using System.Diagnostics;
@@ -86,11 +88,27 @@ internal abstract class BaseMapInitializer : IMapInitializer
     /// </summary>
     protected virtual byte SafezoneMapNumber => (byte)(this._mapDefinition?.ExitGates.Any(g => g.IsSpawnGate) ?? false ? this._mapDefinition.Number : Version075.Maps.Lorencia.Number);
 
+    private short MapId
+    {
+        get
+        {
+            if (this.MapDefinition!.Discriminator is 0)
+            {
+                return this.MapDefinition.Number;
+            }
+
+            return NumberConversionExtensions.MakeWord(
+                (byte)this._mapDefinition!.Number,
+                (byte)this._mapDefinition.Discriminator).ToSigned();
+        }
+    }
+
     /// <inheritdoc />
     public void Initialize()
     {
         this.CreateMonsters();
         this._mapDefinition = this.Context.CreateNew<GameMapDefinition>();
+        this._mapDefinition.SetGuid(this.MapNumber, this.Discriminator);
         this._mapDefinition.Number = this.MapNumber;
         this._mapDefinition.Name = this.MapName;
         this._mapDefinition.Discriminator = this.Discriminator;
@@ -219,8 +237,9 @@ internal abstract class BaseMapInitializer : IMapInitializer
     }
 
     /// <summary>
-    /// Creates a new <see cref="MonsterSpawnArea"/> with the specified data.
+    /// Creates a new <see cref="MonsterSpawnArea" /> with the specified data.
     /// </summary>
+    /// <param name="number">The number of the spawn for later reference.</param>
     /// <param name="monsterDefinition">The monster definition.</param>
     /// <param name="x1">The x1 coordinate.</param>
     /// <param name="x2">The x2 coordinate.</param>
@@ -229,10 +248,14 @@ internal abstract class BaseMapInitializer : IMapInitializer
     /// <param name="quantity">The quantity.</param>
     /// <param name="direction">The direction.</param>
     /// <param name="spawnTrigger">The spawn trigger.</param>
-    /// <returns>The created monster spawn area.</returns>
-    protected MonsterSpawnArea CreateMonsterSpawn(MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2, short quantity = 1, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic, byte waveNumber = 0)
+    /// <param name="waveNumber">The wave number.</param>
+    /// <returns>
+    /// The created monster spawn area.
+    /// </returns>
+    protected MonsterSpawnArea CreateMonsterSpawn(short number, MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2, short quantity = 1, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic, byte waveNumber = 0)
     {
         var area = this.Context.CreateNew<MonsterSpawnArea>();
+        area.SetGuid(this.MapId, number);
         area.GameMap = this._mapDefinition;
         area.MonsterDefinition = monsterDefinition;
         area.Quantity = quantity;
@@ -247,16 +270,19 @@ internal abstract class BaseMapInitializer : IMapInitializer
     }
 
     /// <summary>
-    /// Creates a new <see cref="MonsterSpawnArea"/> with the specified data.
+    /// Creates a new <see cref="MonsterSpawnArea" /> with the specified data.
     /// </summary>
+    /// <param name="number">The number.</param>
     /// <param name="monsterDefinition">The monster definition.</param>
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>
     /// <param name="direction">The direction.</param>
     /// <param name="spawnTrigger">The spawn trigger.</param>
-    /// <returns>The created monster spawn area.</returns>
-    protected MonsterSpawnArea CreateMonsterSpawn(MonsterDefinition monsterDefinition, byte x, byte y, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic)
-        => this.CreateMonsterSpawn(monsterDefinition, x, x, y, y, 1, direction, spawnTrigger);
+    /// <returns>
+    /// The created monster spawn area.
+    /// </returns>
+    protected MonsterSpawnArea CreateMonsterSpawn(short number, MonsterDefinition monsterDefinition, byte x, byte y, Direction direction = Direction.Undefined, SpawnTrigger spawnTrigger = SpawnTrigger.Automatic)
+        => this.CreateMonsterSpawn(number, monsterDefinition, x, x, y, y, 1, direction, spawnTrigger);
 
     /// <summary>
     /// Can be used to add additional map requirements.
@@ -279,6 +305,7 @@ internal abstract class BaseMapInitializer : IMapInitializer
         }
 
         var requirement = this.Context.CreateNew<AttributeRequirement>();
+        requirement.SetGuid(this.MapId, attribute.Id.ExtractFirstTwoBytes());
         requirement.Attribute = attribute.GetPersistent(this.GameConfiguration);
         requirement.MinimumValue = minimumValue;
         this._mapDefinition.MapRequirements.Add(requirement);

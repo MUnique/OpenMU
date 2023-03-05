@@ -21,4 +21,9 @@ public interface IMemoryRepository : IRepository
     /// </summary>
     /// <param name="key">The key.</param>
     ValueTask RemoveAsync(Guid key);
+
+    /// <summary>
+    /// Called when the context saves the changes.
+    /// </summary>
+    void OnSaveChanges();
 }

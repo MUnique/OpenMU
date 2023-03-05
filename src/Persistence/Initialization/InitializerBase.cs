@@ -43,6 +43,9 @@ public abstract class InitializerBase : IInitializer
     /// </value>
     protected GameConfiguration GameConfiguration { get; }
 
+    /// <summary>
+    /// Gets the maximum option level.
+    /// </summary>
     protected virtual int MaximumOptionLevel => 4;
 
     /// <inheritdoc />
@@ -100,9 +103,13 @@ public abstract class InitializerBase : IInitializer
     {
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         powerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
-        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = value;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+        if (value != 0)
+        {
+            powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            powerUpDefinition.Boost.ConstantValue.Value = value;
+            powerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+        }
+
         return powerUpDefinition;
     }
 
@@ -148,9 +155,23 @@ public abstract class InitializerBase : IInitializer
         return table;
     }
 
-    protected IncreasableItemOption CreateItemOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, float valueIncrementPerLevel)
+    /// <summary>
+    /// Creates a new <see cref="IncreasableItemOption" /> with the specified parameters
+    /// with options for multiple option levels until <see cref="MaximumOptionLevel" />.
+    /// </summary>
+    /// <param name="number">The number.</param>
+    /// <param name="attributeDefinition">The attribute definition.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="aggregateType">Type of the aggregate.</param>
+    /// <param name="valueIncrementPerLevel">The value increment per level.</param>
+    /// <param name="optionNumber">The option number.</param>
+    /// <returns>
+    /// The created <see cref="IncreasableItemOption" />.
+    /// </returns>
+    protected IncreasableItemOption CreateItemOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, float valueIncrementPerLevel, short optionNumber)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.SetGuid(optionNumber, attributeDefinition.Id.ExtractFirstTwoBytes());
         itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
         itemOption.Number = number;
 
@@ -160,7 +181,10 @@ public abstract class InitializerBase : IInitializer
         {
             var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
             optionOfLevel.Level = level;
-            optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(itemOption.PowerUpDefinition.TargetAttribute!, level * valueIncrementPerLevel, aggregateType);
+            optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(
+                itemOption.PowerUpDefinition.TargetAttribute!,
+                level * valueIncrementPerLevel,
+                aggregateType);
             itemOption.LevelDependentOptions.Add(optionOfLevel);
         }
 

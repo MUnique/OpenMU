@@ -44,9 +44,9 @@ internal class LorenMarket : BaseMapInitializer
         // yield return this.CreateMonsterSpawn(NpcDictionary[240], 1, Direction.SouthWest, SpawnTrigger.Automatic, 077, 077, 045, 045); // Safety Guardian
         // yield return this.CreateMonsterSpawn(NpcDictionary[385], 1, Direction.SouthWest, SpawnTrigger.Automatic, 014, 014, 067, 067); // Mirage
         // yield return this.CreateMonsterSpawn(NpcDictionary[540], 1, Direction.SouthEast, SpawnTrigger.Automatic, 086, 086, 129, 129); // Lugard
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[545], 113, 116, Direction.SouthEast); // Christine the General Goods Merchant
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[546], 131, 109, Direction.SouthEast); // Jeweler Raul
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[547], 123, 140, Direction.SouthEast); // Market Union Member Julia
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[545], 113, 116, Direction.SouthEast); // Christine the General Goods Merchant
+        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[546], 131, 109, Direction.SouthEast); // Jeweler Raul
+        yield return this.CreateMonsterSpawn(12, this.NpcDictionary[547], 123, 140, Direction.SouthEast); // Market Union Member Julia
     }
 
     /// <inheritdoc/>

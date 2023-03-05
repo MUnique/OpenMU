@@ -15,8 +15,11 @@ internal partial class NpcInitialization
     /// <summary>
     /// Creates the merchant store of 'Potion Girl'.
     /// </summary>
-    /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreatePotionGirlItemStorage()
+    /// <param name="number">The number.</param>
+    /// <returns>
+    /// The created store.
+    /// </returns>
+    protected virtual ItemStorage CreatePotionGirlItemStorage(short number)
     {
         List<Item> itemList = new ()
         {
@@ -48,14 +51,20 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(17, ItemGroups.Bows, 15, 0, 0, false, false, null), // Arrow
             this.ItemHelper.CreateItem(18, 10, 14, 1, 0), // Town Portal Scroll
         };
-        return this.CreateMerchantStore(itemList);
+
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the wandering merchant store.
     /// </summary>
-    /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreateWanderingMerchant()
+    /// <param name="number">The number.</param>
+    /// <returns>
+    /// The created store.
+    /// </returns>
+    protected virtual ItemStorage CreateWanderingMerchant(short number)
     {
         List<Item> itemList = new ()
         {
@@ -90,14 +99,16 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateSetItem(84, 9, ItemGroups.Gloves, null, 3, 1, true),   // Plate Gloves    +3+4+L
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the merchant store of 'Hanzo the Blacksmith'.
     /// </summary>
     /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreateHanzoTheBlacksmith()
+    protected virtual ItemStorage CreateHanzoTheBlacksmith(short number)
     {
         List<Item> itemList = new ()
         {
@@ -132,14 +143,16 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(75, ItemGroups.Swords, 5, 3, 1, true, true, null),   // Blade            +3+4+L+S
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the merchant store of 'Pasi the Mage'.
     /// </summary>
     /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreatePasiTheMageStore()
+    protected virtual ItemStorage CreatePasiTheMageStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -175,14 +188,16 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(94, ItemGroups.Staff, 3, 3, 1, true, false, null),  // Thunder Staff    +3+4+L
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the merchant store of 'Elf Lala'.
     /// </summary>
     /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreateElfLalaStore()
+    protected virtual ItemStorage CreateElfLalaStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -244,14 +259,16 @@ internal partial class NpcInitialization
 
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the merchant store of 'Izabel the Wizard'.
     /// </summary>
     /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreateIzabelTheWizardStore()
+    protected virtual ItemStorage CreateIzabelTheWizardStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -295,14 +312,16 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(52, ItemGroups.Shields, 14, 3, 2, true, false, null), // Legendary Shield +3+Luck+5
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the merchant store of 'Eo the Craftsman'.
     /// </summary>
     /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreateEoTheCraftsmanStore()
+    protected virtual ItemStorage CreateEoTheCraftsmanStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -333,14 +352,16 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateShield(78, 3, false, null, 3, 2, true), // Elven Shield +3+Luck+5
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the merchant store of 'Zienna'.
     /// </summary>
     /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreateZiennaStore()
+    protected virtual ItemStorage CreateZiennaStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -367,14 +388,16 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(70, ItemGroups.Bows, 13, 3, 1, true, true, null), // Bluewing Crossbow +3+Skill+Luck+4
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the merchant store of 'Lumen the Barmaid'.
     /// </summary>
     /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreateLumenTheBarmaidStore()
+    protected virtual ItemStorage CreateLumenTheBarmaidStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -382,14 +405,16 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateItem(1, 10, 14, 1, 0), // Town Portal Scroll
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the merchant store of 'Carmen the Barmaid'.
     /// </summary>
     /// <returns>The created store.</returns>
-    protected virtual ItemStorage CreateCarenTheBarmaidStore()
+    protected virtual ItemStorage CreateCarenTheBarmaidStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -397,7 +422,9 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateItem(1, 10, 14, 1, 0), // Town Portal Scroll
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>

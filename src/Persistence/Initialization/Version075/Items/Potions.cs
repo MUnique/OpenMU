@@ -51,6 +51,7 @@ public class Potions : InitializerBase
         alcohol.Value = 30;
         alcohol.Width = 1;
         alcohol.Height = 2;
+        alcohol.SetGuid(alcohol.Group, alcohol.Number);
         return alcohol;
     }
 
@@ -70,6 +71,7 @@ public class Potions : InitializerBase
         apple.Value = 5;
         apple.Width = 1;
         apple.Height = 1;
+        apple.SetGuid(apple.Group, apple.Number);
         return apple;
     }
 
@@ -89,6 +91,7 @@ public class Potions : InitializerBase
         potion.Value = 10;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -108,6 +111,7 @@ public class Potions : InitializerBase
         potion.Value = 20;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -127,6 +131,7 @@ public class Potions : InitializerBase
         definition.Value = 30;
         definition.Width = 1;
         definition.Height = 1;
+        definition.SetGuid(definition.Group, definition.Number);
         return definition;
     }
 
@@ -146,6 +151,7 @@ public class Potions : InitializerBase
         potion.Value = 10;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -165,6 +171,7 @@ public class Potions : InitializerBase
         potion.Value = 20;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -184,6 +191,7 @@ public class Potions : InitializerBase
         definition.Value = 30;
         definition.Width = 1;
         definition.Height = 1;
+        definition.SetGuid(definition.Group, definition.Number);
         return definition;
     }
 
@@ -203,6 +211,7 @@ public class Potions : InitializerBase
         definition.Value = 10;
         definition.Width = 1;
         definition.Height = 1;
+        definition.SetGuid(definition.Group, definition.Number);
         return definition;
     }
 
@@ -218,6 +227,7 @@ public class Potions : InitializerBase
         definition.Value = 30;
         definition.Width = 1;
         definition.Height = 2;
+        definition.SetGuid(definition.Group, definition.Number);
         return definition;
     }
 }

@@ -26,6 +26,7 @@ internal partial class CharacterClassInitialization
         this.GameConfiguration.Attributes.Add(energyMinus15);
 
         var result = this.Context.CreateNew<CharacterClass>();
+        result.SetGuid((byte)number);
         this.GameConfiguration.CharacterClasses.Add(result);
         result.CanGetCreated = canGetCreated;
         result.CreationAllowedFlag = 2;

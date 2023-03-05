@@ -73,5 +73,6 @@ public class Scrolls : InitializerBase
         this.CreateItemRequirementIfNeeded(scroll, Stats.TotalEnergyRequirementValue, energyRequirement);
 
         scroll.Value = money;
+        scroll.SetGuid(scroll.Group, scroll.Number);
     }
 }
