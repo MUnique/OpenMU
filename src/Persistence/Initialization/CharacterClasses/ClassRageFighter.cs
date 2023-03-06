@@ -33,6 +33,7 @@ internal partial class CharacterClassInitialization
         result.IsMasterClass = isMaster;
         result.LevelRequirementByCreation = 150;
         result.NextGenerationClass = nextGenerationClass;
+        result.LevelWarpRequirementReductionPercent = 100 / 3;
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 7, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 32, true));

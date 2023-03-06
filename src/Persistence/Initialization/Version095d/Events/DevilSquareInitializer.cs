@@ -144,6 +144,7 @@ internal class DevilSquareInitializer : InitializerBase
         devilSquare.GameLevel = level;
         devilSquare.MapCreationPolicy = MiniGameMapCreationPolicy.OnePerParty;
         devilSquare.SaveRankingStatistics = true;
+        devilSquare.AllowParty = true;
 
         this.CreateRewards(level, devilSquare);
         this.CreateWaves(devilSquare);

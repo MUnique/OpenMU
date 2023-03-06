@@ -198,4 +198,10 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     {
         return new EntityFrameworkContext(new TypedContext<T>(), this._loggerFactory, this._changePublisher);
     }
+
+    /// <inheritdoc />
+    public IContext CreateNewUpdateContext()
+    {
+        return new EntityFrameworkContext(new EntityDataContext(), this._loggerFactory, this._changePublisher);
+    }
 }

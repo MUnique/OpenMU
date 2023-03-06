@@ -74,7 +74,9 @@ public class WarpAction
 
     private bool CheckLevelRequirement(Player player, WarpInfo warpInfo)
     {
-        if (warpInfo.LevelRequirement <= player.Attributes?[Stats.Level])
+        var requirement = player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warpInfo.LevelRequirement);
+        
+        if (requirement <= player.Attributes?[Stats.Level])
         {
             return true;
         }

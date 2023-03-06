@@ -79,5 +79,10 @@ public class Program
         {
             throw new NotImplementedException();
         }
+
+        public IContext CreateNewUpdateContext()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

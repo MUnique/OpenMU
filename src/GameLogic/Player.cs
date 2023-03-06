@@ -102,6 +102,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public event AsyncEventHandler<(Player, ILocateable)>? PlayerPickedUpItem;
 
+    /// <summary>
+    /// Occurs when this instance died.
+    /// </summary>
+    public event EventHandler<DeathInformation>? Died;
+
     /// <inheritdoc />
     ILogger ILoggerOwner.Logger => this.Logger;
 
@@ -478,6 +483,21 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
+    /// <inheritdoc />
+    public async ValueTask KillInstantlyAsync()
+    {
+        if (this.Attributes is null)
+        {
+            throw new InvalidOperationException("AttributeSystem not set.");
+        }
+
+        var hitInfo = new HitInfo((uint)this.Attributes[Stats.CurrentHealth], (uint)this.Attributes[Stats.CurrentShield], DamageAttributes.Undefined);
+        this.Attributes[Stats.CurrentHealth] = 0;
+
+        this.LastDeath = new DeathInformation(0, string.Empty, hitInfo, 0);
+        await this.OnDeathAsync(null).ConfigureAwait(false);
+    }
+
     /// <inheritdoc/>
     public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo)
     {
@@ -597,30 +617,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         this.IsTeleporting = false;
-    }
-
-    /// <summary>
-    /// Is called after the player killed a <see cref="Player"/>.
-    /// Increment PK Level.
-    /// </summary>
-    public async ValueTask AfterKilledPlayerAsync()
-    {
-        // TODO: Self Defense System
-        if (this._selectedCharacter!.State != HeroState.PlayerKiller2ndStage)
-        {
-            if (this._selectedCharacter.State < HeroState.Normal)
-            {
-                this._selectedCharacter.State = HeroState.PlayerKillWarning;
-            }
-            else
-            {
-                this._selectedCharacter.State++;
-            }
-        }
-
-        this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
-        this._selectedCharacter.PlayerKillCount += 1;
-        await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1277,6 +1273,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Removes the summon.
+    /// </summary>
+    public async ValueTask RemoveSummonAsync()
+    {
+        if (this.Summon is { } summon)
+        {
+            // remove summon, if exists
+            await summon.Item1.CurrentMap.RemoveAsync(summon.Item1).ConfigureAwait(false);
+            summon.Item1.Dispose();
+            this.SummonDied();
+        }
+    }
+
+    /// <summary>
     /// Removes the pet command manager.
     /// </summary>
     public void RemovePetCommandManager()
@@ -1569,7 +1579,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask OnDeathAsync(IAttacker killer)
+    private async ValueTask OnDeathAsync(IAttacker? killer)
     {
         if (!await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
         {
@@ -1582,7 +1592,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, killer), true).ConfigureAwait(false);
 
         if (killer is Player killerAfterKilled
-            && !(killerAfterKilled.GuildWarContext?.Score is { } score && score == this.GuildWarContext?.Score))
+            && !(killerAfterKilled.GuildWarContext?.Score is { } score && score == this.GuildWarContext?.Score)
+            && this.CurrentMiniGame?.AllowPlayerKilling is not true)
         {
             await killerAfterKilled.AfterKilledPlayerAsync().ConfigureAwait(false);
         }
@@ -1599,6 +1610,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 this.Summon = null;
             }
 
+            await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
             this.SetReclaimableAttributesToMaximum();
             await this.RespawnAtAsync(await this.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -1606,6 +1618,34 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         _ = RespawnAsync(this._respawnAfterDeathCts.Token);
 
         this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, killer);
+        if (this.LastDeath is { } deathInformation)
+        {
+            this.Died?.Invoke(this, deathInformation);
+        }
+    }
+
+    /// <summary>
+    /// Is called after the player killed a <see cref="Player"/>.
+    /// Increment PK Level.
+    /// </summary>
+    private async ValueTask AfterKilledPlayerAsync()
+    {
+        // TODO: Self Defense System
+        if (this._selectedCharacter!.State != HeroState.PlayerKiller2ndStage)
+        {
+            if (this._selectedCharacter.State < HeroState.Normal)
+            {
+                this._selectedCharacter.State = HeroState.PlayerKillWarning;
+            }
+            else
+            {
+                this._selectedCharacter.State++;
+            }
+        }
+
+        this._selectedCharacter.StateRemainingSeconds += (int)TimeSpan.FromHours(1).TotalSeconds;
+        this._selectedCharacter.PlayerKillCount += 1;
+        await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
     }
 
     private Item? GetAmmunitionItem()

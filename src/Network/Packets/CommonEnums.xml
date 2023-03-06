@@ -300,5 +300,41 @@
         </EnumValue>
       </Values>
     </Enum>
+    <Enum>
+      <Name>MiniGameType</Name>
+      <Description>Defines the type of the mini game.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Undefined</Name>
+          <Description>Undefined mini game type.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DevilSquare</Name>
+          <Description>The devil square mini game.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BloodCastle</Name>
+          <Description>The blood castle mini game.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ChaosCastle</Name>
+          <Description>The chaos castle mini game.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>IllusionTemple</Name>
+          <Description>The illusion temple mini game.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Doppelganger</Name>
+          <Description>The doppelgänger mini game.</Description>
+          <Value>6</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
   </Enums>
 </PacketDefinitions>

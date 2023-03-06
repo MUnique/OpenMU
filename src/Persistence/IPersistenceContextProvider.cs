@@ -75,4 +75,10 @@ public interface IPersistenceContextProvider
     /// A new context which can be used to load and edit an object of <typeparamref name="T" />.
     /// </returns>
     IContext CreateNewTypedContext<T>();
+
+    /// <summary>
+    /// Creates a new context for data updates, without caching.
+    /// </summary>
+    /// <returns>The newly created context.</returns>
+    IContext CreateNewUpdateContext();
 }

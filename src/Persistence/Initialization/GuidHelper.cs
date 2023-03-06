@@ -196,7 +196,7 @@ internal static class GuidHelper
     /// <typeparam name="T">The type of object which should get the id.</typeparam>
     /// <param name="number">The number.</param>
     /// <returns>The created unique identifier.</returns>
-    private static Guid CreateGuid<T>(short number)
+    public static Guid CreateGuid<T>(short number)
     {
         if (!TypeIds.TryGetValue(typeof(T), out var typeId))
         {
@@ -214,7 +214,7 @@ internal static class GuidHelper
     /// <param name="parentNumber">The parent number.</param>
     /// <param name="number">The child number.</param>
     /// <returns>The created unique identifier.</returns>
-    private static Guid CreateGuid<T>(short parentNumber, short number)
+    public static Guid CreateGuid<T>(short parentNumber, short number)
     {
         if (!TypeIds.TryGetValue(typeof(T), out var typeId))
         {
@@ -235,7 +235,7 @@ internal static class GuidHelper
     /// <returns>
     /// The created unique identifier.
     /// </returns>
-    private static Guid CreateGuid<T>(short parentNumber, short number, byte subNumber)
+    public static Guid CreateGuid<T>(short parentNumber, short number, byte subNumber)
     {
         if (!TypeIds.TryGetValue(typeof(T), out var typeId))
         {

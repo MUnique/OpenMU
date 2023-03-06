@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
 using MUnique.OpenMU.Network.PlugIns;
@@ -135,6 +136,11 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             {
                 plugInConfiguration.IsActive = false;
                 plugInConfiguration.SetConfiguration(new ResetConfiguration());
+            }
+
+            if (plugInType == typeof(ChaosCastleStartPlugIn))
+            {
+                plugInConfiguration.SetConfiguration(ChaosCastleStartConfiguration.Default);
             }
 
             if (plugInType == typeof(GoldenInvasionPlugIn))

@@ -38,7 +38,7 @@ public class DataUpdateService
     /// <exception cref="System.InvalidOperationException">The plugin manager is not initialized.</exception>
     public async ValueTask<IReadOnlyCollection<IConfigurationUpdatePlugIn>> DetermineAvailableUpdatesAsync()
     {
-        using var context = this._contextProvider.CreateNewContext();
+        using var context = this._contextProvider.CreateNewUpdateContext();
         var updates = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).ToList();
 
         var initializationKey = await DetermineInitializationKeyAsync(context);
@@ -67,10 +67,10 @@ public class DataUpdateService
     /// Applies the updates asynchronous.
     /// </summary>
     /// <param name="updates">The updates.</param>
-    /// <param name="progress">The progress provider. Reports b</param>
+    /// <param name="progress">The progress provider. Reports the progress back to the caller.</param>
     public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(int CurrentUpdatingVersion, bool IsCompleted)> progress)
     {
-        using var context = this._contextProvider.CreateNewContext();
+        using var context = this._contextProvider.CreateNewUpdateContext();
         var updateStates = await context.GetAsync<ConfigurationUpdateState>();
         var updateState = updateStates.FirstOrDefault() ?? context.CreateNew<ConfigurationUpdateState>();
         foreach (var update in updates)

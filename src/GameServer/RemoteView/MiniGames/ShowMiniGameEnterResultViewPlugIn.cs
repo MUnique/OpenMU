@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -38,7 +39,8 @@ public class ShowMiniGameEnterResultViewPlugIn : IShowMiniGameEnterResultPlugIn
                 await this._player.Connection.SendBloodCastleEnterResultAsync(enterResult.ToBloodCastleEnterResult()).ConfigureAwait(false);
                 break;
             case MiniGameType.ChaosCastle:
-                throw new NotImplementedException();
+                await this._player.Connection.SendChaosCastleEnterResultAsync(enterResult.ToChaosCastleEnterResult()).ConfigureAwait(false);
+                break;
             case MiniGameType.Undefined:
                 throw new ArgumentException("undefined game type", nameof(miniGameType));
             default:

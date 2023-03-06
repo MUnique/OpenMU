@@ -146,7 +146,11 @@ public class MapInitializer : IMapInitializer
     }
 
     /// <inheritdoc />
-    public async ValueTask InitializeSpawnAsync(GameMap createdMap, MonsterSpawnArea spawnArea, IEventStateProvider? eventStateProvider = null)
+    public async ValueTask<NonPlayerCharacter?> InitializeSpawnAsync(
+        GameMap createdMap,
+        MonsterSpawnArea spawnArea,
+        IEventStateProvider? eventStateProvider = null,
+        IDropGenerator? dropGenerator = null)
     {
         _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
         _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
@@ -159,7 +163,7 @@ public class MapInitializer : IMapInitializer
         if (monsterDef.ObjectKind == NpcObjectKind.Monster)
         {
             this._logger.LogDebug("Creating monster {spawn}", spawnArea);
-            npc = new Monster(spawnArea, monsterDef, createdMap, this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager, this.PathFinderPool,  eventStateProvider);
+            npc = new Monster(spawnArea, monsterDef, createdMap, dropGenerator ?? this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager, this.PathFinderPool,  eventStateProvider);
         }
         else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
         {
@@ -174,7 +178,7 @@ public class MapInitializer : IMapInitializer
         else if (monsterDef.ObjectKind == NpcObjectKind.Destructible)
         {
             this._logger.LogDebug("Creating destructible {spawn}", spawnArea);
-            npc = new Destructible(spawnArea, monsterDef, createdMap, eventStateProvider, this._dropGenerator, this.PlugInManager!);
+            npc = new Destructible(spawnArea, monsterDef, createdMap, eventStateProvider, dropGenerator ?? this._dropGenerator, this.PlugInManager!);
         }
         else
         {
@@ -186,12 +190,15 @@ public class MapInitializer : IMapInitializer
         {
             npc.Initialize();
             await createdMap.AddAsync(npc).ConfigureAwait(false);
+            return npc;
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, $"Object {spawnArea} couldn't be initialized.", spawnArea);
             await npc.DisposeAsync().ConfigureAwait(false);
         }
+
+        return null;
     }
 
     /// <summary>

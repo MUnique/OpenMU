@@ -35,6 +35,9 @@ internal class ChaosCastle1 : BaseMapInitializer
     }
 
     /// <inheritdoc/>
+    protected override byte SafezoneMapNumber => Devias.Number;
+
+    /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>

@@ -215,6 +215,9 @@ public class GameContext : AsyncDisposable, IGameContext
 
             switch (miniGameDefinition.Type)
             {
+                case MiniGameType.ChaosCastle:
+                    miniGameContext = new ChaosCastleContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
+                    break;
                 case MiniGameType.DevilSquare:
                     miniGameContext = new DevilSquareContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
                     break;

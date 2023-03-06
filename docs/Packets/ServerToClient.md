@@ -123,6 +123,7 @@
   * [C1 A8 - PetAttack (by server)](C1-A8-PetAttack_by-server.md)
   * [C1 A9 - PetInfoResponse (by server)](C1-A9-PetInfoResponse_by-server.md)
   * [C2 AE - MuHelperConfigurationData (by server)](C2-AE-MuHelperConfigurationData_by-server.md)
+  * [C1 AF 01 - ChaosCastleEnterResult (by server)](C1-AF-01-ChaosCastleEnterResult_by-server.md)
   * [C1 BA - SkillStageUpdate (by server)](C1-BA-SkillStageUpdate_by-server.md)
   * [C1 BF 51 - MuHelperStatusUpdate (by server)](C1-BF-51-MuHelperStatusUpdate_by-server.md)
   * [C2 C0 - MessengerInitialization (by server)](C2-C0-MessengerInitialization_by-server.md)

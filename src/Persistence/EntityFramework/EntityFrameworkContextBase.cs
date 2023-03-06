@@ -78,6 +78,7 @@ public class EntityFrameworkContextBase : IContext
     public async ValueTask<bool> SaveChangesAsync()
     {
         using var l = await this._lock.LockAsync();
+
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
         // Otherwise, we can accept them.
         var acceptChanges = this._changePublisher is null;

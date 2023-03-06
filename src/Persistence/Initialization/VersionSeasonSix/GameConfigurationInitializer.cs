@@ -81,7 +81,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new Quests(this.Context, this.GameConfiguration).Initialize();
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
         new BloodCastleInitializer(this.Context, this.GameConfiguration).Initialize();
-        
+        new ChaosCastleInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void CreateJewelMixes()

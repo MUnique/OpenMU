@@ -20,7 +20,7 @@ public class MiniGameRankingEntry
     /// <summary>
     /// Gets or sets the timestamp when the game has finished.
     /// </summary>
-    public DateTime Timestamp { get; set; }
+    public DateTime? Timestamp { get; set; }
 
     /// <summary>
     /// Gets or sets the score which the player has reached.

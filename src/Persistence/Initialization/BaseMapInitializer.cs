@@ -3,6 +3,7 @@
 // </copyright>
 
 using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 
 namespace MUnique.OpenMU.Persistence.Initialization;
 
@@ -112,24 +113,7 @@ internal abstract class BaseMapInitializer : IMapInitializer
         this._mapDefinition.Number = this.MapNumber;
         this._mapDefinition.Name = this.MapName;
         this._mapDefinition.Discriminator = this.Discriminator;
-        var assembly = Assembly.GetExecutingAssembly();
-        if (this.GetTerrainFileName() is { } resourceName)
-        {
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream != null)
-            {
-                using var reader = new BinaryReader(stream);
-                this._mapDefinition.TerrainData = reader.ReadBytes(3 * ushort.MaxValue);
-            }
-            else
-            {
-                Debug.Fail("Couldn't get terrain resource stream for map " + this.MapName);
-            }
-        }
-        else
-        {
-            Debug.Fail("Couldn't find terrain resource for map " + this.MapName);
-        }
+        this._mapDefinition.UpdateTerrainFromResources(this.TerrainVersionPrefix);
 
         this._mapDefinition.ExpMultiplier = 1;
         foreach (var spawn in this.CreateNpcSpawns().Concat(this.CreateMonsterSpawns()))

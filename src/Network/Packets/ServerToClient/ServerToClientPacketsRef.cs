@@ -21452,9 +21452,9 @@ public readonly ref struct MiniGameOpeningStateRef
     }
 
     /// <summary>
-    /// Gets or sets the remaining entering time minutes 2.
+    /// Gets or sets just used for Chaos Castle. In this case, this field contains the lower byte of the remaining minutes. For other event types, this field is not used.
     /// </summary>
-    public byte RemainingEnteringTimeMinutes2
+    public byte RemainingEnteringTimeMinutesLow
     {
         get => this._data[6];
         set => this._data[6] = value;
@@ -22034,6 +22034,92 @@ public readonly ref struct BloodCastleStateRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(BloodCastleStateRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player requested to enter the chaos castle mini game by using the 'Armor of Guardsman' item.
+/// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+/// </summary>
+public readonly ref struct ChaosCastleEnterResultRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleEnterResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChaosCastleEnterResultRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleEnterResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChaosCastleEnterResultRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xAF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public ChaosCastleEnterResult.EnterResult Result
+    {
+        get => (ChaosCastleEnterResult.EnterResult)this._data[4];
+        set => this._data[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ChaosCastleEnterResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChaosCastleEnterResultRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChaosCastleEnterResult"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ChaosCastleEnterResultRef packet) => packet._data; 
 }
 
 

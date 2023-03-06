@@ -20,6 +20,11 @@ public class MiniGameTerrainChange
     public bool SetTerrainAttribute { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether no client update is required.
+    /// </summary>
+    public bool IsClientUpdateRequired { get; set; }
+
+    /// <summary>
     /// Gets or sets the start value of the X-coordinate of the terrain area.
     /// </summary>
     public byte StartX { get; set; }

@@ -63,6 +63,12 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
+    public IContext CreateNewUpdateContext()
+    {
+        return new InMemoryContext(this._repositoryManager);
+    }
+
+    /// <inheritdoc />
     public Task<bool> DatabaseExistsAsync()
     {
         return Task.FromResult(true);
