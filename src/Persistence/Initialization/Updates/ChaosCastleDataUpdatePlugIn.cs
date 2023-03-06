@@ -54,10 +54,14 @@ public class ChaosCastleDataUpdatePlugIn : UpdatePlugInBase
 
         var initializer = new ChaosCastleInitializer(context, gameConfiguration);
         initializer.Initialize();
+
+        var chaosCastleMaps = gameConfiguration.Maps.Where(map => map.Number is >= 17 and <= 23 or 53);
+        foreach (var chaosCastleMap in chaosCastleMaps)
+        {
+            chaosCastleMap.UpdateTerrainFromResources();
+        }
     }
 
-    /// <summary>
-    /// </summary>
     /// <inheritdoc />
-    public override DateTime CreatedAt => new DateTime(2023, 03, 05, 20, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2023, 03, 05, 20, 0, 0, DateTimeKind.Utc);
 }

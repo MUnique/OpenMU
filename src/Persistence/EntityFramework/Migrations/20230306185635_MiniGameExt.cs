@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -17,6 +18,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 type: "boolean",
                 nullable: false,
                 defaultValue: false);
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "Timestamp",
+                schema: "data",
+                table: "MiniGameRankingEntry",
+                type: "timestamp with time zone",
+                nullable: true,
+                oldClrType: typeof(DateTime),
+                oldType: "timestamp with time zone");
 
             migrationBuilder.AddColumn<bool>(
                 name: "AllowParty",
@@ -41,22 +51,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 type: "integer",
                 nullable: false,
                 defaultValue: 0);
-
-            migrationBuilder.UpdateData(
-                table: "MiniGameDefinition",
-                column: "AllowParty",
-                schema: "config",
-                keyColumn: "AllowParty",
-                value: true,
-                keyValue: false);
-
-            migrationBuilder.UpdateData(
-                table: "MiniGameTerrainChange",
-                column: "IsClientUpdateRequired",
-                schema: "config",
-                keyColumn: "IsClientUpdateRequired",
-                value: true,
-                keyValue: false);
         }
 
         /// <inheritdoc />
@@ -81,6 +75,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 name: "EntranceFee",
                 schema: "config",
                 table: "MiniGameDefinition");
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "Timestamp",
+                schema: "data",
+                table: "MiniGameRankingEntry",
+                type: "timestamp with time zone",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                oldClrType: typeof(DateTime),
+                oldType: "timestamp with time zone",
+                oldNullable: true);
         }
     }
 }

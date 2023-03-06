@@ -2314,7 +2314,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("Score")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Timestamp")
+                    b.Property<DateTime?>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");

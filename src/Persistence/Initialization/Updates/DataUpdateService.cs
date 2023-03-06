@@ -67,7 +67,7 @@ public class DataUpdateService
     /// Applies the updates asynchronous.
     /// </summary>
     /// <param name="updates">The updates.</param>
-    /// <param name="progress">The progress provider. Reports b</param>
+    /// <param name="progress">The progress provider. Reports the progress back to the caller.</param>
     public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(int CurrentUpdatingVersion, bool IsCompleted)> progress)
     {
         using var context = this._contextProvider.CreateNewUpdateContext();
