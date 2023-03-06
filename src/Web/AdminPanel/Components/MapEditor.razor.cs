@@ -289,7 +289,8 @@ public partial class MapEditor : IDisposable
                     this.OnGateResizing(gate, x, y);
                     break;
                 default:
-                    throw new NotImplementedException($"Resizing for object {this._focusedObject} not implemented.");
+                    // do nothing
+                    return;
             }
 
             this.NotificationService.NotifyChange(this._focusedObject, null);
@@ -316,11 +317,9 @@ public partial class MapEditor : IDisposable
                 spawnArea.X2 = x;
                 spawnArea.Y1 = y;
                 break;
-            case null:
+            default:
                 // do nothing.
                 break;
-            default:
-                throw new InvalidOperationException("Unknown resizer position");
         }
     }
 
@@ -344,10 +343,9 @@ public partial class MapEditor : IDisposable
                 gate.X2 = x;
                 gate.Y1 = y;
                 break;
-            case null:
-                // do nothing
             default:
-                throw new InvalidOperationException("Unknown resizer position");
+                // do nothing
+                break;
         }
     }
 
