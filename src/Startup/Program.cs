@@ -171,7 +171,7 @@ internal sealed class Program : IDisposable
                 break;
             case "?":
             case "help":
-                var commandList = "exit, gc, pid";
+                var commandList = "help, exit, gc, pid";
                 Console.WriteLine($"Commands available: {commandList}");
                 break;
             case "":
@@ -179,7 +179,7 @@ internal sealed class Program : IDisposable
                 break;
             default:
                 Console.WriteLine("Unknown command");
-                break;
+                goto case "help";
         }
 
         if (_confirmExit && !string.IsNullOrWhiteSpace(input))
@@ -250,7 +250,8 @@ internal sealed class Program : IDisposable
 
         await host.StartAsync().ConfigureAwait(false);
         stopwatch.Stop();
-        this._logger.Information($"Host started, elapsed time: {stopwatch.Elapsed}");
+        this._logger.Information("Host started, elapsed time: {elapsed}",stopwatch.Elapsed);
+        this._logger.Information("Admin Panel bound to urls: {urls}", string.Join("; ", host.Urls));
         return host;
     }
 
