@@ -11,7 +11,7 @@
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
     <BlazoredTypeahead TItem="TObject" TValue="TObject"
                        @bind-Value="@this.CurrentValue"
-                       SearchMethod="@(text => this._lookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
+                       SearchMethod="@(text => this._lookupController.GetSuggestionsAsync<TObject>(text, null))"
                        EnableDropDown="true"
                        placeholder="Search ..."
                        id="@this.FieldIdentifier.FieldName">

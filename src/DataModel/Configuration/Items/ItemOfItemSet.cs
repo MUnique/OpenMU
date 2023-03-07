@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using System.Text.Json.Serialization;
+
 /// <summary>
 /// Defines additional bonus options for this item of a set.
 /// </summary>
@@ -36,6 +38,12 @@ public class ItemOfItemSet
     /// Gets or sets the bonus option.
     /// </summary>
     public virtual IncreasableItemOption? BonusOption { get; set; }
+
+    /// <summary>
+    /// Gets the name.
+    /// </summary>
+    [JsonIgnore]
+    public string Name => $"{this.ItemSetGroup?.Name} {this.ItemDefinition?.Name}";
 
     /// <inheritdoc/>
     public override string ToString()

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Services;
 
 using MUnique.OpenMU.Persistence;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// A lookup controller which will return persistent objects which start with or contain the specified text.
@@ -13,42 +14,54 @@ using MUnique.OpenMU.Persistence;
 public class PersistentObjectsLookupController : ILookupController
 {
     private readonly IPersistenceContextProvider _contextProvider;
+    private readonly ILogger<PersistentObjectsLookupController> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PersistentObjectsLookupController"/> class.
     /// </summary>
     /// <param name="contextProvider">The persistence context provider.</param>
-    public PersistentObjectsLookupController(IPersistenceContextProvider contextProvider)
+    public PersistentObjectsLookupController(IPersistenceContextProvider contextProvider, ILogger<PersistentObjectsLookupController> logger)
     {
         this._contextProvider = contextProvider;
+        this._logger = logger;
     }
 
     /// <inheritdoc />
     public async Task<IEnumerable<T>> GetSuggestionsAsync<T>(string? text, IContext? persistenceContext)
         where T : class
     {
-        if (!typeof(T).IsConfigurationType())
+        try
         {
-            // Only config data should be searchable
-            return Enumerable.Empty<T>();
+            if (!typeof(T).IsConfigurationType())
+            {
+                // Only config data should be searchable
+                return Enumerable.Empty<T>();
+            }
+
+            using var context = persistenceContext is null ? this._contextProvider.CreateNewTypedContext<T>() : null;
+            var effectiveContext = persistenceContext ?? context;
+            if (effectiveContext is null)
+            {
+                return Enumerable.Empty<T>();
+            }
+
+            var values = await effectiveContext.GetAsync<T>().ConfigureAwait(false);
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return values;
+            }
+
+            return values.Where(v => v.GetName().StartsWith(text, StringComparison.InvariantCultureIgnoreCase))
+                .Concat(values.Where(v => v.GetName().Contains(text, StringComparison.InvariantCultureIgnoreCase)))
+                .Distinct();
+
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error while searching for suggestions...");
         }
 
-        using var context = persistenceContext is null ? this._contextProvider.CreateNewTypedContext<T>() : null;
-        var effectiveContext = persistenceContext ?? context;
-        if (effectiveContext is null)
-        {
-            return Enumerable.Empty<T>();
-        }
-
-        var values = await effectiveContext.GetAsync<T>().ConfigureAwait(false);
-
-        if (string.IsNullOrEmpty(text))
-        {
-            return values;
-        }
-
-        return values.Where(v => v.GetName().StartsWith(text, StringComparison.InvariantCultureIgnoreCase))
-            .Concat(values.Where(v => v.GetName().Contains(text, StringComparison.InvariantCultureIgnoreCase)))
-            .Distinct();
+        return Enumerable.Empty<T>();
     }
 }
