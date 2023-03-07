@@ -107,7 +107,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         {
             GameMap = gameMap.Definition,
             MonsterDefinition = monsterDefinition,
-            SpawnTrigger = SpawnTrigger.Automatic,
+            SpawnTrigger = SpawnTrigger.OnceAtEventStart,
             Quantity = 1,
             X1 = x1,
             X2 = x2,
