@@ -29,11 +29,24 @@ steps:
   env:
     TAG: $(projectVersion)
 - task: Docker@2
-  condition: eq(variables.tagExists, 'false')
+  # condition: eq(variables.tagExists, 'false')
   inputs:
    containerRegistry: 'munique docker hub'
    command: 'login'
 
+- task: CmdLine@2
+  displayName: TEST - Build and Push ARM build
+  inputs:
+    script: |
+      docker run --privileged --rm tonistiigi/binfmt --install arm64
+      docker run --privileged --rm tonistiigi/binfmt
+      docker buildx create --use
+      docker buildx build --platform linux/amd64,linux/arm64 \
+        --file src/Startup/Dockerfile \
+        --context src \
+        -t munique/openmu:armtest \
+        --push \
+        .
 - task: Docker@2
   displayName: "Build and Push All-In-One Image (openmu)"
   condition: eq(variables.tagExists, 'false')
