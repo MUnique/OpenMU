@@ -42,7 +42,7 @@ steps:
       docker run --privileged --rm tonistiigi/binfmt
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm64 \
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
         --file Startup/Dockerfile \
         -t munique/openmu:armtest \
         --push \
