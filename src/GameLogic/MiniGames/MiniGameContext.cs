@@ -619,6 +619,10 @@ public class MiniGameContext : Disposable, IEventStateProvider
             await Task.Delay(spawnWave.EndTime - spawnWave.StartTime, cancellationToken).ConfigureAwait(false);
             this.Logger.LogInformation("Wave ended: {0}", spawnWave.Description);
         }
+        catch (OperationCanceledException)
+        {
+            // do nothing, as it's expected when game ends ...
+        }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "Unexpected error during spawn wave {0}: {1}", spawnWave.WaveNumber, ex.Message);
