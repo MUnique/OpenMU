@@ -681,7 +681,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
             {
                 await Task.Delay(gameDuration, cancellationToken).ConfigureAwait(false);
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
                 this.Logger.LogInformation("Finished event earlier");
             }
@@ -699,9 +699,9 @@ public class MiniGameContext : Disposable, IEventStateProvider
             this.Logger.LogInformation("Shutting down event");
             await this.ShutdownGameAsync().ConfigureAwait(false);
         }
-        catch (TaskCanceledException ex)
+        catch (OperationCanceledException ex)
         {
-            this.Logger.LogDebug(ex, "Received TaskCanceledException: {0}", ex.Message);
+            this.Logger.LogDebug(ex, "Received OperationCanceledException: {0}", ex.Message);
         }
         catch (Exception ex)
         {
@@ -865,26 +865,33 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
     private async Task ApplyChangeEventAsync(MiniGameChangeEvent changeEvent, string? triggeredBy = null)
     {
-        if (changeEvent.TerrainChanges.Any())
+        try
         {
-            await this.OnTerrainChangingAsync(changeEvent).ConfigureAwait(false);
-            await this.UpdateClientTerrainAsync(changeEvent.TerrainChanges).ConfigureAwait(false);
-            this.UpdateServerTerrain(changeEvent.TerrainChanges);
-            await this.Map.ClearDropsOnInvalidTerrain().ConfigureAwait(false);
-            await this.OnTerrainChangedAsync(changeEvent).ConfigureAwait(false);
-        }
-
-        if (changeEvent.SpawnArea is { } spawnArea)
-        {
-            for (int i = 0; i < spawnArea.Quantity; i++)
+            if (changeEvent.TerrainChanges.Any())
             {
-                await this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this).ConfigureAwait(false);
+                await this.OnTerrainChangingAsync(changeEvent).ConfigureAwait(false);
+                await this.UpdateClientTerrainAsync(changeEvent.TerrainChanges).ConfigureAwait(false);
+                this.UpdateServerTerrain(changeEvent.TerrainChanges);
+                await this.Map.ClearDropsOnInvalidTerrain().ConfigureAwait(false);
+                await this.OnTerrainChangedAsync(changeEvent).ConfigureAwait(false);
+            }
+
+            if (changeEvent.SpawnArea is { } spawnArea)
+            {
+                for (int i = 0; i < spawnArea.Quantity; i++)
+                {
+                    await this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this).ConfigureAwait(false);
+                }
+            }
+
+            if (changeEvent.Message is { } message)
+            {
+                await this.ShowMessageAsync(string.Format(message, triggeredBy)).ConfigureAwait(false);
             }
         }
-
-        if (changeEvent.Message is { } message)
+        catch (Exception ex)
         {
-            await this.ShowMessageAsync(string.Format(message, triggeredBy)).ConfigureAwait(false);
+            this.Logger.LogError(ex, "Unexpected exception at change event {changeEvent}: {ex}", changeEvent.Description, ex);
         }
     }
 
