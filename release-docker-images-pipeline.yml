@@ -40,10 +40,10 @@ steps:
     script: |
       docker run --privileged --rm tonistiigi/binfmt --install arm64
       docker run --privileged --rm tonistiigi/binfmt
+      cd src
       docker buildx create --use
       docker buildx build --platform linux/amd64,linux/arm64 \
-        --file src/Startup/Dockerfile \
-        --build-context src \
+        --file Startup/Dockerfile \
         -t munique/openmu:armtest \
         --push \
         .
