@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Nito.Disposables.Internals;
 
 /// <summary>
 /// The manager for plugins.
@@ -493,7 +494,24 @@ public class PlugInManager
             .Where(assembly => assembly.FullName is not null)
             .Where(assembly => !assembly.FullName!.StartsWith("System"))
             .Where(assembly => !assembly.FullName!.StartsWith("Microsoft"))
-            .SelectMany(assembly => assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null));
+            .Where(assembly => !assembly.FullName!.StartsWith("Nito"))
+            .Where(assembly => !assembly.FullName!.StartsWith("Blazor"))
+            .SelectMany(assembly =>
+                {
+                    try
+                    {
+                        return assembly.DefinedTypes.Where(type => type.GetCustomAttribute<PlugInAttribute>() != null);
+                    }
+                    catch (ReflectionTypeLoadException ex)
+                    {
+                        return ex.Types.WhereNotNull();
+                    }
+                    catch (Exception)
+                    {
+                        return Enumerable.Empty<Type>();
+                    }
+                }
+            );
     }
 
     private IEnumerable<Type> DiscoverPlugIns(Assembly assembly)
