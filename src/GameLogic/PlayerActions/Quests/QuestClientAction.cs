@@ -21,9 +21,11 @@ public class QuestClientAction
     public void ClientAction(Player player, short group, short number)
     {
         var questState = player.SelectedCharacter?.QuestStates.FirstOrDefault(s => s.Group == group && s.ActiveQuest?.Number == number && s.ActiveQuest.RequiresClientAction);
-        if (questState != null)
+        if (questState is null)
         {
-            questState.ClientActionPerformed = true;
+            return;
         }
+
+        questState.ClientActionPerformed = true;
     }
 }
