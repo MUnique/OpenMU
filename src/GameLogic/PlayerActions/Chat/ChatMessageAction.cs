@@ -29,7 +29,7 @@ public class ChatMessageAction
             { "/", ChatMessageType.Command },
         };
 
-        this._chatProcessMessages = new Dictionary<ChatMessageType, IChatProcessorMessage>()
+        this._chatProcessMessages = new Dictionary<ChatMessageType, IChatProcessorMessage>
         {
             { ChatMessageType.Command, new ChatCommandProcessorMessage() },
             { ChatMessageType.Whisper, new ChatWhisperProcessorMessage() },
