@@ -72,6 +72,7 @@ public partial class NavMenu : IDisposable
         // We have to reload, because the old links are not correct anymore.
         this.GameConfigurationId = null;
         await this.LoadGameConfigurationAsync().ConfigureAwait(false);
+        await this.CheckForUpdatesAsync().ConfigureAwait(false);
     }
 
     private async Task LoadGameConfigurationAsync()

@@ -48,6 +48,16 @@ internal class Quest220 : Quest150
     }
 
     /// <inheritdoc/>
+    protected override Character CreateWizard()
+    {
+        var character = base.CreateWizard();
+        var ringOfHonor = this.CreateJewel(49, Items.Quest.ScrollOfEmperorNumber);
+        ringOfHonor.Level = 1;
+        character.Inventory!.Items.Add(ringOfHonor);
+        return character;
+    }
+
+    /// <inheritdoc/>
     protected override Character CreateElf()
     {
         var character = base.CreateElf();

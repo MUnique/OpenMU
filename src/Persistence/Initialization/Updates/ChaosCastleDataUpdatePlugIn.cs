@@ -44,9 +44,10 @@ public class ChaosCastleDataUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context)
     {
-        var chaosCastleId = GuidHelper.CreateGuid<MiniGameDefinition>((short)MiniGameType.ChaosCastle);
+        var chaosCastleId = GuidHelper.CreateGuid<MiniGameDefinition>((short)MiniGameType.ChaosCastle, 1);
         if (await context.GetByIdAsync<MiniGameDefinition>(chaosCastleId).ConfigureAwait(false) is { })
         {
+            // There is already a chaos castle definition, so we can skip this update
             return;
         }
 

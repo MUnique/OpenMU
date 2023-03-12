@@ -394,6 +394,7 @@ public partial class MapEditor : IDisposable
         this._createMode = true;
 
         var exitGate = this.PersistenceContext.CreateNew<ExitGate>();
+        exitGate.Map = this.SelectedMap;
         this.SelectedMap.ExitGates.Add(exitGate);
         exitGate.X1 = 120;
         exitGate.Y1 = 120;
