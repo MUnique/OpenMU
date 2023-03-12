@@ -35,21 +35,25 @@ public class QuestCompletionAction
 
         foreach (var requiredItem in activeQuest.RequiredItems)
         {
-            if (requiredItem.MinimumNumber > player.Inventory?.Items.Count(i => i.Definition == requiredItem.Item))
+            if (!(requiredItem.MinimumNumber > player.Inventory?.Items.Count(i => i.Definition == requiredItem.Item)))
             {
-                player.Logger.LogDebug("Failed, required item not found: {0}", requiredItem.Item!.Name);
-                return;
+                continue;
             }
+
+            player.Logger.LogDebug("Failed, required item not found: {0}", requiredItem.Item!.Name);
+            return;
         }
 
         foreach (var requiredKills in activeQuest.RequiredMonsterKills)
         {
             var currentKillCount = questState!.RequirementStates.FirstOrDefault(r => r.Requirement == requiredKills)?.KillCount ?? 0;
-            if (currentKillCount < requiredKills.MinimumNumber)
+            if (currentKillCount >= requiredKills.MinimumNumber)
             {
-                player.Logger.LogDebug("Failed, required kills of monster {0}: {1}/{2};", requiredKills.Monster?.Designation, currentKillCount, requiredKills.MinimumNumber);
-                return;
+                continue;
             }
+
+            player.Logger.LogDebug("Failed, required kills of monster {0}: {1}/{2};", requiredKills.Monster?.Designation, currentKillCount, requiredKills.MinimumNumber);
+            return;
         }
 
         if (activeQuest.RequiresClientAction && !questState!.ClientActionPerformed)
