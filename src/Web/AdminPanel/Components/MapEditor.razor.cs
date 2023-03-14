@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Components;
 
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
@@ -96,15 +95,6 @@ public partial class MapEditor : IDisposable
     protected override async Task OnInitializedAsync()
     {
         this.NotificationService.PropertyChanged += this.OnPropertyChanged;
-        try
-        {
-            this.Maps = (await this.PersistenceContext.GetAsync<GameMapDefinition>().ConfigureAwait(false)).OrderBy(c => c.Number).ToList();
-        }
-        catch (Exception ex)
-        {
-            Debug.Fail(ex.Message, ex.StackTrace);
-        }
-
         await base.OnInitializedAsync().ConfigureAwait(false);
     }
 

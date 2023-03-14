@@ -5,10 +5,12 @@
 namespace MUnique.OpenMU.Persistence;
 
 /// <summary>
-/// The base repository manager.
+/// The base repository provider.
 /// </summary>
-public class BaseRepositoryManager
+public class BaseRepositoryProvider
 {
+    private bool _isInitialized;
+
     /// <summary>
     /// Gets the repositories for each entity type.
     /// </summary>
@@ -19,10 +21,14 @@ public class BaseRepositoryManager
     /// </summary>
     /// <typeparam name="T">The generic type.</typeparam>
     /// <returns>The repository of the specified generic type.</returns>
-    public virtual IRepository<T> GetRepository<T>()
+    public virtual IRepository<T>? GetRepository<T>()
         where T : class
     {
         var repository = this.GetRepository(typeof(T));
+        if (repository is null)
+        {
+            return null;
+        }
 
         // TODO: Not always an adapter is required. Also, the adapter could be cached.
         return new RepositoryAdapter<T>(repository);
@@ -36,11 +42,11 @@ public class BaseRepositoryManager
     /// <returns>
     /// The repository of the specified generic type.
     /// </returns>
-    public TRepository GetRepository<T, TRepository>()
+    public TRepository? GetRepository<T, TRepository>()
         where T : class
         where TRepository : IRepository
     {
-        return (TRepository)this.GetRepository(typeof(T));
+        return (TRepository?)this.GetRepository(typeof(T));
     }
 
     /// <summary>
@@ -48,15 +54,17 @@ public class BaseRepositoryManager
     /// </summary>
     /// <param name="objectType">Type of the object.</param>
     /// <returns>The repository of the specified type.</returns>
-    public virtual IRepository GetRepository(Type objectType)
+    public virtual IRepository? GetRepository(Type objectType)
     {
         var repository = this.InternalGetRepository(objectType);
-        if (repository is null)
-        {
-            throw new RepositoryNotFoundException(objectType);
-        }
-
         return repository;
+    }
+
+    /// <summary>
+    /// Initializes this instance.
+    /// </summary>
+    protected virtual void Initialize()
+    {
     }
 
     /// <summary>
@@ -66,6 +74,7 @@ public class BaseRepositoryManager
     /// <returns>The repository of the specified type.</returns>
     protected IRepository? InternalGetRepository(Type objectType)
     {
+        this.EnsureInitialized();
         Type? currentSearchType = objectType;
         do
         {
@@ -73,7 +82,7 @@ public class BaseRepositoryManager
             {
                 break;
             }
-
+            
             if (this.Repositories.TryGetValue(currentSearchType, out var repository))
             {
                 return repository as IRepository;
@@ -110,5 +119,14 @@ public class BaseRepositoryManager
     protected virtual void RegisterRepository(Type type, IRepository repository)
     {
         this.Repositories.Add(type, repository);
+    }
+
+    private void EnsureInitialized()
+    {
+        if (!this._isInitialized)
+        {
+            this.Initialize();
+            this._isInitialized = true;
+        }
     }
 }

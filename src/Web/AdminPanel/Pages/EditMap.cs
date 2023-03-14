@@ -16,26 +16,26 @@ using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Components;
 
 /// <summary>
-/// A page, which shows an <see cref="MapEditor"/> for the given <see cref="Id"/> of a <see cref="GameMapDefinition"/>.
+/// A page, which shows an <see cref="MapEditor"/> for all <see cref="GameConfiguration.Maps"/>.
 /// </summary>
 [Route("/map-editor")]
 public sealed class EditMap : ComponentBase, IDisposable
 {
     private List<GameMapDefinition>? _maps;
-    private IContext? _persistenceContext;
     private CancellationTokenSource? _disposeCts;
-
-    /// <summary>
-    /// Gets or sets the persistence context provider which loads and saves the object.
-    /// </summary>
-    [Inject]
-    private IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
+    private IContext? _context;
 
     /// <summary>
     /// Gets or sets the modal service.
     /// </summary>
     [Inject]
     private IModalService ModalService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the game configuration.
+    /// </summary>
+    [Inject]
+    private IDataSource<GameConfiguration> GameConfigurationSource { get; set; } = null!;
 
     [Inject]
     private ILogger<EditMap> Logger { get; set; } = null!;
@@ -46,8 +46,6 @@ public sealed class EditMap : ComponentBase, IDisposable
         this._disposeCts?.Cancel();
         this._disposeCts?.Dispose();
         this._disposeCts = null;
-        this._persistenceContext?.Dispose();
-        this._persistenceContext = null;
     }
 
     /// <inheritdoc />
@@ -56,8 +54,8 @@ public sealed class EditMap : ComponentBase, IDisposable
         if (this._maps is { })
         {
             builder.OpenComponent<CascadingValue<IContext>>(1);
-            builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
-            builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), true);
+            builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._context);
+            builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), false);
             builder.AddAttribute(4, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
             {
                 builder2.OpenComponent(5, typeof(MapEditor));
@@ -71,13 +69,15 @@ public sealed class EditMap : ComponentBase, IDisposable
     }
 
     /// <inheritdoc />
-    protected override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
         this._disposeCts?.Cancel();
         this._disposeCts?.Dispose();
         this._disposeCts = null;
 
-        return base.OnParametersSetAsync();
+        this._context = await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(false);
+
+        await base.OnParametersSetAsync();
     }
 
     /// <inheritdoc />
@@ -97,14 +97,14 @@ public sealed class EditMap : ComponentBase, IDisposable
         IDisposable? modal = null;
         var showModalTask = this.InvokeAsync(() => modal = this.ModalService.ShowLoadingIndicator());
 
-        this._persistenceContext = this.PersistenceContextProvider.CreateNewTypedContext<GameMapDefinition>();
         try
         {
             if (!cancellationToken.IsCancellationRequested)
             {
+                var gameConfig = await this.GameConfigurationSource.GetOwnerAsync(Guid.Empty);
                 try
                 {
-                    this._maps = (await this._persistenceContext.GetAsync<GameMapDefinition>().ConfigureAwait(false)).OrderBy(c => c.Number).ToList();
+                    this._maps = gameConfig.Maps.OrderBy(c => c.Number).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -129,12 +129,14 @@ public sealed class EditMap : ComponentBase, IDisposable
         }
     }
 
-    private Task SaveChangesAsync()
+    private async Task SaveChangesAsync()
     {
         string text;
         try
         {
-            text = this._persistenceContext?.SaveChanges() ?? false ? "The changes have been saved." : "There were no changes to save.";
+            var context = await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(true);
+            var success = await context.SaveChangesAsync().ConfigureAwait(true);
+            text = success ? "The changes have been saved." : "There were no changes to save.";
         }
         catch (Exception ex)
         {
@@ -142,6 +144,6 @@ public sealed class EditMap : ComponentBase, IDisposable
             text = $"An unexpected error occured: {ex.Message}.";
         }
 
-        return this.ModalService.ShowMessageAsync("Save", text);
+        await this.ModalService.ShowMessageAsync("Save", text);
     }
 }

@@ -19,24 +19,31 @@ internal class AccountRepository : CachingGenericRepository<Account>
     /// <summary>
     /// Initializes a new instance of the <see cref="AccountRepository" /> class.
     /// </summary>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public AccountRepository(CachingRepositoryManager repositoryManager, ILoggerFactory loggerFactory)
-        : base(repositoryManager, loggerFactory)
+    public AccountRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory)
+        : base(repositoryProvider, loggerFactory)
     {
     }
 
     /// <inheritdoc />
     public override async ValueTask<Account?> GetByIdAsync(Guid id)
     {
-        ((CachingRepositoryManager)this.RepositoryManager).EnsureCachesForCurrentGameConfiguration();
+        (this.RepositoryProvider as ICacheAwareRepositoryProvider)?.EnsureCachesForCurrentGameConfiguration();
+
         using var context = this.GetContext();
         await context.Context.Database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
-            var account = context.Context.ChangeTracker.Entries<Account>().FirstOrDefault(a => a.Entity.Id == id)?.Entity;
-            if (account is null)
+            var accountEntry = context.Context.ChangeTracker.Entries<Account>().FirstOrDefault(a => a.Entity.Id == id);
+            var account = accountEntry?.Entity;
+            if (account is null || accountEntry?.References.Any(reference => !reference.IsLoaded) is true)
             {
+                if (account is not null)
+                {
+                    context.Detach(account);
+                }
+
                 var objectLoader = new AccountJsonObjectLoader();
                 account = await objectLoader.LoadObjectAsync<Account>(id, context.Context).ConfigureAwait(false);
                 if (account != null && !(context.Context.Entry(account) is { } entry && entry.State != EntityState.Detached))

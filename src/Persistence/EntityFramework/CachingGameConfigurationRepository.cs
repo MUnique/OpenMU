@@ -23,10 +23,10 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingGameConfigurationRepository" /> class.
     /// </summary>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public CachingGameConfigurationRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory)
-        : base(repositoryManager, loggerFactory)
+    public CachingGameConfigurationRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory)
+        : base(repositoryProvider, loggerFactory)
     {
         this._objectLoader = new GameConfigurationJsonObjectLoader();
     }
@@ -34,7 +34,7 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     /// <inheritdoc />
     public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id)
     {
-        if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
+        if (this.RepositoryProvider.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
         {
             throw new InvalidOperationException("There is no current context set.");
         }
@@ -60,7 +60,7 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     /// <inheritdoc />
     public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync()
     {
-        if (this.RepositoryManager.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
+        if (this.RepositoryProvider.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
         {
             throw new InvalidOperationException("There is no current context set.");
         }

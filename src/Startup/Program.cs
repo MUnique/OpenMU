@@ -237,6 +237,7 @@ internal sealed class Program : IDisposable
             .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!);
         var host = builder.Build();
 
+        // NpgsqlLoggingConfiguration.InitializeLogging(host.Services.GetRequiredService<ILoggerFactory>())
         this._logger.Information("Host created");
 
         if (addAdminPanel)
@@ -258,7 +259,7 @@ internal sealed class Program : IDisposable
     private ICollection<PlugInConfiguration> PlugInConfigurationsFactory(IServiceProvider serviceProvider)
     {
         var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
-        using var context = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>();
+        using var context = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false);
         var configs = context.GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList();
 
         // We check if we miss any plugin configurations in the database. If we do, we try to add them.
@@ -360,13 +361,13 @@ internal sealed class Program : IDisposable
         }
         else
         {
-            contextProvider = await this.PrepareRepositoryManagerAsync(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory).ConfigureAwait(false);
+            contextProvider = await this.PrepareRepositoryProviderAsync(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory).ConfigureAwait(false);
         }
 
         return contextProvider;
     }
 
-    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryManagerAsync(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
+    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryProviderAsync(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
     {
         var contextProvider = new PersistenceContextProvider(loggerFactory, null);
         if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))

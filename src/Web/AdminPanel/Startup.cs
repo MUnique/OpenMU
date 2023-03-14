@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
@@ -14,9 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
@@ -71,19 +67,6 @@ public class Startup
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
 
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
-
-        services.AddScoped(provider =>
-        {
-            var contextProvider = provider.GetService<IPersistenceContextProvider>();
-            using var initialContext = contextProvider!.CreateNewConfigurationContext();
-            return initialContext.GetAsync<GameConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault()!; // yes, we might get null here - it's intended.
-        });
-
-        services.AddTransient(provider =>
-        {
-            var contextProvider = provider.GetService<IPersistenceContextProvider>();
-            return contextProvider!.CreateNewPlayerContext(provider.GetService<GameConfiguration>()!);
-        });
     }
 
     /// <summary>

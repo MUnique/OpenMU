@@ -42,16 +42,16 @@ public class ChaosCastleDataUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    protected override async ValueTask ApplyAsync(IContext context)
+#pragma warning disable CS1998
+    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+#pragma warning restore CS1998
     {
-        var chaosCastleId = GuidHelper.CreateGuid<MiniGameDefinition>((short)MiniGameType.ChaosCastle, 1);
-        if (await context.GetByIdAsync<MiniGameDefinition>(chaosCastleId).ConfigureAwait(false) is { })
+        // First check if an update is required.
+        if (gameConfiguration.MiniGameDefinitions.Any(def => def.Type == MiniGameType.ChaosCastle))
         {
             // There is already a chaos castle definition, so we can skip this update
             return;
         }
-
-        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
 
         var initializer = new ChaosCastleInitializer(context, gameConfiguration);
         initializer.Initialize();

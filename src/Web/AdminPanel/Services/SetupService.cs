@@ -69,7 +69,7 @@ public class SetupService
     /// </summary>
     public async ValueTask<ClientVersion?> GetCurrentGameClientVersionAsync()
     {
-        using var context = this._contextProvider.CreateNewTypedContext<GameClientDefinition>();
+        using var context = this._contextProvider.CreateNewConfigurationContext();
         var definition = (await context.GetAsync<GameClientDefinition>().ConfigureAwait(false)).FirstOrDefault();
         return definition is { } ? new ClientVersion(definition.Season, definition.Episode, definition.Language) : null;
     }

@@ -15,8 +15,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// Abstract base class for an <see cref="IContext"/> which uses an <see cref="DbContext"/>.
 /// </summary>
-/// <seealso cref="MUnique.OpenMU.Persistence.IContext" />
-public class EntityFrameworkContextBase : IContext
+internal class EntityFrameworkContextBase : IContext
 {
     private readonly bool _isOwner;
     private readonly IConfigurationChangePublisher? _changePublisher;
@@ -28,14 +27,14 @@ public class EntityFrameworkContextBase : IContext
     /// Initializes a new instance of the <see cref="EntityFrameworkContextBase" /> class.
     /// </summary>
     /// <param name="context">The db context.</param>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="isOwner">If set to <c>true</c>, this instance owns the <see cref="Context" />. That means it will be disposed when this instance will be disposed.</param>
     /// <param name="changePublisher">The change publisher.</param>
     /// <param name="logger">The logger.</param>
-    protected EntityFrameworkContextBase(DbContext context, RepositoryManager repositoryManager, bool isOwner, IConfigurationChangePublisher? changePublisher, ILogger logger)
+    protected EntityFrameworkContextBase(DbContext context, IContextAwareRepositoryProvider repositoryProvider, bool isOwner, IConfigurationChangePublisher? changePublisher, ILogger logger)
     {
         this.Context = context;
-        this.RepositoryManager = repositoryManager;
+        this.RepositoryProvider = repositoryProvider;
         this._isOwner = isOwner;
         this._changePublisher = changePublisher;
         this._logger = logger;
@@ -50,15 +49,18 @@ public class EntityFrameworkContextBase : IContext
     /// </summary>
     ~EntityFrameworkContextBase() => this.Dispose(false);
 
+    /// <inheritdoc />
+    public bool HasChanges => this.Context.ChangeTracker.HasChanges();
+
     /// <summary>
     /// Gets the entity framework context.
     /// </summary>
     internal DbContext Context { get; }
 
     /// <summary>
-    /// Gets the repository manager.
+    /// Gets the repository provider.
     /// </summary>
-    protected RepositoryManager RepositoryManager { get; }
+    protected IContextAwareRepositoryProvider RepositoryProvider { get; }
 
     /// <inheritdoc/>
     public bool SaveChanges()
@@ -162,16 +164,16 @@ public class EntityFrameworkContextBase : IContext
         where T : class
     {
         using var l = await this._lock.LockAsync();
-        using var context = this.RepositoryManager.ContextStack.UseContext(this);
-        return await this.RepositoryManager.GetRepository<T>().GetByIdAsync(id).ConfigureAwait(false);
+        using var context = this.RepositoryProvider.ContextStack.UseContext(this);
+        return await this.GetRepository<T>().GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async Task<object?> GetByIdAsync(Guid id, Type type)
     {
         using var l = await this._lock.LockAsync();
-        using var context = this.RepositoryManager.ContextStack.UseContext(this);
-        return await this.RepositoryManager.GetRepository(type).GetByIdAsync(id).ConfigureAwait(false);
+        using var context = this.RepositoryProvider.ContextStack.UseContext(this);
+        return await this.GetRepository(type).GetByIdAsync(id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -179,8 +181,8 @@ public class EntityFrameworkContextBase : IContext
         where T : class
     {
         using var l = await this._lock.LockAsync();
-        using var context = this.RepositoryManager.ContextStack.UseContext(this);
-        return await this.RepositoryManager.GetRepository<T>().GetAllAsync().ConfigureAwait(false);
+        using var context = this.RepositoryProvider.ContextStack.UseContext(this);
+        return await this.GetRepository<T>().GetAllAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -208,6 +210,27 @@ public class EntityFrameworkContextBase : IContext
 
         this.Context.SavedChanges -= this.OnSavedChanges;
         this.Context.Dispose();
+    }
+
+    private IRepository<T> GetRepository<T>()
+        where T : class
+    {
+        if (this.RepositoryProvider.GetRepository<T>() is { } repository)
+        {
+            return repository;
+        }
+
+        throw new RepositoryNotFoundException(typeof(T));
+    }
+
+    private IRepository GetRepository(Type type)
+    {
+        if (this.RepositoryProvider.GetRepository(type) is { } repository)
+        {
+            return repository;
+        }
+
+        throw new RepositoryNotFoundException(type);
     }
 
     private void ForEachAggregate(object obj, Action<object> action)

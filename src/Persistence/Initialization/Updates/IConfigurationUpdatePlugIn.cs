@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -49,9 +50,10 @@ public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<int>
     /// Applies this update on the given persistence context.
     /// </summary>
     /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration which can be updated.</param>
     /// <remarks>
     /// Calling <see cref="IContext.SaveChangesAsync"/> is not required in this implementation.
     /// It will be called by <see cref="DataUpdateService"/>.
     /// </remarks>
-    ValueTask ApplyUpdateAsync(IContext context);
+    ValueTask ApplyUpdateAsync(IContext context, GameConfiguration gameConfiguration);
 }

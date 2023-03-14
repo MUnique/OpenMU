@@ -20,7 +20,7 @@
             <td>@item.State</td>
             <td>@item.EMail</td>
             <td>
-                <NavLink href="@("edit/" + typeof(Account).FullName + "/" + item.GetId())">Edit</NavLink>
+                <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")">Edit</NavLink>
             </td>
         </ItemTemplate>
         <TableFooter>
