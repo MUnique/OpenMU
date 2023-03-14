@@ -35,5 +35,6 @@ public class CharacterQuestState
     /// <summary>
     /// Gets or sets the requirement states for the current <see cref="ActiveQuest"/>.
     /// </summary>
+    [MemberOfAggregate]
     public virtual ICollection<QuestMonsterKillRequirementState> RequirementStates { get; protected set; } = null!;
 }
