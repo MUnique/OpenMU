@@ -26,7 +26,6 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     private Type? _type;
     private bool _isOwningContext;
     private IContext? _persistenceContext;
-    private GameConfiguration? _gameConfiguration;
     private CancellationTokenSource? _disposeCts;
     private DataLoadingState _loadingState;
     private Task? _loadTask;
@@ -319,9 +318,9 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         else
         {
             this._isOwningContext = true;
-            this._gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
+            var gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
             var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
-            this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] {true, this._gameConfiguration})!;
+            this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] {true, gameConfiguration})!;
         }
 
         try

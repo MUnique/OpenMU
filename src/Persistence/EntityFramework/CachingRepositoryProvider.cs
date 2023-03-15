@@ -66,7 +66,6 @@ internal class CachingRepositoryProvider : RepositoryProvider
         this.RegisterRepository(new ConfigurationTypeRepository<PlugInConfiguration>(this._parent, config => config.RawPlugInConfigurations));
         this.RegisterRepository(new ConfigurationTypeRepository<QuestDefinition>(this._parent, config => config.RawMonsters.SelectMany(m => m.RawQuests).ToList()));
 
-        // this.RegisterMissingRepositoriesAsGeneric();
         base.Initialize();
     }
 

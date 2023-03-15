@@ -120,7 +120,6 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     protected virtual IEnumerable<INavigationBase> GetNavigations(EntityEntry entityEntry)
     {
         return FullEntityType.GetNavigations();
-        // return entityEntry.Navigations.Select(n => n.Metadata);
     }
 
     /// <summary>

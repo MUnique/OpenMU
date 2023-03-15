@@ -156,8 +156,6 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     {
         var repositoryProvider = new NonCachingRepositoryProvider(this._loggerFactory, null, this._changePublisher, this.RepositoryProvider.ContextStack);
         return new EntityFrameworkContext(new EntityDataContext(), this._loggerFactory, repositoryProvider, true, this._changePublisher);
-
-        // return new CachingEntityFrameworkContext(new EntityDataContext(), this.RepositoryProvider, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
