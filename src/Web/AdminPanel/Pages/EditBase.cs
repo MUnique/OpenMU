@@ -163,7 +163,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
 
         var downloadMarkup = this.GetDownloadMarkup();
         var editorsMarkup = this.GetEditorsMarkup();
-        builder.AddMarkupContent(0, $"<h1>Edit {this.Type!.Name}</h1>{downloadMarkup}{editorsMarkup}\r\n");
+        builder.AddMarkupContent(0, $"<h1>Edit {CaptionHelper.SeparateWords(this.Type!.Name)}</h1>{downloadMarkup}{editorsMarkup}\r\n");
         builder.OpenComponent<CascadingValue<IContext>>(1);
         builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
         builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
