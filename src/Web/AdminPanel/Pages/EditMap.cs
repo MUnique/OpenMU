@@ -9,7 +9,9 @@ using System.Threading;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel;
@@ -24,6 +26,8 @@ public sealed class EditMap : ComponentBase, IDisposable
     private List<GameMapDefinition>? _maps;
     private CancellationTokenSource? _disposeCts;
     private IContext? _context;
+    private IDisposable? _navigationLockDisposable;
+    private Guid _selectedMapId;
 
     /// <summary>
     /// Gets or sets the modal service.
@@ -40,12 +44,27 @@ public sealed class EditMap : ComponentBase, IDisposable
     [Inject]
     private ILogger<EditMap> Logger { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the navigation manager.
+    /// </summary>
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the java script runtime.
+    /// </summary>
+    [Inject]
+    public IJSRuntime JavaScript { get; set; } = null!;
+
     /// <inheritdoc />
     public void Dispose()
     {
         this._disposeCts?.Cancel();
         this._disposeCts?.Dispose();
         this._disposeCts = null;
+
+        this._navigationLockDisposable?.Dispose();
+        this._navigationLockDisposable = null;
     }
 
     /// <inheritdoc />
@@ -60,7 +79,9 @@ public sealed class EditMap : ComponentBase, IDisposable
             {
                 builder2.OpenComponent(5, typeof(MapEditor));
                 builder2.AddAttribute(6, nameof(MapEditor.Maps), this._maps);
-                builder2.AddAttribute(7, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+                builder2.AddAttribute(7, nameof(MapEditor.SelectedMapId), this._selectedMapId);
+                builder2.AddAttribute(8, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+                builder2.AddAttribute(9, nameof(MapEditor.SelectedMapChanging), EventCallback.Factory.Create<MapEditor.MapChangingArgs>(this, this.OnSelectedMapChanging));
                 builder2.CloseComponent();
             }));
 
@@ -90,6 +111,55 @@ public sealed class EditMap : ComponentBase, IDisposable
             var cts = this._disposeCts.Token;
             _ = Task.Run(() => this.LoadDataAsync(cts), cts);
         }
+    }
+
+    /// <inheritdoc />
+    protected override Task OnInitializedAsync()
+    {
+        this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigation);
+        return base.OnInitializedAsync();
+    }
+
+    private async ValueTask OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        if (! await this.AllowChangeAsync())
+        {
+            context.PreventNavigation();
+        }
+    }
+
+    private async Task OnSelectedMapChanging(MapEditor.MapChangingArgs eventArgs)
+    {
+        eventArgs.Cancel = !await this.AllowChangeAsync();
+        if (!eventArgs.Cancel)
+        {
+            this._selectedMapId = eventArgs.NextMap;
+        }
+    }
+
+    private async ValueTask<bool> AllowChangeAsync()
+    {
+        var persistenceContext = await this.GameConfigurationSource.GetContextAsync();
+        if (persistenceContext?.HasChanges is not true)
+        {
+            return true;
+        }
+
+        var isConfirmed = await JavaScript.InvokeAsync<bool>("window.confirm",
+            "There are unsaved changes. Are you sure you want to discard them?");
+
+        if (!isConfirmed)
+        {
+            return false;
+        }
+
+        await this.GameConfigurationSource.DiscardChangesAsync();
+        this._maps = null;
+        // OnAfterRender will load again ...
+        //var cts = this._disposeCts.Token;
+        //_ = Task.Run(() => this.LoadDataAsync(cts), cts);
+        
+        return true;
     }
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
