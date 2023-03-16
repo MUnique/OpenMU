@@ -168,11 +168,14 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
 
         var result = new Dictionary<Guid, IIdentifiable>();
 
-        foreach (var (_, objects) in TypeToEnumerables)
+        foreach (var (type, objects) in TypeToEnumerables)
         {
             foreach (var obj in objects(owner).OfType<IIdentifiable>())
             {
-                result.Add(obj.Id, obj);
+                if (!result.TryAdd(obj.Id, obj))
+                {
+                    this._logger.LogDebug($"Duplicate key {obj.Id}, type {type}.");
+                }
             }
         }
 
