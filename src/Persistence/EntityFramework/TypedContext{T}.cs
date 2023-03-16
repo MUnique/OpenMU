@@ -21,6 +21,7 @@ internal class TypedContext<T> : EntityDataContext, ITypedContext
     {
         { typeof(GameServerDefinition), new[] { typeof(GameServerConfiguration) } },
         { typeof(GameServerEndpoint), new[] { typeof(GameClientDefinition) } },
+        { typeof(ConnectServerDefinition), new[] { typeof(GameClientDefinition) } },
     };
 
     // ReSharper disable once StaticMemberInGenericType That's okay, we want this behavior (each type context with it's own set)
