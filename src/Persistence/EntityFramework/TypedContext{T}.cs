@@ -55,7 +55,7 @@ internal class TypedContext<T> : EntityDataContext, ITypedContext
         var modelTypes = modelBuilder.Model.GetEntityTypes().ToList();
 
         var editTypes = DetermineEditTypes(modelTypes).ToList();
-        var additionalTypes = editTypes.SelectMany(t => DetermineAdditionalTypes(modelTypes, t));
+        var additionalTypes = editTypes.SelectMany(t => DetermineAdditionalTypes(modelTypes, t)).ToList();
         editTypes.AddRange(additionalTypes);
         foreach (var type in editTypes)
         {
