@@ -366,5 +366,9 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             // It would be great to have an async api with cancellation token support in the persistence layer
             // For the moment, we swallow the exception
         }
+        catch (Exception ex)
+        {
+            this.Logger?.LogError(ex, "Unexpected error when loading data: {ex}", ex);
+        }
     }
 }
